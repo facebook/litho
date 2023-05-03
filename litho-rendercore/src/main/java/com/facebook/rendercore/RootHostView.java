@@ -102,4 +102,8 @@ public class RootHostView extends HostView implements RootHost {
   public @Nullable Object findMountContentById(long id) {
     return mRootHostDelegate.findMountContentById(id);
   }
+
+  RootHostDelegate getRootHostDelegate() {
+    return mRootHostDelegate;
+  }
 }

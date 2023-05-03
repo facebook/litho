@@ -34,7 +34,7 @@ public class RenderTree {
   private final int mHeightSpec;
   private final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> mResults;
   private final LongSparseArray<Integer> mIdToIndexMap = new LongSparseArray<>();
-  private @Nullable Object mRenderTreeData;
+  private @Nullable Object mDebugData;
 
   public RenderTree(
       final RenderTreeNode root,
@@ -42,13 +42,15 @@ public class RenderTree {
       final int widthSpec,
       final int heightSpec,
       final int renderStateId,
-      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results,
+      final @Nullable Object debugData) {
     mRoot = root;
     mFlatList = flatList;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mResults = results;
     mRenderStateId = renderStateId;
+    mDebugData = debugData;
 
     for (int i = 0; i < mFlatList.length; i++) {
       assertNoDuplicateRenderUnits(i);
@@ -119,13 +121,10 @@ public class RenderTree {
     return mResults;
   }
 
+  // This will vary by framework and will be null outside of debug builds
   @Nullable
-  public Object getRenderTreeData() {
-    return mRenderTreeData;
-  }
-
-  public void setRenderTreeData(Object renderTreeData) {
-    mRenderTreeData = renderTreeData;
+  public Object getDebugData() {
+    return mDebugData;
   }
 
   public RenderTreeNode getRoot() {

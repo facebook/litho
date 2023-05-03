@@ -171,7 +171,13 @@ public class Reducer {
 
     RenderCoreSystrace.endSection();
 
-    return new RenderTree(root, nodesArray, widthSpec, heightSpec, renderStateId, results);
+    Object debugData = null;
+    if (BuildConfig.DEBUG) {
+      debugData = layoutResult;
+    }
+
+    return new RenderTree(
+        root, nodesArray, widthSpec, heightSpec, renderStateId, results, debugData);
   }
 
   private static @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> populate(

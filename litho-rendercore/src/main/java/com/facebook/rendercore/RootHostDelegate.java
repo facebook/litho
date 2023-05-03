@@ -149,4 +149,9 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
   public void attach() {
     mMountState.attach();
   }
+
+  @Nullable
+  RenderState getRenderState() {
+    return mRenderState;
+  }
 }

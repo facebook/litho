@@ -496,6 +496,7 @@ public class IncrementalMountExtensionTest {
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             RenderState.NO_ID,
+            null,
             null);
 
     final TestIncrementalMountExtensionInput input1 =
@@ -559,6 +560,7 @@ public class IncrementalMountExtensionTest {
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             RenderState.NO_ID,
+            null,
             null);
 
     final TestIncrementalMountExtensionInput input =
@@ -601,6 +603,7 @@ public class IncrementalMountExtensionTest {
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             RenderState.NO_ID,
+            null,
             null);
     final TestIncrementalMountExtensionInput input_reparented =
         new TestIncrementalMountExtensionInput(

@@ -1131,7 +1131,7 @@ public class LayoutState
     }
 
     final RenderTree renderTree =
-        new RenderTree(root, flatList, mWidthSpec, mHeightSpec, mComponentTreeId, null);
+        new RenderTree(root, flatList, mWidthSpec, mHeightSpec, mComponentTreeId, null, null);
     mCachedRenderTree = renderTree;
 
     return renderTree;

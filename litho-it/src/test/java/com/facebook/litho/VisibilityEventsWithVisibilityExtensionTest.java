@@ -128,7 +128,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
     final RenderTree renderTree = mock(RenderTree.class);
     final RenderTreeNode rootNode = mock(RenderTreeNode.class);
     when(layoutState.toRenderTree()).thenReturn(renderTree);
-    when(renderTree.getRenderTreeData()).thenReturn(layoutState);
     when(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode);
     when(rootNode.getRenderUnit()).thenReturn(Reducer.sRootHostRenderUnit);
 
