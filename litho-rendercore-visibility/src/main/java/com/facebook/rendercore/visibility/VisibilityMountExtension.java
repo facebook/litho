@@ -445,7 +445,13 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       return false;
     }
 
-    final int halfViewportArea = parent.getWidth() * parent.getHeight() / 2;
+    final @Nullable VisibilityBoundsTransformer transformer =
+        extensionState.getState().mVisibilityBoundsTransformer;
+    final int halfViewportArea =
+        (transformer != null
+                ? transformer.getViewportArea(parent)
+                : parent.getWidth() * parent.getHeight())
+            / 2;
     final int totalComponentArea = computeRectArea(componentBounds);
     final int visibleComponentArea = computeRectArea(componentVisibleBounds);
 
