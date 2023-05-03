@@ -8,6 +8,7 @@ load(
 litho_android_library(
     name = "litho-live-data",
     srcs = glob(["**/*.kt"]),
+    abi_generation_mode = "source_only",
     autoglob = False,
     labels = [],
     visibility = [
