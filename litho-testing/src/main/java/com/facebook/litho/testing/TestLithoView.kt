@@ -211,6 +211,14 @@ internal constructor(
     return this
   }
 
+  fun markAsNeedsRemount() {
+    lithoView.setMountStateAsNeedingRemount()
+  }
+
+  fun setComponentTree(componentTree: ComponentTree) {
+    lithoView.componentTree = componentTree
+  }
+
   /** Explicitly releases current root [LithoView] */
   fun release(): TestLithoView {
     lithoView.release()

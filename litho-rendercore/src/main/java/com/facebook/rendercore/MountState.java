@@ -1193,4 +1193,8 @@ public class MountState implements MountDelegateTarget {
       }
     }
   }
+
+  public void needsRemount(boolean needsRemount) {
+    mNeedsRemount = needsRemount;
+  }
 }

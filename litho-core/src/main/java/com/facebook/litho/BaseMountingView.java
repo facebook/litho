@@ -343,6 +343,15 @@ public abstract class BaseMountingView extends ComponentHost
     return mMountState.needsRemount();
   }
 
+  /**
+   * The usage of this method is not encouraged and it is only being used in the scope of a
+   * temporary experiment.
+   */
+  @Deprecated
+  public void setMountStateAsNeedingRemount() {
+    mMountState.needsRemount(true);
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public MountDelegateTarget getMountDelegateTarget() {
     return mMountState;
