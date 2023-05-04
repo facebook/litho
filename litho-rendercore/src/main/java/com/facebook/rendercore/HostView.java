@@ -88,24 +88,6 @@ public class HostView extends Host {
   public void unmount(MountItem item) {
     final int index = findItemIndex(item);
 
-    if (RenderCoreConfig.shouldIgnoreMountingErrors
-        && index != item.getRenderTreeNode().getPositionInParent()) {
-      ErrorReporter.getInstance()
-          .report(
-              LogLevel.ERROR,
-              "HostView:IndexMismatch",
-              "The actual index of the Item being unmounted doesn't match its position in parent."
-                  + " actual index: "
-                  + index
-                  + " index in parent: "
-                  + item.getRenderTreeNode().getPositionInParent()
-                  + " RenderUnit: "
-                  + item.getRenderTreeNode().getRenderUnit().getDescription(),
-              null,
-              0,
-              null);
-    }
-
     unmount(index, item);
   }
 
@@ -122,34 +104,14 @@ public class HostView extends Host {
       }
     }
 
-    if (RenderCoreConfig.shouldIgnoreMountingErrors) {
-      ErrorReporter.getInstance()
-          .report(
-              LogLevel.ERROR,
-              "HostView:ItemNotFound",
-              "Mount item was not found in the list of mounted items."
-                  + "\nItem to remove: "
-                  + item.getRenderTreeNode().generateDebugString(null)
-                  + "\nMounted items: "
-                  + getDescriptionOfMountedItems(mMountItems)
-                  + "\nScraped items: "
-                  + getDescriptionOfMountedItems(mScrapMountItemsArray),
-              null,
-              0,
-              null);
-
-      // return the index of the node as a fallback value.
-      return item.getRenderTreeNode().getPositionInParent();
-    } else {
-      throw new IllegalStateException(
-          "Mount item was not found in the list of mounted items."
-              + "\nItem to remove: "
-              + item.getRenderTreeNode().generateDebugString(null)
-              + "\nMounted items: "
-              + getDescriptionOfMountedItems(mMountItems)
-              + "\nScraped items: "
-              + getDescriptionOfMountedItems(mScrapMountItemsArray));
-    }
+    throw new IllegalStateException(
+        "Mount item was not found in the list of mounted items."
+            + "\nItem to remove: "
+            + item.getRenderTreeNode().generateDebugString(null)
+            + "\nMounted items: "
+            + getDescriptionOfMountedItems(mMountItems)
+            + "\nScraped items: "
+            + getDescriptionOfMountedItems(mScrapMountItemsArray));
   }
 
   private static int findItemIndexInArray(MountItem item, MountItem[] array) {

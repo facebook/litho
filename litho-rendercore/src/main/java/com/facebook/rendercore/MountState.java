@@ -859,22 +859,9 @@ public class MountState implements MountDelegateTarget {
 
             // check if all items are unmount from the host
             if (!hasUnmountDelegate && ((Host) content).getMountItemCount() > 0) {
-              if (RenderCoreConfig.shouldIgnoreMountingErrors) {
-                ErrorReporter.getInstance()
-                    .report(
-                        LogLevel.ERROR,
-                        "MountState:UntrackedItems",
-                        "Host has untracked items: "
-                            + ((Host) content).getDescriptionOfMountedItems(),
-                        null,
-                        0,
-                        null);
-                ((Host) content).safelyUnmountAll();
-              } else {
-                throw new IllegalStateException(
-                    "Recursively unmounting items from a ComponentHost, left"
-                        + " some items behind maybe because not tracked by its MountState");
-              }
+              throw new IllegalStateException(
+                  "Recursively unmounting items from a ComponentHost, left"
+                      + " some items behind maybe because not tracked by its MountState");
             }
           }
 

@@ -29,12 +29,6 @@ public class RenderCoreConfig {
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
   /**
-   * Enabling this config will log mounting errors instead of throwing exceptions. In addition it
-   * will safely clean Hosts so they can be released back to the pool.
-   */
-  public static boolean shouldIgnoreMountingErrors = false;
-
-  /**
    * Enabling this config will set the root host view in layout before unmounting all items from it
    * so that layouts are not request when removing content from the hierarchy.
    */
