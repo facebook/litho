@@ -19,9 +19,9 @@ package com.facebook.litho;
 import android.content.Context;
 import android.os.Build;
 import android.util.SparseArray;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class HostComponent extends SpecGeneratedComponent {
@@ -59,7 +59,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   protected void onMount(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object convertContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) convertContent;
@@ -75,7 +75,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   protected void onUnmount(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) mountedContent;
@@ -94,7 +94,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   protected void onBind(
-      ComponentContext c,
+      @Nullable ComponentContext c,
       Object mountedContent,
       @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) mountedContent;

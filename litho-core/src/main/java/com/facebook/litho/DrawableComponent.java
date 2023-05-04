@@ -50,7 +50,7 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
 
   @Override
   protected void onMount(
-      final ComponentContext context,
+      final @Nullable ComponentContext context,
       final Object content,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     MatrixDrawable drawable = (MatrixDrawable) content;
@@ -60,7 +60,7 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
 
   @Override
   protected void onBind(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
@@ -70,7 +70,7 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
 
   @Override
   protected void onUnmount(
-      final ComponentContext context,
+      final @Nullable ComponentContext context,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;

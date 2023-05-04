@@ -63,7 +63,7 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   final void bind(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     if (c != null) {
@@ -92,7 +92,7 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   final void mount(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object convertContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     if (c != null) {
@@ -121,7 +121,7 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   final void unbind(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -131,14 +131,16 @@ public abstract class SpecGeneratedComponent extends Component
     try {
       onUnbind(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
-      ComponentUtils.handle(c, e);
+      if (c != null) {
+        ComponentUtils.handle(c, e);
+      }
     } finally {
       ComponentsSystrace.endSection();
     }
   }
 
   final void unmount(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -148,7 +150,9 @@ public abstract class SpecGeneratedComponent extends Component
     try {
       onUnmount(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
-      ComponentUtils.handle(c, e);
+      if (c != null) {
+        ComponentUtils.handle(c, e);
+      }
     } finally {
       ComponentsSystrace.endSection();
     }
@@ -390,7 +394,7 @@ public abstract class SpecGeneratedComponent extends Component
   protected void onAttached(ComponentContext c) {}
 
   protected void onBind(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
@@ -477,14 +481,14 @@ public abstract class SpecGeneratedComponent extends Component
    * @param c The {@link ComponentContext} to mount the component into.
    */
   protected void onMount(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object convertContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }
 
   protected void onUnbind(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
@@ -498,7 +502,7 @@ public abstract class SpecGeneratedComponent extends Component
    * @param interStagePropsContainer
    */
   protected void onUnmount(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
