@@ -153,7 +153,8 @@ public class ComponentContext implements Cloneable {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
 
-    mContext = context;
+    mContext =
+        Preconditions.checkNotNull(context, "ComponentContext requires a non null Android Context");
     mResourceResolver =
         new ResourceResolver(
             context, ResourceCache.getLatest(context.getResources().getConfiguration()));
