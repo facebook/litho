@@ -154,6 +154,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int rightPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int topPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int bottomPadding,
+      @Prop(optional = true) boolean disableAddingPadding,
       @Prop(optional = true) EventHandler<TouchEvent> recyclerTouchEventHandler,
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
@@ -207,6 +208,7 @@ public class RecyclerCollectionComponentSpec {
             .rightPadding(rightPadding)
             .topPadding(topPadding)
             .bottomPadding(bottomPadding)
+            .disableAddingPadding(disableAddingPadding)
             .clipChildren(clipChildren)
             .nestedScrollingEnabled(nestedScrollingEnabled)
             .scrollBarStyle(scrollBarStyle)

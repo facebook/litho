@@ -134,6 +134,7 @@ class RecyclerSpec {
       @Prop(optional = true) int rightPadding,
       @Prop(optional = true) int topPadding,
       @Prop(optional = true) int bottomPadding,
+      @Prop(optional = true) boolean disableAddingPadding,
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
@@ -159,8 +160,10 @@ class RecyclerSpec {
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
     sectionsRecycler.setClipToPadding(clipToPadding);
-    ViewCompat.setPaddingRelative(
-        recyclerView, leftPadding, topPadding, rightPadding, bottomPadding);
+    if (!disableAddingPadding) {
+      ViewCompat.setPaddingRelative(
+          recyclerView, leftPadding, topPadding, rightPadding, bottomPadding);
+    }
     recyclerView.setClipChildren(clipChildren);
     sectionsRecycler.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
