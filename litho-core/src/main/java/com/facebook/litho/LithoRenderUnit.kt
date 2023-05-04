@@ -16,14 +16,11 @@
 
 package com.facebook.litho
 
-import androidx.annotation.IntDef
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.rendercore.MountItem
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.transitions.TransitionRenderUnit
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
 
 abstract class LithoRenderUnit
 protected constructor(
@@ -35,10 +32,6 @@ protected constructor(
     renderType: RenderType?,
     @field:JvmField val componentContext: ComponentContext?
 ) : RenderUnit<Any?>(renderType), TransitionRenderUnit {
-
-  @IntDef(STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY)
-  @Retention(RetentionPolicy.SOURCE)
-  annotation class UpdateState
 
   override fun getId(): Long = _id
 
@@ -70,9 +63,6 @@ protected constructor(
     }
 
   companion object {
-    const val STATE_UNKNOWN = 0
-    const val STATE_UPDATED = 1
-    const val STATE_DIRTY = 2
     const val LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 shl 0
     const val LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 shl 1
     const val LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 shl 2

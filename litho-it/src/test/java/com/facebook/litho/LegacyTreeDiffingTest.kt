@@ -21,7 +21,9 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.LithoRenderUnit.UpdateState
+import com.facebook.litho.MountSpecLithoRenderUnit.Companion.STATE_DIRTY
+import com.facebook.litho.MountSpecLithoRenderUnit.Companion.STATE_UNKNOWN
+import com.facebook.litho.MountSpecLithoRenderUnit.Companion.STATE_UPDATED
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
@@ -60,30 +62,30 @@ class LegacyTreeDiffingTest {
     componentTree.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY))
     val state = requireNotNull(componentTree.mainThreadLayoutState)
-    assertOutputsState(state, LithoRenderUnit.STATE_UNKNOWN)
+    assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
     componentTree.root = component2
     val secondState = requireNotNull(componentTree.mainThreadLayoutState)
     assertThat(5).isEqualTo(secondState.mountableOutputCount)
-    assertOutputsState(secondState, LithoRenderUnit.STATE_UPDATED)
+    assertOutputsState(secondState, MountSpecLithoRenderUnit.STATE_UPDATED)
     componentTree.root = component3
     val thirdState = requireNotNull(componentTree.mainThreadLayoutState)
     assertThat(5).isEqualTo(thirdState.mountableOutputCount)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState.getMountableOutputAt(1))))
-        .isEqualTo(LithoRenderUnit.STATE_DIRTY)
+        .isEqualTo(STATE_DIRTY)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState.getMountableOutputAt(2))))
-        .isEqualTo(LithoRenderUnit.STATE_UPDATED)
+        .isEqualTo(STATE_UPDATED)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState.getMountableOutputAt(3))))
-        .isEqualTo(LithoRenderUnit.STATE_UPDATED)
+        .isEqualTo(STATE_UPDATED)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState.getMountableOutputAt(4))))
-        .isEqualTo(LithoRenderUnit.STATE_UPDATED)
+        .isEqualTo(STATE_UPDATED)
   }
 
   // This test covers the same case with the foreground since the code path is the same!
@@ -101,19 +103,19 @@ class LegacyTreeDiffingTest {
     val state = requireNotNull(componentTree.mainThreadLayoutState)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(requireNotNull(state.getMountableOutputAt(2))))
-        .isEqualTo(LithoRenderUnit.STATE_UNKNOWN)
+        .isEqualTo(STATE_UNKNOWN)
     componentTree.root = component2
     val secondState = requireNotNull(componentTree.mainThreadLayoutState)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(secondState.getMountableOutputAt(2))))
-        .isEqualTo(LithoRenderUnit.STATE_UPDATED)
+        .isEqualTo(STATE_UPDATED)
     componentTree.root = component3
     val thirdState = requireNotNull(componentTree.mainThreadLayoutState)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState.getMountableOutputAt(2))))
-        .isEqualTo(LithoRenderUnit.STATE_DIRTY)
+        .isEqualTo(STATE_DIRTY)
   }
 
   private class TestLayoutSpecBgState(private val changeBg: Boolean) : InlineLayoutSpec() {
@@ -148,8 +150,11 @@ class LegacyTreeDiffingTest {
     private lateinit var redDrawable: Drawable
     private lateinit var blackDrawable: Drawable
     private lateinit var transparentDrawable: Drawable
-    private fun assertOutputsState(layoutState: LayoutState, @UpdateState state: Int) {
-      assertThat(LithoRenderUnit.STATE_DIRTY)
+    private fun assertOutputsState(
+        layoutState: LayoutState,
+        @MountSpecLithoRenderUnit.UpdateState state: Int
+    ) {
+      assertThat(STATE_DIRTY)
           .isEqualTo(MountSpecLithoRenderUnit.getUpdateState(layoutState.getMountableOutputAt(0)))
       for (i in 1 until layoutState.mountableOutputCount) {
         assertThat(state)

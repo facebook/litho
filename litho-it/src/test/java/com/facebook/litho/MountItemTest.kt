@@ -22,6 +22,7 @@ import android.util.SparseArray
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.facebook.litho.MountSpecLithoRenderUnit.Companion.STATE_UNKNOWN
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -257,8 +258,7 @@ class MountItemTest {
   @Test
   fun testUpdateDoesntChangeFlags() {
     val unit: LithoRenderUnit =
-        MountSpecLithoRenderUnit.create(
-            0, component, context, nodeInfo, 0, 0, LithoRenderUnit.STATE_UNKNOWN)
+        MountSpecLithoRenderUnit.create(0, component, context, nodeInfo, 0, 0, STATE_UNKNOWN)
     val node: RenderTreeNode = create(unit, Rect(0, 0, 0, 0), null, null)
     val view = View(getApplicationContext())
     val mountItem = MountItem(node, componentHost, view)

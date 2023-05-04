@@ -75,10 +75,10 @@ public class InternalNodeUtils {
         node,
         node.getImportantForAccessibility(),
         previousId != id
-            ? LithoRenderUnit.STATE_UNKNOWN
+            ? MountSpecLithoRenderUnit.STATE_UNKNOWN
             : result.areCachedMeasuresValid()
-                ? LithoRenderUnit.STATE_UPDATED
-                : LithoRenderUnit.STATE_DIRTY,
+                ? MountSpecLithoRenderUnit.STATE_UPDATED
+                : MountSpecLithoRenderUnit.STATE_DIRTY,
         node.isDuplicateParentStateEnabled(),
         false,
         node.needsHostView(),
@@ -103,18 +103,18 @@ public class InternalNodeUtils {
     hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getScopedComponentInfos()));
 
     final long id;
-    final @LithoRenderUnit.UpdateState int updateState;
+    final @MountSpecLithoRenderUnit.UpdateState int updateState;
     if (isRoot) {
       // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       id = ROOT_HOST_ID;
-      updateState = LithoRenderUnit.STATE_DIRTY;
+      updateState = MountSpecLithoRenderUnit.STATE_DIRTY;
     } else {
       id =
           node.getTailComponentContext()
               .calculateLayoutOutputId(node.getTailComponentKey(), OutputUnitType.HOST);
 
-      updateState = LithoRenderUnit.STATE_UNKNOWN;
+      updateState = MountSpecLithoRenderUnit.STATE_UNKNOWN;
     }
 
     return createRenderUnit(
@@ -252,8 +252,10 @@ public class InternalNodeUtils {
         node,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         previousId != id
-            ? LithoRenderUnit.STATE_UNKNOWN
-            : isCachedOutputUpdated ? LithoRenderUnit.STATE_UPDATED : LithoRenderUnit.STATE_DIRTY,
+            ? MountSpecLithoRenderUnit.STATE_UNKNOWN
+            : isCachedOutputUpdated
+                ? MountSpecLithoRenderUnit.STATE_UPDATED
+                : MountSpecLithoRenderUnit.STATE_DIRTY,
         node.isDuplicateParentStateEnabled(),
         false,
         node.needsHostView(),
@@ -267,7 +269,7 @@ public class InternalNodeUtils {
       @Nullable ComponentContext context,
       LithoNode node,
       int importantForAccessibility,
-      @LithoRenderUnit.UpdateState int updateState,
+      @MountSpecLithoRenderUnit.UpdateState int updateState,
       boolean duplicateParentState,
       boolean duplicateChildrenStates,
       boolean hasHostView,

@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import com.facebook.litho.LithoRenderUnit.UpdateState
+import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
 import com.facebook.rendercore.RenderTreeNode
 
 /**

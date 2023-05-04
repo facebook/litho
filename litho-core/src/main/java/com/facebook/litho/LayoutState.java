@@ -296,7 +296,7 @@ public class LayoutState
             null,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            LithoRenderUnit.STATE_DIRTY);
+            MountSpecLithoRenderUnit.STATE_DIRTY);
 
     final RenderTreeNode node =
         RenderTreeNodeUtils.create(

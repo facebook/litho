@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
+import androidx.annotation.IntDef
 import com.facebook.litho.ComponentHostUtils.maybeSetDrawableState
 import com.facebook.litho.ComponentsSystrace.beginSection
 import com.facebook.litho.ComponentsSystrace.endSection
@@ -29,7 +30,6 @@ import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountItemsPool.ItemPool
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
-import java.lang.Exception
 
 /** This [RenderUnit] encapsulates a Litho output to be mounted using Render Core. */
 class MountSpecLithoRenderUnit
@@ -111,6 +111,10 @@ private constructor(
   }
 
   companion object {
+
+    const val STATE_UNKNOWN = 0
+    const val STATE_UPDATED = 1
+    const val STATE_DIRTY = 2
 
     val mountBinder: Binder<MountSpecLithoRenderUnit, Any> =
         object : Binder<MountSpecLithoRenderUnit, Any> {
@@ -337,4 +341,8 @@ private constructor(
       return (node.renderUnit as MountSpecLithoRenderUnit).updateState
     }
   }
+
+  @IntDef(STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY)
+  @Retention(AnnotationRetention.SOURCE)
+  annotation class UpdateState
 }

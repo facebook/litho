@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.MountSpecLithoRenderUnit.STATE_UNKNOWN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -124,8 +125,7 @@ public class TransitionTest {
         };
 
     LithoRenderUnit rootUnit =
-        MountSpecLithoRenderUnit.create(
-            0, component, null, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
+        MountSpecLithoRenderUnit.create(0, component, null, null, 0, 0, STATE_UNKNOWN);
 
     when(layoutState.getMountableOutputAt(0))
         .thenReturn(RenderTreeNodeUtils.create(rootUnit, new Rect(0, 0, 300, 100), null, null));

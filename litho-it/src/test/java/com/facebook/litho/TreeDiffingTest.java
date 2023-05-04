@@ -20,9 +20,9 @@ import static android.R.drawable.btn_default;
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.TRANSPARENT;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LithoRenderUnit.STATE_DIRTY;
-import static com.facebook.litho.LithoRenderUnit.STATE_UNKNOWN;
-import static com.facebook.litho.LithoRenderUnit.STATE_UPDATED;
+import static com.facebook.litho.MountSpecLithoRenderUnit.STATE_DIRTY;
+import static com.facebook.litho.MountSpecLithoRenderUnit.STATE_UNKNOWN;
+import static com.facebook.litho.MountSpecLithoRenderUnit.STATE_UPDATED;
 import static com.facebook.litho.MountSpecLithoRenderUnit.getUpdateState;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
@@ -423,17 +423,17 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
-    assertOutputsState(state, LithoRenderUnit.STATE_UNKNOWN);
+    assertOutputsState(state, STATE_UNKNOWN);
 
     mLegacyLithoViewRule.setRoot(secondComponent);
     LayoutState secondState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
-    assertOutputsState(secondState, LithoRenderUnit.STATE_UPDATED);
+    assertOutputsState(secondState, STATE_UPDATED);
 
     mLegacyLithoViewRule.setRoot(thirdComponent);
     LayoutState thirdState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
-    assertOutputsState(thirdState, LithoRenderUnit.STATE_DIRTY);
+    assertOutputsState(thirdState, STATE_DIRTY);
   }
 
   @Test
@@ -701,7 +701,7 @@ public class TreeDiffingTest {
   }
 
   private static void assertOutputsState(
-      LayoutState layoutState, @LithoRenderUnit.UpdateState int state) {
+      LayoutState layoutState, @MountSpecLithoRenderUnit.UpdateState int state) {
     assertThat(STATE_DIRTY).isEqualTo(getUpdateState(layoutState.getMountableOutputAt(0)));
     for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
       assertThat(state).isEqualTo(getUpdateState(layoutState.getMountableOutputAt(i)));
@@ -736,8 +736,7 @@ public class TreeDiffingTest {
 
   private static RenderTreeNode createNode(final Component component) {
     LithoRenderUnit unit =
-        MountSpecLithoRenderUnit.create(
-            0, component, null, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
+        MountSpecLithoRenderUnit.create(0, component, null, null, 0, 0, STATE_UNKNOWN);
     return RenderTreeNodeUtils.create(
         unit, new Rect(), new LithoLayoutData(0, 0, 0, 0, null, null), null);
   }
