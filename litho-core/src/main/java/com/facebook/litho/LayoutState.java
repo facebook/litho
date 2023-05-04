@@ -271,7 +271,7 @@ public class LayoutState
       return null;
     }
 
-    final @Nullable LithoRenderUnit unit = result.getContentRenderUnit(layoutState);
+    final @Nullable LithoRenderUnit unit = result.getContentRenderUnit();
     if (unit == null) {
       return null;
     }
@@ -615,7 +615,7 @@ public class LayoutState
     }
 
     final boolean isRoot = parent == null;
-    final @Nullable LithoRenderUnit hostRenderUnit = result.getHostRenderUnit(layoutState, isRoot);
+    final @Nullable LithoRenderUnit hostRenderUnit = result.getHostRenderUnit(isRoot);
     final boolean needsHostView = hostRenderUnit != null;
 
     final long currentHostMarker = layoutState.mCurrentHostMarker;
@@ -646,7 +646,7 @@ public class LayoutState
 
     // 2. Add background if defined.
     if (!context.mLithoConfiguration.mComponentsConfiguration.isShouldDisableBgFgOutputs()) {
-      final LithoRenderUnit backgroundRenderUnit = result.getBackgroundRenderUnit(layoutState);
+      final LithoRenderUnit backgroundRenderUnit = result.getBackgroundRenderUnit();
       if (backgroundRenderUnit != null) {
         final RenderTreeNode backgroundRenderTreeNode =
             addDrawableRenderTreeNode(
@@ -775,7 +775,7 @@ public class LayoutState
     layoutState.mCurrentY -= result.getY();
 
     // 5. Add border color if defined.
-    final LithoRenderUnit borderRenderUnit = result.getBorderRenderUnit(layoutState);
+    final LithoRenderUnit borderRenderUnit = result.getBorderRenderUnit();
     if (borderRenderUnit != null) {
       final RenderTreeNode borderRenderTreeNode =
           addDrawableRenderTreeNode(
@@ -794,8 +794,7 @@ public class LayoutState
 
     // 6. Add foreground if defined.
     if (!context.mLithoConfiguration.mComponentsConfiguration.isShouldDisableBgFgOutputs()) {
-      final @Nullable LithoRenderUnit foregroundRenderUnit =
-          result.getForegroundRenderUnit(layoutState);
+      final @Nullable LithoRenderUnit foregroundRenderUnit = result.getForegroundRenderUnit();
       if (foregroundRenderUnit != null) {
         final RenderTreeNode foregroundRenderTreeNode =
             addDrawableRenderTreeNode(
