@@ -439,8 +439,7 @@ public class LithoView extends BaseMountingView {
       if (componentTree == null && unmountAllWhenComponentTreeSetToNull) {
         unmountAllItems();
       } else if (componentTree != null) {
-        clearVisibilityItems();
-        clearLastMountedTree();
+        onBeforeSettingNewTree();
       }
 
       if (mInvalidStateLogParams != null) {

@@ -183,6 +183,15 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void onBeforeLayout(int left, int top, int right, int bottom) {}
 
+  /**
+   * Invoke this before the result of getCurrentLayoutState is about to change to a new non-null
+   * tree.
+   */
+  void onBeforeSettingNewTree() {
+    clearVisibilityItems();
+    clearLastMountedTree();
+  }
+
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
@@ -888,14 +897,14 @@ public abstract class BaseMountingView extends ComponentHost
     }
   }
 
-  void clearVisibilityItems() {
+  private void clearVisibilityItems() {
     if (mLithoHostListenerCoordinator != null) {
       mLithoHostListenerCoordinator.clearVisibilityItems();
     }
   }
 
   /** This should be called when setting a null component tree to the litho view. */
-  void clearLastMountedTree() {
+  private void clearLastMountedTree() {
     if (mLithoHostListenerCoordinator != null) {
       mLithoHostListenerCoordinator.clearLastMountedTreeId();
     }
