@@ -86,9 +86,7 @@ public class InternalNodeUtils {
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
-  static @Nullable LithoRenderUnit createHostRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getNode();
-
+  static @Nullable LithoRenderUnit createHostRenderUnit(final LithoNode node) {
     if (!node.needsHostView()) {
       return null;
     }

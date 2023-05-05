@@ -394,11 +394,11 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   public @Nullable LithoRenderUnit getHostRenderUnit() {
     if (mContext.shouldReuseOutputs()) {
       if (mHostRenderUnit == null) {
-        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this);
+        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(getNode());
       }
       return mHostRenderUnit;
     } else {
-      return InternalNodeUtils.createHostRenderUnit(this);
+      return InternalNodeUtils.createHostRenderUnit(getNode());
     }
   }
 
