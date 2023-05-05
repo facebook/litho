@@ -614,8 +614,13 @@ public class LayoutState
       diffNode = null;
     }
 
-    final boolean isRoot = parent == null;
-    final @Nullable LithoRenderUnit hostRenderUnit = result.getHostRenderUnit(isRoot);
+    final @Nullable LithoRenderUnit hostRenderUnit;
+    if (parent == null /* isRoot */) {
+      hostRenderUnit = InternalNodeUtils.createRootHostRenderUnit(result.getNode());
+    } else {
+      hostRenderUnit = result.getHostRenderUnit();
+    }
+
     final boolean needsHostView = hostRenderUnit != null;
 
     final long currentHostMarker = layoutState.mCurrentHostMarker;

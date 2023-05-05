@@ -440,6 +440,14 @@ public class ComponentContext implements Cloneable {
         : null;
   }
 
+  LithoConfiguration getLithoConfiguration() {
+    return mLithoConfiguration;
+  }
+
+  ComponentsConfiguration getComponentsConfiguration() {
+    return mLithoConfiguration.mComponentsConfiguration;
+  }
+
   /**
    * Notify the Component Tree that it needs to synchronously perform a state update.
    *

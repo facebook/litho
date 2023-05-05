@@ -86,11 +86,10 @@ public class InternalNodeUtils {
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
-  static @Nullable LithoRenderUnit createHostRenderUnit(
-      LithoLayoutResult result, final boolean isRoot) {
+  static @Nullable LithoRenderUnit createHostRenderUnit(LithoLayoutResult result) {
     final LithoNode node = result.getNode();
 
-    if (!isRoot && !node.needsHostView()) {
+    if (!node.needsHostView()) {
       return null;
     }
 
@@ -102,20 +101,9 @@ public class InternalNodeUtils {
     // LayoutStates using same Components
     hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getScopedComponentInfos()));
 
-    final long id;
-    final @MountSpecLithoRenderUnit.UpdateState int updateState;
-    if (isRoot) {
-      // The root host (LithoView) always has ID 0 and is unconditionally
-      // set as dirty i.e. no need to use shouldComponentUpdate().
-      id = ROOT_HOST_ID;
-      updateState = MountSpecLithoRenderUnit.STATE_DIRTY;
-    } else {
-      id =
-          node.getTailComponentContext()
-              .calculateLayoutOutputId(node.getTailComponentKey(), OutputUnitType.HOST);
-
-      updateState = MountSpecLithoRenderUnit.STATE_UNKNOWN;
-    }
+    final long id =
+        node.getTailComponentContext()
+            .calculateLayoutOutputId(node.getTailComponentKey(), OutputUnitType.HOST);
 
     return createRenderUnit(
         id,
@@ -123,7 +111,31 @@ public class InternalNodeUtils {
         null,
         node,
         node.getImportantForAccessibility(),
-        updateState,
+        MountSpecLithoRenderUnit.STATE_UNKNOWN,
+        node.isHostDuplicateParentState(),
+        node.isDuplicateChildrenStatesEnabled(),
+        false,
+        true);
+  }
+
+  /** Creates a {@link LithoRenderUnit} for the root host */
+  static LithoRenderUnit createRootHostRenderUnit(LithoNode node) {
+
+    final HostComponent hostComponent = HostComponent.create();
+
+    // We need to pass common dynamic props to the host component, as they only could be applied to
+    // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
+    // time, we don't remove them from the current component, as we may calculate multiple
+    // LayoutStates using same Components
+    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getScopedComponentInfos()));
+
+    return createRenderUnit(
+        ROOT_HOST_ID, // The root host (LithoView) always has ID 0
+        hostComponent,
+        null,
+        node,
+        node.getImportantForAccessibility(),
+        MountSpecLithoRenderUnit.STATE_DIRTY, // set as dirty to skip shouldComponentUpdate()
         node.isHostDuplicateParentState(),
         node.isDuplicateChildrenStatesEnabled(),
         false,
