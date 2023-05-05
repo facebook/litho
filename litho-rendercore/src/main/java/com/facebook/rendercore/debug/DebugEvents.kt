@@ -16,9 +16,11 @@
 
 package com.facebook.rendercore.debug
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.rendercore.LogLevel
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 /** Base class of all debug events */
@@ -219,7 +221,84 @@ object DebugEventDispatcher {
     )
   }
 
+  private val lastTraceIdentifier = AtomicInteger(0)
+  private val traceIdsToEvents: MutableMap<Int, EventData> = HashMap()
+
+  /**
+   * Returns an identifier for a trace for the given [type]. This identifier will always be unique
+   * across a session, and if `null` it means this event is not to be traced.
+   *
+   * This is to be used whenever the [DebugEvent] API is called from Java.
+   */
   @JvmStatic
+  fun generateTraceIdentifier(type: String): Int? =
+      if (enabled && subscribers.any { type in it.events || DebugEvent.All in it.events }) {
+        lastTraceIdentifier.getAndIncrement()
+      } else {
+        null
+      }
+
+  /**
+   * Starts recording a trace block for the given [type].
+   *
+   * This is intended to be used with Java clients due to performance reasons. The recommended usage
+   * is the following:
+   * ```
+   * Integer traceIdentifier = DebugEvents.getTraceIdentifier(DebugEvents.MyEvent);
+   * if(traceIdentifier != null) {
+   *    DebugEvents.beginTrace(traceIdentifier, ...);
+   * }
+   *
+   * // code for the process
+   *
+   * if(traceIdentifier != null) {
+   *   DebugEvents.endTrace(traceIdentifier);
+   * }
+   * ```
+   */
+  @JvmStatic
+  fun beginTrace(
+      traceIdentifier: Int,
+      type: String,
+      renderStateId: String,
+      attributes: Map<String, Any?>,
+  ) {
+    traceIdsToEvents[traceIdentifier] =
+        EventData(
+            type = type,
+            renderStateId = renderStateId,
+            attributes = attributes,
+            startTimestamp = System.nanoTime())
+  }
+
+  @JvmStatic
+  fun endTrace(traceIdentifier: Int) {
+    val endTime = System.nanoTime()
+    val last = traceIdsToEvents.remove(traceIdentifier) ?: return
+    val type = last.type
+
+    // find the subscribers listening for this event
+    val subscribersToNotify =
+        subscribers.filter { subscriber ->
+          subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)
+        }
+
+    if (subscribersToNotify.isEmpty()) {
+      return
+    }
+
+    val event =
+        DebugProcessEvent(
+            type = type,
+            timestamp = last.startTimestamp, // for calender time
+            renderStateId = last.renderStateId,
+            duration = Duration(value = endTime - last.startTimestamp),
+            attributes = last.attributes,
+        )
+
+    subscribersToNotify.forEach { it.onEvent(event) }
+  }
+
   inline fun <T> trace(
       type: String,
       renderStateId: () -> String,
@@ -253,6 +332,7 @@ object DebugEventDispatcher {
     val event =
         DebugProcessEvent(
             type = type,
+            timestamp = startTime,
             renderStateId = renderStateId(),
             duration = Duration(value = endTime - startTime),
             attributes = attributes,
@@ -283,6 +363,14 @@ object DebugEventDispatcher {
       attributes[name] = value
     }
   }
+
+  @DataClassGenerate
+  private data class EventData(
+      val type: String,
+      val renderStateId: String,
+      val attributes: Map<String, Any?>,
+      val startTimestamp: Long
+  )
 }
 
 /** Object to subscribe to debug events */
@@ -317,15 +405,6 @@ object DebugEventBus {
   fun unsubscribeAll() {
     DebugEventDispatcher.unsubscribeAll()
   }
-}
-
-/**
- * This accumulator interface is invoked to get attributes of a [DebugEvent]. Using this interface
- * improve ergonomics in Java; i.e. not return `Unit.INSTANCE` or `null`.
- */
-fun interface AttributesAccumulator {
-
-  fun accumulate(map: MutableMap<String, Any?>)
 }
 
 @JvmInline

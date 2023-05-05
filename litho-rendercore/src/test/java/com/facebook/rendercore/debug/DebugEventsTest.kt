@@ -289,6 +289,47 @@ class DebugEventsTest {
     event = null
   }
 
+  @Test
+  fun `generateTraceIdentifier should generate a valid id if there is at least one subscriber listening to all events`() {
+    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNull()
+    DebugEventDispatcher.subscribe(TestEventsSubscriber(All, listener = { /* nothing */}))
+    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNotNull()
+  }
+
+  @Test
+  fun `generateTraceIdentifier should generate a valid id if there is at least one subscriber listens to that event`() {
+    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNull()
+    DebugEventDispatcher.subscribe(TestEventsSubscriber(TestEvent, listener = { /* nothing */}))
+    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNotNull()
+  }
+
+  @Test
+  fun `generateTraceIdentifier should generate different ids for each invocation as long as there are valid subscribers`() {
+    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNull()
+    DebugEventDispatcher.subscribe(TestEventsSubscriber(TestEvent, listener = { /* nothing */}))
+    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isEqualTo(1)
+    assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isEqualTo(2)
+  }
+
+  @Test
+  fun `java trace APIs work correctly`() {
+    val events = mutableListOf<DebugEvent>()
+    DebugEventDispatcher.subscribe(TestEventsSubscriber(All, listener = { events.add(it) }))
+
+    val traceId = DebugEventDispatcher.generateTraceIdentifier(TestEvent)
+    DebugEventDispatcher.beginTrace(
+        traceId!!, TestEvent, TestRenderStateId, mutableMapOf(TestAttr to 1))
+    assertThat(events).isEmpty()
+
+    DebugEventDispatcher.endTrace(traceId)
+    assertThat(events).hasSize(1)
+
+    val event = events.last()
+    assertThat(event.type).isEqualTo(TestEvent)
+    assertThat(event.renderStateId).isEqualTo(TestRenderStateId)
+    assertThat(event.attribute<Int>(TestAttr)).isEqualTo(1)
+  }
+
   class TestEventSubscriber(val listener: (DebugEvent) -> Unit) : DebugEventSubscriber(TestEvent) {
     override fun onEvent(event: DebugEvent) {
       listener(event)
