@@ -559,7 +559,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(valueWithMoreGenericsAndContext)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithMoreGenericsAndContext(com.facebook.litho.ComponentContext c) {\n"
+            "private java.lang.String getExpensiveValueWithMoreGenericsAndContext(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final ExpensiveValueWithMoreGenericsAndContextInputs inputs = new ExpensiveValueWithMoreGenericsAndContextInputs(globalKey,genericArg,genericArg2);\n"
                 + "  java.lang.String expensiveValueWithMoreGenericsAndContext = (java.lang.String) c.getCachedValue(inputs);\n"

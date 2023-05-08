@@ -154,7 +154,8 @@ public class InterStagePropsGeneratorTest {
 
     assertThat(methodSpec.toString())
         .isEqualTo(
-            "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl(com.facebook.litho.ComponentContext c,\n"
+            "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl(\n"
+                + "    com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  return (MountTestInterStagePropsContainer) super.getInterStagePropsContainer(c, interStageProps);\n"
                 + "}\n");

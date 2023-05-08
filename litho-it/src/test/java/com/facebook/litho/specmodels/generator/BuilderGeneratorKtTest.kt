@@ -118,7 +118,8 @@ class BuilderGeneratorKtTest {
                           required = true
                       )
                       @com.facebook.litho.annotations.RequiredProp("numWildCard")
-                      public Builder numWildCard(@org.jetbrains.annotations.NotNull java.util.List<? extends java.lang.Number> numWildCard) {
+                      public Builder numWildCard(
+                          @org.jetbrains.annotations.NotNull java.util.List<? extends java.lang.Number> numWildCard) {
                         this.mWildcardOutPropTest.numWildCard = numWildCard;
                         mRequired.set(0);
                         return this;
@@ -190,7 +191,8 @@ class BuilderGeneratorKtTest {
                           value = "colors",
                           required = false
                       )
-                      public Builder colors(@org.jetbrains.annotations.NotNull java.util.List<android.graphics.Color> colors) {
+                      public Builder colors(
+                          @org.jetbrains.annotations.NotNull java.util.List<android.graphics.Color> colors) {
                         if (colors == null) {
                           return this;
                         }

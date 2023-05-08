@@ -251,7 +251,8 @@ public class ComponentBodyGeneratorTest {
                     mSpecModelDI, ClassNames.STATE_CONTAINER)
                 .toString())
         .isEqualTo(
-            "private com.facebook.litho.StateContainer getStateContainerImpl(com.facebook.litho.ComponentContext c) {\n"
+            "private com.facebook.litho.StateContainer getStateContainerImpl(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  return (com.facebook.litho.StateContainer) c.getScopedComponentInfo().getStateContainer();\n"
                 + "}\n");
   }

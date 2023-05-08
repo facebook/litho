@@ -150,9 +150,9 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private <T extends java.lang.CharSequence> void testEventMethod1(com.facebook.litho.HasEventDispatcher _abstract,\n"
-                + "    com.facebook.litho.ComponentContext c, java.lang.Object arg2, T arg3,\n"
-                + "    @androidx.annotation.Nullable T arg6) {\n"
+            "private <T extends java.lang.CharSequence> void testEventMethod1(\n"
+                + "    com.facebook.litho.HasEventDispatcher _abstract, com.facebook.litho.ComponentContext c,\n"
+                + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  TestStateContainer _state = getStateContainerImpl(c);\n"
                 + "  TestSpec.testEventMethod1(\n"
@@ -187,8 +187,9 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
+            "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(\n"
+                + "    com.facebook.litho.ComponentContext c, java.lang.Object arg2, T arg3,\n"
+                + "    @androidx.annotation.Nullable T arg6) {\n"
                 + "  return newEventHandler(Test.class, \"Test\", c, -1400079064, new Object[] {\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
@@ -198,7 +199,8 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.ComponentContext c) {\n"
+            "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, null);\n"
                 + "}\n");
   }
@@ -250,7 +252,8 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@androidx.annotation.Nullable\n"
-                + "public static com.facebook.litho.EventHandler<java.lang.Object> getObjectHandler(com.facebook.litho.ComponentContext context) {\n"
+                + "public static com.facebook.litho.EventHandler<java.lang.Object> getObjectHandler(\n"
+                + "    com.facebook.litho.ComponentContext context) {\n"
                 + "  if (context.getComponentScope() == null) {\n"
                 + "    return null;\n"
                 + "  }\n"
@@ -404,7 +407,8 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T extends FirstType, T0 extends SecondType> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(com.facebook.litho.ComponentContext c) {\n"
+            "public static <T extends FirstType, T0 extends SecondType> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }
@@ -480,7 +484,8 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T extends FirstType> com.facebook.litho.EventHandler<EventClass<T>> onEvent(com.facebook.litho.ComponentContext c) {\n"
+            "public static <T extends FirstType> com.facebook.litho.EventHandler<EventClass<T>> onEvent(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }
@@ -548,7 +553,8 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T, T0> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(com.facebook.litho.ComponentContext c) {\n"
+            "public static <T, T0> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }
@@ -653,8 +659,8 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T, P extends java.util.Set, F extends FirstType, S extends SecondType> com.facebook.litho.EventHandler<EventClass<F, S>> onEvent(com.facebook.litho.ComponentContext c,\n"
-                + "    P param1) {\n"
+            "public static <T, P extends java.util.Set, F extends FirstType, S extends SecondType> com.facebook.litho.EventHandler<EventClass<F, S>> onEvent(\n"
+                + "    com.facebook.litho.ComponentContext c, P param1) {\n"
                 + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
                 + "        param1,\n"
                 + "      });\n"
@@ -724,7 +730,8 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T extends java.lang.Integer> com.facebook.litho.EventHandler<EventClass<T>> onEvent(com.facebook.litho.ComponentContext c) {\n"
+            "public static <T extends java.lang.Integer> com.facebook.litho.EventHandler<EventClass<T>> onEvent(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }

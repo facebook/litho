@@ -216,8 +216,8 @@ public class TreePropGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.TreeProps getTreePropsForChildren(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.TreeProps parentTreeProps) {\n"
+                + "protected com.facebook.litho.TreeProps getTreePropsForChildren(\n"
+                + "    com.facebook.litho.ComponentContext c, com.facebook.litho.TreeProps parentTreeProps) {\n"
                 + "  final com.facebook.litho.TreeProps childTreeProps = com.facebook.litho.TreeProps.acquire(parentTreeProps);\n"
                 + "  TestStateContainer _state = getStateContainerImpl(c);\n"
                 + "  childTreeProps.put(boolean.class, TestSpec.onCreateTreeProp(\n"
@@ -251,8 +251,8 @@ public class TreePropGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.TreeProps getTreePropsForChildren(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.TreeProps parentTreeProps) {\n"
+                + "protected com.facebook.litho.TreeProps getTreePropsForChildren(\n"
+                + "    com.facebook.litho.ComponentContext c, com.facebook.litho.TreeProps parentTreeProps) {\n"
                 + "  final com.facebook.litho.TreeProps childTreeProps = com.facebook.litho.TreeProps.acquire(parentTreeProps);\n"
                 + "  childTreeProps.put(com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject.class, TestSpec.onCreateTreeProp(\n"
                 + "      (com.facebook.litho.ComponentContext) c,\n"

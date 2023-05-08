@@ -336,7 +336,8 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private TestWithStateStateContainer getStateContainerWithLazyStateUpdatesApplied(com.facebook.litho.ComponentContext c,\n"
+            "private TestWithStateStateContainer getStateContainerWithLazyStateUpdatesApplied(\n"
+                + "    com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState component) {\n"
                 + "  TestWithStateStateContainer _stateContainer = (TestWithStateStateContainer) getStateContainerImpl(c);\n"
                 + "  return (TestWithStateStateContainer) c.applyLazyStateUpdatesForContainer(_stateContainer);\n"
@@ -443,8 +444,8 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "protected static <T extends java.lang.CharSequence> void lazyUpdateArg0(com.facebook.litho.ComponentContext c,\n"
-                + "    final T lazyUpdateValue) {\n"
+            "protected static <T extends java.lang.CharSequence> void lazyUpdateArg0(\n"
+                + "    com.facebook.litho.ComponentContext c, final T lazyUpdateValue) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
