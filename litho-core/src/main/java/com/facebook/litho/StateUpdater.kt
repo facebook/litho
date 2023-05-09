@@ -19,14 +19,17 @@ package com.facebook.litho
 import androidx.arch.core.util.Function
 
 /**
- * StateUpdater lets a Component rendered with a scoped ComponentContext interact with Litho's state
- * An implementation of StateUpdater is responsible for collecting state update operations and
- * schedule a new Resolve/Layout step to occur. The default implementation of StateUpdater is
- * ComponentTree but it might be useful to implement this interface when integrating Litho in
+ * StateUpdater lets a [Component] rendered with a scoped [ComponentContext] interact with Litho's
+ * state. An implementation of StateUpdater is responsible for collecting state update operations
+ * and schedule a new Resolve/Layout step to occur. The default implementation of StateUpdater is
+ * [ComponentTree], but it might be useful to implement this interface when integrating Litho in
  * different rendering frameworks where it's not desirable for Litho to control the
  * resolve/layout/commit process.
  */
 interface StateUpdater {
+
+  /** @return whether this tree has never been mounted before */
+  var isFirstMount: Boolean
 
   /**
    * Enqueues a state update that will schedule a new render on the calling thread at the end of its
@@ -36,8 +39,8 @@ interface StateUpdater {
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      createLayoutInProgress: Boolean,
-      nestedTreeContext: Boolean
+      isCreateLayoutInProgress: Boolean,
+      isNestedTreeContext: Boolean
   )
 
   /**
@@ -48,8 +51,8 @@ interface StateUpdater {
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      createLayoutInProgress: Boolean,
-      nestedTreeContext: Boolean
+      isCreateLayoutInProgress: Boolean,
+      isNestedTreeContext: Boolean
   )
 
   /**
@@ -59,63 +62,60 @@ interface StateUpdater {
   fun updateStateLazy(
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
-      nestedTreeContext: Boolean
+      isNestedTreeContext: Boolean
   )
 
   /** Same as updateStateAsync but for Hook State. */
   fun updateHookStateAsync(
       globalKey: String,
       updateBlock: HookUpdater,
-      s: String?,
-      createLayoutInProgress: Boolean,
-      nestedTreeContext: Boolean
+      attribution: String?,
+      isCreateLayoutInProgress: Boolean,
+      isNestedTreeContext: Boolean
   )
 
   /** Same as updateStateSync but for Hook State. */
   fun updateHookStateSync(
       globalKey: String,
       updateBlock: HookUpdater,
-      s: String?,
-      createLayoutInProgress: Boolean,
-      nestedTreeContext: Boolean
+      attribution: String?,
+      isCreateLayoutInProgress: Boolean,
+      isNestedTreeContext: Boolean
   )
 
   fun applyLazyStateUpdatesForContainer(
       globalKey: String,
       container: StateContainer,
-      nestedTreeContext: Boolean
+      isNestedTreeContext: Boolean
   ): StateContainer?
 
   /** Returns a Cached value that is accessible across all re-render operations. */
-  fun getCachedValue(cachedValueInputs: Any, nestedTreeContext: Boolean): Any?
+  fun getCachedValue(cachedValueInputs: Any, isNestedTreeContext: Boolean): Any?
 
   /** Stores a Cached value that will be accessible across all re-render operations. */
-  fun putCachedValue(cachedValueInputs: Any, cachedValue: Any?, nestedTreeContext: Boolean)
+  fun putCachedValue(cachedValueInputs: Any, cachedValue: Any?, isNestedTreeContext: Boolean)
 
   /**
    * Removes a state update that was previously enqueued if the state update has not been processed
    * yet.
    */
-  fun removePendingStateUpdate(key: String, nestedTreeContext: Boolean)
-
-  /** @return whether this tree has ever been mounted before */
-  var isFirstMount: Boolean
+  fun removePendingStateUpdate(key: String, isNestedTreeContext: Boolean)
 
   fun <T> canSkipStateUpdate(
       globalKey: String,
       hookStateIndex: Int,
       newValue: T?,
-      isNestedTree: Boolean
+      isNestedTreeContext: Boolean
   ): Boolean
 
   fun <T> canSkipStateUpdate(
       newValueFunction: Function<T, T>?,
       globalKey: String,
       hookStateIndex: Int,
-      isNestedTree: Boolean
+      isNestedTreeContext: Boolean
   ): Boolean
 
-  fun getEventTrigger(s: String): EventTrigger<*>?
+  fun getEventTrigger(key: String): EventTrigger<*>?
 
   fun getEventTrigger(handle: Handle, id: Int): EventTrigger<*>?
 }
