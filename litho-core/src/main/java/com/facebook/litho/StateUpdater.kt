@@ -109,7 +109,7 @@ interface StateUpdater {
   ): Boolean
 
   fun <T> canSkipStateUpdate(
-      newValueFunction: Function<T, T>?,
+      newValueFunction: Function<T, T>,
       globalKey: String,
       hookStateIndex: Int,
       isNestedTreeContext: Boolean
