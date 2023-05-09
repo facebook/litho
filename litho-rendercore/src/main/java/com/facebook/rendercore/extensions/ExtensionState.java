@@ -22,6 +22,7 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.Systracer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -116,33 +117,98 @@ public class ExtensionState<State> {
     mExtension.onUnmount(this);
   }
 
-  public void onBindItem(RenderUnit renderUnit, Object content, Object layoutData) {
+  public void onBindItem(
+      final RenderUnit renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
+    final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection("Extension:onBindItem " + mExtension.getName());
+    }
     mExtension.onBindItem(this, renderUnit, content, layoutData);
+    if (isTracing) {
+      tracer.endSection();
+    }
   }
 
-  public void onUnbindItem(RenderUnit renderUnit, Object content, Object layoutData) {
+  public void onUnbindItem(
+      final RenderUnit renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
+    final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection("Extension:onUnbindItem " + mExtension.getName());
+    }
     mExtension.onUnbindItem(this, renderUnit, content, layoutData);
+    if (isTracing) {
+      tracer.endSection();
+    }
   }
 
-  public void onUnmountItem(RenderUnit<?> renderUnit, Object content, Object layoutData) {
+  public void onUnmountItem(
+      final RenderUnit<?> renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
+    final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection("Extension:onUnmountItem " + mExtension.getName());
+    }
     mExtension.onUnmountItem(this, renderUnit, content, layoutData);
+    if (isTracing) {
+      tracer.endSection();
+    }
   }
 
-  public void onMountItem(RenderUnit<?> renderUnit, Object content, Object layoutData) {
-
+  public void onMountItem(
+      final RenderUnit<?> renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
+    final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection("Extension:onMountItem " + mExtension.getName());
+    }
     mExtension.onMountItem(this, renderUnit, content, layoutData);
+    if (isTracing) {
+      tracer.endSection();
+    }
   }
 
-  public void onBoundsAppliedToItem(RenderUnit renderUnit, Object content, Object layoutData) {
+  public void onBoundsAppliedToItem(
+      final RenderUnit renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
+    final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection("Extension:onBoundsAppliedToItem " + mExtension.getName());
+    }
     mExtension.onBoundsAppliedToItem(this, renderUnit, content, layoutData);
+    if (isTracing) {
+      tracer.endSection();
+    }
   }
 
   public boolean shouldUpdateItem(
-      RenderUnit<?> previousRenderUnit,
-      Object previousLayoutData,
-      RenderUnit<?> nextRenderUnit,
-      Object nextLayoutData) {
-    return mExtension.shouldUpdateItem(
-        this, previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData);
+      final RenderUnit<?> previousRenderUnit,
+      final Object previousLayoutData,
+      final RenderUnit<?> nextRenderUnit,
+      final Object nextLayoutData,
+      final Systracer tracer) {
+    final boolean shouldUpdate;
+    final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection("Extension:shouldUpdateItem " + mExtension.getName());
+    }
+    shouldUpdate =
+        mExtension.shouldUpdateItem(
+            this, previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData);
+    if (isTracing) {
+      tracer.endSection();
+    }
+    return shouldUpdate;
   }
 }

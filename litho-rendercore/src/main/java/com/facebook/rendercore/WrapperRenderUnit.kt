@@ -94,7 +94,8 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
-      isAttached: Boolean
+      isAttached: Boolean,
+      tracer: Systracer,
   ) {
     renderUnit.updateBinders(
         context,
@@ -103,7 +104,9 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
         currentLayoutData,
         newLayoutData,
         mountDelegate,
-        isAttached)
+        isAttached,
+        tracer,
+    )
     super.updateBinders(
         context,
         content,
@@ -111,6 +114,8 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
         currentLayoutData,
         newLayoutData,
         mountDelegate,
-        isAttached)
+        isAttached,
+        tracer,
+    )
   }
 }

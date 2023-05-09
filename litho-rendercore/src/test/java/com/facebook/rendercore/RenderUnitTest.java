@@ -204,7 +204,7 @@ public class RenderUnitTest {
     final TestRenderUnit currentRU = new TestRenderUnit(fixedMountBinders);
     final TestRenderUnit nextRU = new TestRenderUnit(fixedMountBinders);
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
 
     assertThat(mBindOrder).containsExactlyElementsOf(binders);
     Collections.reverse(binders);
@@ -242,7 +242,7 @@ public class RenderUnitTest {
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder1));
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder2));
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
 
     assertThat(mUnbindOrder)
         .containsExactly(
@@ -278,7 +278,7 @@ public class RenderUnitTest {
             Collections.singletonList(
                 createDelegateBinder(new TestRenderUnit(), fixedMountBinder1)));
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -292,7 +292,7 @@ public class RenderUnitTest {
 
     final TestRenderUnit nextRU = new TestRenderUnit();
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
   }
 
   @Test
@@ -310,7 +310,7 @@ public class RenderUnitTest {
         new TestRenderUnit(
             Collections.singletonList(createDelegateBinder(drawable2, fixedDrawableMountBinder)));
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
 
     assertThat(mBindOrder).containsExactly(fixedDrawableMountBinder);
     assertThat(mUnbindOrder).containsExactly(fixedDrawableMountBinder);
@@ -345,7 +345,7 @@ public class RenderUnitTest {
     currentRU.addOptionalMountBinder(createDelegateBinder(currentRU, mountBinder));
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder));
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
 
     assertThat(mUnbindOrder).containsExactly(mountBinder);
     assertThat(mBindOrder).containsExactly(attachBinder);
@@ -362,7 +362,7 @@ public class RenderUnitTest {
     nextRU.addAttachBinder(createDelegateBinder(nextRU, attachBinder));
 
     // Pass false to isAttached, indicating currentRU is already unbound
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, false);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, false, mTracer);
 
     // unbind should not happen, so unbind-order should be empty.
     assertThat(mUnbindOrder).isEmpty();
@@ -390,7 +390,7 @@ public class RenderUnitTest {
     nextRU.addAttachBinders(createDelegateBinder(nextRU, nextAttachBinder2));
     nextRU.addOptionalMountBinders(createDelegateBinder(nextRU, nextMountBinder2));
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
 
     assertThat(mUnbindOrder)
         .containsExactly(currentAttachBinder2, currentAttachBinder1, currentMountBinder1);
@@ -416,7 +416,7 @@ public class RenderUnitTest {
     nextRU.addAttachBinders(createDelegateBinder(nextRU, nextAttachBinder2));
     nextRU.addOptionalMountBinders(createDelegateBinder(nextRU, nextMountBinder2));
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, null, null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, null, null, true, mTracer);
 
     assertThat(mUnbindOrder).containsExactly(currentAttachBinder1, currentMountBinder1);
     assertThat(mBindOrder).containsExactly(nextMountBinder2);
@@ -435,7 +435,7 @@ public class RenderUnitTest {
     currentRU.addOptionalMountBinders(createDelegateBinder(drawable1, drawableMountBinder));
     nextRU.addOptionalMountBinders(createDelegateBinder(drawable2, drawableMountBinder));
 
-    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true);
+    nextRU.updateBinders(mContext, mContent, currentRU, null, new Object(), null, true, mTracer);
 
     assertThat(mBindOrder).containsExactly(drawableMountBinder);
     assertThat(mUnbindOrder).containsExactly(drawableMountBinder);

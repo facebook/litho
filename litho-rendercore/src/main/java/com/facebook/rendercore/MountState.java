@@ -580,7 +580,7 @@ public class MountState implements MountDelegateTarget {
         item.getRenderTreeNode(), item.getContent(), forceTraversal /* force */, mTracer);
 
     if (mountDelegate != null) {
-      mountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
+      mountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent(), mTracer);
     }
   }
 
@@ -814,7 +814,7 @@ public class MountState implements MountDelegateTarget {
       mTracer.beginSection("MountItem:after " + renderTreeNode.getRenderUnit().getDescription());
     }
     if (mMountDelegate != null) {
-      mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
+      mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent(), mTracer);
       mMountDelegate.endNotifyVisibleBoundsChangedSection();
     }
 
@@ -1042,7 +1042,7 @@ public class MountState implements MountDelegateTarget {
     final MountDelegate mountDelegate = mMountDelegate;
     unit.mountBinders(mContext, content, node.getLayoutData(), mTracer);
     if (mountDelegate != null) {
-      mountDelegate.onMountItem(unit, content, node.getLayoutData());
+      mountDelegate.onMountItem(unit, content, node.getLayoutData(), mTracer);
     }
 
     if (traceIdentifier != null) {
@@ -1054,7 +1054,7 @@ public class MountState implements MountDelegateTarget {
       final RenderTreeNode node, final RenderUnit unit, final Object content) {
     final MountDelegate mountDelegate = mMountDelegate;
     if (mountDelegate != null) {
-      mountDelegate.onUnmountItem(unit, content, node.getLayoutData());
+      mountDelegate.onUnmountItem(unit, content, node.getLayoutData(), mTracer);
     }
     unit.unmountBinders(mContext, content, node.getLayoutData(), mTracer);
   }
@@ -1066,7 +1066,7 @@ public class MountState implements MountDelegateTarget {
     renderUnit.attachBinders(mContext, content, layoutData, mTracer);
     final MountDelegate mountDelegate = mMountDelegate;
     if (mountDelegate != null) {
-      mountDelegate.onBindItem(renderUnit, content, layoutData);
+      mountDelegate.onBindItem(renderUnit, content, layoutData, mTracer);
     }
     item.setIsBound(true);
   }
@@ -1077,7 +1077,7 @@ public class MountState implements MountDelegateTarget {
     final Object layoutData = item.getRenderTreeNode().getLayoutData();
     final MountDelegate mountDelegate = mMountDelegate;
     if (mountDelegate != null) {
-      mountDelegate.onUnbindItem(renderUnit, content, layoutData);
+      mountDelegate.onUnbindItem(renderUnit, content, layoutData, mTracer);
     }
     renderUnit.detachBinders(mContext, content, layoutData, mTracer);
     item.setIsBound(false);
@@ -1134,7 +1134,8 @@ public class MountState implements MountDelegateTarget {
           currentLayoutData,
           newLayoutData,
           mountDelegate,
-          currentMountItem.isBound());
+          currentMountItem.isBound(),
+          mTracer);
 
       if (traceIdentifier != null) {
         endTrace(traceIdentifier);

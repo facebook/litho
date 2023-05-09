@@ -147,7 +147,8 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
       @Nullable MountDelegate mountDelegate,
-      boolean isAttached) {
+      boolean isAttached,
+      Systracer tracer) {
     super.updateBinders(
         context,
         contentT,
@@ -155,6 +156,7 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
         currentLayoutData,
         newLayoutData,
         mountDelegate,
-        isAttached);
+        isAttached,
+        tracer);
   }
 }

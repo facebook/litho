@@ -248,22 +248,28 @@ public class MountDelegate {
   }
 
   public void onBindItem(
-      final RenderUnit renderUnit, final Object content, final Object layoutData) {
+      final RenderUnit renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates.get(i).onBindItem(renderUnit, content, layoutData);
+      mExtensionStates.get(i).onBindItem(renderUnit, content, layoutData, tracer);
     }
 
     endNotifyVisibleBoundsChangedSection();
   }
 
   public void onUnbindItem(
-      final RenderUnit renderUnit, final Object content, final Object layoutData) {
+      final RenderUnit renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates.get(i).onUnbindItem(renderUnit, content, layoutData);
+      mExtensionStates.get(i).onUnbindItem(renderUnit, content, layoutData, tracer);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -278,12 +284,13 @@ public class MountDelegate {
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
-      final @Nullable Object nextLayoutData) {
+      final @Nullable Object nextLayoutData,
+      final Systracer tracer) {
     List<ExtensionState> extensionStatesToUpdate = null;
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       final ExtensionState state = mExtensionStates.get(i);
       if (state.shouldUpdateItem(
-          previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
+          previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData, tracer)) {
         if (extensionStatesToUpdate == null) {
           extensionStatesToUpdate = new ArrayList<>(mExtensionStates.size());
         }
@@ -300,13 +307,14 @@ public class MountDelegate {
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
-      final Object content) {
+      final Object content,
+      final Systracer tracer) {
     if (!extensionStatesToUpdate.isEmpty()) {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         extensionStatesToUpdate
             .get(i)
-            .onUnbindItem(previousRenderUnit, content, previousLayoutData);
+            .onUnbindItem(previousRenderUnit, content, previousLayoutData, tracer);
       }
     }
   }
@@ -317,13 +325,14 @@ public class MountDelegate {
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
-      final Object content) {
+      final Object content,
+      final Systracer tracer) {
     if (!extensionStatesToUpdate.isEmpty()) {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         extensionStatesToUpdate
             .get(i)
-            .onUnmountItem(previousRenderUnit, content, previousLayoutData);
+            .onUnmountItem(previousRenderUnit, content, previousLayoutData, tracer);
       }
     }
   }
@@ -334,11 +343,12 @@ public class MountDelegate {
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
-      final Object content) {
+      final Object content,
+      final Systracer tracer) {
     if (!extensionStatesToUpdate.isEmpty()) {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
-        extensionStatesToUpdate.get(i).onMountItem(nextRenderUnit, content, nextLayoutData);
+        extensionStatesToUpdate.get(i).onMountItem(nextRenderUnit, content, nextLayoutData, tracer);
       }
     }
   }
@@ -349,44 +359,51 @@ public class MountDelegate {
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
-      final Object content) {
+      final Object content,
+      final Systracer tracer) {
     if (!extensionStatesToUpdate.isEmpty()) {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
-        extensionStatesToUpdate.get(i).onBindItem(nextRenderUnit, content, nextLayoutData);
+        extensionStatesToUpdate.get(i).onBindItem(nextRenderUnit, content, nextLayoutData, tracer);
       }
     }
   }
 
   public void onMountItem(
-      final RenderUnit renderUnit, final Object content, final Object layoutData) {
+      final RenderUnit renderUnit,
+      final Object content,
+      final Object layoutData,
+      final Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates.get(i).onMountItem(renderUnit, content, layoutData);
+      mExtensionStates.get(i).onMountItem(renderUnit, content, layoutData, tracer);
     }
 
     endNotifyVisibleBoundsChangedSection();
   }
 
   public void onUnmountItem(
-      final RenderUnit renderUnit, final Object content, final @Nullable Object layoutData) {
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData,
+      final Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates.get(i).onUnmountItem(renderUnit, content, layoutData);
+      mExtensionStates.get(i).onUnmountItem(renderUnit, content, layoutData, tracer);
     }
 
     endNotifyVisibleBoundsChangedSection();
   }
 
-  public void onBoundsAppliedToItem(RenderTreeNode node, Object content) {
+  public void onBoundsAppliedToItem(RenderTreeNode node, Object content, Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       mExtensionStates
           .get(i)
-          .onBoundsAppliedToItem(node.getRenderUnit(), content, node.getLayoutData());
+          .onBoundsAppliedToItem(node.getRenderUnit(), content, node.getLayoutData(), tracer);
     }
 
     endNotifyVisibleBoundsChangedSection();

@@ -375,7 +375,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
       @Nullable MountDelegate mountDelegate,
-      boolean isAttached) {
+      boolean isAttached,
+      Systracer tracer) {
 
     final List<DelegateBinder> attachBindersForBind = new ArrayList<>(sizeOrZero(mAttachBinders));
     final List<DelegateBinder> attachBindersForUnbind =
@@ -416,7 +417,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     if (mountDelegate != null) {
       extensionStatesToUpdate =
           mountDelegate.collateExtensionsToUpdate(
-              currentRenderUnit, currentLayoutData, this, newLayoutData);
+              currentRenderUnit, currentLayoutData, this, newLayoutData, tracer);
     } else {
       extensionStatesToUpdate = null;
     }
@@ -430,7 +431,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
             currentLayoutData,
             this,
             newLayoutData,
-            content);
+            content,
+            tracer);
       }
       for (int i = attachBindersForUnbind.size() - 1; i >= 0; i--) {
         final DelegateBinder binder = attachBindersForUnbind.get(i);
@@ -446,7 +448,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
           currentLayoutData,
           this,
           newLayoutData,
-          content);
+          content,
+          tracer);
     }
     for (int i = optionalMountBindersForUnbind.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = optionalMountBindersForUnbind.get(i);
@@ -481,7 +484,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
           currentLayoutData,
           this,
           newLayoutData,
-          content);
+          content,
+          tracer);
     }
 
     // 6. Rebind all attach binders which did update.
@@ -496,7 +500,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
           currentLayoutData,
           this,
           newLayoutData,
-          content);
+          content,
+          tracer);
     }
   }
 

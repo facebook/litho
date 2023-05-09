@@ -113,7 +113,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
       @Nullable MountDelegate mountDelegate,
-      boolean isAttached) {
+      boolean isAttached,
+      Systracer tracer) {
     mMountable.updateBinders(
         context,
         o,
@@ -121,7 +122,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
         Preconditions.checkNotNull((LithoLayoutData) currentLayoutData).layoutData,
         Preconditions.checkNotNull((LithoLayoutData) newLayoutData).layoutData,
         mountDelegate,
-        isAttached);
+        isAttached,
+        tracer);
   }
 
   @Override

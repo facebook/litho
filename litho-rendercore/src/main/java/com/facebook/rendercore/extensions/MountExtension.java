@@ -146,4 +146,12 @@ public abstract class MountExtension<Input, State> {
   protected static boolean isLockedForMount(ExtensionState extensionState, long id) {
     return extensionState.getMountDelegate().isLockedForMount(id);
   }
+
+  public String getName() {
+    // This API is primarily used for tracing, and the section names have a char limit of 127.
+    // If the class name exceeds that it will be replace by the simple name.
+    // In a release build the class name will be minified, so it is unlikely to hit the limit.
+    final String name = getClass().getName();
+    return name.length() > 80 ? getClass().getSimpleName() : "<cls>" + name + "</cls>";
+  }
 }

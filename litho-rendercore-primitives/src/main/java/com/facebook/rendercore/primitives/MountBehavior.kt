@@ -109,7 +109,8 @@ abstract class PrimitiveRenderUnit<ContentType>(
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
-      isAttached: Boolean
+      isAttached: Boolean,
+      tracer: Systracer,
   ) =
       super.updateBinders(
           context,
@@ -118,5 +119,7 @@ abstract class PrimitiveRenderUnit<ContentType>(
           currentLayoutData,
           newLayoutData,
           mountDelegate,
-          isAttached)
+          isAttached,
+          tracer,
+      )
 }
