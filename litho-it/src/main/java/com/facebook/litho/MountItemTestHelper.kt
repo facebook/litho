@@ -24,7 +24,6 @@ object MountItemTestHelper {
   @JvmStatic
   fun create(
       component: Component,
-      host: ComponentHost?,
       content: Any,
       info: NodeInfo?,
       bounds: Rect?,
@@ -50,6 +49,6 @@ object MountItemTestHelper {
             ),
             null,
         )
-    return MountItem(node, host, content).apply { mountData = LithoMountData(content) }
+    return MountItem(node, content).apply { mountData = LithoMountData(content) }
   }
 }

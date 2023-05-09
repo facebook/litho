@@ -88,13 +88,7 @@ class MountItemTest {
 
   private fun create(content: Any): MountItem =
       MountItemTestHelper.create(
-          component,
-          componentHost,
-          content,
-          nodeInfo,
-          null,
-          flags,
-          ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
+          component, content, nodeInfo, null, flags, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
 
   @Test
   fun testIsBound() {
@@ -107,7 +101,6 @@ class MountItemTest {
   @Test
   fun testGetters() {
     assertThat(LithoRenderUnit.getRenderUnit(mountItem).component).isSameAs(component)
-    assertThat(mountItem.host).isSameAs(componentHost)
     assertThat(mountItem.content).isSameAs(content)
     assertThat(LithoRenderUnit.getRenderUnit(mountItem).nodeInfo?.contentDescription)
         .isSameAs(contentDescription)
@@ -211,7 +204,6 @@ class MountItemTest {
         MountItemTestHelper.create(
             TestDrawableComponent.create(context, true, true, true /* implementsAccessibility */)
                 .build(),
-            componentHost,
             content,
             nodeInfo,
             null,
@@ -226,7 +218,6 @@ class MountItemTest {
         MountItemTestHelper.create(
             TestDrawableComponent.create(context, true, true, true /* implementsAccessibility */)
                 .build(),
-            componentHost,
             content,
             nodeInfo,
             null,
@@ -241,7 +232,6 @@ class MountItemTest {
         MountItemTestHelper.create(
             TestDrawableComponent.create(context, true, true, true /* implementsAccessibility */)
                 .build(),
-            componentHost,
             content,
             nodeInfo,
             null,
@@ -261,7 +251,7 @@ class MountItemTest {
         MountSpecLithoRenderUnit.create(0, component, context, nodeInfo, 0, 0, STATE_UNKNOWN)
     val node: RenderTreeNode = create(unit, Rect(0, 0, 0, 0), null, null)
     val view = View(getApplicationContext())
-    val mountItem = MountItem(node, componentHost, view)
+    val mountItem = MountItem(node, view)
     mountItem.setMountData(LithoMountData(view))
     assertThat(
             LithoMountData.isViewClickable(

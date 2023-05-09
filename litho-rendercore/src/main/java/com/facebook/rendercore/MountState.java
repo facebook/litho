@@ -674,7 +674,7 @@ public class MountState implements MountDelegateTarget {
         final @Nullable MountItem hostItem = mIdToMountedItemMap.get(newHostMarker);
         final @Nullable Host newHost = hostItem != null ? (Host) hostItem.getContent() : null;
 
-        if (oldItem.getHost() != newHost) {
+        if (oldItem.getHost() == null || oldItem.getHost() != newHost) {
           // If the id is the same but the parent host is different we simply unmount the item and
           // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
@@ -702,7 +702,7 @@ public class MountState implements MountDelegateTarget {
   // The content might be null because it's the LayoutSpec for the root host
   // (the very first RenderTreeNode).
   private MountItem mountContentInHost(Object content, Host host, RenderTreeNode node) {
-    final MountItem item = new MountItem(node, host, content);
+    final MountItem item = new MountItem(node, content);
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
@@ -899,7 +899,11 @@ public class MountState implements MountDelegateTarget {
       if (isTracing) {
         mTracer.beginSection("UnmountItem:remove: " + unit.getDescription());
       }
-      host.unmount(item);
+      // We don't expect Host to really be null but we observe cases where this
+      // is actually happening
+      if (host != null) {
+        host.unmount(item);
+      }
       if (isTracing) {
         mTracer.endSection();
       }
@@ -964,7 +968,7 @@ public class MountState implements MountDelegateTarget {
     mountRenderUnitToContent(rootNode, rootNode.getRenderUnit(), mRootHost);
 
     // Create root mount item.
-    final MountItem item = new MountItem(rootNode, mRootHost, mRootHost);
+    final MountItem item = new MountItem(rootNode, mRootHost);
 
     // Adds root mount item to map.
     mIdToMountedItemMap.put(ROOT_HOST_ID, item);

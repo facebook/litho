@@ -268,7 +268,7 @@ public class HostViewTest {
         (content instanceof View) ? RenderUnit.RenderType.VIEW : RenderUnit.RenderType.DRAWABLE;
     final RenderUnit renderUnit = new TestRenderUnit(renderType);
     return new MountItem(
-        new RenderTreeNode(null, renderUnit, null, new Rect(), new Rect(), 0), host, content);
+        new RenderTreeNode(null, renderUnit, null, new Rect(), new Rect(), 0), content);
   }
 
   private static class TestRenderUnit extends RenderUnit implements ContentAllocator<Object> {

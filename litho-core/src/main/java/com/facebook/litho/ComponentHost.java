@@ -165,6 +165,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     }
 
     mMountItems.put(index, mountItem);
+    mountItem.setHost(this);
     updateAccessibilityState(renderUnit);
   }
 
@@ -213,6 +214,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
     updateAccessibilityState(getRenderUnit(mountItem));
+    mountItem.setHost(null);
   }
 
   /**
@@ -241,6 +243,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     releaseScrapDataStructuresIfNeeded();
     ensureDisappearingItems();
     mDisappearingItems.add(mountItem);
+    mountItem.setHost(null);
   }
 
   @Override

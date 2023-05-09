@@ -70,6 +70,7 @@ public class HostView extends Host {
     }
     ensureSize(index);
     mMountItems[index] = mountItem;
+    mountItem.setHost(this);
   }
 
   private void ensureSize(int index) {
@@ -89,6 +90,7 @@ public class HostView extends Host {
     final int index = findItemIndex(item);
 
     unmount(index, item);
+    item.setHost(null);
   }
 
   private int findItemIndex(MountItem item) {

@@ -21,14 +21,13 @@ import androidx.annotation.Nullable;
 
 public class MountItem {
   private Object mContent;
-  private @Nullable Host mHost;
+  private @Nullable Host mHost = null;
   private boolean mBound;
   private RenderTreeNode mRenderTreeNode;
   private Object mMountData;
 
-  public MountItem(RenderTreeNode renderTreeNode, @Nullable Host host, Object content) {
+  public MountItem(RenderTreeNode renderTreeNode, Object content) {
     mRenderTreeNode = renderTreeNode;
-    mHost = host;
     mContent = content;
   }
 

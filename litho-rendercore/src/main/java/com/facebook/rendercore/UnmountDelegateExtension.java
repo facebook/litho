@@ -17,6 +17,7 @@
 package com.facebook.rendercore;
 
 import com.facebook.rendercore.extensions.ExtensionState;
+import javax.annotation.Nullable;
 
 /** This delegate allows overriding a {@link MountItem}'s unmount responsibility. */
 public interface UnmountDelegateExtension<State> {
@@ -37,5 +38,5 @@ public interface UnmountDelegateExtension<State> {
    * @param mountItem
    * @param host
    */
-  void unmount(ExtensionState<State> extensionState, MountItem mountItem, Host host);
+  void unmount(ExtensionState<State> extensionState, MountItem mountItem, @Nullable Host host);
 }

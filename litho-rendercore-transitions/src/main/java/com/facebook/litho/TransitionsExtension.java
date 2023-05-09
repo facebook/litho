@@ -87,6 +87,7 @@ public class TransitionsExtension
         new LinkedHashMap<>();
     private static final int UNSET = -1;
     private final Map<RenderUnit, AnimatableItem> mLockedDisappearingMountitems = new HashMap<>();
+    private final Map<MountItem, Host> mCurrentlyDisappearingItems = new HashMap<>();
     private TransitionsExtensionInput mInput;
     private int mLastMountedTreeId = UNSET;
     private TransitionManager mTransitionManager;
@@ -174,7 +175,7 @@ public class TransitionsExtension
   public void unmount(
       final ExtensionState<TransitionsExtensionState> extensionState,
       final MountItem mountItem,
-      final Host host) {
+      @Nullable final Host host) {
     final TransitionsExtensionState state = extensionState.getState();
     final AnimatableItem animatableItem =
         state.mLockedDisappearingMountitems.get(mountItem.getRenderTreeNode().getRenderUnit());
@@ -185,8 +186,9 @@ public class TransitionsExtension
       final boolean isRoot = group.get(animatableItem.getOutputType()) != null;
       // We only start unmount disappearing item on the root of the disappearing animation. The rest
       // will be unmounted after the animation finishes.
-      if (isRoot) {
+      if (isRoot && host != null) {
         ((DisappearingHost) host).startDisappearingMountItem(mountItem);
+        state.mCurrentlyDisappearingItems.put(mountItem, host);
       }
     }
   }
@@ -723,7 +725,8 @@ public class TransitionsExtension
       }
     }
 
-    final Host host = mountItem.getHost();
+    final Host host =
+        isRoot ? state.mCurrentlyDisappearingItems.get(mountItem) : mountItem.getHost();
     if (host == null) {
       throw new IllegalStateException("Disappearing mountItem has no host, can not be unmounted.");
     }
@@ -739,6 +742,8 @@ public class TransitionsExtension
         throw new RuntimeException(
             "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
       }
+
+      state.mCurrentlyDisappearingItems.remove(mountItem);
     } else {
       host.unmount(mountItem);
     }
@@ -851,9 +856,6 @@ public class TransitionsExtension
 
     // Mount to the root
     rootHost.mount(index, mountItem);
-
-    // Set new host to the MountItem
-    mountItem.setHost(rootHost);
   }
 
   private static void maybeUpdateAnimatingMountContent(
