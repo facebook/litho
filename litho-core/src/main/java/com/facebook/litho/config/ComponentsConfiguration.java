@@ -330,8 +330,6 @@ public class ComponentsConfiguration {
 
   private final boolean mShouldReuseOutputs;
 
-  private final boolean mIsLegacyRenderEnabled;
-
   private final boolean mUsePaintAdvanceForEllipsisCalculation;
 
   private final boolean mShouldAddHostViewForRootComponent;
@@ -370,7 +368,6 @@ public class ComponentsConfiguration {
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
     mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
-    mIsLegacyRenderEnabled = builder.mIsLegacyRenderEnabled;
     mUsePaintAdvanceForEllipsisCalculation = builder.mUsePaintAdvanceForEllipsisCalculation;
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
@@ -378,10 +375,6 @@ public class ComponentsConfiguration {
 
   public boolean shouldReuseOutputs() {
     return mShouldReuseOutputs;
-  }
-
-  public boolean isLegacyRenderEnabled() {
-    return mIsLegacyRenderEnabled;
   }
 
   public static ComponentsConfiguration.Builder create() {
@@ -394,8 +387,7 @@ public class ComponentsConfiguration {
         .resolveCancellationStrategy(config.getResolveCancellationStrategy())
         .isLayoutCancellationEnabled(config.isLayoutCancellationEnabled())
         .shouldAddHostViewForRootComponent(config.isShouldAddHostViewForRootComponent())
-        .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs())
-        .isLegacyRenderEnabled(config.isLegacyRenderEnabled());
+        .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs());
   }
 
   public static class Builder {
@@ -404,7 +396,6 @@ public class ComponentsConfiguration {
     boolean mUseInterruptibleResolution = true;
     boolean mShouldReuseOutputs = false;
     boolean mIsLayoutCancellationEnabled = false;
-    boolean mIsLegacyRenderEnabled = false;
     boolean mShouldAddHostViewForRootComponent = false;
     boolean mShouldDisableBgFgOutputs = false;
     @Nullable ResolveCancellationStrategy mResolveCancellationStrategy;
@@ -428,11 +419,6 @@ public class ComponentsConfiguration {
 
     public Builder isLayoutCancellationEnabled(boolean enabled) {
       mIsLayoutCancellationEnabled = enabled;
-      return this;
-    }
-
-    public Builder isLegacyRenderEnabled(boolean enabled) {
-      mIsLegacyRenderEnabled = enabled;
       return this;
     }
 

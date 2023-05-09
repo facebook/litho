@@ -1234,12 +1234,6 @@ public class LayoutState
       return;
     }
 
-    // only keep the node if reconciliation is enabled for legacy render
-    if (c.isReconciliationEnabled()
-        && c.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
-      layoutState.mRoot = nodeForSaving;
-    }
-
     // override used by analytics teams
     if (ComponentsConfiguration.keepLayoutResults) {
       layoutState.mLayoutResult = layoutResultForSaving;
