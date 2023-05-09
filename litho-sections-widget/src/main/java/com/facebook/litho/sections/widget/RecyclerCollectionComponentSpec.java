@@ -168,6 +168,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger,
+      @Prop(optional = true) @Nullable CharSequence recyclerContentDescription,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -236,7 +237,8 @@ public class RecyclerCollectionComponentSpec {
                     : itemAnimator)
             .flexShrink(0)
             .touchHandler(recyclerTouchEventHandler)
-            .sectionsViewLogger(sectionsViewLogger);
+            .sectionsViewLogger(sectionsViewLogger)
+            .contentDescription(recyclerContentDescription);
 
     if (!binder.canMeasure()
         && !recyclerConfiguration.getRecyclerBinderConfiguration().isWrapContent()) {
