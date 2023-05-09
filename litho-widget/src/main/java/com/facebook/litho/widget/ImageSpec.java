@@ -55,7 +55,7 @@ import javax.annotation.Nullable;
  * @prop scaleType Scale type for the drawable within the container.
  */
 @MountSpec(isPureRender = true, poolSize = 30, canPreallocate = true)
-class ImageSpec {
+public class ImageSpec {
 
   private static final ScaleType[] SCALE_TYPE = ScaleType.values();
 
@@ -143,7 +143,7 @@ class ImageSpec {
   }
 
   @OnCreateMountContent
-  static MatrixDrawable onCreateMountContent(Context c) {
+  public static MatrixDrawable onCreateMountContent(Context c) {
     return new MatrixDrawable();
   }
 

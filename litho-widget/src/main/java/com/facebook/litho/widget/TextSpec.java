@@ -177,7 +177,7 @@ import java.util.Collections;
     poolSize = 30,
     canPreallocate = true,
     events = {TextOffsetOnTouchEvent.class})
-class TextSpec {
+public class TextSpec {
 
   public static final @Dimension(unit = Dimension.SP) int DEFAULT_TEXT_SIZE_SP = 14;
   public static final int UNSET = -1;
@@ -886,7 +886,7 @@ class TextSpec {
   }
 
   @OnCreateMountContent
-  static TextDrawable onCreateMountContent(Context c) {
+  public static TextDrawable onCreateMountContent(Context c) {
     return new TextDrawable();
   }
 
