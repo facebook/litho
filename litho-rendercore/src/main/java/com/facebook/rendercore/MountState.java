@@ -743,7 +743,6 @@ public class MountState implements MountDelegateTarget {
     final boolean isTracing = mTracer.isTracing();
     if (isTracing) {
       mTracer.beginSection("MountItem: " + renderTreeNode.getRenderUnit().getDescription());
-      mTracer.beginSection("MountItem:before " + renderTreeNode.getRenderUnit().getDescription());
     }
 
     // 1. Resolve the correct host to mount our content to.
@@ -754,8 +753,14 @@ public class MountState implements MountDelegateTarget {
 
     // 2. Ensure render tree node's parent is mounted or throw exception depending on the
     // ensure-parent-mounted flag.
+    if (isTracing) {
+      mTracer.beginSection("MountItem:mount-parent " + parentRenderUnit.getDescription());
+    }
     maybeEnsureParentIsMounted(
         renderTreeNode, renderUnit, hostTreeNode, parentRenderUnit, processLogBuilder);
+    if (isTracing) {
+      mTracer.endSection();
+    }
 
     final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
     final Object parentContent = mountItem.getContent();
@@ -764,15 +769,20 @@ public class MountState implements MountDelegateTarget {
     final Host host = (Host) parentContent;
 
     // 3. call the RenderUnit's Mount bindings.
+    if (isTracing) {
+      mTracer.beginSection("MountItem:acquire-content " + renderUnit.getDescription());
+    }
     final Object content =
         MountItemsPool.acquireMountContent(mContext, renderUnit.getContentAllocator());
+    if (isTracing) {
+      mTracer.endSection();
+    }
 
     if (mMountDelegate != null) {
       mMountDelegate.startNotifyVisibleBoundsChangedSection();
     }
 
     if (isTracing) {
-      mTracer.endSection();
       mTracer.beginSection("MountItem:mount " + renderTreeNode.getRenderUnit().getDescription());
     }
     mountRenderUnitToContent(renderTreeNode, renderUnit, content);

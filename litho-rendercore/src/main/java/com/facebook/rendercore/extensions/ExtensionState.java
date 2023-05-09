@@ -129,6 +129,7 @@ public class ExtensionState<State> {
   }
 
   public void onMountItem(RenderUnit<?> renderUnit, Object content, Object layoutData) {
+
     mExtension.onMountItem(this, renderUnit, content, layoutData);
   }
 
