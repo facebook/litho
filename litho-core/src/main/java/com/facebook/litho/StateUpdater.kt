@@ -117,5 +117,5 @@ interface StateUpdater {
 
   fun getEventTrigger(s: String): EventTrigger<*>?
 
-  fun getEventTrigger(handle: Handle?, id: Int): EventTrigger<*>?
+  fun getEventTrigger(handle: Handle, id: Int): EventTrigger<*>?
 }
