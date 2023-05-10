@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>SizeConstraintsAwareComponent</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../index.html">
+<span>Litho</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="litho-widget-kotlin::com.facebook.litho.kotlin.widget//SizeConstraintsAwareComponent/com.facebook.litho.ResourcesScope#com.facebook.litho.Style?#kotlin.Function2[com.facebook.litho.ComponentScope,com.facebook.rendercore.SizeConstraints,com.facebook.litho.Component]/PointingToDeclaration//868337418">
+  <div class="breadcrumbs"><a href="../index.html">litho-widget-kotlin</a><span class="delimiter">/</span><a href="index.html">com.facebook.litho.kotlin.widget</a><span class="delimiter">/</span><span class="current">SizeConstraintsAwareComponent</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Size</span><wbr><span>Constraints</span><wbr><span>Aware</span><wbr><span><span>Component</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="../../litho-core/com.facebook.litho/-resources-scope/index.html">ResourcesScope</a><span class="token punctuation">.</span><a href="-size-constraints-aware-component.html"><span class="token function">SizeConstraintsAwareComponent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">style<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-style/index.html">Style</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">content<span class="token operator">: </span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component-scope/index.html">ComponentScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword"></span><span data-unresolved-link="com.facebook.rendercore/SizeConstraints///PointingToDeclaration/">SizeConstraints</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a></div><p class="paragraph">Utility for creating a layout tree that depends on its own and/or its children's size.</p><p class="paragraph">For example, Component A is returned if it fits within the specified width otherwise Component B is returned.</p><p class="paragraph">Example:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">SizeConstraintsAwareComponent { sizeConstraints -&gt;<br>    val textComponent = Text(textSize = 16.sp, text = "Some text to measure")<br><br>    val textOutputSize = Size()<br><br>    textComponent.measure(<br>    context,<br>    SizeSpec.makeSizeSpec(0, UNSPECIFIED),<br>    SizeSpec.makeSizeSpec(0, UNSPECIFIED),<br>    textOutputSize)<br><br>    // Small component to use in case textComponent doesn’t fit within<br>    // the current layout.<br>    val imageComponent = Image(drawable = drawableRes(R.drawable.ic_launcher))<br><br>    // Assuming sizeConstraints.hasBoundedWidth == true<br>    val doesTextFit = textOutputSize.width &lt;= sizeConstraints.maxWidth<br><br>    if (doesTextFit) textComponent else imageComponent<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+
