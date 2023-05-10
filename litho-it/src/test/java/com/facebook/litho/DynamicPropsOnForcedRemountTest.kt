@@ -91,6 +91,6 @@ private object TestLayoutBehavior : LayoutBehavior {
           MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
         }
 
-    return PrimitiveLayoutResult(widthSpec, heightSpec, measureResult.width, measureResult.height)
+    return PrimitiveLayoutResult(width = measureResult.width, height = measureResult.height)
   }
 }

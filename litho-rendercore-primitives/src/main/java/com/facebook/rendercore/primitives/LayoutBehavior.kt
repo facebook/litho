@@ -19,6 +19,7 @@ package com.facebook.rendercore.primitives
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 
 /**
@@ -152,6 +153,24 @@ class PrimitiveLayoutResult(
     private val paddingLeft: Int = 0,
     private val layoutData: Any? = null,
 ) {
+
+  init {
+    if (width < 0) {
+      throw IllegalArgumentException("width must be >= 0, but was: $width")
+    }
+    if (height < 0) {
+      throw IllegalArgumentException("height must be >= 0, but was: $height")
+    }
+    if (width >= SizeConstraints.MaxValue) {
+      throw IllegalArgumentException(
+          "width must be < ${SizeConstraints.MaxValue}, but was: $width. Components this big may affect performance and lead to out of memory errors.")
+    }
+    if (height >= SizeConstraints.MaxValue) {
+      throw IllegalArgumentException(
+          "height must be < ${SizeConstraints.MaxValue}, but was: $height. Components this big may affect performance and lead to out of memory errors.")
+    }
+  }
+
   internal fun toNodeLayoutResult(
       widthSpec: Int,
       heightSpec: Int,
