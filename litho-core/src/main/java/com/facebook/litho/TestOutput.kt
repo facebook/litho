@@ -17,12 +17,14 @@
 package com.facebook.litho
 
 import android.graphics.Rect
+import androidx.annotation.VisibleForTesting
 
 /**
  * Stores information about a [Component] which is only available when tests are run. TestOutputs
  * are calculated in [LayoutState] and transformed into [TestItem]s while mounting.
  */
-internal class TestOutput {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+class TestOutput {
   var testKey: String? = null
   var hostMarker: Long = -1
   var layoutOutputId: Long = -1
