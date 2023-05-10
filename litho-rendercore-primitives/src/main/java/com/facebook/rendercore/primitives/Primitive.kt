@@ -21,6 +21,7 @@ import android.view.View
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.Node
+import com.facebook.rendercore.SizeConstraints
 
 /**
  * Primitive is the fundamental building block of a UI component that can be shared across
@@ -50,7 +51,7 @@ class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: M
     val layoutScope = LayoutScope(context, context.consumePreviousLayoutDataForCurrentNode())
     return with(layoutBehavior) {
       layoutScope
-          .layout(widthSpec, heightSpec)
+          .layout(SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
           .toNodeLayoutResult(widthSpec, heightSpec, renderUnit)
     }
   }

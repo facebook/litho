@@ -37,10 +37,14 @@ import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
+import kotlin.math.max
 
 class ExperimentalPrimitiveRecycler(
     private val binder: Binder<RecyclerView>,
@@ -255,13 +259,14 @@ private class RecyclerLayoutBehavior(
     private val binder: Binder<RecyclerView>,
     private val onRemeasure: () -> Unit
 ) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val size = Size()
     binder.measure(
         size,
-        widthSpec,
-        heightSpec,
+        sizeConstraints.toWidthSpec(),
+        sizeConstraints.toHeightSpec(),
         if (binder.canMeasure() || binder.isWrapContent) eventHandler { onRemeasure() } else null)
-    return PrimitiveLayoutResult(size.width, size.height)
+    return PrimitiveLayoutResult(
+        max(sizeConstraints.minWidth, size.width), max(sizeConstraints.minHeight, size.height))
   }
 }

@@ -53,6 +53,8 @@ import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.Size
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -60,6 +62,7 @@ import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.testing.ViewAssertions
+import com.facebook.rendercore.utils.fillSpace
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -996,13 +999,11 @@ private fun PrimitiveComponentScope.ViewPrimitive(
 ): Primitive {
 
   class ViewPrimitiveLayoutBehavior(private val id: Int = 0) : LayoutBehavior {
-    override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+    override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
       steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
-      val result = MeasureResult.fillSpace(widthSpec, heightSpec, 100, 100, null)
+      val size = Size.fillSpace(sizeConstraints, 100, 100)
       return PrimitiveLayoutResult(
-          result.width,
-          result.height,
-          layoutData = TestPrimitiveLayoutData(result.width, result.height))
+          size = size, layoutData = TestPrimitiveLayoutData(size.width, size.height))
     }
   }
 
@@ -1035,19 +1036,18 @@ class TestDrawablePrimitiveComponent(val drawable: Drawable, val style: Style? =
         layoutBehavior =
             object : LayoutBehavior {
               override fun LayoutScope.layout(
-                  widthSpec: Int,
-                  heightSpec: Int
+                  sizeConstraints: SizeConstraints
               ): PrimitiveLayoutResult {
                 val width =
-                    if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
-                      SizeSpec.getSize(widthSpec)
+                    if (sizeConstraints.hasExactWidth) {
+                      sizeConstraints.maxWidth
                     } else {
                       100
                     }
 
                 val height =
-                    if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY) {
-                      SizeSpec.getSize(heightSpec)
+                    if (sizeConstraints.hasExactHeight) {
+                      sizeConstraints.maxHeight
                     } else {
                       100
                     }

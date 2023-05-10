@@ -23,11 +23,13 @@ import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.ThreadUtils
-import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.Size
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.utils.withEqualDimensions
 
 class TimePickerPrimitiveComponent(
     private val controller: TimePickerController? = null,
@@ -52,9 +54,8 @@ class TimePickerPrimitiveComponent(
 }
 
 internal object TimePickerLayoutBehavior : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val result = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
-    return PrimitiveLayoutResult(result.width, result.height)
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    return PrimitiveLayoutResult(size = Size.withEqualDimensions(sizeConstraints))
   }
 }
 

@@ -27,16 +27,18 @@ import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.R
 import com.facebook.litho.Size
-import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.useState
 import com.facebook.litho.widget.HorizontalScrollEventsController
 import com.facebook.litho.widget.HorizontalScrollLithoView
 import com.facebook.litho.widget.ScrollStateListener
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.yoga.YogaDirection
 import kotlin.math.max
 
@@ -175,16 +177,15 @@ internal class HorizontalScrollLayoutBehavior(
     private val childComponent: Component,
     private val childComponentTree: ComponentTree
 ) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val size = Size()
-    val width = max(0, SizeSpec.getSize(widthSpec))
 
     // Measure the component with undefined width spec, as the contents of the
     // hscroll have unlimited horizontal space.
     childComponentTree.setRootAndSizeSpecSync(
-        childComponent, SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED), heightSpec, size)
+        childComponent, MeasureSpecUtils.unspecified(), sizeConstraints.toHeightSpec(), size)
 
-    size.width = max(0, max(size.width, if (fillViewport) width else 0))
+    size.width = max(0, max(size.width, if (fillViewport) sizeConstraints.maxWidth else 0))
     size.height = max(0, size.height)
 
     val extraLayoutData: LithoLayoutExtraData? =

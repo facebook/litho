@@ -23,7 +23,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.widget.CardShadowDrawable
 import com.facebook.rendercore.primitives.DrawableAllocator
-import com.facebook.rendercore.primitives.FromSpecsLayoutBehavior
+import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 
 /**
  * A component that is able to render the card's shadow.
@@ -50,7 +50,7 @@ class CardShadow(
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
-        layoutBehavior = FromSpecsLayoutBehavior,
+        layoutBehavior = ExactSizeConstraintsLayoutBehavior,
         mountBehavior =
             MountBehavior(DrawableAllocator { CardShadowDrawable() }) {
               hideTopShadow.bindTo(CardShadowDrawable::setHideTopShadow, false)

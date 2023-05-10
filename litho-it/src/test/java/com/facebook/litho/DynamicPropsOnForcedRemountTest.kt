@@ -22,11 +22,13 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.Size
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.utils.withEqualDimensions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -82,15 +84,13 @@ private class TestPrimitiveComponent(
 
 private object TestLayoutBehavior : LayoutBehavior {
 
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val measureResult =
-        if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
-            SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-          MeasureResult(1080, 840)
-        } else {
-          MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
-        }
-
-    return PrimitiveLayoutResult(width = measureResult.width, height = measureResult.height)
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    return PrimitiveLayoutResult(
+        size =
+            if (!sizeConstraints.hasBoundedWidth && !sizeConstraints.hasBoundedHeight) {
+              Size(1080, 840)
+            } else {
+              Size.withEqualDimensions(sizeConstraints)
+            })
   }
 }

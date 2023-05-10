@@ -17,10 +17,14 @@
 package com.facebook.rendercore.primitives
 
 import com.facebook.rendercore.LayoutResult
-import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
+import com.facebook.rendercore.utils.exact
+import com.facebook.rendercore.utils.fillSpace
+import com.facebook.rendercore.utils.withAspectRatio
+import com.facebook.rendercore.utils.withEqualDimensions
 
 /**
  * LayoutBehavior defines how large a primitive is and, if it has children, how it lays out and
@@ -29,35 +33,34 @@ import com.facebook.rendercore.primitives.utils.hasEquivalentFields
  * equivalent?). This will be used to determine whether re-layouts need to happen.
  */
 interface LayoutBehavior : Equivalence<LayoutBehavior> {
-  fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult
+  fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult
 
   // By default, LayoutBehavior have field-wise equivalence, like Components
   override fun isEquivalentTo(other: LayoutBehavior): Boolean = hasEquivalentFields(this, other)
 }
 
 /**
- * Returns a [LayoutBehavior] with sizes set based on the provided widthSpec and heightSpec.
+ * Returns a [LayoutBehavior] with sizes set based on the provided [SizeConstraints].
  *
  * This method should only be used for Primitive Components which do not measure themselves - it's
  * the parent that has determined the exact size for this child.
  *
- * @throws IllegalArgumentException if the widthSpec or heightSpec is not exact
+ * @throws IllegalArgumentException if the [SizeConstraints] are not exact
  */
-object FromSpecsLayoutBehavior : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val result = MeasureResult.fromSpecs(widthSpec, heightSpec)
-    return PrimitiveLayoutResult(width = result.width, height = result.height)
+object ExactSizeConstraintsLayoutBehavior : LayoutBehavior {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    return PrimitiveLayoutResult(size = Size.exact(sizeConstraints))
   }
 }
 
 /**
- * Returns a [LayoutBehavior] with sizes set based on the widthSpec and heightSpec if the spec mode
- * is EXACTLY or AT_MOST, otherwise uses default values.
+ * Returns a [LayoutBehavior] with sizes set based on the [SizeConstraints] if the constraints are
+ * bounded, otherwise uses default values.
  *
- * @param defaultWidth The pixel value for the width of the measured component using the UNSPECIFIED
- *   mode.
- * @param defaultHeight The pixel value for the height of the measured component using the
- *   UNSPECIFIED mode.
+ * @param defaultWidth The pixel value for the width of the measured component when the provided
+ *   maxWidth constraint is equal to Infinity.
+ * @param defaultHeight The pixel value for the height of the measured component when the provided
+ *   maxHeight constraint is equal to Infinity.
  * @param layoutData The data to be returned from the layout pass.
  */
 class FillLayoutBehavior(
@@ -65,26 +68,10 @@ class FillLayoutBehavior(
     private val defaultHeight: Int,
     private val layoutData: Any? = null
 ) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val result = MeasureResult.fillSpace(widthSpec, heightSpec, defaultWidth, defaultHeight, null)
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
-        width = result.width, height = result.height, layoutData = layoutData)
-  }
-}
-
-/**
- * Returns a [LayoutBehavior] with sizes set based on the widthSpec and heightSpec if the spec mode
- * is EXACTLY or AT_MOST, otherwise uses 0 size as a default.
- *
- * It's the same as [FillLayoutBehavior] but defaults to 0 for UNSPECIFIED mode.
- *
- * @param layoutData The data to be returned from the layout pass.
- */
-class FillOrGoneLayoutBehavior(private val layoutData: Any? = null) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val result = MeasureResult.fillSpaceOrGone(widthSpec, heightSpec, null)
-    return PrimitiveLayoutResult(
-        width = result.width, height = result.height, layoutData = layoutData)
+        size = Size.fillSpace(sizeConstraints, defaultWidth, defaultHeight),
+        layoutData = layoutData)
   }
 }
 
@@ -100,14 +87,14 @@ class FixedSizeLayoutBehavior(
     private val height: Int,
     private val layoutData: Any? = null,
 ) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(width = width, height = height, layoutData = layoutData)
   }
 }
 
 /**
- * Returns a [LayoutBehavior] with sizes set according to an aspect ratio an width and height
- * constraints. It will respect the intrinsic size of the component being measured.
+ * Returns a [LayoutBehavior] with sizes set according to an aspect ratio and [SizeConstraints]. It
+ * will respect the intrinsic size of the component being measured.
  *
  * @param aspectRatio The aspect ratio for calculating size.
  * @param intrinsicWidth The pixel value for the intrinsic width of the measured component.
@@ -120,27 +107,24 @@ class AspectRatioLayoutBehavior(
     private val intrinsicHeight: Int,
     private val layoutData: Any? = null
 ) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val result =
-        MeasureResult.forAspectRatio(
-            widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio)
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
-        width = result.width, height = result.height, layoutData = layoutData)
+        size = Size.withAspectRatio(sizeConstraints, aspectRatio, intrinsicWidth, intrinsicHeight),
+        layoutData = layoutData)
   }
 }
 
 /**
- * Returns a [LayoutBehavior] that respects both size specs and try to keep both width and height
- * equal. This will only not guarantee equal width and height if these specs use modes and sizes
- * which prevent it.
+ * Returns a [LayoutBehavior] that respects both [SizeConstraints] and tries to keep both width and
+ * height equal. This will only not guarantee equal width and height if the constraints don't allow
+ * for it.
  *
  * @param layoutData The data to be returned from the layout pass.
  */
 class EqualDimensionsLayoutBehavior(private val layoutData: Any? = null) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val result = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
-        width = result.width, height = result.height, layoutData = layoutData)
+        size = Size.withEqualDimensions(sizeConstraints), layoutData = layoutData)
   }
 }
 
@@ -153,6 +137,16 @@ class PrimitiveLayoutResult(
     private val paddingLeft: Int = 0,
     private val layoutData: Any? = null,
 ) {
+
+  constructor(
+      size: Size,
+      paddingTop: Int = 0,
+      paddingRight: Int = 0,
+      paddingBottom: Int = 0,
+      paddingLeft: Int = 0,
+      layoutData: Any? = null
+  ) : this(
+      size.width, size.height, paddingTop, paddingRight, paddingBottom, paddingLeft, layoutData)
 
   init {
     if (width < 0) {

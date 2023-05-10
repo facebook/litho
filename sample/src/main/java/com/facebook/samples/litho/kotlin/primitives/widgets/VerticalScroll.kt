@@ -29,17 +29,19 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Size
-import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.Wrapper
 import com.facebook.litho.px
 import com.facebook.litho.useState
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.litho.widget.VerticalScrollEventsController
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.toWidthSpec
+import com.facebook.rendercore.utils.MeasureSpecUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -192,16 +194,13 @@ internal class VerticalScrollLayoutBehavior(
     private val fillViewport: Boolean,
     private val componentTree: ComponentTree
 ) : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val heightMode = SizeSpec.getMode(heightSpec)
-    val height = max(0, SizeSpec.getSize(heightSpec))
-
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
     val actualComponent =
         if (fillViewport) {
           Wrapper.create(ComponentContext(androidContext))
               .delegate(component)
-              .minHeightPx(height)
+              .minHeightPx(sizeConstraints.maxHeight)
               .build()
         } else {
           component
@@ -211,19 +210,20 @@ internal class VerticalScrollLayoutBehavior(
 
     componentTree.setRootAndSizeSpecSync(
         actualComponent,
-        widthSpec,
-        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        sizeConstraints.toWidthSpec(),
+        MeasureSpecUtils.unspecified(),
         size,
     )
 
     // Compute the appropriate size depending on the heightSpec
-    when (heightMode) {
-      // If this Vertical scroll is being measured with a fixed height we don't care
+    if (sizeConstraints.hasExactHeight) {
+      // If this Vertical scroll is being measured with an exact height we don't care
       // about the size of the content and just use that instead
-      SizeSpec.EXACTLY -> size.height = height
-      // For at most we want the VerticalScroll to be as big as its content up to
+      size.height = sizeConstraints.maxHeight
+    } else if (sizeConstraints.hasBoundedHeight) {
+      // For bounded height we want the VerticalScroll to be as big as its content up to
       // the maximum height specified in the heightSpec
-      SizeSpec.AT_MOST -> size.height = max(0, min(height, size.height))
+      size.height = max(0, min(sizeConstraints.maxHeight, size.height))
     }
 
     // Ensure that width is not less than 0

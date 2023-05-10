@@ -25,14 +25,15 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
-import com.facebook.litho.Size
-import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
-import com.facebook.litho.utils.MeasureUtils
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -72,7 +73,7 @@ internal class SampleTextInputLayoutBehavior(
     private val inputBackground: Drawable
 ) : LayoutBehavior {
   // start_layout_with_view_measurement
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     // The height should be the measured height of EditText with relevant params
     val editTextForMeasure: EditText =
         AppCompatEditText(androidContext).apply {
@@ -85,19 +86,15 @@ internal class SampleTextInputLayoutBehavior(
                   else inputBackground)
         }
 
-    editTextForMeasure.measure(
-        MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec))
-
-    val size = Size()
-    size.height = editTextForMeasure.measuredHeight
+    editTextForMeasure.measure(sizeConstraints.toWidthSpec(), sizeConstraints.toHeightSpec())
+    val measuredWidth = max(sizeConstraints.minWidth, editTextForMeasure.measuredWidth)
+    val measuredHeight = max(sizeConstraints.minHeight, editTextForMeasure.measuredHeight)
 
     // For width we always take all available space, or collapse to 0 if unspecified.
-    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-      size.width = 0
-    } else {
-      size.width = min(SizeSpec.getSize(widthSpec), editTextForMeasure.measuredWidth)
-    }
-    return PrimitiveLayoutResult(size.width, size.height)
+    val width =
+        if (!sizeConstraints.hasBoundedWidth) 0 else min(sizeConstraints.maxWidth, measuredWidth)
+
+    return PrimitiveLayoutResult(width, measuredHeight)
   }
   // end_layout_with_view_measurement
 }

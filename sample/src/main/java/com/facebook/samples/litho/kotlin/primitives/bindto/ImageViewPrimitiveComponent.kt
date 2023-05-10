@@ -23,13 +23,14 @@ import com.facebook.litho.DynamicValue
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
-import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
-import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.Size
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.utils.withEqualDimensions
 import com.facebook.samples.litho.R
 
 class ImageViewPrimitiveComponent(
@@ -70,16 +71,14 @@ internal object ImageLayoutBehavior : LayoutBehavior {
   private const val defaultSize: Int = 150
 
   // start_primitive_measure_example
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    val measureResult =
-        if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
-            SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-          MeasureResult(defaultSize, defaultSize)
-        } else {
-          MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
-        }
-
-    return PrimitiveLayoutResult(measureResult.width, measureResult.height)
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    return PrimitiveLayoutResult(
+        size =
+            if (!sizeConstraints.hasBoundedWidth && !sizeConstraints.hasBoundedHeight) {
+              Size(defaultSize, defaultSize)
+            } else {
+              Size.withEqualDimensions(sizeConstraints)
+            })
   }
   // end_primitive_measure_example
 }

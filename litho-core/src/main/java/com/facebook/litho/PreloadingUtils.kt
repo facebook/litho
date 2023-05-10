@@ -28,10 +28,9 @@ import com.facebook.rendercore.primitives.BindScope
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.EqualDimensionsLayoutBehavior
 import com.facebook.rendercore.primitives.Equivalence
+import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 import com.facebook.rendercore.primitives.FillLayoutBehavior
-import com.facebook.rendercore.primitives.FillOrGoneLayoutBehavior
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
-import com.facebook.rendercore.primitives.FromSpecsLayoutBehavior
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.MountBehavior
@@ -206,9 +205,8 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 LayoutScope::class.java,
                 LayoutBehavior::class.java,
                 PrimitiveLayoutResult::class.java,
-                FromSpecsLayoutBehavior::class.java,
+                ExactSizeConstraintsLayoutBehavior::class.java,
                 FillLayoutBehavior::class.java,
-                FillOrGoneLayoutBehavior::class.java,
                 FixedSizeLayoutBehavior::class.java,
                 AspectRatioLayoutBehavior::class.java,
                 EqualDimensionsLayoutBehavior::class.java,

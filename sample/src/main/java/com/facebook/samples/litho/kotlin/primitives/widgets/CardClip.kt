@@ -23,7 +23,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.widget.CardClipDrawable
 import com.facebook.rendercore.primitives.DrawableAllocator
-import com.facebook.rendercore.primitives.FromSpecsLayoutBehavior
+import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 
 /**
  * A component that paints rounded edges to mimic a clipping operation on the component being
@@ -48,7 +48,7 @@ class CardClip(
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
-        layoutBehavior = FromSpecsLayoutBehavior,
+        layoutBehavior = ExactSizeConstraintsLayoutBehavior,
         mountBehavior =
             MountBehavior(DrawableAllocator { CardClipDrawable() }) {
               clippingColor.bindTo(CardClipDrawable::setClippingColor, Color.WHITE)
