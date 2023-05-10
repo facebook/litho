@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.TouchExpansionDelegateTest.Companion.emulateClickEvent
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
@@ -201,7 +202,7 @@ class LithoMetadataExceptionWrapperTest {
         .attachToWindow()
         .measure()
         .layout()
-    TouchExpansionDelegateTest.emulateClickEvent(legacyLithoViewRule.lithoView, 7, 7)
+    legacyLithoViewRule.lithoView.emulateClickEvent(7, 7)
   }
 
   @Test
