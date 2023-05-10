@@ -15,7 +15,7 @@ import org.robolectric.RobolectricTestRunner
 class SizeConstraintsTest {
 
   @Test
-  fun `test - create exact size constraints - is successful`() {
+  fun `create -  exact size constraints - is successful`() {
     val c = SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(0)
@@ -27,10 +27,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isTrue
+    assertThat(Size(width = 0, height = 0).fitsWithin(c)).isTrue
+    assertThat(Size(width = 1, height = 0).fitsWithin(c)).isFalse
+    assertThat(Size(width = 0, height = 1).fitsWithin(c)).isFalse
+    assertThat(Size(width = 1, height = 1).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - create bounded size constraints - is successful`() {
+  fun `create - bounded size constraints - is successful`() {
     val c = SizeConstraints(minWidth = 10, maxWidth = 50, minHeight = 100, maxHeight = 300)
     assertThat(c).isNotNull
     assertThat(c.minWidth).isEqualTo(10)
@@ -42,10 +46,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(Size(width = 100, height = 200).fitsWithin(c)).isFalse
+    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(Size(width = 100, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - create unbounded width size constraints with zero minWidth - is successful`() {
+  fun `create - unbounded width size constraints with zero minWidth - is successful`() {
     val c =
         SizeConstraints(
             minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 100, maxHeight = 300)
@@ -59,10 +67,12 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 100, height = 200).fitsWithin(c)).isTrue
+    assertThat(Size(width = 100, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - create unbounded height size constraints with zero minHeight - is successful`() {
+  fun `create - unbounded height size constraints with zero minHeight - is successful`() {
     val c =
         SizeConstraints(
             minWidth = 42, maxWidth = 84, minHeight = 0, maxHeight = SizeConstraints.Infinity)
@@ -76,10 +86,12 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(Size(width = 100, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - create unbounded width size constraints with non-zero minWidth - is successful`() {
+  fun `create - unbounded width size constraints with non-zero minWidth - is successful`() {
     val c =
         SizeConstraints(
             minWidth = 10, maxWidth = SizeConstraints.Infinity, minHeight = 100, maxHeight = 300)
@@ -93,10 +105,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(Size(width = 5, height = 200).fitsWithin(c)).isFalse
+    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(Size(width = 5, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - create unbounded height size constraints with non-zero minHeight - is successful`() {
+  fun `create - unbounded height size constraints with non-zero minHeight - is successful`() {
     val c =
         SizeConstraints(
             minWidth = 42, maxWidth = 84, minHeight = 10, maxHeight = SizeConstraints.Infinity)
@@ -110,10 +126,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(Size(width = 30, height = 100).fitsWithin(c)).isFalse
+    assertThat(Size(width = 50, height = 5).fitsWithin(c)).isFalse
+    assertThat(Size(width = 30, height = 5).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - create infinite size constraints - is successful`() {
+  fun `create - infinite size constraints - is successful`() {
     val c =
         SizeConstraints(
             minWidth = SizeConstraints.Infinity,
@@ -130,10 +150,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
+    assertThat(
+            Size(width = SizeConstraints.Infinity, height = SizeConstraints.Infinity).fitsWithin(c))
+        .isTrue
+    assertThat(Size(width = 100, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - create size constraints with negative minWidth - should throw`() {
+  fun `create - size constraints with negative minWidth - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = -1, maxWidth = 0, minHeight = 0, maxHeight = 0)
         }
@@ -142,7 +166,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints with negative maxWidth - should throw`() {
+  fun `create - size constraints with negative maxWidth - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = -1, minHeight = 0, maxHeight = 0)
         }
@@ -151,7 +175,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints with negative minHeight - should throw`() {
+  fun `create - size constraints with negative minHeight - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = -1, maxHeight = 0)
         }
@@ -160,7 +184,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints with negative maxHeight - should throw`() {
+  fun `create - size constraints with negative maxHeight - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = -1)
         }
@@ -169,7 +193,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints with maxWidth larger than MaxValue - should throw`() {
+  fun `create - size constraints with maxWidth larger than MaxValue - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 70000, minHeight = 0, maxHeight = 0)
         }
@@ -178,7 +202,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints with maxHeight larger than MaxValue - should throw`() {
+  fun `create - size constraints with maxHeight larger than MaxValue - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 70000)
         }
@@ -187,7 +211,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - copy exact size constraints - is successful`() {
+  fun `copy - exact size constraints - is successful`() {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(minWidth = 10, maxWidth = 10, minHeight = 10, maxHeight = 10)
@@ -201,10 +225,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 10, height = 10).fitsWithin(c)).isTrue
+    assertThat(Size(width = 20, height = 10).fitsWithin(c)).isFalse
+    assertThat(Size(width = 10, height = 20).fitsWithin(c)).isFalse
+    assertThat(Size(width = 20, height = 20).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - copy bounded size constraints - is successful`() {
+  fun `copy - bounded size constraints - is successful`() {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(minWidth = 10, maxWidth = 50, minHeight = 100, maxHeight = 300)
@@ -218,10 +246,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(Size(width = 5, height = 200).fitsWithin(c)).isFalse
+    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(Size(width = 5, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - copy unbounded width size constraints with zero minWidth - is successful`() {
+  fun `copy - unbounded width size constraints with zero minWidth - is successful`() {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
@@ -236,10 +268,12 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 10, height = 200).fitsWithin(c)).isTrue
+    assertThat(Size(width = 10, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - copy unbounded height size constraints with zero minHeight - is successful`() {
+  fun `copy - unbounded height size constraints with zero minHeight - is successful`() {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(minWidth = 42, maxWidth = 84, minHeight = 0, maxHeight = SizeConstraints.Infinity)
@@ -253,10 +287,12 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(Size(width = 30, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - copy unbounded width size constraints with non-zero minWidth - is successful`() {
+  fun `copy - unbounded width size constraints with non-zero minWidth - is successful`() {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
@@ -274,10 +310,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 20, height = 200).fitsWithin(c)).isTrue
+    assertThat(Size(width = 5, height = 200).fitsWithin(c)).isFalse
+    assertThat(Size(width = 20, height = 400).fitsWithin(c)).isFalse
+    assertThat(Size(width = 5, height = 400).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - copy unbounded height size constraints with non-zero minHeight - is successful`() {
+  fun `copy - unbounded height size constraints with non-zero minHeight - is successful`() {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
@@ -292,10 +332,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isFalse
     assertThat(c.hasExactHeight).isFalse
     assertThat(c.isZeroSize).isFalse
+    assertThat(Size(width = 50, height = 100).fitsWithin(c)).isTrue
+    assertThat(Size(width = 30, height = 100).fitsWithin(c)).isFalse
+    assertThat(Size(width = 50, height = 5).fitsWithin(c)).isFalse
+    assertThat(Size(width = 30, height = 5).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - copy infinite size constraints - is successful`() {
+  fun `copy - infinite size constraints - is successful`() {
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
@@ -313,10 +357,14 @@ class SizeConstraintsTest {
     assertThat(c.hasExactWidth).isTrue
     assertThat(c.hasExactHeight).isTrue
     assertThat(c.isZeroSize).isFalse
+    assertThat(
+            Size(width = SizeConstraints.Infinity, height = SizeConstraints.Infinity).fitsWithin(c))
+        .isTrue
+    assertThat(Size(width = 100, height = 100).fitsWithin(c)).isFalse
   }
 
   @Test
-  fun `test - copy size constraints with negative minWidth - should throw`() {
+  fun `copy - size constraints with negative minWidth - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(minWidth = -1, maxWidth = 0, minHeight = 0, maxHeight = 0)
@@ -326,7 +374,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - copy size constraints with negative maxWidth - should throw`() {
+  fun `copy - size constraints with negative maxWidth - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(minWidth = 0, maxWidth = -1, minHeight = 0, maxHeight = 0)
@@ -336,7 +384,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - copy size constraints with negative minHeight - should throw`() {
+  fun `copy - size constraints with negative minHeight - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(minWidth = 0, maxWidth = 0, minHeight = -1, maxHeight = 0)
@@ -346,7 +394,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - copy size constraints with negative maxHeight - should throw`() {
+  fun `copy - size constraints with negative maxHeight - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = -1)
@@ -356,7 +404,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - copy size constraints with maxWidth larger than MaxValue - should throw`() {
+  fun `copy - size constraints with maxWidth larger than MaxValue - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(minWidth = 0, maxWidth = 70000, minHeight = 0, maxHeight = 0)
@@ -366,7 +414,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - copy size constraints with maxHeight larger than MaxValue - should throw`() {
+  fun `copy - size constraints with maxHeight larger than MaxValue - should throw`() {
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 70000)
@@ -376,7 +424,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints exact width and exact height measure specs - is successful`() {
+  fun `create - size constraints with exact width and exact height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(MeasureSpecUtils.exactly(10), MeasureSpecUtils.exactly(20))
     assertThat(c).isNotNull
@@ -387,7 +435,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints at most width and unspecified height measure specs - is successful`() {
+  fun `create - size constraints with at most width and unspecified height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
             MeasureSpecUtils.atMost(10), MeasureSpecUtils.unspecified())
@@ -399,7 +447,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - create size constraints unspecified width and at most height measure specs - is successful`() {
+  fun `create - size constraints with unspecified width and at most height measure specs - is successful`() {
     val c =
         SizeConstraints.fromMeasureSpecs(
             MeasureSpecUtils.unspecified(), MeasureSpecUtils.atMost(10))
@@ -411,7 +459,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - convert size constraints to exact width and exact height measure specs - is successful`() {
+  fun `convert - size constraints to exact width and exact height measure specs - is successful`() {
     val c = SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
     val widthSpec = c.toWidthSpec()
     val heightSpec = c.toHeightSpec()
@@ -422,7 +470,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - convert size constraints to unspecified width and unspecified height measure specs - is successful`() {
+  fun `convert - size constraints to unspecified width and unspecified height measure specs - is successful`() {
     val c =
         SizeConstraints(
             minWidth = 0,
@@ -438,7 +486,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - convert size constraints to at most width and at most height measure specs - is successful`() {
+  fun `convert - size constraints to at most width and at most height measure specs - is successful`() {
     val c = SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 200)
     val widthSpec = c.toWidthSpec()
     val heightSpec = c.toHeightSpec()
@@ -449,7 +497,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - convert size constraints to at most width and at most height measure specs - is lossy`() {
+  fun `convert - size constraints to at most width and at most height measure specs - is lossy`() {
     val c = SizeConstraints(minWidth = 50, maxWidth = 100, minHeight = 120, maxHeight = 200)
     val widthSpec = c.toWidthSpec()
     val heightSpec = c.toHeightSpec()
@@ -460,7 +508,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - convert size constraints to unspecified width and unspecified height measure specs - is lossy`() {
+  fun `convert - size constraints to unspecified width and unspecified height measure specs - is lossy`() {
     val c =
         SizeConstraints(
             minWidth = 50,
@@ -476,7 +524,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - subtract one from infinite maxWidth - should throw`() {
+  fun `subtract - one from infinite maxWidth - should throw`() {
     val constraints =
         SizeConstraints(
             minWidth = 0,
@@ -489,7 +537,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - add one to infinite maxWidth - should throw`() {
+  fun `add - one to infinite maxWidth - should throw`() {
     val constraints =
         SizeConstraints(
             minWidth = 0,
@@ -502,7 +550,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - subtract one from infinite maxHeight - should throw`() {
+  fun `subtract - one from infinite maxHeight - should throw`() {
     val constraints =
         SizeConstraints(
             minWidth = 0,
@@ -515,7 +563,7 @@ class SizeConstraintsTest {
   }
 
   @Test
-  fun `test - add one to infinite maxHeight - should throw`() {
+  fun `add - one to infinite maxHeight - should throw`() {
     val constraints =
         SizeConstraints(
             minWidth = 0,

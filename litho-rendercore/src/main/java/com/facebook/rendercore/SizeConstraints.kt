@@ -246,3 +246,9 @@ fun SizeConstraints.toHeightSpec(): Int {
   }
   return View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
 }
+
+/** Returns true if the size fits within the given constraints, otherwise returns false. */
+fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
+  return (width in sizeConstraints.minWidth..sizeConstraints.maxWidth) &&
+      (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
+}
