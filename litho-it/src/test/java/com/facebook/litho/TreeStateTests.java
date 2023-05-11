@@ -99,8 +99,8 @@ public class TreeStateTests {
     }
 
     // Unregister local tree state from ISC
-    treeState.unregisterResolveState(localTreeState);
-    treeState.unregisterLayoutState(localTreeState);
+    localTreeState.unregisterResolveInitialState();
+    localTreeState.unregisterLayoutInitialState();
 
     // State containers in ISC should be cleared
     assertThat(resolveState.getInitialStateContainer()).isNotNull();

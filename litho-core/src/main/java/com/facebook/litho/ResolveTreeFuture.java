@@ -200,6 +200,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
             .flush();
       }
 
+      state.registerResolveState();
+
       final ResolveStateContext rsc =
           new ResolveStateContext(
               new MeasuredResultCache(),
@@ -250,6 +252,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
           rsc.isLayoutInterrupted() ? rsc : null);
 
     } finally {
+      state.unregisterResolveInitialState();
       if (isTracing) {
         ComponentsSystrace.endSection();
         if (extraAttribution != null) {
@@ -289,6 +292,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
         ComponentsSystrace.beginSection("resume:" + component.getSimpleName());
       }
 
+      partialResult.treeState.registerResolveState();
+
       final @Nullable CalculationStateContext previousStateContext =
           context.getCalculationStateContext();
 
@@ -306,6 +311,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
       partialResult.contextForResuming.getCache().freezeCache();
       final List<Pair<String, EventHandler<?>>> createdEventHandlers =
           partialResult.contextForResuming.getCreatedEventHandlers();
+
+      partialResult.treeState.unregisterResolveInitialState();
 
       return new ResolveResult(
           node,

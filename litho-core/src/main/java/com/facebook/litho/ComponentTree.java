@@ -2236,7 +2236,6 @@ public class ComponentTree
           message);
     }
 
-    treeState.registerResolveState();
     ResolveTreeFuture treeFuture =
         new ResolveTreeFuture(
             context,
@@ -2366,10 +2365,6 @@ public class ComponentTree
       if (!isCreateLayoutInProgress) {
         mStateUpdatesFromCreateLayoutCount = 0;
       }
-    }
-
-    if (mTreeState != null) {
-      mTreeState.unregisterResolveState(resolveResult.treeState);
     }
   }
 
@@ -2613,10 +2608,6 @@ public class ComponentTree
         bindHandlesToComponentTree(this, layoutState);
 
         measureListeners = mMeasureListeners == null ? null : new ArrayList<>(mMeasureListeners);
-      }
-
-      if (mTreeState != null && localTreeState != null) {
-        mTreeState.unregisterLayoutState(localTreeState);
       }
 
       // Resetting the count after layout calculation is complete and it was triggered from within

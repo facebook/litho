@@ -133,6 +133,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
 
     LithoStats.incrementLayoutCount();
 
+    final TreeState treeState = resolveResult.treeState;
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     try {
       if (isTracing) {
@@ -145,8 +147,9 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
             .flush();
       }
 
+      treeState.registerLayoutState();
+
       final LithoNode node = resolveResult.node;
-      final TreeState treeState = resolveResult.treeState;
       final MeasuredResultCache renderPhaseCache = resolveResult.consumeCache();
       final ComponentContext c = resolveResult.context;
 
@@ -234,6 +237,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
 
       return layoutState;
     } finally {
+      treeState.unregisterLayoutInitialState();
       if (isTracing) {
         ComponentsSystrace.endSection();
       }

@@ -83,12 +83,12 @@ public class TreeState {
     mLayoutState.getInitialStateContainer().registerStateHandler(mLayoutState);
   }
 
-  void unregisterResolveState(TreeState treeState) {
-    mResolveState.getInitialStateContainer().unregisterStateHandler(treeState.mResolveState);
+  void unregisterResolveInitialState() {
+    mResolveState.getInitialStateContainer().unregisterStateHandler(mResolveState);
   }
 
-  void unregisterLayoutState(TreeState treeState) {
-    mLayoutState.getInitialStateContainer().unregisterStateHandler(treeState.mLayoutState);
+  void unregisterLayoutInitialState() {
+    mLayoutState.getInitialStateContainer().unregisterStateHandler(mLayoutState);
   }
 
   void commitResolveState(TreeState localTreeState) {
