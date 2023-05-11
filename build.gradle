@@ -23,7 +23,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "com.vanniktech:gradle-maven-publish-plugin:${MAVEN_PUBLISH_PLUGIN}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${DOKKA_VERSION}"
@@ -109,14 +109,14 @@ ext.isDokkaBuild = getGradle().getStartParameter().getTaskNames().toString().toL
 
 ext.deps = [
         // Android support
-        supportAnnotations : 'androidx.annotation:annotation:1.0.0',
-        supportAppCompat   : 'androidx.appcompat:appcompat:1.0.0',
-        supportCore        : 'androidx.core:core:1.9.0',
-        supportFragment    : 'androidx.fragment:fragment:1.3.5',
+        supportAnnotations : 'androidx.annotation:annotation:1.3.0',
+        supportAppCompat   : 'androidx.appcompat:appcompat:1.3.0',
+        supportCore        : 'androidx.core:core:1.10.0',
+        supportFragment    : 'androidx.fragment:fragment:1.4.1',
         supportCustomView  : 'androidx.customview:customview:1.0.0',
-        supportRecyclerView: 'androidx.recyclerview:recyclerview:1.2.0-beta01',
-        supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.1',
-        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.1',
+        supportRecyclerView: 'androidx.recyclerview:recyclerview:1.3.0',
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.5.0',
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.5.0',
         supportTestCore    : 'androidx.test:core:1.4.0',
         supportTestRunner  : 'androidx.test:runner:1.1.1',
         supportTestRules   : 'androidx.test:rules:1.1.1',
@@ -128,8 +128,8 @@ ext.deps = [
         supportSwipeRefresh: 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
         supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
         // Arch
-        archLifecycle      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
-        liveData           : 'androidx.lifecycle:lifecycle-livedata:2.3.1',
+        archLifecycle      : 'androidx.lifecycle:lifecycle-viewmodel:2.5.1',
+        liveData           : 'androidx.lifecycle:lifecycle-livedata:2.5.1',
         // First-party
         fresco             : 'com.facebook.fresco:fresco:1.13.0',
         soloader           : 'com.facebook.soloader:soloader:0.10.5',
