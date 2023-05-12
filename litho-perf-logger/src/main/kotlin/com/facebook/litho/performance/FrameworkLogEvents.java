@@ -46,7 +46,7 @@ public interface FrameworkLogEvents {
   int EVENT_BENCHMARK_RUN = 18;
   int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
   int EVENT_INIT_RANGE = 20;
-  int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21;
+  // Previously int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21; Now unused
   int EVENT_CALCULATE_RESOLVE = 22;
 
   /**
@@ -70,7 +70,6 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
     FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
     FrameworkLogEvents.EVENT_INIT_RANGE,
-    FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT,
     FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
     FrameworkLogEvents.EVENT_COMPONENT_PREPARE,
   })
