@@ -21,7 +21,7 @@ Litho provides a manual component measurement API for determining component size
 
 * **This API should only be used during layout creation.** Using the API elsewhere may cause unintended behaviour.
 
-## Size Constraints
+## Size Specs
 
 Before diving into the API, it's recommended that you familiarise yourself with how the [onMeasure](https://developer.android.com/reference/android/view/View.html#onMeasure(int,%20int)) function works in a regular Android `View`.  Also,  what a [MeasureSpec](https://developer.android.com/reference/android/view/View.MeasureSpec.html) is, since Litho uses an analogous concept called [SizeSpec](pathname:///javadoc/com/facebook/litho/SizeSpec.html).
 
@@ -63,16 +63,13 @@ In the following example, a `Text` component is measured to check if the given t
 
 ## Kotlin Integration
 
-Unfortunately, `KComponent`s do not currently support any analogous behaviour of `@OnCreateLayoutWithSizeSpec`. The good news is that such support should be added soon.
+Kotlin equivalent of `@OnCreateLayoutWithSizeSpec` is called `SizeConstraintsAwareComponent`. `SizeConstraintsAwareComponent` is a Component that defines its own content according to the available space, based on the incoming SizeConstraints. It can be used in situations when a different content needs to be displayed depending on the available space.
 
-For now, if your product requirements demand integration with this API, then the simple workaround would be to define the `KComponent` with width & height specs as props, then wrap the `KComponent` in a `LayoutSpec` with an `@OnCreateLayoutWithSizeSpec` method that delegates the values to your `KComponent`.
+Below, there is an example that uses `sizeConstraints` provided by `SizeConstraintsAwareComponent`:
 
-Following is a `KComponent` that uses width & height specs as props (based on the Java example above):
-
-``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LongTextReplacerKComponent.kt start=start_example end=end_example
+``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/sizeconstraintsawarecomponent/SizeConstraintsAwareComponentKComponent.kt start=start_sizeconstraintsawarecomponent_example end=end_sizeconstraintsawarecomponent_example
 ```
 
-Following is an example of what a wrapper `LayoutSpec` would look like that uses this `KComponent`:
-
-``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LongTextReplacerWrapperComponentSpec.kt start=start_example end=end_example
-```
+:::note
+In Kotlin the SizeSpec has been replaced with SizeConstraints. It's an object that restricts the minimum and maximum width and height of a Component.  SizeConstraints are provided by parent Component to a child component. A child Component should define its size within those constraints.
+:::
