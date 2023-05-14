@@ -90,7 +90,6 @@ class SampleComponentsLogger : ComponentsLogger {
         FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET -> "SECTIONS_GENERATE_CHANGESET"
         FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN -> "SECTIONS_ON_CREATE_CHILDREN"
         FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT -> "SECTIONS_SET_ROOT"
-        FrameworkLogEvents.EVENT_LEGACY_RENDER -> "LEGACY_RENDER"
         FrameworkLogEvents.EVENT_CALCULATE_RESOLVE -> "RESOLVE"
         FrameworkLogEvents.EVENT_BENCHMARK_RUN -> "EVENT_BENCHMARK_RUN"
         FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE ->
