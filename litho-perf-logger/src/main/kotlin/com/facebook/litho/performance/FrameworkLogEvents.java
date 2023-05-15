@@ -39,7 +39,7 @@ public interface FrameworkLogEvents {
   int EVENT_SECTIONS_CREATE_NEW_TREE = 11;
   int EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF = 12;
   // Previously int EVENT_SECTIONS_GENERATE_CHANGESET = 13; Now unused
-  int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14;
+  // Previously int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14; Now unused
   int EVENT_SECTIONS_SET_ROOT = 15;
   // Previously int EVENT_LEGACY_RENDER = 16;
   // Previously int EVENT_DRAW = 17; Now unused.
@@ -63,7 +63,6 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
     FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE,
     FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF,
-    FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN,
     FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT,
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
     FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,

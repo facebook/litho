@@ -18,7 +18,6 @@ package com.facebook.litho.sections;
 
 import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_SET_ROOT_SOURCE;
@@ -1801,16 +1800,7 @@ public class SectionTree {
         final TreeProps parentTreeProps = context.getTreeProps();
         context.setTreeProps(nextRoot.getTreePropsForChildren(context, parentTreeProps));
 
-        final ComponentsLogger logger = context.getLogger();
-        final PerfEvent logEvent =
-            SectionsLogEventUtils.getSectionsPerformanceEvent(
-                context, EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
-
         nextRoot.setChildren(nextRoot.createChildren(nextRoot.getScopedContext()));
-
-        if (logger != null && logEvent != null) {
-          logger.logPerfEvent(logEvent);
-        }
 
         final List<Section> nextRootChildren = nextRoot.getChildren();
 

@@ -87,7 +87,6 @@ class SampleComponentsLogger : ComponentsLogger {
         FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE -> "SECTIONS_CREATE_NEW_TREE"
         FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF ->
             "SECTIONS_DATA_DIFF_CALCULATE_DIFF"
-        FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN -> "SECTIONS_ON_CREATE_CHILDREN"
         FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT -> "SECTIONS_SET_ROOT"
         FrameworkLogEvents.EVENT_CALCULATE_RESOLVE -> "RESOLVE"
         FrameworkLogEvents.EVENT_BENCHMARK_RUN -> "EVENT_BENCHMARK_RUN"
