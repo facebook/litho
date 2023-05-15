@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections.common;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
 import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
 
 import androidx.annotation.Nullable;
@@ -24,14 +23,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DiffUtil;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
-import com.facebook.litho.LogTreePopulator;
-import com.facebook.litho.PerfEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -140,12 +136,6 @@ public class DataDiffSectionSpec<T> {
 
     final Callback<T> callback = new Callback<>(c, data.getPrevious(), data.getNext());
 
-    final ComponentsLogger logger = c.getLogger();
-    final PerfEvent logEvent =
-        logger == null
-            ? null
-            : LogTreePopulator.populatePerfEventFromLogger(
-                c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
     if (nextData != null && isDetectDuplicatesEnabled(alwaysDetectDuplicates)) {
       detectDuplicates(nextData, callback);
     }
@@ -156,10 +146,6 @@ public class DataDiffSectionSpec<T> {
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
     if (isTracing) {
       ComponentsSystrace.endSection();
-    }
-
-    if (logEvent != null) {
-      logger.logPerfEvent(logEvent);
     }
 
     updatesCallback =
