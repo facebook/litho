@@ -16,26 +16,12 @@
 
 package com.facebook.litho.sections;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_CHANGE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_DELETE_RANGE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_DELETE_SINGLE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_EFFECTIVE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_FINAL_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_INSERT_RANGE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_INSERT_SINGLE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_MOVE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_UPDATE_RANGE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_UPDATE_SINGLE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CURRENT_ROOT_COUNT;
 import static com.facebook.litho.sections.Section.acquireChildrenMap;
 
 import android.util.Pair;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
-import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
-import com.facebook.litho.PerfEvent;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,10 +65,6 @@ public class ChangeSetState {
       String currentPrefix,
       String nextPrefix,
       boolean enableStats) {
-    final ComponentsLogger logger = sectionContext.getLogger();
-    final PerfEvent logEvent =
-        SectionsLogEventUtils.getSectionsPerformanceEvent(
-            sectionContext, EVENT_SECTIONS_GENERATE_CHANGESET, currentRoot, newRoot);
     final ArrayList<Section> removedComponents = new ArrayList<>();
     final ChangeSet changeSet;
     if (currentRoot != null
@@ -127,34 +109,6 @@ public class ChangeSetState {
               nextPrefix,
               Thread.currentThread().getName(),
               enableStats);
-    }
-
-    if (logger != null && logEvent != null) {
-      logEvent.markerAnnotate(
-          PARAM_CURRENT_ROOT_COUNT, currentRoot == null ? -1 : currentRoot.getCount());
-      logEvent.markerAnnotate(PARAM_CHANGESET_CHANGE_COUNT, changeSet.getChangeCount());
-      logEvent.markerAnnotate(PARAM_CHANGESET_FINAL_COUNT, changeSet.getCount());
-
-      final ChangeSet.ChangeSetStats changeSetStats = changeSet.getChangeSetStats();
-      if (changeSetStats != null) {
-        logEvent.markerAnnotate(
-            PARAM_CHANGESET_EFFECTIVE_COUNT, changeSetStats.getEffectiveChangesCount());
-        logEvent.markerAnnotate(
-            PARAM_CHANGESET_INSERT_SINGLE_COUNT, changeSetStats.getInsertSingleCount());
-        logEvent.markerAnnotate(
-            PARAM_CHANGESET_INSERT_RANGE_COUNT, changeSetStats.getInsertRangeCount());
-        logEvent.markerAnnotate(
-            PARAM_CHANGESET_DELETE_SINGLE_COUNT, changeSetStats.getDeleteSingleCount());
-        logEvent.markerAnnotate(
-            PARAM_CHANGESET_DELETE_RANGE_COUNT, changeSetStats.getDeleteRangeCount());
-        logEvent.markerAnnotate(
-            PARAM_CHANGESET_UPDATE_SINGLE_COUNT, changeSetStats.getUpdateSingleCount());
-        logEvent.markerAnnotate(
-            PARAM_CHANGESET_UPDATE_RANGE_COUNT, changeSetStats.getUpdateRangeCount());
-        logEvent.markerAnnotate(PARAM_CHANGESET_MOVE_COUNT, changeSetStats.getMoveCount());
-      }
-
-      logger.logPerfEvent(logEvent);
     }
 
     final ChangeSetState changeSetState =
