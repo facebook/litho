@@ -18,10 +18,6 @@ package com.facebook.litho.sections;
 
 import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_SET_ROOT_SOURCE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_SET_ROOT_ON_BG_THREAD;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
@@ -1153,18 +1149,6 @@ public class SectionTree {
         mIsChangeSetCalculationInProgress = true;
       }
 
-      final PerfEvent logEvent =
-          SectionsLogEventUtils.getSectionsPerformanceEvent(
-              mContext, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
-      final boolean enableStats = logger != null && logEvent != null && logger.isTracing(logEvent);
-      if (logEvent != null) {
-        logEvent.markerAnnotate(PARAM_ATTRIBUTION, attribution);
-        logEvent.markerAnnotate(
-            PARAM_SECTION_SET_ROOT_SOURCE,
-            SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
-        logEvent.markerAnnotate(PARAM_SET_ROOT_ON_BG_THREAD, !ThreadUtils.isMainThread());
-      }
-
       clearUnusedTriggerHandlers();
 
       // Checking nextRoot is enough here since whenever we enqueue a new state update we also
@@ -1182,8 +1166,7 @@ public class SectionTree {
                 nextRoot,
                 pendingStateUpdates.mAllStateUpdates,
                 mSectionsDebugLogger,
-                mTag,
-                enableStats);
+                mTag);
         if (isTracing) {
           ComponentsSystrace.endSection();
         }
@@ -1268,10 +1251,6 @@ public class SectionTree {
               : mContext.getTreeProps().get(LithoStartupLogger.class);
       if (LithoStartupLogger.isEnabled(startupLogger)) {
         startupLogger.markPoint(LithoStartupLogger.CHANGESET_CALCULATION, LithoStartupLogger.END);
-      }
-
-      if (logger != null && logEvent != null) {
-        logger.logPerfEvent(logEvent);
       }
     } finally {
       if (isTracing) {
@@ -1680,8 +1659,7 @@ public class SectionTree {
       Section nextRoot,
       Map<String, List<StateContainer.StateUpdate>> pendingStateUpdates,
       SectionsDebugLogger sectionsDebugLogger,
-      String sectionTreeTag,
-      boolean enableStats) {
+      String sectionTreeTag) {
     nextRoot.setGlobalKey(nextRoot.getKey());
 
     final ComponentsLogger logger = context.getLogger();
@@ -1710,7 +1688,7 @@ public class SectionTree {
     }
     try {
       return ChangeSetState.generateChangeSet(
-          context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "", enableStats);
+          context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "", false);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
