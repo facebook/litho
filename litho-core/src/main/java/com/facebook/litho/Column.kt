@@ -26,12 +26,12 @@ import com.facebook.yoga.YogaWrap
 class Column
 private constructor(
     private val customSimpleName: String?,
-    @Prop(optional = true) private var alignContent: YogaAlign?,
-    @Prop(optional = true) private var alignItems: YogaAlign?,
-    @Prop(optional = true) private var justifyContent: YogaJustify?,
-    @Prop(optional = true) private var wrap: YogaWrap?,
-    @Prop(optional = true) private var reverse: Boolean,
-    @Prop(optional = true) private var children: MutableList<Component>?,
+    @field:Prop(optional = true) private var alignContent: YogaAlign?,
+    @field:Prop(optional = true) private var alignItems: YogaAlign?,
+    @field:Prop(optional = true) private var justifyContent: YogaJustify?,
+    @field:Prop(optional = true) private var wrap: YogaWrap?,
+    @field:Prop(optional = true) private var reverse: Boolean,
+    @field:Prop(optional = true) private var children: MutableList<Component>?,
 ) : Component() {
 
   constructor(
