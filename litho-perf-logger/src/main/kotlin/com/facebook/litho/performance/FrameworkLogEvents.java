@@ -44,7 +44,7 @@ public interface FrameworkLogEvents {
   // Previously int EVENT_LEGACY_RENDER = 16;
   // Previously int EVENT_DRAW = 17; Now unused.
   int EVENT_BENCHMARK_RUN = 18;
-  int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
+  // Previously int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19; Now unused
   int EVENT_INIT_RANGE = 20;
   // Previously int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21; Now unused
   int EVENT_CALCULATE_RESOLVE = 22;
@@ -62,7 +62,6 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_MOUNT,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
-    FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
     FrameworkLogEvents.EVENT_INIT_RANGE,
     FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
     FrameworkLogEvents.EVENT_COMPONENT_PREPARE,
@@ -72,7 +71,6 @@ public interface FrameworkLogEvents {
 
   String PARAM_COMPONENT = "component";
   String PARAM_LOG_TAG = "log_tag";
-  String PARAM_TREE_DIFF_ENABLED = "tree_diff_enabled";
   String PARAM_IS_BACKGROUND_LAYOUT = "is_background_layout";
   String PARAM_UNMOUNTED_COUNT = "unmounted_count";
   String PARAM_UNMOUNTED_CONTENT = "unmounted_content";
