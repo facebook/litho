@@ -84,7 +84,6 @@ class SampleComponentsLogger : ComponentsLogger {
       when (markerId) {
         FrameworkLogEvents.EVENT_MOUNT -> "MOUNT"
         FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT -> "PRE_ALLOCATE_MOUNT_CONTENT"
-        FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE -> "SECTIONS_CREATE_NEW_TREE"
         FrameworkLogEvents.EVENT_CALCULATE_RESOLVE -> "RESOLVE"
         FrameworkLogEvents.EVENT_BENCHMARK_RUN -> "EVENT_BENCHMARK_RUN"
         FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE ->

@@ -17,7 +17,6 @@
 package com.facebook.litho.sections;
 
 import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
@@ -41,7 +40,6 @@ import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
 import com.facebook.litho.LithoStartupLogger;
-import com.facebook.litho.PerfEvent;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
@@ -1662,11 +1660,6 @@ public class SectionTree {
       String sectionTreeTag) {
     nextRoot.setGlobalKey(nextRoot.getKey());
 
-    final ComponentsLogger logger = context.getLogger();
-    final PerfEvent logEvent =
-        SectionsLogEventUtils.getSectionsPerformanceEvent(
-            context, EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
-
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("createTree");
@@ -1678,9 +1671,6 @@ public class SectionTree {
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
-    }
-    if (logger != null && logEvent != null) {
-      logger.logPerfEvent(logEvent);
     }
 
     if (isTracing) {
