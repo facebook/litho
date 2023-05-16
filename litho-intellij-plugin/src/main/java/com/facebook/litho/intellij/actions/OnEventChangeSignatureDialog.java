@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.intellij.adapters.OnEventChangeSignatureDialogAdapter;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
@@ -41,8 +42,6 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.refactoring.BaseRefactoringProcessor;
 import com.intellij.refactoring.RefactoringBundle;
-import com.intellij.refactoring.changeSignature.CallerChooserBase;
-import com.intellij.refactoring.changeSignature.ChangeSignatureDialogBase;
 import com.intellij.refactoring.changeSignature.JavaChangeSignatureDialog;
 import com.intellij.refactoring.changeSignature.JavaMethodDescriptor;
 import com.intellij.refactoring.changeSignature.JavaParameterTableModel;
@@ -53,8 +52,6 @@ import com.intellij.refactoring.ui.VisibilityPanelBase;
 import com.intellij.refactoring.util.RefactoringMessageUtil;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.treeStructure.Tree;
-import com.intellij.util.Consumer;
 import com.intellij.util.ui.table.EditorTextFieldJBTableRowRenderer;
 import com.intellij.util.ui.table.JBTableRow;
 import com.intellij.util.ui.table.JBTableRowEditor;
@@ -63,7 +60,6 @@ import java.awt.BorderLayout;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -84,14 +80,7 @@ import org.jetbrains.annotations.Nullable;
  *   <li>No Preview and Refactor buttons
  * </ul>
  */
-final class OnEventChangeSignatureDialog
-    extends ChangeSignatureDialogBase<
-        ParameterInfoImpl,
-        PsiMethod,
-        String,
-        JavaMethodDescriptor,
-        ParameterTableModelItemBase<ParameterInfoImpl>,
-        JavaParameterTableModel> {
+final class OnEventChangeSignatureDialog extends OnEventChangeSignatureDialogAdapter {
 
   private final Map<String, PsiParameter> nameToParameter = new HashMap<>();
   private PsiMethod newMethod;
@@ -153,13 +142,6 @@ final class OnEventChangeSignatureDialog
   @Nullable
   @Override
   protected PsiCodeFragment createReturnTypeCodeFragment() {
-    return null;
-  }
-
-  @Nullable
-  @Override
-  protected CallerChooserBase<PsiMethod> createCallerChooser(
-      String s, Tree tree, Consumer<Set<PsiMethod>> consumer) {
     return null;
   }
 
@@ -329,23 +311,6 @@ final class OnEventChangeSignatureDialog
       return parameter;
     }
     return null;
-  }
-
-  /** Java Method Descriptor that doesn't allow to modify return type or change visibility. */
-  private static class OnEventMethodDescriptor extends JavaMethodDescriptor {
-    OnEventMethodDescriptor(PsiMethod method) {
-      super(method);
-    }
-
-    @Override
-    public boolean canChangeVisibility() {
-      return false;
-    }
-
-    @Override
-    public ReadWriteOption canChangeReturnType() {
-      return ReadWriteOption.None;
-    }
   }
 
   /**
