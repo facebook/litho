@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright (c) Meta Platforms, Inc. and affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+  <id>com.facebook.litho.intellij</id>
+  <name>Litho</name>
+  <idea-version since-build="212" until-build="212.*"/>
+  <description>
+  <![CDATA[
+    <p><a href='https://fblitho.com/'>Litho</a> is a declarative UI framework for Android.
+    This plugin provides better Litho integration in Android Studio.
+    <p>The following features are available:
+    <ul>
+      <li>Command-click on a Section or Component takes you to Spec</li>
+      <li>Component usages in the search results</li>
+      <li>MountSpec, LayoutSpec, and GroupSectionSpec templates under File -> New menu</li>
+      <li>Completion for valid method annotations in LayoutSpec</li>
+      <li>Completion for ClickEvent handler</li>
+      <li>Completion for component builder</li>
+      <li>Error annotations for LayoutSpec</li>
+      <li>Error annotations for missing Required Props</li>
+      <li><code>@DefaultProp</code> value near the <code>@Prop</code> parameter as a folding</li>
+      <li>Regenerate Component action in Editor menu</li>
+    </ul>
+  ]]>
+  </description>
+  <version>2021.2.0.1-SNAPSHOT</version>
+  <change-notes>
+    <![CDATA[
+    <h3>1.8.5</h3>
+      <ul>
+        <li>New: Required props autocompletion for KComponents and Litho widget wrappers</li>
+        <li>New: DiffSectionSpec Litho Structure View</li>
+        <li>Fix: Re-arrange litho actions in 'New' context menu</li>
+    <h3>Older Versions</h3>
+    <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
+    ]]>
+  </change-notes>
+  <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
+        Facebook,Inc.
+  </vendor>
+
+  <xi:include href="/META-INF/CommonPlugin.xml" xpointer="xpointer(/idea-plugin/*)" />
+
+</idea-plugin>

@@ -1,11 +1,14 @@
+load("@fbsource//third-party/java/intellij:defs.bzl", "select_path_by_version")
+load("@fbsource//tools/build_defs/intellij:plugin_rules.bzl", "plugin_rules")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "fb_java_binary",
     "make_dep_path",
 )
 
-fb_java_binary(
+plugin_rules.intellij_plugin_binary(
     name = "litho-intellij-plugin",
+    ide_version_blocklist = ["AI-213"],
+    meta_inf_directory = select_path_by_version("resources/{}/META-INF"),
     tests = [
         make_dep_path("litho-intellij-plugin/src/test/java/com/facebook/litho:test"),
     ],
