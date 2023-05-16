@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentContextUtils.buildDefaultLithoConfiguration;
 import static com.facebook.litho.StateContainer.StateUpdate;
 
 import android.content.Context;
@@ -54,7 +55,8 @@ public class ComponentContext implements Cloneable {
   private Component mComponentScope;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable String mGlobalKey;
+  @Nullable
+  String mGlobalKey;
 
   @ThreadConfined(ThreadConfined.ANY)
   private final ResourceResolver mResourceResolver;
@@ -110,37 +112,27 @@ public class ComponentContext implements Cloneable {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, treeProps, buildDefaultLithoConfiguration(context, null, logTag, logger), null);
+    this(
+        context,
+        treeProps,
+        buildDefaultLithoConfiguration(context, null, logTag, logger, -1),
+        null);
   }
 
-  public static LithoConfiguration buildDefaultLithoConfiguration(
-      final Context context,
-      final @Nullable VisibilityBoundsTransformer transformer,
-      final @Nullable String logTag,
-      final @Nullable ComponentsLogger logger) {
-    ComponentsLogger loggerToUse =
-        logger != null ? logger : ComponentsConfiguration.sComponentsLogger;
-
-    String logTagToUse = logTag;
-    if (logTag == null && logger == null && loggerToUse != null) {
-      logTagToUse = "global-components-logger";
-    }
-
-    return new LithoConfiguration(
-        ComponentsConfiguration.getDefaultComponentsConfiguration(),
-        AnimationsDebug.areTransitionsEnabled(context),
-        ComponentsConfiguration.overrideReconciliation != null
-            ? ComponentsConfiguration.overrideReconciliation
-            : true,
-        true,
-        ComponentsConfiguration.isNullNodeEnabled,
-        null,
-        !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
-        DefaultErrorEventHandler.INSTANCE,
-        logTagToUse,
-        loggerToUse,
-        null, // TODO check if we can make this not nullable and always instantiate one
-        transformer);
+  public ComponentContext(
+      Context androidContext,
+      @Nullable TreeProps treeProps,
+      LithoConfiguration lithoConfiguration,
+      LithoTree lithoTree,
+      @Nullable String globalKey,
+      @Nullable LithoLifecycleProvider lifecycleProvider,
+      @Nullable Component componentScope,
+      @Nullable TreeProps parentTreeProps) {
+    this(androidContext, treeProps, lithoConfiguration, lithoTree);
+    mGlobalKey = globalKey;
+    mLifecycleProvider = lifecycleProvider;
+    mComponentScope = componentScope;
+    mParentTreeProps = parentTreeProps;
   }
 
   public ComponentContext(
@@ -201,54 +193,6 @@ public class ComponentContext implements Cloneable {
 
   ComponentContext makeNewCopy() {
     return new ComponentContext(this);
-  }
-
-  /**
-   * Creates a new ComponentContext instance and sets the {@link ComponentTree} on the component.
-   *
-   * @param context context scoped to the parent component
-   * @param componentTree component tree associated with the newly created context
-   * @return a new ComponentContext instance
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  @Deprecated
-  public static ComponentContext withComponentTree(
-      ComponentContext context, ComponentTree componentTree) {
-    final String contextLogTag = context.mLithoConfiguration.logTag;
-    final ComponentsLogger contextLogger = context.mLithoConfiguration.logger;
-
-    final LithoConfiguration lithoConfiguration =
-        (contextLogTag != null || contextLogger != null)
-            ? mergeConfigurationWithNewLogTagAndLogger(
-                componentTree.getLithoConfiguration(), contextLogTag, contextLogger)
-            : componentTree.getLithoConfiguration();
-
-    final LithoTree lithoTree =
-        new LithoTree(componentTree, componentTree, componentTree, componentTree);
-    ComponentContext componentContext =
-        new ComponentContext(
-            context.getAndroidContext(), context.mTreeProps, lithoConfiguration, lithoTree);
-    componentContext.mParentTreeProps = context.mParentTreeProps;
-    componentContext.mGlobalKey = context.mGlobalKey;
-    componentContext.mLifecycleProvider = componentTree.getLifecycleProvider();
-    componentContext.mComponentScope = null;
-
-    return componentContext;
-  }
-
-  static ComponentContext withComponentTree(
-      final ComponentContext c,
-      final LithoConfiguration config,
-      final ComponentTree componentTree) {
-    final LithoTree tree =
-        new LithoTree(componentTree, componentTree, componentTree, componentTree);
-    ComponentContext out = new ComponentContext(c.getAndroidContext(), c.mTreeProps, config, tree);
-    out.mParentTreeProps = c.mParentTreeProps;
-    out.mGlobalKey = c.mGlobalKey;
-    out.mLifecycleProvider = componentTree.getLifecycleProvider();
-    out.mComponentScope = null;
-
-    return out;
   }
 
   /**

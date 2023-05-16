@@ -472,7 +472,7 @@ public class ComponentTree
             logger,
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer);
-    mContext = ComponentContext.withComponentTree(builder.context, config, this);
+    mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
 
     if (builder.mLifecycleProvider != null) {
       subscribeToLifecycleProvider(builder.mLifecycleProvider);

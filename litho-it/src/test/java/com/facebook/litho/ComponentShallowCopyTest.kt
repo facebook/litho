@@ -38,7 +38,8 @@ class ComponentShallowCopyTest {
 
   @Test
   fun testShallowCopyCachedLayoutSameLayoutState() {
-    context = ComponentContext.withComponentTree(context, ComponentTree.create(context).build())
+    context =
+        ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
     val c = ComponentContext(context)
     val resolveStateContext = c.setRenderStateContextForTests()
     val resultCache = resolveStateContext.cache
@@ -53,9 +54,10 @@ class ComponentShallowCopyTest {
 
   @Test
   fun testShallowCopyCachedLayoutOtherLayoutStateCacheLayoutState() {
-    context = ComponentContext.withComponentTree(context, ComponentTree.create(context).build())
-    val c1 = ComponentContext.withComponentTree(context, ComponentTree.create(context).build())
-    val c2 = ComponentContext.withComponentTree(context, ComponentTree.create(context).build())
+    context =
+        ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
+    val c1 = ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
+    val c2 = ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
     val rsc1 = c1.setRenderStateContextForTests()
     val rsc2 = c2.setRenderStateContextForTests()
     val resultCache1 = rsc1.cache

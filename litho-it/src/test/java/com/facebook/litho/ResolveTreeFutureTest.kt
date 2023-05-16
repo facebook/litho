@@ -37,7 +37,7 @@ class ResolveTreeFutureTest {
   @Before
   fun setup() {
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    componentContext = ComponentContext.withComponentTree(c, ComponentTree.create(c).build())
+    componentContext = ComponentContextUtils.withComponentTree(c, ComponentTree.create(c).build())
   }
 
   /**

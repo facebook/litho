@@ -889,7 +889,8 @@ class LayoutStateCalculateTest {
   fun testNoMeasureOnNestedComponentWithSameSpecs() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build())
+        ComponentContextUtils.withComponentTree(
+            baseContext, ComponentTree.create(baseContext).build())
     val resolveStateContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
@@ -929,7 +930,8 @@ class LayoutStateCalculateTest {
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build())
+        ComponentContextUtils.withComponentTree(
+            baseContext, ComponentTree.create(baseContext).build())
     val resolveStateContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
@@ -969,7 +971,8 @@ class LayoutStateCalculateTest {
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecified() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build())
+        ComponentContextUtils.withComponentTree(
+            baseContext, ComponentTree.create(baseContext).build())
     val resolveStateContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
@@ -1007,7 +1010,8 @@ class LayoutStateCalculateTest {
   fun testNoMeasureOnNestedComponentWithOldAndNewAtMost() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build())
+        ComponentContextUtils.withComponentTree(
+            baseContext, ComponentTree.create(baseContext).build())
     val resolveStateContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()

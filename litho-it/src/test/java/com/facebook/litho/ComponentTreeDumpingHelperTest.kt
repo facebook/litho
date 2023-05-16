@@ -49,7 +49,7 @@ class ComponentTreeDumpingHelperTest {
     var componentContext: ComponentContext =
         ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val componentTree = ComponentTree.create(componentContext, component).build()
-    componentContext = ComponentContext.withComponentTree(componentContext, componentTree)
+    componentContext = ComponentContextUtils.withComponentTree(componentContext, componentTree)
     val lithoView = LithoView(ApplicationProvider.getApplicationContext<Context>())
     lithoView.componentTree = componentTree
     lithoView.measure(

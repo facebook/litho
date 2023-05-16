@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentContextUtils;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
@@ -447,7 +448,7 @@ public final class ComponentTestHelper {
     ComponentTree tree = ComponentTree.create(context).build();
     ComponentContext c =
         new ComponentContext(
-            ComponentContext.withComponentTree(new ComponentContext(context), tree));
+            ComponentContextUtils.withComponentTree(new ComponentContext(context), tree));
 
     final ResolveStateContext rsc = c.setRenderStateContextForTests();
 
