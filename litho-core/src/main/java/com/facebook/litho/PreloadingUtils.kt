@@ -224,3 +224,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
   }
   preloadClassHandler.post(r)
 }
+
+fun preloadYogaConfig() {
+  NodeConfig.createYogaNode()
+}
