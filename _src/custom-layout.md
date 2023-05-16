@@ -63,13 +63,13 @@ In the following example, a `Text` component is measured to check if the given t
 
 ## Kotlin Integration
 
-Kotlin equivalent of `@OnCreateLayoutWithSizeSpec` is called `SizeConstraintsAwareComponent`. `SizeConstraintsAwareComponent` is a Component that defines its own content according to the available space, based on the incoming SizeConstraints. It can be used in situations when a different content needs to be displayed depending on the available space.
+Kotlin equivalent of `@OnCreateLayoutWithSizeSpec` is called `SizeConstraintsAwareComponent`. `SizeConstraintsAwareComponent` is a Component that defines its own content according to the available space, based on the incoming `SizeConstraints`. It can be used in situations when a different content needs to be displayed depending on the available space.
 
-Below, there is an example that uses `sizeConstraints` provided by `SizeConstraintsAwareComponent`:
+Below, there is an example that uses `SizeConstraints` provided by `SizeConstraintsAwareComponent`:
 
 ``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/sizeconstraintsawarecomponent/SizeConstraintsAwareComponentKComponent.kt start=start_sizeconstraintsawarecomponent_example end=end_sizeconstraintsawarecomponent_example
 ```
 
 :::note
-In Kotlin the SizeSpec has been replaced with SizeConstraints. It's an object that restricts the minimum and maximum width and height of a Component.  SizeConstraints are provided by parent Component to a child component. A child Component should define its size within those constraints.
+In Kotlin the `SizeSpec` has been replaced with `SizeConstraints`. It's an object that provides the minimum and maximum width and height available for a Component. SizeConstraints are provided by parent Component to a child component. A child Component should define its size within those constraints.
 :::
