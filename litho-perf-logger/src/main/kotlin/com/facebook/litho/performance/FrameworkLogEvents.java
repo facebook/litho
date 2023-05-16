@@ -43,7 +43,7 @@ public interface FrameworkLogEvents {
   // Previously int EVENT_SECTIONS_SET_ROOT = 15; Now unused
   // Previously int EVENT_LEGACY_RENDER = 16;
   // Previously int EVENT_DRAW = 17; Now unused.
-  int EVENT_BENCHMARK_RUN = 18;
+  // Previously int EVENT_BENCHMARK_RUN = 18; Now unused.
   // Previously int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19; Now unused
   int EVENT_INIT_RANGE = 20;
   // Previously int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21; Now unused
@@ -60,7 +60,6 @@ public interface FrameworkLogEvents {
 
   @IntDef({
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
-    FrameworkLogEvents.EVENT_BENCHMARK_RUN,
     FrameworkLogEvents.EVENT_INIT_RANGE,
     FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
     FrameworkLogEvents.EVENT_COMPONENT_PREPARE,
