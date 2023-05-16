@@ -31,7 +31,7 @@ public interface FrameworkLogEvents {
   // Previously int EVENT_LAYOUT_CALCULATE = 3; Now unused.
   // Previously int EVENT_PREPARE_PART_DEFINITION = 4; Now unused.
   // Previously int EVENT_PREPARE_MOUNT = 5; Now unused.
-  int EVENT_MOUNT = 6;
+  // Previously int EVENT_MOUNT = 6; Now unused.
   // Previously EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 7; Now unused.
   int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 8;
   // Previously EVENT_ERROR = 9; Now unused.
@@ -59,7 +59,6 @@ public interface FrameworkLogEvents {
   int EVENT_COMPONENT_PREPARE = 24;
 
   @IntDef({
-    FrameworkLogEvents.EVENT_MOUNT,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
     FrameworkLogEvents.EVENT_INIT_RANGE,

@@ -82,7 +82,6 @@ class SampleComponentsLogger : ComponentsLogger {
 
   private fun getEventNameById(@FrameworkLogEvents.LogEventId markerId: Int): String =
       when (markerId) {
-        FrameworkLogEvents.EVENT_MOUNT -> "MOUNT"
         FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT -> "PRE_ALLOCATE_MOUNT_CONTENT"
         FrameworkLogEvents.EVENT_CALCULATE_RESOLVE -> "RESOLVE"
         FrameworkLogEvents.EVENT_BENCHMARK_RUN -> "EVENT_BENCHMARK_RUN"
