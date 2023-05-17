@@ -274,15 +274,15 @@ class IncrementalMountTest {
     assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_UNMOUNT)).isEqualTo(0)
     assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(0)
   }
+}
 
-  /** Returns the amount of steps that match the given step in the given list of steps */
-  private fun getCountOfLifecycleSteps(steps: List<LifecycleStep>, step: LifecycleStep): Int {
-    var count = 0
-    for (i in steps.indices) {
-      if (steps[i] == step) {
-        count++
-      }
+/** Returns the amount of steps that match the given step in the given list of steps */
+fun getCountOfLifecycleSteps(steps: List<LifecycleStep>, step: LifecycleStep): Int {
+  var count = 0
+  for (i in steps.indices) {
+    if (steps[i] == step) {
+      count++
     }
-    return count
   }
+  return count
 }

@@ -17,6 +17,12 @@
 package com.facebook.litho
 
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.common.DynamicComponentGroupSection
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent
+import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -185,5 +191,113 @@ class LayoutCachingTest {
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps).doesNotContain(LifecycleStep.ON_MEASURE)
+  }
+
+  /**
+   * Context: With layout caching we need to reset the size spec of the root component if measured
+   * size is different from specified one, to re-measure the whole tree. This case is to ensure that
+   * the SizeSpec of AT_MOST is also being reset correctly.
+   */
+  @Test
+  fun `RecyclerCollectionComponent with wrapContent should be re-measured with the latest size specs when it changes`() {
+    if (!ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
+
+    val context = legacyLithoViewRule.context
+    val lifecycleTracker1 = LifecycleTracker()
+    val lifecycleTracker2 = LifecycleTracker()
+    val lifecycleTracker3 = LifecycleTracker()
+
+    val component =
+        buildRecyclerCollectionComponent(
+            context, lifecycleTracker1, lifecycleTracker2, lifecycleTracker3)
+
+    // Set LithoView with height so that it can fully show all the items
+    legacyLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(exactly(100), unspecified())
+        .measure()
+        .layout()
+
+    Assertions.assertThat(
+            getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE))
+        .isEqualTo(5)
+    Assertions.assertThat(
+            getCountOfLifecycleSteps(lifecycleTracker2.steps, LifecycleStep.ON_MEASURE))
+        .isEqualTo(5)
+    Assertions.assertThat(
+            getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE))
+        .isEqualTo(5)
+
+    val height = legacyLithoViewRule.lithoView.height
+
+    lifecycleTracker1.reset()
+    lifecycleTracker2.reset()
+    lifecycleTracker3.reset()
+
+    val measuredSize = Size()
+    legacyLithoViewRule.lithoView.componentTree?.setSizeSpec(
+        exactly(200), unspecified(), measuredSize)
+    Assertions.assertThat(measuredSize.height).isEqualTo(height)
+    Assertions.assertThat(
+            getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE))
+        .isEqualTo(5)
+        .describedAs("Ensure that all children are re-measured")
+    Assertions.assertThat(
+            getCountOfLifecycleSteps(lifecycleTracker2.steps, LifecycleStep.ON_MEASURE))
+        .isEqualTo(5)
+        .describedAs("Ensure that all children are re-measured")
+    Assertions.assertThat(
+            getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE))
+        .isEqualTo(5)
+        .describedAs("Ensure that all children are re-measured")
+  }
+
+  private fun buildRecyclerCollectionComponent(
+      context: ComponentContext,
+      lifecycleTracker1: LifecycleTracker,
+      lifecycleTracker2: LifecycleTracker,
+      lifecycleTracker3: LifecycleTracker,
+  ): RecyclerCollectionComponent {
+
+    val child1: Component =
+        MountSpecLifecycleTester.create(context)
+            .intrinsicSize(Size(10, 10))
+            .lifecycleTracker(lifecycleTracker1)
+            .build()
+    val child2: Component =
+        MountSpecLifecycleTester.create(context)
+            .intrinsicSize(Size(10, 15))
+            .lifecycleTracker(lifecycleTracker2)
+            .build()
+    val child3: Component =
+        MountSpecLifecycleTester.create(context)
+            .intrinsicSize(Size(10, 20))
+            .lifecycleTracker(lifecycleTracker3)
+            .build()
+
+    val item: Component =
+        Column.create(context)
+            .child(Wrapper.create(context).delegate(child1))
+            .child(Wrapper.create(context).delegate(child2))
+            .child(Wrapper.create(context).delegate(child3))
+            .build()
+    val config: RecyclerConfiguration =
+        ListRecyclerConfiguration.create()
+            .recyclerBinderConfiguration(
+                RecyclerBinderConfiguration.create().wrapContent(true).build())
+            .build()
+    val sectionContext = SectionContext(context)
+    return RecyclerCollectionComponent.create(context)
+        .recyclerConfiguration(config)
+        .section(
+            DynamicComponentGroupSection.create(sectionContext)
+                .component(item)
+                .totalItems(5)
+                .build())
+        .maxHeightDip(300f)
+        .build()
   }
 }

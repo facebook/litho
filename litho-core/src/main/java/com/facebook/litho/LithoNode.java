@@ -511,12 +511,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
     final YogaNode yogaNode = layoutResult.getYogaNode();
     if (Float.compare(layoutResult.getWidthFromStyle(), yogaNode.getWidth().value) != 0) {
-      yogaNode.setWidth(YogaConstants.UNDEFINED);
-      yogaNode.setMaxWidth(YogaConstants.UNDEFINED);
+      yogaNode.setWidthAuto();
     }
     if (Float.compare(layoutResult.getHeightFromStyle(), yogaNode.getHeight().value) != 0) {
-      yogaNode.setHeight(YogaConstants.UNDEFINED);
-      yogaNode.setMaxHeight(YogaConstants.UNDEFINED);
+      yogaNode.setHeightAuto();
     }
   }
 
