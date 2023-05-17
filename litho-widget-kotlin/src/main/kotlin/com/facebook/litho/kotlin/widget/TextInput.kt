@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -67,6 +68,7 @@ inline fun ResourcesScope.TextInput(
     textInputActions: TextInputActions = TextInputActions.Default,
     handle: Handle? = null,
     inputBackground: Drawable? = null,
+    textWatcher: TextWatcher? = null,
 ): TextInput =
     TextInput.create(context)
         .inputFilters(inputFilters)
@@ -86,6 +88,7 @@ inline fun ResourcesScope.TextInput(
         .imeOptions(imeOptions)
         .inputFilter(inputFilter)
         .inputBackground(inputBackground)
+        .textWatcher(textWatcher)
         .handle(handle)
         .kotlinStyle(style)
         .apply {
