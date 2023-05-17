@@ -132,7 +132,7 @@ open class StateUpdatesTest {
     val previousStateContainer =
         stateContainersMap?.get(testComponentKey) as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
-    assertThat(previousStateContainer?.mCount)
+    assertThat(previousStateContainer?.count)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE)
     assertThat(resolveState?.initialStateContainer?.initialStates?.isEmpty()).isTrue
   }
@@ -145,7 +145,7 @@ open class StateUpdatesTest {
     val previousStateContainer =
         stateContainersMap?.get(testComponentKey) as StateUpdateTestComponent.TestStateContainer?
     assertThat(previousStateContainer).isNotNull
-    assertThat(previousStateContainer?.mCount)
+    assertThat(previousStateContainer?.count)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1)
   }
 
@@ -189,7 +189,7 @@ open class StateUpdatesTest {
     assertThat(
             (stateContainersMap?.get(testComponentKey)
                     as StateUpdateTestComponent.TestStateContainer?)
-                ?.mCount)
+                ?.count)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1)
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).hasSize(1)
   }

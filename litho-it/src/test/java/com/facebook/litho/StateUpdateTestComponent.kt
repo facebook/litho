@@ -29,7 +29,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
 
   override fun createInitialState(c: ComponentContext, stateContainer: StateContainer) {
     val testStateContainer = stateContainer as TestStateContainer
-    testStateContainer.mCount = INITIAL_COUNT_STATE_VALUE
+    testStateContainer.count = INITIAL_COUNT_STATE_VALUE
     createInitialStateCount.incrementAndGet()
     finalCounterValue.set(INITIAL_COUNT_STATE_VALUE)
   }
@@ -45,14 +45,14 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
       c.scopedComponentInfo.stateContainer as TestStateContainer?
 
   class TestStateContainer : StateContainer() {
-    @JvmField var mCount = 0
+    @JvmField var count = 0
     override fun applyStateUpdate(stateUpdate: StateUpdate) {
       when (stateUpdate.type) {
         STATE_UPDATE_TYPE_NOOP -> {}
-        STATE_UPDATE_TYPE_INCREMENT -> mCount += 1
-        STATE_UPDATE_TYPE_MULTIPLY -> mCount *= 2
+        STATE_UPDATE_TYPE_INCREMENT -> count += 1
+        STATE_UPDATE_TYPE_MULTIPLY -> count *= 2
       }
-      finalCounterValue.set(mCount)
+      finalCounterValue.set(count)
     }
   }
 
