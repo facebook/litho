@@ -22,6 +22,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.facebook.litho.AOSPLithoLifecycleProvider
@@ -160,7 +161,7 @@ class UseLiveDataTest {
     Assertions.assertThat(liveData.hasObservers()).isTrue
 
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_DESTROY)
-    Assertions.assertThat(liveData.hasObservers()).isFalse
+    Assertions.assertThat(liveData.hasActiveObservers()).isFalse
   }
 
   @Test
@@ -195,9 +196,7 @@ class UseLiveDataTest {
 
   private class FakeLifecycleOwner(initialState: Lifecycle.State) : LifecycleOwner {
 
-    private val lifecycle: FakeLifecycle = FakeLifecycle(this, initialState)
-
-    override fun getLifecycle(): Lifecycle = lifecycle
+    override val lifecycle: FakeLifecycle = FakeLifecycle(this, initialState)
 
     fun onEvent(lifecycleEvent: Lifecycle.Event) {
       lifecycle.onEvent(lifecycleEvent)
@@ -205,12 +204,15 @@ class UseLiveDataTest {
   }
 
   private class FakeLifecycle(private val owner: LifecycleOwner, initialState: State) :
-      Lifecycle() {
+      LifecycleRegistry(owner) {
 
-    private var currentState: State = initialState
     private var lastEvent: Event? = null
 
     private val observers: MutableList<LifecycleObserver> = mutableListOf()
+
+    init {
+      currentState = initialState
+    }
 
     fun onEvent(event: Event) {
       val newState =
@@ -242,10 +244,6 @@ class UseLiveDataTest {
 
     override fun removeObserver(observer: LifecycleObserver) {
       observers.remove(observer)
-    }
-
-    override fun getCurrentState(): State {
-      return currentState
     }
   }
 }
