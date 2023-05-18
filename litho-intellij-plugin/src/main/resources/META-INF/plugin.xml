@@ -15,6 +15,45 @@
   -->
 
 <idea-plugin>
+  <id>com.facebook.litho.intellij</id>
+  <name>Litho</name>
+  <!-- 201 is Android Studio 4.1 -->
+  <idea-version since-build="201"/>
+  <description>
+  <![CDATA[
+    <p><a href='https://fblitho.com/'>Litho</a> is a declarative UI framework for Android.
+    This plugin provides better Litho integration in Android Studio.
+    <p>The following features are available:
+    <ul>
+      <li>Command-click on a Section or Component takes you to Spec</li>
+      <li>Component usages in the search results</li>
+      <li>MountSpec, LayoutSpec, and GroupSectionSpec templates under File -> New menu</li>
+      <li>Completion for valid method annotations in LayoutSpec</li>
+      <li>Completion for ClickEvent handler</li>
+      <li>Completion for component builder</li>
+      <li>Error annotations for LayoutSpec</li>
+      <li>Error annotations for missing Required Props</li>
+      <li><code>@DefaultProp</code> value near the <code>@Prop</code> parameter as a folding</li>
+      <li>Regenerate Component action in Editor menu</li>
+    </ul>
+  ]]>
+  </description>
+  <version>1.8.7-SNAPSHOT</version>
+  <change-notes>
+    <![CDATA[
+    <h3>1.8.5</h3>
+      <ul>
+        <li>New: Required props autocompletion for KComponents and Litho widget wrappers</li>
+        <li>New: DiffSectionSpec Litho Structure View</li>
+        <li>Fix: Re-arrange litho actions in 'New' context menu</li>
+    <h3>Older Versions</h3>
+    <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
+    ]]>
+  </change-notes>
+  <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
+        Facebook,Inc.
+  </vendor>
+
   <extensionPoints>
     <extensionPoint name="eventLogger"
       interface="com.facebook.litho.intellij.extensions.EventLogger" />

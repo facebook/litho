@@ -1,4 +1,3 @@
-load("@fbsource//third-party/java/intellij:defs.bzl", "select_glob_by_version")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "ANDROID_STUDIO_PLUGIN_SDK",
@@ -16,11 +15,8 @@ fb_java_library(
         exclude = [
             "java/com/facebook/litho/intellij/extensions/*.java",
             "java/com/facebook/litho/intellij/redsymbols/**",
-            "java/com/facebook/litho/intellij/adapters/**",
         ],
-    ) + select_glob_by_version([
-        "java/com/facebook/litho/intellij/adapters/{}/**",
-    ]),
+    ),
     provided_deps = [
         ANDROID_STUDIO_PLUGIN_SDK,
     ],
