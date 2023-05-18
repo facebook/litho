@@ -292,11 +292,7 @@ private constructor(
       }
       if (useUpdateValueFromLayoutOutput) {
         if (updateState == STATE_UPDATED) {
-
-          // Check for incompatible ReferenceLifecycle.
-          return (currentComponent is DrawableComponent<*> &&
-              nextComponent is DrawableComponent<*> &&
-              shouldUpdate(currentComponent, currentContext, nextComponent, nextContext))
+          return false
         } else if (updateState == STATE_DIRTY) {
           return true
         }
