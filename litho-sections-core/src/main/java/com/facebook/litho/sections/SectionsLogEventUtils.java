@@ -16,15 +16,7 @@
 
 package com.facebook.litho.sections;
 
-import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_CURRENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_NEXT;
-
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentsLogger;
-import com.facebook.litho.LogTreePopulator;
-import com.facebook.litho.PerfEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -45,34 +37,6 @@ public class SectionsLogEventUtils {
     int SET_ROOT_ASYNC = 1;
     int UPDATE_STATE = 2;
     int UPDATE_STATE_ASYNC = 3;
-  }
-
-  /**
-   * Create a performance event that will add the names of the current and next section as params.
-   */
-  @Nullable
-  public static PerfEvent getSectionsPerformanceEvent(
-      ComponentContext c,
-      int eventId,
-      @Nullable Section currentSection,
-      @Nullable Section nextSection) {
-    final ComponentsLogger logger = c.getLogger();
-
-    if (logger == null) {
-      return null;
-    }
-
-    final PerfEvent logEvent =
-        LogTreePopulator.populatePerfEventFromLogger(
-            c, logger, logger.newPerformanceEvent(eventId));
-    if (logEvent != null) {
-      logEvent.markerAnnotate(
-          PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());
-      logEvent.markerAnnotate(
-          PARAM_SECTION_NEXT, nextSection == null ? "null" : nextSection.getSimpleName());
-    }
-
-    return logEvent;
   }
 
   public static String applyNewChangeSetSourceToString(@ApplyNewChangeSet int source) {
