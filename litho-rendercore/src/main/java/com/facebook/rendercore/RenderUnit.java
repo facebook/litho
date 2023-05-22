@@ -76,26 +76,6 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   public RenderUnit(
-      RenderType renderType, List<DelegateBinder<?, ? super MOUNT_CONTENT>> optionalMountBinders) {
-    this(
-        renderType,
-        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
-        optionalMountBinders,
-        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList());
-  }
-
-  public RenderUnit(
-      RenderType type,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> optionalMountBinders,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachBinders) {
-    this(
-        type,
-        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
-        optionalMountBinders,
-        attachBinders);
-  }
-
-  public RenderUnit(
       RenderType type,
       List<DelegateBinder<?, ? super MOUNT_CONTENT>> fixedMountBinders,
       List<DelegateBinder<?, ? super MOUNT_CONTENT>> optionalMountBinders,
