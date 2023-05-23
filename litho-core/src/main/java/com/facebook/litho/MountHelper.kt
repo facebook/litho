@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.graphics.Rect;
-import com.facebook.infer.annotation.Nullsafe;
+import android.graphics.Rect
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class MountHelper {
+object MountHelper {
 
   /**
    * Can be used in the context of a ViewPager which binds views before ahead of displaying them and
    * requesting layout, if we want mount to happen ahead of time too.
    */
-  public static void requestMount(
-      ComponentTree componentTree, Rect visibleRect, boolean processVisibilityOutputs) {
-    final LithoView lithoView = componentTree.getLithoView();
-    if (lithoView != null) {
-      lithoView.mountComponent(visibleRect, processVisibilityOutputs);
-    }
+  @JvmStatic
+  fun requestMount(
+      componentTree: ComponentTree,
+      visibleRect: Rect?,
+      processVisibilityOutputs: Boolean
+  ) {
+    val lithoView = componentTree.lithoView
+    lithoView?.mountComponent(visibleRect, processVisibilityOutputs)
   }
 
-  private static final Rect sEmptyRect = new Rect();
+  private val emptyRect = Rect()
 
-  public static void requestMount(LithoView lithoView, boolean processVisibilityOutputs) {
-    lithoView.mountComponent(sEmptyRect, processVisibilityOutputs);
+  @JvmStatic
+  fun requestMount(lithoView: LithoView, processVisibilityOutputs: Boolean) {
+    lithoView.mountComponent(emptyRect, processVisibilityOutputs)
   }
 }
