@@ -823,9 +823,7 @@ public class TextSpec {
     // Get character offset number corresponding to that X position:
 
     int ellipsisOffset;
-    if (ComponentsConfiguration.getDefaultComponentsConfiguration()
-            .usePaintAdvanceForEllipsisCalculation()
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       ellipsisOffset =
           getEllipsisOffsetFromPaintAdvance(
               newLayout, text, isRtl, ellipsizedLineNumber, ellipsisTarget);

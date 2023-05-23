@@ -334,17 +334,11 @@ public class ComponentsConfiguration {
 
   private final boolean mShouldReuseOutputs;
 
-  private final boolean mUsePaintAdvanceForEllipsisCalculation;
-
   private final boolean mShouldAddHostViewForRootComponent;
 
   private final boolean mShouldDisableBgFgOutputs;
 
   private @Nullable ResolveCancellationStrategy mResolveCancellationStrategy = null;
-
-  public boolean usePaintAdvanceForEllipsisCalculation() {
-    return mUsePaintAdvanceForEllipsisCalculation;
-  }
 
   public @Nullable ResolveCancellationStrategy getResolveCancellationStrategy() {
     return mResolveCancellationStrategy;
@@ -372,7 +366,6 @@ public class ComponentsConfiguration {
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
     mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
-    mUsePaintAdvanceForEllipsisCalculation = builder.mUsePaintAdvanceForEllipsisCalculation;
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
   }
@@ -395,7 +388,6 @@ public class ComponentsConfiguration {
   }
 
   public static class Builder {
-    boolean mUsePaintAdvanceForEllipsisCalculation = false;
     boolean mUseCancelableLayoutFutures = true;
     boolean mUseInterruptibleResolution = true;
     boolean mShouldReuseOutputs = false;
@@ -433,18 +425,6 @@ public class ComponentsConfiguration {
 
     public Builder shouldDisableBgFgOutputs(boolean enabled) {
       mShouldDisableBgFgOutputs = enabled;
-      return this;
-    }
-
-    /**
-     * If enabled it will use the {@link TextSpec.getEllipsisOffsetFromPaintAdvance} as the method
-     * to calculate the ellipsis target point.
-     *
-     * <p>This is used for an experiment that is targetting reducing ANRs by avoiding a code path
-     * that is associated to a lot of ANRs.
-     */
-    public Builder withTextPaintAdvanceEllipsisCalculation(boolean enabled) {
-      mUsePaintAdvanceForEllipsisCalculation = enabled;
       return this;
     }
 
