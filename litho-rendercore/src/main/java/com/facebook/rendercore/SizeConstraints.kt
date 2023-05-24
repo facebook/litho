@@ -163,31 +163,45 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
         else -> throw IllegalStateException("Unknown height spec mode.")
       }
 
+      validateSizes(
+          minWidth,
+          maxWidth,
+          minHeight,
+          maxHeight,
+          "minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight, widthSpec=[${View.MeasureSpec.toString(widthSpec)}], heightSpec=[${View.MeasureSpec.toString(heightSpec)}]")
       return SizeConstraints(minWidth, maxWidth, minHeight, maxHeight)
     }
 
-    internal fun validateSizes(minWidth: Int, maxWidth: Int, minHeight: Int, maxHeight: Int) {
+    internal fun validateSizes(
+        minWidth: Int,
+        maxWidth: Int,
+        minHeight: Int,
+        maxHeight: Int,
+        additionalErrorMessage: String
+    ) {
       if (minWidth < 0) {
-        throw IllegalArgumentException("minWidth must be >= 0, but was: $minWidth")
+        throw IllegalArgumentException(
+            "minWidth must be >= 0, but was: $minWidth $additionalErrorMessage")
       }
       if (minHeight < 0) {
-        throw IllegalArgumentException("minHeight must be >= 0, but was: $minHeight")
+        throw IllegalArgumentException(
+            "minHeight must be >= 0, but was: $minHeight $additionalErrorMessage")
       }
       if (maxWidth >= MaxValue && maxWidth != Infinity) {
         throw IllegalArgumentException(
-            "maxWidth must be < $MaxValue, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors.")
+            "maxWidth must be < $MaxValue, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
       }
       if (maxHeight >= MaxValue && maxHeight != Infinity) {
         throw IllegalArgumentException(
-            "maxHeight must be < $MaxValue, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors.")
+            "maxHeight must be < $MaxValue, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
       }
       if (minWidth > maxWidth) {
         throw IllegalArgumentException(
-            "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth")
+            "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth $additionalErrorMessage")
       }
       if (minHeight > maxHeight) {
         throw IllegalArgumentException(
-            "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight")
+            "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight $additionalErrorMessage")
       }
     }
 
@@ -204,7 +218,12 @@ fun SizeConstraints(
     minHeight: Int,
     maxHeight: Int,
 ): SizeConstraints {
-  SizeConstraints.validateSizes(minWidth, maxWidth, minHeight, maxHeight)
+  SizeConstraints.validateSizes(
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      "minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
   val v1 = SizeConstraints.valueOrInfinity(minWidth)
   val v2 = SizeConstraints.valueOrInfinity(maxWidth)
   val v3 = SizeConstraints.valueOrInfinity(minHeight)
