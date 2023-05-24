@@ -138,20 +138,24 @@ public class ComponentContext implements Cloneable {
   public ComponentContext(
       Context context,
       @Nullable TreeProps treeProps,
-      LithoConfiguration lithoConfiguration,
+      @Nullable LithoConfiguration lithoConfiguration,
       @Nullable LithoTree lithoTree) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
-    if (lithoConfiguration.logger != null && lithoConfiguration.logTag == null) {
-      throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
-    }
-
     mContext =
         Preconditions.checkNotNull(context, "ComponentContext requires a non null Android Context");
     mResourceResolver =
         new ResourceResolver(
             context, ResourceCache.getLatest(context.getResources().getConfiguration()));
     mTreeProps = treeProps;
-    mLithoConfiguration = lithoConfiguration;
+    mLithoConfiguration =
+        lithoConfiguration != null
+            ? lithoConfiguration
+            : buildDefaultLithoConfiguration(mContext, null, null, null, -1);
+
+    if (mLithoConfiguration.logger != null && mLithoConfiguration.logTag == null) {
+      throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
+    }
+
     mLithoTree = lithoTree;
   }
 
@@ -384,7 +388,7 @@ public class ComponentContext implements Cloneable {
         : null;
   }
 
-  LithoConfiguration getLithoConfiguration() {
+  public LithoConfiguration getLithoConfiguration() {
     return mLithoConfiguration;
   }
 
