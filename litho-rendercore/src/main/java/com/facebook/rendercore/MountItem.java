@@ -25,6 +25,7 @@ public class MountItem {
   private boolean mBound;
   private RenderTreeNode mRenderTreeNode;
   private Object mMountData;
+  private final BindData mBindData = new BindData();
 
   public MountItem(RenderTreeNode renderTreeNode, Object content) {
     mRenderTreeNode = renderTreeNode;
@@ -67,10 +68,18 @@ public class MountItem {
     return mRenderTreeNode;
   }
 
+  /** @deprecated Use BindData API instead. */
+  @Deprecated
   public Object getMountData() {
     return mMountData;
   }
 
+  public BindData getBindData() {
+    return mBindData;
+  }
+
+  /** @deprecated Use BindData API instead. */
+  @Deprecated
   public void setMountData(Object mountData) {
     mMountData = mountData;
   }

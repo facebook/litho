@@ -235,14 +235,20 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   /** Bind all fixed mountUnmount binder functions. */
   private void mountFixedBinders(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+      Context context,
+      MOUNT_CONTENT content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
     final boolean isTracing = tracer.isTracing();
-    for (int i = 0; i < mFixedMountBinders.size(); i++) {
+    final int fixedMountBindersSize = mFixedMountBinders.size();
+    for (int i = 0; i < fixedMountBindersSize; i++) {
       final DelegateBinder binder = mFixedMountBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.mountFixedBinder:" + binder.getSimpleName());
       }
-      binder.bind(context, content, layoutData);
+      @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
+      bindData.setFixedBindersBindData(binderBindData, i, fixedMountBindersSize);
       if (isTracing) {
         tracer.endSection();
       }
@@ -251,19 +257,26 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   /** Bind all mountUnmount binder functions. */
   protected void mountBinders(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
-    mountFixedBinders(context, content, layoutData, tracer);
+      Context context,
+      MOUNT_CONTENT content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
+    mountFixedBinders(context, content, layoutData, bindData, tracer);
     if (mOptionalMountBinders == null) {
       return;
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (int i = 0; i < mOptionalMountBinders.size(); i++) {
+    final int optionalMountBindersSize = mOptionalMountBinders.size();
+    for (int i = 0; i < optionalMountBindersSize; i++) {
       final DelegateBinder binder = mOptionalMountBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.mountBinder:" + binder.getSimpleName());
       }
-      binder.bind(context, content, layoutData);
+      @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
+      bindData.setOptionalMountBindersBindData(
+          binderBindData, binder.binder.getClass(), optionalMountBindersSize);
       if (isTracing) {
         tracer.endSection();
       }
@@ -272,14 +285,18 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   /** Unbind all fixed mountUnmount binder functions. */
   private void unmountFixedBinders(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+      Context context,
+      MOUNT_CONTENT content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
     final boolean isTracing = tracer.isTracing();
     for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = mFixedMountBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.unmountFixedBinder:" + binder.getSimpleName());
       }
-      binder.unbind(context, content, layoutData, null);
+      binder.unbind(context, content, layoutData, bindData.removeFixedBinderBindData(i));
       if (isTracing) {
         tracer.endSection();
       }
@@ -288,7 +305,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   /** Unbind all mountUnmount binder functions. */
   protected void unmountBinders(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+      Context context,
+      MOUNT_CONTENT content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
     if (mOptionalMountBinders != null) {
       final boolean isTracing = tracer.isTracing();
       for (int i = mOptionalMountBinders.size() - 1; i >= 0; i--) {
@@ -296,30 +317,41 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
         if (isTracing) {
           tracer.beginSection("RenderUnit.unmountBinder:" + binder.getSimpleName());
         }
-        binder.unbind(context, content, layoutData, null);
+        binder.unbind(
+            context,
+            content,
+            layoutData,
+            bindData.removeOptionalMountBindersBindData(binder.binder.getClass()));
         if (isTracing) {
           tracer.endSection();
         }
       }
     }
 
-    unmountFixedBinders(context, content, layoutData, tracer);
+    unmountFixedBinders(context, content, layoutData, bindData, tracer);
   }
 
   /** Bind all attachDetach binder functions. */
   protected void attachBinders(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+      Context context,
+      MOUNT_CONTENT content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
     if (mAttachBinders == null) {
       return;
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (int i = 0; i < mAttachBinders.size(); i++) {
+    final int attachBindersSize = mAttachBinders.size();
+    for (int i = 0; i < attachBindersSize; i++) {
       final DelegateBinder binder = mAttachBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.attachBinder:" + binder.getSimpleName());
       }
-      binder.bind(context, content, layoutData);
+      @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
+      bindData.setAttachBindersBindData(
+          binderBindData, binder.binder.getClass(), attachBindersSize);
       if (isTracing) {
         tracer.endSection();
       }
@@ -328,7 +360,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   /** Unbind all attachDetach binder functions. */
   protected void detachBinders(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+      Context context,
+      MOUNT_CONTENT content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
     if (mAttachBinders == null) {
       return;
     }
@@ -339,7 +375,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       if (isTracing) {
         tracer.beginSection("RenderUnit.detachBinder:" + binder.getSimpleName());
       }
-      binder.unbind(context, content, layoutData, null);
+      binder.unbind(
+          context,
+          content,
+          layoutData,
+          bindData.removeAttachBindersBindData((binder.binder.getClass())));
       if (isTracing) {
         tracer.endSection();
       }
@@ -357,6 +397,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
       @Nullable MountDelegate mountDelegate,
+      BindData bindData,
       boolean isAttached,
       Systracer tracer) {
 
@@ -418,7 +459,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       }
       for (int i = attachBindersForUnbind.size() - 1; i >= 0; i--) {
         final DelegateBinder binder = attachBindersForUnbind.get(i);
-        binder.unbind(context, content, currentLayoutData, null);
+        binder.unbind(
+            context,
+            content,
+            currentLayoutData,
+            bindData.removeAttachBindersBindData(binder.binder.getClass()));
       }
     }
 
@@ -435,29 +480,39 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
     for (int i = optionalMountBindersForUnbind.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = optionalMountBindersForUnbind.get(i);
-      binder.unbind(context, content, currentLayoutData, null);
+      binder.unbind(
+          context,
+          content,
+          currentLayoutData,
+          bindData.removeOptionalMountBindersBindData(binder.binder.getClass()));
     }
     if (fixedMountBindersToUpdate != 0) {
       for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
         if ((fixedMountBindersToUpdate & ((long) 0x1 << i)) != 0) {
           final DelegateBinder binder = currentRenderUnit.mFixedMountBinders.get(i);
-          binder.unbind(context, content, currentLayoutData, null);
+          binder.unbind(context, content, currentLayoutData, bindData.removeFixedBinderBindData(i));
         }
       }
     }
 
     // 5. Rebind all fixed and optional mount binders which did update.
     if (fixedMountBindersToUpdate != 0) {
-      for (int i = 0; i < mFixedMountBinders.size(); i++) {
+      final int fixedMountBindersSize = mFixedMountBinders.size();
+      for (int i = 0; i < fixedMountBindersSize; i++) {
         if ((fixedMountBindersToUpdate & (0x1L << i)) != 0) {
           final DelegateBinder binder = mFixedMountBinders.get(i);
-          binder.bind(context, content, newLayoutData);
+          @Nullable final Object binderBindData = binder.bind(context, content, newLayoutData);
+          bindData.setFixedBindersBindData(binderBindData, i, fixedMountBindersSize);
         }
       }
     }
+    final int optionalMountBindersSize =
+        mOptionalMountBinders != null ? mOptionalMountBinders.size() : 0;
     for (int i = 0; i < optionalMountBindersForBind.size(); i++) {
       final DelegateBinder binder = optionalMountBindersForBind.get(i);
-      binder.bind(context, content, newLayoutData);
+      @Nullable final Object binderBindData = binder.bind(context, content, newLayoutData);
+      bindData.setOptionalMountBindersBindData(
+          binderBindData, binder.binder.getClass(), optionalMountBindersSize);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
       MountDelegate.onMountItemWhichRequiresUpdate(
@@ -471,9 +526,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     // 6. Rebind all attach binders which did update.
+    final int attachBindersSize = mAttachBinders != null ? mAttachBinders.size() : 0;
     for (int i = 0; i < attachBindersForBind.size(); i++) {
       final DelegateBinder binder = attachBindersForBind.get(i);
-      binder.bind(context, content, newLayoutData);
+      @Nullable final Object binderBindData = binder.bind(context, content, newLayoutData);
+      bindData.setAttachBindersBindData(
+          binderBindData, binder.binder.getClass(), attachBindersSize);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
       MountDelegate.onBindItemWhichRequiresUpdate(
@@ -498,6 +556,18 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     return (T) binder.binder;
+  }
+
+  public boolean containsAttachBinder(final DelegateBinder<?, ?, ?> delegateBinder) {
+    return mAttachBinderTypeToDelegateMap != null
+        && !mAttachBinderTypeToDelegateMap.isEmpty()
+        && mAttachBinderTypeToDelegateMap.containsKey(delegateBinder.binder.getClass());
+  }
+
+  public boolean containsOptionalMountBinder(final DelegateBinder<?, ?, ?> delegateBinder) {
+    return mOptionalMountBinderTypeToDelegateMap != null
+        && !mOptionalMountBinderTypeToDelegateMap.isEmpty()
+        && mOptionalMountBinderTypeToDelegateMap.containsKey(delegateBinder.binder.getClass());
   }
 
   /**

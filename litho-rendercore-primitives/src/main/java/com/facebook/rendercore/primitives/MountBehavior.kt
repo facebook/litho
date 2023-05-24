@@ -17,6 +17,7 @@
 package com.facebook.rendercore.primitives
 
 import android.content.Context
+import com.facebook.rendercore.BindData
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.RenderUnit
@@ -74,34 +75,58 @@ abstract class PrimitiveRenderUnit<ContentType>(
 
   override fun doesMountRenderTreeHosts(): Boolean = doesMountRenderTreeHosts
 
+  /**
+   * This method is an override that calls super impl to make it public on RenderUnit because it
+   * needs to be called in PrimitiveLithoRenderUnit.
+   */
   public override fun mountBinders(
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
-  ) = super.mountBinders(context, content, layoutData, tracer)
+  ) = super.mountBinders(context, content, layoutData, bindData, tracer)
 
+  /**
+   * This method is an override that calls super impl to make it public on RenderUnit because it
+   * needs to be called in PrimitiveLithoRenderUnit.
+   */
   public override fun unmountBinders(
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
-  ) = super.unmountBinders(context, content, layoutData, tracer)
+  ) = super.unmountBinders(context, content, layoutData, bindData, tracer)
 
+  /**
+   * This method is an override that calls super impl to make it public on RenderUnit because it
+   * needs to be called in PrimitiveLithoRenderUnit.
+   */
   public override fun attachBinders(
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
-  ) = super.attachBinders(context, content, layoutData, tracer)
+  ) = super.attachBinders(context, content, layoutData, bindData, tracer)
 
+  /**
+   * This method is an override that calls super impl to make it public on RenderUnit because it
+   * needs to be called in PrimitiveLithoRenderUnit.
+   */
   public override fun detachBinders(
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
-  ) = super.detachBinders(context, content, layoutData, tracer)
+  ) = super.detachBinders(context, content, layoutData, bindData, tracer)
 
+  /**
+   * This method is an override that calls super impl to make it public on RenderUnit because it
+   * needs to be called in PrimitiveLithoRenderUnit.
+   */
   public override fun updateBinders(
       context: Context,
       content: ContentType,
@@ -109,6 +134,7 @@ abstract class PrimitiveRenderUnit<ContentType>(
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
+      bindData: BindData,
       isAttached: Boolean,
       tracer: Systracer,
   ) =
@@ -119,6 +145,7 @@ abstract class PrimitiveRenderUnit<ContentType>(
           currentLayoutData,
           newLayoutData,
           mountDelegate,
+          bindData,
           isAttached,
           tracer,
       )

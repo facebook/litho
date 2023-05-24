@@ -20,9 +20,11 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.BindData;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.RenderUnit.DelegateBinder;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.primitives.PrimitiveRenderUnit;
 
@@ -73,35 +75,53 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
 
   @Override
   protected void mountBinders(
-      Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
+      Context context, Object o, @Nullable Object layoutData, BindData bindData, Systracer tracer) {
     mPrimitiveRenderUnit.mountBinders(
-        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData, tracer);
+        context,
+        o,
+        Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData,
+        bindData,
+        tracer);
   }
 
   @Override
   protected void unmountBinders(
-      Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
+      Context context, Object o, @Nullable Object layoutData, BindData bindData, Systracer tracer) {
     mPrimitiveRenderUnit.unmountBinders(
-        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData, tracer);
+        context,
+        o,
+        Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData,
+        bindData,
+        tracer);
   }
 
   @Override
   protected void attachBinders(
-      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
+      Context context,
+      Object content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
     mPrimitiveRenderUnit.attachBinders(
         context,
         content,
         Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData,
+        bindData,
         tracer);
   }
 
   @Override
   protected void detachBinders(
-      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
+      Context context,
+      Object content,
+      @Nullable Object layoutData,
+      BindData bindData,
+      Systracer tracer) {
     mPrimitiveRenderUnit.detachBinders(
         context,
         content,
         Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData,
+        bindData,
         tracer);
   }
 
@@ -113,6 +133,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
       @Nullable MountDelegate mountDelegate,
+      BindData bindData,
       boolean isAttached,
       Systracer tracer) {
     mPrimitiveRenderUnit.updateBinders(
@@ -122,6 +143,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
         Preconditions.checkNotNull((LithoLayoutData) currentLayoutData).layoutData,
         Preconditions.checkNotNull((LithoLayoutData) newLayoutData).layoutData,
         mountDelegate,
+        bindData,
         isAttached,
         tracer);
   }
@@ -130,6 +152,16 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
   @Nullable
   public <T extends Binder<?, ?, ?>> T findAttachBinderByClass(Class<T> klass) {
     return mPrimitiveRenderUnit.findAttachBinderByClass(klass);
+  }
+
+  @Override
+  public boolean containsAttachBinder(final DelegateBinder<?, ?, ?> delegateBinder) {
+    return mPrimitiveRenderUnit.containsAttachBinder(delegateBinder);
+  }
+
+  @Override
+  public boolean containsOptionalMountBinder(final DelegateBinder<?, ?, ?> delegateBinder) {
+    return mPrimitiveRenderUnit.containsOptionalMountBinder(delegateBinder);
   }
 
   @Override

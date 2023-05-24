@@ -12,6 +12,10 @@ import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.core.util.Pair;
+import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData1;
+import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData2;
+import com.facebook.rendercore.TestBinderWithBindData.TestBinderWithBindData3;
 import com.facebook.rendercore.renderunits.HostRenderUnit;
 import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
@@ -896,6 +900,153 @@ public class MountStateTest {
     final MountState mountState = createMountState(c);
 
     mountState.mount(renderTree);
+  }
+
+  @Test
+  public void onAttachDetachMountState_MountStateShouldCallBindersAndPassBindData() {
+    final Context c = RuntimeEnvironment.application;
+
+    final List<TestBinder<?>> bindOrder = new ArrayList<>();
+    final List<Pair<Object, Object>> unbindOrder = new ArrayList<>();
+
+    TestBinderWithBindData bindBinder = new TestBinderWithBindData<>(bindOrder, unbindOrder, 1);
+    TestBinderWithBindData mountBinder = new TestBinderWithBindData<>(bindOrder, unbindOrder, 2);
+
+    final LayoutResult root =
+        SimpleLayoutResult.create()
+            .width(200)
+            .height(200)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(
+                        new ViewWrapperUnit(new TextView(c), 1)
+                            .addBindBinders(bindBinder)
+                            .addMounBinders(mountBinder))
+                    .width(100)
+                    .height(100))
+            .build();
+
+    final RenderTree renderTree = createRenderTree(c, new LayoutResultWrappingNode(root));
+    final MountState mountState = createMountState(c);
+
+    mountState.mount(renderTree);
+
+    // assert mount state is correct
+    assertThat(mountState.getMountItemCount()).isEqualTo(2);
+
+    // assert bind data is correct
+    final BindData bindData = mountState.getMountItemAt(1).getBindData();
+    assertThat(bindData.getFixedBindersBindData()).isNull();
+    assertThat(bindData.getOptionalMountBindersBindData().get(mountBinder.getClass())).isEqualTo(2);
+    assertThat(bindData.getAttachBindersBindData().get(bindBinder.getClass())).isEqualTo(1);
+
+    mountState.detach();
+
+    // assert that unbind was called in correct order and correct bind data was passed after detach
+    assertThat(unbindOrder).hasSize(1);
+    assertThat(unbindOrder.get(0).second).isEqualTo(1);
+
+    unbindOrder.clear();
+    mountState.unmountAllItems();
+
+    // assert that unbind was called in correct order and correct bind data was passed after unmount
+    assertThat(unbindOrder).hasSize(1);
+    assertThat(unbindOrder.get(0).second).isEqualTo(2);
+  }
+
+  @Test
+  public void testBinderUnmountPassBindDataOnUpdateMountItem_whenShouldUpdateReturnsTrue() {
+    final Context c = RuntimeEnvironment.application;
+    final long id;
+    MountState mountState;
+
+    final TestBinderWithBindData1 mountBinder = new TestBinderWithBindData1(1);
+    final TestBinderWithBindData1 attachBinder = new TestBinderWithBindData1(2);
+    {
+      final TestNode root = new TestNode();
+      final TestNode leaf = new TestNode(0, 0, 10, 10);
+
+      root.addChild(leaf);
+
+      final TestRenderUnit renderUnit = new TestRenderUnit();
+      renderUnit.addOptionalMountBinder(createDelegateBinder(renderUnit, mountBinder));
+      renderUnit.addAttachBinder(createDelegateBinder(renderUnit, attachBinder));
+      id = renderUnit.getId();
+      leaf.setRenderUnit(renderUnit);
+      RenderTree renderTree = createRenderTree(c, root);
+      mountState = createMountState(c);
+
+      mountState.mount(renderTree);
+
+      // assert mount state is correct
+      assertThat(mountState.getMountItemCount()).isEqualTo(2);
+
+      final BindData bindData = mountState.getMountItemAt(1).getBindData();
+
+      assertThat(bindData.getFixedBindersBindData()).isNull();
+
+      // assert optional mount binders bind data is correct
+      assertThat(bindData.getOptionalMountBindersBindData()).hasSize(1);
+      assertThat(bindData.getOptionalMountBindersBindData().get(mountBinder.getClass()))
+          .isEqualTo(1);
+
+      // assert attach binders bind data is correct
+      assertThat(bindData.getAttachBindersBindData()).hasSize(1);
+      assertThat(bindData.getAttachBindersBindData().get(attachBinder.getClass())).isEqualTo(2);
+    }
+
+    {
+      final TestNode newRoot = new TestNode();
+      final TestNode newLeaf = new TestNode(10, 10, 10, 10);
+      newLeaf.setLayoutData(new Object());
+
+      newRoot.addChild(newLeaf);
+
+      final TestBinderWithBindData1 mountBinder1 = new TestBinderWithBindData1(10);
+      final TestBinderWithBindData2 mountBinder2 = new TestBinderWithBindData2(3);
+
+      final TestBinderWithBindData1 attachBinder1 = new TestBinderWithBindData1(20);
+      final TestBinderWithBindData2 attachBinder2 = new TestBinderWithBindData2(4);
+      final TestBinderWithBindData3 attachBinder3 = new TestBinderWithBindData3(5);
+
+      final TestRenderUnit newRenderUnit = new TestRenderUnit();
+      newRenderUnit.addOptionalMountBinders(
+          createDelegateBinder(newRenderUnit, mountBinder1),
+          createDelegateBinder(newRenderUnit, mountBinder2));
+      newRenderUnit.addAttachBinders(
+          createDelegateBinder(newRenderUnit, attachBinder1),
+          createDelegateBinder(newRenderUnit, attachBinder2),
+          createDelegateBinder(newRenderUnit, attachBinder3));
+
+      newRenderUnit.setId(id);
+      newLeaf.setRenderUnit(newRenderUnit);
+
+      RenderTree newRenderTree = createRenderTree(c, newRoot);
+      mountState.mount(newRenderTree);
+
+      // assert mount state is correct
+      assertThat(mountState.getMountItemCount()).isEqualTo(2);
+
+      final BindData updatedBindData = mountState.getMountItemAt(1).getBindData();
+
+      assertThat(updatedBindData.getFixedBindersBindData()).isNull();
+
+      // assert optional mount binders bind data is correct
+      assertThat(updatedBindData.getOptionalMountBindersBindData()).hasSize(2);
+      assertThat(updatedBindData.getOptionalMountBindersBindData().get(mountBinder1.getClass()))
+          .isEqualTo(10);
+      assertThat(updatedBindData.getOptionalMountBindersBindData().get(mountBinder2.getClass()))
+          .isEqualTo(3);
+
+      // assert attach binders bind data is correct
+      assertThat(updatedBindData.getAttachBindersBindData()).hasSize(3);
+      assertThat(updatedBindData.getAttachBindersBindData().get(attachBinder1.getClass()))
+          .isEqualTo(20);
+      assertThat(updatedBindData.getAttachBindersBindData().get(attachBinder2.getClass()))
+          .isEqualTo(4);
+      assertThat(updatedBindData.getAttachBindersBindData().get(attachBinder3.getClass()))
+          .isEqualTo(5);
+    }
   }
 
   private static RenderTree createRenderTree(Context c, Node root) {

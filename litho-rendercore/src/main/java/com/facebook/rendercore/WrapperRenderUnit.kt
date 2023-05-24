@@ -23,6 +23,8 @@ import android.content.Context
  * [addOptionalMountBinder] and [addAttachBinder] methods gather additional Binders in the
  * [WrapperRenderUnit] instance and all other methods are delegated to the original [renderUnit].
  */
+// Don't add support for fixedMountBinders in WrapperRenderUnit unless you add support for them in
+// BindData handling logic.
 class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentType>) :
     RenderUnit<ContentType>(renderUnit.renderType) {
 
@@ -37,10 +39,18 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
   override fun getDescription(): String = renderUnit.description
 
   override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType, *>) {
+    if (renderUnit.containsOptionalMountBinder(binder)) {
+      throw IllegalArgumentException(
+          "Binder ${binder.getSimpleName()} already exists in the wrapped ${renderUnit.getDescription()}")
+    }
     super.addOptionalMountBinder(binder)
   }
 
   override fun addAttachBinder(binder: DelegateBinder<*, in ContentType, *>) {
+    if (renderUnit.containsAttachBinder(binder)) {
+      throw IllegalArgumentException(
+          "Binder ${binder.getSimpleName()} already exists in the wrapped ${renderUnit.getDescription()}")
+    }
     super.addAttachBinder(binder)
   }
 
@@ -51,40 +61,44 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
   ) {
-    renderUnit.mountBinders(context, content, layoutData, tracer)
-    super.mountBinders(context, content, layoutData, tracer)
+    renderUnit.mountBinders(context, content, layoutData, bindData, tracer)
+    super.mountBinders(context, content, layoutData, bindData, tracer)
   }
 
   override fun unmountBinders(
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
   ) {
-    super.unmountBinders(context, content, layoutData, tracer)
-    renderUnit.unmountBinders(context, content, layoutData, tracer)
+    super.unmountBinders(context, content, layoutData, bindData, tracer)
+    renderUnit.unmountBinders(context, content, layoutData, bindData, tracer)
   }
 
   override fun attachBinders(
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
   ) {
-    renderUnit.attachBinders(context, content, layoutData, tracer)
-    super.attachBinders(context, content, layoutData, tracer)
+    renderUnit.attachBinders(context, content, layoutData, bindData, tracer)
+    super.attachBinders(context, content, layoutData, bindData, tracer)
   }
 
   override fun detachBinders(
       context: Context,
       content: ContentType,
       layoutData: Any?,
+      bindData: BindData,
       tracer: Systracer
   ) {
-    super.detachBinders(context, content, layoutData, tracer)
-    renderUnit.detachBinders(context, content, layoutData, tracer)
+    super.detachBinders(context, content, layoutData, bindData, tracer)
+    renderUnit.detachBinders(context, content, layoutData, bindData, tracer)
   }
 
   override fun updateBinders(
@@ -94,6 +108,7 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
+      bindData: BindData,
       isAttached: Boolean,
       tracer: Systracer,
   ) {
@@ -104,6 +119,7 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
         currentLayoutData,
         newLayoutData,
         mountDelegate,
+        bindData,
         isAttached,
         tracer,
     )
@@ -114,6 +130,7 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
         currentLayoutData,
         newLayoutData,
         mountDelegate,
+        bindData,
         isAttached,
         tracer,
     )
