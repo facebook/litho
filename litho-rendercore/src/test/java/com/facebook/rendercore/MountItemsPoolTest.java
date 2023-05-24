@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,11 @@ public class MountItemsPoolTest {
     MountItemsPool.setMountContentPoolFactory(null);
     mActivityController = Robolectric.buildActivity(Activity.class).create();
     mActivity = mActivityController.get();
+  }
+
+  @After
+  public void cleanup() {
+    MountItemsPool.setMountContentPoolFactory(null);
   }
 
   @Test
