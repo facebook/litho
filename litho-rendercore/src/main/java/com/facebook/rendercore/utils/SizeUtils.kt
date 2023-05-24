@@ -189,9 +189,23 @@ fun Size.Companion.withAspectRatio(sizeConstraints: SizeConstraints, aspectRatio
     outputHeight = sizeConstraints.maxHeight
   }
 
-  return Size(
-      outputWidth.coerceIn(sizeConstraints.minWidth, sizeConstraints.maxWidth),
-      outputHeight.coerceIn(sizeConstraints.minHeight, sizeConstraints.maxHeight))
+  // Ensure that the resulting width and height are in appropriate ranges.
+  outputWidth =
+      if (outputWidth == SizeConstraints.Infinity) {
+        SizeConstraints.Infinity
+      } else {
+        outputWidth.coerceIn(
+            sizeConstraints.minWidth, min(sizeConstraints.maxWidth, SizeConstraints.MaxValue - 1))
+      }
+  outputHeight =
+      if (outputHeight == SizeConstraints.Infinity) {
+        SizeConstraints.Infinity
+      } else {
+        outputHeight.coerceIn(
+            sizeConstraints.minHeight, min(sizeConstraints.maxHeight, SizeConstraints.MaxValue - 1))
+      }
+
+  return Size(outputWidth, outputHeight)
 }
 
 /**

@@ -249,6 +249,34 @@ class SizeUtilsTest {
   }
 
   @Test
+  fun `aspect ratio - with width bounded to MaxValue - 1 and unbounded height - returns size with values clamped to MaxValue - 1`() {
+    assertThat(
+            Size.withAspectRatio(
+                SizeConstraints(
+                    minWidth = 0,
+                    maxWidth = SizeConstraints.MaxValue - 1,
+                    minHeight = 0,
+                    maxHeight = SizeConstraints.Infinity),
+                aspectRatio = 0.2f))
+        .isEqualTo(
+            Size(width = SizeConstraints.MaxValue - 1, height = SizeConstraints.MaxValue - 1))
+  }
+
+  @Test
+  fun `aspect ratio - with unbounded width and height bounded to MaxValue - 1 - returns size with values clamped to MaxValue - 1`() {
+    assertThat(
+            Size.withAspectRatio(
+                SizeConstraints(
+                    minWidth = 0,
+                    maxWidth = SizeConstraints.Infinity,
+                    minHeight = 0,
+                    maxHeight = SizeConstraints.MaxValue - 1),
+                aspectRatio = 2.0f))
+        .isEqualTo(
+            Size(width = SizeConstraints.MaxValue - 1, height = SizeConstraints.MaxValue - 1))
+  }
+
+  @Test
   fun `equal dimensions - with bounded width and bounded height - returns size with equal dimensions`() {
     assertThat(
             Size.withEqualDimensions(
