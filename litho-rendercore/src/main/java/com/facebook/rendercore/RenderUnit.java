@@ -57,29 +57,30 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   // These maps are used to match a binder with its Binder class.
   // Every RenderUnit should have only one Binder per type.
-  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
+  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT, ?>>
       mOptionalMountBinderTypeToDelegateMap;
-  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mOptionalMountBinders;
+  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT, ?>> mOptionalMountBinders;
   // Fixed mount binders are binders that are always there for a given RenderUnit type, and they're
   // always in the same order.
-  private final List<DelegateBinder<?, ? super MOUNT_CONTENT>> mFixedMountBinders;
+  private final List<DelegateBinder<?, ? super MOUNT_CONTENT, ?>> mFixedMountBinders;
 
-  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> mAttachBinderTypeToDelegateMap;
-  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mAttachBinders;
+  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT, ?>>
+      mAttachBinderTypeToDelegateMap;
+  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT, ?>> mAttachBinders;
 
   public RenderUnit(RenderType renderType) {
     this(
         renderType,
-        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
-        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
-        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList());
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT, ?>>emptyList(),
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT, ?>>emptyList(),
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT, ?>>emptyList());
   }
 
   public RenderUnit(
       RenderType type,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> fixedMountBinders,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> optionalMountBinders,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachBinders) {
+      List<DelegateBinder<?, ? super MOUNT_CONTENT, ?>> fixedMountBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT, ?>> optionalMountBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT, ?>> attachBinders) {
     if (fixedMountBinders != null && fixedMountBinders.size() > MAX_FIXED_MOUNT_BINDERS_COUNT) {
       throw new IllegalStateException(
           "Too many fixed mount binders. Max is " + MAX_FIXED_MOUNT_BINDERS_COUNT);
@@ -88,11 +89,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     mRenderType = type;
     mFixedMountBinders = fixedMountBinders;
     for (int i = 0; i < optionalMountBinders.size(); i++) {
-      final DelegateBinder<?, ? super MOUNT_CONTENT> binder = optionalMountBinders.get(i);
+      final DelegateBinder<?, ? super MOUNT_CONTENT, ?> binder = optionalMountBinders.get(i);
       addOptionalMountBinder(binder);
     }
     for (int i = 0; i < attachBinders.size(); i++) {
-      final DelegateBinder<?, ? super MOUNT_CONTENT> binder = attachBinders.get(i);
+      final DelegateBinder<?, ? super MOUNT_CONTENT, ?> binder = attachBinders.get(i);
       addAttachBinder(binder);
     }
   }
@@ -129,7 +130,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
-  public void addOptionalMountBinder(DelegateBinder<?, ? super MOUNT_CONTENT> binder) {
+  public void addOptionalMountBinder(DelegateBinder<?, ? super MOUNT_CONTENT, ?> binder) {
     if (mOptionalMountBinders == null) {
       mOptionalMountBinders = new ArrayList<>();
 
@@ -151,7 +152,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * class-level javadocs about immutability.
    */
   @SafeVarargs
-  public final void addOptionalMountBinders(DelegateBinder<?, ? super MOUNT_CONTENT>... binders) {
+  public final void addOptionalMountBinders(
+      DelegateBinder<?, ? super MOUNT_CONTENT, ?>... binders) {
     for (int i = 0; i < binders.length; i++) {
       addOptionalMountBinder(binders[i]);
     }
@@ -164,7 +166,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
-  public void addAttachBinder(DelegateBinder<?, ? super MOUNT_CONTENT> binder) {
+  public void addAttachBinder(DelegateBinder<?, ? super MOUNT_CONTENT, ?> binder) {
     if (mAttachBinders == null) {
       mAttachBinders = new ArrayList<>();
 
@@ -186,7 +188,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * class-level javadocs about immutability.
    */
   @SafeVarargs
-  public final void addAttachBinders(DelegateBinder<?, ? super MOUNT_CONTENT>... binders) {
+  public final void addAttachBinders(DelegateBinder<?, ? super MOUNT_CONTENT, ?>... binders) {
     for (int i = 0; i < binders.length; i++) {
       addAttachBinder(binders[i]);
     }
@@ -196,8 +198,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   // If that's the case, remove the old binder and add the new one at the current list position
   // which is at the end.
   private static <MOUNT_CONTENT> void addBinder(
-      Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> binderTypeToBinderMap,
-      List<DelegateBinder<?, MOUNT_CONTENT>> binders,
+      Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT, ?>> binderTypeToBinderMap,
+      List<DelegateBinder<?, MOUNT_CONTENT, ?>> binders,
       DelegateBinder binder) {
     final @Nullable DelegateBinder prevBinder =
         binderTypeToBinderMap.put(binder.binder.getClass(), binder);
@@ -277,7 +279,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       if (isTracing) {
         tracer.beginSection("RenderUnit.unmountFixedBinder:" + binder.getSimpleName());
       }
-      binder.unbind(context, content, layoutData);
+      binder.unbind(context, content, layoutData, null);
       if (isTracing) {
         tracer.endSection();
       }
@@ -294,7 +296,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
         if (isTracing) {
           tracer.beginSection("RenderUnit.unmountBinder:" + binder.getSimpleName());
         }
-        binder.unbind(context, content, layoutData);
+        binder.unbind(context, content, layoutData, null);
         if (isTracing) {
           tracer.endSection();
         }
@@ -337,7 +339,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       if (isTracing) {
         tracer.beginSection("RenderUnit.detachBinder:" + binder.getSimpleName());
       }
-      binder.unbind(context, content, layoutData);
+      binder.unbind(context, content, layoutData, null);
       if (isTracing) {
         tracer.endSection();
       }
@@ -416,7 +418,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       }
       for (int i = attachBindersForUnbind.size() - 1; i >= 0; i--) {
         final DelegateBinder binder = attachBindersForUnbind.get(i);
-        binder.unbind(context, content, currentLayoutData);
+        binder.unbind(context, content, currentLayoutData, null);
       }
     }
 
@@ -433,13 +435,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
     for (int i = optionalMountBindersForUnbind.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = optionalMountBindersForUnbind.get(i);
-      binder.unbind(context, content, currentLayoutData);
+      binder.unbind(context, content, currentLayoutData, null);
     }
     if (fixedMountBindersToUpdate != 0) {
       for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
         if ((fixedMountBindersToUpdate & ((long) 0x1 << i)) != 0) {
           final DelegateBinder binder = currentRenderUnit.mFixedMountBinders.get(i);
-          binder.unbind(context, content, currentLayoutData);
+          binder.unbind(context, content, currentLayoutData, null);
         }
       }
     }
@@ -485,7 +487,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
-  public @Nullable <T extends Binder<?, ?>> T findAttachBinderByClass(Class<T> klass) {
+  public @Nullable <T extends Binder<?, ?, ?>> T findAttachBinderByClass(Class<T> klass) {
     if (mAttachBinderTypeToDelegateMap == null || mAttachBinderTypeToDelegateMap.isEmpty()) {
       return null;
     }
@@ -503,8 +505,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * returning a long value with bits set to 1 for all fixed binders that need to be updated.
    */
   private static <MOUNT_CONTENT> long resolveFixedMountBindersToUpdate(
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> currentFixedBinders,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> newFixedBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT, ?>> currentFixedBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT, ?>> newFixedBinders,
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData) {
     long fixedMountBindersToUpdate = 0;
@@ -541,9 +543,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * bind.
    */
   private static <MOUNT_CONTENT> void resolveBindersToUpdate(
-      @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> currentBinders,
-      @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> newBinders,
-      @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> currentBinderTypeToBinderMap,
+      @Nullable List<DelegateBinder<?, MOUNT_CONTENT, ?>> currentBinders,
+      @Nullable List<DelegateBinder<?, MOUNT_CONTENT, ?>> newBinders,
+      @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT, ?>> currentBinderTypeToBinderMap,
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
       List<DelegateBinder> bindersToBind,
@@ -607,11 +609,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * A binder is a pair of data Model and {@link Binder}. The binder will bind the model to a
    * matching content type defined.
    */
-  public static class DelegateBinder<MODEL, CONTENT> {
+  public static class DelegateBinder<MODEL, CONTENT, BIND_DATA> {
     private final MODEL model;
-    private final Binder<MODEL, CONTENT> binder;
+    private final Binder<MODEL, CONTENT, BIND_DATA> binder;
 
-    private DelegateBinder(MODEL model, Binder<MODEL, CONTENT> binder) {
+    private DelegateBinder(MODEL model, Binder<MODEL, CONTENT, BIND_DATA> binder) {
       this.model = model;
       this.binder = binder;
     }
@@ -620,24 +622,30 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
      * Create a binder with a Model and {@link Binder} which will bind the given Model to the
      * content type which will be provided by the RenderUnit.
      */
-    public static <MODEL, CONTENT> DelegateBinder<MODEL, CONTENT> createDelegateBinder(
-        MODEL model, Binder<MODEL, CONTENT> binder) {
+    public static <MODEL, CONTENT, BIND_DATA>
+        DelegateBinder<MODEL, CONTENT, BIND_DATA> createDelegateBinder(
+            MODEL model, Binder<MODEL, CONTENT, BIND_DATA> binder) {
       return new DelegateBinder<>(model, binder);
     }
 
     boolean shouldUpdate(
-        final DelegateBinder<MODEL, CONTENT> previous,
+        final DelegateBinder<MODEL, CONTENT, BIND_DATA> previous,
         final @Nullable Object currentLayoutData,
         final @Nullable Object nextLayoutData) {
       return binder.shouldUpdate(previous.model, model, currentLayoutData, nextLayoutData);
     }
 
-    void bind(final Context context, final CONTENT content, final @Nullable Object layoutData) {
-      binder.bind(context, content, model, layoutData);
+    BIND_DATA bind(
+        final Context context, final CONTENT content, final @Nullable Object layoutData) {
+      return binder.bind(context, content, model, layoutData);
     }
 
-    void unbind(final Context context, final CONTENT content, final @Nullable Object layoutData) {
-      binder.unbind(context, content, model, layoutData);
+    void unbind(
+        final Context context,
+        final CONTENT content,
+        final @Nullable Object layoutData,
+        final BIND_DATA bindData) {
+      binder.unbind(context, content, model, layoutData, bindData);
     }
 
     String getSimpleName() {
@@ -649,23 +657,33 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * Represents a single bind function. Every bind has an equivalent unbind and a shouldUpdate
    * callback
    */
-  public interface Binder<MODEL, CONTENT> {
+  public interface Binder<MODEL, CONTENT, BIND_DATA> {
+
+    /**
+     * Decides of the model should be re-bound to the content. If this method returns true, then
+     * unbind will be called followed by bind.
+     */
     boolean shouldUpdate(
         final MODEL currentModel,
         final MODEL newModel,
         final @Nullable Object currentLayoutData,
         final @Nullable Object nextLayoutData);
 
-    void bind(
+    /**
+     * Binds the model to the content and returns optional bind data that will be passed to unbind.
+     */
+    BIND_DATA bind(
         final Context context,
         final CONTENT content,
         final MODEL model,
         final @Nullable Object layoutData);
 
+    /** Unbinds the model from the content. */
     void unbind(
         final Context context,
         final CONTENT content,
         final MODEL model,
-        final @Nullable Object layoutData);
+        final @Nullable Object layoutData,
+        final BIND_DATA bindData);
   }
 }

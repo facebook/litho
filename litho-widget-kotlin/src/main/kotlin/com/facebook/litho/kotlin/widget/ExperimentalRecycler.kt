@@ -163,8 +163,8 @@ internal class ExperimentalRecyclerMountable(
 
   companion object {
     private val CONSTANT_PROPS_ATTACH_BINDER:
-        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
@@ -177,7 +177,7 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
-          ) {
+          ): Any? {
             with(model) {
               sectionsViewLogger?.let { content.setSectionsRecyclerViewLogger(sectionsViewLogger) }
               // contentDescription should be set on the recyclerView itself, and not the
@@ -209,13 +209,15 @@ internal class ExperimentalRecyclerMountable(
                 content.setHasBeenDetachedFromWindow(false)
               }
             }
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             content.setSectionsRecyclerViewLogger(null)
             content.setOnRefreshListener(null)
@@ -235,8 +237,8 @@ internal class ExperimentalRecyclerMountable(
         }
 
     private val CONSTANT_PROPS_MOUNT_BINDER:
-        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
@@ -276,7 +278,7 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
-          ) {
+          ): Any? {
             with(model) {
               contentDescription?.let {
                 content.recyclerView.contentDescription = contentDescription
@@ -309,13 +311,15 @@ internal class ExperimentalRecyclerMountable(
                   if (itemAnimator != ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR) itemAnimator
                   else NoUpdateItemAnimator())
             }
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             content.recyclerView.id = View.NO_ID
             model.refreshProgressBarBackgroundColor?.let {
@@ -326,8 +330,9 @@ internal class ExperimentalRecyclerMountable(
           }
         }
 
-    private val ITEM_DECORATOR_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+    private val ITEM_DECORATOR_BINDER:
+        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
@@ -345,22 +350,25 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
-          ) {
+          ): Any? {
             model.itemDecoration?.let { content.recyclerView.addItemDecoration(it) }
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             model.itemDecoration?.let { content.recyclerView.removeItemDecoration(it) }
           }
         }
 
-    private val CONTENT_MOUNT_BINDER: Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> =
-        object : Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> {
+    private val CONTENT_MOUNT_BINDER:
+        Binder<LithoBinder<RecyclerView>, SectionsRecyclerView, Any?> =
+        object : Binder<LithoBinder<RecyclerView>, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: LithoBinder<RecyclerView>,
               newModel: LithoBinder<RecyclerView>,
@@ -373,22 +381,25 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               binder: LithoBinder<RecyclerView>,
               layoutData: Any?
-          ) {
+          ): Any? {
             binder.mount(content.recyclerView)
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               binder: LithoBinder<RecyclerView>,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             binder.unmount(content.recyclerView)
           }
         }
 
-    private val CONTENT_ATTACH_BINDER: Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> =
-        object : Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> {
+    private val CONTENT_ATTACH_BINDER:
+        Binder<LithoBinder<RecyclerView>, SectionsRecyclerView, Any?> =
+        object : Binder<LithoBinder<RecyclerView>, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: LithoBinder<RecyclerView>,
               newModel: LithoBinder<RecyclerView>,
@@ -401,22 +412,24 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               binder: LithoBinder<RecyclerView>,
               layoutData: Any?
-          ) {
+          ): Any? {
             binder.bind(content.recyclerView)
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               binder: LithoBinder<RecyclerView>,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             binder.unbind(content.recyclerView)
           }
         }
 
-    private val MOUNT_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+    private val MOUNT_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
@@ -461,7 +474,7 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
-          ) {
+          ): Any? {
             with(model) {
               contentDescription?.let {
                 content.recyclerView.contentDescription = contentDescription
@@ -499,13 +512,15 @@ internal class ExperimentalRecyclerMountable(
                   })
               binder.mount(content.recyclerView)
             }
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             content.recyclerView.id = View.NO_ID
             model.refreshProgressBarBackgroundColor?.let {
@@ -523,8 +538,8 @@ internal class ExperimentalRecyclerMountable(
           }
         }
 
-    private val ATTACH_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+    private val ATTACH_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
@@ -537,7 +552,7 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
-          ) {
+          ): Any? {
             with(model) {
               sectionsViewLogger?.let { content.setSectionsRecyclerViewLogger(sectionsViewLogger) }
               content.contentDescription = null
@@ -567,13 +582,15 @@ internal class ExperimentalRecyclerMountable(
                 content.setHasBeenDetachedFromWindow(false)
               }
             }
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             content.setSectionsRecyclerViewLogger(null)
             model.binder.unbind(content.recyclerView)
@@ -591,8 +608,8 @@ internal class ExperimentalRecyclerMountable(
           }
         }
 
-    private val ANIMATOR_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+    private val ANIMATOR_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
@@ -610,26 +627,28 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
-          ) {
+          ): Any? {
             content.setItemAnimator(
                 if (model.itemAnimator != ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR)
                     model.itemAnimator
                 else NoUpdateItemAnimator())
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             content.resetItemAnimator()
           }
         }
 
     private val CONSTANT_PROPS_MOUNT_BINDER_WITHOUT_ANIMATOR:
-        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView, Any?> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
@@ -663,7 +682,7 @@ internal class ExperimentalRecyclerMountable(
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
-          ) {
+          ): Any? {
             with(model) {
               contentDescription?.let {
                 content.recyclerView.contentDescription = contentDescription
@@ -693,13 +712,15 @@ internal class ExperimentalRecyclerMountable(
               }
               content.setColorSchemeColors(refreshProgressBarColor)
             }
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: SectionsRecyclerView,
               model: ExperimentalRecyclerMountable,
-              layoutData: Any?
+              layoutData: Any?,
+              bindData: Any?
           ) {
             content.recyclerView.id = View.NO_ID
             model.refreshProgressBarBackgroundColor?.let {

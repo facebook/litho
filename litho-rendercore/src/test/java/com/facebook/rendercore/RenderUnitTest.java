@@ -194,7 +194,7 @@ public class RenderUnitTest {
   @Test
   public void testUpdateExtensionsWithFixedBinders_WillBeDoneInCorrectOrder() {
     final List<TestBinder<?>> binders = new ArrayList<>();
-    final List<RenderUnit.DelegateBinder<?, ? super View>> fixedMountBinders = new ArrayList<>();
+    final List<RenderUnit.DelegateBinder<?, ? super View, ?>> fixedMountBinders = new ArrayList<>();
     for (int i = 0; i < 64; i++) {
       final TestBinder1 binder = new TestBinder1(mBindOrder, mUnbindOrder);
       binders.add(binder);
@@ -318,7 +318,7 @@ public class RenderUnitTest {
 
   @Test
   public void testAdd64FixedMountBinders_shouldNotCrash() {
-    final List<RenderUnit.DelegateBinder<?, ? super View>> fixedMountBinders = new ArrayList<>();
+    final List<RenderUnit.DelegateBinder<?, ? super View, ?>> fixedMountBinders = new ArrayList<>();
     for (int i = 0; i < 64; i++) {
       fixedMountBinders.add(createDelegateBinder(new TestRenderUnit(), new TestBinder1()));
     }
@@ -327,7 +327,7 @@ public class RenderUnitTest {
 
   @Test(expected = IllegalStateException.class)
   public void testAdd65FixedMountBinders_shouldCrash() {
-    final List<RenderUnit.DelegateBinder<?, ? super View>> fixedMountBinders = new ArrayList<>();
+    final List<RenderUnit.DelegateBinder<?, ? super View, ?>> fixedMountBinders = new ArrayList<>();
     for (int i = 0; i < 65; i++) {
       fixedMountBinders.add(createDelegateBinder(new TestRenderUnit(), new TestBinder1()));
     }

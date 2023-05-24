@@ -41,10 +41,10 @@ class MountConfigurationScope<ContentType : Any> {
    */
   var description: String? = null
 
-  internal val fixedBinders: List<RenderUnit.DelegateBinder<*, ContentType>>
+  internal val fixedBinders: List<RenderUnit.DelegateBinder<*, ContentType, *>>
     get() = _fixedBinders
 
-  private val _fixedBinders = mutableListOf<RenderUnit.DelegateBinder<*, ContentType>>()
+  private val _fixedBinders = mutableListOf<RenderUnit.DelegateBinder<*, ContentType, *>>()
 
   /**
    * Creates a binding between the value, and the content’s property. Allows for specifying custom
@@ -64,7 +64,7 @@ class MountConfigurationScope<ContentType : Any> {
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
-            object : RenderUnit.Binder<Array<out Any?>, ContentType> {
+            object : RenderUnit.Binder<Array<out Any?>, ContentType, Any?> {
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
                   newModel: Array<out Any?>?,
@@ -90,15 +90,17 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: Array<out Any?>?,
                   layoutData: Any?
-              ) {
+              ): Any? {
                 unbindFunc = bindScope.bindCall(content)
+                return null
               }
 
               override fun unbind(
                   context: Context?,
                   content: ContentType,
                   model: Array<out Any?>?,
-                  layoutData: Any?
+                  layoutData: Any?,
+                  bindData: Any?
               ) {
                 unbindFunc?.onUnbind()
               }
@@ -128,7 +130,7 @@ class MountConfigurationScope<ContentType : Any> {
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
-            object : RenderUnit.Binder<Array<out Any?>, ContentType> {
+            object : RenderUnit.Binder<Array<out Any?>, ContentType, Any?> {
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
                   newModel: Array<out Any?>?,
@@ -163,15 +165,17 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: Array<out Any?>?,
                   layoutData: Any?
-              ) {
+              ): Any? {
                 unbindFunc = bindScope.bindCall(content, layoutData as LayoutDataT)
+                return null
               }
 
               override fun unbind(
                   context: Context?,
                   content: ContentType,
                   model: Array<out Any?>?,
-                  layoutData: Any?
+                  layoutData: Any?,
+                  bindData: Any?
               ) {
                 unbindFunc?.onUnbind()
               }
@@ -188,7 +192,7 @@ class MountConfigurationScope<ContentType : Any> {
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
-            object : RenderUnit.Binder<T, ContentType> {
+            object : RenderUnit.Binder<T, ContentType, Any?> {
               override fun shouldUpdate(
                   currentModel: T,
                   newModel: T,
@@ -203,15 +207,17 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: T,
                   layoutData: Any?
-              ) {
+              ): Any? {
                 setter(content, model)
+                return null
               }
 
               override fun unbind(
                   context: Context?,
                   content: ContentType,
                   model: T,
-                  layoutData: Any?
+                  layoutData: Any?,
+                  bindData: Any?
               ) {
                 setter(content, defaultValue)
               }
@@ -228,7 +234,7 @@ class MountConfigurationScope<ContentType : Any> {
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
-            object : RenderUnit.Binder<T, ContentType> {
+            object : RenderUnit.Binder<T, ContentType, Any?> {
               override fun shouldUpdate(
                   currentModel: T,
                   newModel: T,
@@ -243,15 +249,17 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: T,
                   layoutData: Any?
-              ) {
+              ): Any? {
                 setter.set(content, model)
+                return null
               }
 
               override fun unbind(
                   context: Context?,
                   content: ContentType,
                   model: T,
-                  layoutData: Any?
+                  layoutData: Any?,
+                  bindData: Any?
               ) {
                 setter.set(content, defaultValue)
               }

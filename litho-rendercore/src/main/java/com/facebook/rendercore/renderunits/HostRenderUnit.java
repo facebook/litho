@@ -182,14 +182,14 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
     mOnTouchListener = onTouchListener;
   }
 
-  public static Binder<HostRenderUnit, HostView> sBackgroundBindFunction =
-      new Binder<HostRenderUnit, HostView>() {
+  public static Binder<HostRenderUnit, HostView, Void> sBackgroundBindFunction =
+      new Binder<HostRenderUnit, HostView, Void>() {
         @Override
         public boolean shouldUpdate(
             HostRenderUnit currentValue,
             HostRenderUnit newValue,
-            Object currentLayoutData,
-            Object nextLayoutData) {
+            @Nullable Object currentLayoutData,
+            @Nullable Object nextLayoutData) {
           final Drawable currentBackground = currentValue.mBackground;
           final Drawable newBackground = newValue.mBackground;
           if (currentBackground == null) {
@@ -200,26 +200,34 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
         }
 
         @Override
-        public void bind(
-            Context context, HostView hostView, HostRenderUnit hostRenderUnit, Object layoutData) {
+        public Void bind(
+            Context context,
+            HostView hostView,
+            HostRenderUnit hostRenderUnit,
+            @Nullable Object layoutData) {
           hostView.setBackground(hostRenderUnit.getBackground());
+          return null;
         }
 
         @Override
         public void unbind(
-            Context context, HostView hostView, HostRenderUnit hostRenderUnit, Object layoutData) {
+            Context context,
+            HostView hostView,
+            HostRenderUnit hostRenderUnit,
+            @Nullable Object layoutData,
+            Void bindData) {
           hostView.setBackground(null);
         }
       };
 
-  public static Binder<HostRenderUnit, HostView> sForegroundBindFunction =
-      new Binder<HostRenderUnit, HostView>() {
+  public static Binder<HostRenderUnit, HostView, Void> sForegroundBindFunction =
+      new Binder<HostRenderUnit, HostView, Void>() {
         @Override
         public boolean shouldUpdate(
             HostRenderUnit currentValue,
             HostRenderUnit newValue,
-            Object currentLayoutData,
-            Object nextLayoutData) {
+            @Nullable Object currentLayoutData,
+            @Nullable Object nextLayoutData) {
           final Drawable currentForeground = currentValue.mForeground;
           final Drawable newForeground = newValue.mForeground;
           if (currentForeground == null) {
@@ -230,20 +238,28 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
         }
 
         @Override
-        public void bind(
-            Context context, HostView hostView, HostRenderUnit hostRenderUnit, Object layoutData) {
+        public Void bind(
+            Context context,
+            HostView hostView,
+            HostRenderUnit hostRenderUnit,
+            @Nullable Object layoutData) {
           hostView.setForegroundCompat(hostRenderUnit.getForeground());
+          return null;
         }
 
         @Override
         public void unbind(
-            Context context, HostView hostView, HostRenderUnit hostRenderUnit, Object layoutData) {
+            Context context,
+            HostView hostView,
+            HostRenderUnit hostRenderUnit,
+            @Nullable Object layoutData,
+            Void bindData) {
           hostView.setForegroundCompat(null);
         }
       };
 
-  public static Binder<HostRenderUnit, HostView> sLayerTypeBindFunction =
-      new Binder<HostRenderUnit, HostView>() {
+  public static Binder<HostRenderUnit, HostView, Void> sLayerTypeBindFunction =
+      new Binder<HostRenderUnit, HostView, Void>() {
 
         @Override
         public boolean shouldUpdate(
@@ -255,12 +271,13 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
         }
 
         @Override
-        public void bind(
+        public Void bind(
             Context context,
             HostView hostView,
             HostRenderUnit hostRenderUnit,
             @Nullable Object layoutData) {
           hostView.setLayerType(hostRenderUnit.getLayerType(), null);
+          return null;
         }
 
         @Override
@@ -268,26 +285,30 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
             Context context,
             HostView hostView,
             HostRenderUnit hostRenderUnit,
-            @Nullable Object layoutData) {
+            @Nullable Object layoutData,
+            Void bindData) {
           hostView.setLayerType(View.LAYER_TYPE_NONE, null);
         }
       };
 
-  public static Binder<HostRenderUnit, HostView> sTouchHandlersBindFunction =
-      new Binder<HostRenderUnit, HostView>() {
+  public static Binder<HostRenderUnit, HostView, Void> sTouchHandlersBindFunction =
+      new Binder<HostRenderUnit, HostView, Void>() {
         @Override
         public boolean shouldUpdate(
             HostRenderUnit currentValue,
             HostRenderUnit newValue,
-            Object currentLayoutData,
-            Object nextLayoutData) {
+            @Nullable Object currentLayoutData,
+            @Nullable Object nextLayoutData) {
           // Updating touch and click listeners is not an expensive operation.
           return true;
         }
 
         @Override
-        public void bind(
-            Context context, HostView hostView, HostRenderUnit hostRenderUnit, Object layoutData) {
+        public Void bind(
+            Context context,
+            HostView hostView,
+            HostRenderUnit hostRenderUnit,
+            @Nullable Object layoutData) {
           hostView.setOnTouchListener(hostRenderUnit.getOnTouchListener());
           hostView.setInterceptTouchEventHandler(hostRenderUnit.getOnInterceptTouchEvent());
           final OnClickListener onClickListener = hostRenderUnit.getOnClickListener();
@@ -310,11 +331,16 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
           if (clickable != UNSET) {
             hostView.setClickable(clickable == SET_TRUE);
           }
+          return null;
         }
 
         @Override
         public void unbind(
-            Context context, HostView hostView, HostRenderUnit hostRenderUnit, Object layoutData) {
+            Context context,
+            HostView hostView,
+            HostRenderUnit hostRenderUnit,
+            @Nullable Object layoutData,
+            Void bindData) {
           hostView.setOnTouchListener(null);
           hostView.setInterceptTouchEventHandler(null);
           hostView.setOnClickListener(null);

@@ -1072,7 +1072,7 @@ class NonLithoViewMountable(
     addOptionalMountBinder(
         createDelegateBinder(
             this,
-            object : Binder<NonLithoViewMountable, View> {
+            object : Binder<NonLithoViewMountable, View, Any?> {
               override fun shouldUpdate(
                   currentModel: NonLithoViewMountable,
                   newModel: NonLithoViewMountable,
@@ -1092,16 +1092,18 @@ class NonLithoViewMountable(
                   content: View?,
                   model: NonLithoViewMountable?,
                   layoutData: Any?
-              ) {
+              ): Any? {
                 steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
                 layoutData as TestLayoutData
+                return null
               }
 
               override fun unbind(
                   context: Context?,
                   content: View?,
                   model: NonLithoViewMountable?,
-                  layoutData: Any?
+                  layoutData: Any?,
+                  bindData: Any?
               ) {
                 steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT))
                 layoutData as TestLayoutData

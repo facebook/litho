@@ -34,7 +34,7 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
   init {
     addOptionalMountBinder(
         DelegateBinder.createDelegateBinder(
-            this, BINDER as Binder<SimpleMountable<ContentT>, ContentT>))
+            this, BINDER as Binder<SimpleMountable<ContentT>, ContentT, Any?>))
   }
 
   final override fun measure(
@@ -83,8 +83,8 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
   }
 }
 
-private val BINDER: RenderUnit.Binder<*, *> =
-    object : RenderUnit.Binder<SimpleMountable<Any>, Any> {
+private val BINDER: RenderUnit.Binder<*, *, *> =
+    object : RenderUnit.Binder<SimpleMountable<Any>, Any, Any?> {
       override fun shouldUpdate(
           currentMountable: SimpleMountable<Any>,
           newMountable: SimpleMountable<Any>,
@@ -104,15 +104,17 @@ private val BINDER: RenderUnit.Binder<*, *> =
           content: Any,
           mountable: SimpleMountable<Any>,
           layoutData: Any?
-      ) {
+      ): Any? {
         mountable.mount(context, content, layoutData)
+        return null
       }
 
       override fun unbind(
           context: Context,
           content: Any,
           mountable: SimpleMountable<Any>,
-          layoutData: Any?
+          layoutData: Any?,
+          bindData: Any?
       ) {
         mountable.unmount(context, content, layoutData)
       }

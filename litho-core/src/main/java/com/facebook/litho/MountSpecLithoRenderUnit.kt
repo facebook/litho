@@ -116,8 +116,8 @@ private constructor(
     const val STATE_UPDATED = 1
     const val STATE_DIRTY = 2
 
-    val mountBinder: Binder<MountSpecLithoRenderUnit, Any> =
-        object : Binder<MountSpecLithoRenderUnit, Any> {
+    val mountBinder: Binder<MountSpecLithoRenderUnit, Any, Any?> =
+        object : Binder<MountSpecLithoRenderUnit, Any, Any?> {
           override fun shouldUpdate(
               current: MountSpecLithoRenderUnit,
               next: MountSpecLithoRenderUnit,
@@ -135,32 +135,34 @@ private constructor(
               context: Context,
               content: Any,
               unit: MountSpecLithoRenderUnit,
-              data: Any?,
-          ) {
+              layoutData: Any?,
+          ): Any? {
             val component = unit.component
             (component as SpecGeneratedComponent).mount(
                 getComponentContext(unit),
                 content,
-                getInterStageProps(data),
+                getInterStageProps(layoutData),
             )
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: Any,
               unit: MountSpecLithoRenderUnit,
-              data: Any?,
+              layoutData: Any?,
+              bindData: Any?
           ) {
             (unit.component as SpecGeneratedComponent).unmount(
                 getComponentContext(unit),
                 content,
-                getInterStageProps(data),
+                getInterStageProps(layoutData),
             )
           }
         }
 
-    val binderBinder: Binder<MountSpecLithoRenderUnit, Any> =
-        object : Binder<MountSpecLithoRenderUnit, Any> {
+    val binderBinder: Binder<MountSpecLithoRenderUnit, Any, Any?> =
+        object : Binder<MountSpecLithoRenderUnit, Any, Any?> {
           override fun shouldUpdate(
               current: MountSpecLithoRenderUnit,
               next: MountSpecLithoRenderUnit,
@@ -174,8 +176,8 @@ private constructor(
               context: Context,
               content: Any,
               unit: MountSpecLithoRenderUnit,
-              data: Any?,
-          ) {
+              layoutData: Any?,
+          ): Any? {
             if (content is Drawable) {
               if (content.callback is View) {
                 val view = content.callback as View?
@@ -185,20 +187,22 @@ private constructor(
             (unit.component as SpecGeneratedComponent).bind(
                 getComponentContext(unit),
                 content,
-                getInterStageProps(data),
+                getInterStageProps(layoutData),
             )
+            return null
           }
 
           override fun unbind(
               context: Context,
               content: Any,
               unit: MountSpecLithoRenderUnit,
-              data: Any?,
+              layoutData: Any?,
+              bindData: Any?,
           ) {
             (unit.component as SpecGeneratedComponent).unbind(
                 getComponentContext(unit),
                 content,
-                getInterStageProps(data),
+                getInterStageProps(layoutData),
             )
           }
         }

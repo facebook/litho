@@ -13,14 +13,14 @@ class TestRenderUnit extends RenderUnit<View> implements ContentAllocator<View> 
     super(RenderType.VIEW);
   }
 
-  public TestRenderUnit(List<DelegateBinder<?, ? super View>> fixedMountBinders) {
+  public TestRenderUnit(List<DelegateBinder<?, ? super View, ?>> fixedMountBinders) {
     super(RenderType.VIEW, fixedMountBinders, Collections.emptyList(), Collections.emptyList());
   }
 
   public TestRenderUnit(
-      List<DelegateBinder<?, ? super View>> fixedMountBinders,
-      List<DelegateBinder<?, ? super View>> optionalMountBinders,
-      List<DelegateBinder<?, ? super View>> attachBinder) {
+      List<DelegateBinder<?, ? super View, ?>> fixedMountBinders,
+      List<DelegateBinder<?, ? super View, ?>> optionalMountBinders,
+      List<DelegateBinder<?, ? super View, ?>> attachBinder) {
     super(RenderType.VIEW, fixedMountBinders, optionalMountBinders, attachBinder);
   }
 

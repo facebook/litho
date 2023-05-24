@@ -27,17 +27,24 @@ import com.facebook.rendercore.RenderUnit
  */
 internal class DynamicValuesBinder<ContentT>(
     private val binders: ArrayList<DynamicPropsHolder<Any?, Mountable<*>>>
-) : RenderUnit.Binder<Mountable<*>, ContentT> {
+) : RenderUnit.Binder<Mountable<*>, ContentT, Any?> {
 
-  override fun bind(context: Context?, content: ContentT, model: Mountable<*>?, layoutData: Any?) {
+  override fun bind(
+      context: Context?,
+      content: ContentT,
+      model: Mountable<*>?,
+      layoutData: Any?
+  ): Any? {
     binders.forEach { it.bind(context, content, model, layoutData) }
+    return null
   }
 
   override fun unbind(
       context: Context?,
       content: ContentT,
       model: Mountable<*>?,
-      layoutData: Any?
+      layoutData: Any?,
+      bindData: Any?
   ) {
     binders.forEach { it.unbind(context, content, model, layoutData) }
   }

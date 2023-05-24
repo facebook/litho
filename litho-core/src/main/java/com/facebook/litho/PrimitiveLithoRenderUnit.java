@@ -128,7 +128,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
 
   @Override
   @Nullable
-  public <T extends Binder<?, ?>> T findAttachBinderByClass(Class<T> klass) {
+  public <T extends Binder<?, ?, ?>> T findAttachBinderByClass(Class<T> klass) {
     return mPrimitiveRenderUnit.findAttachBinderByClass(klass);
   }
 

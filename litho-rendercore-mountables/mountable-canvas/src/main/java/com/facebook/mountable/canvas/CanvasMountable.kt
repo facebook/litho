@@ -80,7 +80,7 @@ class CanvasMountable(
 }
 
 private val CANVAS_MODEL_BINDER =
-    object : RenderUnit.Binder<Unit, CanvasView> {
+    object : RenderUnit.Binder<Unit, CanvasView, Any?> {
       override fun shouldUpdate(
           currentModel: Unit,
           newModel: Unit,
@@ -92,17 +92,29 @@ private val CANVAS_MODEL_BINDER =
         return currentCanvasModel != newCanvasModel
       }
 
-      override fun bind(context: Context, content: CanvasView, model: Unit, layoutData: Any?) {
+      override fun bind(
+          context: Context,
+          content: CanvasView,
+          model: Unit,
+          layoutData: Any?
+      ): Any? {
         content.canvasModel = layoutData as CanvasModel
+        return null
       }
 
-      override fun unbind(context: Context, content: CanvasView, model: Unit, layoutData: Any?) {
+      override fun unbind(
+          context: Context,
+          content: CanvasView,
+          model: Unit,
+          layoutData: Any?,
+          bindData: Any?
+      ) {
         content.canvasModel = null
       }
     }
 
 private val CANVAS_LAYER_TYPE_BINDER =
-    object : RenderUnit.Binder<CanvasLayerType, CanvasView> {
+    object : RenderUnit.Binder<CanvasLayerType, CanvasView, Any?> {
       override fun shouldUpdate(
           currentModel: CanvasLayerType,
           newModel: CanvasLayerType,
@@ -117,19 +129,21 @@ private val CANVAS_LAYER_TYPE_BINDER =
           content: CanvasView,
           model: CanvasLayerType,
           layoutData: Any?
-      ) {
+      ): Any? {
         val canvasModel = layoutData as CanvasModel
         val layerType = model.toLayerType(canvasModel.needsSoftwareLayer())
         if (content.layerType != layerType) {
           content.setLayerType(layerType, null)
         }
+        return null
       }
 
       override fun unbind(
           context: Context,
           content: CanvasView,
           model: CanvasLayerType,
-          layoutData: Any?
+          layoutData: Any?,
+          bindData: Any?
       ) {
         content.setLayerType(View.LAYER_TYPE_NONE, null)
       }

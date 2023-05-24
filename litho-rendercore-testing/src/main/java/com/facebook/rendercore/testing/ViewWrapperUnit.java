@@ -64,16 +64,16 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
     return true;
   }
 
-  public ViewWrapperUnit addBindBinders(RenderUnit.Binder<ViewWrapperUnit, View>... binders) {
-    for (Binder<ViewWrapperUnit, View> binder : binders) {
+  public ViewWrapperUnit addBindBinders(RenderUnit.Binder<ViewWrapperUnit, View, Void>... binders) {
+    for (Binder<ViewWrapperUnit, View, Void> binder : binders) {
       super.addAttachBinder(createDelegateBinder(this, binder));
     }
 
     return this;
   }
 
-  public ViewWrapperUnit addMounBinders(RenderUnit.Binder<ViewWrapperUnit, View>... binders) {
-    for (Binder<ViewWrapperUnit, View> binder : binders) {
+  public ViewWrapperUnit addMounBinders(RenderUnit.Binder<ViewWrapperUnit, View, Void>... binders) {
+    for (Binder<ViewWrapperUnit, View, Void> binder : binders) {
       super.addOptionalMountBinder(createDelegateBinder(this, binder));
     }
 

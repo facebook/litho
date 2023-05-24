@@ -62,7 +62,7 @@ class MountBehavior<ContentType : Any>(
 
 abstract class PrimitiveRenderUnit<ContentType>(
     renderType: RenderType,
-    fixedMountBinders: List<DelegateBinder<*, ContentType>>,
+    fixedMountBinders: List<DelegateBinder<*, ContentType, *>>,
     private val doesMountRenderTreeHosts: Boolean
 ) :
     RenderUnit<ContentType>(

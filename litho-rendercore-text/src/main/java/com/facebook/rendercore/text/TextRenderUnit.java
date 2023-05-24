@@ -20,6 +20,7 @@ import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBi
 import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayoutContext;
@@ -48,23 +49,23 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
     return mId;
   }
 
-  public static Binder<TextRenderUnit, RCTextView> sMountUnmount =
-      new Binder<TextRenderUnit, RCTextView>() {
+  public static Binder<TextRenderUnit, RCTextView, Void> sMountUnmount =
+      new Binder<TextRenderUnit, RCTextView, Void>() {
         @Override
         public boolean shouldUpdate(
             TextRenderUnit currentValue,
             TextRenderUnit newValue,
-            Object currentLayoutData,
-            Object newLayoutData) {
+            @Nullable Object currentLayoutData,
+            @Nullable Object newLayoutData) {
           return true;
         }
 
         @Override
-        public void bind(
+        public Void bind(
             Context context,
             RCTextView textView,
             TextRenderUnit textRenderUnit,
-            Object layoutData) {
+            @Nullable Object layoutData) {
           if (layoutData == null) {
             throw new RuntimeException("Missing text layout context!");
           }
@@ -89,6 +90,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
           if (textLayoutContext.processedText instanceof MountableCharSequence) {
             ((MountableCharSequence) textLayoutContext.processedText).onMount(textView);
           }
+          return null;
         }
 
         @Override
@@ -96,7 +98,8 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
             Context context,
             RCTextView textView,
             TextRenderUnit textRenderUnit,
-            Object layoutData) {
+            @Nullable Object layoutData,
+            Void bindData) {
           textView.unmount();
           final TextLayoutContext textLayoutContext = (TextLayoutContext) layoutData;
 

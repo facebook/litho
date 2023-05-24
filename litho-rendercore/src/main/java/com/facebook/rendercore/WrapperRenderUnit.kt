@@ -36,15 +36,15 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
 
   override fun getDescription(): String = renderUnit.description
 
-  override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType>) {
+  override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType, *>) {
     super.addOptionalMountBinder(binder)
   }
 
-  override fun addAttachBinder(binder: DelegateBinder<*, in ContentType>) {
+  override fun addAttachBinder(binder: DelegateBinder<*, in ContentType, *>) {
     super.addAttachBinder(binder)
   }
 
-  override fun <T : Binder<*, *>> findAttachBinderByClass(klass: Class<T>): T? =
+  override fun <T : Binder<*, *, *>> findAttachBinderByClass(klass: Class<T>): T? =
       renderUnit.findAttachBinderByClass(klass) ?: super.findAttachBinderByClass(klass)
 
   override fun mountBinders(
