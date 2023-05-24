@@ -966,6 +966,60 @@ class PrimitiveComponentsTest {
 
     testView.lithoView.unmountAllItems()
   }
+
+  @Test
+  fun `Primitive remounting with the same props should preserve 'unbind' lambdas returned from original 'bind' calls`() {
+    val bindInfo = mutableListOf<String>()
+    val lv = LithoView(lithoViewRule.context)
+    // mount component
+    var testView =
+        lithoViewRule.render(lithoView = lv) {
+          TestPrimitiveWithTwoBindersComponent(text = "foo", contentDescription = "bar", bindInfo)
+        }
+    // remount with the same props
+    testView =
+        lithoViewRule.render(lithoView = lv) {
+          TestPrimitiveWithTwoBindersComponent(text = "foo", contentDescription = "bar", bindInfo)
+        }
+    // unmount component
+    testView.lithoView.unmountAllItems()
+    assertThat(bindInfo)
+        .containsExactly(
+            "BIND:text", "BIND:contentDescription", "UNBIND:contentDescription", "UNBIND:text")
+  }
+
+  @Test
+  fun `Primitive binding and unbinding two binders individually should preserve 'unbind' lambdas returned from original 'bind' calls`() {
+    val bindInfo = mutableListOf<String>()
+    val lv = LithoView(lithoViewRule.context)
+    // mount component
+    var testView =
+        lithoViewRule.render(lithoView = lv) {
+          TestPrimitiveWithTwoBindersComponent(text = "foo", contentDescription = "bar", bindInfo)
+        }
+    assertThat(bindInfo).containsExactly("BIND:text", "BIND:contentDescription")
+
+    // remount updating only first binder
+    bindInfo.clear()
+    testView =
+        lithoViewRule.render(lithoView = lv) {
+          TestPrimitiveWithTwoBindersComponent(text = "baz", contentDescription = "bar", bindInfo)
+        }
+    assertThat(bindInfo).containsExactly("UNBIND:text", "BIND:text")
+
+    // remount updating only second binder
+    bindInfo.clear()
+    testView =
+        lithoViewRule.render(lithoView = lv) {
+          TestPrimitiveWithTwoBindersComponent(text = "baz", contentDescription = "qux", bindInfo)
+        }
+    assertThat(bindInfo).containsExactly("UNBIND:contentDescription", "BIND:contentDescription")
+
+    // unmount component
+    bindInfo.clear()
+    testView.lithoView.unmountAllItems()
+    assertThat(bindInfo).containsExactly("UNBIND:contentDescription", "UNBIND:text")
+  }
 }
 
 class TestViewPrimitiveComponent(
@@ -1094,6 +1148,37 @@ class TestVerticalScrollPrimitiveComponent(
               }
             },
         style)
+  }
+}
+
+class TestPrimitiveWithTwoBindersComponent(
+    private val text: String,
+    private val contentDescription: String,
+    private val bindInfo: MutableList<String>
+) : PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+        layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+        mountBehavior =
+            MountBehavior(ViewAllocator { context -> TextView(context) }) {
+              bind(text) { content ->
+                bindInfo.add("BIND:text")
+                content.text = text
+                onUnbind {
+                  bindInfo.add("UNBIND:text")
+                  content.text = null
+                }
+              }
+              bindWithLayoutData<Any?>(contentDescription) { content, _ ->
+                bindInfo.add("BIND:contentDescription")
+                content.contentDescription = contentDescription
+                onUnbind {
+                  bindInfo.add("UNBIND:contentDescription")
+                  content.contentDescription = null
+                }
+              }
+            },
+        style = null)
   }
 }
 

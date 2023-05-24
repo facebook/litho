@@ -60,11 +60,10 @@ class MountConfigurationScope<ContentType : Any> {
    */
   fun bind(vararg deps: Any?, bindCall: BindScope.(content: ContentType) -> UnbindFunc) {
     val bindScope = BindScope()
-    var unbindFunc: UnbindFunc? = null
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
-            object : RenderUnit.Binder<Array<out Any?>, ContentType, Any?> {
+            object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
                   newModel: Array<out Any?>?,
@@ -90,9 +89,8 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: Array<out Any?>?,
                   layoutData: Any?
-              ): Any? {
-                unbindFunc = bindScope.bindCall(content)
-                return null
+              ): UnbindFunc {
+                return bindScope.bindCall(content)
               }
 
               override fun unbind(
@@ -100,9 +98,9 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: Array<out Any?>?,
                   layoutData: Any?,
-                  bindData: Any?
+                  unbindFunc: UnbindFunc
               ) {
-                unbindFunc?.onUnbind()
+                unbindFunc.onUnbind()
               }
             }))
   }
@@ -126,11 +124,10 @@ class MountConfigurationScope<ContentType : Any> {
       bindCall: BindScope.(content: ContentType, layoutData: LayoutDataT) -> UnbindFunc
   ) {
     val bindScope = BindScope()
-    var unbindFunc: UnbindFunc? = null
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
-            object : RenderUnit.Binder<Array<out Any?>, ContentType, Any?> {
+            object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
                   newModel: Array<out Any?>?,
@@ -165,9 +162,8 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: Array<out Any?>?,
                   layoutData: Any?
-              ): Any? {
-                unbindFunc = bindScope.bindCall(content, layoutData as LayoutDataT)
-                return null
+              ): UnbindFunc {
+                return bindScope.bindCall(content, layoutData as LayoutDataT)
               }
 
               override fun unbind(
@@ -175,9 +171,9 @@ class MountConfigurationScope<ContentType : Any> {
                   content: ContentType,
                   model: Array<out Any?>?,
                   layoutData: Any?,
-                  bindData: Any?
+                  unbindFunc: UnbindFunc
               ) {
-                unbindFunc?.onUnbind()
+                unbindFunc.onUnbind()
               }
             }))
   }
