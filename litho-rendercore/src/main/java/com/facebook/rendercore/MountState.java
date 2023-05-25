@@ -30,6 +30,7 @@ import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+import androidx.core.util.Preconditions;
 import com.facebook.rendercore.debug.DebugEvent;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -53,7 +54,7 @@ public class MountState implements MountDelegateTarget {
 
   private boolean mIsMounting;
   private boolean mNeedsRemount;
-  private RenderTree mRenderTree;
+  private @Nullable RenderTree mRenderTree;
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
 
@@ -144,6 +145,8 @@ public class MountState implements MountDelegateTarget {
       if (!updateRenderTree(renderTree)) {
         return;
       }
+
+      Preconditions.checkNotNull(mRenderTree);
 
       final boolean isTracing = mTracer.isTracing();
       if (isTracing) {
@@ -356,6 +359,11 @@ public class MountState implements MountDelegateTarget {
       }
 
       mNeedsRemount = true;
+
+      if (RenderCoreConfig.shouldClearRenderTreeOnUnmountAll) {
+        mRenderTree = null;
+      }
+
     } finally {
       if (RenderCoreConfig.shouldSetInLayoutDuringUnmountAll) {
         mRootHost.unsetInLayout();

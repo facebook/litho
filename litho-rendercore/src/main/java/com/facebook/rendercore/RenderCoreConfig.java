@@ -33,4 +33,7 @@ public class RenderCoreConfig {
    * so that layouts are not request when removing content from the hierarchy.
    */
   public static boolean shouldSetInLayoutDuringUnmountAll = false;
+
+  /** Enabling this will clear the render tree from the MountState when unmount all is invoked. */
+  public static boolean shouldClearRenderTreeOnUnmountAll = false;
 }
