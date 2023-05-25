@@ -906,7 +906,7 @@ public class MountStateTest {
   public void onAttachDetachMountState_MountStateShouldCallBindersAndPassBindData() {
     final Context c = RuntimeEnvironment.application;
 
-    final List<TestBinder<?>> bindOrder = new ArrayList<>();
+    final List<Pair<Object, Object>> bindOrder = new ArrayList<>();
     final List<Pair<Object, Object>> unbindOrder = new ArrayList<>();
 
     TestBinderWithBindData bindBinder = new TestBinderWithBindData<>(bindOrder, unbindOrder, 1);
@@ -934,11 +934,10 @@ public class MountStateTest {
     // assert mount state is correct
     assertThat(mountState.getMountItemCount()).isEqualTo(2);
 
-    // assert bind data is correct
-    final BindData bindData = mountState.getMountItemAt(1).getBindData();
-    assertThat(bindData.getFixedBindersBindData()).isNull();
-    assertThat(bindData.getOptionalMountBindersBindData().get(mountBinder.getClass())).isEqualTo(2);
-    assertThat(bindData.getAttachBindersBindData().get(bindBinder.getClass())).isEqualTo(1);
+    // assert that bind was called in correct order and correct bind data was returned
+    assertThat(bindOrder).hasSize(2);
+    assertThat(bindOrder.get(0).second).isEqualTo(2);
+    assertThat(bindOrder.get(1).second).isEqualTo(1);
 
     mountState.detach();
 
@@ -960,8 +959,13 @@ public class MountStateTest {
     final long id;
     MountState mountState;
 
-    final TestBinderWithBindData1 mountBinder = new TestBinderWithBindData1(1);
-    final TestBinderWithBindData1 attachBinder = new TestBinderWithBindData1(2);
+    final List<Pair<Object, Object>> bindOrder = new ArrayList<>();
+    final List<Pair<Object, Object>> unbindOrder = new ArrayList<>();
+
+    final TestBinderWithBindData1 mountBinder =
+        new TestBinderWithBindData1(bindOrder, unbindOrder, 1);
+    final TestBinderWithBindData1 attachBinder =
+        new TestBinderWithBindData1(bindOrder, unbindOrder, 2);
     {
       final TestNode root = new TestNode();
       final TestNode leaf = new TestNode(0, 0, 10, 10);
@@ -981,20 +985,14 @@ public class MountStateTest {
       // assert mount state is correct
       assertThat(mountState.getMountItemCount()).isEqualTo(2);
 
-      final BindData bindData = mountState.getMountItemAt(1).getBindData();
-
-      assertThat(bindData.getFixedBindersBindData()).isNull();
-
-      // assert optional mount binders bind data is correct
-      assertThat(bindData.getOptionalMountBindersBindData()).hasSize(1);
-      assertThat(bindData.getOptionalMountBindersBindData().get(mountBinder.getClass()))
-          .isEqualTo(1);
-
-      // assert attach binders bind data is correct
-      assertThat(bindData.getAttachBindersBindData()).hasSize(1);
-      assertThat(bindData.getAttachBindersBindData().get(attachBinder.getClass())).isEqualTo(2);
+      // assert that bind was called in correct order and correct bind data was returned
+      assertThat(bindOrder).hasSize(2);
+      assertThat(bindOrder.get(0).second).isEqualTo(1);
+      assertThat(bindOrder.get(1).second).isEqualTo(2);
     }
 
+    bindOrder.clear();
+    unbindOrder.clear();
     {
       final TestNode newRoot = new TestNode();
       final TestNode newLeaf = new TestNode(10, 10, 10, 10);
@@ -1002,12 +1000,17 @@ public class MountStateTest {
 
       newRoot.addChild(newLeaf);
 
-      final TestBinderWithBindData1 mountBinder1 = new TestBinderWithBindData1(10);
-      final TestBinderWithBindData2 mountBinder2 = new TestBinderWithBindData2(3);
+      final TestBinderWithBindData1 mountBinder1 =
+          new TestBinderWithBindData1(bindOrder, unbindOrder, 10);
+      final TestBinderWithBindData2 mountBinder2 =
+          new TestBinderWithBindData2(bindOrder, unbindOrder, 3);
 
-      final TestBinderWithBindData1 attachBinder1 = new TestBinderWithBindData1(20);
-      final TestBinderWithBindData2 attachBinder2 = new TestBinderWithBindData2(4);
-      final TestBinderWithBindData3 attachBinder3 = new TestBinderWithBindData3(5);
+      final TestBinderWithBindData1 attachBinder1 =
+          new TestBinderWithBindData1(bindOrder, unbindOrder, 20);
+      final TestBinderWithBindData2 attachBinder2 =
+          new TestBinderWithBindData2(bindOrder, unbindOrder, 4);
+      final TestBinderWithBindData3 attachBinder3 =
+          new TestBinderWithBindData3(bindOrder, unbindOrder, 5);
 
       final TestRenderUnit newRenderUnit = new TestRenderUnit();
       newRenderUnit.addOptionalMountBinders(
@@ -1027,25 +1030,19 @@ public class MountStateTest {
       // assert mount state is correct
       assertThat(mountState.getMountItemCount()).isEqualTo(2);
 
-      final BindData updatedBindData = mountState.getMountItemAt(1).getBindData();
+      // assert that unbind was called in correct order and correct bind data was passed after
+      // update
+      assertThat(unbindOrder).hasSize(2);
+      assertThat(unbindOrder.get(0).second).isEqualTo(2);
+      assertThat(unbindOrder.get(1).second).isEqualTo(1);
 
-      assertThat(updatedBindData.getFixedBindersBindData()).isNull();
-
-      // assert optional mount binders bind data is correct
-      assertThat(updatedBindData.getOptionalMountBindersBindData()).hasSize(2);
-      assertThat(updatedBindData.getOptionalMountBindersBindData().get(mountBinder1.getClass()))
-          .isEqualTo(10);
-      assertThat(updatedBindData.getOptionalMountBindersBindData().get(mountBinder2.getClass()))
-          .isEqualTo(3);
-
-      // assert attach binders bind data is correct
-      assertThat(updatedBindData.getAttachBindersBindData()).hasSize(3);
-      assertThat(updatedBindData.getAttachBindersBindData().get(attachBinder1.getClass()))
-          .isEqualTo(20);
-      assertThat(updatedBindData.getAttachBindersBindData().get(attachBinder2.getClass()))
-          .isEqualTo(4);
-      assertThat(updatedBindData.getAttachBindersBindData().get(attachBinder3.getClass()))
-          .isEqualTo(5);
+      // assert that bind was called in correct order and correct bind data was returned
+      assertThat(bindOrder).hasSize(5);
+      assertThat(bindOrder.get(0).second).isEqualTo(10);
+      assertThat(bindOrder.get(1).second).isEqualTo(3);
+      assertThat(bindOrder.get(2).second).isEqualTo(20);
+      assertThat(bindOrder.get(3).second).isEqualTo(4);
+      assertThat(bindOrder.get(4).second).isEqualTo(5);
     }
   }
 

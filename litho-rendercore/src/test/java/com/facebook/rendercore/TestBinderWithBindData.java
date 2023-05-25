@@ -121,7 +121,7 @@ public class TestBinderWithBindData<MODEL> implements RenderUnit.Binder<MODEL, V
 
   @Override
   public Object bind(Context context, View view, MODEL model, Object layoutData) {
-    bindOrder.add(this);
+    bindOrder.add(new Pair(this, bindData));
     wasBound = true;
     return bindData;
   }
