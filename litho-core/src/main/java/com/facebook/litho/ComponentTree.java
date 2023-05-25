@@ -153,6 +153,7 @@ public class ComponentTree
   private boolean mInAttach = false;
 
   @Nullable private final ComponentTreeTimeMachine mTimeMachine;
+  @Nullable private final ComponentTreeDebugEventsSubscriber mDebugEventsSubscriber;
 
   @Override
   public void onMovedToState(LithoLifecycle state) {
@@ -471,7 +472,9 @@ public class ComponentTree
             logTag,
             logger,
             renderUnitIdGenerator,
-            builder.visibilityBoundsTransformer);
+            builder.visibilityBoundsTransformer,
+            builder.componentTreeDebugEventListener);
+
     mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
 
     if (builder.mLifecycleProvider != null) {
@@ -482,6 +485,20 @@ public class ComponentTree
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
     } else {
       mTimeMachine = null;
+    }
+
+    if (config.debugEventListener != null) {
+      mDebugEventsSubscriber =
+          new ComponentTreeDebugEventsSubscriber(
+              mId,
+              config.debugEventListener.getEvents(),
+              debugEvent -> {
+                config.debugEventListener.onEvent(debugEvent);
+                return Unit.INSTANCE;
+              });
+      DebugEventBus.subscribe(mDebugEventsSubscriber);
+    } else {
+      mDebugEventsSubscriber = null;
     }
 
     if (ComponentsConfiguration.enableStateUpdatesBatching) {
@@ -2701,6 +2718,10 @@ public class ComponentTree
     }
 
     synchronized (this) {
+      if (mDebugEventsSubscriber != null) {
+        DebugEventBus.unsubscribe(mDebugEventsSubscriber);
+      }
+
       if (mBatchedStateUpdatesStrategy != null) {
         mBatchedStateUpdatesStrategy.release();
       }
@@ -3107,6 +3128,7 @@ public class ComponentTree
     @Nullable final ComponentsLogger logger;
     final RenderUnitIdGenerator renderUnitIdGenerator;
     @Nullable final VisibilityBoundsTransformer visibilityBoundsTransformer;
+    @Nullable final ComponentTreeDebugEventListener debugEventListener;
 
     public LithoConfiguration(
         final ComponentsConfiguration config,
@@ -3120,7 +3142,8 @@ public class ComponentTree
         String logTag,
         @Nullable ComponentsLogger logger,
         RenderUnitIdGenerator renderUnitIdGenerator,
-        @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer) {
+        @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer,
+        @Nullable ComponentTreeDebugEventListener debugEventListener) {
       this.mComponentsConfiguration = config;
       this.areTransitionsEnabled = areTransitionsEnabled;
       this.isReconciliationEnabled = isReconciliationEnabled;
@@ -3134,6 +3157,7 @@ public class ComponentTree
       this.logger = logger;
       this.renderUnitIdGenerator = renderUnitIdGenerator;
       this.visibilityBoundsTransformer = visibilityBoundsTransformer;
+      this.debugEventListener = debugEventListener;
     }
   }
 
@@ -3166,6 +3190,7 @@ public class ComponentTree
 
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
+    private @Nullable ComponentTreeDebugEventListener componentTreeDebugEventListener;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3193,6 +3218,12 @@ public class ComponentTree
 
     public Builder withLithoLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
       this.mLifecycleProvider = lifecycleProvider;
+      return this;
+    }
+
+    public Builder withComponentTreeDebugEventListener(
+        ComponentTreeDebugEventListener componentTreeDebugEventListener) {
+      this.componentTreeDebugEventListener = componentTreeDebugEventListener;
       return this;
     }
 

@@ -176,25 +176,6 @@ public class ComponentContext implements Cloneable {
     mLithoConfiguration = context.mLithoConfiguration;
   }
 
-  private static LithoConfiguration mergeConfigurationWithNewLogTagAndLogger(
-      LithoConfiguration lithoConfiguration,
-      @Nullable String logTag,
-      @Nullable ComponentsLogger logger) {
-    return new LithoConfiguration(
-        lithoConfiguration.mComponentsConfiguration,
-        lithoConfiguration.areTransitionsEnabled,
-        lithoConfiguration.isReconciliationEnabled,
-        lithoConfiguration.isVisibilityProcessingEnabled,
-        lithoConfiguration.isNullNodeEnabled,
-        lithoConfiguration.mountContentPreallocationHandler,
-        lithoConfiguration.incrementalMountEnabled,
-        lithoConfiguration.errorEventHandler,
-        logTag != null ? logTag : lithoConfiguration.logTag,
-        logger != null ? logger : lithoConfiguration.logger,
-        lithoConfiguration.renderUnitIdGenerator,
-        lithoConfiguration.visibilityBoundsTransformer);
-  }
-
   ComponentContext makeNewCopy() {
     return new ComponentContext(this);
   }

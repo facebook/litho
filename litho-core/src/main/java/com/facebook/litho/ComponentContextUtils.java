@@ -88,7 +88,8 @@ public class ComponentContextUtils {
         logTag != null ? logTag : lithoConfiguration.logTag,
         logger != null ? logger : lithoConfiguration.logger,
         lithoConfiguration.renderUnitIdGenerator,
-        lithoConfiguration.visibilityBoundsTransformer);
+        lithoConfiguration.visibilityBoundsTransformer,
+        lithoConfiguration.debugEventListener);
   }
 
   public static ComponentTree.LithoConfiguration buildDefaultLithoConfiguration(
@@ -121,6 +122,7 @@ public class ComponentContextUtils {
         treeID != ComponentTree.INVALID_ID
             ? new RenderUnitIdGenerator(treeID)
             : null, // TODO check if we can make this not nullable and always instantiate one
-        transformer);
+        transformer,
+        null);
   }
 }

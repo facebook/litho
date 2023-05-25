@@ -17,8 +17,15 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import android.os.Bundle
+import android.util.Log
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentTree
+import com.facebook.litho.ComponentTreeDebugEventListener
 import com.facebook.litho.LithoView
+import com.facebook.litho.debug.LithoDebugEvent.LayoutCommitted
+import com.facebook.litho.debug.LithoDebugEvent.StateUpdateEnqueued
+import com.facebook.rendercore.debug.DebugEvent
+import com.facebook.rendercore.debug.DebugEvent.Companion.MountItemMount
 import com.facebook.samples.litho.NavigatableDemoActivity
 
 class LoggingActivity : NavigatableDemoActivity() {
@@ -27,6 +34,21 @@ class LoggingActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
 
     val c = ComponentContext(this, "LITHOSAMPLE", SampleComponentsLogger())
-    setContentView(LithoView.create(c, LoggingRootComponent()))
+    val lithoView =
+        LithoView.create(
+            c,
+            ComponentTree.create(c, LoggingRootComponent())
+                .withComponentTreeDebugEventListener(
+                    object : ComponentTreeDebugEventListener {
+                      override fun onEvent(debugEvent: DebugEvent) {
+                        Log.d("litho-events", debugEvent.toString())
+                      }
+
+                      override val events: Set<String> =
+                          setOf(MountItemMount, StateUpdateEnqueued, LayoutCommitted)
+                    })
+                .build())
+
+    setContentView(lithoView)
   }
 }
