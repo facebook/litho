@@ -17,6 +17,8 @@
 package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentTreeDebugEventListener;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
@@ -46,6 +48,13 @@ public interface RenderInfo {
 
   @Nullable
   String getLogTag();
+
+  /**
+   * @return the {@link ComponentTreeDebugEventListener} that should be used on the {@link
+   *     ComponentTree} responsible for building this {@link RenderInfo}
+   */
+  @Nullable
+  ComponentTreeDebugEventListener getDebugEventListener();
 
   @Nullable
   EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler();

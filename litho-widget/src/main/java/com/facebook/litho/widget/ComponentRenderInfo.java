@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentTreeDebugEventListener;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EmptyComponent;
 import com.facebook.litho.EventHandler;
@@ -33,6 +34,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
   @Nullable private final EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;
   @Nullable private final ComponentsLogger mComponentsLogger;
   @Nullable private final String mLogTag;
+  @Nullable private final ComponentTreeDebugEventListener mDebugEventListener;
 
   public static Builder create() {
     return new Builder();
@@ -48,6 +50,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     mComponent = builder.mComponent;
     mRenderCompleteEventHandler = builder.mRenderCompleteEventEventHandler;
     mComponentsLogger = builder.mComponentsLogger;
+    mDebugEventListener = builder.mDebugEventListener;
     mLogTag = builder.mLogTag;
   }
 
@@ -75,6 +78,12 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
   @Nullable
   @Override
+  public ComponentTreeDebugEventListener getDebugEventListener() {
+    return mDebugEventListener;
+  }
+
+  @Nullable
+  @Override
   public String getLogTag() {
     return mLogTag;
   }
@@ -94,6 +103,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     private EventHandler<RenderCompleteEvent> mRenderCompleteEventEventHandler;
     @Nullable private ComponentsLogger mComponentsLogger;
     @Nullable private String mLogTag;
+    @Nullable private ComponentTreeDebugEventListener mDebugEventListener;
 
     /** Specify {@link Component} that will be rendered as an item of the list. */
     public Builder component(Component component) {
@@ -118,6 +128,11 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
     public Builder logTag(@Nullable String logTag) {
       this.mLogTag = logTag;
+      return this;
+    }
+
+    public Builder debugEventListener(ComponentTreeDebugEventListener debugEventListener) {
+      mDebugEventListener = debugEventListener;
       return this;
     }
 

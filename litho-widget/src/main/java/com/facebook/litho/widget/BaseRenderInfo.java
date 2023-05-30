@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentTreeDebugEventListener;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
@@ -133,6 +134,16 @@ public abstract class BaseRenderInfo implements RenderInfo {
   @Override
   @Nullable
   public ComponentsLogger getComponentsLogger() {
+    return null;
+  }
+
+  /**
+   * @return Optional {@link ComponentTreeDebugEventListener} if {@link RenderInfo} was created
+   *     through {@link ComponentRenderInfo#create()}, null otherwise
+   */
+  @Nullable
+  @Override
+  public ComponentTreeDebugEventListener getDebugEventListener() {
     return null;
   }
 
