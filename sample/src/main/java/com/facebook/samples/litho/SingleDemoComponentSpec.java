@@ -31,11 +31,13 @@ public class SingleDemoComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @Prop String title) {
-    return Text.create(c)
+    return PoliteComponentWrapper.create(c)
+      .content(
+        Text.create(c)
         .paddingDip(VERTICAL, 12)
         .paddingDip(LEFT, 16)
         .text(title)
-        .textSizeSp(16)
-        .build();
+        .textSizeSp(16))
+      .build();
   }
 }
