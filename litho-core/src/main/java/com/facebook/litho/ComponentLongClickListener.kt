@@ -14,32 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import static com.facebook.litho.EventDispatcherUtils.dispatchOnLongClick;
-
-import android.view.View;
-import androidx.annotation.Nullable;
+import android.view.View
 
 /** Long click listener that triggers its underlying event handler. */
-class ComponentLongClickListener implements View.OnLongClickListener {
+class ComponentLongClickListener : View.OnLongClickListener {
 
-  private @Nullable EventHandler<LongClickEvent> mEventHandler;
+  var eventHandler: EventHandler<LongClickEvent>? = null
 
-  @Override
-  public boolean onLongClick(View view) {
-    if (mEventHandler != null) {
-      return dispatchOnLongClick(mEventHandler, view);
-    }
-
-    return false;
-  }
-
-  EventHandler<LongClickEvent> getEventHandler() {
-    return mEventHandler;
-  }
-
-  void setEventHandler(@Nullable EventHandler<LongClickEvent> eventHandler) {
-    mEventHandler = eventHandler;
-  }
+  override fun onLongClick(view: View): Boolean =
+      if (eventHandler != null) {
+        EventDispatcherUtils.dispatchOnLongClick(eventHandler, view)
+      } else {
+        false
+      }
 }
