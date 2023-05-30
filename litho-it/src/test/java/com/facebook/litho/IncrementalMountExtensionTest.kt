@@ -23,6 +23,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.MountDelegateInput
 import com.facebook.rendercore.MountDelegateTarget
+import com.facebook.rendercore.RenderCoreSystrace
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension
@@ -55,6 +56,7 @@ class IncrementalMountExtensionTest {
     whenever(lithoView.height).thenReturn(50)
     val mountDelegate = mock<MountDelegate>()
     val mountDelegateTarget = mock<MountDelegateTarget>()
+    whenever(mountDelegate.tracer).thenReturn(RenderCoreSystrace.getInstance())
     whenever(mountDelegate.mountDelegateTarget).thenReturn(mountDelegateTarget)
     val extension = IncrementalMountExtension.getInstance()
     val extensionState = extension.createExtensionState(mountDelegate)
@@ -87,6 +89,7 @@ class IncrementalMountExtensionTest {
     whenever(lithoView.height).thenReturn(50)
     val mountDelegate = mock<MountDelegate>()
     val mountDelegateTarget = mock<MountDelegateTarget>()
+    whenever(mountDelegate.tracer).thenReturn(RenderCoreSystrace.getInstance())
     whenever(mountDelegate.mountDelegateTarget).thenReturn(mountDelegateTarget)
     val extension = IncrementalMountExtension.getInstance()
     mountDelegate.registerMountExtension(extension)

@@ -549,6 +549,10 @@ public class MountDelegate {
     return mMountDelegateTarget;
   }
 
+  public Systracer getTracer() {
+    return mTracer;
+  }
+
   @VisibleForTesting
   public int getRefCount(long id) {
     return mReferenceCountMap.get(id);

@@ -52,6 +52,10 @@ public class ExtensionState<State> {
     return mMountDelegate;
   }
 
+  public Systracer getTracer() {
+    return getMountDelegate().getTracer();
+  }
+
   public State getState() {
     return mState;
   }
