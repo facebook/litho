@@ -24,13 +24,16 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
+import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.IllegalSizeConstraintsException;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.SizeConstraints;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
@@ -639,8 +642,41 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         } else if (primitive != null) {
           context.setPreviousLayoutDataForCurrentNode(mLayoutData);
           context.setLayoutContextExtraData(new LithoLayoutContextExtraData(mYogaNode));
-          LayoutResult layoutResult =
-              primitive.calculateLayout((LayoutContext) context, widthSpec, heightSpec);
+          int primitiveWidthSpec = widthSpec;
+          int primitiveHeightSpec = heightSpec;
+          if (ComponentsConfiguration.enableSizeConstraintsClampSpecs) {
+            // Clamp width and height values from MeasureSpec to ([SizeConstraints.MaxValue] - 1) if
+            // it's >= [SizeConstraints.MaxValue]. See this analysis for more details:
+            // https://fburl.com/gdoc/rfwaielm
+            int widthMode = MeasureSpecUtils.getMode(widthSpec);
+            int widthFromSpec = MeasureSpecUtils.getSize(widthSpec);
+            if (widthFromSpec >= SizeConstraints.MaxValue) {
+              primitiveWidthSpec =
+                  View.MeasureSpec.makeMeasureSpec(SizeConstraints.MaxValue - 1, widthMode);
+            }
+
+            int heightMode = MeasureSpecUtils.getMode(heightSpec);
+            int heightFromSpec = MeasureSpecUtils.getSize(heightSpec);
+            if (heightFromSpec >= SizeConstraints.MaxValue) {
+              primitiveHeightSpec =
+                  View.MeasureSpec.makeMeasureSpec(SizeConstraints.MaxValue - 1, heightMode);
+            }
+          }
+
+          LayoutResult layoutResult;
+          try {
+            layoutResult =
+                primitive.calculateLayout(
+                    (LayoutContext) context, primitiveWidthSpec, primitiveHeightSpec);
+          } catch (IllegalArgumentException exception) {
+            throw new IllegalSizeConstraintsException(
+                "Primitive.calculateLayout possibly called with incorrect MeasureSpecs. widthSpec: "
+                    + View.MeasureSpec.toString(primitiveWidthSpec)
+                    + " heightSpec: "
+                    + View.MeasureSpec.toString(primitiveHeightSpec),
+                exception);
+          }
+
           mLayoutData = layoutResult.getLayoutData();
           return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
         } else {

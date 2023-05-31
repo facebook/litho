@@ -17,6 +17,7 @@
 package com.facebook.rendercore
 
 import android.view.View
+import java.lang.RuntimeException
 
 /**
  * Size constraints for measuring layouts. The parent container can decide what [SizeConstraints]
@@ -271,3 +272,6 @@ fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
   return (width in sizeConstraints.minWidth..sizeConstraints.maxWidth) &&
       (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
 }
+
+class IllegalSizeConstraintsException(message: String?, cause: Throwable?) :
+    RuntimeException(message, cause)

@@ -62,14 +62,17 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.IllegalSizeConstraintsException;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.SizeConstraints;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -577,6 +580,26 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     if (c.getRenderContext().layoutStateContext.isReleased()) {
       throw new IllegalStateException(
           "Cannot calculate a layout with a released LayoutStateContext.");
+    }
+
+    if (ComponentsConfiguration.enablePrimitiveComponents
+        && !ComponentsConfiguration.enableSizeConstraintsClampSpecs) {
+      if (MeasureSpecUtils.getSize(widthSpec) >= SizeConstraints.MaxValue) {
+        throw new IllegalSizeConstraintsException(
+            "LithoNode.calculateLayout was called with large width value. widthSpec: "
+                + View.MeasureSpec.toString(widthSpec)
+                + " heightSpec: "
+                + View.MeasureSpec.toString(heightSpec),
+            null);
+      }
+      if (MeasureSpecUtils.getSize(heightSpec) >= SizeConstraints.MaxValue) {
+        throw new IllegalSizeConstraintsException(
+            "LithoNode.calculateLayout was called with large height value. widthSpec: "
+                + View.MeasureSpec.toString(widthSpec)
+                + " heightSpec: "
+                + View.MeasureSpec.toString(heightSpec),
+            null);
+      }
     }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
