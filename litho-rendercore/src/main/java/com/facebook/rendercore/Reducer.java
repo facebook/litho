@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.List;
  */
 public class Reducer {
 
-  public static final RenderUnit sRootHostRenderUnit = new RootHostRenderUnit();
+  @VisibleForTesting public static final RenderUnit sRootHostRenderUnit = new RootHostRenderUnit();
 
   private static void reduceTree(
       final Context context,
