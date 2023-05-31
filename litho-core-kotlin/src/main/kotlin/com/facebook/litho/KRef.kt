@@ -36,7 +36,8 @@ class Ref<T>(@UiThread value: T) {
     }
 
   private fun maybeAssertMainThread() {
-    if (ComponentsConfiguration.crashOnWrongUseRefUsage) {
+    if (ComponentsConfiguration.crashOnWrongUseRefUsage ||
+        ComponentsConfiguration.IS_INTERNAL_BUILD) {
       assertMainThread()
     }
   }
