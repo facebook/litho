@@ -481,6 +481,28 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
   }
 
   /**
+   * Asserts that the LithoView does not contain a Component with given props at any level of the
+   * hierarchy. This function uses DFS algorithm to go through the whole component tree
+   *
+   * @param kClass class of a component
+   * @param propsValuePairs Pairs of props and their expected values
+   */
+  public <T1, T2> LithoViewAssert doesNotHaveMatchingComponent(
+      KClass kClass, Pair<KProperty1<T2, T1>, T1>... propsValuePairs) {
+
+    List<Component> componentsList =
+        ComponentsFinderKt.findAllComponentsInLithoView(actual, kClass);
+    boolean hasMatchingProps = hasMatchingProps(componentsList, propsValuePairs);
+    Assertions.assertThat(hasMatchingProps)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to not contain component with given props, but the components that were found of given class: \n <%s> \ndid satisfy all those props: \n %s ",
+            actual, kClass.toString(), getPropsFormattedString(propsValuePairs))
+        .isFalse();
+
+    return this;
+  }
+
+  /**
    * Asserts that the LithoView contains a direct Component with given props
    *
    * @param kClass class of a component
