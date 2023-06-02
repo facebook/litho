@@ -303,12 +303,6 @@ public class ComponentsConfiguration {
 
   @Nullable public static ComponentsLogger sComponentsLogger;
 
-  private boolean mIsLayoutCancellationEnabled = false;
-
-  public boolean isLayoutCancellationEnabled() {
-    return mIsLayoutCancellationEnabled;
-  }
-
   /** Debug option to highlight interactive areas in mounted components. */
   public static boolean debugHighlightInteractiveBounds = false;
 
@@ -342,12 +336,6 @@ public class ComponentsConfiguration {
 
   private final boolean mShouldDisableBgFgOutputs;
 
-  private @Nullable ResolveCancellationStrategy mResolveCancellationStrategy = null;
-
-  public @Nullable ResolveCancellationStrategy getResolveCancellationStrategy() {
-    return mResolveCancellationStrategy;
-  }
-
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
@@ -368,8 +356,6 @@ public class ComponentsConfiguration {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mUseInterruptibleResolution = builder.mUseInterruptibleResolution;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
-    mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
-    mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
   }
@@ -385,8 +371,6 @@ public class ComponentsConfiguration {
   public static ComponentsConfiguration.Builder create(ComponentsConfiguration config) {
     return new Builder()
         .useCancelableLayoutFutures(config.getUseCancelableLayoutFutures())
-        .resolveCancellationStrategy(config.getResolveCancellationStrategy())
-        .isLayoutCancellationEnabled(config.isLayoutCancellationEnabled())
         .shouldAddHostViewForRootComponent(config.isShouldAddHostViewForRootComponent())
         .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs());
   }
@@ -398,7 +382,6 @@ public class ComponentsConfiguration {
     boolean mIsLayoutCancellationEnabled = false;
     boolean mShouldAddHostViewForRootComponent = false;
     boolean mShouldDisableBgFgOutputs = false;
-    @Nullable ResolveCancellationStrategy mResolveCancellationStrategy;
 
     protected Builder() {}
 
@@ -409,16 +392,6 @@ public class ComponentsConfiguration {
 
     public Builder useInterruptibleResolution(boolean enable) {
       this.mUseInterruptibleResolution = enable;
-      return this;
-    }
-
-    public Builder resolveCancellationStrategy(@Nullable ResolveCancellationStrategy strategy) {
-      mResolveCancellationStrategy = strategy;
-      return this;
-    }
-
-    public Builder isLayoutCancellationEnabled(boolean enabled) {
-      mIsLayoutCancellationEnabled = enabled;
       return this;
     }
 

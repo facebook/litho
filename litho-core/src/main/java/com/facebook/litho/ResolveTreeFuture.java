@@ -22,16 +22,12 @@ import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.litho.cancellation.ExecutionModeKt;
-import com.facebook.litho.cancellation.RequestMetadataSupplier;
-import com.facebook.litho.cancellation.ResolveMetadata;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import java.util.List;
 
-public class ResolveTreeFuture extends TreeFuture<ResolveResult>
-    implements RequestMetadataSupplier<ResolveMetadata> {
+public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   private final ComponentContext mComponentContext;
   private final Component mComponent;
   private final TreeState mTreeState;
@@ -46,8 +42,6 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
   // TODO(T137275959): Refactor sync render logic to remove sizes from resolved tree future
   @Deprecated private final int mSyncWidthSpec;
   @Deprecated private final int mSyncHeightSpec;
-
-  private final ResolveMetadata mResolveMetadata;
 
   public ResolveTreeFuture(
       final ComponentContext c,
@@ -105,13 +99,6 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
     mExtraAttribution = extraAttribution;
     mSyncWidthSpec = syncWidthSpec;
     mSyncHeightSpec = syncHeightSpec;
-    mResolveMetadata =
-        new ResolveMetadata(
-            resolveVersion,
-            component.getId(),
-            mComponentContext.getTreeProps(),
-            ExecutionModeKt.getExecutionMode(source),
-            source);
 
     // Allow interrupt to happen during tryRegisterForResponse when config is enabled.
     mEnableEarlyInterrupt = ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
@@ -133,16 +120,12 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
 
   @Override
   public int getVersion() {
-    return mResolveMetadata.getLocalVersion();
+    return mResolveVersion;
   }
 
   @Override
   public String getDescription() {
     return DESCRIPTION;
-  }
-
-  public ResolveMetadata getMetadata() {
-    return mResolveMetadata;
   }
 
   @Override
@@ -158,7 +141,11 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
 
     final ResolveTreeFuture thatRtf = (ResolveTreeFuture) that;
 
-    if (!mResolveMetadata.isEquivalentTo(thatRtf.mResolveMetadata)) {
+    if (mComponent.getId() != thatRtf.mComponent.getId()) {
+      return false;
+    }
+
+    if (mComponentContext.getTreeProps() != thatRtf.mComponentContext.getTreeProps()) {
       return false;
     }
 

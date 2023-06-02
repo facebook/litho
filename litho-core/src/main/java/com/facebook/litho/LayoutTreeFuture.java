@@ -20,16 +20,12 @@ import static android.content.Context.ACCESSIBILITY_SERVICE;
 
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.litho.cancellation.ExecutionModeKt;
-import com.facebook.litho.cancellation.LayoutMetadata;
-import com.facebook.litho.cancellation.RequestMetadataSupplier;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LayoutCache;
 
-public class LayoutTreeFuture extends TreeFuture<LayoutState>
-    implements RequestMetadataSupplier<LayoutMetadata> {
+public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final ResolveResult mResolveResult;
   private final @Nullable LayoutState mCurrentLayoutState;
   private final @Nullable DiffNode mDiffTreeRoot;
@@ -39,7 +35,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
   private final int mComponentTreeId;
   private final int mLayoutVersion;
   private final boolean mIsLayoutDiffingEnabled;
-  private LayoutMetadata mLayoutMetadata;
 
   public static final String DESCRIPTION = "layout";
 
@@ -65,13 +60,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
     mComponentTreeId = componentTreeId;
     mLayoutVersion = layoutVersion;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
-    mLayoutMetadata =
-        new LayoutMetadata(
-            layoutVersion,
-            widthSpec,
-            heightSpec,
-            resolveResult,
-            ExecutionModeKt.getExecutionMode(source));
   }
 
   @Override
@@ -81,12 +69,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
 
   @Override
   public int getVersion() {
-    return mLayoutMetadata.getLocalVersion();
-  }
-
-  @Override
-  public LayoutMetadata getMetadata() {
-    return mLayoutMetadata;
+    return mLayoutVersion;
   }
 
   @Override
@@ -115,7 +98,11 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
       return false;
     }
 
-    return mLayoutMetadata.isEquivalentTo(((LayoutTreeFuture) that).mLayoutMetadata);
+    final LayoutTreeFuture thatLtf = (LayoutTreeFuture) that;
+
+    return mWidthSpec == thatLtf.mWidthSpec
+        && mHeightSpec == thatLtf.mHeightSpec
+        && mResolveResult == thatLtf.mResolveResult;
   }
 
   /** Function to calculate a new layout. */

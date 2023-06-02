@@ -72,11 +72,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.annotations.MountSpec;
-import com.facebook.litho.cancellation.CancellationHelper;
-import com.facebook.litho.cancellation.LayoutCancellationPolicy;
-import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.ResolveCancellationStrategy;
 import com.facebook.litho.debug.AttributionUtils;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
@@ -398,8 +394,6 @@ public class ComponentTree
   }
 
   private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
-  private final @Nullable ResolveCancellationPolicy mResolveCancellationPolicy;
-  private final @Nullable LayoutCancellationPolicy mLayoutCancellationPolicy;
 
   public static Builder create(ComponentContext context) {
     return new ComponentTree.Builder(context);
@@ -505,29 +499,6 @@ public class ComponentTree
       mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
     } else {
       mBatchedStateUpdatesStrategy = null;
-    }
-
-    ResolveCancellationStrategy resolveCancellationStrategy =
-        config.mComponentsConfiguration.getResolveCancellationStrategy();
-    if (resolveCancellationStrategy == null) {
-      mResolveCancellationPolicy = null;
-    } else {
-      switch (resolveCancellationStrategy) {
-        case LIGHT:
-          mResolveCancellationPolicy = ResolveCancellationPolicy.Default.INSTANCE;
-          break;
-        case GREEDY:
-          mResolveCancellationPolicy = ResolveCancellationPolicy.Greedy.INSTANCE;
-          break;
-        default:
-          mResolveCancellationPolicy = null;
-      }
-    }
-
-    if (config.mComponentsConfiguration.isLayoutCancellationEnabled()) {
-      mLayoutCancellationPolicy = new LayoutCancellationPolicy.Default();
-    } else {
-      mLayoutCancellationPolicy = null;
     }
 
     if (ComponentsConfiguration.overrideLayoutDiffing != null) {
@@ -2276,26 +2247,13 @@ public class ComponentTree
             extraAttribution,
             source);
 
-    final TreeFuture.TreeFutureResult<ResolveResult> resolveResultHolder;
-
-    if (mResolveCancellationPolicy != null) {
-      resolveResultHolder =
-          CancellationHelper.trackAndRunTreeFutureWithCancellation(
-              treeFuture,
-              mResolveResultFutures,
-              source,
-              mResolveResultFutureLock,
-              mFutureExecutionListener,
-              mResolveCancellationPolicy);
-    } else {
-      resolveResultHolder =
-          TreeFuture.trackAndRunTreeFuture(
-              treeFuture,
-              mResolveResultFutures,
-              source,
-              mResolveResultFutureLock,
-              mFutureExecutionListener);
-    }
+    final TreeFuture.TreeFutureResult<ResolveResult> resolveResultHolder =
+        TreeFuture.trackAndRunTreeFuture(
+            treeFuture,
+            mResolveResultFutures,
+            source,
+            mResolveResultFutureLock,
+            mFutureExecutionListener);
 
     if (resolveResultHolder == null) {
       return;
@@ -2473,8 +2431,6 @@ public class ComponentTree
 
     resolveResult.treeState.registerLayoutState();
 
-    final TreeFuture.TreeFutureResult<LayoutState> layoutStateHolder;
-
     final LayoutTreeFuture layoutTreeFuture =
         new LayoutTreeFuture(
             resolveResult,
@@ -2488,24 +2444,13 @@ public class ComponentTree
             mIsLayoutDiffingEnabled,
             source);
 
-    if (mLayoutCancellationPolicy != null) {
-      layoutStateHolder =
-          CancellationHelper.trackAndRunTreeFutureWithCancellation(
-              layoutTreeFuture,
-              mLayoutTreeFutures,
-              source,
-              mLayoutStateFutureLock,
-              mFutureExecutionListener,
-              mLayoutCancellationPolicy);
-    } else {
-      layoutStateHolder =
-          TreeFuture.trackAndRunTreeFuture(
-              layoutTreeFuture,
-              mLayoutTreeFutures,
-              source,
-              mLayoutStateFutureLock,
-              mFutureExecutionListener);
-    }
+    final TreeFuture.TreeFutureResult<LayoutState> layoutStateHolder =
+        TreeFuture.trackAndRunTreeFuture(
+            layoutTreeFuture,
+            mLayoutTreeFutures,
+            source,
+            mLayoutStateFutureLock,
+            mFutureExecutionListener);
 
     if (layoutStateHolder == null) {
       return;
