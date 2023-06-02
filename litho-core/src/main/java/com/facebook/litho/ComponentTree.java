@@ -1487,19 +1487,17 @@ public class ComponentTree
   }
 
   private void dispatchStateUpdateEnqueuedEvent(String attribution, boolean isSynchronous) {
-    if (DebugEventBus.getEnabled()) {
-      DebugEventDispatcher.dispatch(
-          LithoDebugEvent.StateUpdateEnqueued,
-          () -> String.valueOf(mId),
-          attributes -> {
-            attributes.put(
-                LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
-            attributes.put(LithoDebugEventAttributes.Attribution, attribution);
-            attributes.put(
-                LithoDebugEventAttributes.StateUpdateType, isSynchronous ? "sync" : "async");
-            return Unit.INSTANCE;
-          });
-    }
+    DebugEventDispatcher.dispatch(
+        LithoDebugEvent.StateUpdateEnqueued,
+        () -> String.valueOf(mId),
+        attributes -> {
+          attributes.put(
+              LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
+          attributes.put(LithoDebugEventAttributes.Attribution, attribution);
+          attributes.put(
+              LithoDebugEventAttributes.StateUpdateType, isSynchronous ? "sync" : "async");
+          return Unit.INSTANCE;
+        });
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {

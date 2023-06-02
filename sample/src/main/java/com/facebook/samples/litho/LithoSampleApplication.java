@@ -38,8 +38,7 @@ public class LithoSampleApplication extends Application {
   public void onCreate() {
     super.onCreate();
 
-    DebugEventBus.setEnabled(true);
-    DebugEventBus.subscribe(DebugEventLogger::new);
+    DebugEventBus.subscribe(new DebugEventLogger());
 
     Fresco.initialize(this);
     SoLoader.init(this, false);

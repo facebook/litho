@@ -19,7 +19,6 @@ package com.facebook.rendercore.debug
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.rendercore.LogLevel
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
@@ -138,16 +137,6 @@ abstract class DebugEventSubscriber(vararg val events: String) {
 /** Object to dispatch debug events */
 object DebugEventDispatcher {
 
-  val enabledRef: AtomicBoolean = AtomicBoolean(false)
-
-  @JvmStatic
-  var enabled: Boolean
-    @JvmStatic get() = enabledRef.get()
-    @JvmStatic
-    set(value) {
-      enabledRef.set(value)
-    }
-
   private val minLogLevelRef = AtomicReference(LogLevel.DEBUG)
 
   @JvmStatic
@@ -171,7 +160,13 @@ object DebugEventDispatcher {
       logLevel: LogLevel = LogLevel.DEBUG,
       attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
   ) {
-    if (enabled && logLevel >= this.minLogLevel) {
+    if (logLevel < this.minLogLevel) {
+      return
+    }
+
+    val subscribersToNotify =
+        subscribers.filter { it.events.contains(type) || it.events.contains(DebugEvent.All) }
+    if (subscribersToNotify.isNotEmpty()) {
       val attributes = LinkedHashMap<String, Any?>()
       attributesAccumulator(attributes)
 
@@ -183,11 +178,7 @@ object DebugEventDispatcher {
               timestamp = timestamp,
               logLevel = logLevel,
           )
-      subscribers.forEach { subscriber ->
-        if (subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)) {
-          subscriber.onEvent(event)
-        }
-      }
+      subscribersToNotify.forEach { subscriber -> subscriber.onEvent(event) }
     }
   }
 
@@ -232,7 +223,7 @@ object DebugEventDispatcher {
    */
   @JvmStatic
   fun generateTraceIdentifier(type: String): Int? =
-      if (enabled && subscribers.any { type in it.events || DebugEvent.All in it.events }) {
+      if (subscribers.any { type in it.events || DebugEvent.All in it.events }) {
         lastTraceIdentifier.getAndIncrement()
       } else {
         null
@@ -305,12 +296,6 @@ object DebugEventDispatcher {
       attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
       block: (TraceScope?) -> T,
   ): T {
-
-    // run the block if the event bus is disabled
-    if (!enabled) {
-      return block(null)
-    }
-
     // find the subscribers listening for this event
     val subscribersToNotify =
         subscribers.filter { subscriber ->
@@ -375,25 +360,10 @@ object DebugEventDispatcher {
 
 /** Object to subscribe to debug events */
 object DebugEventBus {
-  var enabled: Boolean
-    @JvmStatic get() = DebugEventDispatcher.enabled
-    @JvmStatic
-    set(value) {
-      DebugEventDispatcher.enabled = value
-    }
-
-  @JvmStatic
-  inline fun subscribe(block: () -> DebugEventSubscriber) {
-    if (enabled) {
-      DebugEventDispatcher.subscribe(block())
-    }
-  }
 
   @JvmStatic
   inline fun subscribe(subscriber: DebugEventSubscriber) {
-    if (enabled) {
-      DebugEventDispatcher.subscribe(subscriber)
-    }
+    DebugEventDispatcher.subscribe(subscriber)
   }
 
   @JvmStatic

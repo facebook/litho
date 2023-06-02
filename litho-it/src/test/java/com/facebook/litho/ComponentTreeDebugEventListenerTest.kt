@@ -23,11 +23,8 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.debug.DebugEvent
-import com.facebook.rendercore.debug.DebugEventBus
 import com.facebook.rendercore.debug.DebugEventDispatcher
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,16 +33,6 @@ import org.junit.runner.RunWith
 class ComponentTreeDebugEventListenerTest {
 
   @get:Rule val rule = LithoViewRule()
-
-  @Before
-  fun setup() {
-    DebugEventBus.enabled = true
-  }
-
-  @After
-  fun tearDown() {
-    DebugEventBus.enabled = false
-  }
 
   @Test
   fun `should process events if associated with a ComponentTree`() {

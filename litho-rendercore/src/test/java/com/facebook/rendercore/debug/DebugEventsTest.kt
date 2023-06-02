@@ -1,4 +1,18 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.rendercore.debug
 
@@ -23,20 +37,18 @@ class DebugEventsTest {
 
   @Before
   fun before() {
-    DebugEventDispatcher.enabled = true
     DebugEventDispatcher.minLogLevel = LogLevel.DEBUG
   }
 
   @After
   fun after() {
     DebugEventBus.unsubscribeAll()
-    DebugEventDispatcher.enabled = false
   }
 
   @Test
   fun `test event should be dispatched to subscriber`() {
     var event: DebugEvent? = null
-    DebugEventBus.subscribe { TestEventSubscriber { e -> event = e } }
+    DebugEventBus.subscribe(TestEventSubscriber { e -> event = e })
 
     val timestamp = System.currentTimeMillis()
     DebugEventDispatcher.dispatch(
@@ -58,8 +70,8 @@ class DebugEventsTest {
   fun `test event should be dispatched to multiple subscribers`() {
     var eventToSub1: DebugEvent? = null
     var eventToSub2: DebugEvent? = null
-    DebugEventBus.subscribe { TestEventSubscriber { e -> eventToSub1 = e } }
-    DebugEventBus.subscribe { TestEventSubscriber { e -> eventToSub2 = e } }
+    DebugEventBus.subscribe(TestEventSubscriber { e -> eventToSub1 = e })
+    DebugEventBus.subscribe(TestEventSubscriber { e -> eventToSub2 = e })
 
     val timestamp = System.currentTimeMillis()
     DebugEventDispatcher.dispatch(
@@ -86,22 +98,57 @@ class DebugEventsTest {
   }
 
   @Test
-  fun `test event should not be dispatched to subscriber when dispatcher is disabled`() {
-    DebugEventDispatcher.enabled = false
+  fun `test event should not be created on dispatch if there are no subscribers`() {
+    var createdDebugEvent = false
 
-    var event: DebugEvent? = null
-    DebugEventBus.subscribe { TestEventSubscriber { e -> event = e } }
+    fun dispatchDebugEvent() {
+      DebugEventDispatcher.dispatch(
+          type = TestEvent,
+          renderStateId = {
+            createdDebugEvent = true
+            TestRenderStateId
+          })
+    }
 
-    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = { TestRenderStateId })
+    dispatchDebugEvent()
+    assertThat(createdDebugEvent).isFalse
 
-    assertThat(event).isNull()
+    DebugEventBus.subscribe(TestEventSubscriber { /* do nothing */})
+    dispatchDebugEvent()
+    assertThat(createdDebugEvent).isTrue
+  }
+
+  @Test
+  fun `test event should not be created on trace if there are no subscribers`() {
+    var createdDebugEvent = false
+    var traceBlockRan = false
+
+    fun runTrace() {
+      DebugEventDispatcher.trace(
+          type = TestEvent,
+          renderStateId = {
+            createdDebugEvent = true
+            TestRenderStateId
+          }) {
+            traceBlockRan = true
+          }
+    }
+
+    runTrace()
+    assertThat(createdDebugEvent).isFalse
+    assertThat(traceBlockRan).isTrue
+
+    DebugEventBus.subscribe(TestEventSubscriber { /* do nothing */})
+    runTrace()
+    assertThat(createdDebugEvent).isTrue
+    assertThat(traceBlockRan).isTrue
   }
 
   @Test
   fun `test event should not be dispatched to subscriber after unsubscribing`() {
     var event: DebugEvent? = null
     val subscriber = TestEventSubscriber { e -> event = e }
-    DebugEventBus.subscribe { subscriber }
+    DebugEventBus.subscribe(subscriber)
 
     DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = { TestRenderStateId })
 
@@ -119,7 +166,7 @@ class DebugEventsTest {
   fun `multiple test events should be dispatched to subscriber`() {
     val events = mutableListOf<DebugEvent>()
 
-    DebugEventBus.subscribe { TestEventSubscriber { e -> events.add(e) } }
+    DebugEventBus.subscribe(TestEventSubscriber { e -> events.add(e) })
 
     val timestamp = System.currentTimeMillis() - 1 // note: time in the past
     DebugEventDispatcher.dispatch(
@@ -152,14 +199,12 @@ class DebugEventsTest {
   @Test
   fun `test events should be dispatched to correct subscribers`() {
     var event: DebugEvent? = null
-    DebugEventBus.subscribe { TestEventSubscriber { e -> event = e } }
+    DebugEventBus.subscribe(TestEventSubscriber { e -> event = e })
 
     val notTestEvent = "Not${TestEvent}"
     var otherEvent: DebugEvent? = null
 
-    DebugEventBus.subscribe {
-      TestEventsSubscriber(notTestEvent, listener = { e -> otherEvent = e })
-    }
+    DebugEventBus.subscribe(TestEventsSubscriber(notTestEvent, listener = { e -> otherEvent = e }))
 
     DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = { TestRenderStateId })
 
@@ -174,7 +219,7 @@ class DebugEventsTest {
   fun `test event should be dispatched to all event subscriber`() {
     val events = mutableListOf<DebugEvent>()
 
-    DebugEventBus.subscribe { TestEventsSubscriber(All, listener = { e -> events.add(e) }) }
+    DebugEventBus.subscribe(TestEventsSubscriber(All, listener = { e -> events.add(e) }))
 
     DebugEventDispatcher.dispatch(type = "a", renderStateId = { TestRenderStateId })
     DebugEventDispatcher.dispatch(type = "b", renderStateId = { TestRenderStateId })
@@ -190,7 +235,7 @@ class DebugEventsTest {
     val traceTestAttrValue = "2"
 
     var event: DebugEvent? = null
-    DebugEventBus.subscribe { TestEventSubscriber { e -> event = e } }
+    DebugEventBus.subscribe(TestEventSubscriber { e -> event = e })
 
     val timestamp = System.currentTimeMillis() - 1 // note: time in the past
 
@@ -214,7 +259,7 @@ class DebugEventsTest {
   @Test
   fun `test event should be dispatched only if min log level is smaller than event log level`() {
     var event: DebugEvent? = null
-    DebugEventBus.subscribe { TestEventSubscriber { e -> event = e } }
+    DebugEventBus.subscribe(TestEventSubscriber { e -> event = e })
 
     DebugEventDispatcher.minLogLevel = LogLevel.VERBOSE
     DebugEventDispatcher.dispatch(
