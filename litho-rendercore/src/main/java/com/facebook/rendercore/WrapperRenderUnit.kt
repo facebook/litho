@@ -41,7 +41,7 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
   override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsOptionalMountBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.getSimpleName()} already exists in the wrapped ${renderUnit.getDescription()}")
+          "Binder ${binder.getDescription()} already exists in the wrapped ${renderUnit.getDescription()}")
     }
     super.addOptionalMountBinder(binder)
   }
@@ -49,7 +49,7 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
   override fun addAttachBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsAttachBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.getSimpleName()} already exists in the wrapped ${renderUnit.getDescription()}")
+          "Binder ${binder.getDescription()} already exists in the wrapped ${renderUnit.getDescription()}")
     }
     super.addAttachBinder(binder)
   }

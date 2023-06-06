@@ -64,6 +64,9 @@ class MountConfigurationScope<ContentType : Any> {
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
+
+              val lastBinderIndex: Int = _fixedBinders.size
+
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
                   newModel: Array<out Any?>?,
@@ -102,6 +105,10 @@ class MountConfigurationScope<ContentType : Any> {
               ) {
                 unbindFunc.onUnbind()
               }
+
+              override fun getDescription(): String {
+                return "#$lastBinderIndex"
+              }
             }))
   }
 
@@ -128,6 +135,9 @@ class MountConfigurationScope<ContentType : Any> {
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
+
+              val lastBinderIndex: Int = _fixedBinders.size
+
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
                   newModel: Array<out Any?>?,
@@ -175,6 +185,10 @@ class MountConfigurationScope<ContentType : Any> {
               ) {
                 unbindFunc.onUnbind()
               }
+
+              override fun getDescription(): String {
+                return "#$lastBinderIndex"
+              }
             }))
   }
 
@@ -189,6 +203,9 @@ class MountConfigurationScope<ContentType : Any> {
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
             object : RenderUnit.Binder<T, ContentType, Any?> {
+
+              val lastBinderIndex: Int = _fixedBinders.size
+
               override fun shouldUpdate(
                   currentModel: T,
                   newModel: T,
@@ -217,6 +234,10 @@ class MountConfigurationScope<ContentType : Any> {
               ) {
                 setter(content, defaultValue)
               }
+
+              override fun getDescription(): String {
+                return "#$lastBinderIndex"
+              }
             }))
   }
 
@@ -231,6 +252,9 @@ class MountConfigurationScope<ContentType : Any> {
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
             object : RenderUnit.Binder<T, ContentType, Any?> {
+
+              val lastBinderIndex: Int = _fixedBinders.size
+
               override fun shouldUpdate(
                   currentModel: T,
                   newModel: T,
@@ -258,6 +282,10 @@ class MountConfigurationScope<ContentType : Any> {
                   bindData: Any?
               ) {
                 setter.set(content, defaultValue)
+              }
+
+              override fun getDescription(): String {
+                return "#$lastBinderIndex"
               }
             }))
   }

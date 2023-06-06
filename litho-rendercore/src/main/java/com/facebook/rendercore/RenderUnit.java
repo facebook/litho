@@ -245,7 +245,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = 0; i < fixedMountBindersSize; i++) {
       final DelegateBinder binder = mFixedMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.mountFixedBinder:" + binder.getSimpleName());
+        tracer.beginSection(
+            sectionName(getDescription() + ":mount-fixed:" + binder.getDescription()));
       }
       @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
       bindData.setFixedBindersBindData(binderBindData, i, fixedMountBindersSize);
@@ -272,7 +273,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = 0; i < optionalMountBindersSize; i++) {
       final DelegateBinder binder = mOptionalMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.mountBinder:" + binder.getSimpleName());
+        tracer.beginSection(sectionName(getDescription() + ":mount:" + binder.getDescription()));
       }
       @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
       bindData.setOptionalMountBindersBindData(
@@ -294,7 +295,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = mFixedMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.unmountFixedBinder:" + binder.getSimpleName());
+        tracer.beginSection(
+            sectionName(getDescription() + ":unmount-fixed:" + binder.getDescription()));
       }
       binder.unbind(context, content, layoutData, bindData.removeFixedBinderBindData(i));
       if (isTracing) {
@@ -315,7 +317,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       for (int i = mOptionalMountBinders.size() - 1; i >= 0; i--) {
         final DelegateBinder binder = mOptionalMountBinders.get(i);
         if (isTracing) {
-          tracer.beginSection("RenderUnit.unmountBinder:" + binder.getSimpleName());
+          tracer.beginSection(
+              sectionName(getDescription() + ":unmount:" + binder.getDescription()));
         }
         binder.unbind(
             context,
@@ -347,7 +350,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = 0; i < attachBindersSize; i++) {
       final DelegateBinder binder = mAttachBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.attachBinder:" + binder.getSimpleName());
+        tracer.beginSection(sectionName(getDescription() + ":attach:" + binder.getDescription()));
       }
       @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
       bindData.setAttachBindersBindData(
@@ -373,7 +376,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = mAttachBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = mAttachBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.detachBinder:" + binder.getSimpleName());
+        tracer.beginSection(sectionName(getDescription() + ":detach:" + binder.getDescription()));
       }
       binder.unbind(
           context,
@@ -675,6 +678,14 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     return collection == null ? 0 : collection.size();
   }
 
+  private static String sectionName(final String name) {
+    if (name.length() <= MAX_DESCRIPTION_LENGTH) {
+      return name;
+    }
+
+    return name.substring(0, MAX_DESCRIPTION_LENGTH);
+  }
+
   /**
    * A binder is a pair of data Model and {@link Binder}. The binder will bind the model to a
    * matching content type defined.
@@ -718,8 +729,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       binder.unbind(context, content, model, layoutData, bindData);
     }
 
-    String getSimpleName() {
-      return CommonUtils.getSectionNameForTracing(binder.getClass());
+    String getDescription() {
+      return binder.getDescription();
     }
   }
 
@@ -755,5 +766,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
         final MODEL model,
         final @Nullable Object layoutData,
         final BIND_DATA bindData);
+
+    default String getDescription() {
+      return CommonUtils.getSectionNameForTracing(getClass());
+    }
   }
 }
