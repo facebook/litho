@@ -405,6 +405,11 @@ public class ComponentsConfiguration {
       return this;
     }
 
+    public Builder shouldReuseOutputs(boolean enabled) {
+      mShouldReuseOutputs = enabled;
+      return this;
+    }
+
     public ComponentsConfiguration build() {
       return new ComponentsConfiguration(this);
     }

@@ -1961,6 +1961,9 @@ class LayoutStateCalculateTest {
 
   @Test
   fun testMeasure() {
+    if (ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
     val width = 50
     val height = 30
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())

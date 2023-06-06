@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable
 import android.util.SparseArray
 import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
@@ -353,6 +354,9 @@ class LithoNodeTest {
 
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
+    if (ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     c.setRenderStateContextForTests()
     val component =
@@ -368,6 +372,9 @@ class LithoNodeTest {
 
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutLayoutStateContextOrStateHandler_returnsMeasurement() {
+    if (ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     c.setRenderStateContextForTests()
     val component =

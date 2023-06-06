@@ -29,6 +29,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.MountSpecInterStagePropsTester
 import com.facebook.litho.widget.MountSpecLifecycleTester
+import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import org.assertj.core.api.Assertions
@@ -63,11 +64,71 @@ class LayoutCachingTest {
             .build()
 
     legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps).contains(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
 
     lifecycleTracker.reset()
     caller.increment()
-    Assertions.assertThat(lifecycleTracker.steps).doesNotContain(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker.steps)
+        .describedAs(
+            "node with inter stage props doesn't need to be re-measured if layout caching is turned on")
+        .containsExactly(
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+  }
+
+  @Test
+  fun `unchanged node without inter state prop should not rebind when state updates`() {
+    if (!ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
+
+    val c = legacyLithoViewRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val caller = SimpleStateUpdateEmulatorSpec.Caller()
+    val component =
+        Column.create(c)
+            .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
+            .child(
+                MountSpecPureRenderLifecycleTester.create(c)
+                    .intrinsicSize(Size(100, 100))
+                    .lifecycleTracker(lifecycleTracker)
+                    .build())
+            .build()
+
+    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+
+    lifecycleTracker.reset()
+    caller.increment()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .describedAs(
+            "node without inter stage props doesn't need to rebind if layout caching is turned on")
+        .containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
   }
 
   @Test
@@ -86,26 +147,48 @@ class LayoutCachingTest {
             .child(
                 Column.create(c)
                     .child(
-                        MountSpecLifecycleTester.create(c)
+                        MountSpecPureRenderLifecycleTester.create(c)
                             .intrinsicSize(Size(100, 100))
                             .lifecycleTracker(lifecycleTracker1))
                     .child(
                         Column.create(c)
                             .child(
-                                MountSpecLifecycleTester.create(c)
+                                MountSpecPureRenderLifecycleTester.create(c)
                                     .intrinsicSize(Size(200, 200))
                                     .lifecycleTracker(lifecycleTracker2))))
             .build()
 
     legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    Assertions.assertThat(lifecycleTracker1.steps).contains(LifecycleStep.ON_MEASURE)
-    Assertions.assertThat(lifecycleTracker2.steps).contains(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker1.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker2.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
 
     lifecycleTracker1.reset()
     lifecycleTracker2.reset()
     caller.increment()
-    Assertions.assertThat(lifecycleTracker1.steps).doesNotContain(LifecycleStep.ON_MEASURE)
-    Assertions.assertThat(lifecycleTracker2.steps).doesNotContain(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker1.steps).containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
+    Assertions.assertThat(lifecycleTracker2.steps).containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
   }
 
   @Test
@@ -117,7 +200,7 @@ class LayoutCachingTest {
     val c = legacyLithoViewRule.context
     val lifecycleTracker = LifecycleTracker()
     val component =
-        MountSpecLifecycleTester.create(c)
+        MountSpecPureRenderLifecycleTester.create(c)
             .lifecycleTracker(lifecycleTracker)
             .intrinsicSize(Size(100, 100))
             .build()
@@ -129,11 +212,70 @@ class LayoutCachingTest {
         .setSizeSpecs(exactly(100), unspecified())
         .measure()
         .layout()
-    Assertions.assertThat(lifecycleTracker.steps).contains(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
 
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizeSpecs(exactly(200), unspecified()).measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps).contains(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.SHOULD_UPDATE,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+  }
+
+  @Test
+  fun `changing size spec but end up with same measured size should reuse render unit`() {
+    if (!ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
+
+    val c = legacyLithoViewRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker)
+            .intrinsicSize(Size(100, 100))
+            .build()
+
+    // Make the target component to be the root component and change the size spec
+    legacyLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(exactly(100), unspecified())
+        .measure()
+        .layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+
+    lifecycleTracker.reset()
+    legacyLithoViewRule.setSizeSpecs(unspecified(), unspecified()).measure().layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
   }
 
   @Test
@@ -152,19 +294,27 @@ class LayoutCachingTest {
             .build()
 
     legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps).contains(LifecycleStep.ON_PREPARE)
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
 
     lifecycleTracker.reset()
     caller.increment()
     Assertions.assertThat(lifecycleTracker.steps)
-        .doesNotContainSequence(LifecycleStep.ON_PREPARE, LifecycleStep.ON_MEASURE)
         .describedAs("prepare and measure should not be called for cached node")
-        .contains(LifecycleStep.ON_BIND)
-        .describedAs("prepared data should be present as the same as non-cached node")
+        .containsExactly(
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
   }
 
   @Test
-  fun `unchanged node should not be remeasured when the size of root node changes`() {
+  fun `unchanged node should not be reused when the size of root node changes`() {
     if (!ComponentsConfiguration.enableLayoutCaching) {
       return
     }
@@ -174,7 +324,7 @@ class LayoutCachingTest {
     val component =
         Column.create(c)
             .child(
-                MountSpecLifecycleTester.create(c)
+                MountSpecPureRenderLifecycleTester.create(c)
                     .lifecycleTracker(lifecycleTracker)
                     .maxWidthPx(200)
                     .maxHeightPx(200))
@@ -186,11 +336,22 @@ class LayoutCachingTest {
         .attachToWindow()
         .measure()
         .layout()
-    Assertions.assertThat(lifecycleTracker.steps).contains(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
 
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps).doesNotContain(LifecycleStep.ON_MEASURE)
+    Assertions.assertThat(lifecycleTracker.steps).containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
   }
 
   /**
@@ -243,16 +404,16 @@ class LayoutCachingTest {
     Assertions.assertThat(measuredSize.height).isEqualTo(height)
     Assertions.assertThat(
             getCountOfLifecycleSteps(lifecycleTracker1.steps, LifecycleStep.ON_MEASURE))
-        .isEqualTo(5)
         .describedAs("Ensure that all children are re-measured")
+        .isEqualTo(5)
     Assertions.assertThat(
             getCountOfLifecycleSteps(lifecycleTracker2.steps, LifecycleStep.ON_MEASURE))
-        .isEqualTo(5)
         .describedAs("Ensure that all children are re-measured")
+        .isEqualTo(5)
     Assertions.assertThat(
             getCountOfLifecycleSteps(lifecycleTracker3.steps, LifecycleStep.ON_MEASURE))
-        .isEqualTo(5)
         .describedAs("Ensure that all children are re-measured")
+        .isEqualTo(5)
   }
 
   private fun buildRecyclerCollectionComponent(
