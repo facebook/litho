@@ -950,9 +950,8 @@ class PrimitiveComponentsTest {
             val primitive =
                 Primitive(
                     layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
-                    MountBehavior(ViewAllocator { context -> TextView(context) }) {
-                      description = customDescription
-                    })
+                    MountBehavior(
+                        customDescription, ViewAllocator { context -> TextView(context) }) {})
 
             customRenderUnitDescription = primitive.renderUnit.description
 

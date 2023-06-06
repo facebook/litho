@@ -33,18 +33,16 @@ class MountConfigurationScope<ContentType : Any> {
    */
   var doesMountRenderTreeHosts: Boolean = false
 
-  /**
-   * A description of the underlying [RenderUnit]. Mainly for debugging purposes such as tracing and
-   * logs. Maximum description length is 127 characters. Everything above that will be truncated.
-   *
-   * Default is null.
-   */
-  var description: String? = null
-
   internal val fixedBinders: List<RenderUnit.DelegateBinder<*, ContentType, *>>
     get() = _fixedBinders
 
   private val _fixedBinders = mutableListOf<RenderUnit.DelegateBinder<*, ContentType, *>>()
+
+  /**
+   * Stores the current binder description which is used by a binder defined within
+   * withDescription{} block.
+   */
+  @PublishedApi internal var binderDescription: String? = null
 
   /**
    * Creates a binding between the value, and the content’s property. Allows for specifying custom
@@ -107,7 +105,7 @@ class MountConfigurationScope<ContentType : Any> {
               }
 
               override fun getDescription(): String {
-                return "#$lastBinderIndex"
+                return binderDescription ?: "#$lastBinderIndex"
               }
             }))
   }
@@ -187,7 +185,7 @@ class MountConfigurationScope<ContentType : Any> {
               }
 
               override fun getDescription(): String {
-                return "#$lastBinderIndex"
+                return binderDescription ?: "#$lastBinderIndex"
               }
             }))
   }
@@ -236,7 +234,7 @@ class MountConfigurationScope<ContentType : Any> {
               }
 
               override fun getDescription(): String {
-                return "#$lastBinderIndex"
+                return binderDescription ?: "#$lastBinderIndex"
               }
             }))
   }
@@ -285,7 +283,7 @@ class MountConfigurationScope<ContentType : Any> {
               }
 
               override fun getDescription(): String {
-                return "#$lastBinderIndex"
+                return binderDescription ?: "#$lastBinderIndex"
               }
             }))
   }
@@ -305,6 +303,23 @@ class MountConfigurationScope<ContentType : Any> {
    * @param setter property reference that will set the value on the content
    */
   inline fun <T> T.bindTo(setter: KMutableProperty1<ContentType, T?>) = bindTo(setter, null)
+
+  /**
+   * Sets the description on the [RenderUnit.Binder] defined within [binderCall]. Descriptions are
+   * used mainly for debugging purposes such as tracing and logs. Maximum description length is 127
+   * characters. Everything above that will be truncated.
+   */
+  inline fun withDescription(
+      description: String,
+      binderCall: MountConfigurationScope<ContentType>.() -> Unit
+  ) {
+    try {
+      binderDescription = description.take(RenderUnit.MAX_DESCRIPTION_LENGTH)
+      this.binderCall()
+    } finally {
+      binderDescription = null
+    }
+  }
 
   /**
    * Creates a binding between the value, and the content’s property. Allows for specifying custom

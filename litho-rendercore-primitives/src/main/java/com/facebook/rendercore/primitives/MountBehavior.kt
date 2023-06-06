@@ -27,14 +27,25 @@ import com.facebook.rendercore.Systracer
  * MountBehavior defines how to allocate a [View]/[Drawable] and apply properties to it.
  *
  * @property id Unique id identifying the [RenderUnit] in the tree of Node it is part of.
+ * @property description A description of the underlying [RenderUnit]. Mainly for debugging purposes
+ *   such as tracing and logs. Maximum description length is 127 characters. Everything above that
+ *   will be truncated.
  * @property contentAllocator Provides a [View]/[Drawable] content.
  * @property mountConfigurationCall A function that allows for applying properties to the content.
  */
 class MountBehavior<ContentType : Any>(
     private val id: Long,
+    private val description: String?,
     private val contentAllocator: ContentAllocator<ContentType>,
     private val mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
 ) {
+
+  constructor(
+      id: Long,
+      contentAllocator: ContentAllocator<ContentType>,
+      mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
+  ) : this(id, null, contentAllocator, mountConfigurationCall)
+
   internal val renderUnit: PrimitiveRenderUnit<ContentType> by
       lazy(LazyThreadSafetyMode.NONE) {
         val mountConfigurationScope = MountConfigurationScope<ContentType>()
@@ -54,7 +65,7 @@ class MountBehavior<ContentType : Any>(
           }
 
           override fun getDescription(): String {
-            return mountConfigurationScope.description?.take(MAX_DESCRIPTION_LENGTH)
+            return this@MountBehavior.description?.take(MAX_DESCRIPTION_LENGTH)
                 ?: super.getDescription()
           }
         }

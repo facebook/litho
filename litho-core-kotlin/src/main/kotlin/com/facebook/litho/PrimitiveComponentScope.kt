@@ -37,6 +37,9 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
   /**
    * Generates an unique id and creates a [com.facebook.rendercore.primitives.MountBehavior] with
    * it.
+   *
+   * @param contentAllocator Provides a [View]/[Drawable] content.
+   * @param mountConfigurationCall A function that allows for applying properties to the content.
    */
   @Suppress("FunctionName", "NOTHING_TO_INLINE")
   inline fun <ContentType : Any> MountBehavior(
@@ -44,6 +47,26 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
       noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
   ): PrimitiveMountBehavior<ContentType> {
     return PrimitiveMountBehavior(id = createId(), contentAllocator, mountConfigurationCall)
+  }
+
+  /**
+   * Generates an unique id and creates a [com.facebook.rendercore.primitives.MountBehavior] with
+   * it.
+   *
+   * @param description A description of the underlying [RenderUnit]. Mainly for debugging purposes
+   *   such as tracing and logs. Maximum description length is 127 characters. Everything above that
+   *   will be truncated.
+   * @param contentAllocator Provides a [View]/[Drawable] content.
+   * @param mountConfigurationCall A function that allows for applying properties to the content.
+   */
+  @Suppress("FunctionName", "NOTHING_TO_INLINE")
+  inline fun <ContentType : Any> MountBehavior(
+      description: String,
+      contentAllocator: ContentAllocator<ContentType>,
+      noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
+  ): PrimitiveMountBehavior<ContentType> {
+    return PrimitiveMountBehavior(
+        id = createId(), description, contentAllocator, mountConfigurationCall)
   }
 
   /**
