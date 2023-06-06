@@ -251,6 +251,8 @@ LITHO_FLIPPER_TARGETS = [
 
 LITHO_FRESCO_PIPELINE_TARGET = [make_dep_path("lib/fresco:imagepipeline")]
 
+LITHO_FRESCO_VITO_INIT = [make_dep_path("lib/fresco:vito")]
+
 def litho_robolectric4_test(
         name,
         language = "KOTLIN",

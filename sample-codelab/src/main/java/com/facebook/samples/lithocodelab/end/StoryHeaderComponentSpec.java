@@ -25,8 +25,9 @@ import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 
+import android.net.Uri;
 import android.widget.Toast;
-import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.fresco.vito.litho.FrescoVitoImage2;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -36,7 +37,6 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 import com.facebook.samples.lithocodelab.R;
@@ -54,11 +54,8 @@ class StoryHeaderComponentSpec {
         .paddingDip(HORIZONTAL, CARD_INSET)
         .paddingDip(TOP, CARD_INSET)
         .child(
-            FrescoImage.create(c)
-                .controller(
-                    Fresco.newDraweeControllerBuilder()
-                        .setUri("http://placekitten.com/g/200/200")
-                        .build())
+            FrescoVitoImage2.create(c)
+                .uri(Uri.parse("http://placekitten.com/g/200/200"))
                 .widthDip(40)
                 .heightDip(40)
                 .marginDip(END, CARD_INTERNAL_PADDING)

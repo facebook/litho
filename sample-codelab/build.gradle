@@ -49,6 +49,7 @@ dependencies {
     // First-party
     implementation deps.soloader
     implementation deps.fresco
+    implementation deps.frescoVito
 
     // Annotations
     compileOnly deps.jsr305
