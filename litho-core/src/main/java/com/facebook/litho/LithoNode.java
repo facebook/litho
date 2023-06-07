@@ -214,9 +214,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public void setPrimitive(Primitive primitive) {
-    if (primitive == null) {
-      throw new RuntimeException("Primitive is null in LithoNode.setPrimitive()");
-    }
     mPrimitive = primitive;
   }
 
