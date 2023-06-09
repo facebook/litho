@@ -160,6 +160,8 @@ class Layout {
               Preconditions.checkNotNull(globalKeyToReuse));
 
       if (newNode == null) {
+        // mark as error to prevent from resolving it again.
+        holderResult.setMeasureHadExceptions(true);
         return null;
       }
 

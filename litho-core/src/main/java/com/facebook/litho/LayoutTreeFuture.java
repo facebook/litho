@@ -169,7 +169,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               isLayoutDiffingEnabled,
               lsc.isAccessibilityEnabled());
 
-      final LayoutCache writableCache = new LayoutCache(layoutState.mLayoutCacheData);
+      final LayoutCache layoutCache = new LayoutCache(layoutState.mLayoutCacheData);
 
       if (perfEventLogger != null) {
         lsc.setPerfEvent(perfEventLogger);
@@ -185,13 +185,18 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
                 lsc,
                 c.getAndroidContext(),
                 node,
-                writableCache,
+                layoutCache,
                 widthSpec,
                 heightSpec,
                 perfEventLogger);
 
+        if (root != null) {
+          LayoutState.measurePendingSubtrees(
+              c, root, layoutCache, root.getNode(), layoutState, lsc);
+        }
+
         layoutState.mLayoutResult = root;
-        layoutState.mLayoutCacheData = writableCache.getWriteCacheData();
+        layoutState.mLayoutCacheData = layoutCache.getWriteCacheData();
 
         if (perfEventLogger != null) {
           perfEventLogger.markerPoint("start_collect_results");

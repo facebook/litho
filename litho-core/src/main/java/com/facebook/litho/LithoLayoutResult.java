@@ -551,6 +551,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mMeasureHadExceptions;
   }
 
+  void setMeasureHadExceptions(boolean hadException) {
+    mMeasureHadExceptions = hadException;
+  }
+
   MeasureResult measure(
       final LayoutContext<LithoRenderContext> context, final int widthSpec, final int heightSpec) {
 
