@@ -250,6 +250,8 @@ public class ComponentsConfiguration {
 
   public static boolean clearDiffNodes = false;
 
+  public static boolean enableMeasurePendingSubtrees = false;
+
   public static int recyclerBinderStrategy = 0;
 
   public static boolean enableMountableRecycler = false;

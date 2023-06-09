@@ -29,6 +29,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.yoga.YogaConstants;
@@ -160,8 +161,10 @@ class Layout {
               Preconditions.checkNotNull(globalKeyToReuse));
 
       if (newNode == null) {
-        // mark as error to prevent from resolving it again.
-        holderResult.setMeasureHadExceptions(true);
+        if (ComponentsConfiguration.enableMeasurePendingSubtrees) {
+          // mark as error to prevent from resolving it again.
+          holderResult.setMeasureHadExceptions(true);
+        }
         return null;
       }
 

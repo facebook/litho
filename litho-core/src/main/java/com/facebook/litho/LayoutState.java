@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isLayoutSpec;
+import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
@@ -41,6 +42,7 @@ import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
+import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
@@ -241,6 +243,38 @@ public class LayoutState
       return null;
     }
 
+    final @Nullable MeasureResult measure;
+    final boolean hasExactSize = !result.wasMeasured();
+    if (!ComponentsConfiguration.enableMeasurePendingSubtrees) {
+      if ((isMountable(node.getTailComponent()) || isPrimitive(node.getTailComponent()))
+          && hasExactSize) {
+        final int width =
+            result.getWidth()
+                - result.getPaddingRight()
+                - result.getPaddingLeft()
+                - result.getLayoutBorder(YogaEdge.RIGHT)
+                - result.getLayoutBorder(YogaEdge.LEFT);
+        final int height =
+            result.getHeight()
+                - result.getPaddingTop()
+                - result.getPaddingBottom()
+                - result.getLayoutBorder(YogaEdge.TOP)
+                - result.getLayoutBorder(YogaEdge.BOTTOM);
+
+        final LayoutContext layoutContext =
+            LithoLayoutResult.getLayoutContextFromYogaNode(result.getYogaNode());
+        measure =
+            result.measure(
+                layoutContext, MeasureSpecUtils.exactly(width), MeasureSpecUtils.exactly(height));
+      } else {
+        measure = null;
+      }
+
+      if (measure != null && measure.mHadExceptions) {
+        return null;
+      }
+    }
+
     final @Nullable LithoRenderUnit unit = result.getContentRenderUnit();
     if (unit == null) {
       return null;
@@ -248,7 +282,6 @@ public class LayoutState
 
     final @Nullable Object layoutData = result.getLayoutData();
 
-    final boolean hasExactSize = !result.wasMeasured();
     return createRenderTreeNode(unit, layoutState, result, true, layoutData, parent, hasExactSize);
   }
 
@@ -538,7 +571,7 @@ public class LayoutState
       return;
     }
 
-    if (Component.isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
+    if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
       // Invoke onBoundsDefined for all MountSpecs
       final ComponentContext context = result.getNode().getTailComponentContext();
       if (isTracing) {
@@ -669,6 +702,19 @@ public class LayoutState
         return;
       }
 
+      if (!ComponentsConfiguration.enableMeasurePendingSubtrees) {
+        if (parentContext.isNullNodeEnabled()) {
+          final @Nullable List<Attachable> attachables =
+              Resolver.collectAttachables(nestedTree.mNode);
+          if (attachables != null) {
+            if (layoutState.mAttachables == null) {
+              layoutState.mAttachables = new ArrayList<>(attachables.size());
+            }
+            layoutState.mAttachables.addAll(attachables);
+          }
+        }
+      }
+
       // Account for position of the holder node.
       layoutState.mCurrentX += result.getX();
       layoutState.mCurrentY += result.getY();
@@ -766,6 +812,30 @@ public class LayoutState
     if (contentRenderTreeNode != null) {
       final LithoRenderUnit contentRenderUnit =
           (LithoRenderUnit) contentRenderTreeNode.getRenderUnit();
+
+      if (!ComponentsConfiguration.enableMeasurePendingSubtrees) {
+        final LithoLayoutData layoutData =
+            (LithoLayoutData) Preconditions.checkNotNull(contentRenderTreeNode.getLayoutData());
+
+        // Notify component about its final size.
+        if (isTracing) {
+          ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
+        }
+
+        try {
+          if (isMountSpec(component) && component instanceof SpecGeneratedComponent) {
+            ((SpecGeneratedComponent) component)
+                .onBoundsDefined(context, result, (InterStagePropsContainer) layoutData.layoutData);
+          }
+        } catch (Exception e) {
+          ComponentUtils.handleWithHierarchy(context, component, e);
+          return;
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+        }
+      }
 
       addRenderTreeNode(
           layoutState,

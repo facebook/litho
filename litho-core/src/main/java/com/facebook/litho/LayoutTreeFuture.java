@@ -190,7 +190,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
                 heightSpec,
                 perfEventLogger);
 
-        if (root != null) {
+        if (root != null && ComponentsConfiguration.enableMeasurePendingSubtrees) {
           LayoutState.measurePendingSubtrees(
               c, root, layoutCache, root.getNode(), layoutState, lsc);
         }
