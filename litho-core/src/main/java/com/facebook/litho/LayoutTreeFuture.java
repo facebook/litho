@@ -191,8 +191,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
                 perfEventLogger);
 
         if (root != null && ComponentsConfiguration.enableMeasurePendingSubtrees) {
-          LayoutState.measurePendingSubtrees(
-              c, root, layoutCache, root.getNode(), layoutState, lsc);
+          Layout.measurePendingSubtrees(c, root, layoutCache, root.getNode(), layoutState, lsc);
         }
 
         layoutState.mLayoutResult = root;

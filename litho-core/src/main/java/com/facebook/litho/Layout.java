@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
+import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
 
@@ -32,8 +33,12 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaNode;
+import java.util.ArrayList;
+import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class Layout {
@@ -288,6 +293,144 @@ class Layout {
     }
 
     return null;
+  }
+
+  /**
+   * In order to reuse render unit, we have to make sure layout data which render unit relies on is
+   * determined before collecting layout results. So we're doing three things here:<br>
+   * 1. Resolve NestedTree.<br>
+   * 2. Measure Mountable and Primitive that were skipped due to fixed size.<br>
+   * 3. Invoke OnBoundsDefined for all MountSpecs.<br>
+   */
+  static void measurePendingSubtrees(
+      final ComponentContext parentContext,
+      final LithoLayoutResult result,
+      final LayoutCache layoutCache,
+      final LithoNode node,
+      final LayoutState layoutState,
+      final LayoutStateContext layoutStateContext) {
+
+    if (layoutStateContext.isFutureReleased() || result.measureHadExceptions()) {
+      // Exit early if the layout future as been released or if this result had exceptions.
+      return;
+    }
+
+    final Component component = node.getTailComponent();
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (result instanceof NestedTreeHolderResult) {
+      // If the nested tree is defined, it has been resolved during a measure call during
+      // layout calculation.
+      if (isTracing) {
+        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + component.getSimpleName())
+            .arg("widthSpec", "EXACTLY " + result.getWidth())
+            .arg("heightSpec", "EXACTLY " + result.getHeight())
+            .arg("rootComponentId", node.getTailComponent().getId())
+            .flush();
+      }
+
+      final int size = node.getComponentCount();
+      final ComponentContext immediateParentContext;
+      if (size == 1) {
+        immediateParentContext = parentContext;
+      } else {
+        immediateParentContext = node.getComponentContextAt(1);
+      }
+
+      LithoLayoutResult nestedTree =
+          Layout.measure(
+              layoutStateContext,
+              Preconditions.checkNotNull(immediateParentContext),
+              layoutCache,
+              (NestedTreeHolderResult) result,
+              MeasureSpecUtils.exactly(result.getWidth()),
+              MeasureSpecUtils.exactly(result.getHeight()));
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+
+      if (nestedTree == null) {
+        return;
+      }
+
+      if (parentContext.isNullNodeEnabled()) {
+        final @Nullable List<Attachable> attachables =
+            Resolver.collectAttachables(nestedTree.mNode);
+        if (attachables != null) {
+          if (layoutState.mAttachables == null) {
+            layoutState.mAttachables = new ArrayList<>(attachables.size());
+          }
+          layoutState.mAttachables.addAll(attachables);
+        }
+      }
+
+      measurePendingSubtrees(
+          parentContext,
+          nestedTree,
+          layoutCache,
+          nestedTree.getNode(),
+          layoutState,
+          layoutStateContext);
+      return;
+    } else if (result.getChildrenCount() > 0) {
+      for (int i = 0, count = result.getChildrenCount(); i < count; i++) {
+        LithoLayoutResult child = result.getChildAt(i);
+        measurePendingSubtrees(
+            parentContext, child, layoutCache, child.getNode(), layoutState, layoutStateContext);
+      }
+      return;
+    }
+
+    if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
+      if (!result.wasMeasured()) {
+        // Check if we need to recreate render unit for MountSpec that skips measurement due
+        // to fixed size
+        final boolean hasSizeChanged =
+            result.getWidth() != result.getLastMeasuredWidth()
+                || result.getHeight() != result.getLastMeasuredHeight();
+        result.createAdditionalRenderUnitsIfNeeded(hasSizeChanged);
+      }
+
+      // Invoke onBoundsDefined for all MountSpecs
+      final ComponentContext context = result.getNode().getTailComponentContext();
+      if (isTracing) {
+        ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
+      }
+      try {
+        ((SpecGeneratedComponent) component)
+            .onBoundsDefined(context, result, (InterStagePropsContainer) result.getLayoutData());
+      } catch (Exception e) {
+        ComponentUtils.handleWithHierarchy(context, component, e);
+        result.setMeasureHadExceptions(true);
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+      }
+
+    } else if (Component.isMountable(component) || Component.isPrimitive(component)) {
+      if (!result.wasMeasured()) {
+        // Check if we need to run measure for Mountable or Primitive that was skipped due to with
+        // fixed size
+        final int width =
+            result.getWidth()
+                - result.getPaddingRight()
+                - result.getPaddingLeft()
+                - result.getLayoutBorder(YogaEdge.RIGHT)
+                - result.getLayoutBorder(YogaEdge.LEFT);
+        final int height =
+            result.getHeight()
+                - result.getPaddingTop()
+                - result.getPaddingBottom()
+                - result.getLayoutBorder(YogaEdge.TOP)
+                - result.getLayoutBorder(YogaEdge.BOTTOM);
+        final LayoutContext layoutContext =
+            LithoLayoutResult.getLayoutContextFromYogaNode(result.getYogaNode());
+        result.measure(
+            layoutContext, MeasureSpecUtils.exactly(width), MeasureSpecUtils.exactly(height));
+      }
+    }
   }
 
   /**
