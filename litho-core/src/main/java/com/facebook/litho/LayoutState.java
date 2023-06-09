@@ -572,6 +572,15 @@ public class LayoutState
     }
 
     if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
+      if (!result.wasMeasured()) {
+        // Check if we need to recreate render unit for MountSpec that skips measurement due
+        // to fixed size
+        final boolean hasSizeChanged =
+            result.getWidth() != result.getLastMeasuredWidth()
+                || result.getHeight() != result.getLastMeasuredHeight();
+        result.createAdditionalRenderUnitsIfNeeded(hasSizeChanged);
+      }
+
       // Invoke onBoundsDefined for all MountSpecs
       final ComponentContext context = result.getNode().getTailComponentContext();
       if (isTracing) {

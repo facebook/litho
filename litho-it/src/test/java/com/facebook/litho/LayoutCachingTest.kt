@@ -44,8 +44,44 @@ class LayoutCachingTest {
 
   @JvmField @Rule var legacyLithoViewRule = LegacyLithoViewRule()
 
+  fun `unchanged node with inter stage prop should not be remeasured when state updates`() {
+    if (!ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
+
+    val c = legacyLithoViewRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val caller = SimpleStateUpdateEmulatorSpec.Caller()
+    val component =
+        Column.create(c)
+            .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
+            .child(
+                MountSpecInterStagePropsTester.create(c).lifecycleTracker(lifecycleTracker).build())
+            .build()
+
+    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+
+    lifecycleTracker.reset()
+    caller.increment()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .describedAs(
+            "Node with inter stage props doesn't need remeasurement but rebinding if layout caching is turned on")
+        .containsExactly(
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+  }
+
   @Test
-  fun `unchanged node should not be remeasured when state updates`() {
+  fun `unchanged node without inter stage prop should not get rebinding when state updates`() {
     if (!ComponentsConfiguration.enableLayoutCaching) {
       return
     }
@@ -81,58 +117,12 @@ class LayoutCachingTest {
     caller.increment()
     Assertions.assertThat(lifecycleTracker.steps)
         .describedAs(
-            "node with inter stage props doesn't need to be re-measured if layout caching is turned on")
-        .containsExactly(
-            LifecycleStep.ON_BOUNDS_DEFINED,
-            LifecycleStep.ON_UNBIND,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
-  }
-
-  @Test
-  fun `unchanged node without inter state prop should not rebind when state updates`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
-      return
-    }
-
-    val c = legacyLithoViewRule.context
-    val lifecycleTracker = LifecycleTracker()
-    val caller = SimpleStateUpdateEmulatorSpec.Caller()
-    val component =
-        Column.create(c)
-            .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
-            .child(
-                MountSpecPureRenderLifecycleTester.create(c)
-                    .intrinsicSize(Size(100, 100))
-                    .lifecycleTracker(lifecycleTracker)
-                    .build())
-            .build()
-
-    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps)
-        .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_PREPARE,
-            LifecycleStep.ON_MEASURE,
-            LifecycleStep.ON_BOUNDS_DEFINED,
-            LifecycleStep.ON_ATTACHED,
-            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
-            LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
-
-    lifecycleTracker.reset()
-    caller.increment()
-    Assertions.assertThat(lifecycleTracker.steps)
-        .describedAs(
-            "node without inter stage props doesn't need to rebind if layout caching is turned on")
+            "Node without inter stage props doesn't need rebinding if layout caching is turned on")
         .containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
   }
 
   @Test
-  fun `unchanged subtree should not be remeasured when state updates`() {
+  fun `unchanged subtree should not get rebinding when state updates`() {
     if (!ComponentsConfiguration.enableLayoutCaching) {
       return
     }
@@ -314,7 +304,7 @@ class LayoutCachingTest {
   }
 
   @Test
-  fun `unchanged node should not be reused when the size of root node changes`() {
+  fun `unchanged node should not get rebinding when the size of root node changes`() {
     if (!ComponentsConfiguration.enableLayoutCaching) {
       return
     }
