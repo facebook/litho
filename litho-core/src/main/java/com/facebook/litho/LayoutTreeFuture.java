@@ -205,13 +205,15 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
         if (ComponentsConfiguration.enableLayoutCaching && root != null) {
           root.clearYogaNodeData();
-          // Try to clear diff nodes because we're reusing LayoutResult which is a super set of
-          // DiffNode.
-          final LayoutCache.CachedData cachedData = layoutState.mLayoutCacheData;
-          if (cachedData != null) {
-            Collection<LayoutResult> layoutResultList = cachedData.getCacheByNode().values();
-            for (LayoutResult result : layoutResultList) {
-              ((LithoLayoutResult) result).setDiffNode(null);
+          if (ComponentsConfiguration.clearDiffNodes) {
+            // Try to clear diff nodes because we're reusing LayoutResult which is a super set of
+            // DiffNode.
+            final LayoutCache.CachedData cachedData = layoutState.mLayoutCacheData;
+            if (cachedData != null) {
+              Collection<LayoutResult> layoutResultList = cachedData.getCacheByNode().values();
+              for (LayoutResult result : layoutResultList) {
+                ((LithoLayoutResult) result).setDiffNode(null);
+              }
             }
           }
         }

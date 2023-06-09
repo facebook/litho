@@ -248,6 +248,8 @@ public class ComponentsConfiguration {
 
   public static boolean enableLayoutCaching = false;
 
+  public static boolean clearDiffNodes = false;
+
   public static int recyclerBinderStrategy = 0;
 
   public static boolean enableMountableRecycler = false;
