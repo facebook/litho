@@ -18,6 +18,7 @@ package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,10 @@ public final class LayoutCache {
   public static final class CachedData {
     private final Map<Node<?>, LayoutResult> mCacheByNode = new HashMap<>();
     private final LongSparseArray<Object> mCacheById = new LongSparseArray<>();
+
+    public Map<Node<?>, LayoutResult> getCacheByNode() {
+      return Collections.unmodifiableMap(mCacheByNode);
+    }
   }
 
   private final CachedData mWriteCache = new CachedData();
