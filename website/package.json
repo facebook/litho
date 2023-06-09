@@ -19,10 +19,5 @@
   },
   "devDependencies": {
     "prettier": "^2.0.2"
-  },
-  "resolutions": {
-    "is-svg": "4.2.2",
-    "shelljs": "^0.8.5",
-    "ansi-html": "0.0.8"
   }
 }
