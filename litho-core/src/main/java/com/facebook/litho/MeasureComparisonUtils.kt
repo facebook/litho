@@ -89,7 +89,7 @@ object MeasureComparisonUtils {
     val oldSpecMode = SizeSpec.getMode(oldSizeSpec)
     val oldSpecSize = SizeSpec.getSize(oldSizeSpec)
     return oldSizeSpec == sizeSpec ||
-        (oldSpecMode == SizeSpec.UNSPECIFIED && newSpecMode == SizeSpec.UNSPECIFIED )||
+        (oldSpecMode == SizeSpec.UNSPECIFIED && newSpecMode == SizeSpec.UNSPECIFIED) ||
         newSizeIsExactAndMatchesOldMeasuredSize(newSpecMode, newSpecSize, oldMeasuredSize) ||
         oldSizeIsUnspecifiedAndStillFits(oldSpecMode, newSpecMode, newSpecSize, oldMeasuredSize) ||
         newMeasureSizeIsStricterAndStillValid(
