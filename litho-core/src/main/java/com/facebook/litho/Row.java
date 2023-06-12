@@ -26,7 +26,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /** A {@link Component} that renders its children in a row. */
-public final class Row extends Component {
+public final class Row extends SpecGeneratedComponent {
 
   @Nullable
   @Prop(optional = true)
@@ -51,10 +51,8 @@ public final class Row extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  private final @Nullable String mCustomSimpleName;
-
   Row(String customSimpleName) {
-    mCustomSimpleName = customSimpleName;
+    super(customSimpleName);
   }
 
   Row(
@@ -73,7 +71,7 @@ public final class Row extends Component {
       @Nullable YogaWrap wrap,
       boolean reverse,
       @Nullable List<Component> children) {
-    mCustomSimpleName = null;
+    super("Row");
     this.alignContent = alignContent;
     this.alignItems = alignItems;
     this.justifyContent = justifyContent;
@@ -182,11 +180,6 @@ public final class Row extends Component {
       return false;
     }
     return true;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return mCustomSimpleName != null ? mCustomSimpleName : "Row";
   }
 
   @Override

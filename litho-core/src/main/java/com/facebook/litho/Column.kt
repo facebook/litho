@@ -25,14 +25,14 @@ import com.facebook.yoga.YogaWrap
 /** A [Component] that renders its children in a column. */
 class Column
 private constructor(
-    private val customSimpleName: String?,
+    customSimpleName: String?,
     @field:Prop(optional = true) private var alignContent: YogaAlign?,
     @field:Prop(optional = true) private var alignItems: YogaAlign?,
     @field:Prop(optional = true) private var justifyContent: YogaJustify?,
     @field:Prop(optional = true) private var wrap: YogaWrap?,
     @field:Prop(optional = true) private var reverse: Boolean,
     @field:Prop(optional = true) private var children: MutableList<Component>?,
-) : Component() {
+) : SpecGeneratedComponent(customSimpleName ?: "Column") {
 
   constructor(
       customSimpleName: String?
@@ -110,8 +110,6 @@ private constructor(
     }
     return reverse == other.reverse
   }
-
-  override fun getSimpleName(): String = customSimpleName ?: "Column"
 
   override fun usesLocalStateContainer(): Boolean = true
 
