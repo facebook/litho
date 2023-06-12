@@ -43,7 +43,6 @@ import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RenderUnit;
@@ -175,9 +174,8 @@ public class LithoViewAttributesExtension
     final LithoViewAttributesState state = extensionState.getState();
     final @Nullable ViewAttributes currentAttributes = state.getCurrentViewAttributes(id);
     final @Nullable ViewAttributes nextAttributes = state.getNewViewAttributes(id);
-    if (ComponentsConfiguration.checkShouldUpdateInVAExtension
-        && (previousRenderUnit instanceof LithoRenderUnit
-            && nextRenderUnit instanceof LithoRenderUnit)) {
+    if (previousRenderUnit instanceof LithoRenderUnit
+        && nextRenderUnit instanceof LithoRenderUnit) {
       return (previousRenderUnit instanceof MountSpecLithoRenderUnit
               && nextRenderUnit instanceof MountSpecLithoRenderUnit
               && MountSpecLithoRenderUnit.shouldUpdateMountItem(

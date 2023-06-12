@@ -271,8 +271,6 @@ public class ComponentsConfiguration {
   public static boolean enableMountableInIGDS = false;
   public static boolean enableMountableInIG4A = false;
 
-  public static boolean checkShouldUpdateInVAExtension = true;
-
   public static boolean crashOnWrongUseRefUsage = false;
 
   private static boolean sReduceMemorySpikeUserSession = false;
