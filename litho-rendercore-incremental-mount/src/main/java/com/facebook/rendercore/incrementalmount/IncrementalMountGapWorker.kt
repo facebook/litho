@@ -25,7 +25,7 @@ import com.facebook.rendercore.Systracer
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.gapWorkerDeadlineBufferMs
 import java.util.concurrent.TimeUnit
 
-class GapWorker
+class IncrementalMountGapWorker
 private constructor(
     private val frameIntervalNs: Long,
     private val tracer: Systracer,
@@ -47,7 +47,7 @@ private constructor(
     if (delegates.isNotEmpty()) {
       val isTracing = tracer.isTracing
       if (isTracing) {
-        tracer.beginSection("GapWorker::doFrame")
+        tracer.beginSection("IncrementalMountGapWorker::doFrame")
       }
       handler.post(this)
       Choreographer.getInstance().postFrameCallback(this)
@@ -124,8 +124,8 @@ private constructor(
   }
 
   /**
-   * Registers a [MountDelegate] with the [GapWorker]. This will also start the [GapWorker] if it
-   * isn't already running.
+   * Registers a [MountDelegate] with the [IncrementalMountGapWorker]. This will also start the
+   * [IncrementalMountGapWorker] if it isn't already running.
    */
   fun add(root: MountDelegate, frameTimeMs: Long?) {
     delegates.add(root)
@@ -133,8 +133,8 @@ private constructor(
   }
 
   /**
-   * Removes a [MountDelegate] registered with the [GapWorker]. This will also disable the
-   * [GapWorker] if there are no more [MountDelegate]s.
+   * Removes a [MountDelegate] registered with the [IncrementalMountGapWorker]. This will also
+   * disable the [IncrementalMountGapWorker] if there are no more [MountDelegate]s.
    */
   fun remove(root: MountDelegate) {
     delegates.remove(root)
@@ -142,12 +142,12 @@ private constructor(
 
   companion object {
 
-    private var worker: GapWorker? = null
+    private var worker: IncrementalMountGapWorker? = null
 
     @JvmStatic
-    fun get(display: Display?, tracer: Systracer): GapWorker {
+    fun get(display: Display?, tracer: Systracer): IncrementalMountGapWorker {
       val frameInterval = getFrameIntervalInNs(display)
-      return GapWorker(frameInterval, tracer).apply { worker = this }
+      return IncrementalMountGapWorker(frameInterval, tracer).apply { worker = this }
     }
 
     @JvmStatic

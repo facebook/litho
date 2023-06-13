@@ -69,7 +69,7 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extension, @Nullable Long frameTimeMs) {
     if (mUseGapWorker) {
       extension.getState().usesGapWorker = true;
-      final GapWorker worker = getGapWorker(extension);
+      final IncrementalMountGapWorker worker = getGapWorker(extension);
       worker.add(extension.getMountDelegate(), frameTimeMs);
     }
   }
@@ -79,7 +79,7 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extension) {
     if (mUseGapWorker) {
       extension.getState().usesGapWorker = false;
-      final GapWorker worker = getGapWorker(extension);
+      final IncrementalMountGapWorker worker = getGapWorker(extension);
       worker.remove(extension.getMountDelegate());
     }
   }
@@ -573,8 +573,10 @@ public class IncrementalMountExtension
         binarySearchBottomBoundary(localVisibleRect.top, byBottomBounds, mountableOutputCount);
   }
 
-  private static GapWorker getGapWorker(ExtensionState<IncrementalMountExtensionState> state) {
-    return GapWorker.get(ViewCompat.getDisplay(state.getRootHost()), state.getTracer());
+  private static IncrementalMountGapWorker getGapWorker(
+      ExtensionState<IncrementalMountExtensionState> state) {
+    return IncrementalMountGapWorker.get(
+        ViewCompat.getDisplay(state.getRootHost()), state.getTracer());
   }
 
   private static int binarySearchTopBoundary(
