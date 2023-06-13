@@ -57,6 +57,11 @@ public class RootHostView extends HostView implements RootHost {
   }
 
   @Override
+  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+    mRootHostDelegate.setRenderTreeUpdateListener(listener);
+  }
+
+  @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     if (mRootHostDelegate.onMeasure(widthMeasureSpec, heightMeasureSpec, MEASURE_OUTPUTS)) {
       setMeasuredDimension(MEASURE_OUTPUTS[0], MEASURE_OUTPUTS[1]);

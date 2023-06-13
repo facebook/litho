@@ -36,6 +36,7 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
+import com.facebook.rendercore.RenderTreeUpdateListener;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs;
@@ -646,6 +647,11 @@ public abstract class BaseMountingView extends ComponentHost
         ComponentsSystrace.endSection();
       }
     }
+  }
+
+  @Override
+  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+    mMountState.setRenderTreeUpdateListener(listener);
   }
 
   /**

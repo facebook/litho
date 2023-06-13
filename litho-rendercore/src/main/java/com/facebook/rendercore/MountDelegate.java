@@ -45,6 +45,7 @@ public class MountDelegate {
   private int mNotifyVisibleBoundsChangedNestCount = 0;
   private final Set<Object> mNotifyVisibleBoundsChangedItems = new HashSet<>();
   private final Systracer mTracer;
+  private @Nullable RenderTreeUpdateListener mMountStateListener;
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget, Systracer tracer) {
     mMountDelegateTarget = mountDelegateTarget;
@@ -595,5 +596,15 @@ public class MountDelegate {
   @VisibleForTesting
   public List<ExtensionState> getExtensionStates() {
     return mExtensionStates;
+  }
+
+  public void setMountStateListener(@Nullable RenderTreeUpdateListener listener) {
+    mMountStateListener = listener;
+  }
+
+  public void renderTreeUpdated(RenderCoreExtensionHost host) {
+    if (mMountStateListener != null) {
+      mMountStateListener.onRenderTreeUpdated(host);
+    }
   }
 }

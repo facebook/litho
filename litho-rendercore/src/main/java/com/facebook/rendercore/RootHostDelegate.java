@@ -87,6 +87,11 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     RenderCoreExtension.onUnregisterForPremount(mMountState);
   }
 
+  @Override
+  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+    mMountState.setRenderTreeUpdateListener(listener);
+  }
+
   /**
    * Returns true if the delegate has defined a size and filled the measureOutput array, returns
    * false if not in which case the hosting view should call super.onMeasure.

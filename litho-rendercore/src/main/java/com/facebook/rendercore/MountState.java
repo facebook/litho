@@ -280,6 +280,18 @@ public class MountState implements MountDelegateTarget {
 
       RenderCoreExtension.afterMount(mMountDelegate);
 
+      mIsMounting = false;
+
+      if (mMountDelegate != null) {
+        if (isTracing) {
+          mTracer.beginSection("MountState.onRenderTreeUpdated");
+        }
+        mMountDelegate.renderTreeUpdated((RenderCoreExtensionHost) mRootHost);
+        if (isTracing) {
+          mTracer.endSection();
+        }
+      }
+
       if (isTracing) {
         mTracer.endSection();
       }
@@ -1012,6 +1024,14 @@ public class MountState implements MountDelegateTarget {
         mountItem.getBindData());
 
     mountItem.releaseMountContent(mContext);
+  }
+
+  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+    if (mMountDelegate == null) {
+      mMountDelegate = new MountDelegate(this, mTracer);
+    }
+
+    mMountDelegate.setMountStateListener(listener);
   }
 
   private void addExtensions(@Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> extensions) {

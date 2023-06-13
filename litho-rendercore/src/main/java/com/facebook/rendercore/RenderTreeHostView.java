@@ -127,6 +127,11 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   }
 
   @Override
+  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+    mMountState.setRenderTreeUpdateListener(listener);
+  }
+
+  @Override
   public void offsetTopAndBottom(int offset) {
     if (offset != 0) {
       super.offsetTopAndBottom(offset);

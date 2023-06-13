@@ -149,6 +149,11 @@ public class LazyMeasureHostView extends HostView implements RenderCoreExtension
   }
 
   @Override
+  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+    mMountState.setRenderTreeUpdateListener(listener);
+  }
+
+  @Override
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
     notifyVisibleBoundsChanged();

@@ -38,4 +38,7 @@ public interface RenderCoreExtensionHost {
 
   /** Notifies the host when its parent wants to stop pre-mounting content. */
   void onUnregisterForPremount();
+
+  /** Sets a {@link RenderTreeUpdateListener} on the {@link RootHost}'s {@link MountState} */
+  void setRenderTreeUpdateListener(RenderTreeUpdateListener listener);
 }
