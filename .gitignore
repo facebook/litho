@@ -10,6 +10,9 @@ docs/_site/
 /.lsp-buck-out
 /gentest/test.html
 .buck-java11
+# Python buck files
+/.pylsp.buckd
+/.pylsp-buck-out
 
 .cxx
 .externalNativeBuild
