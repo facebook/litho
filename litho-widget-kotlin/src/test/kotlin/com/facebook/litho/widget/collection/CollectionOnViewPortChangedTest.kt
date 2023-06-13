@@ -18,7 +18,6 @@ package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
@@ -63,7 +62,6 @@ class CollectionOnViewPortChangedTest {
       override fun ComponentScope.render(): Component {
         val onViewportChanged =
             {
-                _: ComponentContext,
                 firstVisibleIndex: Int,
                 lastVisibleIndex: Int,
                 totalCount: Int,

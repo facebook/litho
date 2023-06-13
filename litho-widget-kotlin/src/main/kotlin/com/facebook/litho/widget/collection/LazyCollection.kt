@@ -18,7 +18,6 @@ package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
@@ -42,7 +41,6 @@ import com.facebook.litho.widget.RecyclerBinder
 
 typealias OnViewportChanged =
     (
-        c: ComponentContext,
         firstVisibleIndex: Int,
         lastVisibleIndex: Int,
         totalCount: Int,
@@ -51,7 +49,6 @@ typealias OnViewportChanged =
 
 typealias OnDataRendered =
     (
-        c: ComponentContext,
         isDataChanged: Boolean,
         isMounted: Boolean,
         monoTimestampMs: Long,
@@ -81,7 +78,7 @@ class LazyCollection(
     private val startupLogger: LithoStartupLogger? = null,
     private val style: Style? = null,
     private val onViewportChanged: OnViewportChanged? = null,
-    private val onDataBound: ((c: ComponentContext) -> Unit)? = null,
+    private val onDataBound: (() -> Unit)? = null,
     handle: Handle? = null,
     private val onPullToRefresh: (() -> Unit)? = null,
     private val onNearEnd: OnNearCallback? = null,
@@ -104,7 +101,6 @@ class LazyCollection(
 
     val combinedOnViewportChanged: OnViewportChanged =
         {
-            c,
             firstVisibleIndex,
             lastVisibleIndex,
             totalCount,
@@ -121,7 +117,6 @@ class LazyCollection(
             }
           }
           onViewportChanged?.invoke(
-              c,
               firstVisibleIndex,
               lastVisibleIndex,
               totalCount,
@@ -131,7 +126,6 @@ class LazyCollection(
 
     val combinedOnDataRendered: OnDataRendered =
         {
-            c: ComponentContext,
             isDataChanged: Boolean,
             isMounted: Boolean,
             monoTimestampMs: Long,
@@ -145,7 +139,6 @@ class LazyCollection(
               firstVisibleIndex,
               lastVisibleIndex)
           onDataRendered?.invoke(
-              c,
               isDataChanged,
               isMounted,
               monoTimestampMs,

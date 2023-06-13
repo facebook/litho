@@ -18,7 +18,6 @@ package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
@@ -53,7 +52,7 @@ inline fun ResourcesScope.LazyGrid(
     startupLogger: LithoStartupLogger? = null,
     style: Style? = null,
     noinline onViewportChanged: OnViewportChanged? = null,
-    noinline onDataBound: ((c: ComponentContext) -> Unit)? = null,
+    noinline onDataBound: (() -> Unit)? = null,
     handle: Handle? = null,
     noinline onPullToRefresh: (() -> Unit)? = null,
     onNearEnd: OnNearCallback? = null,

@@ -16,7 +16,6 @@
 
 package com.facebook.litho.widget.collection
 
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.sections.ChangesInfo
 import com.facebook.litho.sections.Children
@@ -24,29 +23,24 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.annotations.GroupSectionSpec
 import com.facebook.litho.sections.annotations.OnCreateChildren
 import com.facebook.litho.sections.annotations.OnDataBound
-import com.facebook.litho.sections.annotations.OnDataRendered
 import com.facebook.litho.sections.annotations.OnRefresh
-import com.facebook.litho.sections.annotations.OnViewportChanged
 
 @GroupSectionSpec
 object CollectionGroupSectionSpec {
 
   @JvmStatic
   @OnCreateChildren
-  fun onCreateChildren(c: SectionContext?, @Prop childrenBuilder: Children.Builder): Children =
+  fun onCreateChildren(c: SectionContext, @Prop childrenBuilder: Children.Builder): Children =
       childrenBuilder.build()
 
   @JvmStatic
   @OnDataBound
-  fun onDataBound(
-      c: SectionContext,
-      @Prop(optional = true) onDataBound: ((ComponentContext) -> Unit)?
-  ) {
-    onDataBound?.invoke(c)
+  fun onDataBound(c: SectionContext, @Prop(optional = true) onDataBound: (() -> Unit)?) {
+    onDataBound?.invoke()
   }
 
   @JvmStatic
-  @OnViewportChanged
+  @com.facebook.litho.sections.annotations.OnViewportChanged
   fun onViewportChanged(
       c: SectionContext,
       firstVisibleIndex: Int,
@@ -54,11 +48,9 @@ object CollectionGroupSectionSpec {
       totalCount: Int,
       firstFullyVisibleIndex: Int,
       lastFullyVisibleIndex: Int,
-      @Prop(optional = true)
-      onViewportChanged: ((ComponentContext, Int, Int, Int, Int, Int) -> Unit)?
+      @Prop(optional = true) onViewportChanged: OnViewportChanged?
   ) {
     onViewportChanged?.invoke(
-        c,
         firstVisibleIndex,
         lastVisibleIndex,
         totalCount,
@@ -73,7 +65,7 @@ object CollectionGroupSectionSpec {
   }
 
   @JvmStatic
-  @OnDataRendered
+  @com.facebook.litho.sections.annotations.OnDataRendered
   fun onDataRendered(
       c: SectionContext,
       isDataChanged: Boolean,
@@ -83,12 +75,9 @@ object CollectionGroupSectionSpec {
       lastVisibleIndex: Int,
       changesInfo: ChangesInfo,
       globalOffset: Int,
-      @Prop(optional = true)
-      onDataRendered:
-          ((ComponentContext, Boolean, Boolean, Long, Int, Int, ChangesInfo, Int) -> Unit)?
+      @Prop(optional = true) onDataRendered: OnDataRendered?
   ) {
     onDataRendered?.invoke(
-        c,
         isDataChanged,
         isMounted,
         monoTimestampMs,
