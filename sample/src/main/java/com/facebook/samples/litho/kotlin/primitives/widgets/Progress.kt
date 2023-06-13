@@ -51,6 +51,7 @@ class Progress(
         mountBehavior =
             MountBehavior(ViewAllocator { context -> ProgressView(context) }) {
               bind(indeterminateDrawable, color) { content ->
+                val defaultIndeterminateDrawable = content.indeterminateDrawable
                 indeterminateDrawable?.let { content.indeterminateDrawable = indeterminateDrawable }
                 content.indeterminateDrawable?.let {
                   if (color != Color.TRANSPARENT) {
@@ -64,7 +65,7 @@ class Progress(
                   if (color != Color.TRANSPARENT && content.indeterminateDrawable != null) {
                     content.indeterminateDrawable.mutate().clearColorFilter()
                   }
-                  content.indeterminateDrawable = null
+                  content.indeterminateDrawable = defaultIndeterminateDrawable
                 }
               }
             },
