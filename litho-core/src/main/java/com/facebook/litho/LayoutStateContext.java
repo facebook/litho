@@ -34,6 +34,7 @@ import java.util.List;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutStateContext implements CalculationStateContext {
 
+  private final int mComponentTreeId;
   private @Nullable TreeState mTreeState;
   private @Nullable TreeFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
@@ -55,6 +56,7 @@ public class LayoutStateContext implements CalculationStateContext {
   private final List<String> mThreadResumedOn = new LinkedList<>();
 
   LayoutStateContext(
+      final int componentTreeId,
       final MeasuredResultCache cache,
       final ComponentContext rootComponentContext,
       final TreeState treeState,
@@ -63,6 +65,7 @@ public class LayoutStateContext implements CalculationStateContext {
       final boolean isAccessibilityEnabled,
       final @Nullable DiffNode currentDiffTree,
       final @Nullable TreeFuture layoutStateFuture) {
+    mComponentTreeId = componentTreeId;
     mCache = cache;
     mRootComponentContext = rootComponentContext;
     mTreeState = treeState;
@@ -95,6 +98,12 @@ public class LayoutStateContext implements CalculationStateContext {
   @Nullable
   ComponentContext getRootComponentContext() {
     return mRootComponentContext;
+  }
+
+  /** Returns the {@link ComponentTree} id associated to this Layout phase context. */
+  @Override
+  public int getTreeId() {
+    return mComponentTreeId;
   }
 
   @Override

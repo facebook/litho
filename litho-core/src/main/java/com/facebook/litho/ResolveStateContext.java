@@ -31,6 +31,7 @@ public class ResolveStateContext implements CalculationStateContext {
   private final int mLayoutVersion;
   private final int mRootComponentId;
   private final MeasuredResultCache mCache;
+  private final int mComponentTreeId;
 
   private boolean mIsInterruptible = true;
   private @Nullable TreeState mTreeState;
@@ -43,6 +44,7 @@ public class ResolveStateContext implements CalculationStateContext {
   private final boolean mIsAccessibilityEnabled;
 
   ResolveStateContext(
+      final int componentTreeId,
       final MeasuredResultCache cache,
       final TreeState treeState,
       final int layoutVersion,
@@ -52,6 +54,7 @@ public class ResolveStateContext implements CalculationStateContext {
       final @Nullable LithoNode currentRoot,
       final @Nullable PerfEvent perfEventLogger,
       final @Nullable ComponentsLogger componentsLogger) {
+    mComponentTreeId = componentTreeId;
     mCache = cache;
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
@@ -61,6 +64,12 @@ public class ResolveStateContext implements CalculationStateContext {
     mPerfEventLogger = perfEventLogger;
     mComponentsLogger = componentsLogger;
     mIsAccessibilityEnabled = isAccessibilityEnabled;
+  }
+
+  /** Returns the {@link ComponentTree} id associated to this Resolve phase context. */
+  @Override
+  public int getTreeId() {
+    return mComponentTreeId;
   }
 
   @Override

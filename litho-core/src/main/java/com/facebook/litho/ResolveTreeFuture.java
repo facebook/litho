@@ -191,6 +191,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
       final ResolveStateContext rsc =
           new ResolveStateContext(
+              componentTreeId,
               new MeasuredResultCache(),
               state,
               version,

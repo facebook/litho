@@ -69,6 +69,7 @@ public class TestLayoutState {
 
     final LayoutStateContext lsc =
         new LayoutStateContext(
+            resolveStateContext.getTreeId(),
             resolveStateContext.getCache(),
             c,
             resolveStateContext.getTreeState(),

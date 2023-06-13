@@ -21,13 +21,21 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.jvm.JvmField
 
 /** Represents a pointer to the Tree that a ComponentContext is attached to */
-class LithoTree(
+class LithoTree
+private constructor(
     @field:ThreadConfined(ThreadConfined.ANY) val stateUpdater: StateUpdater,
     @field:ThreadConfined(ThreadConfined.UI) val mountedViewReference: MountedViewReference,
     val errorComponentReceiver: ErrorComponentReceiver,
-    val lithoTreeLifecycleProvider: LithoTreeLifecycleProvider
+    val lithoTreeLifecycleProvider: LithoTreeLifecycleProvider,
+    val id: Int
 ) {
 
   // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
   @JvmField val internalScopeRef: AtomicReference<Any> = AtomicReference<Any>()
+
+  companion object {
+
+    fun create(componentTree: ComponentTree): LithoTree =
+        LithoTree(componentTree, componentTree, componentTree, componentTree, componentTree.mId)
+  }
 }

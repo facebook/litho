@@ -185,10 +185,7 @@ public final class StateUpdatesTestHelper {
 
     Whitebox.setInternalState(context, "mGlobalKey", "$bogusKeyForTest");
     Whitebox.setInternalState(context, "mComponentScope", component);
-    Whitebox.setInternalState(
-        context,
-        "mLithoTree",
-        new LithoTree(componentTree, componentTree, componentTree, componentTree));
+    Whitebox.setInternalState(context, "mLithoTree", LithoTree.Companion.create(componentTree));
 
     if (isLayoutSpecWithSizeSpec(component)) {
       Whitebox.setInternalState(context, "isNestedTreeContext", true);

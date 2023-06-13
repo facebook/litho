@@ -1982,6 +1982,7 @@ class LayoutStateCalculateTest {
     c.clearCalculationStateContext()
     val layoutStateContext =
         LayoutStateContext(
+            resolveStateContext.treeId,
             resolveStateContext.cache,
             c,
             resolveStateContext.treeState,

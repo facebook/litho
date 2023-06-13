@@ -51,8 +51,7 @@ public class ComponentContextUtils {
       ComponentContext c,
       ComponentTree.LithoConfiguration lithoConfiguration,
       ComponentTree componentTree) {
-    final LithoTree lithoTree =
-        new LithoTree(componentTree, componentTree, componentTree, componentTree);
+    final LithoTree lithoTree = LithoTree.Companion.create(componentTree);
     return withLithoTree(c, lithoConfiguration, lithoTree, componentTree.getLifecycleProvider());
   }
 

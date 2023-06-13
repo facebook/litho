@@ -45,6 +45,7 @@ class LithoNodeTouchExpansionTest {
     node.mutableNodeInfo().touchHandler = EventHandler(null, 1)
     layoutStateContext =
         LayoutStateContext(
+            resolveStateContext.treeId,
             resolveStateContext.cache,
             context,
             resolveStateContext.treeState,

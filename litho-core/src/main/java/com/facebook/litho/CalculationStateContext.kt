@@ -20,6 +20,7 @@ import android.util.Pair
 
 interface CalculationStateContext {
 
+  val treeId: Int
   val cache: MeasuredResultCache
   val treeState: TreeState
   val layoutVersion: Int

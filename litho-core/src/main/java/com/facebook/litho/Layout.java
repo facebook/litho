@@ -142,6 +142,7 @@ class Layout {
     try {
       final ResolveStateContext nestedRsc =
           new ResolveStateContext(
+              layoutStateContext.getTreeId(),
               layoutStateContext.getCache(),
               layoutStateContext.getTreeState(),
               layoutStateContext.getLayoutVersion(),
@@ -184,6 +185,7 @@ class Layout {
 
       final LayoutStateContext nestedLsc =
           new LayoutStateContext(
+              nestedRsc.getTreeId(),
               nestedRsc.getCache(),
               parentContext,
               nestedRsc.getTreeState(),

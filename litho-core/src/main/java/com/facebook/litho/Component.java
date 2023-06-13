@@ -677,6 +677,7 @@ public abstract class Component
         } else {
           final ResolveStateContext nestedRsc =
               new ResolveStateContext(
+                  calculationStateContext.getTreeId(),
                   resultCache,
                   treeState,
                   layoutVersion,
@@ -699,6 +700,7 @@ public abstract class Component
 
         final LayoutStateContext nestedLsc =
             new LayoutStateContext(
+                calculationStateContext.getTreeId(),
                 resultCache,
                 c,
                 treeState,
@@ -776,8 +778,22 @@ public abstract class Component
     }
 
     try {
+      LithoTree lithoTree = c.getLithoTree();
+      int componentTreeId;
+
+      if (lithoTree == null) {
+        // This is a temporary tree that will be only used as a way of measuring a component.
+        // we could be using a treeless context here as well. Might be worth revisiting later.
+        ComponentTree ct = ComponentTree.create(c).build();
+        componentTreeId = ct.mId;
+        c = ComponentContextUtils.withComponentTree(c, ct);
+      } else {
+        componentTreeId = lithoTree.getId();
+      }
+
       final ResolveStateContext tempRsc =
           new ResolveStateContext(
+              componentTreeId,
               new MeasuredResultCache(),
               new TreeState(),
               0,
@@ -791,12 +807,6 @@ public abstract class Component
               null,
               null,
               null);
-
-      if (c.getLithoTree() == null) {
-        // This is a temporary tree that will be only used as a way of measuring a component.
-        // we could be using a treeless context here as well. Might be worth revisiting later.
-        c = ComponentContextUtils.withComponentTree(c, ComponentTree.create(c).build());
-      }
 
       c.setRenderStateContext(tempRsc);
 
