@@ -33,6 +33,7 @@ litho_android_library(
     pure_kotlin = False,
     visibility = ["PUBLIC"],
     deps = [
+        "//fbandroid/libraries/rendercore/rendercore-incremental-mount:rendercore-incremental-mount",
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
     ],
 )

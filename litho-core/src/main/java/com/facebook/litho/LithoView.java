@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import com.facebook.litho.TreeState.TreeMountInfo;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.lang.ref.WeakReference;
@@ -665,6 +666,14 @@ public class LithoView extends BaseMountingView {
   @Override
   protected String getTreeName() {
     return mComponentTree != null ? mComponentTree.getSimpleName() : null;
+  }
+
+  @Nullable
+  @Override
+  public ComponentsConfiguration getConfiguration() {
+    return mComponentTree != null
+        ? mComponentTree.getLithoConfiguration().mComponentsConfiguration
+        : null;
   }
 
   @Override

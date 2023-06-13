@@ -39,7 +39,6 @@ import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeUpdateListener;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
-import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
@@ -622,7 +621,8 @@ public abstract class BaseMountingView extends ComponentHost
 
   @Override
   public void onRegisterForPremount(@Nullable Long frameTime) {
-    if (IncrementalMountExtensionConfigs.useGapWorker) {
+    final @Nullable ComponentsConfiguration config = getConfiguration();
+    if (config != null && config.useIncrementalMountGapWorker()) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onRegisterForPremount");
@@ -637,7 +637,8 @@ public abstract class BaseMountingView extends ComponentHost
 
   @Override
   public void onUnregisterForPremount() {
-    if (IncrementalMountExtensionConfigs.useGapWorker) {
+    final @Nullable ComponentsConfiguration config = getConfiguration();
+    if (config != null && config.useIncrementalMountGapWorker()) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onUnregisterForPremount");
@@ -782,7 +783,9 @@ public abstract class BaseMountingView extends ComponentHost
 
     if (hasTree()) {
       if (isIncrementalMountEnabled()) {
-        mLithoHostListenerCoordinator.enableIncrementalMount();
+        final @Nullable ComponentsConfiguration config = getConfiguration();
+        boolean useGapWorker = config != null && config.useIncrementalMountGapWorker();
+        mLithoHostListenerCoordinator.enableIncrementalMount(useGapWorker);
       } else {
         mLithoHostListenerCoordinator.disableIncrementalMount();
       }
@@ -1101,6 +1104,8 @@ public abstract class BaseMountingView extends ComponentHost
 
     return super.shouldRequestLayout();
   }
+
+  public abstract @Nullable ComponentsConfiguration getConfiguration();
 
   protected abstract boolean isVisibilityProcessingEnabled();
 

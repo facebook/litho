@@ -126,13 +126,14 @@ public class LithoHostListenerCoordinator {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  void enableIncrementalMount() {
+  void enableIncrementalMount(boolean useGapWorker) {
     if (mIncrementalMountExtensionState != null) {
       return;
     }
 
     mIncrementalMountExtensionState =
-        mMountDelegateTarget.registerMountExtension(IncrementalMountExtension.getInstance());
+        mMountDelegateTarget.registerMountExtension(
+            IncrementalMountExtension.getInstance(useGapWorker));
   }
 
   void disableIncrementalMount() {

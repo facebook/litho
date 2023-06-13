@@ -41,10 +41,22 @@ import java.util.Set;
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState> {
 
-  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension();
+  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension(false);
+  private static final IncrementalMountExtension sGapWorkerInstance =
+      new IncrementalMountExtension(true);
+
+  private final boolean mUseGapWorker;
+
+  public IncrementalMountExtension(boolean useGapWorker) {
+    mUseGapWorker = useGapWorker;
+  }
 
   public static IncrementalMountExtension getInstance() {
     return sInstance;
+  }
+
+  public static IncrementalMountExtension getInstance(boolean useGapWorker) {
+    return useGapWorker ? sGapWorkerInstance : sInstance;
   }
 
   @Override
@@ -55,7 +67,7 @@ public class IncrementalMountExtension
   @Override
   public void onRegisterForPremount(
       final ExtensionState<IncrementalMountExtensionState> extension, @Nullable Long frameTimeMs) {
-    if (IncrementalMountExtensionConfigs.useGapWorker) {
+    if (mUseGapWorker) {
       extension.getState().usesGapWorker = true;
       final GapWorker worker = getGapWorker(extension);
       worker.add(extension.getMountDelegate(), frameTimeMs);
@@ -65,7 +77,7 @@ public class IncrementalMountExtension
   @Override
   public void onUnregisterForPremount(
       final ExtensionState<IncrementalMountExtensionState> extension) {
-    if (IncrementalMountExtensionConfigs.useGapWorker) {
+    if (mUseGapWorker) {
       extension.getState().usesGapWorker = false;
       final GapWorker worker = getGapWorker(extension);
       worker.remove(extension.getMountDelegate());

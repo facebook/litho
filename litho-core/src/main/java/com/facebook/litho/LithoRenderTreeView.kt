@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.UiThread
+import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * An implementation of BaseMountingView that can mount a LayoutState without the need for a
@@ -42,6 +43,10 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     get() {
       return requireNotNull(layoutState) { "LayoutState not available." }
     }
+
+  override fun getConfiguration(): ComponentsConfiguration? {
+    return layoutState?.componentContext?.componentsConfiguration
+  }
 
   override fun isIncrementalMountEnabled(): Boolean {
     val componentContext = layoutState?.componentContext ?: return false

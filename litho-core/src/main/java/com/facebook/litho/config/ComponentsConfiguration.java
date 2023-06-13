@@ -25,6 +25,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs;
 import java.util.Set;
 
 /**
@@ -336,6 +337,8 @@ public class ComponentsConfiguration {
 
   private final boolean mShouldDisableBgFgOutputs;
 
+  private final boolean mUseIncrementalMountGapWorker;
+
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
@@ -352,12 +355,17 @@ public class ComponentsConfiguration {
     return mShouldAddHostViewForRootComponent || mShouldDisableBgFgOutputs;
   }
 
+  public boolean useIncrementalMountGapWorker() {
+    return mUseIncrementalMountGapWorker;
+  }
+
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mUseInterruptibleResolution = builder.mUseInterruptibleResolution;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
+    mUseIncrementalMountGapWorker = builder.mUseIncrementalMountGapWorker;
   }
 
   public boolean shouldReuseOutputs() {
@@ -382,6 +390,7 @@ public class ComponentsConfiguration {
     boolean mIsLayoutCancellationEnabled = false;
     boolean mShouldAddHostViewForRootComponent = false;
     boolean mShouldDisableBgFgOutputs = false;
+    boolean mUseIncrementalMountGapWorker = IncrementalMountExtensionConfigs.useGapWorker;
 
     protected Builder() {}
 
@@ -407,6 +416,11 @@ public class ComponentsConfiguration {
 
     public Builder shouldReuseOutputs(boolean enabled) {
       mShouldReuseOutputs = enabled;
+      return this;
+    }
+
+    public Builder useIncrementalMountGapWorker(boolean enabled) {
+      mUseIncrementalMountGapWorker = enabled;
       return this;
     }
 
