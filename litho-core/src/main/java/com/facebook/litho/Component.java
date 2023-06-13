@@ -137,7 +137,6 @@ public abstract class Component
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   private @Nullable CommonProps mCommonProps;
-  private @Nullable SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -848,7 +847,10 @@ public abstract class Component
    */
   @Nullable
   SparseArray<DynamicValue<?>> getCommonDynamicProps() {
-    return mCommonDynamicProps;
+    if (mCommonProps == null) {
+      return null;
+    }
+    return mCommonProps.getCommonDynamicProps();
   }
 
   /**
@@ -921,7 +923,10 @@ public abstract class Component
    * @see DynamicPropsManager
    */
   boolean hasCommonDynamicProps() {
-    return CollectionsUtils.isNotNullOrEmpty(mCommonDynamicProps);
+    if (mCommonProps == null) {
+      return false;
+    }
+    return mCommonProps.hasCommonDynamicProps();
   }
 
   /** @return if has a handle set */
@@ -968,10 +973,7 @@ public abstract class Component
    * @see DynamicPropsManager
    */
   final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
-    if (mCommonDynamicProps == null) {
-      mCommonDynamicProps = new SparseArray<>();
-    }
-    return mCommonDynamicProps;
+    return getOrCreateCommonProps().getOrCreateCommonDynamicProps();
   }
 
   final CommonProps getOrCreateCommonProps() {

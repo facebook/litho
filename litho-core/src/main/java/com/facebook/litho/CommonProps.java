@@ -65,6 +65,8 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   @AttrRes private int mDefStyleAttr;
   @StyleRes private int mDefStyleRes;
 
+  @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
+
   private OtherProps getOrCreateOtherProps() {
     if (mOtherProps == null) {
       mOtherProps = new OtherProps();
@@ -79,6 +81,36 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     return mLayoutProps;
+  }
+
+  /**
+   * @return {@link SparseArray} that holds common dynamic Props
+   * @see DynamicPropsManager
+   */
+  @Nullable
+  SparseArray<DynamicValue<?>> getCommonDynamicProps() {
+    return mCommonDynamicProps;
+  }
+
+  /**
+   * @return true if component has common dynamic props, false - otherwise. If so {@link
+   *     #getCommonDynamicProps()} will return not null value
+   * @see DynamicPropsManager
+   */
+  boolean hasCommonDynamicProps() {
+    return CollectionsUtils.isNotNullOrEmpty(mCommonDynamicProps);
+  }
+
+  /**
+   * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
+   *     needed
+   * @see DynamicPropsManager
+   */
+  final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
+    if (mCommonDynamicProps == null) {
+      mCommonDynamicProps = new SparseArray<>();
+    }
+    return mCommonDynamicProps;
   }
 
   public void setStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
@@ -679,20 +711,14 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   @Override
-  public boolean isEquivalentTo(@Nullable CommonProps o) {
-    if (this == o) {
+  public boolean isEquivalentTo(@Nullable CommonProps other) {
+    if (this == other) {
       return true;
     }
 
-    if (o == null) {
+    if (other == null) {
       return false;
     }
-
-    if (!(o instanceof CommonProps)) {
-      return false;
-    }
-
-    CommonProps other = (CommonProps) o;
 
     return mPrivateFlags == other.mPrivateFlags
         && mWrapInView == other.mWrapInView
@@ -703,7 +729,8 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         && EquivalenceUtils.isEquivalentTo(mNodeInfo, other.mNodeInfo)
         && EquivalenceUtils.isEquivalentTo(mLayoutProps, other.mLayoutProps)
         && EquivalenceUtils.equals(mTestKey, other.mTestKey)
-        && EquivalenceUtils.equals(mComponentTag, other.mComponentTag);
+        && EquivalenceUtils.equals(mComponentTag, other.mComponentTag)
+        && EquivalenceUtils.equals(mCommonDynamicProps, other.mCommonDynamicProps);
   }
 
   private static final class OtherProps implements Equivalence<OtherProps> {
