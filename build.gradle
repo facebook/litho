@@ -133,6 +133,7 @@ ext.deps = [
         // First-party
         fresco             : 'com.facebook.fresco:fresco:3.0.0',
         frescoVito         : 'com.facebook.fresco:vito:3.0.0',
+        frescoVitoLitho    : 'com.facebook.fresco:vito-litho:3.0.0',
         soloader           : 'com.facebook.soloader:soloader:0.10.5',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.7.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
