@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore;
 
+import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 
 /**
@@ -27,4 +28,14 @@ public interface RenderCoreExtensionHost {
 
   /** Notifies the host the its visible bounds may have potentially changed. */
   void notifyVisibleBoundsChanged();
+
+  /**
+   * Notifies the host when its parent wants to start pre-mounting content.
+   *
+   * @param frameTimeMs the latest frame time
+   */
+  void onRegisterForPremount(@Nullable Long frameTimeMs);
+
+  /** Notifies the host when its parent wants to stop pre-mounting content. */
+  void onUnregisterForPremount();
 }

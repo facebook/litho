@@ -117,6 +117,16 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   }
 
   @Override
+  public void onRegisterForPremount(@Nullable Long frameTimeMs) {
+    RenderCoreExtension.onRegisterForPremount(mMountState, frameTimeMs);
+  }
+
+  @Override
+  public void onUnregisterForPremount() {
+    RenderCoreExtension.onUnregisterForPremount(mMountState);
+  }
+
+  @Override
   public void offsetTopAndBottom(int offset) {
     if (offset != 0) {
       super.offsetTopAndBottom(offset);

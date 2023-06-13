@@ -113,6 +113,21 @@ public class RenderCoreExtension<Input, State> {
     }
   }
 
+  public static void onRegisterForPremount(
+      final MountDelegateTarget target, final @Nullable Long frameTimeMs) {
+    MountDelegate delegate = target.getMountDelegate();
+    if (delegate != null) {
+      delegate.onRegisterForPremount(frameTimeMs);
+    }
+  }
+
+  public static void onUnregisterForPremount(final MountDelegateTarget target) {
+    MountDelegate delegate = target.getMountDelegate();
+    if (delegate != null) {
+      delegate.onUnregisterForPremount();
+    }
+  }
+
   /** returns {@code false} iff the results have the same {@link RenderCoreExtension}s. */
   public static boolean shouldUpdate(
       final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> current,

@@ -37,6 +37,8 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
@@ -614,6 +616,35 @@ public abstract class BaseMountingView extends ComponentHost
 
     if (isTracing) {
       ComponentsSystrace.endSection();
+    }
+  }
+
+  @Override
+  public void onRegisterForPremount(@Nullable Long frameTime) {
+    if (IncrementalMountExtensionConfigs.useGapWorker) {
+      final boolean isTracing = ComponentsSystrace.isTracing();
+      if (isTracing) {
+        ComponentsSystrace.beginSection("BaseMountingView::onRegisterForPremount");
+      }
+      mountComponentInternal(null, false);
+      RenderCoreExtension.onRegisterForPremount(mMountState, frameTime);
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  @Override
+  public void onUnregisterForPremount() {
+    if (IncrementalMountExtensionConfigs.useGapWorker) {
+      final boolean isTracing = ComponentsSystrace.isTracing();
+      if (isTracing) {
+        ComponentsSystrace.beginSection("BaseMountingView::onUnregisterForPremount");
+      }
+      RenderCoreExtension.onUnregisterForPremount(mMountState);
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 

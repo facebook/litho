@@ -77,6 +77,16 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     RenderCoreExtension.notifyVisibleBoundsChanged(mMountState, mHost);
   }
 
+  @Override
+  public void onRegisterForPremount(@Nullable Long frameTimeMs) {
+    RenderCoreExtension.onRegisterForPremount(mMountState, frameTimeMs);
+  }
+
+  @Override
+  public void onUnregisterForPremount() {
+    RenderCoreExtension.onUnregisterForPremount(mMountState);
+  }
+
   /**
    * Returns true if the delegate has defined a size and filled the measureOutput array, returns
    * false if not in which case the hosting view should call super.onMeasure.

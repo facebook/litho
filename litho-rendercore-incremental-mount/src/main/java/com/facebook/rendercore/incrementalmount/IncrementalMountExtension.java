@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.ViewCompat;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
@@ -49,6 +50,26 @@ public class IncrementalMountExtension
   @Override
   public IncrementalMountExtensionState createState() {
     return new IncrementalMountExtensionState();
+  }
+
+  @Override
+  public void onRegisterForPremount(
+      final ExtensionState<IncrementalMountExtensionState> extension, @Nullable Long frameTimeMs) {
+    if (IncrementalMountExtensionConfigs.useGapWorker) {
+      extension.getState().usesGapWorker = true;
+      final GapWorker worker = getGapWorker(extension);
+      worker.add(extension.getMountDelegate(), frameTimeMs);
+    }
+  }
+
+  @Override
+  public void onUnregisterForPremount(
+      final ExtensionState<IncrementalMountExtensionState> extension) {
+    if (IncrementalMountExtensionConfigs.useGapWorker) {
+      extension.getState().usesGapWorker = false;
+      final GapWorker worker = getGapWorker(extension);
+      worker.remove(extension.getMountDelegate());
+    }
   }
 
   @Override
@@ -126,6 +147,45 @@ public class IncrementalMountExtension
 
     if (isTracing) {
       extensionState.getTracer().endSection();
+    }
+  }
+
+  @Override
+  public boolean hasItemToMount(ExtensionState<IncrementalMountExtensionState> extensionState) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    if (state.mInput == null) {
+      return false;
+    }
+
+    final int count = state.mInput.getIncrementalMountOutputCount();
+    return state.mPreviousBottomsIndex > 0 || state.mPreviousTopsIndex < count;
+  }
+
+  @Override
+  public void premountNext(ExtensionState<IncrementalMountExtensionState> extensionState) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    if (state.mInput == null) {
+      return;
+    }
+
+    final List<IncrementalMountOutput> atTheEnd = state.mInput.getOutputsOrderedByTopBounds();
+    final List<IncrementalMountOutput> atTheStart = state.mInput.getOutputsOrderedByBottomBounds();
+    final int count = state.mInput.getIncrementalMountOutputCount();
+
+    if (state.mPreviousTopsIndex < count) {
+      final IncrementalMountOutput node = atTheEnd.get(state.mPreviousTopsIndex);
+      final long id = node.getId();
+      if (!extensionState.ownsReference(id)) {
+        extensionState.acquireMountReference(node.getId(), true);
+      }
+      state.mPreviousTopsIndex++;
+    } else if (state.mPreviousBottomsIndex > 0) {
+      final IncrementalMountOutput node = atTheStart.get(state.mPreviousBottomsIndex - 1);
+      final long id = node.getId();
+      if (!extensionState.ownsReference(id)) {
+        extensionState.acquireMountReference(node.getId(), true);
+      }
+      state.mPreviousBottomsIndex--;
     }
   }
 
@@ -256,7 +316,6 @@ public class IncrementalMountExtension
   @Override
   public void onUnmount(final ExtensionState<IncrementalMountExtensionState> extensionState) {
     extensionState.releaseAllAcquiredReferences();
-
     final IncrementalMountExtensionState state = extensionState.getState();
     state.mPreviousLocalVisibleRect.setEmpty();
     state.mComponentIdsMountedInThisFrame.clear();
@@ -338,7 +397,7 @@ public class IncrementalMountExtension
     final boolean hasAcquiredMountRef = extensionState.ownsReference(id);
     if (isMountable && !hasAcquiredMountRef) {
       extensionState.acquireMountReference(incrementalMountOutput.getId(), isMounting);
-    } else if (!isMountable && hasAcquiredMountRef) {
+    } else if (!isMountable && hasAcquiredMountRef && !extensionState.getState().usesGapWorker) {
       extensionState.releaseMountReference(id, isMounting);
     }
   }
@@ -381,7 +440,9 @@ public class IncrementalMountExtension
         final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex);
         final long id = node.getId();
 
-        if (extensionState.ownsReference(id) && !node.excludeFromIncrementalMount()) {
+        if (extensionState.ownsReference(id)
+            && !node.excludeFromIncrementalMount()
+            && !state.usesGapWorker) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;
@@ -446,7 +507,9 @@ public class IncrementalMountExtension
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex - 1);
         final long id = node.getId();
 
-        if (extensionState.ownsReference(id) && !node.excludeFromIncrementalMount()) {
+        if (extensionState.ownsReference(id)
+            && !node.excludeFromIncrementalMount()
+            && !state.usesGapWorker) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;
@@ -496,6 +559,10 @@ public class IncrementalMountExtension
         binarySearchTopBoundary(localVisibleRect.bottom, byTopBounds, mountableOutputCount);
     state.mPreviousBottomsIndex =
         binarySearchBottomBoundary(localVisibleRect.top, byBottomBounds, mountableOutputCount);
+  }
+
+  private static GapWorker getGapWorker(ExtensionState<IncrementalMountExtensionState> state) {
+    return GapWorker.get(ViewCompat.getDisplay(state.getRootHost()), state.getTracer());
   }
 
   private static int binarySearchTopBoundary(
@@ -562,5 +629,7 @@ public class IncrementalMountExtension
     private @Nullable IncrementalMountExtensionInput mInput;
     private int mPreviousTopsIndex;
     private int mPreviousBottomsIndex;
+
+    private boolean usesGapWorker = false;
   }
 }

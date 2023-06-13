@@ -47,6 +47,16 @@ public class RootHostView extends HostView implements RootHost {
   }
 
   @Override
+  public void onRegisterForPremount(@Nullable Long frameTimeMs) {
+    mRootHostDelegate.onRegisterForPremount(frameTimeMs);
+  }
+
+  @Override
+  public void onUnregisterForPremount() {
+    mRootHostDelegate.onUnregisterForPremount();
+  }
+
+  @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     if (mRootHostDelegate.onMeasure(widthMeasureSpec, heightMeasureSpec, MEASURE_OUTPUTS)) {
       setMeasuredDimension(MEASURE_OUTPUTS[0], MEASURE_OUTPUTS[1]);

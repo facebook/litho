@@ -134,6 +134,21 @@ public class MountDelegate {
     mReferenceCountingEnabled = false;
   }
 
+  public void onRegisterForPremount(@Nullable Long frameTimeMs) {
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      mExtensionStates
+          .get(i)
+          .getExtension()
+          .onRegisterForPremount(mExtensionStates.get(i), frameTimeMs);
+    }
+  }
+
+  public void onUnregisterForPremount() {
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      mExtensionStates.get(i).getExtension().onUnregisterForPremount(mExtensionStates.get(i));
+    }
+  }
+
   /**
    * Calls {@link MountExtension#beforeMount(ExtensionState, Object, Rect)} for each {@link
    * RenderCoreExtension} that has a mount phase.
@@ -480,6 +495,25 @@ public class MountDelegate {
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
     // that.
     mMountDelegateTarget.notifyMount(id);
+  }
+
+  public boolean hasItemToMount() {
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      if (mExtensionStates.get(i).getExtension().hasItemToMount(mExtensionStates.get(i))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void premountNext() {
+    startNotifyVisibleBoundsChangedSection();
+
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      mExtensionStates.get(i).getExtension().premountNext(mExtensionStates.get(i));
+    }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

@@ -28,4 +28,8 @@ public class IncrementalMountExtensionConfigs {
 
   /** Set this to true to enable debug logs for the incremental mount extension. */
   public static boolean isDebugLoggingEnabled = false;
+
+  public static boolean useGapWorker = false;
+
+  public static long gapWorkerDeadlineBufferMs = 4L;
 }

@@ -46,6 +46,11 @@ public abstract class MountExtension<Input, State> {
     return false;
   }
 
+  public void onRegisterForPremount(
+      final ExtensionState<State> extensionState, final @Nullable Long frameTimeMs) {}
+
+  public void onUnregisterForPremount(ExtensionState<State> extensionState) {}
+
   /**
    * Called for setting up input on the extension before mounting.
    *
@@ -121,6 +126,12 @@ public abstract class MountExtension<Input, State> {
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
+
+  public boolean hasItemToMount(final ExtensionState<State> extensionState) {
+    return false;
+  }
+
+  public void premountNext(final ExtensionState<State> extensionState) {}
 
   public static MountDelegateTarget getMountTarget(final ExtensionState<?> extensionState) {
     return extensionState.getMountDelegate().getMountDelegateTarget();

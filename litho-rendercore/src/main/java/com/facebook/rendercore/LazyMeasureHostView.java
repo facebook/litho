@@ -139,6 +139,16 @@ public class LazyMeasureHostView extends HostView implements RenderCoreExtension
   }
 
   @Override
+  public void onRegisterForPremount(@Nullable Long frameTimeMs) {
+    RenderCoreExtension.onRegisterForPremount(mMountState, frameTimeMs);
+  }
+
+  @Override
+  public void onUnregisterForPremount() {
+    RenderCoreExtension.onUnregisterForPremount(mMountState);
+  }
+
+  @Override
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
     notifyVisibleBoundsChanged();
