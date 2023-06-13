@@ -25,7 +25,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiCall;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpressionList;
@@ -82,20 +81,6 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
     String fixDescription =
         "Add ." + methodName + "() " + getCapitalizedMethoName(originalMethodCall);
     return new AddArgumentFix(originalMethodCall, newArgumentList, fixDescription);
-  }
-
-  /**
-   * Creates new fix, that generates OnEvent method and adds static method call as an argument to
-   * the originalMethodCall.
-   */
-  static IntentionAction createNewMethodCallFix(
-      PsiMethodCallExpression originalMethodCall,
-      String clsName,
-      PsiClass event,
-      PsiClass parentLayoutSpec) {
-    String fixDescription = "Create new " + getCapitalizedMethoName(originalMethodCall);
-    return new OnEventCreateFix(
-        originalMethodCall, clsName, event, parentLayoutSpec, fixDescription);
   }
 
   static String getCapitalizedMethoName(PsiMethodCallExpression methodCall) {

@@ -131,14 +131,6 @@
       />
       <separator/>
     </group>
-    <group id="litho.GenerateGroup"
-      class="com.facebook.litho.intellij.actions.LithoGenerateGroup"
-      text="[Litho] Insert..." popup="true">
-      <add-to-group group-id="GenerateGroup" anchor="first"/>
-      <action id="litho.OnEventGenerateAction"
-          class="com.facebook.litho.intellij.actions.OnEventGenerateAction"
-          text="Litho @OnEvent..."/>
-    </group>
     <group class="com.facebook.litho.intellij.actions.templates.LithoTemplateActionGroup"
       description="Create new Litho class" icon="LithoPluginIcons.BASE_ACTION" id="litho.NewGroup"
       popup="true" text="Litho Component">
