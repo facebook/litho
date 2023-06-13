@@ -28,6 +28,7 @@ import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 
 /** A scrollable collection of components arranged in a grid */
+@Suppress("FunctionName")
 inline fun ResourcesScope.LazyGrid(
     @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
     @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
@@ -66,7 +67,7 @@ inline fun ResourcesScope.LazyGrid(
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
-    noinline init: LazyGridScope.() -> Unit
+    init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
   return LazyCollection(
