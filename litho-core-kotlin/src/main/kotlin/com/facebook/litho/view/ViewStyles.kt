@@ -26,6 +26,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.ClickEvent
+import com.facebook.litho.CommonProps
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
@@ -38,7 +39,6 @@ import com.facebook.litho.TouchEvent
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
-import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */
@@ -98,8 +98,7 @@ internal enum class DimenField : StyleItemField {
 @DataClassGenerate
 internal data class ObjectStyleItem(override val field: ObjectField, override val value: Any?) :
     StyleItem<Any?> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
       ObjectField.CLICKABLE -> commonProps.clickable(value as Boolean)
@@ -149,8 +148,7 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
 @DataClassGenerate
 internal data class FloatStyleItem(override val field: FloatField, override val value: Float) :
     StyleItem<Float> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       FloatField.ALPHA -> commonProps.alpha(value)
       FloatField.ROTATION -> commonProps.rotation(value)
@@ -166,8 +164,7 @@ internal data class FloatStyleItem(override val field: FloatField, override val 
 @DataClassGenerate
 internal data class DimenStyleItem(override val field: DimenField, override val value: Dimen) :
     StyleItem<Dimen> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     val pixelValue = value.toPixels(context.resourceResolver)
     when (field) {
       DimenField.TOUCH_EXPANSION_START -> commonProps.touchExpansionPx(YogaEdge.START, pixelValue)
@@ -529,8 +526,7 @@ internal data class ShadowStyleItem(
     @ColorInt val spotShadowColor: Int
 ) : StyleItem<ShadowStyleItemParams> {
 
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     commonProps.shadowElevationPx(elevation.toPixels(context.resourceResolver).toFloat())
     commonProps.outlineProvider(outlineProvider)
     commonProps.ambientShadowColor(ambientShadowColor)

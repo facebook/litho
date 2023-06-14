@@ -18,13 +18,12 @@ package com.facebook.litho.flexbox
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Border
-import com.facebook.litho.Component
+import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
-import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -74,8 +73,7 @@ internal data class FlexboxDimenStyleItem(
     override val field: FlexboxDimenField,
     override val value: Dimen
 ) : StyleItem<Dimen> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     val pixelValue = value.toPixels(context.resourceResolver)
     when (field) {
       FlexboxDimenField.FLEX_BASIS -> commonProps.flexBasisPx(pixelValue)
@@ -97,8 +95,7 @@ internal data class FlexboxDimenStyleItem(
 @PublishedApi
 internal class FloatStyleItem(override val field: FlexboxFloatField, override val value: Float) :
     StyleItem<Float> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       FlexboxFloatField.FLEX -> commonProps.flex(value)
       FlexboxFloatField.FLEX_GROW -> commonProps.flexGrow(value)
@@ -115,8 +112,7 @@ internal class FlexboxObjectStyleItem(
     override val field: FlexboxObjectField,
     override val value: Any?
 ) : StyleItem<Any?> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       FlexboxObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
       FlexboxObjectField.BORDER -> commonProps.border(value as Border?)

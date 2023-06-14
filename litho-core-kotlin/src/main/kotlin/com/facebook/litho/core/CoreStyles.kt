@@ -17,13 +17,12 @@
 package com.facebook.litho.core
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.litho.Component
+import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
-import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [CoreDimenStyleItem]. */
@@ -73,8 +72,7 @@ internal data class CoreDimenStyleItem(
     override val field: CoreDimenField,
     override val value: Dimen
 ) : StyleItem<Dimen> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     val pixelValue = value.toPixels(context.resourceResolver)
     when (field) {
       // TODO(t89044330): When yoga is decoupled from Litho, implement these more generically.
@@ -110,8 +108,7 @@ internal data class CoreDimenStyleItem(
 @PublishedApi
 internal class CoreFloatStyleItem(override val field: CoreFloatField, override val value: Float) :
     StyleItem<Float> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       // TODO(t89044330): When yoga is decoupled from Litho, implement these more generically.
       CoreFloatField.WIDTH_PERCENT -> commonProps.widthPercent(value)

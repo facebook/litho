@@ -52,7 +52,8 @@ import com.facebook.yoga.YogaPositionType
  */
 fun <T : Component.Builder<T>> Component.Builder<T>.kotlinStyle(style: Style?): T {
   val context = context ?: error("Context should not be null")
-  style?.applyToComponent(context, component)
+  style?.applyCommonProps(context, component.getCommonPropsHolder())
+  style?.applyAttributeToComponent(context, component)
   return getThis()
 }
 

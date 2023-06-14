@@ -44,7 +44,8 @@ abstract class PrimitiveComponent : Component() {
 
     // TODO(zielinskim): currently we apply style to the PrimitiveComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in PrimitiveLithoRenderUnit
-    lithoPrimitive.style?.applyToComponent(c, this)
+    lithoPrimitive.style?.applyCommonProps(c, getCommonPropsHolder())
+    lithoPrimitive.style?.applyAttributeToComponent(c, this)
 
     if (primitiveComponentScope.shouldExcludeFromIncrementalMount) {
       lithoPrimitive.primitive.renderUnit.addAttachBinder(

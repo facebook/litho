@@ -38,7 +38,7 @@ private class AttributeStyleItem(
     override val value: (AttributesAcceptor) -> Unit,
 ) : StyleItem<AttributesAcceptor.() -> Unit> {
 
-  override fun applyToComponent(context: ComponentContext, component: Component) {
+  override fun applyAttributeToComponent(context: ComponentContext, component: Component) {
     value(component)
   }
 }

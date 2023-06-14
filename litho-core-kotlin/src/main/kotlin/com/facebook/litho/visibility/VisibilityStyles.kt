@@ -17,7 +17,7 @@
 package com.facebook.litho.visibility
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.litho.Component
+import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.FocusedVisibleEvent
 import com.facebook.litho.FullImpressionVisibleEvent
@@ -29,7 +29,6 @@ import com.facebook.litho.UnfocusedVisibleEvent
 import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
 import com.facebook.litho.eventHandler
-import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [VisibilityStyleItem]. */
 @PublishedApi
@@ -56,8 +55,7 @@ internal data class VisibilityStyleItem(
     override val value: Any?,
     val tag: String? = null
 ) : StyleItem<Any?> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       VisibilityField.ON_VISIBLE ->
           commonProps.visibleHandler(eventHandler(value as (VisibleEvent) -> Unit, tag))
@@ -82,8 +80,7 @@ internal class VisibilityFloatStyleItem(
     override val field: VisibilityFloatField,
     override val value: Float
 ) : StyleItem<Float> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       VisibilityFloatField.VISIBLE_HEIGHT_RATIO -> commonProps.visibleHeightRatio(value)
       VisibilityFloatField.VISIBLE_WIDTH_RATIO -> commonProps.visibleWidthRatio(value)

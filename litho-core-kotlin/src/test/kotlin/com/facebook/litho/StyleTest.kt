@@ -35,7 +35,8 @@ class StyleTest {
 
     override val field = TestItemField.instance
 
-    override fun applyToComponent(context: ComponentContext, component: Component) = Unit
+    override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) = Unit
+    override fun applyAttributeToComponent(context: ComponentContext, component: Component) = Unit
   }
 
   @Test

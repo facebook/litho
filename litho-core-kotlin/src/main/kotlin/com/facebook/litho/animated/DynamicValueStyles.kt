@@ -18,7 +18,7 @@ package com.facebook.litho.animated
 
 import android.graphics.drawable.Drawable
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.litho.Component
+import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.DynamicPropsManager.KEY_ALPHA
 import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR
@@ -34,7 +34,6 @@ import com.facebook.litho.DynamicValue
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
-import com.facebook.litho.getOrCreateCommonDynamicPropsHolder
 
 /** Enums for [DynamicStyleItem]. */
 @PublishedApi
@@ -60,19 +59,19 @@ internal data class DynamicStyleItem(
     override val field: DynamicField,
     override val value: DynamicValue<*>
 ) : StyleItem<DynamicValue<*>> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val dynamicProps = component.getOrCreateCommonDynamicPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
+    val commonDynamicProps = commonProps.orCreateCommonDynamicProps
     when (field) {
-      DynamicField.ALPHA -> dynamicProps.put(KEY_ALPHA, value)
-      DynamicField.BACKGROUND_COLOR -> dynamicProps.put(KEY_BACKGROUND_COLOR, value)
-      DynamicField.BACKGROUND_DRAWABLE -> dynamicProps.put(KEY_BACKGROUND_DRAWABLE, value)
-      DynamicField.ELEVATION -> dynamicProps.put(KEY_ELEVATION, value)
-      DynamicField.FOREGROUND -> dynamicProps.put(KEY_FOREGROUND_COLOR, value)
-      DynamicField.ROTATION -> dynamicProps.put(KEY_ROTATION, value)
-      DynamicField.SCALE_X -> dynamicProps.put(KEY_SCALE_X, value)
-      DynamicField.SCALE_Y -> dynamicProps.put(KEY_SCALE_Y, value)
-      DynamicField.TRANSLATION_X -> dynamicProps.put(KEY_TRANSLATION_X, value)
-      DynamicField.TRANSLATION_Y -> dynamicProps.put(KEY_TRANSLATION_Y, value)
+      DynamicField.ALPHA -> commonDynamicProps.put(KEY_ALPHA, value)
+      DynamicField.BACKGROUND_COLOR -> commonDynamicProps.put(KEY_BACKGROUND_COLOR, value)
+      DynamicField.BACKGROUND_DRAWABLE -> commonDynamicProps.put(KEY_BACKGROUND_DRAWABLE, value)
+      DynamicField.ELEVATION -> commonDynamicProps.put(KEY_ELEVATION, value)
+      DynamicField.FOREGROUND -> commonDynamicProps.put(KEY_FOREGROUND_COLOR, value)
+      DynamicField.ROTATION -> commonDynamicProps.put(KEY_ROTATION, value)
+      DynamicField.SCALE_X -> commonDynamicProps.put(KEY_SCALE_X, value)
+      DynamicField.SCALE_Y -> commonDynamicProps.put(KEY_SCALE_Y, value)
+      DynamicField.TRANSLATION_X -> commonDynamicProps.put(KEY_TRANSLATION_X, value)
+      DynamicField.TRANSLATION_Y -> commonDynamicProps.put(KEY_TRANSLATION_Y, value)
     }
   }
 }

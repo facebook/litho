@@ -18,7 +18,7 @@ package com.facebook.litho.accessibility
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
-import com.facebook.litho.Component
+import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
@@ -36,7 +36,6 @@ import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_AC
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES
 import com.facebook.litho.eventHandler
-import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [AccessibilityStyleItem]. */
 @PublishedApi
@@ -62,8 +61,7 @@ internal data class AccessibilityStyleItem(
     override val field: AccessibilityField,
     override val value: Any?
 ) : StyleItem<Any?> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
       AccessibilityField.ACCESSIBILITY_HEADING -> commonProps.accessibilityHeading(value as Boolean)
       AccessibilityField.ACCESSIBILITY_ROLE -> commonProps.accessibilityRole(value as String)

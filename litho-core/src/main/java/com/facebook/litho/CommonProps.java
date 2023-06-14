@@ -106,7 +106,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
    *     needed
    * @see DynamicPropsManager
    */
-  final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
+  public SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
     if (mCommonDynamicProps == null) {
       mCommonDynamicProps = new SparseArray<>();
     }

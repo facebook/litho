@@ -19,14 +19,13 @@
 package com.facebook.litho.transition
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.litho.Component
+import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
 import com.facebook.litho.Transition
 import com.facebook.litho.Transition.TransitionKeyType
-import com.facebook.litho.getCommonPropsHolder
 
 @DataClassGenerate
 data class TransitionKeyStyleItemValue(
@@ -45,8 +44,7 @@ internal data class TransitionKeyStyleItem(
     val transitionKey: String?,
     val transitionKeyType: TransitionKeyType
 ) : StyleItem<TransitionKeyStyleItemValue> {
-  override fun applyToComponent(context: ComponentContext, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
+  override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     commonProps.transitionKey(transitionKey, this.context.globalKey)
     commonProps.transitionKeyType(transitionKeyType)
   }
