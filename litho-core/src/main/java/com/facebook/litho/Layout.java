@@ -376,10 +376,11 @@ class Layout {
           layoutStateContext);
       return;
     } else if (result.getChildrenCount() > 0) {
+      final ComponentContext context = result.getNode().getTailComponentContext();
       for (int i = 0, count = result.getChildrenCount(); i < count; i++) {
         LithoLayoutResult child = result.getChildAt(i);
         measurePendingSubtrees(
-            parentContext, child, layoutCache, child.getNode(), layoutState, layoutStateContext);
+            context, child, layoutCache, child.getNode(), layoutState, layoutStateContext);
       }
       return;
     }
