@@ -148,9 +148,9 @@ abstract class PrimitiveComponent : Component() {
   ): LithoNode? = super.resolve(resolveStateContext, c)
 
   final override fun shouldUpdate(
-      previous: Component?,
+      previous: Component,
       prevStateContainer: StateContainer?,
-      next: Component?,
+      next: Component,
       nextStateContainer: StateContainer?
   ): Boolean = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 

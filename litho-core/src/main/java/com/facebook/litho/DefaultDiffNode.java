@@ -17,34 +17,40 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DefaultDiffNode implements DiffNode {
 
+  private final Component mComponent;
+  private final String mGlobalKey;
+  private final ScopedComponentInfo mScopedComponentInfo;
+  private final List<DiffNode> mChildren = new ArrayList<>(4);
   private @Nullable LithoRenderUnit mContent;
   private @Nullable LithoRenderUnit mBackground;
   private @Nullable LithoRenderUnit mForeground;
   private @Nullable LithoRenderUnit mBorder;
   private @Nullable LithoRenderUnit mHost;
   private @Nullable VisibilityOutput mVisibilityOutput;
-  private @Nullable Component mComponent;
   private @Nullable Mountable<?> mMountable;
   private @Nullable Primitive mPrimitive;
   private float mLastMeasuredWidth;
   private float mLastMeasuredHeight;
   private int mLastWidthSpec;
   private int mLastHeightSpec;
-  private final List<DiffNode> mChildren = new ArrayList<>(4);
-  private String mGlobalKey;
-  private @Nullable ScopedComponentInfo mScopedComponentInfo;
   private @Nullable Object mLayoutData;
 
   /** package private constructor */
-  DefaultDiffNode() {}
+  DefaultDiffNode(Component component, String globalKey, ScopedComponentInfo scopedComponentInfo) {
+    mComponent = component;
+    mGlobalKey = globalKey;
+    mScopedComponentInfo = scopedComponentInfo;
+  }
 
   @Override
   public int getChildCount() {
@@ -57,17 +63,17 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public @Nullable Component getComponent() {
+  public Component getComponent() {
     return mComponent;
   }
 
   @Override
-  public @Nullable String getComponentGlobalKey() {
+  public String getComponentGlobalKey() {
     return mGlobalKey;
   }
 
   @Override
-  public @Nullable ScopedComponentInfo getScopedComponentInfo() {
+  public ScopedComponentInfo getScopedComponentInfo() {
     return mScopedComponentInfo;
   }
 
@@ -100,16 +106,6 @@ public class DefaultDiffNode implements DiffNode {
   @Override
   public void setLayoutData(@Nullable Object layoutData) {
     mLayoutData = layoutData;
-  }
-
-  @Override
-  public void setComponent(
-      @Nullable Component component,
-      @Nullable String globalKey,
-      @Nullable ScopedComponentInfo scopedComponentInfo) {
-    mComponent = component;
-    mGlobalKey = globalKey;
-    mScopedComponentInfo = scopedComponentInfo;
   }
 
   @Override

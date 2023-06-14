@@ -1404,8 +1404,8 @@ public class LayoutState
   }
 
   static DiffNode createDiffNode(final ScopedComponentInfo tail, final @Nullable DiffNode parent) {
-    final DiffNode diffNode = new DefaultDiffNode();
-    diffNode.setComponent(tail.getComponent(), tail.getContext().getGlobalKey(), tail);
+    final DiffNode diffNode =
+        new DefaultDiffNode(tail.getComponent(), tail.getContext().getGlobalKey(), tail);
     if (parent != null) {
       parent.addChild(diffNode);
     }

@@ -387,17 +387,17 @@ public abstract class Component
 
   final boolean shouldComponentUpdate(
       final @Nullable ComponentContext previousScopedContext,
-      @Nullable Component currentComponent,
+      Component currentComponent,
       final @Nullable ComponentContext nextScopedContext,
-      @Nullable Component nextComponent) {
+      Component nextComponent) {
     final boolean shouldUpdate =
         shouldUpdate(
             currentComponent,
-            currentComponent == null || previousScopedContext == null
+            previousScopedContext == null
                 ? null
                 : previousScopedContext.getScopedComponentInfo().getStateContainer(),
             nextComponent,
-            nextComponent == null || nextScopedContext == null
+            nextScopedContext == null
                 ? null
                 : nextScopedContext.getScopedComponentInfo().getStateContainer());
 
@@ -429,16 +429,15 @@ public abstract class Component
    * @return true if the component needs an update, false otherwise.
    */
   protected boolean shouldUpdate(
-      final @Nullable Component previous,
+      final Component previous,
       final @Nullable StateContainer prevStateContainer,
-      final @Nullable Component next,
+      final Component next,
       final @Nullable StateContainer nextStateContainer) {
     if (!isPureRender()) {
       return true;
     }
 
-    return previous == null
-        || !previous.isEquivalentProps(next, false)
+    return !previous.isEquivalentProps(next, false)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 

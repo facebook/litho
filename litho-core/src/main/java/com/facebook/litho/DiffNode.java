@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.visibility.VisibilityOutput;
@@ -26,6 +27,7 @@ import java.util.List;
  * A lightweight representation of a layout node, used to cache measurements between two Layout tree
  * calculations.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface DiffNode extends Cloneable {
 
   int UNSPECIFIED = -1;
@@ -35,24 +37,16 @@ public interface DiffNode extends Cloneable {
   @Nullable
   DiffNode getChildAt(int i);
 
-  @Nullable
   Component getComponent();
 
-  @Nullable
   String getComponentGlobalKey();
 
-  @Nullable
   ScopedComponentInfo getScopedComponentInfo();
 
   @Nullable
   Object getLayoutData();
 
   void setLayoutData(@Nullable Object layoutData);
-
-  void setComponent(
-      @Nullable Component component,
-      @Nullable String globalKey,
-      @Nullable ScopedComponentInfo scopedComponentInfo);
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the

@@ -131,9 +131,9 @@ abstract class KComponent : Component() {
   ): LithoNode? = super.resolve(resolveStateContext, c)
 
   final override fun shouldUpdate(
-      previous: Component?,
+      previous: Component,
       prevStateContainer: StateContainer?,
-      next: Component?,
+      next: Component,
       nextStateContainer: StateContainer?
   ) = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 }

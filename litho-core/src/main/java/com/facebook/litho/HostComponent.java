@@ -122,9 +122,9 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   protected boolean shouldUpdate(
-      final @Nullable Component previous,
+      final Component previous,
       final @Nullable StateContainer previousStateContainer,
-      final @Nullable Component next,
+      final Component next,
       final @Nullable StateContainer nextStateContainer) {
     return true;
   }
