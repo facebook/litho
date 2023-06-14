@@ -23,12 +23,14 @@ import com.facebook.litho.ThreadUtils.assertMainThread
 import com.facebook.litho.annotations.Hook
 
 /** A simple mutable holder of a value. */
-class Ref<T>(@UiThread value: T) {
+class Ref<T>(value: T) {
   var value: T = value
+    @UiThread
     get() {
       assertMainThread()
       return field
     }
+    @UiThread
     set(value) {
       assertMainThread()
       field = value
