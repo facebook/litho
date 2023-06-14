@@ -110,8 +110,6 @@ abstract class MountableComponent() : Component() {
 
   internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
 
-  final override fun getDynamicProps() = super.getDynamicProps()
-
   final override fun getSimpleName(): String = super.getSimpleName()
 
   final override fun hasChildLithoViews(): Boolean = false

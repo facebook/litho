@@ -84,8 +84,6 @@ abstract class KComponent : Component() {
 
   internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
 
-  final override fun getDynamicProps() = super.getDynamicProps()
-
   final override fun getMountType() = super.getMountType()
 
   final override fun getSimpleName(): String = super.getSimpleName()

@@ -100,8 +100,6 @@ abstract class PrimitiveComponent : Component() {
   internal final override fun getCommonDynamicProps(): SparseArray<DynamicValue<*>>? =
       super.getCommonDynamicProps()
 
-  final override fun getDynamicProps(): Array<DynamicValue<*>> = super.getDynamicProps()
-
   final override fun getSimpleName(): String = super.getSimpleName()
 
   final override fun hasChildLithoViews(): Boolean = false

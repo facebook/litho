@@ -53,6 +53,8 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   public static final int KEY_BACKGROUND_DRAWABLE = 9;
   public static final int KEY_FOREGROUND_COLOR = 10;
 
+  private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
+
   private final Map<DynamicValue<?>, Set<Component>> mDependentComponents = new HashMap<>();
   private final Map<Component, Set<DynamicValue<?>>> mAffectingDynamicValues = new HashMap<>();
   private final Map<Component, Object> mContents = new HashMap<>();
@@ -62,9 +64,8 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       final @Nullable ComponentContext scopedContext,
       final Object content) {
     final boolean hasCommonDynamicPropsToBind = hasCommonDynamicPropsToBind(component, content);
-    final boolean hasCustomDynamicProps = component.getDynamicProps().length > 0;
 
-    if (!hasCommonDynamicPropsToBind && !hasCustomDynamicProps) {
+    if (!hasCommonDynamicPropsToBind && !hasCustomDynamicProps(component)) {
       return;
     }
 
@@ -85,7 +86,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       }
     }
 
-    final DynamicValue[] dynamicProps = component.getDynamicProps();
+    final DynamicValue[] dynamicProps = getCustomDynamicProps(component);
     // Go through all the other dynamic props
     for (int i = 0; i < dynamicProps.length; i++) {
       final @Nullable DynamicValue<?> value = dynamicProps[i];
@@ -110,8 +111,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   }
 
   void onUnbindComponent(Component component, Object content) {
-    if (!hasCommonDynamicPropsToBind(component, content)
-        && component.getDynamicProps().length == 0) {
+    if (!hasCommonDynamicPropsToBind(component, content) && !hasCustomDynamicProps(component)) {
       return;
     }
 
@@ -284,7 +284,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         }
       }
 
-      final DynamicValue[] dynamicProps = component.getDynamicProps();
+      final DynamicValue[] dynamicProps = getCustomDynamicProps(component);
       for (int i = 0; i < dynamicProps.length; i++) {
         if (value == dynamicProps[i]) {
           ((SpecGeneratedComponent) component).bindDynamicProp(i, value.get(), content);
@@ -304,6 +304,17 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
    */
   private static boolean hasCommonDynamicPropsToBind(Component component, Object content) {
     return component.hasCommonDynamicProps() && content instanceof View;
+  }
+
+  private static boolean hasCustomDynamicProps(Component component) {
+    return component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).getDynamicProps().length > 0;
+  }
+
+  private static DynamicValue[] getCustomDynamicProps(Component component) {
+    return component instanceof SpecGeneratedComponent
+        ? ((SpecGeneratedComponent) component).getDynamicProps()
+        : sEmptyArray;
   }
 
   @VisibleForTesting

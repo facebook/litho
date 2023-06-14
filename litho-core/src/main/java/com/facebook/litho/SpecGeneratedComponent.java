@@ -38,6 +38,7 @@ public abstract class SpecGeneratedComponent extends Component
     implements ContentAllocator, EventTriggerTarget, HasEventTrigger {
 
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
+  private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
   private final String mSimpleName;
 
@@ -517,6 +518,10 @@ public abstract class SpecGeneratedComponent extends Component
   protected @Nullable RenderData recordRenderData(
       ComponentContext c, @Nullable RenderData toRecycle) {
     return null;
+  }
+
+  protected DynamicValue<?>[] getDynamicProps() {
+    return sEmptyArray;
   }
 
   /**

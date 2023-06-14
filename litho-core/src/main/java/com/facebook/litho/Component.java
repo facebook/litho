@@ -109,7 +109,6 @@ public abstract class Component
   private static final String MISMATCHING_BASE_CONTEXT = "Component:MismatchingBaseContext";
   private static final String NULL_KEY_SET = "Component:NullKeySet";
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
-  private static final DynamicValue<?>[] sEmptyArray = new DynamicValue[0];
 
   /**
    * @return the globally unique ID associated with {@param type}, creating one if necessary.
@@ -951,10 +950,6 @@ public abstract class Component
    */
   boolean canResolve() {
     return false;
-  }
-
-  protected DynamicValue<?>[] getDynamicProps() {
-    return sEmptyArray;
   }
 
   // Get an id that is identical across cloned instances, but otherwise unique
