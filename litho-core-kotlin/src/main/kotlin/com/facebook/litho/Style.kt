@@ -31,9 +31,6 @@ interface StyleItem<T> {
 
   /** Sets this style item value on the given [CommonProps]. */
   fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) = Unit
-
-  /** Applies [Attributes] on the given [Component]. */
-  fun applyAttributeToComponent(context: ComponentContext, component: Component) = Unit
 }
 
 /** exposed to avoid package-private error on [Component] */
@@ -91,10 +88,6 @@ open class Style(
 
   internal fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     forEach { it.applyCommonProps(context, commonProps) }
-  }
-
-  internal fun applyAttributeToComponent(context: ComponentContext, component: Component) {
-    forEach { it.applyAttributeToComponent(context, component) }
   }
 
   override fun equals(other: Any?): Boolean {

@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,12 +33,12 @@ class StyleTest {
     }
   }
 
+  @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
   private data class TestStyleItem(override val value: String) : StyleItem<String> {
 
     override val field = TestItemField.instance
 
     override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) = Unit
-    override fun applyAttributeToComponent(context: ComponentContext, component: Component) = Unit
   }
 
   @Test

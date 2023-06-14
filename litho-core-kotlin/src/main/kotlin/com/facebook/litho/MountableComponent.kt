@@ -42,7 +42,6 @@ abstract class MountableComponent() : Component() {
     // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
     mountableRenderResult.style?.applyCommonProps(c, getCommonPropsHolder())
-    mountableRenderResult.style?.applyAttributeToComponent(c, this)
 
     // generate ID and set it on the Mountable
     val idGenerator = c.renderUnitIdGenerator
