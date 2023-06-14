@@ -1639,7 +1639,7 @@ public class LayoutState
       parent.child(node);
     }
 
-    Component component = unit.getComponent();
+    final Component component = unit.getComponent();
     if (component instanceof SpecGeneratedComponent
         && ((SpecGeneratedComponent) component).implementsExtraAccessibilityNodes()
         && unit.isAccessible()
@@ -1658,14 +1658,12 @@ public class LayoutState
             node.getRenderUnit().getId(),
             position,
             absoluteBounds,
-            unit.getComponent().excludeFromIncrementalMount()
-                || shouldExcludeMountableFromIncrementalMount,
+            component.excludeFromIncrementalMount() || shouldExcludeMountableFromIncrementalMount,
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
 
-    if (unit.getComponent().excludeFromIncrementalMount()
-        || shouldExcludeMountableFromIncrementalMount) {
+    if (component.excludeFromIncrementalMount() || shouldExcludeMountableFromIncrementalMount) {
       layoutState.mHasComponentsExcludedFromIncrementalMount = true;
     }
 
@@ -1674,7 +1672,8 @@ public class LayoutState
     layoutState.mIncrementalMountOutputs.put(id, incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
-    if (unit.getComponent().hasChildLithoViews()
+    if ((component instanceof SpecGeneratedComponent
+            && ((SpecGeneratedComponent) component).hasChildLithoViews())
         || node.getRenderUnit().doesMountRenderTreeHosts()) {
 
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id);
