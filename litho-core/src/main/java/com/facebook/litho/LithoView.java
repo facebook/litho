@@ -711,7 +711,7 @@ public class LithoView extends BaseMountingView {
 
     if (mComponentTree != null) {
       mComponentTree.release();
-      ComponentTree.clearDebugOverlay(this);
+      clearDebugOverlay(this);
       mComponentTree = null;
       mNullComponentCause = "release_CT";
     }

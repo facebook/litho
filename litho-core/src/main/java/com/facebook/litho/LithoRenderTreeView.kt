@@ -135,6 +135,10 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     this.layoutState = layoutState
     this.treeState = treeState
 
+    if (this.layoutState == null) {
+      clearDebugOverlay(this)
+    }
+
     setupMountExtensions()
     requestLayout()
   }

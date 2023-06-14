@@ -952,7 +952,7 @@ public class ComponentTree
       throw new RuntimeException("clearing LithoView while in attach");
     }
 
-    clearDebugOverlay(mLithoView);
+    BaseMountingView.clearDebugOverlay(mLithoView);
 
     mLithoView = null;
   }
@@ -2949,21 +2949,6 @@ public class ComponentTree
 
   public static int generateComponentTreeId() {
     return sIdGenerator.getAndIncrement();
-  }
-
-  static void drawDebugOverlay(@Nullable LithoView view, int id) {
-    if (DebugOverlay.isEnabled && view != null) {
-      Drawable drawable = DebugOverlay.getDebugOverlay(id);
-      clearDebugOverlay(view);
-      drawable.setBounds(0, 0, view.getWidth(), view.getHeight());
-      view.getOverlay().add(drawable);
-    }
-  }
-
-  static void clearDebugOverlay(@Nullable LithoView view) {
-    if (view != null) {
-      view.getOverlay().clear();
-    }
   }
 
   private class DoLayoutRunnable extends ThreadTracingRunnable {

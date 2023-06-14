@@ -20,6 +20,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,7 @@ import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountState;
@@ -489,6 +491,7 @@ public abstract class BaseMountingView extends ComponentHost
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       mMountState.mount(renderTree);
       LithoStats.incrementComponentMountCount();
+      drawDebugOverlay(this, layoutState.getComponentTreeId());
     }
   }
 
@@ -1123,6 +1126,21 @@ public abstract class BaseMountingView extends ComponentHost
     final LayoutState layoutState = getCurrentLayoutState();
 
     return layoutState != null ? layoutState.mRootComponentName : "";
+  }
+
+  static void drawDebugOverlay(@Nullable BaseMountingView view, int id) {
+    if (DebugOverlay.isEnabled && view != null) {
+      Drawable drawable = DebugOverlay.getDebugOverlay(id);
+      clearDebugOverlay(view);
+      drawable.setBounds(0, 0, view.getWidth(), view.getHeight());
+      view.getOverlay().add(drawable);
+    }
+  }
+
+  static void clearDebugOverlay(@Nullable BaseMountingView view) {
+    if (view != null) {
+      view.getOverlay().clear();
+    }
   }
 
   /**
