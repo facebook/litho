@@ -26,7 +26,6 @@ import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForCont
 import android.os.Process;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.instrumentation.FutureInstrumenter;
 import java.util.List;
@@ -61,9 +60,6 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
 
   protected final RunnableFuture<TreeFutureResult<T>> mFutureTask;
   protected final boolean mIsInterruptionEnabled;
-
-  protected boolean mEnableEarlyInterrupt =
-      ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
 
   public TreeFuture(boolean isInterruptionEnabled) {
     mIsInterruptionEnabled = isInterruptionEnabled;
@@ -169,9 +165,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       }
     }
 
-    if (mEnableEarlyInterrupt) {
-      maybeInterruptEarly();
-    }
+    maybeInterruptEarly();
 
     // If we haven't returned false by now, we are now marked NON_INTERRUPTIBLE so we're good to
     // wait on this future

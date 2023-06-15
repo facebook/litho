@@ -213,12 +213,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useSeparateThreadHandlersForResolveAndLayout = false;
 
-  /**
-   * When true, RenderTreeFuture will apply the interrupt immediately when calling
-   * tryRegisterForResponse.
-   */
-  public static boolean isInterruptEarlyWithSplitFuturesEnabled = false;
-
   /** Return true when resolve and layout futures are split, and each uses its own thread handler */
   public static boolean isSplitResolveAndLayoutWithSplitHandlers() {
     return useSeparateThreadHandlersForResolveAndLayout;

@@ -22,7 +22,6 @@ import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import java.util.List;
@@ -99,9 +98,6 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     mExtraAttribution = extraAttribution;
     mSyncWidthSpec = syncWidthSpec;
     mSyncHeightSpec = syncHeightSpec;
-
-    // Allow interrupt to happen during tryRegisterForResponse when config is enabled.
-    mEnableEarlyInterrupt = ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
   }
 
   @Override

@@ -688,11 +688,6 @@ class SplitFuturesTest {
    */
   @Test
   fun testSyncRenderContinuesAsyncOnMainThread() {
-
-    // This isn't written to run without early interruption
-    if (!ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled) {
-      return
-    }
     val c = legacyLithoViewRule.context
     val counter = RenderAndMeasureCounter()
 
