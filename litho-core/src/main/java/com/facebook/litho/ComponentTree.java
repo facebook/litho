@@ -2222,6 +2222,15 @@ public class ComponentTree
           message);
     }
 
+    // If sync operations are interruptible and happen on background thread, which could end
+    // up being moved to UI thread with null result and causing crash later. To prevent that
+    // we mark it as Non-Interruptible.
+    final boolean isInterruptible =
+        !LayoutState.isFromSyncLayout(source)
+            && (mContext.mLithoConfiguration.mComponentsConfiguration
+                    .getUseInterruptibleResolution()
+                || mContext.mLithoConfiguration.mComponentsConfiguration
+                    .getUseCancelableLayoutFutures());
     ResolveTreeFuture treeFuture =
         new ResolveTreeFuture(
             context,
@@ -2230,15 +2239,7 @@ public class ComponentTree
             currentNode,
             null,
             localResolveVersion,
-            // If sync operations are interruptible and happen on background thread, which could end
-            // up being moved to UI thread with null result and causing crash later. To prevent that
-            // we mark it as Non-Interruptible.
-            (!ComponentsConfiguration.isSyncTaskNonInterruptibleEnabled
-                    || !LayoutState.isFromSyncLayout(source))
-                && (mContext.mLithoConfiguration.mComponentsConfiguration
-                        .getUseInterruptibleResolution()
-                    || mContext.mLithoConfiguration.mComponentsConfiguration
-                        .getUseCancelableLayoutFutures()),
+            isInterruptible,
             widthSpec,
             heightSpec,
             mId,

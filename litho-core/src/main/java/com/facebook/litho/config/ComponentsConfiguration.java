@@ -223,9 +223,6 @@ public class ComponentsConfiguration {
   /** Skip checking for root component and tree-props while layout */
   public static boolean isSkipRootCheckingEnabled = false;
 
-  /** Mark sync operations as non-interruptible */
-  public static boolean isSyncTaskNonInterruptibleEnabled = false;
-
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;
 
   public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;
