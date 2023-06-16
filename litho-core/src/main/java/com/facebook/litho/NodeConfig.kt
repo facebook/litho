@@ -16,8 +16,10 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.yoga.LithoYogaFactory
 import com.facebook.yoga.YogaConfig
+import com.facebook.yoga.YogaExperimentalFeature
 import com.facebook.yoga.YogaNode
 import kotlin.jvm.JvmField
 
@@ -31,7 +33,13 @@ object NodeConfig {
   @JvmField @Volatile var yogaNodeFactory: InternalYogaNodeFactory? = null
 
   /** Allows access to the internal YogaConfig instance */
-  @get:JvmStatic val yogaConfig: YogaConfig = LithoYogaFactory.createYogaConfig()
+  @get:JvmStatic
+  val yogaConfig: YogaConfig =
+      LithoYogaFactory.createYogaConfig().apply {
+        if (ComponentsConfiguration.enableFixForJniLocalRefOverflow) {
+          setExperimentalFeatureEnabled(YogaExperimentalFeature.FIX_JNILOCAL_REF_OVERFLOWS, true)
+        }
+      }
 
   @JvmStatic
   fun createYogaNode(): YogaNode {
