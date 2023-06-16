@@ -106,7 +106,7 @@ class VisibilityEventsWithVisibilityExtensionTest {
 
   @Test
   fun visibilityExtensionOnUnmountAllItems_shouldUnmount() {
-    val content: Component = Text.create(context).text("hello world").build()
+    val content: SpecGeneratedComponent = Text.create(context).text("hello world").build()
     val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
     val root: Component =
         create(context)

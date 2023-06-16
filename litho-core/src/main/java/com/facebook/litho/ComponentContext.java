@@ -656,7 +656,7 @@ public class ComponentContext implements Cloneable {
   }
 
   public <E> EventHandler<E> newEventHandler(int id, @Nullable Object[] params) {
-    if (mComponentScope == null) {
+    if (mComponentScope == null || !(mComponentScope instanceof HasEventDispatcher)) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
           NO_SCOPE_EVENT_HANDLER,
@@ -664,7 +664,8 @@ public class ComponentContext implements Cloneable {
       return NoOpEventHandler.getNoOpEventHandler();
     }
 
-    return new EventHandler<>(id, new EventDispatchInfo(mComponentScope, this), params);
+    return new EventHandler<>(
+        id, new EventDispatchInfo((HasEventDispatcher) mComponentScope, this), params);
   }
 
   @Nullable

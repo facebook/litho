@@ -79,9 +79,6 @@ abstract class KComponent : Component() {
 
   final override fun canResolve() = false
 
-  final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
-      super.dispatchOnEventImpl(eventHandler, eventState)
-
   internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
 
   final override fun getMountType() = super.getMountType()

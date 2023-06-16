@@ -43,7 +43,7 @@ class ComponentTreeEventHandlerTest {
 
   @Test
   fun testAllEventHandlersForEventDispatchInfoAreUpdated() {
-    val component = mock<Component>()
+    val component = mock<SpecGeneratedComponent>()
     val componentGlobalKey = "component1"
     val scopedContext = ComponentContext.withComponentScope(context, component, componentGlobalKey)
     val eventHandlersController = componentTree.eventHandlersController
@@ -62,7 +62,7 @@ class ComponentTreeEventHandlerTest {
     eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers)
     assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(1)
     assertThat(eventHandler1.dispatchInfo).isSameAs(eventHandler2.dispatchInfo)
-    val newComponent = mock<Component>()
+    val newComponent = mock<SpecGeneratedComponent>()
     val newScopedContext =
         ComponentContext.withComponentScope(context, newComponent, componentGlobalKey)
     eventHandlersController.updateEventDispatchInfoForGlobalKey(
@@ -77,9 +77,9 @@ class ComponentTreeEventHandlerTest {
 
   @Test
   fun testClearUnusedEntries() {
-    val component = mock<Component>()
-    val component2 = mock<Component>()
-    val component2_2 = mock<Component>()
+    val component = mock<SpecGeneratedComponent>()
+    val component2 = mock<SpecGeneratedComponent>()
+    val component2_2 = mock<SpecGeneratedComponent>()
     val componentGlobalKey1 = "component1"
     val componentGlobalKey2 = "component2"
     val scopedContext = ComponentContext.withComponentScope(context, component, componentGlobalKey1)

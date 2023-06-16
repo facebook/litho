@@ -16,11 +16,14 @@
 
 package com.facebook.litho;
 
+import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -35,7 +38,11 @@ import com.facebook.rendercore.RenderUnit;
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class SpecGeneratedComponent extends Component
-    implements ContentAllocator, EventTriggerTarget, HasEventTrigger {
+    implements ContentAllocator,
+        HasEventDispatcher,
+        EventDispatcher,
+        EventTriggerTarget,
+        HasEventTrigger {
 
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
@@ -598,6 +605,73 @@ public abstract class SpecGeneratedComponent extends Component
   @Override
   public int poolSize() {
     return DEFAULT_MAX_PREALLOCATION;
+  }
+
+  @Override
+  public final @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    boolean isTracing = ComponentsSystrace.isTracing();
+
+    // We don't want to wrap and throw error events
+    if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+      if (isTracing) {
+        ComponentsSystrace.beginSection(
+            "onError:"
+                + getSimpleName()
+                + "("
+                + getSectionNameForTracing(eventState.getClass())
+                + ")");
+      }
+      try {
+        return dispatchOnEventImpl(eventHandler, eventState);
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+      }
+    }
+
+    final Object token = EventDispatcherInstrumenter.onBeginWork(eventHandler, eventState);
+    if (isTracing) {
+      ComponentsSystrace.beginSection(
+          "onEvent:"
+              + getSimpleName()
+              + "("
+              + getSectionNameForTracing(eventState.getClass())
+              + ")");
+    }
+    try {
+      return dispatchOnEventImpl(eventHandler, eventState);
+    } catch (Exception e) {
+      if (eventHandler.dispatchInfo.componentContext != null) {
+        ComponentUtils.handle(eventHandler.dispatchInfo.componentContext, e);
+        return null;
+      } else {
+        throw e;
+      }
+    } finally {
+      EventDispatcherInstrumenter.onEndWork(token);
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
+    if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+      Preconditions.checkNotNull(
+              getErrorHandler(
+                  Preconditions.checkNotNull(eventHandler.dispatchInfo.componentContext)))
+          .dispatchEvent((ErrorEvent) eventState);
+    }
+
+    // Don't do anything by default, unless we're handling an error.
+    return null;
+  }
+
+  @Deprecated
+  @Override
+  public final EventDispatcher getEventDispatcher() {
+    return this;
   }
 
   /**

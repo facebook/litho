@@ -104,9 +104,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun canResolve(): Boolean = false
 
-  final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
-      super.dispatchOnEventImpl(eventHandler, eventState)
-
   internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
 
   final override fun getSimpleName(): String = super.getSimpleName()

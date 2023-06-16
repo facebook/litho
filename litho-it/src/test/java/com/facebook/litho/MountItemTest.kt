@@ -39,7 +39,7 @@ import org.junit.runner.RunWith
 class MountItemTest {
 
   private lateinit var mountItem: MountItem
-  private lateinit var component: Component
+  private lateinit var component: SpecGeneratedComponent
   private lateinit var componentHost: ComponentHost
   private lateinit var content: Any
   private lateinit var contentDescription: CharSequence

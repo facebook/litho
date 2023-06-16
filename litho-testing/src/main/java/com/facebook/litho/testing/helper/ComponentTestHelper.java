@@ -35,6 +35,7 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
+import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.LithoView;
@@ -557,11 +558,17 @@ public final class ComponentTestHelper {
 
     lithoView.notifyVisibleBoundsChanged();
 
-    eventHandler.dispatchInfo.hasEventDispatcher = component;
+    if (!(component instanceof HasEventDispatcher)) {
+      return lithoView;
+    }
+    eventHandler.dispatchInfo.hasEventDispatcher = (HasEventDispatcher) component;
 
     try {
       Whitebox.invokeMethod(
-          component.getEventDispatcher(), "dispatchOnEvent", eventHandler, eventInstance);
+          ((HasEventDispatcher) component).getEventDispatcher(),
+          "dispatchOnEvent",
+          eventHandler,
+          eventInstance);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

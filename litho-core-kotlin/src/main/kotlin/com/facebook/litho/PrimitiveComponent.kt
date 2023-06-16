@@ -93,9 +93,6 @@ abstract class PrimitiveComponent : Component() {
 
   final override fun canResolve(): Boolean = false
 
-  final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any): Any? =
-      super.dispatchOnEventImpl(eventHandler, eventState)
-
   internal final override fun getCommonDynamicProps(): SparseArray<DynamicValue<*>>? =
       super.getCommonDynamicProps()
 

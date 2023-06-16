@@ -29,7 +29,6 @@ import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
-import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -87,12 +86,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * values for individual props. {@link Component} instances are immutable after creation.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class Component
-    implements Cloneable,
-        HasEventDispatcher,
-        EventDispatcher,
-        Equivalence<Component>,
-        AttributesAcceptor {
+public abstract class Component implements Cloneable, Equivalence<Component>, AttributesAcceptor {
 
   // This name needs to match the generated code in specmodels in
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
@@ -174,67 +168,6 @@ public abstract class Component
         ComponentsSystrace.endSection();
       }
     }
-  }
-
-  @Override
-  public final @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    boolean isTracing = ComponentsSystrace.isTracing();
-
-    // We don't want to wrap and throw error events
-    if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      if (isTracing) {
-        ComponentsSystrace.beginSection(
-            "onError:"
-                + getSimpleName()
-                + "("
-                + getSectionNameForTracing(eventState.getClass())
-                + ")");
-      }
-      try {
-        return dispatchOnEventImpl(eventHandler, eventState);
-      } finally {
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
-      }
-    }
-
-    final Object token = EventDispatcherInstrumenter.onBeginWork(eventHandler, eventState);
-    if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "onEvent:"
-              + getSimpleName()
-              + "("
-              + getSectionNameForTracing(eventState.getClass())
-              + ")");
-    }
-    try {
-      return dispatchOnEventImpl(eventHandler, eventState);
-    } catch (Exception e) {
-      if (eventHandler.dispatchInfo.componentContext != null) {
-        ComponentUtils.handle(eventHandler.dispatchInfo.componentContext, e);
-        return null;
-      } else {
-        throw e;
-      }
-    } finally {
-      EventDispatcherInstrumenter.onEndWork(token);
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-  }
-
-  protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
-    if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      Preconditions.checkNotNull(
-              getErrorHandler(
-                  Preconditions.checkNotNull(eventHandler.dispatchInfo.componentContext)))
-          .dispatchEvent((ErrorEvent) eventState);
-    }
-
-    // Don't do anything by default, unless we're handling an error.
-    return null;
   }
 
   /**
@@ -461,7 +394,9 @@ public abstract class Component
       final ComponentContext c,
       final int id,
       final Object[] params) {
-    if (c == null || c.getComponentScope() == null) {
+    if (c == null
+        || c.getComponentScope() == null
+        || !(c.getComponentScope() instanceof HasEventDispatcher)) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
           NO_SCOPE_EVENT_HANDLER,
@@ -477,7 +412,8 @@ public abstract class Component
               className, c.getComponentScope().getSimpleName()));
     }
     final EventHandler eventHandler =
-        new EventHandler<>(id, new EventDispatchInfo(c.getComponentScope(), c), params);
+        new EventHandler<>(
+            id, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
     final CalculationStateContext calculationStateContext = c.getCalculationStateContext();
     if (calculationStateContext != null) {
       calculationStateContext.recordEventHandler(c.getGlobalKey(), eventHandler);
@@ -523,12 +459,6 @@ public abstract class Component
   @Nullable
   public final CommonProps getCommonProps() {
     return mCommonProps;
-  }
-
-  @Deprecated
-  @Override
-  public final EventDispatcher getEventDispatcher() {
-    return this;
   }
 
   public String getSimpleName() {
