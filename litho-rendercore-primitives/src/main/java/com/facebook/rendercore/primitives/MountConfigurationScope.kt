@@ -22,7 +22,7 @@ import kotlin.reflect.KFunction2
 import kotlin.reflect.KMutableProperty1
 
 /** The implicit receiver for [MountBehavior.mountConfigurationCall]. */
-class MountConfigurationScope<ContentType : Any> {
+class MountConfigurationScope<ContentType : Any> internal constructor() {
 
   /**
    * If true, the nested tree hierarchy (if present) will be notified about parent's bounds changes.

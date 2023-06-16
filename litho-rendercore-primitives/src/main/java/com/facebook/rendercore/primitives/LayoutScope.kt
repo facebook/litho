@@ -23,7 +23,8 @@ import com.facebook.rendercore.LayoutContext
  * The scope for the [Primitive] layout method. Provides access to [LayoutContext], the previous
  * layout data and utility methods that may help to compute the [PrimitiveLayoutResult].
  */
-class LayoutScope(val layoutContext: LayoutContext<Any?>, val previousLayoutData: Any?) {
+class LayoutScope
+internal constructor(val layoutContext: LayoutContext<Any?>, val previousLayoutData: Any?) {
   val androidContext: Context
     get() = layoutContext.androidContext
 }
