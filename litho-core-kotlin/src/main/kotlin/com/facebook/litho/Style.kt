@@ -38,8 +38,6 @@ internal fun Component.getCommonPropsHolder() = getOrCreateCommonProps()
 
 internal fun Component.getOrCreateCommonDynamicPropsHolder() = getOrCreateCommonDynamicProps()
 
-internal fun Component.getComponentOwnerGlobalKey() = getOwnerGlobalKey()
-
 /**
  * An immutable ordered collection of attributes ( [StyleItem] s) that can be applied to a
  * component, like width or click handling.

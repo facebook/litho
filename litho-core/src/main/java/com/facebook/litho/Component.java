@@ -123,7 +123,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   private final int mTypeId;
 
   private int mId = sIdGenerator.getAndIncrement();
-  private @Nullable String mOwnerGlobalKey;
   private @Nullable String mKey;
   private boolean mHasManualKey;
   private @Nullable Handle mHandle;
@@ -830,12 +829,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mKey = key;
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  @Nullable
-  final String getOwnerGlobalKey() {
-    return mOwnerGlobalKey;
-  }
-
   /**
    * @return true if component has common dynamic props, false - otherwise. If so {@link
    *     #getCommonDynamicProps()} will return not null value
@@ -1061,7 +1054,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     protected final ResourceResolver mResourceResolver;
     private final ComponentContext mContext;
-    private Component mComponent;
+    private SpecGeneratedComponent mComponent;
 
     protected Builder(
         ComponentContext c,
@@ -1070,13 +1063,20 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         Component component) {
       Preconditions.checkNotNull(c);
 
+      if (!(component instanceof SpecGeneratedComponent)) {
+        throw new RuntimeException(
+            "Component.Builder only accepts SpecGeneratedComponent and "
+                + component.getClass()
+                + " was provided.");
+      }
+
       mResourceResolver = c.getResourceResolver();
-      mComponent = component;
+      mComponent = (SpecGeneratedComponent) component;
       mContext = c;
 
       final Component owner = getOwner();
       if (owner != null) {
-        mComponent.mOwnerGlobalKey = mContext.getGlobalKey();
+        mComponent.setOwnerGlobalKey(mContext.getGlobalKey());
       }
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
@@ -1503,7 +1503,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     @Deprecated
     public boolean hasBackgroundSet() {
-      return mComponent.mCommonProps != null && mComponent.mCommonProps.getBackground() != null;
+      return mComponent.getCommonProps() != null
+          && mComponent.getCommonProps().getBackground() != null;
     }
 
     public boolean hasClickHandlerSet() {
@@ -2144,7 +2145,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     public T transitionKey(@Nullable String key) {
-      mComponent.getOrCreateCommonProps().transitionKey(key, mComponent.mOwnerGlobalKey);
+      mComponent.getOrCreateCommonProps().transitionKey(key, mComponent.getOwnerGlobalKey());
       if (mComponent.getOrCreateCommonProps().getTransitionKeyType() == null) {
         // If TransitionKeyType isn't set, set to default type
         transitionKeyType(Transition.DEFAULT_TRANSITION_KEY_TYPE);

@@ -276,14 +276,14 @@ class DynamicPropsTest {
       c: ComponentContext,
       defStyleAttr: Int,
       defStyleRes: Int,
-      private var _component: Component
+      private var _component: SpecGeneratedComponent
   ) : Component.Builder<DynamicElevationBuilder?>(c, defStyleAttr, defStyleRes, _component) {
-    override fun build(): Component = _component
+    override fun build(): SpecGeneratedComponent = _component
 
     override fun getThis(): DynamicElevationBuilder = this
 
     override fun setComponent(component: Component) {
-      this._component = component
+      this._component = component as SpecGeneratedComponent
     }
   }
 
@@ -299,7 +299,7 @@ class DynamicPropsTest {
                 context,
                 -1,
                 -1,
-                object : Component() {
+                object : SpecGeneratedComponent("DynamicElevationTestComponent") {
                   override fun getMountType(): MountType = MountType.VIEW
                 })
             .shadowElevation(elevationDV)

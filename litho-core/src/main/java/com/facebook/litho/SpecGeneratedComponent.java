@@ -48,6 +48,7 @@ public abstract class SpecGeneratedComponent extends Component
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
   private final String mSimpleName;
+  private @Nullable String mOwnerGlobalKey;
 
   protected SpecGeneratedComponent(String simpleName) {
     mSimpleName = simpleName;
@@ -57,6 +58,16 @@ public abstract class SpecGeneratedComponent extends Component
   protected SpecGeneratedComponent(int identityHashCode, String simpleName) {
     super(identityHashCode);
     mSimpleName = simpleName;
+  }
+
+  @VisibleForTesting
+  @Nullable
+  final String getOwnerGlobalKey() {
+    return mOwnerGlobalKey;
+  }
+
+  final void setOwnerGlobalKey(String ownerGlobalKey) {
+    mOwnerGlobalKey = ownerGlobalKey;
   }
 
   /** Should only be used by logging to provide more readable messages. */
