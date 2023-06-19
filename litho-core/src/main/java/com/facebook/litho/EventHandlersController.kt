@@ -18,8 +18,6 @@ package com.facebook.litho
 
 import android.util.Pair
 import androidx.annotation.VisibleForTesting
-import androidx.core.util.component1
-import androidx.core.util.component2
 import com.facebook.infer.annotation.ThreadSafe
 import java.util.HashMap
 
@@ -116,7 +114,9 @@ class EventHandlersController {
    */
   @Synchronized
   fun canonicalizeEventDispatchInfos(eventHandlers: List<Pair<String, EventHandler<*>>>) {
-    for ((globalKey, eventHandler) in eventHandlers) {
+    for (entry in eventHandlers) {
+      val globalKey = entry.first
+      val eventHandler = entry.second
       var existingDispatchInfo = _dispatchInfos[globalKey]
       if (existingDispatchInfo == null) {
         existingDispatchInfo = DispatchInfoWrapper(eventHandler.dispatchInfo)
