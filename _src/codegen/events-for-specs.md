@@ -97,7 +97,7 @@ class FacePileComponentSpec {
     Component.Builder builder = Column.create(c);
     for (Uri face : faces) {
       builder.child(
-          FrescoImage.create(c)
+          FrescoVitoImage2.create(c)
               .uri(face)
               .clickHandler(FacePileComponent.onFaceClicked(c, face)));
     }
