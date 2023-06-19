@@ -23,8 +23,10 @@ package com.facebook.rendercore
 class BindData {
   var fixedBindersBindData: Array<Any?>? = null
     private set
+
   var optionalMountBindersBindData: MutableMap<Class<*>, Any?>? = null
     private set
+
   var attachBindersBindData: MutableMap<Class<*>, Any?>? = null
     private set
 

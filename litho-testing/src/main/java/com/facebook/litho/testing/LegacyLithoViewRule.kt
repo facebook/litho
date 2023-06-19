@@ -85,6 +85,7 @@ constructor(
       }
       return _componentTree ?: throw AssertionError("Set to null by another thread")
     }
+
   val lithoView: LithoView
     get() {
       if (_lithoView == null) {
@@ -96,12 +97,15 @@ constructor(
       }
       return _lithoView ?: throw AssertionError("Set to null by another thread")
     }
+
   val committedLayoutState: LayoutState?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     get() = componentTree.committedLayoutState
+
   val currentRootNode: LithoLayoutResult?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     get() = committedLayoutState?.rootLayoutResult
+
   var widthSpec = DEFAULT_WIDTH_SPEC
   var heightSpec = DEFAULT_HEIGHT_SPEC
   lateinit var context: ComponentContext
@@ -536,6 +540,7 @@ constructor(
           .layout()
           .currentRootNode
     }
+
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmStatic
     fun getRootLayout(rule: LegacyLithoViewRule, component: Component?): LithoLayoutResult? {

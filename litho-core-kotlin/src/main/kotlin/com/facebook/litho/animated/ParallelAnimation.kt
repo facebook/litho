@@ -26,6 +26,7 @@ class ParallelAnimation(private val animators: Array<out AnimatedAnimation>) : A
   private val parallelAnimationListeners = mutableListOf<AnimationFinishListener>()
   private var parallelFinishedAnimators = 0
   private var _isActive: Boolean = false
+
   init {
     animators.forEach {
       it.addListener(
@@ -41,6 +42,7 @@ class ParallelAnimation(private val animators: Array<out AnimatedAnimation>) : A
           })
     }
   }
+
   @ThreadConfined(ThreadConfined.UI) override fun isActive(): Boolean = _isActive
 
   @ThreadConfined(ThreadConfined.UI)

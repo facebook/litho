@@ -65,6 +65,7 @@ object SimpleStateUpdateEmulatorWillRenderSpec {
 
   class Caller {
     var c: ComponentContext? = null
+
     fun set(c: ComponentContext?) {
       this.c = c
     }

@@ -46,6 +46,7 @@ class ViewAttributes {
       field = value
       flags = flags or FLAG_VIEW_ID
     }
+
   var viewTag: Any? = null
     set(value) {
       field = value
@@ -83,6 +84,7 @@ class ViewAttributes {
             flags or FLAG_SCALE
           }
     }
+
   var alpha: Float = 1f
     set(value) {
       field = value
@@ -93,6 +95,7 @@ class ViewAttributes {
             flags or FLAG_ALPHA
           }
     }
+
   var rotation: Float = 0f
     set(value) {
       field = value
@@ -103,11 +106,13 @@ class ViewAttributes {
             flags or FLAG_ROTATION
           }
     }
+
   var rotationX: Float = 0f
     set(value) {
       field = value
       flags = flags or FLAG_ROTATION_X
     }
+
   var rotationY: Float = 0f
     set(value) {
       field = value
@@ -119,26 +124,31 @@ class ViewAttributes {
       field = value
       flags = flags or FLAG_CLIP_CHILDREN
     }
+
   var clipToOutline: Boolean = false
     set(value) {
       field = value
       flags = flags or FLAG_CLIP_TO_OUTLINE
     }
+
   var isFocusable: Boolean = false
     set(value) {
       field = value
       flags = flags or FLAG_FOCUS
     }
+
   var isClickable: Boolean = false
     set(value) {
       field = value
       flags = flags or FLAG_CLICKABLE
     }
+
   var isEnabled: Boolean = false
     set(value) {
       field = value
       flags = flags or FLAG_ENABLED
     }
+
   var isSelected: Boolean = false
     set(value) {
       field = value
@@ -150,12 +160,14 @@ class ViewAttributes {
       field = value
       flags = flags or FLAG_SHADOW_ELEVATION
     }
+
   @ColorInt
   var ambientShadowColor: Int = Color.BLACK
     set(value) {
       field = value
       flags = flags or FLAG_AMBIENT_SHADOW_COLOR
     }
+
   @ColorInt
   var spotShadowColor: Int = Color.BLACK
     set(value) {
@@ -165,26 +177,37 @@ class ViewAttributes {
 
   val isClipChildrenSet: Boolean
     get() = flags and FLAG_CLIP_CHILDREN != 0
+
   val isFocusableSet: Boolean
     get() = flags and FLAG_FOCUS != 0
+
   val isClickableSet: Boolean
     get() = flags and FLAG_CLICKABLE != 0
+
   val isEnabledSet: Boolean
     get() = flags and FLAG_ENABLED != 0
+
   val isSelectedSet: Boolean
     get() = flags and FLAG_SELECTED != 0
+
   val isScaleSet: Boolean
     get() = flags and FLAG_SCALE != 0
+
   val isAlphaSet: Boolean
     get() = flags and FLAG_ALPHA != 0
+
   val isRotationSet: Boolean
     get() = flags and FLAG_ROTATION != 0
+
   val isRotationXSet: Boolean
     get() = flags and FLAG_ROTATION_X != 0
+
   val isRotationYSet: Boolean
     get() = flags and FLAG_ROTATION_Y != 0
+
   val isTagSet: Boolean
     get() = flags and FLAG_VIEW_TAG != 0
+
   val isViewIdSet: Boolean
     get() = flags and FLAG_VIEW_ID != 0
 
@@ -192,10 +215,13 @@ class ViewAttributes {
 
   val paddingLeft: Int
     get() = padding?.left ?: 0
+
   val paddingTop: Int
     get() = padding?.top ?: 0
+
   val paddingRight: Int
     get() = padding?.right ?: 0
+
   val paddingBottom: Int
     get() = padding?.bottom ?: 0
 

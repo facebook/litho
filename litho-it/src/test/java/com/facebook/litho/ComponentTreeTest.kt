@@ -218,6 +218,7 @@ class ComponentTreeTest {
   private class MeasureListener : ComponentTree.MeasureListener {
     var width: Int = 0
     var height: Int = 0
+
     override fun onSetRootAndSizeSpec(
         layoutVersion: Int,
         width: Int,

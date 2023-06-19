@@ -37,9 +37,13 @@ class ViewAllocator<Content : View>(
     private val allocator: Allocator<Content>
 ) : ContentAllocator<Content> {
   override fun createContent(context: Context): Content = allocator.allocate(context)
+
   override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.VIEW
+
   override fun poolSize(): Int = poolSize
+
   override fun canPreallocate(): Boolean = canPreallocate
+
   override fun getPoolableContentType(): Any = allocator.javaClass
 }
 
@@ -57,9 +61,13 @@ class DrawableAllocator<Content : Drawable>(
     private val allocator: Allocator<Content>
 ) : ContentAllocator<Content> {
   override fun createContent(context: Context): Content = allocator.allocate(context)
+
   override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
+
   override fun poolSize(): Int = poolSize
+
   override fun canPreallocate(): Boolean = canPreallocate
+
   override fun getPoolableContentType(): Any = allocator.javaClass
 }
 

@@ -36,6 +36,7 @@ class MatrixDrawable<T : Drawable?> : Drawable(), Drawable.Callback, Touchable, 
 
   var mountedDrawable: T? = null
     private set
+
   private var matrix: DrawableMatrix? = null
   private var shouldClipRect = false
   private var width = 0

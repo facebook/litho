@@ -247,6 +247,7 @@ object TestCrashFromEachLayoutLifecycleMethodSpec {
   class Caller {
     lateinit var c: ComponentContext
     lateinit var crashFromStep: LifecycleStep
+
     operator fun set(c: ComponentContext, crashFromStep: LifecycleStep) {
       this.c = c
       this.crashFromStep = crashFromStep

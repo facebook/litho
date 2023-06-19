@@ -44,6 +44,7 @@ import org.junit.runner.RunWith
 class GlobalKeyTest {
   private var mContext: ComponentContext? = null
   private var mComponentsReporter: TestComponentsReporter? = null
+
   @Before
   fun setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)

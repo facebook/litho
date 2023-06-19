@@ -35,6 +35,7 @@ import com.facebook.mountable.utils.types.Size
 
 sealed interface CanvasNodeModel {
   fun draw(canvas: Canvas, state: CanvasState)
+
   fun needsSoftwareLayer(): Boolean
 }
 

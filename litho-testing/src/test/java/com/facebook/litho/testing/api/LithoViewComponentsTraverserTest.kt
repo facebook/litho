@@ -230,6 +230,7 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
 
     Assertions.assertThat(actual).isEqualTo(expected)
   }
+
   private fun renderLithoViewWithComponent(component: Component): LithoView {
     val componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val lithoView = LithoView(componentContext)
@@ -258,6 +259,7 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
 
     append("]")
   }
+
   private class RootComponent : KComponent() {
 
     override fun ComponentScope.render(): Component? {

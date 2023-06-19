@@ -130,8 +130,11 @@ object Animated {
  */
 interface AnimatedAnimation {
   fun isActive(): Boolean
+
   fun start()
+
   fun cancel()
+
   fun addListener(finishListener: AnimationFinishListener)
 }
 
@@ -143,9 +146,11 @@ fun interface AnimationFinishListener {
 
 private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : AnimatedAnimation {
   override fun isActive(): Boolean = springAnimation.isRunning
+
   override fun start() {
     springAnimation.start()
   }
+
   override fun cancel() {
     springAnimation.cancel()
   }
@@ -162,11 +167,13 @@ internal class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimatio
   private var _isActive: Boolean = false
 
   override fun isActive(): Boolean = _isActive
+
   override fun start() {
     _isActive = true
     animationCancelled = false
     animator.start()
   }
+
   override fun cancel() {
     _isActive = false
     animationCancelled = true
@@ -184,6 +191,7 @@ internal class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimatio
             animatorFinishListener.onFinish(false)
             _isActive = false
           }
+
           override fun onAnimationCancel(animation: Animator) {
             animatorFinishListener.onFinish(true)
           }
@@ -208,6 +216,7 @@ private class DynamicFloatValueHolder(val dynamicValue: DynamicValue<Float>) : F
   override fun getValue(): Float {
     return dynamicValue.get()
   }
+
   override fun setValue(value: Float) {
     dynamicValue.set(value)
   }

@@ -56,6 +56,7 @@ object NestedTreeComponentSpec {
   }
 
   class C
+
   class ExtraProps {
     @JvmField var steps: MutableList<LifecycleStep>? = null
     @JvmField var mDirection: YogaDirection? = null

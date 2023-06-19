@@ -18,8 +18,12 @@ package com.facebook.litho.testing
 
 interface BaseThreadLooperController {
   fun init()
+
   fun clean()
+
   fun runOneTaskSync()
+
   fun runToEndOfTasksSync()
+
   fun runToEndOfTasksAsync(): TimeOutSemaphore?
 }

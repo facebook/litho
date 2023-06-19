@@ -74,6 +74,7 @@ object DynamicPropsResetValueTesterSpec {
 
   class Caller {
     @JvmField var c: ComponentContext? = null
+
     fun set(c: ComponentContext) {
       this.c = c
     }

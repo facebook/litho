@@ -1454,6 +1454,7 @@ class MountStateIncrementalMountTest {
 
   private class TestLithoView(context: Context?) : LithoView(context) {
     private val previousIncrementalMountBounds = Rect()
+
     override fun notifyVisibleBoundsChanged(visibleRect: Rect, processVisibilityOutputs: Boolean) {
       println("performIncMount on TestLithoView")
       previousIncrementalMountBounds.set(visibleRect)

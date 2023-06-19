@@ -172,8 +172,11 @@ class PrimitiveLayoutResult(
   ): LayoutResult {
     return object : LayoutResult {
       override fun getRenderUnit(): RenderUnit<*>? = renderUnit
+
       override fun getLayoutData(): Any? = this@PrimitiveLayoutResult.layoutData
+
       override fun getChildrenCount(): Int = 0
+
       override fun getChildAt(index: Int): LayoutResult {
         throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
       }
@@ -187,12 +190,19 @@ class PrimitiveLayoutResult(
       }
 
       override fun getWidth(): Int = this@PrimitiveLayoutResult.width
+
       override fun getHeight(): Int = this@PrimitiveLayoutResult.height
+
       override fun getPaddingTop(): Int = this@PrimitiveLayoutResult.paddingTop
+
       override fun getPaddingRight(): Int = this@PrimitiveLayoutResult.paddingRight
+
       override fun getPaddingBottom(): Int = this@PrimitiveLayoutResult.paddingBottom
+
       override fun getPaddingLeft(): Int = this@PrimitiveLayoutResult.paddingLeft
+
       override fun getWidthSpec(): Int = widthSpec
+
       override fun getHeightSpec(): Int = heightSpec
     }
   }

@@ -66,6 +66,7 @@ class BuilderGeneratorKtTest {
   private val layoutSpecModelFactory = LayoutSpecModelFactory()
   private val elements: Elements
     get() = compilationRule.elements
+
   private val types: Types
     get() = compilationRule.types
 

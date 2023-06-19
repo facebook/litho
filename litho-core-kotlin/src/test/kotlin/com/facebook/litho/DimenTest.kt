@@ -205,6 +205,7 @@ class DimenTest {
                   .getResources()
                   .getConfiguration())) {
     override fun dipsToPixels(dips: Float): Int = FastMath.round(dips * density)
+
     override fun sipsToPixels(sips: Float): Int = FastMath.round(sips * scaledDensity)
   }
 }

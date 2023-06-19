@@ -62,6 +62,7 @@ class TestCollectionDescriptionHelperTest {
     assertThat(TestCollectionDescriptionHelper.collectionToString(testCollection))
         .isEqualTo(testCollection.recyclerView.toString())
   }
+
   @Test
   fun `prints recycler with fully visible child item info with id`() {
     val testLithoView =
@@ -84,6 +85,7 @@ class TestCollectionDescriptionHelperTest {
         """
                 .trimMargin())
   }
+
   @Test
   fun `prints recycler with partially visible child item info with id`() {
     val testLithoView =
@@ -106,6 +108,7 @@ class TestCollectionDescriptionHelperTest {
         """
                 .trimMargin())
   }
+
   @Test
   fun `prints recycler with invisible child item info without id set`() {
     val testLithoView =
@@ -126,6 +129,7 @@ class TestCollectionDescriptionHelperTest {
         """
                 .trimMargin())
   }
+
   @Test
   fun `prints recycler with multiple children including fallback`() {
     val testLithoView =

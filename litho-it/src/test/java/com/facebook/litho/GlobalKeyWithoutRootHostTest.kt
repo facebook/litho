@@ -36,6 +36,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class GlobalKeyWithoutRootHostTest {
   private var mContext: ComponentContext? = null
+
   @Before
   fun setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false)

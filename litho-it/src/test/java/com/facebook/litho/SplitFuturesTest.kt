@@ -237,6 +237,7 @@ class SplitFuturesTest {
     val listener: RenderAndLayoutCountingTesterSpec.Listener =
         object : RenderAndLayoutCountingTesterSpec.Listener {
           override fun onPrepare() = Unit
+
           override fun onMeasure() {
             // inform measure has started
             firstMeasureStartLatch.release()
@@ -517,6 +518,7 @@ class SplitFuturesTest {
     val listener: RenderAndLayoutCountingTesterSpec.Listener =
         object : RenderAndLayoutCountingTesterSpec.Listener {
           override fun onPrepare() = Unit
+
           override fun onMeasure() {
             // Waiting should only happen on the 1st measure.
             // The latches below ensure that this condition is only met for the "old" specs.
@@ -632,6 +634,7 @@ class SplitFuturesTest {
     val listener: RenderAndLayoutCountingTesterSpec.Listener =
         object : RenderAndLayoutCountingTesterSpec.Listener {
           override fun onPrepare() = Unit
+
           override fun onMeasure() {
             // Inform measure has started
             syncMeasureStartedLatch.release()
@@ -756,6 +759,7 @@ class SplitFuturesTest {
     val listener: RenderAndLayoutCountingTesterSpec.Listener =
         object : RenderAndLayoutCountingTesterSpec.Listener {
           override fun onPrepare() = Unit
+
           override fun onMeasure() {
             // Inform async measure has started
             waitForAsyncMeasureToStartLatch.release()

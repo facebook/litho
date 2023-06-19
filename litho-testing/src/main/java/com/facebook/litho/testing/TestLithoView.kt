@@ -86,6 +86,7 @@ internal constructor(
       }
       return _componentTree ?: throw AssertionError("Set to null by another thread")
     }
+
   val lithoView: LithoView
     get() {
       if (_lithoView == null) {
@@ -97,11 +98,14 @@ internal constructor(
       }
       return _lithoView ?: throw AssertionError("Set to null by another thread")
     }
+
   val rootComponent: Component?
     get() = getRootComponentInLithoView(lithoView)
+
   val committedLayoutState: LayoutState?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     get() = componentTree.committedLayoutState
+
   val currentRootNode: LithoLayoutResult?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     get() = committedLayoutState?.rootLayoutResult

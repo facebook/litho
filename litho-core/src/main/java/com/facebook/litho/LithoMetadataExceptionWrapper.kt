@@ -35,6 +35,7 @@ private constructor(
   }
 
   internal constructor(cause: Throwable) : this(null, null, cause)
+
   internal constructor(
       componentContext: ComponentContext?,
       cause: Throwable
@@ -103,6 +104,7 @@ private constructor(
 
   companion object {
     const val LITHO_CONTEXT = "Litho Context:"
+
     private fun StringBuilder.appendMap(map: Map<String, String>) {
       for ((key, value) in map) {
         append("  ").append(key).append(": ").appendLine(value)

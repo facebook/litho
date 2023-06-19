@@ -76,6 +76,7 @@ class ExecutorLithoHandlerTest {
 
   private class QueuingExecutor : Executor {
     private val queue = ArrayDeque<Runnable>()
+
     override fun execute(runnable: Runnable) {
       queue.add(runnable)
     }

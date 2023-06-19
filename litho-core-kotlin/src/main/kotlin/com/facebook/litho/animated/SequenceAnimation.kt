@@ -26,6 +26,7 @@ class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : A
   private val sequenceAnimatorListeners = mutableListOf<AnimationFinishListener>()
   private var currentIndex = 0
   private var _isActive: Boolean = false
+
   init {
     animators.forEach {
       it.addListener(

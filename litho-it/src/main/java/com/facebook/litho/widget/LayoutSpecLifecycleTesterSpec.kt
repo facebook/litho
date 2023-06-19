@@ -185,6 +185,7 @@ object LayoutSpecLifecycleTesterSpec {
     lateinit var steps: List<StepInfo>
 
     var eventWithoutAnnotation: EventWithoutAnnotation? = null
+
     operator fun set(c: ComponentContext, steps: List<StepInfo>) {
       this.c = c
       this.steps = steps

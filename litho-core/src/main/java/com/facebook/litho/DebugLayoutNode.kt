@@ -35,6 +35,7 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
   private val node: LithoNode = result.node
   val foreground: Drawable?
     get() = node.foreground
+
   val background: Drawable?
     get() = node.background
 
@@ -60,36 +61,52 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
 
   val layoutDirection: YogaDirection
     get() = result.yogaNode.styleDirection
+
   val flexDirection: YogaFlexDirection
     get() = result.yogaNode.flexDirection
+
   val justifyContent: YogaJustify
     get() = result.yogaNode.justifyContent
+
   val alignItems: YogaAlign
     get() = result.yogaNode.alignItems
+
   val alignSelf: YogaAlign
     get() = result.yogaNode.alignSelf
+
   val alignContent: YogaAlign
     get() = result.yogaNode.alignContent
+
   val positionType: YogaPositionType
     get() = result.yogaNode.positionType
+
   val flexGrow: Float
     get() = result.yogaNode.flexGrow
+
   val flexShrink: Float
     get() = result.yogaNode.flexShrink
+
   val flexBasis: YogaValue
     get() = result.yogaNode.flexBasis
+
   val width: YogaValue
     get() = result.yogaNode.width
+
   val minWidth: YogaValue
     get() = result.yogaNode.minWidth
+
   val maxWidth: YogaValue
     get() = result.yogaNode.maxWidth
+
   val height: YogaValue
     get() = result.yogaNode.height
+
   val minHeight: YogaValue
     get() = result.yogaNode.minHeight
+
   val maxHeight: YogaValue
     get() = result.yogaNode.maxHeight
+
   val aspectRatio: Float
     get() = result.yogaNode.aspectRatio
 

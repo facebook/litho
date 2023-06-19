@@ -23,6 +23,7 @@ class TrackingMountContentPool(name: String, maxSize: Int, sync: Boolean) :
     DefaultMountContentPool(name, maxSize, sync) {
   var acquireCount: Int = 0
     private set
+
   var releaseCount: Int = 0
     private set
 

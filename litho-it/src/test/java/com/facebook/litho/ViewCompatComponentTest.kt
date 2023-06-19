@@ -40,7 +40,9 @@ class ViewCompatComponentTest {
   private val noOpViewBinder: ViewBinder<TextView> =
       object : ViewBinder<TextView> {
         override fun prepare() = Unit
+
         override fun bind(view: TextView) = Unit
+
         override fun unbind(view: TextView) = Unit
       }
 
@@ -54,6 +56,7 @@ class ViewCompatComponentTest {
     val binder =
         object : ViewBinder<TextView> {
           override fun prepare() = Unit
+
           override fun bind(view: TextView) {
             view.text = "Hello World!"
           }
@@ -73,6 +76,7 @@ class ViewCompatComponentTest {
     val binder =
         object : ViewBinder<TextView> {
           private var state: String? = null
+
           override fun prepare() {
             state = "Hello World!"
           }
@@ -96,6 +100,7 @@ class ViewCompatComponentTest {
     val binder =
         object : ViewBinder<TextView> {
           private lateinit var state: String
+
           override fun prepare() {
             state = "Hello World!"
           }

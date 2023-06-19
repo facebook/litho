@@ -124,6 +124,7 @@ constructor(private val delegateCache: MeasuredResultCache? = null) {
     nodeToResultCache.remove(node)
     componentIdToNodeCache.remove(componentId)
   }
+
   companion object {
     @JvmField val EMPTY = MeasuredResultCache().apply { freezeCache() }
   }

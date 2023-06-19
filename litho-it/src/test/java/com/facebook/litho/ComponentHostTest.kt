@@ -724,12 +724,15 @@ class ComponentHostTest {
   private class TestableComponentHost : ComponentHost {
     var invalidationCount = 0
       private set
+
     var invalidationRect: Rect? = null
       private set
+
     var focusRequestCount = 0
       private set
 
     constructor(context: ComponentContext?) : super(context)
+
     constructor(context: Context?) : super(context)
 
     override fun invalidate(dirty: Rect) {

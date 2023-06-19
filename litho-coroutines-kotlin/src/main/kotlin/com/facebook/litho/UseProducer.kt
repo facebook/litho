@@ -23,8 +23,11 @@ import kotlinx.coroutines.CoroutineScope
 
 interface StateProducerScope<T> : CoroutineScope {
   fun update(newValue: T)
+
   fun update(newValueFunction: (T) -> T)
+
   fun updateSync(newValue: T)
+
   fun updateSync(newValueFunction: (T) -> T)
 }
 

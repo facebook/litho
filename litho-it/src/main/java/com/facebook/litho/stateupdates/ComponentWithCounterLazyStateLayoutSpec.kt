@@ -71,6 +71,7 @@ object ComponentWithCounterLazyStateLayoutSpec {
 
   class Caller {
     private var c: ComponentContext? = null
+
     fun set(c: ComponentContext) {
       this.c = c
     }

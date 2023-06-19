@@ -28,6 +28,7 @@ interface ResourcesScope {
   val context: ComponentContext
   val androidContext: Context
     get() = context.androidContext
+
   val resourceResolver: ResourceResolver
     get() = context.resourceResolver
 

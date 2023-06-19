@@ -215,6 +215,7 @@ class TouchExpansionDelegateTest {
   class ClickListenerCallback : View.OnClickListener {
     var handled = false
     var count = 0
+
     override fun onClick(v: View) {
       handled = true
       count++

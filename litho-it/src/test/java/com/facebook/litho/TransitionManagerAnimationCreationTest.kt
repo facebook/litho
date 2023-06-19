@@ -50,6 +50,7 @@ class TransitionManagerAnimationCreationTest {
         TransitionManager(
             object : OnAnimationCompleteListener<Any?> {
               override fun onAnimationComplete(transitionId: TransitionId?) = Unit
+
               override fun onAnimationUnitComplete(propertyHandle: PropertyHandle, data: Any?) =
                   Unit
             },

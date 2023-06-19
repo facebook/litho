@@ -22,6 +22,7 @@ import java.lang.reflect.Method
 
 object Reflection {
   private val cache = mutableMapOf<String, AccessibleObject>()
+
   private inline fun <reified T> fromCache(key: String): T? = cache[key] as? T
 
   private fun getCacheKey(obj: Any, name: String, vararg types: Class<*>) =

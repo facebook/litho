@@ -150,6 +150,7 @@ class LegacyTreeDiffingTest {
     private lateinit var redDrawable: Drawable
     private lateinit var blackDrawable: Drawable
     private lateinit var transparentDrawable: Drawable
+
     private fun assertOutputsState(
         layoutState: LayoutState,
         @MountSpecLithoRenderUnit.UpdateState state: Int

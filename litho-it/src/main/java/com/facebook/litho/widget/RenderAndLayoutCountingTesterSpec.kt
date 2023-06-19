@@ -68,6 +68,7 @@ object RenderAndLayoutCountingTesterSpec {
 
   interface Listener {
     fun onPrepare()
+
     fun onMeasure()
   }
 }

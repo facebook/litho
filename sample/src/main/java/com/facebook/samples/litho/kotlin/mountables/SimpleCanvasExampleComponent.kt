@@ -208,6 +208,7 @@ class SimpleCanvasExampleComponent : KComponent() {
           drawRotatingRings(ringsPath, ringsSize, ringsRotation)
         }
   }
+
   private fun CanvasScope.drawRotatingRings(
       ringsPath: Path,
       ringsSize: Size,
@@ -313,6 +314,7 @@ class SimpleCanvasExampleComponent : KComponent() {
               blendingMode = BlendingMode.Multiply)
         }
   }
+
   private fun CanvasScope.drawRightRect(squareSize: Size) {
     group(
         Transform {

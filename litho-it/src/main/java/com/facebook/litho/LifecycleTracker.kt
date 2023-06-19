@@ -26,10 +26,13 @@ import com.facebook.litho.LifecycleStep.StepInfo
 class LifecycleTracker {
   var isMounted: Boolean = false
     private set
+
   var isBound: Boolean = false
     private set
+
   var isAttached: Boolean = false
     private set
+
   var isMeasured: Boolean = false
     private set
 
@@ -38,6 +41,7 @@ class LifecycleTracker {
 
   val width: Int
     get() = (getInfo(LifecycleStep.ON_BOUNDS_DEFINED).args?.get(0) as? Rect)?.width() ?: 0
+
   val height: Int
     get() = (getInfo(LifecycleStep.ON_BOUNDS_DEFINED).args?.get(0) as? Rect)?.height() ?: 0
 

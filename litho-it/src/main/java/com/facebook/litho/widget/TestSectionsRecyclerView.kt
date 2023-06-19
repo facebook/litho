@@ -27,8 +27,10 @@ class TestSectionsRecyclerView(context: Context, view: RecyclerView?) :
   private var listener: OnRefreshListener? = null
   var removeCallbackCount: Int = 0
     private set
+
   var postCount: Int = 0
     private set
+
   private var lastRefreshingValue: Boolean = false
   var setRefreshingValuesCount: Int = 0
     private set

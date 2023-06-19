@@ -55,6 +55,7 @@ object LayoutWithSizeSpecWithCachedValueSpec {
 
   class CalculateCachedValueCounter {
     private val counter: AtomicInteger = AtomicInteger(0)
+
     fun increment() {
       counter.incrementAndGet()
     }

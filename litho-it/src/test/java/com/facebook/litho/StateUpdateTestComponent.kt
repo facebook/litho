@@ -46,6 +46,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
 
   class TestStateContainer : StateContainer() {
     @JvmField var count = 0
+
     override fun applyStateUpdate(stateUpdate: StateUpdate) {
       when (stateUpdate.type) {
         STATE_UPDATE_TYPE_NOOP -> {}
@@ -61,6 +62,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
     private const val STATE_UPDATE_TYPE_INCREMENT = 1
     private const val STATE_UPDATE_TYPE_MULTIPLY = 2
     const val INITIAL_COUNT_STATE_VALUE = 4
+
     @JvmStatic
     fun createNoopStateUpdate(): StateContainer.StateUpdate =
         StateContainer.StateUpdate(STATE_UPDATE_TYPE_NOOP)

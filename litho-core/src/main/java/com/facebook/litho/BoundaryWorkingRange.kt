@@ -42,6 +42,7 @@ class BoundaryWorkingRange @JvmOverloads constructor(private val offset: Int = O
 
   companion object {
     private const val OFFSET = 1
+
     private fun isInRange(
         position: Int,
         firstVisiblePosition: Int,

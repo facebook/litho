@@ -27,6 +27,7 @@ class LoopAnimation(private var repeatCount: Int, private val animation: Animate
   private val loopAnimatorListeners = mutableListOf<AnimationFinishListener>()
   private var currentLoop = 0
   private var _isActive: Boolean = false
+
   init {
     animation.addListener(
         object : AnimationFinishListener {
@@ -40,6 +41,7 @@ class LoopAnimation(private var repeatCount: Int, private val animation: Animate
           }
         })
   }
+
   @ThreadConfined(ThreadConfined.UI) override fun isActive(): Boolean = _isActive
 
   @ThreadConfined(ThreadConfined.UI)
@@ -48,6 +50,7 @@ class LoopAnimation(private var repeatCount: Int, private val animation: Animate
     _isActive = true
     animation.start()
   }
+
   @ThreadConfined(ThreadConfined.UI)
   override fun cancel() {
     if (!_isActive) {
@@ -80,6 +83,7 @@ class LoopAnimation(private var repeatCount: Int, private val animation: Animate
     }
     animation.start()
   }
+
   private fun finish() {
     _isActive = false
     currentLoop = 0

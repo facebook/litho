@@ -446,6 +446,7 @@ class FlexboxStylesTest {
               child<ComponentHost> { bounds(start, top, 100 - start - end, 100 - top - bottom) }
             })
   }
+
   @Test
   fun position_whenAllSet_isRespected() {
     val all = 10

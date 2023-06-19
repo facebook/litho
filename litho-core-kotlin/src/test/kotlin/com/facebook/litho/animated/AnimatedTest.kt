@@ -68,6 +68,7 @@ class AnimatedTest {
     sequence.start()
     shadowOf(getMainLooper()).idle()
   }
+
   @Test
   fun cancelAnimation_called_twice_expect_one_cancel_call_behaviour() {
     listener = mock()
@@ -341,6 +342,7 @@ class AnimatedTest {
                     "main sequence animation listener called onFinish(true) as it was cancelled"))
         .onFinish(true)
   }
+
   @Test
   fun parralelAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
     listener = mock()

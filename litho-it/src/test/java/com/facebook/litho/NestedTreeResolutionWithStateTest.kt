@@ -1288,6 +1288,7 @@ class NestedTreeResolutionWithStateTest {
     private lateinit var midStepsStateUpdate3: Array<LifecycleStep>
     private lateinit var botStepsStateUpdate3: Array<LifecycleStep>
     private lateinit var mountSpecStateUpdate3: Array<LifecycleStep?>
+
     fun setRootStepsPreUpdate(steps: Array<LifecycleStep?>): TestHierarchyBuilder {
       rootStepsPreStateUpdate = steps
       return this

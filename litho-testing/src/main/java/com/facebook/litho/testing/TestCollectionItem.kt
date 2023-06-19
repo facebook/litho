@@ -39,8 +39,10 @@ data class TestCollectionItem(
 
   internal val recyclerView
     get() = testCollection.recyclerView
+
   internal val renderInfo
     get() = componentTreeHolder.renderInfo
+
   internal val componentTree
     get() = componentTreeHolder.componentTree
 
