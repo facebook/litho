@@ -31,7 +31,7 @@ fb_native.android_binary(
     allow_r_dot_java_in_secondary_dex = True,
     includes_vector_drawables = True,
     keystore = DEBUG_KEYSTORE,
-    manifest = "src/main/AndroidManifest.xml",
+    manifest = ":manifest",
     primary_dex_patterns = NORMAL_PRIMARY_DEX_PATTERNS,
     use_split_dex = True,
     visibility = [
@@ -39,6 +39,16 @@ fb_native.android_binary(
     ],
     deps = [
         LITHO_SAMPLE,
+    ],
+)
+
+fb_native.android_manifest(
+    name = "manifest",
+    skeleton = "src/main/AndroidManifest.xml",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
     ],
 )
 
