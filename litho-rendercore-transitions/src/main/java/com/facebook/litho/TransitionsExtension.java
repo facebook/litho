@@ -698,58 +698,59 @@ public class TransitionsExtension
     final TransitionsExtensionState state = extensionState.getState();
     final Object content = mountItem.getContent();
 
-    if (mountItem.getRenderTreeNode().getRenderUnit() instanceof TransitionRenderUnit
-        && (content instanceof Host)
-        && !(content instanceof AnimatedRootHost)) {
-      final Host contentHost = (Host) content;
-      // Unmount descendant items in reverse order.
-      for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
-        try {
-          unmountDisappearingItem(extensionState, contentHost.getMountItemAt(j), false);
-        } catch (RuntimeException e) {
-          final String message =
-              "content: <cls>"
-                  + mountItem.getContent().getClass()
-                  + "</cls>\n"
-                  + "renderunit: <cls>"
-                  + mountItem.getRenderTreeNode().getRenderUnit().getClass()
-                  + "</cls>";
-          throw new RuntimeException(message, e);
+    if (mountItem.getRenderTreeNode().getRenderUnit() instanceof TransitionRenderUnit) {
+      if ((content instanceof DisappearingHost) && !(content instanceof AnimatedRootHost)) {
+        final Host contentHost = (Host) content;
+        // Unmount descendant items in reverse order.
+        for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
+          try {
+            unmountDisappearingItem(extensionState, contentHost.getMountItemAt(j), false);
+          } catch (RuntimeException e) {
+            final String message =
+                "content: <cls>"
+                    + mountItem.getContent().getClass()
+                    + "</cls>\n"
+                    + "renderunit: <cls>"
+                    + mountItem.getRenderTreeNode().getRenderUnit().getClass()
+                    + "</cls>";
+            throw new RuntimeException(message, e);
+          }
+        }
+
+        if (contentHost.getMountItemCount() > 0) {
+          throw new IllegalStateException(
+              "Recursively unmounting items from a Host, left"
+                  + " some items behind, this should never happen.");
         }
       }
 
-      if (contentHost.getMountItemCount() > 0) {
+      final Host host =
+          isRoot ? state.mCurrentlyDisappearingItems.get(mountItem) : mountItem.getHost();
+      if (host == null) {
         throw new IllegalStateException(
-            "Recursively unmounting items from a Host, left"
-                + " some items behind, this should never happen.");
+            "Disappearing mountItem has no host, can not be unmounted.");
       }
-    }
+      if (isRoot) {
+        final boolean wasRemoved = ((DisappearingHost) host).finaliseDisappearingItem(mountItem);
+        if (!wasRemoved) {
+          final AnimatableItem item =
+              extensionState
+                  .getState()
+                  .mLockedDisappearingMountitems
+                  .get(mountItem.getRenderTreeNode().getRenderUnit());
+          final TransitionId transitionId = item.getTransitionId();
+          throw new RuntimeException(
+              "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
+        }
 
-    final Host host =
-        isRoot ? state.mCurrentlyDisappearingItems.get(mountItem) : mountItem.getHost();
-    if (host == null) {
-      throw new IllegalStateException("Disappearing mountItem has no host, can not be unmounted.");
-    }
-    if (isRoot) {
-      final boolean wasRemoved = ((DisappearingHost) host).finaliseDisappearingItem(mountItem);
-      if (!wasRemoved) {
-        final AnimatableItem item =
-            extensionState
-                .getState()
-                .mLockedDisappearingMountitems
-                .get(mountItem.getRenderTreeNode().getRenderUnit());
-        final TransitionId transitionId = item.getTransitionId();
-        throw new RuntimeException(
-            "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
+        state.mCurrentlyDisappearingItems.remove(mountItem);
+      } else {
+        host.unmount(mountItem);
       }
 
-      state.mCurrentlyDisappearingItems.remove(mountItem);
-    } else {
-      host.unmount(mountItem);
+      getMountTarget(extensionState).unbindMountItem(mountItem);
+      state.mLockedDisappearingMountitems.remove(mountItem.getRenderTreeNode().getRenderUnit());
     }
-
-    getMountTarget(extensionState).unbindMountItem(mountItem);
-    state.mLockedDisappearingMountitems.remove(mountItem.getRenderTreeNode().getRenderUnit());
   }
 
   private static void endUnmountDisappearingItem(
