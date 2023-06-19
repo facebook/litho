@@ -19,6 +19,7 @@ load(
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "CARIBOU_PREVIEW",
     "DEBUG_KEYSTORE",
     "LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET",
     "LITHO_SAMPLE",
@@ -39,6 +40,7 @@ fb_native.android_binary(
     ],
     deps = [
         LITHO_SAMPLE,
+        CARIBOU_PREVIEW,
     ],
 )
 
@@ -49,6 +51,7 @@ fb_native.android_manifest(
         "PUBLIC",
     ],
     deps = [
+        CARIBOU_PREVIEW,
     ],
 )
 
@@ -68,4 +71,8 @@ fb_native.keystore(
     name = "debug_keystore",
     properties = "debug.keystore.properties",
     store = "debug.keystore",
+)
+
+fb_native.android_library(
+    name = "activity",
 )

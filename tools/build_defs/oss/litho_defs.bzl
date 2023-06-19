@@ -201,6 +201,8 @@ LITHO_RENDERCORE_MOUNTABLE_UTILS_TARGET = make_dep_path("litho-rendercore-mounta
 LITHO_RENDERCORE_PRIMITIVES_TARGET = make_dep_path("litho-rendercore-primitives:rendercore-primitives")
 
 # Previews dummy
+CARIBOU_PREVIEW = make_dep_path("sample:activity")
+
 DEBUG_KEYSTORE = make_dep_path("sample:debug_keystore")
 
 # Fresco
