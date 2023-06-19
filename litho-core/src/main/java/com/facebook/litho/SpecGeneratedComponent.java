@@ -198,6 +198,14 @@ public abstract class SpecGeneratedComponent extends Component
     return current;
   }
 
+  /**
+   * @return Boolean indicating whether the component skips Incremental Mount. If this is true then
+   *     the Component will not be involved in Incremental Mount.
+   */
+  protected boolean excludeFromIncrementalMount() {
+    return false;
+  }
+
   @Override
   protected RenderResult render(
       ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {

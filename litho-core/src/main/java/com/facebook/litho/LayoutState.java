@@ -1653,17 +1653,23 @@ public class LayoutState
     final boolean shouldExcludeMountableFromIncrementalMount =
         unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder.class) != null;
 
+    final boolean shouldExcludeSpecGeneratedComponentFromIncrementalMount =
+        component instanceof SpecGeneratedComponent
+            && ((SpecGeneratedComponent) component).excludeFromIncrementalMount();
+
     final IncrementalMountOutput incrementalMountOutput =
         new IncrementalMountOutput(
             node.getRenderUnit().getId(),
             position,
             absoluteBounds,
-            component.excludeFromIncrementalMount() || shouldExcludeMountableFromIncrementalMount,
+            shouldExcludeSpecGeneratedComponentFromIncrementalMount
+                || shouldExcludeMountableFromIncrementalMount,
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
 
-    if (component.excludeFromIncrementalMount() || shouldExcludeMountableFromIncrementalMount) {
+    if (shouldExcludeSpecGeneratedComponentFromIncrementalMount
+        || shouldExcludeMountableFromIncrementalMount) {
       layoutState.mHasComponentsExcludedFromIncrementalMount = true;
     }
 

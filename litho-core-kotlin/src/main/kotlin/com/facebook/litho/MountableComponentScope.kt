@@ -23,7 +23,7 @@ class MountableComponentScope
 internal constructor(context: ComponentContext, resolveStateContext: ResolveStateContext) :
     ComponentScope(context, resolveStateContext) {
   internal val binders: ArrayList<DynamicPropsHolder<Any?, Mountable<*>>> by lazy { ArrayList(2) }
-  internal var shouldExcludeFromIncrementalMount: Boolean = false
+  var shouldExcludeFromIncrementalMount: Boolean = false
 
   /**
    * Creates a binding between the dynamic value, and the content’s property.

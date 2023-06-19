@@ -209,14 +209,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return false;
   }
 
-  /**
-   * @return Boolean indicating whether the component skips Incremental Mount. If this is true then
-   *     the Component will not be involved in Incremental Mount.
-   */
-  protected boolean excludeFromIncrementalMount() {
-    return false;
-  }
-
   protected boolean usesLocalStateContainer() {
     return false;
   }
