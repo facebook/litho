@@ -1,0 +1,87 @@
+---
+id: primitive
+title: Lifecycle of a Primitive Component
+---
+
+A `Primitive` represents a reusable unit responsible for hosting the logic to create, measure, and mount the content that the Primitive Component will render.
+
+As illustrated in the [Creating a Primitive Component](primitive-component.mdx#creating-a-primitive-component) page, the `render()` method should return a `Primitive` implementation and any `Style` object to be applied to the component on the `LithoPrimitive` object.
+
+This page provides an overview of a `Primitive`: a composable API that can be configured to provide a bespoke implementation.
+
+A Primitive consists of:
+ - LayoutBehavior - defines how a Primitive measures itself
+ - MountConfiguration - defines how a Primitive mounts and configures a View or a Drawable associated with that Primitive
+
+## Lifecycle of a Primitive
+
+A Primitive has four important stages in its lifecycle, which occur in the following order:
+
+1. [Creation](#creation-of-a-primitive)
+1. [Content size measurement](#content-size-measurement)
+1. [Content creation](#content-creation)
+1. [Mounting and unmounting content properties](#mounting-and-unmounting-content-properties)
+
+Each of these stages is detailed in the following sub-sections.
+
+### Creation of a Primitive
+
+In order to create a Primitive, create an instance of a [Primitive](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/Primitive.kt#L36) class.
+
+The following example provides an implementation of `Primitive` with an `ImageView` as content:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt start=start_image_primitive_component_example end=end_image_primitive_component_example
+```
+
+### Content size measurement
+
+:::note
+This stage of the Primitive's lifecycle can occur on any thread.
+:::
+
+Each Primitive should privide an implementation of [LayoutBehavior](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L30) interface to define how it measures itself given arbitrary width and height specs. The `PrimitiveLayoutResult` object it returns contains the width and height of the content, and optionally any layout data, as shown in the following example:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt start=start_image_primitive_layout_behavior_example end=end_image_primitive_layout_behavior_example
+```
+
+To learn about the different strategies to measure content, see the [Measuring](primitive-measuring.mdx) page.
+
+### Content creation
+
+:::note
+This stage of the Primitive's lifecycle can only occur on the main thread.
+:::
+
+Each Primitive needs to create the content it hosts (either a `View` or a `Drawable`) by prividing [a ViewAllocator or a DrawableAllocator](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/ContentAllocator.kt#L34-L64) to the `MountBehavior`, as shown in the following example:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/Image.kt start=start_image_primitive_mount_behavior_example end=end_image_primitive_mount_behavior_example
+```
+
+:::note
+The content should not be mutated based on props passed to the PrimitiveComponent.
+:::
+
+In order to optimize the mount performance, the properties of the View/Drawable Allocator can also be customized to adjust the [content pooling](primitive-preallocation.mdx) strategy.
+
+### Mounting and unmounting content properties
+
+:::note
+This stage of the Primitive's lifecycle can only occur on the main thread.
+:::
+
+Properties can be set and unset on the content using `bindTo`, `bind`, and `bindWithLayoutData` methods inside of `MountBehavior` scope.
+
+The following code shows a component that appropriately sets and unsets the properties on the content:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/Image.kt start=start_image_primitive_mount_behavior_example end=end_image_primitive_mount_behavior_example
+```
+
+Methods like `bind` and `bindWithLayoutData` take dependencies as an argument. Any time dependencies changes between layouts, the `onUnbind {}` callback will be invoked, followed by `bind` or `bindWithLayoutData`. Dependencies should include **all** the props/state that are used to configure the contentinside bind/bindWithLayoutData/onUnbind calls.
+
+:::note
+Dependencies are checked for equivalence by calling equals.
+:::
+
+:::note Important
+Once set, a property should be unset in the `onUnbind {}` callback to ensure correctness when the content is reused.
+:::

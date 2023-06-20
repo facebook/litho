@@ -1,0 +1,38 @@
+---
+id: primitive-tracing
+title: Tracing
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+On Android, [Systrace](https://developer.android.com/topic/performance/tracing) is a standard tool for analyzing app performance. The developer can add traces around parts of the code that need to be measured. Android OS adds some tracing out of the box, and similarly Litho adds traces for common operations such as binding/unbinding data to and from UI.
+
+Below is an example that shows a Systrace output for a simple Primitive implementation with a single `bind{}` call inside of its `MountConfigurationScope`:
+
+<img width="600" src={useBaseUrl('images/litho-trace-no-description.png')} />
+
+At the bottom, there is a trace for `bind{}` call. It consists of three parts:
+
+1. The first part is a description of `RenderUnit`. Under the hood, things like `View` or `Drawable` are represented as `RenderUnit`s. By default the trace will start with the class name of the `RenderUnit`.
+2. The second part is saying if it's a mount or unmount operation. On the above screenshot, `mount-fixed` means that it's a trace for a mount operation. If the component was also unmounted during Tracing session, the Systrace will also show a corresponding `unmount` section.
+3. The last part is an index of a given `bind{}` call. It corresponds to the order in which `bind{}`, `bindWithLayoutData{}`, `bindTo`, and `bindDynamic{}` calls are present in the source code. Starting from the top of `MountConfigurationScope`, the first `bind{}` call will have index 0, the second one will have index 1 etc.
+
+## Configuring Primitive Component Traces
+
+There are two parts that can be configured: `RenderUnit` description and `bind{}`, `bindWithLayoutData{}`, `bindTo`, `bindDynamic{}` descriptions.
+
+### RenderUnit description
+
+The `RenderUnit` description can be customized using `description` parameter of `MountBehavior` constructor. By default it's set to `null` and in this case the `RenderUnit` class name will be used. If a custom description is provided via `MountBehavior` constructor, then it'll be used instead.
+
+Below is an image showing a Systrace output for a Primitive that passes `"ImagePrimitive"` description via `MountBehavior` constructor:
+
+<img width="600" src={useBaseUrl('images/litho-trace-renderunit-description.png')} />
+
+### Binder description
+
+The description of `bind{}`, `bindWithLayoutData{}`, `bindTo`, `bindDynamic{}` can be customized by wrapping each of these calls inside of `withDescription("custom description") {}` block.
+
+Below is an image showing a Systrace output for a Primitive that passes `"ImagePrimitive"` description via `MountBehavior` constructor and customizes the `bind{}` description by wrapping it in `withDescription("drawable") { }` block:
+
+<img width="600" src={useBaseUrl('images/litho-trace-renderunit-and-binder-description.png')} />

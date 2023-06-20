@@ -3,6 +3,10 @@ id: mountable-preallocation
 title: Content Pooling
 ---
 
+:::danger Mountable Components
+Mountable Components are being deprecated. Please use [Primitive Components](mainconcepts/primitivecomponents/overview.mdx) instead.
+:::
+
 When a Mountable Component is being mounted, its content (View or Drawable) needs to be either initialized or reused from the recycling pool. If the pool is empty, a new instance will be created at that time, which might keep the UI thread too busy and drop one or more frames. To mitigate that, the Litho framework can pre-allocate a few instances and put them in the recycling pool to improve performance.
 
 :::note

@@ -45,14 +45,15 @@ module.exports = {
         ],
       },
       {
-        'Mountable Components': [
-          'mainconcepts/mountablecomponents/overview',
-          'mainconcepts/mountablecomponents/mountable-component',
-          'mainconcepts/mountablecomponents/mountable',
-          'mainconcepts/mountablecomponents/mountable-measuring',
-          'mainconcepts/mountablecomponents/mountable-controllers',
-          'mainconcepts/mountablecomponents/mountable-preallocation',
-        ]
+        'Primitive Components': [
+          'mainconcepts/primitivecomponents/overview',
+          'mainconcepts/primitivecomponents/primitive-component',
+          'mainconcepts/primitivecomponents/primitive',
+          'mainconcepts/primitivecomponents/primitive-measuring',
+          'mainconcepts/primitivecomponents/primitive-controllers',
+          'mainconcepts/primitivecomponents/primitive-preallocation',
+          'mainconcepts/primitivecomponents/primitive-tracing',
+        ],
       },
       {
         'Layout System with Flexbox': [
@@ -140,10 +141,10 @@ module.exports = {
       'kotlin/kotlin-intro',
       'kotlin/kotlin-api-basics',
       'kotlin/hooks-for-spec-developers',
-      'kotlin/migrating-from-mountspecs',
+      'kotlin/migrating-from-mountspecs-to-primitives',
       'kotlin/kotlin-flexbox-containers',
       'kotlin/event-handling',
-      'kotlin/kotlin-api-cheatsheet',
+      'kotlin/kotlin-api-cheatsheet-primitives',
       {
         'Lazy Collections' : [
 
@@ -192,17 +193,6 @@ module.exports = {
             'fb/architecture-sections-in-a-fragment-or-activity',
             'fb/architecture-thread-safety',
             'fb/architecture-litho-tricks',
-          ],
-        },
-        {
-          'Primitive Components': [
-            'fb/primitivecomponents/overview',
-            'fb/primitivecomponents/primitive-component',
-            'fb/primitivecomponents/primitive',
-            'fb/primitivecomponents/primitive-measuring',
-            'fb/primitivecomponents/primitive-controllers',
-            'fb/primitivecomponents/primitive-preallocation',
-            'fb/primitivecomponents/primitive-tracing',
           ],
         },
         'fb/dependency-injection',

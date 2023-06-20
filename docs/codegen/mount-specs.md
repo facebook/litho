@@ -5,7 +5,7 @@ title: "Mount Specs"
 
 :::caution
 This section contains information about the old Java Spec API.
-For new development, the Kotlin API is recommended (see the [Mountable Components](mainconcepts/mountablecomponents/overview.mdx) section in the 'Main Concepts' section).
+For new development, the Kotlin API is recommended (see the [Primitive Components](mainconcepts/primitivecomponents/overview.mdx) section in the 'Main Concepts' section).
 :::
 
 :::info

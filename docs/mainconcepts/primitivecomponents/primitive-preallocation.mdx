@@ -1,0 +1,54 @@
+---
+id: primitive-preallocation
+title: Content Pooling
+---
+
+When a Primitive Component is being mounted, its content (View or Drawable) needs to be either initialized or reused from the recycling pool. If the pool is empty, a new instance will be created at that time, which might keep the UI thread too busy and drop one or more frames. To mitigate that, the Litho framework can pre-allocate a few instances and put them in the recycling pool to improve performance.
+
+:::note
+Content pooling is especially recommended for Primitive Components that inflate a complex View, which is time-consuming to create from scratch.
+:::
+
+## Configuring pools
+
+In order to configure content pools, the properties of the View/Drawable Allocator can also be customized.
+
+The `ViewAllocator` and `DrawableAllocator` have properties that allow for configuring the pool behaviour:
+
+* `canPreallocate` - enables pre-allocation for this Primitive Component (disabled by default)
+* `poolSize` - defines the number of instances for the Litho framework to pre-allocate (default value is three)
+
+Primitive Components with `canPreallocate` set to `true` will be preallocated by Litho framework automatically before the component is mounted.
+
+:::tip
+If creating new instances of the content is time-consuming but not very memory-consuming, it's recommended to keep the pool size high.
+
+If there are memory concerns (especially for memory-consuming content), smaller pool sizes are recommended.
+:::
+
+## Pre-allocation example
+
+In order for mount content to be pre-allocated, at least the `canPreallocate` property should be set to `true`. Use `poolSize` to configure the amount of items in the pool, as shown in the example below:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SampleTextInput.kt start=start_preallocation_example end=end_preallocation_example
+```
+
+For the SampleTextInput component example above, ten instances of EditText will be created and pre-allocated in the recycling pool.
+
+## Pre-filling content pool
+
+If automatic preallocation isn't enough, Litho provides an API that allows for manually pre-filling content pool ahead of time. For example, it may be useful when there is a complex component that needs to be displayed on the next screen. Pre-filling such component before the user opens the next screen may improve performance. In order to manually pre-fill content pool, you should use [MountItemsPool.prefillMountContentPool](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore/src/main/java/com/facebook/rendercore/MountItemsPool.java#L127) method, as shown in the example below:
+
+```
+// preallocate 40 TestTextViewPrimitiveComponent components
+MountItemsPool.prefillMountContentPool(androidContext, 40, TestTextViewPrimitiveComponent.ALLOCATOR)
+```
+
+The last parameter of `prefillMountContentPool` is the `ContentAllocator`, which for convenience, can be stored inside of PrimitiveComponent's companion object:
+
+```kotlin file=litho-widget-kotlin/src/test/kotlin/com/facebook/litho/widget/ContentPoolingTest.kt start=start_prefill_mount_content_pool_primitive_component_example end=end_prefill_mount_content_pool_primitive_component_example
+```
+
+:::note Important
+In order for content pre-filling to work properly, it's important to pass the same instance of an Allocator to the Primitive's `MountBehavior` and to `prefillMountContentPool` method.
+:::
