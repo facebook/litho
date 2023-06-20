@@ -128,10 +128,6 @@ public class ComponentsConfiguration {
 
   public static boolean enablePrimitivesPreallocationInOrion = true;
 
-  public static boolean enablePrimitiveComponents = false;
-
-  public static boolean enableSizeConstraintsClampSpecs = false;
-
   public static boolean enableDrawablePreAllocation = false;
 
   /**

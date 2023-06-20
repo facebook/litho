@@ -17,7 +17,6 @@
 package com.facebook.rendercore
 
 import android.view.View
-import java.lang.RuntimeException
 
 /**
  * Size constraints for measuring layouts. The parent container can decide what [SizeConstraints]
@@ -125,7 +124,7 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
     /** Creates [SizeConstraints] from the provided width and height [View.MeasureSpec]s. */
     fun fromMeasureSpecs(widthSpec: Int, heightSpec: Int): SizeConstraints {
       val widthMode = View.MeasureSpec.getMode(widthSpec)
-      val widthSize = View.MeasureSpec.getSize(widthSpec)
+      val widthSize = View.MeasureSpec.getSize(widthSpec).coerceIn(0, MaxValue - 1)
       val minWidth: Int
       val maxWidth: Int
       when (widthMode) {
@@ -145,7 +144,7 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
       }
 
       val heightMode = View.MeasureSpec.getMode(heightSpec)
-      val heightSize = View.MeasureSpec.getSize(heightSpec)
+      val heightSize = View.MeasureSpec.getSize(heightSpec).coerceIn(0, MaxValue - 1)
       val minHeight: Int
       val maxHeight: Int
       when (heightMode) {
@@ -272,6 +271,3 @@ fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
   return (width in sizeConstraints.minWidth..sizeConstraints.maxWidth) &&
       (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
 }
-
-class IllegalSizeConstraintsException(message: String?, cause: Throwable?) :
-    RuntimeException(message, cause)
