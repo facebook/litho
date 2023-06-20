@@ -1,0 +1,36 @@
+---
+id: primitive-component
+title: Creating a Primitive Component
+---
+
+Primitive Components can be used to render views or drawables on the screen.
+
+## Comparison with KComponents
+
+There are several similarities between Primitive Components and [KComponents](/mainconcepts/components-basics.mdx):
+
+* They both consist of a render function that can use the component's [props](../props.mdx) and [hooks](../hooks-intro.mdx).
+* As with KComponents, Primitive Components are subject to [rules](../components-basics.mdx/#rules-for-components) for their use.
+* Just like KComponents, Primitive Components can be configured using common props and state.
+
+## Creating a Primitive Component
+
+The following example shows a Primitive Component that creates an `ImageView` to be rendered on the screen.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt start=start_image_primitive_component_example end=end_image_primitive_component_example
+```
+
+:::note
+The above example explicitly creates a `Primitive` object. But for convenience, you can also pass `layoutBehavior` and `mountBehavior` directly to `LithoPrimitive`.
+:::
+
+A Primitive represents a reusable unit responsible for hosting the logic to create, measure, and bind the content that the Primitive Component will render. For more information, see the [Lifecycle of a Primitive Component](primitive.mdx) page.
+
+As can be seen from the above example, the `render()` function returns a `LithoPrimitive` that contains:
+
+* A `Primitive` object that describes a primitive to be rendered
+* A `style` object that is applied to the primitive component.
+
+:::note
+The `render()` method can be invoked from multiple threads. You should **not** assume it can only be called from the main thread. The implementation of render should not cause side effects; essentially, it acts like a pure function.
+:::

@@ -1,0 +1,21 @@
+---
+id: overview
+title: Overview
+---
+
+Primitive Components are used to render views or drawables and are a replacement for the old Java Specs API-based [Mount Specs](../../codegen/mount-specs.md). Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
+
+Primitive Components should only be created when you need to integrate your own views/drawables with Litho.
+
+The Primitive Components section contains the following pages:
+
+* [Creating a Primitive Component](primitive-component.mdx) - details how to create a Primitive Component responsible for rendering a View or Drawable. Also, compares Primitive Components with KComponents.
+* [Lifecycle of a Primitive](primitive.mdx) - covers the purpose and creation of a Primitive in addition to how to create and mount its content.
+* [Measuring](primitive-measuring.mdx) - shows different strategies to measure the content the Primitive Component will render.
+* [Controllers Pattern](primitive-controllers.mdx) - illustrates the use of controllers by implementing a simple TimePicker that shows an arbitrary time.
+* [Content Pooling](primitive-preallocation.mdx) - details a strategy that can be used to populate the content pools to optimise first mount performance.
+* [Tracing](primitive-tracing.mdx) - shows how to customize [performance tracing](https://developer.android.com/topic/performance/tracing) information for Primitive Components.
+
+Information and step-by-step explanations of how to migrate to Primitive Components from already existing components can be found in the following documents:
+* [Migrating from MountSpecs](../../kotlin/migrating-from-mountspecs-to-primitives.mdx) - details the process of migrating from MountSpec API.
+* [Cheatsheet](../../kotlin/cheatsheet-primitives.mdx) - set of links for the migration of individual aspects of existing code from the Java Spec API to Kotlin API.

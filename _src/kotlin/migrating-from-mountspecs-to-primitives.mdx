@@ -1,0 +1,295 @@
+---
+id: migrating-from-mountspecs-to-primitives
+title: Migrating from MountSpecs
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+This page outlines the process of migrating from [MountSpecs](../codegen/mount-specs.md) to [Primitive Components](../mainconcepts/primitivecomponents/primitive-component.mdx).
+
+Unlike MountSpecs, Primitive Components consist of two separate pieces:
+
+* `PrimitiveComponent.render()` - a method that returns a `Primitive` and `Style` that will be applied to it.
+* `Primitive` - an object that hosts the logic for measuring, creation, and setting properties on the mount content (a `View` or a `Drawable`).
+
+The following two sections contain information on how to migrate MountSpec static lifecycle methods into a Primitive Component `render()` and the `Primitive` it returns. The [Cheatsheet](cheatsheet-primitives.mdx) can also be consulted for a set of links for the migration of individual aspects of existing code.
+
+## Setup - Adding Dependencies
+
+To use the Kotlin Litho API, you'll need to add the following dependencies into your BUCK file:
+
+```python title="BUCK"
+deps = [
+    "//fbandroid/libraries/components:litho_core_kotlin",
+    "//fbandroid/libraries/components/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/kotlin/widget:widget", # for widgets
+],
+```
+
+More details on the setup steps are outlined in the [Introduction and Setup](../kotlin/setup-and-intro.mdx) page.
+
+## Migrating parts belonging to Primitive Component `render()` method
+
+The subsections below outline how to migrate the parts of a MountSpec that will be hosted by the Primitive Component. This includes Props and Common Props, useState and other [Hooks](../kotlin/hooks-for-spec-developers.mdx), Accessibility, Event Handling, and some other MountSpec static lifecycle methods.
+
+### Migrating Props and Common Props
+
+Similar to [KComponents](../kotlin/setup-and-intro.mdx/#props), Props are now just `val` properties on the `PrimitiveComponent`, and `@PropDefaults` become default values of those `val` properties.
+
+Common Props can be set using the `Style` object which the `PrimitiveComponent` returns from `render()` method on the `LithoPrimitive` object. You can find more information on `Style` and how to work with it on the [KComponent and Props](../kotlin/basics.mdx/#common-props) page.
+
+### Migrating State and some other lifecycle methods
+
+As with KComponents, most of the APIs implemented with lifecycle methods in the Mount Specs API (such as `@OnCreateInitialState` and `@OnAttached`) have hooks equivalents in the Kotlin API.
+
+Those Hooks can be used in the `render()` method of the `PrimitiveComponent`.
+
+More information on how to migrate Hooks can be found on the [Hooks](../kotlin/hooks-for-spec-developers.mdx) page.
+
+### Migrating Accessibility
+
+Accessibility for Primitive Components is implemented using the `Style` object. You can find out more about how to implement A11Y for Primitive Components on the dedicated [Accessibility](../accessibility/accessibility.mdx) page.
+
+### Migrating event handling
+
+Event Handling migration works in the same way as for KComponents (for details, see the [Event Handling](../kotlin/event-handling.mdx) page).
+
+### Migrating @OnPrepare and @OnLoadStyle lifecycle methods
+
+PrimitiveComponents do not provide a `@OnPrepare` lifecycle method to move heavy operations off the UI thread before the layout calculation is performed. Instead, such operations should take place in the Primitive Component's `render()` method: the result can be used directly inside of `MountConfigurationScope` block which is passed as a last argument to `MountBehavior`. Therefore, in PrimitiveComponents, there's no equivalent of [inter-stage inputs and outputs](../codegen/mount-specs.md/#inter-stage-inputs-and-outputs).
+
+Similar to `@OnPrepare`, `@OnLoadStyle` lifecycle method's content should also migrate to be a part of PrimitiveComponent's `render()` method.
+
+:::note
+`@OnLoadStyle` lifecycle method from MountSpecs is not related to the `Style` object used for KComponents or Primitive Components and should not be confused with it. `@OnLoadStyle` is a lifecycle method used to retrieve XML attributes with style and theme information applied via calling [obtainStyledAttributes()](https://developer.android.com/reference/android/content/res/Resources.Theme#obtainStyledAttributes(android.util.AttributeSet,%20int[],%20int,%20int)).
+:::
+
+## Migrating parts belonging to the `Primitive` object
+
+The subsections below outline how to migrate the parts of a MountSpec that will be hosted by the `Primitive`. This includes logic to measure, create (and optionally pool), and bind the content, as well as `DynamicValues` and `Controllers` - a mechanism that replaces `@OnTrigger` static lifecycle method.
+
+### Migrating @OnMeasure and @OnBoundsDefined
+
+For MountSpecs, there are 2 measurement-related methods that are optional - `@OnMeasure` and `@OnBoundsDefined`.
+
+Static annotated `@OnMeasure` method could be used to define how a component should be measured during layout calculation. If width and height was explicitly set on the component, it would not be run at all.
+
+The second method, `@OnBoundsDefined` could [receive outputs](../codegen/mount-specs.md/#inter-stage-inputs-and-outputs) from `@OnMeasure` and would run after layout calculation, in order to carry out additional operations after final size of the component is known, but before the component is mounted. If `@OnBoundsDefined` method is included in the MountSpec, it is guaranteed to run once the sizes of the component has been calculated.
+
+Primitive API uses composition instead of inheritance. It means that measuring works in a significantly different way - an implementation of `LayoutBehavior` interface needs to be provided to a Primitive. `LayoutBehavior` defines `layout()` method, which is responsible for measuring the content (a `View` or `Drawable`). `layout()` method runs at least one time, and can be run multiple times in a single layout pass (similarly to Android's `View.measure()`).
+
+Additionally, the `layout()` method has access to the `LayoutContext`, and width and height constraints. The method should return a `PrimitiveLayoutResult` that tells the Litho framework the width and height the content requires and, optionally, any layout data which will be passed to `bindWithLayoutData()` method. This is different from`@OnMeasure` static annotated method, where the sizes needed to be set on `Size` parameter object instead.
+
+When translating a MountSpec containing both `@OnMeasure` and `@OnBoundsDefined`, the logic needs to be merged into a single `layout()` method - there's no need to pass outputs from `@OnMeasure` to `@OnBoundsDefined`.
+
+:::note
+For MountSpecs that did not implement `@OnMeasure` and `@OnBoundsDefined` at all, one of the [existing](../mainconcepts/primitivecomponents/primitive-measuring.mdx) `LayoutBehavior` implementations can be used.
+:::
+
+For more information, see the [Measuring](../mainconcepts/primitivecomponents/primitive-measuring.mdx) page.
+
+### Migrating @OnCreateContent
+
+`@OnCreateMountContent` lifecycle method's equivalent for Primitive is the `ViewAllocator`/`DrawableAllocator` object passed as an argument to `MountBehavior`.
+
+More information on Primitive content creation can be found on the dedicated [Lifecycle of a Primitive Component](../mainconcepts/primitivecomponents/primitive.mdx/#content-creation) page.
+
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Primitive', value: 'primitive_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec
+public class MyComponentSpec {
+
+  @OnCreateMountContent
+  static ImageView onCreateMountContent(Context c) {
+    return new ImageView(c);
+  }
+
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="primitive_tab">
+
+```kotlin
+val primitive = Primitive(
+    mountBehavior = MountBehavior(ViewAllocator { context -> ImageView(context) }) {
+        ...
+    }
+)
+```
+
+  </TabItem>
+</Tabs>
+
+### Migrating content pooling and pre-allocation
+
+For Primitive, instead of static annotated methods or `@MountSpec` annotation parameters, it's the `ViewAllocator`/`DrawableAllocator` object that is passed to `MountBehavior`, which can be used to configure the recycling pool and pre-allocation for content.
+
+Instead of specifying `canPreallocate` and `poolSize` parameters on the `@MountSpec` annotation, the `ViewAllocator` and `DrawableAllocator` accept `canPreallocate` and `poolSize` arguments.
+
+More information on Primitive content pooling can be found on the [Content Pooling](../mainconcepts/primitivecomponents/primitive-preallocation.mdx) page.
+
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Primitive', value: 'primitive_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec(canPreallocate = true, poolSize = 1)
+public class MyComponentSpec {
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="primitive_tab">
+
+```kotlin
+val primitive = Primitive(
+    mountBehavior = MountBehavior(ViewAllocator(canPreallocate = true, poolSize = 1) { ... })
+)
+```
+
+  </TabItem>
+</Tabs>
+
+### Migrating Binding and Mounting (properties setting) - @OnMount, @OnBind, @OnUnbind, @OnUnmount, and @OnShouldUpdate
+
+For MountSpecs, `@OnMount` and `@OnBind` static annotated methods [could be used to set properties on content](../codegen/mount-specs.md/#mount-spec-component-lifecycle), along with matching `@OnUnmount` and `@OnUnbind` to unset properties.
+
+In `Primitive`, the equivalents of those two pairs of methods are `bindTo`, `bind`, and `bindWithLayoutData` methods that are available inside of `MountConfigurationScope` block passed as an argument to `MountBehavior`.
+
+Therefore, the contents of `@OnMount` and `@OnBind` should be replaced with calls to `bindTo`, `bind`, `bindWithLayoutData` methods when migrating to Primitive API. If possible, each `View` or `Drawable` property should be set via a separate `bind` call. This way only the properties that have been changed will be updated. In MountSpec API all properties had to be unset and set again on every state update.
+
+More information on mounting and unmounting content properties can be found on the [Lifecycle of a Primitive Component](../mainconcepts/primitivecomponents/primitive.mdx/#mounting-and-unmounting-content-properties) page.
+
+`bindTo`, `bind`, `bindWithLayoutData` methods take `deps` as an argument which is used to determine if remount needs to happen upon update. If the `deps` have not changed, the remount will be skipped. It represents an [equivalent for @ShouldUpdate](../codegen/mount-specs.md/#shouldupdate) static annotated method present in MountSpecs but allows for more fine-grained updates.
+
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Primitive', value: 'primitive_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec
+public class MyComponentSpec {
+
+  @OnMount
+  static void onMount(
+      ComponentContext c,
+      EditText editText,
+      @Prop CharSequence hint) {
+    editText.setHint(hint);
+  }
+
+  @OnUnmount
+  static void onUnmount(
+      ComponentContext c, EditText editText) {
+    editText.setHint("");
+  }
+
+  @ShouldUpdate
+  static boolean shouldUpdate(@Prop(optional = true) Diff<CharSequence> hint) {
+    if (!ObjectsCompat.equals(hint.getPrevious(), hint.getNext())) {
+      return true;
+    }
+
+    return false;
+  }
+
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="primitive_tab">
+
+```kotlin
+val primitive = Primitive(
+    mountBehavior = MountBehavior(ViewAllocator { ... }) {
+        bind(hint) { content ->
+            content.hint = hint
+            onUnbind { content.hint = "" }
+        }
+        // or an equivalent but shorter version:
+        hint.bindTo(EditText::setHint, "")
+    }
+)
+```
+
+  </TabItem>
+</Tabs>
+
+### Migrating @OnBindDynamicValue using bindTo API
+
+For Primitive, [DynamicValues](../codegen/dynamic-props.mdx) can be implemented using the `bindDynamic` API instead of `bind` APIs described in the previous section.
+
+An example can be found [here](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewPrimitiveComponent.kt#L53-L63).
+
+### Migrating @OnTrigger using Controllers Pattern
+
+In MountSpecs, `@OnTrigger` static annotated methods and `Handle` could be used to [trigger events with handles](../codegen/trigger-events.md).
+
+To implement equivalent behaviour for PrimitiveComponent, Controller pattern should be used instead.
+
+For more information and a step-by-step example, see the [Controllers Pattern](../mainconcepts/primitivecomponents/primitive-controllers.mdx) page.
+
+### Migrating hasChildLithoViews parameter
+
+In MountSpecs, the `hasChildLithoViews` parameter could be added to the `@MountSpec` annotation to indicate whether a given component mounts views that contain component-based content that can be incrementally mounted (such as if the mounted view has a `LithoView` with incremental mount enabled).
+
+To implement the equivalent behaviour in Primitive Component, set the `doesMountRenderTreeHosts` property to `true` inside of `MountConfigurationScope` block.
+
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Primitive', value: 'primitive_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec(hasChildLithoViews = true)
+public class MyComponentSpec {
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="primitive_tab">
+
+```kotlin
+val primitive = Primitive(
+    mountBehavior = MountBehavior(ViewAllocator { ... }) {
+        doesMountRenderTreeHosts = true
+    }
+)
+```
+
+  </TabItem>
+</Tabs>
+
+### Migrating isPureRender parameter
+
+In MountSpecs, the `isPureRender` parameter could be added to the `@MountSpec` annotation to indicate whether a given component is pure render - when the ComponentTree for this component is updated, if nothing changes then the measurements for this component can be re-used.
+
+For Primitive, there's no equivalent behaviour as all the Primitive Components are pure render, so when migrating this parameter should be ignored.

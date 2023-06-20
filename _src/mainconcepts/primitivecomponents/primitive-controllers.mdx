@@ -1,0 +1,45 @@
+---
+id: primitive-controllers
+title: Controllers Pattern
+---
+
+The Controllers Pattern can be used to control the content from outside the component, typically from an ancestor, and for communication between the parent and children Components. A Controller is an object that can control the Primitive Component's content (a `View` or a `Drawable`) independently of the Component itself. In the example described below, the Controller is used to read and write the minute and hour values of the `TimePicker` view. The same instance of the Controller object is shared between the parent Component and both of its children, which allows children for controlling parent's behavior.
+
+## Controllers in Practice
+
+To demonstrate the use of controllers in practice, the following code implements a simple TimePicker Component, which can be used to show some arbitrary time: the code implements simple getters and setters of the TimePicker properties.
+
+:::note
+It's important to remember that the content is necessarily nullable because the **content can get unmounted when it is out of the viewport**. Any operation invoked on the controller should be memoized (saved) when the content is unbound so that it can be applied once the content is mounted. In the following code, notice how the minutes and hours are set to the vars in the setter methods and how, in `bind`, the values are set back on the content.
+:::
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/controllers/TimePickerPrimitiveComponent.kt start=start_primitive_controller_code_example end=end_primitive_controller_code_example
+```
+
+The Controller must be mounted and unmounted from the content manually from the `bind` and `onUnbind` methods inside of `MountBehavior` scope:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/controllers/TimePickerPrimitiveComponent.kt start=start_primitive_controller_bind_code_example end=end_primitive_controller_bind_code_example
+```
+
+In the Primitive Component implementation, it's necessary to  manually `bind` and `unbind` the controller with the content:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/controllers/TimePickerPrimitiveComponent.kt start=start_primitive_controller_mount_behavior_example end=end_primitive_controller_mount_behavior_example
+```
+
+The Primitive Component should pass the `TimePickerPrimitiveComponent` as a constructor parameter.
+
+:::note
+It's important to put the controller into the [useCached](../use-cached.mdx) hook so it's not recreated in each rerender. Otherwise the state won't be preserved across re-renders.
+:::
+
+Any other methods and properties on the controller instance can be used easily in the code (see `controller.hour = ...`):
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/controllers/ControllersExamplePrimitiveComponent.kt start=start_primitive_controllers_example end=end_primitive_controllers_example
+```
+
+## Key points for Controllers
+
+* The Primitive Component takes a controller as a constructor parameter.
+* If the controller is stateful, then it's necessary to hold the controller in state/cache otherwise state will be lost across re-renders.
+* Primitive should bind and unbind the controllers manually.
+* Controllers should maintain/update/watch state manually.

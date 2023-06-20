@@ -1,0 +1,51 @@
+---
+id: primitive-measuring
+title: Measuring
+---
+
+Primitive should privide an implementation of [LayoutBehavior](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L30) interface to define how it should measure itself, based on the provided SizeConstraints.
+
+The `layout()` function returns a `PrimitiveLayoutResult` object that contains the width and height of the content, and optionally any layout data.
+
+There are a few of built-in `LayoutBehavior` implementations provided for most common use cases:
+ - [ExactSizeConstraintsLayoutBehavior](https://github.com/facebook/litho/blob/de470f73f816baedbcb85b23c70e93edad075bc8/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L50) - width and height are set based on the provided SizeConstraints.
+ - [FillLayoutBehavior](https://github.com/facebook/litho/blob/de470f73f816baedbcb85b23c70e93edad075bc8/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L66) - width and height are set based on the SizeConstraints if the constraints are bounded, otherwise uses default values which can be provided via constructor.
+ - [FixedSizeLayoutBehavior](https://github.com/facebook/litho/blob/de470f73f816baedbcb85b23c70e93edad075bc8/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L85) - width and height are set to values provided via constructor.
+ - [AspectRatioLayoutBehavior](https://github.com/facebook/litho/blob/de470f73f816baedbcb85b23c70e93edad075bc8/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L104) - width and height are set according to an aspect ratio and SizeConstraints. It will respect the intrinsic size of the component being measured.
+ - [EqualDimensionsLayoutBehavior](https://github.com/facebook/litho/blob/de470f73f816baedbcb85b23c70e93edad075bc8/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutBehavior.kt#L124) - width and height are set respecting SizeConstraints and trying to keep width and height equal. This will only not guarantee equal width and height if the constraints don't allow for it.
+
+There are utility methods defined as extension functions on the `Size` object that can be used to compute appropriate `Size`. It's also possible to access `androidContext` in the `layout()` method via [LayoutScope](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/LayoutScope.kt#L27).
+
+:::note
+`layout()` method can be called on any thread, and has the following characteristics:
+- it must not cause any side effects
+- it is guaranteed to be called at least once, and can be called multiple times
+:::
+
+## Measuring in practice
+
+In principle, there are two different ways that measuring can be implemented:
+
+### Mathematical calculations using `SizeConstraints`
+
+`SizeConstraints` is an object that provides the minimum and maximum width and height available for a Component. `SizeConstraints` are provided by parent Component to a child component. A child Component should define its size within those constraints.
+
+In practice, the `SizeConstraints` object is passed as a parameter of the `layout()` method and can be used to carry out mathematical calculations and compute the final measurements based on `minWidth`, `maxWidth`, `minHeight`, and `maxHeight` values, as shown in the following example code:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewPrimitiveComponent.kt start=start_primitive_measure_example end=end_primitive_measure_example
+```
+
+:::note
+The actual computation logic that uses `SizeConstraints` values is in `Size.withEqualDimensions` helper function.
+:::
+
+### Creating a View, measuring it, and reading the measured sizes
+
+Alternatively, a View can be created that represents the mount content then call the `View.measure()` method on it directly. After `View.measure()` completes, the measured width and height can be retrieved by calling `View.getMeasuredWidth()` and `View.getMeasuredHeight()`:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SampleTextInput.kt start=start_layout_with_view_measurement end=end_layout_with_view_measurement
+```
+
+:::note
+When the width and height can be determined using mathematical calculations, it is preferred over creating a View because the calculations are much more lightweight.
+:::
