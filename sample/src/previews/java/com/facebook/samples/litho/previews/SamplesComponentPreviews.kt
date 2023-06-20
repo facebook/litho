@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho
+package com.facebook.samples.litho.previews
 
 import com.facebook.litho.Column
 import com.facebook.litho.Component
