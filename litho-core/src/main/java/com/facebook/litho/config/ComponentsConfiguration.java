@@ -124,10 +124,6 @@ public class ComponentsConfiguration {
 
   public static boolean runLooperPrepareForLayoutThreadFactory = true;
 
-  public static boolean enablePrimitiveComponentsInOrion = false;
-
-  public static boolean enablePrimitivesPreallocationInOrion = true;
-
   public static boolean enableDrawablePreAllocation = false;
 
   /**
