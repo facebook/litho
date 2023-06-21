@@ -28,6 +28,9 @@ import com.facebook.rendercore.primitives.utils.hasEquivalentFields
  * Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec APIs.
  * All Kotlin mountable components must extend this class.
  */
+@Deprecated(
+    "Mountable API is deprecated. Use Primitive API instead. Docs: https://fburl.com/staticdocs/j7w6qqyz; example component: https://fburl.com/code/9kigeb7a",
+    replaceWith = ReplaceWith("PrimitiveComponent()", "com.facebook.litho.PrimitiveComponent"))
 abstract class MountableComponent() : Component() {
 
   final override fun prepare(

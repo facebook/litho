@@ -41,7 +41,11 @@ import com.facebook.infer.annotation.Nullsafe;
  * @param <ContentT> The type of the content.
  * @see RenderUnit
  * @see Node
+ * @deprecated Mountable API is deprecated. Use Primitive API instead. <a
+ *     href="https://fburl.com/staticdocs/j7w6qqyz">Docs</a>; <a
+ *     href="https://fburl.com/code/9kigeb7a">example component</a>
  */
+@Deprecated
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implements Node {
 

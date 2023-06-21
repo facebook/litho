@@ -28,6 +28,8 @@ import com.facebook.rendercore.primitives.utils.isEqualOrEquivalentTo
  * This is a simplified implementation of a [Mountable] which requires only one [Binder]. Must be
  * immutable, and not cause side effects.
  */
+@Deprecated(
+    "Mountable API is deprecated. Use Primitive API instead. Docs: https://fburl.com/staticdocs/j7w6qqyz; example component: https://fburl.com/code/9kigeb7a")
 abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
     Mountable<ContentT>(renderType), ContentAllocator<ContentT> {
 
