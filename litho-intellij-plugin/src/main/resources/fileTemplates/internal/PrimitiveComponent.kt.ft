@@ -4,6 +4,7 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.LayoutScope
@@ -22,7 +23,7 @@ class ${NAME}(val style: Style? = null) : PrimitiveComponent() {
 }
 
 internal class ${NAME}LayoutBehavior : LayoutBehavior {
-  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     /* doc: https://fburl.com/primitivemeasurement */
     TODO("Not yet implemented")
   }
