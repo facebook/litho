@@ -2108,7 +2108,14 @@ public class ComponentTree
     // layout.
     if (currentResolveResult != null) {
       boolean canLayoutWithoutResolve =
-          ComponentsConfiguration.isSkipRootCheckingEnabled
+          (ComponentsConfiguration.isSkipRootCheckingEnabled
+                  // we can skip resolve phase if the render source is size changing
+                  && (source == RenderSource.SET_SIZE_SPEC_SYNC
+                      || source == RenderSource.SET_SIZE_SPEC_ASYNC
+                      || source == RenderSource.MEASURE_SET_SIZE_SPEC
+                      || source == RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC)
+                  // we cannot skip resolve phase if there's async resolve task running
+                  && (mCurrentDoResolveRunnable == null))
               || (currentResolveResult.component == root
                   && currentResolveResult.context.getTreeProps() == treeProps);
       if (canLayoutWithoutResolve) {
