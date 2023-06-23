@@ -26,15 +26,6 @@ import kotlin.reflect.KMutableProperty1
 /** The implicit receiver for [MountBehavior.mountConfigurationCall]. */
 class MountConfigurationScope<ContentType : Any> internal constructor() {
 
-  /**
-   * If true, the nested tree hierarchy (if present) will be notified about parent's bounds changes.
-   * It will ensure that visibility events and incremental mount works correctly for the nested tree
-   * hierarchy.
-   *
-   * Default is false.
-   */
-  var doesMountRenderTreeHosts: Boolean = false
-
   internal val fixedBinders: List<RenderUnit.DelegateBinder<*, ContentType, *>>
     get() = _fixedBinders
 

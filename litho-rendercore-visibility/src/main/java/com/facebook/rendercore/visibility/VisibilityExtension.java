@@ -117,7 +117,7 @@ public class VisibilityExtension
         Rect absoluteBounds = new Rect(x, y, x + bounds.width(), y + bounds.height());
         results.addOutput(factory.createVisibilityOutput(layoutResult, absoluteBounds));
         final RenderUnit<?> unit = layoutResult.getRenderUnit();
-        if (unit != null && unit.doesMountRenderTreeHosts()) {
+        if (unit != null && VisibilityUtils.getDoesMountRenderTreeHosts(unit)) {
           results.addRenderUnitIdWhichHostsRenderTree(unit.getId());
         }
       }

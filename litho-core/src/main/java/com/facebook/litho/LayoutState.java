@@ -1680,9 +1680,10 @@ public class LayoutState
     layoutState.mIncrementalMountOutputs.put(id, incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
+
     if ((component instanceof SpecGeneratedComponent
             && ((SpecGeneratedComponent) component).hasChildLithoViews())
-        || node.getRenderUnit().doesMountRenderTreeHosts()) {
+        || IncrementalMountUtils.getDoesMountRenderTreeHosts(node.getRenderUnit())) {
 
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id);
     }

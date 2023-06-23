@@ -47,6 +47,7 @@ android {
 }
 
 dependencies {
+    api project(':litho-rendercore-primitives')
 }
 
 apply plugin: "com.vanniktech.maven.publish"

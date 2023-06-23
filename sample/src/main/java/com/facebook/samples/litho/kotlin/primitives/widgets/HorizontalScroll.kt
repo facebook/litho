@@ -33,6 +33,7 @@ import com.facebook.litho.widget.HorizontalScrollEventsController
 import com.facebook.litho.widget.HorizontalScrollLithoView
 import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.extensions.doesMountRenderTreeHosts
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult

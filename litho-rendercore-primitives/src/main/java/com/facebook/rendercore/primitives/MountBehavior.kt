@@ -56,8 +56,7 @@ class MountBehavior<ContentType : Any>(
             PrimitiveRenderUnit<ContentType>(
                 contentAllocator.renderType,
                 mountConfigurationScope.fixedBinders,
-                mountConfigurationScope.renderUnitExtras,
-                mountConfigurationScope.doesMountRenderTreeHosts) {
+                mountConfigurationScope.renderUnitExtras) {
           override fun getContentAllocator(): ContentAllocator<ContentType> {
             return this@MountBehavior.contentAllocator
           }
@@ -77,8 +76,7 @@ class MountBehavior<ContentType : Any>(
 abstract class PrimitiveRenderUnit<ContentType>(
     renderType: RenderType,
     fixedMountBinders: List<DelegateBinder<*, ContentType, *>>,
-    extras: SparseArray<Any?>? = null,
-    private val doesMountRenderTreeHosts: Boolean
+    extras: SparseArray<Any?>? = null
 ) :
     RenderUnit<ContentType>(
         renderType,
@@ -86,8 +84,6 @@ abstract class PrimitiveRenderUnit<ContentType>(
         emptyList(), // optional binders
         emptyList(), // attach binders
         extras) {
-
-  override fun doesMountRenderTreeHosts(): Boolean = doesMountRenderTreeHosts
 
   /**
    * This method is an override that calls super impl to make it public on RenderUnit because it

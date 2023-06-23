@@ -22,3 +22,8 @@ import com.facebook.rendercore.RenderUnit
 
 val RenderUnit<*>.shouldExcludeFromIncrementalMount: Boolean
   get() = getExtra<Boolean>(R.id.should_exclude_from_incremental_mount) == true
+
+val RenderUnit<*>.doesMountRenderTreeHosts: Boolean
+  get() =
+      getExtra<Boolean>(com.facebook.rendercore.extensions.R.id.does_mount_render_tree_hosts) ==
+          true || doesMountRenderTreeHosts()

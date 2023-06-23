@@ -221,7 +221,8 @@ public class IncrementalMountRenderCoreExtension
               rect,
               IncrementalMountUtils.getShouldExcludeFromIncrementalMount(unit),
               host));
-      if (unit.doesMountRenderTreeHosts()) {
+
+      if (IncrementalMountUtils.getDoesMountRenderTreeHosts(unit)) {
         results.addRenderTreeHostId(id);
       }
     }

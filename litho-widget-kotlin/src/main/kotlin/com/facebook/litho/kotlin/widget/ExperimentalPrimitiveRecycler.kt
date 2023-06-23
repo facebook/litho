@@ -38,6 +38,7 @@ import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.extensions.doesMountRenderTreeHosts
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
