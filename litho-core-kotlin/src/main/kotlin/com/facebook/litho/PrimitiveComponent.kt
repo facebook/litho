@@ -20,8 +20,6 @@ import android.content.Context
 import android.util.SparseArray
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.Primitive
@@ -45,12 +43,6 @@ abstract class PrimitiveComponent : Component() {
     // TODO(zielinskim): currently we apply style to the PrimitiveComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in PrimitiveLithoRenderUnit
     lithoPrimitive.style?.applyCommonProps(c, getCommonPropsHolder())
-
-    if (primitiveComponentScope.shouldExcludeFromIncrementalMount) {
-      lithoPrimitive.primitive.renderUnit.addAttachBinder(
-          RenderUnit.DelegateBinder.createDelegateBinder(
-              lithoPrimitive.primitive.renderUnit, ExcludeFromIncrementalMountBinder.INSTANCE))
-    }
 
     return PrepareResult(
         lithoPrimitive.primitive,

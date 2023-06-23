@@ -52,6 +52,7 @@ import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinde
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountUtils;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -1651,7 +1652,8 @@ public class LayoutState
     final int position = layoutState.mMountableOutputs.size();
     final Rect absoluteBounds = node.getAbsoluteBounds(new Rect());
     final boolean shouldExcludeMountableFromIncrementalMount =
-        unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder.class) != null;
+        IncrementalMountUtils.getShouldExcludeFromIncrementalMount(unit)
+            || unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder.class) != null;
 
     final boolean shouldExcludeSpecGeneratedComponentFromIncrementalMount =
         component instanceof SpecGeneratedComponent
@@ -1662,14 +1664,14 @@ public class LayoutState
             node.getRenderUnit().getId(),
             position,
             absoluteBounds,
-            shouldExcludeSpecGeneratedComponentFromIncrementalMount
-                || shouldExcludeMountableFromIncrementalMount,
+            shouldExcludeMountableFromIncrementalMount
+                || shouldExcludeSpecGeneratedComponentFromIncrementalMount,
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
 
-    if (shouldExcludeSpecGeneratedComponentFromIncrementalMount
-        || shouldExcludeMountableFromIncrementalMount) {
+    if (shouldExcludeMountableFromIncrementalMount
+        || shouldExcludeSpecGeneratedComponentFromIncrementalMount) {
       layoutState.mHasComponentsExcludedFromIncrementalMount = true;
     }
 
