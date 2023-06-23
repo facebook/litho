@@ -3,7 +3,9 @@
 package com.facebook.rendercore;
 
 import android.content.Context;
+import android.util.SparseArray;
 import android.view.View;
+import androidx.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +24,15 @@ class TestRenderUnit extends RenderUnit<View> implements ContentAllocator<View> 
       List<DelegateBinder<?, ? super View, ?>> optionalMountBinders,
       List<DelegateBinder<?, ? super View, ?>> attachBinder) {
     super(RenderType.VIEW, fixedMountBinders, optionalMountBinders, attachBinder);
+  }
+
+  public TestRenderUnit(@Nullable final SparseArray<Object> extras) {
+    super(
+        RenderType.VIEW,
+        Collections.emptyList(),
+        Collections.emptyList(),
+        Collections.emptyList(),
+        extras);
   }
 
   @Override

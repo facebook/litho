@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.util.SparseArray;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -885,6 +886,21 @@ public class RenderUnitTest {
 
     // assert no attach binders bind data is present
     assertThat(bindData.getAttachBindersBindData()).isNull();
+  }
+
+  @Test
+  public void createWithExtra_getExtra_returnsCorrectValues() {
+    final SparseArray<Object> extras = new SparseArray<>();
+    extras.put(1, "test");
+    extras.put(999, 42);
+    extras.put(-50000, true);
+
+    final TestRenderUnit renderUnit = new TestRenderUnit(extras);
+
+    assertThat(renderUnit.<Object>getExtra(0)).isNull();
+    assertThat(renderUnit.<String>getExtra(1)).isEqualTo("test");
+    assertThat(renderUnit.<Integer>getExtra(999)).isEqualTo(42);
+    assertThat(renderUnit.<Boolean>getExtra(-50000)).isEqualTo(true);
   }
 
   static BindData createBindData(

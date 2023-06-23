@@ -17,6 +17,7 @@
 package com.facebook.rendercore
 
 import android.content.Context
+import androidx.annotation.IdRes
 
 /**
  * This wrapper allows to add binders to the original [renderUnit] without modifying it directly.
@@ -37,6 +38,8 @@ class WrapperRenderUnit<ContentType>(private val renderUnit: RenderUnit<ContentT
   override fun getRenderContentType(): Class<*> = renderUnit.renderContentType
 
   override fun getDescription(): String = renderUnit.description
+
+  override fun <T> getExtra(@IdRes key: Int): T? = renderUnit.getExtra(key)
 
   override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsOptionalMountBinder(binder)) {

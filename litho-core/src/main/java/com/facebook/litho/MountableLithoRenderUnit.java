@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.content.Context;
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -71,6 +72,12 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   @Override
   public boolean doesMountRenderTreeHosts() {
     return mMountable.doesMountRenderTreeHosts();
+  }
+
+  @Nullable
+  @Override
+  public <T> T getExtra(@IdRes final int key) {
+    return mMountable.getExtra(key);
   }
 
   @Override
