@@ -175,6 +175,26 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   /**
+   * Tests if any view hierarchy under the root do not has the given contentDescription.
+   *
+   * @param contentDescription the contentDescription to search for
+   * @return the assertions object
+   */
+  public ViewTreeAssert hasNoContentDescription(final String contentDescription) {
+    final ImmutableList<View> path = getPathToContentDescription(contentDescription);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Found content description \"%s\" in view hierarchy:%n%s while the content description should not exist. ",
+            contentDescription,
+            actual.makeString(ViewExtractors.GET_CONTENT_DESCRIPTION_FUNCTION),
+            path)
+        .isNull();
+
+    return this;
+  }
+
+  /**
    * Tests that all views in the hierarchy under the root, for which the path is visible, do not
    * have text equal to the string matching the given resource id
    *

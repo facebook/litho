@@ -114,6 +114,13 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return this;
   }
 
+  /** Assert that any view in the given Component do not have the provided content description. */
+  public LithoViewAssert hasNoContentDescription(String contentDescription) {
+    assertThatViewTree().hasNoContentDescription(contentDescription);
+
+    return this;
+  }
+
   /** Assert that any view in the given Component has the provided content description. */
   public LithoViewAssert hasContentDescription(@StringRes int resourceId) {
     assertThatViewTree().hasContentDescription(resourceId);
