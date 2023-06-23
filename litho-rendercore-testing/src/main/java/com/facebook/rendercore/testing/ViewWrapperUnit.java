@@ -19,9 +19,12 @@ package com.facebook.rendercore.testing;
 import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder;
 
 import android.content.Context;
+import android.util.SparseArray;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
+import java.util.Collections;
 
 public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocator<View> {
 
@@ -29,7 +32,16 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
   private final long id;
 
   public ViewWrapperUnit(final View view, final long id) {
-    super(RenderType.VIEW);
+    this(view, id, null);
+  }
+
+  public ViewWrapperUnit(final View view, final long id, @Nullable SparseArray<Object> extras) {
+    super(
+        RenderType.VIEW,
+        Collections.emptyList(),
+        Collections.emptyList(),
+        Collections.emptyList(),
+        extras);
     this.view = view;
     this.id = id;
   }
