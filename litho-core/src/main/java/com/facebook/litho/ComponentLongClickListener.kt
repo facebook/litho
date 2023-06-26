@@ -24,9 +24,8 @@ class ComponentLongClickListener : View.OnLongClickListener {
   var eventHandler: EventHandler<LongClickEvent>? = null
 
   override fun onLongClick(view: View): Boolean =
-      if (eventHandler != null) {
-        EventDispatcherUtils.dispatchOnLongClick(eventHandler, view)
-      } else {
-        false
+      when (val eventHandler = eventHandler) {
+        null -> false
+        else -> EventDispatcherUtils.dispatchOnLongClick(eventHandler, view)
       }
 }
