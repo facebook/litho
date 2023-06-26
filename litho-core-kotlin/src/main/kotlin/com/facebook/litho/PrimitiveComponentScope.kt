@@ -66,7 +66,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
   /**
    * Creates a binding between the dynamic value, and the content’s property.
    *
-   * @param defaultValue value that will be set to the Content after unbind
+   * @param dynamicValue value that will be set on the Content
    * @param bindCall function or function reference that will set the dynamic value on the content
    */
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
@@ -83,7 +83,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
   /**
    * Creates a binding between the dynamic value, and the content’s property.
    *
-   * @param defaultValue value that will be set to the Content after unbind
+   * @param dynamicValue value that will be set on the Content
    * @param setter function reference that will set the dynamic value on the content
    */
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
@@ -100,7 +100,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
   /**
    * Creates a binding between the dynamic value, and the content’s property.
    *
-   * @param defaultValue value that will be set to the Content after unbind
+   * @param dynamicValue value that will be set on the Content
    * @param setter property reference that will set the dynamic value on the content
    */
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
