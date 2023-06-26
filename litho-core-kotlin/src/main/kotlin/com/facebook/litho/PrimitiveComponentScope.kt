@@ -148,7 +148,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
   ) {
     var listener: DynamicValue.OnValueChangeListener<T>? = null
 
-    bind(Any()) { content ->
+    bind(dynamicValue) { content ->
       if (listener == null) {
         listener =
             DynamicValue.OnValueChangeListener {
