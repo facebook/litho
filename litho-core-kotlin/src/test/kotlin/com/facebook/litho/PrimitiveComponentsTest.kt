@@ -627,6 +627,67 @@ class PrimitiveComponentsTest {
   }
 
   @Test
+  fun `when new dynamic value is null it should unbind the old dynamic value`() {
+    val tag1 = DynamicValue<Any?>("0")
+    val root1 =
+        TestViewPrimitiveComponent(
+            view = EditText(lithoViewRule.context.androidContext),
+            dynamicTag = tag1,
+            style = Style.width(100.px).height(100.px))
+
+    val test = lithoViewRule.render { root1 }
+
+    test.findViewWithTag("0")
+
+    tag1.set("1")
+
+    test.findViewWithTag("1")
+
+    val root2 =
+        TestViewPrimitiveComponent(
+            view = EditText(lithoViewRule.context.androidContext),
+            dynamicTag = null,
+            style = Style.width(100.px).height(100.px))
+
+    test.setRoot(root2)
+
+    assertThat(tag1.numberOfListeners).isEqualTo(0)
+  }
+
+  @Test
+  fun `when new dynamic value is set and the old one was null it should bind the new dynamic value`() {
+    val root1 =
+        TestViewPrimitiveComponent(
+            view = EditText(lithoViewRule.context.androidContext),
+            dynamicTag = null,
+            style = Style.width(100.px).height(100.px))
+
+    val test = lithoViewRule.render { root1 }
+
+    val tag = DynamicValue<Any?>("1")
+    val root2 =
+        TestViewPrimitiveComponent(
+            view = EditText(lithoViewRule.context.androidContext),
+            dynamicTag = tag,
+            style = Style.width(100.px).height(100.px))
+
+    test.setRoot(root2)
+
+    assertThat(tag.numberOfListeners).isEqualTo(1)
+
+    // should have view with new tag
+    val view = test.findViewWithTag("1")
+
+    // set new tag using the new dynamic value
+    tag.set("2")
+
+    // the above should work, the tag should change
+    assertThat(view.tag).isEqualTo("2")
+
+    assertThat(tag.numberOfListeners).isEqualTo(1)
+  }
+
+  @Test
   fun `when same dynamic value is used on different components it should update the content for all instances`() {
     val c = lithoViewRule.context
     val tag = DynamicValue<Any?>("0")
@@ -1077,7 +1138,7 @@ private fun PrimitiveComponentScope.ViewPrimitive(
                 }
 
                 // using tag for convenience of tests
-                dynamicTag?.let { bindDynamic(dynamicTag, View::setTag, "default_value") }
+                bindDynamic(dynamicTag, View::setTag, "default_value")
 
                 bindWithLayoutData<TestPrimitiveLayoutData>(id, steps, updateState, str) { _, _ ->
                   updateState?.invoke("mount")

@@ -70,14 +70,14 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param bindCall function or function reference that will set the dynamic value on the content
    */
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
-      dynamicValue: DynamicValue<T>,
+      dynamicValue: DynamicValue<T>?,
       bindCall: BindDynamicScope.(ContentType, T) -> UnbindDynamicFunc
   ) {
-    val bindDynamicScope = BindDynamicScope()
+    val bindDynamicScope = if (dynamicValue != null) BindDynamicScope() else null
     addBinder(
         dynamicValue,
-        { content, value -> bindDynamicScope.bindCall(content, value) },
-        { bindDynamicScope.unbindDynamicFunc?.onUnbindDynamic() })
+        { content, value -> bindDynamicScope?.bindCall(content, value) },
+        { bindDynamicScope?.unbindDynamicFunc?.onUnbindDynamic() })
   }
 
   /**
@@ -87,7 +87,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param setter function reference that will set the dynamic value on the content
    */
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
-      dynamicValue: DynamicValue<T>,
+      dynamicValue: DynamicValue<T>?,
       setter: KFunction2<ContentType, T, Any?>,
       default: T
   ) {
@@ -104,7 +104,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param setter property reference that will set the dynamic value on the content
    */
   fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
-      dynamicValue: DynamicValue<T>,
+      dynamicValue: DynamicValue<T>?,
       setter: KMutableProperty1<ContentType, T>,
       default: T
   ) {
@@ -121,7 +121,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param setter function reference that will set the dynamic value on the content
    */
   inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
-      dynamicValue: DynamicValue<T?>,
+      dynamicValue: DynamicValue<T?>?,
       setter: KFunction2<ContentType, T?, Any?>,
   ) = bindDynamic(dynamicValue, setter, null)
 
@@ -132,7 +132,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param setter property reference that will set the dynamic value on the content
    */
   inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
-      dynamicValue: DynamicValue<T?>,
+      dynamicValue: DynamicValue<T?>?,
       setter: KMutableProperty1<ContentType, T?>,
   ) = bindDynamic(dynamicValue, setter, null)
 
@@ -142,26 +142,30 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * true from shouldUpdate().
    */
   private inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.addBinder(
-      dynamicValue: DynamicValue<T>,
+      dynamicValue: DynamicValue<T>?,
       crossinline bindCall: (ContentType, T) -> Unit,
       crossinline unbindCall: (ContentType) -> Unit
   ) {
     var listener: DynamicValue.OnValueChangeListener<T>? = null
 
     bind(dynamicValue) { content ->
-      if (listener == null) {
-        listener =
-            DynamicValue.OnValueChangeListener {
-              ThreadUtils.assertMainThread()
-              bindCall(content, dynamicValue.get())
-            }
+      if (dynamicValue != null) {
+        if (listener == null) {
+          listener =
+              DynamicValue.OnValueChangeListener {
+                ThreadUtils.assertMainThread()
+                bindCall(content, dynamicValue.get())
+              }
+        }
+        listener?.let { dynamicValue.attachListener(it) }
+        bindCall(content, dynamicValue.get())
       }
-      listener?.let { dynamicValue.attachListener(it) }
-      bindCall(content, dynamicValue.get())
       onUnbind {
-        unbindCall(content)
-        listener?.let { dynamicValue.detach(it) }
-        listener = null
+        if (dynamicValue != null) {
+          unbindCall(content)
+          listener?.let { dynamicValue.detach(it) }
+          listener = null
+        }
       }
     }
   }
