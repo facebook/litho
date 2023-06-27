@@ -41,7 +41,6 @@ import com.facebook.litho.widget.InputFocusChangedEvent
 import com.facebook.litho.widget.KeyPreImeEvent
 import com.facebook.litho.widget.KeyUpEvent
 import com.facebook.litho.widget.SelectionChangedEvent
-import com.facebook.litho.widget.SetTextEvent
 import com.facebook.litho.widget.TextChangedEvent
 import com.facebook.litho.widget.TextInput
 
@@ -65,7 +64,23 @@ inline fun ResourcesScope.TextInput(
     imeOptions: Int = EditorInfo.IME_NULL,
     inputFilter: InputFilter? = null,
     inputFilters: List<InputFilter>? = null,
-    textInputActions: TextInputActions = TextInputActions.Default,
+    /** Called when the text entered by the user changes. */
+    noinline onTextChanged: ((TextChangedEvent) -> Unit)? = null,
+    /** Called when the selection (particular case: cursor position) gets changed by user. */
+    noinline onSelectionChanged: ((SelectionChangedEvent) -> Unit)? = null,
+    /** Called when the input focus changed by user. */
+    noinline onInputFocusChanged: ((InputFocusChangedEvent) -> Unit)? = null,
+    /** Called when underlying [android.widget.EditText#onKeyUp()] happens. */
+    noinline onKeyUp: ((KeyUpEvent) -> Boolean)? = null,
+    /** Called when underlying [android.widget.EditText#onKeyPreIme()] happens. */
+    noinline onKeyPreIme: ((KeyPreImeEvent) -> Boolean)? = null,
+    /** Called when the return key is pressed or the IME signals an 'action'. */
+    noinline onEditorAction: ((EditorActionEvent) -> Boolean)? = null,
+    /**
+     * Called when underlying
+     * [android.widget.EditText#onCreateInputConnection(EditorInfo editorInfo)] happens.
+     */
+    noinline onInputConnection: ((InputConnectionEvent) -> InputConnection)? = null,
     handle: Handle? = null,
     inputBackground: Drawable? = null,
     textWatcher: TextWatcher? = null,
@@ -92,52 +107,12 @@ inline fun ResourcesScope.TextInput(
         .handle(handle)
         .kotlinStyle(style)
         .apply {
-          with(textInputActions) {
-            onSetText?.let { setTextEventHandler(eventHandler(it)) }
-            onTextChanged?.let { textChangedEventHandler(eventHandler(it)) }
-            onSelectionChanged?.let { selectionChangedEventHandler(eventHandler(it)) }
-            onInputFocusChanged?.let { inputFocusChangedEventHandler(eventHandler(it)) }
-            onKeyUp?.let { keyUpEventHandler(eventHandlerWithReturn(it)) }
-            onKeyPreIme?.let { keyPreImeEventHandler(eventHandlerWithReturn(it)) }
-            onEditorAction?.let { editorActionEventHandler(eventHandlerWithReturn(it)) }
-            onInputConnection?.let { inputConnectionEventHandler(eventHandlerWithReturn(it)) }
-          }
+          onTextChanged?.let { textChangedEventHandler(eventHandler(it)) }
+          onSelectionChanged?.let { selectionChangedEventHandler(eventHandler(it)) }
+          onInputFocusChanged?.let { inputFocusChangedEventHandler(eventHandler(it)) }
+          onKeyUp?.let { keyUpEventHandler(eventHandlerWithReturn(it)) }
+          onKeyPreIme?.let { keyPreImeEventHandler(eventHandlerWithReturn(it)) }
+          onEditorAction?.let { editorActionEventHandler(eventHandlerWithReturn(it)) }
+          onInputConnection?.let { inputConnectionEventHandler(eventHandlerWithReturn(it)) }
         }
         .build()
-
-/**
- * A container class allows developers to specify actions that will be triggered in response to
- * users' editing action on [TextInput].
- */
-class TextInputActions(
-    /** Event sent by EditText when set the field's current text. */
-    val onSetText: ((SetTextEvent) -> Unit)? = null,
-    /** Event sent by EditText when the text entered by the user changes. */
-    val onTextChanged: ((TextChangedEvent) -> Unit)? = null,
-    /**
-     * Event sent by EditText when the selection (particular case: cursor position) gets changed by
-     * user.
-     */
-    val onSelectionChanged: ((SelectionChangedEvent) -> Unit)? = null,
-    /** Event sent by EditText when the input focus changed by user. */
-    val onInputFocusChanged: ((InputFocusChangedEvent) -> Unit)? = null,
-    /** Event that corresponds to an underlying android.widget.EditText#onKeyUp(). */
-    val onKeyUp: ((KeyUpEvent) -> Boolean)? = null,
-    /** Event that corresponds to an underlying [android.widget.EditText#onKeyPreIme()]. */
-    val onKeyPreIme: ((KeyPreImeEvent) -> Boolean)? = null,
-    /** Event sent by EditText when the return key is pressed or the IME signals an 'action'. */
-    val onEditorAction: ((EditorActionEvent) -> Boolean)? = null,
-    /**
-     * Event that corresponds to an underlying
-     * [android.widget.EditText#onCreateInputConnection(EditorInfo editorInfo)].
-     */
-    val onInputConnection: ((InputConnectionEvent) -> InputConnection)? = null,
-) {
-  companion object {
-    /**
-     * Use this default value if you don't want to specify any action but want to use use the
-     * default action implementations.
-     */
-    val Default: TextInputActions = TextInputActions()
-  }
-}
