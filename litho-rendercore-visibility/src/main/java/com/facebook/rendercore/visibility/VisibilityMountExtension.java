@@ -16,12 +16,16 @@
 
 package com.facebook.rendercore.visibility;
 
+import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
+import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
 
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -29,6 +33,8 @@ import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.debug.DebugEvent;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.ArrayList;
@@ -155,7 +161,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   public static void clearVisibilityItems(
       final ExtensionState<VisibilityMountExtensionState> extensionState) {
     final VisibilityMountExtensionState state = extensionState.getState();
-    clearVisibilityItemsNonincremental(state);
+    clearVisibilityItemsNonincremental(extensionState.getRenderStateId(), state);
     state.mPreviousLocalVisibleRect.setEmpty();
   }
 
@@ -306,9 +312,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             // Either the component is invisible now, but used to be visible, or the key on the
             // component has changed so we should generate new visibility events for the new
             // component.
-            if (visibilityItem.getInvisibleHandler() != null) {
-              VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
-            }
+            maybeDispatchOnInvisible(extensionState.getRenderStateId(), visibilityItem);
 
             if (visibilityChangedHandler != null) {
               VisibilityUtils.dispatchOnVisibilityChanged(
@@ -336,7 +340,14 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             final String globalKey = visibilityOutput.getId();
             visibilityItem =
                 new VisibilityItem(
-                    globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
+                    globalKey,
+                    invisibleHandler,
+                    unfocusedHandler,
+                    visibilityChangedHandler,
+                    visibilityOutput.getKey(),
+                    visibilityOutput.mRenderUnitId,
+                    visibilityOutput.getBounds());
+
             visibilityItem.setDoNotClearInThisPass(isDirty);
             visibilityItem.setWasFullyVisible(isFullyVisible);
             state.mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
@@ -346,7 +357,23 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
                   visibilityOutput.hasMountableContent
                       ? getContentById(extensionState, visibilityOutput.mRenderUnitId)
                       : null;
+
+              @Nullable
+              Integer traceIdentifier =
+                  DebugEventDispatcher.generateTraceIdentifier(DebugEvent.RenderUnitOnVisible);
+              if (traceIdentifier != null) {
+                DebugEventDispatcher.beginTrace(
+                    traceIdentifier,
+                    DebugEvent.RenderUnitOnVisible,
+                    String.valueOf(extensionState.getRenderStateId()),
+                    createVisibilityDebugAttributes(visibilityItem));
+              }
+
               VisibilityUtils.dispatchOnVisible(visibleHandler, content);
+
+              if (traceIdentifier != null) {
+                DebugEventDispatcher.endTrace(traceIdentifier);
+              }
             }
           }
 
@@ -415,6 +442,43 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
   }
 
+  @NonNull
+  private static Map<String, Object> createVisibilityDebugAttributes(
+      VisibilityItem visibilityItem) {
+    Map<String, Object> attributes = new HashMap<>();
+    attributes.put(RenderUnitId, visibilityItem.getRenderUnitId());
+    attributes.put(Name, visibilityItem.getComponentName());
+    attributes.put(Bounds, visibilityItem.getBounds());
+    return attributes;
+  }
+
+  /**
+   * This method will dispatch an {@code onInvisibleEvent} to the given {@link VisibilityItem} only
+   * if it returns a non-null invisible handler from {@link VisibilityItem#getInvisibleHandler()}.
+   */
+  private static void maybeDispatchOnInvisible(int renderStateId, VisibilityItem visibilityItem) {
+    if (visibilityItem.getInvisibleHandler() == null) {
+      return;
+    }
+
+    @Nullable
+    Integer traceIdentifier =
+        DebugEventDispatcher.generateTraceIdentifier(DebugEvent.RenderUnitOnInvisible);
+    if (traceIdentifier != null) {
+      DebugEventDispatcher.beginTrace(
+          traceIdentifier,
+          DebugEvent.RenderUnitOnInvisible,
+          String.valueOf(renderStateId),
+          createVisibilityDebugAttributes(visibilityItem));
+    }
+
+    VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+
+    if (traceIdentifier != null) {
+      DebugEventDispatcher.endTrace(traceIdentifier);
+    }
+  }
+
   private static boolean isInVisibleRange(
       final VisibilityOutput visibilityOutput, final Rect bounds, final Rect visibleBounds) {
     float heightRatio = visibilityOutput.getVisibleHeightRatio();
@@ -465,7 +529,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
   @UiThread
   private static void clearVisibilityItemsNonincremental(
-      final VisibilityMountExtensionState state) {
+      final int renderStateId, final VisibilityMountExtensionState state) {
     final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
@@ -488,14 +552,11 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       final VisibilityItem visibilityItem = state.mVisibilityIdToItemMap.get(key);
 
       if (visibilityItem != null) {
-        final Function<Void> invisibleHandler = visibilityItem.getInvisibleHandler();
         final Function<Void> unfocusedHandler = visibilityItem.getUnfocusedHandler();
         final Function<Void> visibilityChangedHandler =
             visibilityItem.getVisibilityChangedHandler();
 
-        if (invisibleHandler != null) {
-          VisibilityUtils.dispatchOnInvisible(invisibleHandler);
-        }
+        maybeDispatchOnInvisible(renderStateId, visibilityItem);
 
         if (visibilityItem.isInFocusedRange()) {
           visibilityItem.setFocusedRange(false);

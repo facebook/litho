@@ -75,4 +75,7 @@ public interface MountDelegateTarget {
    */
   @Deprecated
   ExtensionState registerMountExtension(MountExtension mountExtension);
+
+  /** Returns the id for the {@link RenderState} */
+  int getRenderStateId();
 }

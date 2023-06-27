@@ -40,6 +40,8 @@ sealed class DebugEvent(
     const val RenderUnitMounted = "RenderCore.RenderUnit.Mounted"
     const val RenderUnitUnmounted = "RenderCore.RenderUnit.Unmounted"
     const val RenderUnitUpdated = "RenderCore.RenderUnit.Updated"
+    const val RenderUnitOnVisible = "RenderCore.RenderUnit.OnVisible"
+    const val RenderUnitOnInvisible = "RenderCore.RenderUnit.OnInvisible"
   }
 
   /** Returns the value of attribute with [name]. */
@@ -85,6 +87,7 @@ object DebugEventAttribute {
   const val Description = "description"
   const val Bounds = "bounds"
   const val RootHostHashCode = "rootHostHashCode"
+  const val Name = "name"
 }
 
 /** Base class for marker events */

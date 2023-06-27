@@ -46,19 +46,41 @@ public class VisibilityItem {
 
   private int mFlags;
 
+  private String mComponentName;
+  private long mRenderUnitId;
+  private Rect mBounds;
+
   public VisibilityItem(
       final String key,
       final @Nullable Function<Void> invisibleHandler,
       final @Nullable Function<Void> unfocusedHandler,
-      final @Nullable Function<Void> visibilityChangedHandler) {
+      final @Nullable Function<Void> visibilityChangedHandler,
+      final String componentName,
+      long renderUnitId,
+      Rect bounds) {
     mKey = key;
     mInvisibleHandler = invisibleHandler;
     mUnfocusedHandler = unfocusedHandler;
     mVisibilityChangedHandler = visibilityChangedHandler;
+    mComponentName = componentName;
+    mRenderUnitId = renderUnitId;
+    mBounds = bounds;
   }
 
   public String getKey() {
     return mKey;
+  }
+
+  public long getRenderUnitId() {
+    return mRenderUnitId;
+  }
+
+  public String getComponentName() {
+    return mComponentName;
+  }
+
+  public Rect getBounds() {
+    return mBounds;
   }
 
   /** Sets the invisible event handler. */

@@ -40,6 +40,10 @@ public class ExtensionState<State> {
     mState = state;
   }
 
+  public int getRenderStateId() {
+    return mMountDelegate.getMountDelegateTarget().getRenderStateId();
+  }
+
   public Host getRootHost() {
     return mMountDelegate.getMountDelegateTarget().getRootHost();
   }
