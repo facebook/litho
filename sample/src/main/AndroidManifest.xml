@@ -162,8 +162,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="28" />
+        android:minSdkVersion="19"
+        android:targetSdkVersion="33" />
 
 
 </manifest>

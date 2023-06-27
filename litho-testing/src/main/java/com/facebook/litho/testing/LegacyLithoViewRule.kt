@@ -77,6 +77,11 @@ constructor(
     val componentsConfiguration: ComponentsConfiguration? = null,
     val themeResId: Int? = null
 ) : TestRule {
+
+  init {
+    ComponentsConfiguration.isDebugModeEnabled = true
+  }
+
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {

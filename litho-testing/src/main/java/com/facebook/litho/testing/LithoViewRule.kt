@@ -66,6 +66,10 @@ constructor(
   lateinit var context: ComponentContext
   private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
 
+  init {
+    ComponentsConfiguration.isDebugModeEnabled = true
+  }
+
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {

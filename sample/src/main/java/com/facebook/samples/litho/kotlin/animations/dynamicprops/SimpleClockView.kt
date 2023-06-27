@@ -23,8 +23,6 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.util.TypedValue
 import android.view.View
-import androidx.annotation.Dimension
-import androidx.annotation.Dimension.Companion.DP
 import androidx.annotation.Px
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
@@ -87,6 +85,6 @@ class SimpleClockView(context: Context) : View(context) {
       }
 
   companion object {
-    @Dimension(unit = DP) private const val STROKE_WIDTH_DP = 6f
+    private const val STROKE_WIDTH_DP = 6f
   }
 }
