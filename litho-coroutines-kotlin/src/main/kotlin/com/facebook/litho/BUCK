@@ -30,6 +30,7 @@ load(
 litho_android_library(
     name = "litho-coroutines-kotlin",
     srcs = glob(["**/*.kt"]),
+    abi_generation_mode = "source_only",
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
