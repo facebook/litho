@@ -1138,7 +1138,7 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   static void clearDebugOverlay(@Nullable BaseMountingView view) {
-    if (view != null) {
+    if (DebugOverlay.isEnabled && view != null) {
       view.getOverlay().clear();
     }
   }
