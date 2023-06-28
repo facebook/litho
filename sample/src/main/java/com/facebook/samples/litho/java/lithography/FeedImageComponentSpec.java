@@ -16,9 +16,9 @@
 
 package com.facebook.samples.litho.java.lithography;
 
+import android.net.Uri;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.fresco.vito.litho.FrescoVitoImage2;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.FromEvent;
@@ -26,7 +26,6 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.fresco.FrescoImage;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.RenderEvent;
@@ -70,8 +69,8 @@ public class FeedImageComponentSpec {
   }
 
   private static Component.Builder createImageComponent(ComponentContext c, String image) {
-    final DraweeController controller = Fresco.newDraweeControllerBuilder().setUri(image).build();
-
-    return FrescoImage.create(c).controller(controller).imageAspectRatio(2f);
+    return FrescoVitoImage2.create(c)
+        .uri(image != null ? Uri.parse(image) : null)
+        .imageAspectRatio(2f);
   }
 }
