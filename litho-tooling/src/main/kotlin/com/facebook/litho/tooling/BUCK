@@ -1,0 +1,21 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_JAVA_TARGET",
+    "LITHO_KOTLIN_TARGET",
+    "litho_android_library",
+)
+
+litho_android_library(
+    name = "tooling",
+    srcs = glob(["**/*.kt"]),
+    abi_generation_mode = "source_only",
+    autoglob = False,
+    labels = [],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_KOTLIN_TARGET,
+        LITHO_JAVA_TARGET,
+    ],
+)

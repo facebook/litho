@@ -18,6 +18,7 @@ load(
     "LITHO_SECTIONS_COMMON_TARGET",
     "LITHO_SECTIONS_TARGET",
     "LITHO_SECTIONS_WIDGET_TARGET",
+    "LITHO_TOOLING",
     "LITHO_VISIBILITY",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
@@ -63,6 +64,18 @@ litho_android_library(
     ],
     exported_deps = [
         ":components",
+        LITHO_KOTLIN_TARGET,
+    ],
+)
+
+litho_android_library(
+    name = "litho_tooling",
+    autoglob = False,
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        LITHO_TOOLING,
         LITHO_KOTLIN_TARGET,
     ],
 )
