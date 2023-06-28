@@ -606,13 +606,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     setLastWidthSpec(widthSpec);
     setLastHeightSpec(heightSpec);
 
-    if (getDiffNode() != null) {
-      getDiffNode().setLastWidthSpec(widthSpec);
-      getDiffNode().setLastHeightSpec(heightSpec);
-      getDiffNode().setLastMeasuredWidth(size.width);
-      getDiffNode().setLastMeasuredHeight(size.height);
-    }
-
     if (isTracing) {
       ComponentsSystrace.endSection();
     }

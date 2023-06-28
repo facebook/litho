@@ -210,7 +210,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.SHOULD_UPDATE, // Called during layout diffing
-            LifecycleStep.ON_MEASURE, // Collect results phase
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
             LifecycleStep.ON_BIND)
   }
@@ -308,7 +307,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.SHOULD_UPDATE, // Called during layout diffing
-            LifecycleStep.ON_MEASURE, // Collect results phase
             LifecycleStep.ON_BOUNDS_DEFINED, // Mount phase
             LifecycleStep.ON_BIND)
   }
