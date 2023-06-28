@@ -27,6 +27,7 @@ import com.facebook.flipper.plugins.sections.SectionsFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext;
 import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
+import com.facebook.fresco.vito.init.FrescoVito;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
 import com.facebook.rendercore.debug.DebugEventBus;
 import com.facebook.rendercore.debug.DebugEventLogger;
@@ -41,6 +42,7 @@ public class LithoSampleApplication extends Application {
     DebugEventBus.subscribe(new DebugEventLogger());
 
     Fresco.initialize(this);
+    FrescoVito.initialize();
     SoLoader.init(this, false);
 
     if (FlipperUtils.shouldEnableFlipper(this)) {

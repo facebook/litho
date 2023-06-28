@@ -40,10 +40,13 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 dependencies {
     implementation project(':litho-core-kotlin')
-    api project(':litho-fresco')
 
     // First-party
     compileOnly deps.fresco
+    implementation deps.frescoVito
+    implementation deps.frescoVitoLitho
+    implementation deps.frescoVitoOptions
+    implementation deps.frescoVitoSource
 
     // Annotations
     compileOnly deps.jsr305

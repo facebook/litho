@@ -63,6 +63,10 @@ dependencies {
     implementation deps.flipper
     implementation deps.flipperLithoPlugin
     implementation deps.fresco
+    implementation deps.frescoVito
+    implementation deps.frescoVitoLitho
+    implementation deps.frescoVitoOptions
+    implementation deps.frescoVitoSource
     implementation deps.guava
 
     // Annotations

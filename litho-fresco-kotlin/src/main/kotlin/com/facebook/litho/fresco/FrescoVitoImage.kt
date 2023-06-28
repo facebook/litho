@@ -16,13 +16,22 @@
 
 package com.facebook.litho.fresco
 
-import com.facebook.drawee.interfaces.DraweeController
+import com.facebook.fresco.vito.litho.FrescoVitoImage2
+import com.facebook.fresco.vito.options.ImageOptions
+import com.facebook.fresco.vito.source.ImageSource
 import com.facebook.litho.ResourcesScope
 
-/** Builder function for creating [FrescoImageSpec] components. */
+/** Builder function for creating [FrescoVitoImage2] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ResourcesScope.FrescoImage(
-    controller: DraweeController,
+inline fun ResourcesScope.FrescoVitoImage(
+    imageSource: ImageSource,
+    imageOptions: ImageOptions,
+    callerContext: Any,
     imageAspectRatio: Float
-): FrescoImage =
-    FrescoImage.create(context).controller(controller).imageAspectRatio(imageAspectRatio).build()
+): FrescoVitoImage2 =
+    FrescoVitoImage2.create(context)
+        .imageSource(imageSource)
+        .imageOptions(imageOptions)
+        .callerContext(callerContext)
+        .imageAspectRatio(imageAspectRatio)
+        .build()

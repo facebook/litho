@@ -14,21 +14,18 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_FRESCO_TARGETS",
+    "LITHO_FRESCO_EXPORTED_TARGETS",
     "LITHO_KOTLIN_TARGET",
-    "LITHO_LITHO_FRESCO_TARGET",
     "litho_android_library",
 )
 
 litho_android_library(
     name = "fresco-kotlin",
-    provided_deps = LITHO_FRESCO_TARGETS,
+    provided_deps = LITHO_FRESCO_EXPORTED_TARGETS,
     required_for_source_only_abi = True,
     visibility = ["PUBLIC"],
     deps = [
         LITHO_KOTLIN_TARGET,
     ],
-    exported_deps = [
-        LITHO_LITHO_FRESCO_TARGET,
-    ],
+    exported_deps = LITHO_FRESCO_EXPORTED_TARGETS,
 )

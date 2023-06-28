@@ -16,14 +16,17 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
-import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.fresco.vito.options.ImageOptions
+import com.facebook.fresco.vito.source.ImageSourceProvider
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.fresco.FrescoImage
+import com.facebook.litho.fresco.FrescoVitoImage
 
 class SingleImageComponent(val imageUri: String, val imageAspectRatio: Float = 1f) : KComponent() {
   override fun ComponentScope.render() =
-      FrescoImage(
-          controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
+      FrescoVitoImage(
+          ImageSourceProvider.forUri(imageUri),
+          ImageOptions.defaults(),
+          "SingleImageComponent",
           imageAspectRatio = imageAspectRatio)
 }
