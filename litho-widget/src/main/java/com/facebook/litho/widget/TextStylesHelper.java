@@ -32,6 +32,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.utils.SynchronizedTypefaceHelper;
 
 public final class TextStylesHelper {
   static {

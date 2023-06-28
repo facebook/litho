@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.rendercore.utils;
 
 import android.annotation.TargetApi;
 import android.graphics.Typeface;
