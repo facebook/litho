@@ -459,7 +459,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     LithoLayoutResult copiedResult = node.createLayoutResult(yogaNode, null);
     copiedResult.setCachedLayout(true);
     copiedResult.setCachedMeasuresValid(mCachedMeasuresValid);
-    copiedResult.setDiffNode(mDiffNode);
     copiedResult.setLastWidthSpec(mLastWidthSpec);
     copiedResult.setLastHeightSpec(mLastHeightSpec);
     copiedResult.setLastMeasuredWidth(mLastMeasuredWidth);
