@@ -131,7 +131,7 @@ ext.deps = [
         supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
         // Arch
         archLifecycle      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
-        liveData           : 'androidx.lifecycle:lifecycle-livedata:2.3.1',
+        liveData           : 'androidx.lifecycle:lifecycle-livedata:2.6.1',
         // First-party
         fresco             : 'com.facebook.fresco:fresco:3.0.0',
         frescoVito         : 'com.facebook.fresco:vito:3.0.0',
