@@ -92,6 +92,8 @@ tasks.withType(org.jetbrains.dokka.gradle.DokkaMultiModuleTask).configureEach {
     moduleName = "Litho"
 }
 
+project.gradle.startParameter.excludedTaskNames.add('testReleaseUnitTest')
+
 ext {
     minSdkVersion = 19
     targetSdkVersion = latestSdkVersion
