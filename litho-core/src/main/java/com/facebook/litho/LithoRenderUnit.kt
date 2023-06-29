@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.util.SparseArray
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.rendercore.MountItem
 import com.facebook.rendercore.RenderTreeNode
@@ -26,11 +27,12 @@ abstract class LithoRenderUnit
 protected constructor(
     private val _id: Long,
     val component: Component,
+    @field:JvmField val commonDynamicProps: SparseArray<DynamicValue<Any?>>?,
     val nodeInfo: NodeInfo?,
     val flags: Int,
     importantForAccessibility: Int,
     renderType: RenderType?,
-    @field:JvmField val componentContext: ComponentContext?
+    @field:JvmField val componentContext: ComponentContext?,
 ) : RenderUnit<Any?>(renderType), TransitionRenderUnit {
 
   override fun getId(): Long = _id

@@ -166,6 +166,7 @@ public class Resolver {
     final boolean isNestedTree = Component.isNestedTree(component);
     final boolean hasCachedNode = Component.hasCachedNode(resolveStateContext, component);
     final ScopedComponentInfo scopedComponentInfo;
+    @Nullable CommonProps commonProps = null;
 
     try {
       // 1. Consume the layout created in `willrender`.
@@ -205,7 +206,9 @@ public class Resolver {
       else if (component.canResolve()) {
 
         // Resolve the component into an InternalNode.
-        node = component.resolve(resolveStateContext, c);
+        ComponentResolveResult resolveResult = component.resolveWithResult(resolveStateContext, c);
+        node = resolveResult.lithoNode;
+        commonProps = resolveResult.commonProps;
       }
 
       // If the component is a MountSpec (including MountableComponents and PrimitiveComponents).
@@ -239,6 +242,8 @@ public class Resolver {
           }
           applyTransitionsAndUseEffectEntriesToNode(
               prepareResult.transitions, prepareResult.useEffectEntries, node);
+
+          commonProps = prepareResult.commonProps;
         }
         if (isTracing) {
           // end of prepare
@@ -270,9 +275,10 @@ public class Resolver {
         }
       }
 
-      // What even is this?
+      // What even is this component?
       else {
-        throw new IllegalArgumentException("component:" + component.getSimpleName());
+        throw new IllegalArgumentException(
+            "Component type unrecognized:" + component.getSimpleName());
       }
 
       // 7. If the layout is null then return immediately.
@@ -325,13 +331,20 @@ public class Resolver {
     // 9. Copy the common props
     // Skip if resolving a layout with size spec because common props were copied in the previous
     // layout pass.
-    final CommonProps commonProps = component.getCommonProps();
+
+    if (commonProps == null && (component instanceof SpecGeneratedComponent)) {
+      // for SpecGeneratedComponents we still need to retrieve CommonProps from the Component until
+      // we refactor resolve() process
+      commonProps = component.getCommonProps();
+    }
+
     if (commonProps != null
         && !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
       commonProps.copyInto(c, node);
     }
 
     // 10. Add the component to the InternalNode.
+    scopedComponentInfo.setCommonProps(commonProps);
     node.appendComponent(scopedComponentInfo);
 
     // 11. Create and add transition to this component's InternalNode.

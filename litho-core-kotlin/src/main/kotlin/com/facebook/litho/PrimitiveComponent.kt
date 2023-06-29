@@ -40,14 +40,17 @@ abstract class PrimitiveComponent : Component() {
 
     primitiveComponentScope.cleanUp()
 
-    // TODO(zielinskim): currently we apply style to the PrimitiveComponent here, but in the future
-    // we want to add it onto PrepareResult and translate to Binders in PrimitiveLithoRenderUnit
-    lithoPrimitive.style?.applyCommonProps(c, getCommonPropsHolder())
+    var commonProps: CommonProps? = null
+    if (lithoPrimitive.style != null) {
+      commonProps = CommonProps()
+      lithoPrimitive.style.applyCommonProps(c, commonProps)
+    }
 
     return PrepareResult(
         lithoPrimitive.primitive,
         primitiveComponentScope.transitions,
-        primitiveComponentScope.useEffectEntries)
+        primitiveComponentScope.useEffectEntries,
+        commonProps)
   }
 
   /** This function must return [LithoPrimitive] which are immutable. */

@@ -113,8 +113,11 @@ public class TestLayoutState {
         ComponentContext.withComponentScope(
             c, component, ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));
 
-    node.appendComponent(
-        new ScopedComponentInfo(new TestComponent(component), scopedContext, null));
+    TestComponent testComponent = new TestComponent(component);
+    ScopedComponentInfo scopedComponentInfo =
+        new ScopedComponentInfo(testComponent, scopedContext, null);
+    scopedComponentInfo.setCommonProps(testComponent.getCommonProps());
+    node.appendComponent(scopedComponentInfo);
 
     return node;
   }
@@ -250,7 +253,9 @@ public class TestLayoutState {
       }
     }
 
-    node.appendComponent(c.getScopedComponentInfo());
+    ScopedComponentInfo scopedComponentInfo = c.getScopedComponentInfo();
+    scopedComponentInfo.setCommonProps(commonProps);
+    node.appendComponent(scopedComponentInfo);
     component.prepare(resolveStateContext, c);
 
     return node;
@@ -283,7 +288,10 @@ public class TestLayoutState {
     }
 
     if (node != null) {
-      node.appendComponent(new ScopedComponentInfo(new TestComponent(component), c, null));
+      Component testComponent = new TestComponent(component);
+      ScopedComponentInfo scopedComponentInfo = new ScopedComponentInfo(testComponent, c, null);
+      scopedComponentInfo.setCommonProps(testComponent.getCommonProps());
+      node.appendComponent(scopedComponentInfo);
     }
 
     return node;

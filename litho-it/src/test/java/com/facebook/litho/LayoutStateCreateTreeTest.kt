@@ -507,6 +507,14 @@ class LayoutStateCreateTreeTest {
       return node
     }
 
+    public override fun resolveWithResult(
+        resolveStateContext: ResolveStateContext,
+        c: ComponentContext
+    ): ComponentResolveResult {
+      val lithoNode = resolve(resolveStateContext, c)
+      return ComponentResolveResult(lithoNode, null)
+    }
+
     class Builder(
         c: ComponentContext,
         defStyleAttr: Int,

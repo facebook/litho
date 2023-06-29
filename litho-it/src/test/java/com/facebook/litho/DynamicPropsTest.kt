@@ -305,7 +305,8 @@ class DynamicPropsTest {
             .shadowElevation(elevationDV)
             .build()
     val dynamicPropsManager = DynamicPropsManager()
-    dynamicPropsManager.onBindComponentToContent(component, context, lithoView)
+    dynamicPropsManager.onBindComponentToContent(
+        component, context, component.commonDynamicProps, lithoView)
     assertThat(lithoView.elevation).isEqualTo(startValue)
     elevationDV.set(50f)
     assertThat(lithoView.elevation).isEqualTo(50f)

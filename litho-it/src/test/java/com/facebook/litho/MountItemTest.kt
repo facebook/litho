@@ -248,7 +248,7 @@ class MountItemTest {
   @Test
   fun testUpdateDoesntChangeFlags() {
     val unit: LithoRenderUnit =
-        MountSpecLithoRenderUnit.create(0, component, context, nodeInfo, 0, 0, STATE_UNKNOWN)
+        MountSpecLithoRenderUnit.create(0, component, null, context, nodeInfo, 0, 0, STATE_UNKNOWN)
     val node: RenderTreeNode = create(unit, Rect(0, 0, 0, 0), null, null)
     val view = View(getApplicationContext())
     val mountItem = MountItem(node, view)

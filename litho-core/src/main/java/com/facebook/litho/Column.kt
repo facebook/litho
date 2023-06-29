@@ -75,6 +75,14 @@ private constructor(
     return node
   }
 
+  public override fun resolveWithResult(
+      resolveStateContext: ResolveStateContext,
+      c: ComponentContext
+  ): ComponentResolveResult {
+    val lithoNode = resolve(resolveStateContext, c)
+    return ComponentResolveResult(lithoNode, commonProps)
+  }
+
   override fun isEquivalentProps(other: Component?, shouldCompareCommonProps: Boolean): Boolean {
     if (this === other) {
       return true

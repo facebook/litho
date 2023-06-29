@@ -49,6 +49,9 @@ public class InternalNodeUtils {
   static @Nullable LithoRenderUnit createContentRenderUnit(LithoLayoutResult result) {
     final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
+    final CommonProps commonProps = node.getTailScopedComponentInfo().getCommonProps();
+    final SparseArray<DynamicValue<?>> commonDynamicProps =
+        (commonProps != null) ? commonProps.getCommonDynamicProps() : null;
 
     if (component.getMountType() == NONE) {
       return null;
@@ -71,6 +74,7 @@ public class InternalNodeUtils {
     return createRenderUnit(
         id,
         component,
+        commonDynamicProps,
         context,
         node,
         node.getImportantForAccessibility(),
@@ -97,7 +101,9 @@ public class InternalNodeUtils {
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getScopedComponentInfos()));
+    SparseArray<DynamicValue<?>> commonDynamicProps =
+        mergeCommonDynamicProps(node.getScopedComponentInfos());
+    hostComponent.setCommonDynamicProps(commonDynamicProps);
 
     final long id =
         node.getTailComponentContext()
@@ -106,6 +112,7 @@ public class InternalNodeUtils {
     return createRenderUnit(
         id,
         hostComponent,
+        commonDynamicProps,
         null,
         node,
         node.getImportantForAccessibility(),
@@ -125,11 +132,14 @@ public class InternalNodeUtils {
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getScopedComponentInfos()));
+    SparseArray<DynamicValue<?>> commonDynamicProps =
+        mergeCommonDynamicProps(node.getScopedComponentInfos());
+    hostComponent.setCommonDynamicProps(commonDynamicProps);
 
     return createRenderUnit(
         ROOT_HOST_ID, // The root host (LithoView) always has ID 0
         hostComponent,
+        commonDynamicProps,
         null,
         node,
         node.getImportantForAccessibility(),
@@ -258,6 +268,7 @@ public class InternalNodeUtils {
     return createRenderUnit(
         id,
         component,
+        null /* Drawables don't bind dynamic props */,
         null,
         node,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
@@ -276,6 +287,7 @@ public class InternalNodeUtils {
   static LithoRenderUnit createRenderUnit(
       long id,
       Component component,
+      @Nullable SparseArray<DynamicValue<?>> commonDynamicProps,
       @Nullable ComponentContext context,
       LithoNode node,
       int importantForAccessibility,
@@ -328,13 +340,20 @@ public class InternalNodeUtils {
     Mountable<?> mountable = node.getMountable();
     if (mountable != null && isMountable(component)) {
       return MountableLithoRenderUnit.create(
-          component, context, layoutOutputNodeInfo, flags, importantForAccessibility, mountable);
+          component,
+          commonDynamicProps,
+          context,
+          layoutOutputNodeInfo,
+          flags,
+          importantForAccessibility,
+          mountable);
     }
 
     Primitive primitive = node.getPrimitive();
     if (primitive != null && isPrimitive(component)) {
       return PrimitiveLithoRenderUnit.create(
           component,
+          commonDynamicProps,
           context,
           layoutOutputNodeInfo,
           flags,
@@ -345,6 +364,7 @@ public class InternalNodeUtils {
     return MountSpecLithoRenderUnit.create(
         id,
         component,
+        (SparseArray) commonDynamicProps,
         context,
         layoutOutputNodeInfo,
         flags,
@@ -356,8 +376,9 @@ public class InternalNodeUtils {
       List<ScopedComponentInfo> infos) {
     final SparseArray<DynamicValue<?>> mergedDynamicProps = new SparseArray<>();
     for (ScopedComponentInfo info : infos) {
-      final SparseArray<DynamicValue<?>> commonDynamicProps =
-          info.getComponent().getCommonDynamicProps();
+      final @Nullable CommonProps commonProps = info.getCommonProps();
+      final @Nullable SparseArray<DynamicValue<?>> commonDynamicProps =
+          (commonProps != null) ? commonProps.getCommonDynamicProps() : null;
       if (commonDynamicProps == null) {
         continue;
       }

@@ -24,7 +24,7 @@ import kotlin.jvm.JvmField
  * The result of a [MountableComponent#prepare] or a [PrimitiveComponent#prepare] call. This will be
  * the Mountable/Primitive this component rendered to, potentially as well as other
  * non-Mountable/Primitive metadata that resulted from that call, such as transitions that should be
- * applied.
+ * applied, as well as CommonProps for the component.
  */
 class PrepareResult {
 
@@ -36,25 +36,31 @@ class PrepareResult {
 
   @JvmField val useEffectEntries: List<Attachable>?
 
+  @JvmField val commonProps: CommonProps?
+
   constructor(
       mountable: Mountable<*>?,
       transitions: List<Transition>?,
-      useEffectEntries: List<Attachable>?
+      useEffectEntries: List<Attachable>?,
+      commonProps: CommonProps?
   ) {
     primitive = null
     this.mountable = mountable
     this.transitions = transitions
     this.useEffectEntries = useEffectEntries
+    this.commonProps = commonProps
   }
 
   constructor(
       primitive: Primitive?,
       transitions: List<Transition>?,
-      useEffectEntries: List<Attachable>?
+      useEffectEntries: List<Attachable>?,
+      commonProps: CommonProps?
   ) {
     this.primitive = primitive
     mountable = null
     this.transitions = transitions
     this.useEffectEntries = useEffectEntries
+    this.commonProps = commonProps
   }
 }

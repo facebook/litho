@@ -296,6 +296,18 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return Resolver.resolve(resolveStateContext, c, this);
   }
 
+  /**
+   * Invokes the Component-specific resolve implementation, returning a ComponentResolveResult. The
+   * ComponentResolveResult will have the {@link LithoNode} and {@link CommonProps} for the resolved
+   * component.
+   */
+  protected ComponentResolveResult resolveWithResult(
+      final ResolveStateContext resolveStateContext, final ComponentContext c) {
+    throw new RuntimeException(
+        "resolveWithResult should not be called on a component which hasn't implemented it! "
+            + getSimpleName());
+  }
+
   protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
     return true;
   }

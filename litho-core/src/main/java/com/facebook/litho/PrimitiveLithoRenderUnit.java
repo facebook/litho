@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.content.Context;
+import android.util.SparseArray;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
@@ -36,6 +37,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
 
   private PrimitiveLithoRenderUnit(
       final Component component,
+      final @Nullable SparseArray<DynamicValue<?>> commonDynamicProps,
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
@@ -44,6 +46,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
     super(
         primitiveRenderUnit.getId(),
         component,
+        (SparseArray) commonDynamicProps,
         nodeInfo,
         flags,
         importantForAccessibility,
@@ -55,13 +58,20 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
 
   public static PrimitiveLithoRenderUnit create(
       final Component component,
+      final @Nullable SparseArray<DynamicValue<?>> commonDynamicProps,
       final @Nullable ComponentContext context,
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
       final PrimitiveRenderUnit primitiveRenderUnit) {
     return new PrimitiveLithoRenderUnit(
-        component, nodeInfo, flags, importantForAccessibility, primitiveRenderUnit, context);
+        component,
+        commonDynamicProps,
+        nodeInfo,
+        flags,
+        importantForAccessibility,
+        primitiveRenderUnit,
+        context);
   }
 
   @Override

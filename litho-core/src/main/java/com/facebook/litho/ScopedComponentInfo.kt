@@ -49,6 +49,8 @@ class ScopedComponentInfo(
   var errorEventHandler: EventHandler<ErrorEvent>? = errorEventHandler
     private set
 
+  var commonProps: CommonProps? = null
+
   /**
    * Holds a list of working range related data. [LayoutState] will use it to update
    * [LayoutState.mWorkingRangeContainer] when calculate method is finished.

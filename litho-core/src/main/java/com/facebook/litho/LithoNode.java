@@ -829,6 +829,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return mScopedComponentInfos.get(index);
   }
 
+  public @Nullable CommonProps getCommonPropsAt(int index) {
+    return getComponentInfoAt(index).getCommonProps();
+  }
+
   public ComponentContext getComponentContextAt(int index) {
     return getComponentInfoAt(index).getContext();
   }
@@ -1311,7 +1315,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
           setPaddingFromDrawable(writer, mPaddingFromBackground);
         }
       } else {
-        final CommonProps props = component.getCommonProps();
+        final CommonProps props = info.getCommonProps();
         if (props != null) {
           final int styleAttr = props.getDefStyleAttr();
           final int styleRes = props.getDefStyleRes();

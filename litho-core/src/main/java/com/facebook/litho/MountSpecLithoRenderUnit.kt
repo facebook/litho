@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.SparseArray
 import android.view.View
 import androidx.annotation.IntDef
 import com.facebook.litho.ComponentHostUtils.maybeSetDrawableState
@@ -36,6 +37,7 @@ class MountSpecLithoRenderUnit
 private constructor(
     id: Long,
     component: Component,
+    commonDynamicProps: SparseArray<DynamicValue<Any?>>?,
     nodeInfo: NodeInfo?,
     flags: Int,
     importantForAccessibility: Int,
@@ -45,6 +47,7 @@ private constructor(
     LithoRenderUnit(
         id,
         component,
+        commonDynamicProps,
         nodeInfo,
         flags,
         importantForAccessibility,
@@ -211,6 +214,7 @@ private constructor(
     fun create(
         id: Long,
         component: Component,
+        commonDynamicProps: SparseArray<DynamicValue<Any?>>?,
         context: ComponentContext?,
         nodeInfo: NodeInfo?,
         flags: Int,
@@ -220,6 +224,7 @@ private constructor(
       return MountSpecLithoRenderUnit(
           id,
           component,
+          commonDynamicProps,
           nodeInfo,
           flags,
           importantForAccessibility,

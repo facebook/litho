@@ -42,9 +42,11 @@ abstract class MountableComponent() : Component() {
 
     mountableComponentScope.cleanUp()
 
-    // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
-    // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
-    mountableRenderResult.style?.applyCommonProps(c, getCommonPropsHolder())
+    var commonProps: CommonProps? = null
+    if (mountableRenderResult.style != null) {
+      commonProps = CommonProps()
+      mountableRenderResult.style.applyCommonProps(c, commonProps)
+    }
 
     // generate ID and set it on the Mountable
     val idGenerator = c.renderUnitIdGenerator
@@ -67,7 +69,8 @@ abstract class MountableComponent() : Component() {
     return PrepareResult(
         mountableRenderResult.mountable,
         mountableComponentScope.transitions,
-        mountableComponentScope.useEffectEntries)
+        mountableComponentScope.useEffectEntries,
+        commonProps)
   }
 
   /** This function must return [Mountable] which are immutable. */

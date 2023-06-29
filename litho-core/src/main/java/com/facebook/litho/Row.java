@@ -142,6 +142,13 @@ public final class Row extends SpecGeneratedComponent {
   }
 
   @Override
+  protected ComponentResolveResult resolveWithResult(
+      ResolveStateContext resolveStateContext, ComponentContext c) {
+    LithoNode lithoNode = resolve(resolveStateContext, c);
+    return new ComponentResolveResult(lithoNode, getCommonProps());
+  }
+
+  @Override
   public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
     if (this == other) {
       return true;

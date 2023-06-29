@@ -373,8 +373,7 @@ public final class DebugComponent {
    */
   @Nullable
   public String getComponentTestKey() {
-    Component component = mNode.getComponentAt(mComponentIndex);
-    CommonProps props = component.getCommonProps();
+    CommonProps props = mNode.getCommonPropsAt(mComponentIndex);
     return props == null ? null : props.getTestKey();
   }
 
@@ -384,8 +383,7 @@ public final class DebugComponent {
    */
   @Nullable
   public Object getComponentTag() {
-    Component component = mNode.getComponentAt(mComponentIndex);
-    CommonProps props = component.getCommonProps();
+    CommonProps props = mNode.getCommonPropsAt(mComponentIndex);
     return props != null ? props.getComponentTag() : null;
   }
 

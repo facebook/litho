@@ -676,10 +676,7 @@ class KStateTest {
     // Assert that the state update didn't cause the sibling to re-render
     assertThat(siblingRenderCount.get()).isEqualTo(1)
 
-    // TODO(zielinskim): this assertion is inverted, the id should be equal to View.NO_ID
-    // but it's not because there is a bug where Component's props are not immutable across
-    // re-renders. Invert this assertion once that bug is fixed.
-    assertThat(view.findViewWithTagOrNull("Counter: 1")?.id).isNotEqualTo(View.NO_ID)
+    assertThat(view.findViewWithTagOrNull("Counter: 1")?.id).isEqualTo(View.NO_ID)
   }
 
   @Test
@@ -737,10 +734,7 @@ class KStateTest {
     // Assert that the state update didn't cause the sibling to re-render
     assertThat(siblingRenderCount.get()).isEqualTo(1)
 
-    // TODO(zielinskim): this assertion is inverted, the id should be equal to View.NO_ID
-    // but it's not because there is a bug where Component's props are not immutable across
-    // re-renders. Invert this assertion once that bug is fixed.
-    assertThat(view.findViewWithTagOrNull("Counter: 1")?.id).isNotEqualTo(View.NO_ID)
+    assertThat(view.findViewWithTagOrNull("Counter: 1")?.id).isEqualTo(View.NO_ID)
   }
 
   /**

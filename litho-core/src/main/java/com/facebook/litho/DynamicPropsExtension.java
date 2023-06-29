@@ -51,7 +51,10 @@ public class DynamicPropsExtension
       final DynamicPropsExtensionState state = extensionState.getState();
 
       state.mDynamicPropsManager.onBindComponentToContent(
-          lithoRenderUnit.getComponent(), lithoRenderUnit.componentContext, content);
+          lithoRenderUnit.getComponent(),
+          lithoRenderUnit.componentContext,
+          lithoRenderUnit.commonDynamicProps,
+          content);
     }
   }
 
@@ -65,7 +68,8 @@ public class DynamicPropsExtension
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
       final DynamicPropsExtensionState state = extensionState.getState();
 
-      state.mDynamicPropsManager.onUnbindComponent(lithoRenderUnit.getComponent(), content);
+      state.mDynamicPropsManager.onUnbindComponent(
+          lithoRenderUnit.getComponent(), lithoRenderUnit.commonDynamicProps, content);
     }
   }
 

@@ -28,11 +28,12 @@ import com.facebook.infer.annotation.Nullsafe;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
-public class TestComponent extends Component {
+public class TestComponent extends SpecGeneratedComponent {
 
   private final Component mWrappedComponent;
 
   TestComponent(Component component) {
+    super("TestComponent(" + component.getSimpleName() + ")");
     mWrappedComponent = component;
   }
 
@@ -43,10 +44,5 @@ public class TestComponent extends Component {
   @Override
   public boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
     return this == other;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "TestComponent(" + mWrappedComponent.getSimpleName() + ")";
   }
 }
