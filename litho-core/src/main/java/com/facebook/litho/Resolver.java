@@ -17,6 +17,10 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
+import static com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -24,10 +28,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.LithoDebugEvent;
+import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaFlexDirection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -155,6 +162,20 @@ public class Resolver {
       ComponentsSystrace.beginSection("create-node:" + component.getSimpleName());
     }
 
+    Integer componentResolvedIdentifier =
+        generateTraceIdentifier(LithoDebugEvent.ComponentResolved);
+    if (componentResolvedIdentifier != null) {
+      HashMap<String, Object> attributes = new HashMap<>();
+      attributes.put(LithoDebugEventAttributes.RunsOnMainThread, ThreadUtils.isMainThread());
+      attributes.put(LithoDebugEventAttributes.Component, component.getSimpleName());
+
+      beginTrace(
+          componentResolvedIdentifier,
+          LithoDebugEvent.ComponentResolved,
+          String.valueOf(resolveStateContext.getTreeId()),
+          attributes);
+    }
+
     ComponentsLogger componentsLogger = resolveStateContext.getComponentsLogger();
     PerfEvent resolveLayoutCreationEvent =
         createPerformanceEvent(
@@ -223,15 +244,34 @@ public class Resolver {
             createPerformanceEvent(
                 component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE);
 
+        Integer componentPrepareTraceIdentifier = generateTraceIdentifier(ComponentPrepared);
+        if (componentPrepareTraceIdentifier != null) {
+          HashMap<String, Object> attributes = new HashMap<>();
+          attributes.put(LithoDebugEventAttributes.RunsOnMainThread, ThreadUtils.isMainThread());
+          attributes.put(LithoDebugEventAttributes.Component, component.getSimpleName());
+
+          beginTrace(
+              componentPrepareTraceIdentifier,
+              ComponentPrepared,
+              String.valueOf(resolveStateContext.getTreeId()),
+              attributes);
+        }
+
         if (isTracing) {
           ComponentsSystrace.beginSection("prepare:" + component.getSimpleName());
         }
 
-        PrepareResult prepareResult =
-            component.prepare(resolveStateContext, scopedComponentInfo.getContext());
+        PrepareResult prepareResult = null;
+        try {
+          prepareResult = component.prepare(resolveStateContext, scopedComponentInfo.getContext());
+        } finally {
+          if (prepareEvent != null && componentsLogger != null) {
+            componentsLogger.logPerfEvent(prepareEvent);
+          }
 
-        if (prepareEvent != null && componentsLogger != null) {
-          componentsLogger.logPerfEvent(prepareEvent);
+          if (componentPrepareTraceIdentifier != null) {
+            endTrace(componentPrepareTraceIdentifier);
+          }
         }
 
         if (prepareResult != null) {
@@ -305,6 +345,10 @@ public class Resolver {
         ComponentsSystrace.endSection();
       }
       return null;
+    } finally {
+      if (componentResolvedIdentifier != null) {
+        endTrace(componentResolvedIdentifier);
+      }
     }
 
     if (resolveLayoutCreationEvent != null && componentsLogger != null) {

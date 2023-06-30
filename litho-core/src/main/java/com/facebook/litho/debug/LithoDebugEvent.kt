@@ -22,9 +22,13 @@ object LithoDebugEvent {
   val RenderCore: DebugEvent.Companion = DebugEvent
   const val RenderRequest = "Litho.RenderRequest"
   const val LayoutCommitted = "Litho.LayoutCommitted"
-  const val LayoutCalculated = "Litho.LayoutCalculated"
   const val StateUpdateEnqueued = "Litho.StateUpdateEnqueued"
   const val RenderOnMainThreadStarted = "RenderOnMainThreadStarted"
+  const val ComponentPrepared = "Litho.Resolve.ComponentPrepared"
+  const val ComponentResolved = "Litho.Resolve.ComponentResolved"
+  const val ComponentTreeResolve = "Litho.ComponentTree.Resolve"
+  const val ComponentTreeResolveResumed = "Litho.ComponentTree.Resolve.Resumed"
+  const val ComponentTreeMountContentPreallocated = "Litho.ComponentTree.MountContent.Preallocated"
 }
 
 object LithoDebugEventAttributes {
@@ -46,4 +50,8 @@ object LithoDebugEventAttributes {
   const val RenderSource = "source"
   const val RenderExecutionMode = "execution-mode"
   const val Forced = "forced"
+  const val RunsOnMainThread = "runs_on_main_thread"
+  const val Component = "component"
+  const val ResolveVersion = "resolve_version"
+  const val ResolveSource = "resolve_source"
 }

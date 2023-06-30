@@ -18,12 +18,21 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
+import static com.facebook.litho.LayoutState.layoutSourceToString;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.Attribution;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.ResolveSource;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.ResolveVersion;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.RunsOnMainThread;
 
 import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.debug.DebugOverlay;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
+import java.util.HashMap;
 import java.util.List;
 
 public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
@@ -35,6 +44,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   private final @Nullable PerfEvent mPerfEvent;
   private final int mResolveVersion;
   private final @Nullable String mExtraAttribution;
+
+  private int mSource;
 
   static final String DESCRIPTION = "resolve";
 
@@ -98,20 +109,38 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     mExtraAttribution = extraAttribution;
     mSyncWidthSpec = syncWidthSpec;
     mSyncHeightSpec = syncHeightSpec;
+    mSource = source;
   }
 
   @Override
   protected ResolveResult calculate() {
-    return resolve(
-        mComponentContext,
-        mComponent,
-        mTreeState,
-        mResolveVersion,
-        mComponentTreeId,
-        mCurrentRootNode,
-        mExtraAttribution,
-        this,
-        mPerfEvent);
+    Integer resolveTraceIdentifier =
+        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResolve);
+
+    if (resolveTraceIdentifier != null) {
+      DebugEventDispatcher.beginTrace(
+          resolveTraceIdentifier,
+          LithoDebugEvent.ComponentTreeResolve,
+          String.valueOf(mComponentTreeId),
+          createDebugAttributes());
+    }
+
+    try {
+      return resolve(
+          mComponentContext,
+          mComponent,
+          mTreeState,
+          mResolveVersion,
+          mComponentTreeId,
+          mCurrentRootNode,
+          mExtraAttribution,
+          this,
+          mPerfEvent);
+    } finally {
+      if (resolveTraceIdentifier != null) {
+        DebugEventDispatcher.endTrace(resolveTraceIdentifier);
+      }
+    }
   }
 
   @Override
@@ -126,7 +155,34 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
   @Override
   protected ResolveResult resumeCalculation(ResolveResult partialResult) {
-    return resume(partialResult, mExtraAttribution);
+    Integer resolveTraceIdentifier =
+        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResolveResumed);
+
+    if (resolveTraceIdentifier != null) {
+      DebugEventDispatcher.beginTrace(
+          resolveTraceIdentifier,
+          LithoDebugEvent.ComponentTreeResolveResumed,
+          String.valueOf(mComponentTreeId),
+          createDebugAttributes());
+    }
+
+    try {
+      return resume(partialResult, mExtraAttribution);
+    } finally {
+      if (resolveTraceIdentifier != null) {
+        DebugEventDispatcher.endTrace(resolveTraceIdentifier);
+      }
+    }
+  }
+
+  private HashMap<String, Object> createDebugAttributes() {
+    HashMap<String, Object> attributes = new HashMap<>();
+    attributes.put(RunsOnMainThread, ThreadUtils.isMainThread());
+    attributes.put(Root, mComponent.getSimpleName());
+    attributes.put(ResolveVersion, mResolveVersion);
+    attributes.put(ResolveSource, layoutSourceToString(mSource));
+    attributes.put(Attribution, mExtraAttribution);
+    return attributes;
   }
 
   @Override

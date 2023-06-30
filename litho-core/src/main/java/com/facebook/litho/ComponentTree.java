@@ -46,6 +46,9 @@ import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasureWidthSpe
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.RootId;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeSpecsMatch;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 import static com.facebook.rendercore.utils.MeasureSpecUtils.getMeasureSpecDescription;
 
@@ -88,6 +91,7 @@ import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1262,8 +1266,21 @@ public class ComponentTree
                 mContext, logger, logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT))
             : null;
 
+    Integer traceIdentifier =
+        generateTraceIdentifier(LithoDebugEvent.ComponentTreeMountContentPreallocated);
+    if (traceIdentifier != null) {
+      beginTrace(
+          traceIdentifier,
+          LithoDebugEvent.ComponentTreeMountContentPreallocated,
+          String.valueOf(mId),
+          new HashMap<>());
+    }
+
     toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
 
+    if (traceIdentifier != null) {
+      endTrace(traceIdentifier);
+    }
     if (event != null) {
       logger.logPerfEvent(event);
     }
@@ -2238,6 +2255,7 @@ public class ComponentTree
                     .getUseInterruptibleResolution()
                 || mContext.mLithoConfiguration.mComponentsConfiguration
                     .getUseCancelableLayoutFutures());
+
     ResolveTreeFuture treeFuture =
         new ResolveTreeFuture(
             context,
@@ -2288,6 +2306,7 @@ public class ComponentTree
     }
 
     commitResolveResult(resolveResult, isCreateLayoutInProgress);
+
     ComponentsLogger logger = getLogger();
     if (logger != null && resolvePerfEvent != null) {
       logger.logPerfEvent(resolvePerfEvent);
