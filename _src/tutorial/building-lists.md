@@ -7,4 +7,4 @@ title: Building Lists
 🚧   THIS PAGE IS UNDER CONSTRUCTION
 :::
 
-While work is under way, for an overview of how to build lists in Litho with the Sections API, refer to the [Sections Basics](../sections/start.mdx) page.
+While work is under way, for an overview of how to build lists in Litho with the Lazy Collections API, refer to the [Building List](../../kotlin/lazycollections) page.
