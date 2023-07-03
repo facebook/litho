@@ -110,8 +110,6 @@ class LayoutSpecLifecycleStatelessTest {
 
   @Test
   fun lifecycle_updateState_shouldCallLifecycleMethod() {
-    // TODO: T66662176 Remove code to disable and enable reconciliation.
-    ComponentsConfiguration.isReconciliationEnabled = false
     val info: MutableList<StepInfo> = ArrayList()
     val caller = LayoutSpecLifecycleTesterSpec.Caller()
     val component =
@@ -130,13 +128,10 @@ class LayoutSpecLifecycleStatelessTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT)
-    ComponentsConfiguration.isReconciliationEnabled = true
   }
 
   @Test
   fun lifecycle_updateStateWithTransition_shouldCallLifecycleMethod() {
-    // TODO: T66662176 Remove code to disable and enable reconciliation.
-    ComponentsConfiguration.isReconciliationEnabled = false
     val info: MutableList<StepInfo> = ArrayList()
     val caller = LayoutSpecLifecycleTesterSpec.Caller()
     val component =
@@ -156,7 +151,6 @@ class LayoutSpecLifecycleStatelessTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT)
-    ComponentsConfiguration.isReconciliationEnabled = true
   }
 
   @Test

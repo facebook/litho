@@ -119,7 +119,6 @@ class NestedTreeResolutionWithStateTest {
         .setRootStepsUpdate1(
             arrayOf(
                 LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT))
         .setMidStepsUpdate1(expectedStepsForMidAndBotUpdate1)
@@ -134,8 +133,8 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_UNBIND,
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
-                LifecycleStep.ON_BIND)) // TODO (T133075661) expected empty, no OCTP
-        .setRootStepsUpdate2(arrayOf(LifecycleStep.ON_CREATE_TREE_PROP))
+                LifecycleStep.ON_BIND))
+        .setRootStepsUpdate2(arrayOf())
         .setMidStepsUpdate2(
             arrayOf(
                 LifecycleStep.ON_CREATE_TREE_PROP,
@@ -167,7 +166,7 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
                 LifecycleStep.ON_BIND))
-        .setRootStepsUpdate3(arrayOf(LifecycleStep.ON_CREATE_TREE_PROP))
+        .setRootStepsUpdate3(arrayOf())
         .setMidStepsUpdate3(arrayOf()) // empty
         .setBotStepsUpdate3(
             arrayOf(
@@ -232,7 +231,6 @@ class NestedTreeResolutionWithStateTest {
     // Root steps will be the same for all updates
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
@@ -345,7 +343,7 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND)
-    val rootStepsForUpdate2And3 = arrayOf<LifecycleStep?>(LifecycleStep.ON_CREATE_TREE_PROP)
+    val rootStepsForUpdate2And3 = arrayOf<LifecycleStep?>()
     val midStepsForUpdate2And3 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
@@ -384,7 +382,6 @@ class NestedTreeResolutionWithStateTest {
         .setMountSpecStepsPreUpdate(mountSpecStepsPreUpdate)
         .setRootStepsUpdate1(
             arrayOf(
-                LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT))
@@ -472,7 +469,6 @@ class NestedTreeResolutionWithStateTest {
         .setRootStepsUpdate1(
             arrayOf(
                 LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT))
         .setMidStepsUpdate1(
@@ -492,8 +488,8 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_UNBIND,
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
-                LifecycleStep.ON_BIND)) // TODO (T133075661) expected empty, no OCTP
-        .setRootStepsUpdate2(arrayOf(LifecycleStep.ON_CREATE_TREE_PROP))
+                LifecycleStep.ON_BIND))
+        .setRootStepsUpdate2(arrayOf())
         .setMidStepsUpdate2(
             arrayOf(
                 LifecycleStep.ON_CREATE_TREE_PROP,
@@ -516,7 +512,7 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
                 LifecycleStep.ON_BIND))
-        .setRootStepsUpdate3(arrayOf(LifecycleStep.ON_CREATE_TREE_PROP))
+        .setRootStepsUpdate3(arrayOf())
         .setMidStepsUpdate3(arrayOf()) // empty
         .setBotStepsUpdate3(
             arrayOf(
@@ -594,7 +590,6 @@ class NestedTreeResolutionWithStateTest {
     // Root steps will be the same for all updates
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
@@ -692,7 +687,6 @@ class NestedTreeResolutionWithStateTest {
     // Root steps will be the same for all updates
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
@@ -821,7 +815,7 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND)
-    val rootStepsForUpdate2And3 = arrayOf<LifecycleStep?>(LifecycleStep.ON_CREATE_TREE_PROP)
+    val rootStepsForUpdate2And3 = arrayOf<LifecycleStep?>()
     val midStepsForUpdate2And3 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
@@ -861,7 +855,6 @@ class NestedTreeResolutionWithStateTest {
         .setMountSpecStepsPreUpdate(mountSpecStepsPreUpdate)
         .setRootStepsUpdate1(
             arrayOf(
-                LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT))
@@ -930,7 +923,6 @@ class NestedTreeResolutionWithStateTest {
     // Root steps will be the same for all updates
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,

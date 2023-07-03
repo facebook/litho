@@ -97,17 +97,7 @@ public class Resolver {
         throw new IllegalStateException("Cannot reuse a null global key");
       }
 
-      final ComponentContext updatedScopedContext =
-          createScopedContext(resolveStateContext, c, component, globalKeyToReuse);
-
-      node =
-          reconcile(
-              resolveStateContext,
-              c,
-              current,
-              component,
-              updatedScopedContext.getScopedComponentInfo(),
-              globalKeyToReuse);
+      node = reconcile(resolveStateContext, c, current, component, globalKeyToReuse);
     }
 
     if (layoutStatePerfEvent != null) {
@@ -585,7 +575,6 @@ public class Resolver {
       final ComponentContext c,
       final LithoNode node,
       final Component next,
-      final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey) {
     final TreeState treeState = resolveStateContext.getTreeState();
     final Set<String> keys;
@@ -595,8 +584,7 @@ public class Resolver {
       keys = treeState.getKeysForPendingStateUpdates();
     }
 
-    return reconcile(
-        resolveStateContext, c, node, next, nextScopedComponentInfo, nextKey, keys, null);
+    return reconcile(resolveStateContext, c, node, next, nextKey, keys, null);
   }
 
   /**
@@ -615,11 +603,10 @@ public class Resolver {
       final ComponentContext parentContext,
       final LithoNode current,
       final Component next,
-      final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey,
       final Set<String> keys,
       final @Nullable LithoNode parent) {
-    final int mode = getReconciliationMode(nextScopedComponentInfo.getContext(), current, keys);
+    final int mode = getReconciliationMode(current, keys);
     final LithoNode layout;
     switch (mode) {
       case ReconciliationMode.REUSE:
@@ -693,19 +680,10 @@ public class Resolver {
       int index = Math.max(0, child.getComponentCount() - 1);
       final Component component = child.getComponentAt(index);
       final String key = child.getGlobalKeyAt(index);
-      final ScopedComponentInfo scopedComponentInfo = child.getComponentInfoAt(index);
 
       // 3.2 Reconcile child layout.
       final LithoNode copy =
-          reconcile(
-              resolveStateContext,
-              parentContext,
-              child,
-              component,
-              scopedComponentInfo,
-              key,
-              keys,
-              current);
+          reconcile(resolveStateContext, parentContext, child, component, key, keys, current);
 
       // 3.3 Add the child to the cloned yoga node
       layout.child(copy);
@@ -741,11 +719,11 @@ public class Resolver {
    */
   @VisibleForTesting
   static @ReconciliationMode int getReconciliationMode(
-      final ComponentContext c, final LithoNode current, final Set<String> mutatedKeys) {
+      final LithoNode current, final Set<String> mutatedKeys) {
     final List<ScopedComponentInfo> components = current.getScopedComponentInfos();
 
     // 1.0 check early exit conditions
-    if (c == null || current instanceof NestedTreeHolder) {
+    if (current instanceof NestedTreeHolder) {
       return ReconciliationMode.RECREATE;
     }
 
