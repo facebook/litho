@@ -184,14 +184,14 @@ public class IncrementalMountExtension
     final List<IncrementalMountOutput> atTheStart = state.mInput.getOutputsOrderedByBottomBounds();
     final int count = state.mInput.getIncrementalMountOutputCount();
 
-    if (state.mPreviousTopsIndex < count) {
+    if (state.mPreviousTopsIndex < count && state.mPreviousTopsIndex >= 0) {
       final IncrementalMountOutput node = atTheEnd.get(state.mPreviousTopsIndex);
       final long id = node.getId();
       if (!extensionState.ownsReference(id)) {
         extensionState.acquireMountReference(node.getId(), true);
       }
       state.mPreviousTopsIndex++;
-    } else if (state.mPreviousBottomsIndex > 0) {
+    } else if (state.mPreviousBottomsIndex > 0 && state.mPreviousBottomsIndex <= count) {
       final IncrementalMountOutput node = atTheStart.get(state.mPreviousBottomsIndex - 1);
       final long id = node.getId();
       if (!extensionState.ownsReference(id)) {
@@ -461,7 +461,9 @@ public class IncrementalMountExtension
           }
         }
 
-        state.mPreviousBottomsIndex++;
+        if (!state.usesGapWorker) {
+          state.mPreviousBottomsIndex++;
+        }
       }
 
       while (state.mPreviousBottomsIndex > 0
@@ -528,7 +530,9 @@ public class IncrementalMountExtension
           }
         }
 
-        state.mPreviousTopsIndex--;
+        if (!state.usesGapWorker) {
+          state.mPreviousTopsIndex--;
+        }
       }
     }
 
