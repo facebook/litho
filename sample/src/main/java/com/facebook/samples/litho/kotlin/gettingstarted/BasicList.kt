@@ -19,16 +19,37 @@ package com.facebook.samples.litho.kotlin.gettingstarted
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.core.padding
+import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.useCallback
+import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.collection.LazyList
 
+// start_list_clicking_example
 private val ONE_TO_TEN =
     listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten")
 
 class BasicList : KComponent() {
-  override fun ComponentScope.render(): Component = LazyList {
-    child(Text(text = "Header"))
-    ONE_TO_TEN.forEach { child(id = it, component = Text(it)) }
-    child(Text(text = "Footer"))
+  override fun ComponentScope.render(): Component {
+    val clickItem = useState { "Nothing" }
+    val callBack = useCallback { index: Int -> clickItem.update(ONE_TO_TEN[index]) }
+
+    return LazyList {
+      child(Text(text = "Click us!"))
+      ONE_TO_TEN.forEachIndexed { index, str ->
+        child(
+            id = str,
+            component =
+                Text(
+                    str,
+                    style = Style.onClick { callBack(index) }.padding(all = 16.dp),
+                ))
+      }
+      child(Text(text = "${clickItem.value} was clicked"))
+    }
   }
 }
+// end_list_clicking_example
