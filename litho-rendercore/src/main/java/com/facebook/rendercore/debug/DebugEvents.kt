@@ -85,6 +85,7 @@ object DebugEventAttribute {
   const val source = "source"
   const val RenderUnitId = "renderUnitId"
   const val Description = "description"
+  const val HashCode = "hashCode"
   const val Bounds = "bounds"
   const val RootHostHashCode = "rootHostHashCode"
   const val Name = "name"

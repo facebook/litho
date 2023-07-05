@@ -18,6 +18,7 @@ package com.facebook.rendercore;
 
 import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Description;
+import static com.facebook.rendercore.debug.DebugEventAttribute.HashCode;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RootHostHashCode;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
@@ -1069,6 +1070,7 @@ public class MountState implements MountDelegateTarget {
       HashMap<String, Object> attributes = new HashMap<>();
       attributes.put(RenderUnitId, unit.getId());
       attributes.put(Description, unit.getDescription());
+      attributes.put(HashCode, content.hashCode());
       attributes.put(Bounds, node.getBounds());
 
       beginTrace(
