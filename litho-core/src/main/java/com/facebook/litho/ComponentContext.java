@@ -779,7 +779,7 @@ public class ComponentContext implements Cloneable {
   }
 
   public boolean isNullNodeEnabled() {
-    return mLithoConfiguration.isNullNodeEnabled;
+    return isReconciliationEnabled() && mLithoConfiguration.isNullNodeEnabled;
   }
 
   @Nullable
