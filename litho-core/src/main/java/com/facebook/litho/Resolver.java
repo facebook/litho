@@ -372,9 +372,11 @@ public class Resolver {
       commonProps = component.getCommonProps();
     }
 
-    if (commonProps != null
-        && !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
-      commonProps.copyInto(c, node);
+    if (!(node instanceof NullNode)) { // only if NOT a NullNode
+      if (commonProps != null
+          && !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
+        commonProps.copyInto(c, node);
+      }
     }
 
     // 10. Add the component to the InternalNode.
