@@ -7,6 +7,13 @@ title: Interactions
 Within Litho, lists are implemented using the Lazy Collection API.
 :::
 
+## Clicking items
+
+Clicking items in the Lazy Collection can be done by simply adding `Style.onClick` to children. 
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/gettingstarted/BasicList.kt start=start_list_clicking_example end=end_list_clicking_example
+```
+
 ## Scrolling the Lazy Collection
 
 Scrolling the Lazy Collection by a given distance, or to a child with a given index/id, is a two-step process:
