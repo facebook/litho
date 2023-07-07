@@ -299,33 +299,6 @@ class KStateTest {
   }
 
   @Test
-  fun useState_updateState_stateIsUpdated_forMountable() {
-    lateinit var stateRef: AtomicReference<String>
-
-    class TestMountableComponent : MountableComponent() {
-      override fun MountableComponentScope.render(): MountableRenderResult {
-        val state = useState { "hello" }
-        stateRef = AtomicReference(state.value)
-
-        return MountableRenderResult(
-            TestMountable(),
-            style =
-                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
-                  state.update("world")
-                })
-      }
-    }
-
-    val testLithoView = lithoViewRule.render { TestMountableComponent() }
-
-    assertThat(stateRef.get()).isEqualTo("hello")
-
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
-
-    assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
-  }
-
-  @Test
   fun useState_updateState_stateIsUpdated_forPrimitive() {
     lateinit var stateRef: AtomicReference<String>
 
@@ -350,42 +323,6 @@ class KStateTest {
     lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
 
     assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
-  }
-
-  @Test
-  fun useStateOnHooks_updateTwoStatesWithSamePropertyName_bothStatesAreUpdatedIndependently_forMountable() {
-    lateinit var state1Ref: AtomicReference<State<String>>
-    lateinit var state2Ref: AtomicReference<State<Int>>
-
-    class TestMountableComponent : MountableComponent() {
-      override fun MountableComponentScope.render(): MountableRenderResult {
-        val state1 = useCustomState("hello")
-        val state2 = useCustomState(20)
-
-        state1Ref = AtomicReference(state1)
-        state2Ref = AtomicReference(state2)
-
-        return MountableRenderResult(
-            TestMountable(),
-            style =
-                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
-                  // The correct way to do this (at least until we have automatic batching)
-                  // would be to store these states in the same obj to trigger only one state
-                  // update
-                  state1.update("world")
-                  state2.update { value -> value + 1 }
-                })
-      }
-    }
-
-    val testLithoView = lithoViewRule.render { TestMountableComponent() }
-
-    assertThat(state1Ref.get().value).isEqualTo("hello")
-    assertThat(state2Ref.get().value).isEqualTo(20)
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
-
-    assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
-    assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
   }
 
   @Test
@@ -422,47 +359,6 @@ class KStateTest {
 
     assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
     assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
-  }
-
-  @Test
-  fun useState_calculateLayoutInTwoThreadsConcurrently_stateIsInitializedOnlyOnce_forMountable() {
-    val initCounter = AtomicInteger(0)
-    val countDownLatch = CountDownLatch(2)
-    val firstCountDownLatch = CountDownLatch(1)
-    val secondCountDownLatch = CountDownLatch(1)
-
-    val view = lithoViewRule.createTestLithoView()
-
-    val thread1 = Thread {
-      view.setRootAndSizeSpecSync(
-          CountDownLatchMountableComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
-          SizeSpec.makeSizeSpec(100, EXACTLY),
-          SizeSpec.makeSizeSpec(100, EXACTLY))
-      countDownLatch.countDown()
-    }
-    val thread2 = Thread {
-      firstCountDownLatch.await()
-      view.setRootAndSizeSpecSync(
-          CountDownLatchMountableComponent(secondCountDownLatch, null, initCounter),
-          SizeSpec.makeSizeSpec(200, EXACTLY),
-          SizeSpec.makeSizeSpec(200, EXACTLY))
-      countDownLatch.countDown()
-    }
-
-    thread1.start()
-    thread2.start()
-
-    countDownLatch.await()
-    lithoViewRule.idle()
-
-    assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
-    val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.initialStates)
-        .describedAs("Initial hook state container is empty")
-        .isEmpty()
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.pendingStateHandlers)
-        .describedAs("No pending StateHandlers")
-        .isEmpty()
   }
 
   fun useState_calculateLayoutInTwoThreadsConcurrently_stateIsInitializedOnlyOnce_forPrimitive() {
@@ -506,35 +402,6 @@ class KStateTest {
   }
 
   @Test
-  fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied_forMountable() {
-    class TestMountableComponent : MountableComponent() {
-      override fun MountableComponentScope.render(): MountableRenderResult {
-        val counter = useState { 0 }
-
-        return MountableRenderResult(
-            TestTextMountable(
-                text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
-            style =
-                Style.viewTag("Counter: ${counter.value}").onClick {
-                  counter.update { value -> value + 1 }
-                })
-      }
-    }
-
-    val view =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
-          TestMountableComponent()
-        }
-
-    lithoViewRule.act(view) {
-      clickOnTag("Counter: 0")
-      clickOnTag("Counter: 0")
-    }
-
-    assertThat(view.findViewWithTagOrNull("Counter: 2")).isNotNull()
-  }
-
-  @Test
   fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied_forPrimitive() {
     class TestPrimitiveComponent : PrimitiveComponent() {
       override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -564,35 +431,6 @@ class KStateTest {
   }
 
   @Test
-  fun useState_synchronousUpdate_stateIsUpdatedSynchronously_forMountable() {
-    lateinit var stateRef: AtomicReference<String>
-
-    class TestMountableComponent : MountableComponent() {
-      override fun MountableComponentScope.render(): MountableRenderResult {
-        val state = useState { "hello" }
-        stateRef = AtomicReference(state.value)
-
-        return MountableRenderResult(
-            TestMountable(),
-            style =
-                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
-                  state.updateSync("world")
-                })
-      }
-    }
-
-    val view =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
-          TestMountableComponent()
-        }
-
-    assertThat(stateRef.get()).isEqualTo("hello")
-    lithoViewRule.act(view) { clickOnTag("test_view") }
-
-    assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
-  }
-
-  @Test
   fun useState_synchronousUpdate_stateIsUpdatedSynchronously_forPrimitive() {
     lateinit var stateRef: AtomicReference<String>
 
@@ -619,64 +457,6 @@ class KStateTest {
     lithoViewRule.act(view) { clickOnTag("test_view") }
 
     assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
-  }
-
-  @Test
-  fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling_forMountable() {
-    val siblingRenderCount = AtomicInteger()
-
-    class RootComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
-        return Row(style = Style.wrapInView()) {
-          child(ClickableMountableComponentWithState())
-          child(CountRendersMountableComponent(renderCount = siblingRenderCount))
-        }
-      }
-    }
-
-    val view =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
-
-    assertThat(siblingRenderCount.get()).isEqualTo(1)
-
-    lithoViewRule.act(view) { clickOnTag("Counter: 0") }
-
-    // Using viewTag because Text is currently a drawable and harder to access directly
-    assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
-
-    // Assert that the state update didn't cause the sibling to re-render
-    assertThat(siblingRenderCount.get()).isEqualTo(1)
-  }
-
-  @Test
-  fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling_forMountableWithConditionalStyle() {
-    val siblingRenderCount = AtomicInteger()
-
-    class RootComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
-        return Row(style = Style.wrapInView()) {
-          child(ClickableMountableComponentWithStateAndConditionalStyle())
-          child(CountRendersMountableComponent(renderCount = siblingRenderCount))
-        }
-      }
-    }
-
-    val view =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
-
-    assertThat(siblingRenderCount.get()).isEqualTo(1)
-
-    assertThat(view.findViewWithTagOrNull("Counter: 0")?.id).isEqualTo(42)
-
-    lithoViewRule.act(view) { clickOnTag("Counter: 0") }
-
-    // Using viewTag because Text is currently a drawable and harder to access directly
-    assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
-
-    // Assert that the state update didn't cause the sibling to re-render
-    assertThat(siblingRenderCount.get()).isEqualTo(1)
-
-    assertThat(view.findViewWithTagOrNull("Counter: 1")?.id).isEqualTo(View.NO_ID)
   }
 
   @Test
@@ -742,41 +522,6 @@ class KStateTest {
    * to detect unexpected changes in that behavior.
    */
   @Test
-  fun useState_reconciliation_renderCalledOnParentOfUpdatedComponent_forMountable() {
-    val siblingRenderCount = AtomicInteger()
-    val parentRenderCount = AtomicInteger()
-
-    class ParentOfComponentWithStateUpdate(private val renderCount: AtomicInteger) : KComponent() {
-      override fun ComponentScope.render(): Component {
-        renderCount.incrementAndGet()
-        return ClickableMountableComponentWithState(tag = "test_view")
-      }
-    }
-
-    class RootComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
-        return Row(style = Style.wrapInView()) {
-          child(ParentOfComponentWithStateUpdate(renderCount = parentRenderCount))
-          child(CountRendersMountableComponent(renderCount = siblingRenderCount))
-        }
-      }
-    }
-
-    val view =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
-
-    assertThat(parentRenderCount.get()).isEqualTo(1)
-    assertThat(siblingRenderCount.get()).isEqualTo(1)
-
-    lithoViewRule.act(view) { clickOnTag("test_view") }
-
-    // Assert that the state update still causes parent to re-render but not sibling
-    assertThat(view.findViewWithText("Counter: 1")).isNotNull()
-    assertThat(parentRenderCount.get()).isEqualTo(2)
-    assertThat(siblingRenderCount.get()).isEqualTo(1)
-  }
-
-  @Test
   fun useState_reconciliation_renderCalledOnParentOfUpdatedComponent_forPrimitive() {
     val siblingRenderCount = AtomicInteger()
     val parentRenderCount = AtomicInteger()
@@ -809,27 +554,6 @@ class KStateTest {
     assertThat(view.findViewWithText("Counter: 1")).isNotNull()
     assertThat(parentRenderCount.get()).isEqualTo(2)
     assertThat(siblingRenderCount.get()).isEqualTo(1)
-  }
-
-  @Test
-  fun `should throw exception when state updates are triggered too many times during layout for Mountable`() {
-
-    expectedException.expect(LithoMetadataExceptionWrapper::class.java)
-    expectedException.expectMessage("State update loop during layout detected")
-
-    class RootComponent : MountableComponent() {
-      override fun MountableComponentScope.render(): MountableRenderResult {
-
-        val state = useState { 0 }
-
-        // unconditional state update
-        state.updateSync { value -> value + 1 }
-
-        return MountableRenderResult(TestTextMountable(text = "hello world"), null)
-      }
-    }
-
-    lithoViewRule.render { RootComponent() }
   }
 
   @Test
@@ -884,62 +608,6 @@ class KStateTest {
     override fun ComponentScope.render(): Component? {
       renderCount.incrementAndGet()
       return Row(style = Style.width(100.px).height(100.px))
-    }
-  }
-
-  private class CountDownLatchMountableComponent(
-      val countDownLatch: CountDownLatch,
-      val awaitable: CountDownLatch?,
-      val initCounter: AtomicInteger
-  ) : MountableComponent() {
-    override fun MountableComponentScope.render(): MountableRenderResult {
-      countDownLatch.countDown()
-      awaitable?.await()
-
-      val state = useState { initCounter.incrementAndGet() }
-      return MountableRenderResult(TestTextMountable(text = "stateValue is ${state.value}"), null)
-    }
-  }
-
-  class ClickableMountableComponentWithState(private val tag: String? = null) :
-      MountableComponent() {
-    override fun MountableComponentScope.render(): MountableRenderResult {
-      val counter = useState { 0 }
-
-      return MountableRenderResult(
-          TestTextMountable(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
-          style =
-              Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
-                counter.updateSync { value -> value + 1 }
-              })
-    }
-  }
-
-  class ClickableMountableComponentWithStateAndConditionalStyle(private val tag: String? = null) :
-      MountableComponent() {
-    override fun MountableComponentScope.render(): MountableRenderResult {
-      val counter = useState { 0 }
-
-      var style =
-          Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
-            counter.updateSync { value -> value + 1 }
-          }
-
-      if (counter.value % 2 == 0) {
-        style = style.plus(Style.viewId(42))
-      }
-
-      return MountableRenderResult(
-          TestTextMountable(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
-          style = style)
-    }
-  }
-
-  private class CountRendersMountableComponent(private val renderCount: AtomicInteger) :
-      MountableComponent() {
-    override fun MountableComponentScope.render(): MountableRenderResult {
-      renderCount.incrementAndGet()
-      return MountableRenderResult(TestMountable(), style = Style.width(100.px).height(100.px))
     }
   }
 

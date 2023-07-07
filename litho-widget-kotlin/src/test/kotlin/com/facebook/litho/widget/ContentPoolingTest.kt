@@ -16,7 +16,6 @@
 
 package com.facebook.litho.kotlin.widget
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -24,13 +23,8 @@ import android.widget.TextView
 import com.facebook.litho.Column
 import com.facebook.litho.FixedSizeLayoutBehavior
 import com.facebook.litho.LithoPrimitive
-import com.facebook.litho.MeasureScope
-import com.facebook.litho.MountableComponent
-import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
-import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
@@ -38,7 +32,6 @@ import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TrackedItemPool
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.MountItemsPool.getMountItemPools
 import com.facebook.rendercore.primitives.DrawableAllocator
@@ -60,71 +53,6 @@ class ContentPoolingTest {
   fun setup() {
     MountItemsPool.clear()
     MountItemsPool.setMountContentPoolFactory(null)
-  }
-
-  @Test
-  fun `different mountable components should use different pools`() {
-
-    // Mount an Image component
-    lithoViewRule.render {
-      Column {
-        child(
-            TestDrawableMountableComponent(
-                drawable = ColorDrawable(Color.RED),
-                style = Style.width(100.px).height(100.px),
-            ))
-      }
-    }
-
-    // Should create 1 Pool for TestDrawableMountableComponent
-    assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(1)
-
-    // Mount multiple Image components, and a TestTextViewMountableComponent
-    val lithoView =
-        lithoViewRule
-            .render {
-              Column {
-                child(
-                    TestDrawableMountableComponent(
-                        drawable = ColorDrawable(Color.RED),
-                        style = Style.width(100.px).height(100.px),
-                    ))
-                child(
-                    TestTextViewMountableComponent(
-                        style = Style.width(100.px).height(500.px),
-                    ))
-              }
-            }
-            .lithoView
-
-    // Should now have 2 Pools; one for the Image, and one for the Vertical Scroll component.
-    assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(2)
-
-    // Unmount all content to release all the content to the pools
-    lithoView.unmountAllItems()
-  }
-
-  @Test
-  fun `should use pool size from mountable`() {
-
-    // Mount 40 Image components, and then unmount them all
-    lithoViewRule
-        .render {
-          Column {
-            for (i in 1..40) {
-              child(
-                  TestDrawableMountableComponent(
-                      drawable = ColorDrawable(Color.RED),
-                      style = Style.width(100.px).height(100.px),
-                  ))
-            }
-          }
-        }
-        .lithoView
-        .unmountAllItems()
-
-    assertThat(getMountItemPools().size).isEqualTo(1)
-    assertThat((getMountItemPools()[0] as TrackedItemPool).currentSize).isEqualTo(10)
   }
 
   @Test
@@ -234,61 +162,6 @@ class ContentPoolingTest {
     // There should be 10 items in the pool
     assertThat((getMountItemPools()[0] as TrackedItemPool).currentSize).isEqualTo(10)
   }
-}
-
-// Mountable components
-
-class TestDrawableMountableComponent(val drawable: Drawable, val style: Style? = null) :
-    MountableComponent() {
-
-  override fun MountableComponentScope.render(): MountableRenderResult {
-    return MountableRenderResult(DrawableMountable(drawable), style)
-  }
-}
-
-class DrawableMountable(
-    val drawable: Drawable,
-) : SimpleMountable<Drawable>(RenderType.DRAWABLE) {
-
-  init {
-    MountItemsPool.setMountContentPoolFactory(createPoolFactory(poolSize()))
-  }
-
-  override fun poolSize(): Int = 10
-
-  override fun createContent(context: Context): Drawable {
-    return drawable
-  }
-
-  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
-      MeasureResult(100, 100)
-
-  override fun mount(c: Context, content: Drawable, layoutData: Any?) = Unit
-
-  override fun unmount(c: Context, content: Drawable, layoutData: Any?) = Unit
-}
-
-class TestTextViewMountableComponent(val style: Style? = null) : MountableComponent() {
-
-  override fun MountableComponentScope.render(): MountableRenderResult {
-    return MountableRenderResult(TextViewMountable(), style)
-  }
-}
-
-class TextViewMountable : SimpleMountable<TextView>(RenderType.VIEW) {
-
-  override fun poolSize(): Int = 10
-
-  override fun createContent(context: Context): TextView {
-    return TextView(context)
-  }
-
-  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
-      MeasureResult(100, 100)
-
-  override fun mount(c: Context, content: TextView, layoutData: Any?) = Unit
-
-  override fun unmount(c: Context, content: TextView, layoutData: Any?) = Unit
 }
 
 // Primitive components
