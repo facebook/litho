@@ -12,26 +12,26 @@ Litho supports animated transitions between two consecutive states of the UI (`L
 
 When defining transitions, it's necessary to indicate to the framework what `Component`/`AnimatedProperty` pairs are to be animated. Based on the presence of the Component in *before* and *after* states, three types of transitions can be defined: [Change](#change-transitions), [Appear](#appear-transitions), and [Disappear](#disappear-transitions).
 
-## Change Transitions
+## Change transitions
 
 A transition where the target Component is present in both *before* and *after* `LayoutState`s is called a *Change* transition.
 
-The SimpleAllLayoutTransitionComponentSpec featured in the [Animation Basics](transition-basics.mdx) page features a *Change* transition, since the 'square' Component is always present in the layout but changes its position (`X` property). The 'square' is illustrated in the following animation.
+The `SimpleAllLayoutTransitionComponent` featured in the [Animation Basics](transition-basics.mdx) page features a *Change* transition, since the 'square' Component is always present in the layout but changes its position (`X` property). The 'square' is illustrated in the following animation.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="200px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/basics2.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-### How the Change Type Functions Internally
+### How the Change type functions internally
 
-Imagine a scenario in which layout *A* (the *before* state) is mounted (rendered on the screen) and there exists a blueprint of layout *B* (the *after* state), which the framework is ready to render. In this scenario, the transition is defined for a `AnimatedProperty.P` of a `ComponentC`, where `ComponentC` is present in both layouts.
+Imagine a scenario in which layout *A* (the *before* state) is mounted (rendered on the screen) and there exists a blueprint of layout *B* (the *after* state), which the framework is ready to render. Both of these layouts have `ComponentC` present, and there is a transition defined for a `AnimatedProperty.P` of this component.
 
 The framework needs to take the following steps in order to run *change* animations:
 
 1. Pick the current value of the `AnimatedProperty.P` from the mounted UI element (a `View` or 'Drawable') that represents `ComponentC` on the screen. This is the *start* value for the animation.
 2. Pick the animation *end* value of `AnimatedProperty.P` from the blueprint of layout *B*.
-3. When the layout *B* is mounted to the screen, instead of applying the new value of 'P' immediately, keep the previous value in place, subscribe to the [Choreographer](pathname:///javadoc/com/facebook/litho/choreographercompat/ChoreographerCompat.html), then start changing the value of `P` for the new mounted UI element on every frame until it reaches the end value.
+3. When the layout *B* is mounted to the screen, instead of applying the new value of 'P' immediately, keep the previous value in place, subscribe to the [Choreographer](pathname:///javadoc/com/facebook/litho/choreographercompat/ChoreographerCompat.html), then start changing the value of `P` for the new mounted UI element on every frame until it reaches the *end* value.
 
 :::note
 `ComponentC` is present in both trees.
@@ -39,33 +39,27 @@ The framework needs to take the following steps in order to run *change* animati
 
 Before:
 
-```java
-Column.create(c)
-    .child(
-        SolidColor.create(c) // -> ComponentC
-            .color(YELLOW)
-            .widthDip(80)
-            .heightDip(80)
-            .transitionKey(SQUARE_KEY))
-    .alignItems(YogaAlign.FLEX_START) // AnimatedProperty.X aligned to start
-    .build();
+```kotlin
+Column(alignItems = YogaAlign.FLEX_START) { // AnimatedProperty.X aligned to start
+  child(
+      SolidColor(                           // <- ComponentC
+          color = YELLOW,
+          style = Style.width(80.dp).height(80.dp).transitionKey(context, SQUARE_KEY)))
+}
 ```
 
 After:
 
-```java
-Column.create(c)
-    .child(
-        SolidColor.create(c) // -> ComponentC
-            .color(YELLOW)
-            .widthDip(80)
-            .heightDip(80)
-            .transitionKey(SQUARE_KEY))
-    .alignItems(YogaAlign.FLEX_END) // AnimatedProperty.X aligned to end
-    .build();
+```kotlin
+Column(alignItems = YogaAlign.FLEX_END) {   // AnimatedProperty.X aligned to end
+  child(
+      SolidColor(                           // <- ComponentC
+          color = YELLOW,
+          style = Style.width(80.dp).height(80.dp).transitionKey(context, SQUARE_KEY)))
+}
 ```
 
-### Appear Transitions
+### Appear transitions
 
 A transition where the target Component appears on screen is called an *Appear* transition. The target Component is not present in the *before* `LayoutState` and is present in the *after* `LayoutState`.
 
@@ -82,7 +76,7 @@ The following animation shows the *Appear* transition in action.
   <p>Your browser does not support the video element.</p>
 </video>
 
-### How the Appear Type Functions Internally
+### How the Appear type functions internally
 
 Using the same scenario described for the [Change](#how-the-change-type-functions-internally) type:
 
@@ -92,31 +86,28 @@ Using the same scenario described for the [Change](#how-the-change-type-function
 
 Before:
 
-```java
-child = null;
+```kotlin
+val child = null
 
-Column.create(c)
-    .child(child) // ComponentC is null here
-    .alignItems(YogaAlign.FLEX_END)
-    .build();
+Column(alignItems = YogaAlign.FLEX_END) {
+  child(child)     // ComponentC is null here
+}
 ```
 
 After:
 
-```java
-child = SolidColor.create(c)
-    .color(YELLOW)
-    .widthDip(80)
-    .heightDip(80)
-    .transitionKey(SQUARE_KEY);
+```kotlin
+val child =
+    SolidColor(
+        color = YELLOW,
+        style = Style.width(80.dp).height(80.dp).transitionKey(context, SQUARE_KEY))
 
-Column.create(c)
-    .child(child) // ComponentC is present and will be animated.
-    .alignItems(YogaAlign.FLEX_END)
-    .build();
+Column(alignItems = YogaAlign.FLEX_END) {
+  child(child)     // ComponentC is present and will be animated.
+}
 ```
 
-### Disappear Transitions
+### Disappear transitions
 
 The *Disappear* transition type is the opposite of the [Appear](#appear-transitions) transition type.
 
@@ -124,17 +115,16 @@ A transition where the target Component disappears from the screen is called a *
 
 In order to configure a *Disappear* transition, you need to provide an *end* value for the property that is disappearing. The *end* value can be specified by using the `.disappearTo()` method when building a `Transition`, as shown in the following code:
 
-```java
-@OnCreateTransition
-static Transition onCreateTransition(ComponentContext c) {
-  return Transition.create(SQUARE_KEY)
-      .animate(AnimatedProperties.X)
-      .appearFrom(0f)
-      .animate(AnimatedProperties.ALPHA)
-      .appearFrom(0f)
-      .disappearTo(0f)
-      .animate(AnimatedProperties.SCALE)
-      .disappearTo(0.5f);
+```kotlin
+useTransition(
+    Transition.create(SQUARE_KEY)
+        .animate(AnimatedProperties.X)
+        .appearFrom(0f)
+        .animate(AnimatedProperties.ALPHA)
+        .appearFrom(0f)
+        .disappearTo(0f)
+        .animate(AnimatedProperties.SCALE)
+        .disappearTo(0.5f))
 }
 ```
 
@@ -145,7 +135,7 @@ The following animation shows the *Disappear* transition in action.
   <p>Your browser does not support the video element.</p>
 </video>
 
-### How the Disappear Type Functions Internally
+### How the Disappear type functions internally
 
 1. Pick the *start* value from the mounted UI element that represents the `Component`.
 2. Retrieve the *end* value from the user-provided `disappearTo` value of the transition definition.
@@ -157,28 +147,25 @@ The disappearing component no longer exists in the Component Tree, but must stil
 
 Before:
 
-```java
-child = SolidColor.create(c)
-    .color(YELLOW)
-    .widthDip(80)
-    .heightDip(80)
-    .transitionKey(SQUARE_KEY);
+```kotlin
+val child =
+    SolidColor(
+        color = YELLOW,
+        style = Style.width(80.dp).height(80.dp).transitionKey(context, SQUARE_KEY))
 
-Column.create(c)
-    .child(child) // ComponentC is present and will be animated.
-    .alignItems(YogaAlign.FLEX_END)
-    .build();
+Column(alignItems = YogaAlign.FLEX_END) {
+  child(child)     // ComponentC is present and will be animated.
+}
 ```
 
 After:
 
-```java
-child = null;
+```kotlin
+val child = null
 
-Column.create(c)
-    .child(child) // ComponentC is null here
-    .alignItems(YogaAlign.FLEX_END)
-    .build();
+Column(alignItems = YogaAlign.FLEX_END) {
+  child(child)     // ComponentC is null here
+}
 ```
 
 :::info

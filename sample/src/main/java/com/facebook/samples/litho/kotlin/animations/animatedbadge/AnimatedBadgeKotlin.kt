@@ -55,6 +55,7 @@ class AnimatedBadgeKotlin : KComponent() {
     val expanded1 = state.value == 1 || state.value == 2
     val expanded2 = state.value == 2 || state.value == 3
 
+    // start
     useTransition(
         Transition.parallel<Transition.BaseTransitionUnitsBuilder>(
             Transition.allLayout().animator(ANIMATOR),
@@ -68,6 +69,7 @@ class AnimatedBadgeKotlin : KComponent() {
                 .appearFrom(0f)
                 .disappearTo(0f)
                 .animator(ANIMATOR)))
+    // end
 
     return Column(
         style = Style.padding(all = 8f.dp).onClick { state.update(state.value.plus(1).rem(4)) }) {
