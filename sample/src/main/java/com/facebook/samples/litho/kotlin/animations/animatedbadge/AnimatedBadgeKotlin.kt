@@ -50,7 +50,7 @@ class AnimatedBadgeKotlin : KComponent() {
   private val ANIMATOR = Transition.timing(ANIMATION_DURATION)
   private val TRANSITION_KEY_TEXT = "text"
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val state = useState { 0 }
     val expanded1 = state.value == 1 || state.value == 2
     val expanded2 = state.value == 2 || state.value == 3
@@ -63,38 +63,36 @@ class AnimatedBadgeKotlin : KComponent() {
                 .animate(AnimatedProperties.WIDTH)
                 .appearFrom(0f)
                 .disappearTo(0f)
-                .animator(ANIMATOR),
-            Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY_TEXT)
+                .animator(ANIMATOR)
                 .animate(AnimatedProperties.ALPHA)
                 .appearFrom(0f)
                 .disappearTo(0f)
                 .animator(ANIMATOR)))
     // end
 
-    return Column(
-        style = Style.padding(all = 8f.dp).onClick { state.update(state.value.plus(1).rem(4)) }) {
-          child(Row(style = Style.margin(top = 8f.dp)) { child(buildComment1(expanded1)) })
-          child(Row(style = Style.margin(top = 16f.dp)) { child(buildComment2(expanded2)) })
-        }
+    return Column(style = Style.padding(all = 8.dp).onClick { state.update { (it + 1) % 4 } }) {
+      child(Row(style = Style.margin(top = 8.dp)) { child(buildComment1(expanded1)) })
+      child(Row(style = Style.margin(top = 16.dp)) { child(buildComment2(expanded2)) })
+    }
   }
 
   private fun ResourcesScope.buildComment1(expanded: Boolean): Component =
-      Column(style = Style.padding(all = 8f.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
+      Column(style = Style.padding(all = 8.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
         child(
             Row(alignItems = YogaAlign.CENTER) {
-              child(Text("Cristobal Castilla", textSize = 16f.dp, textStyle = Typeface.BOLD))
+              child(Text("Cristobal Castilla", textSize = 16.dp, textStyle = Typeface.BOLD))
               child(
                   Row(
                       style =
-                          Style.margin(start = 8f.dp)
-                              .padding(all = 3f.dp)
+                          Style.margin(start = 8.dp)
+                              .padding(all = 3.dp)
                               .background(RoundedRect(Color.WHITE, 12.dp)),
                       alignItems = YogaAlign.CENTER) {
                         child(
                             Column(
                                 style =
-                                    Style.height(18f.dp)
-                                        .width(18f.dp)
+                                    Style.height(18.dp)
+                                        .width(18.dp)
                                         .background(RoundedRect(0xffffb74b, 9.dp))))
                         if (expanded) {
                           child(
@@ -102,65 +100,65 @@ class AnimatedBadgeKotlin : KComponent() {
                                 Text(
                                     "Top Follower",
                                     style =
-                                        Style.margin(left = 8f.dp)
+                                        Style.margin(left = 8.dp)
                                             .transitionKey(
                                                 context,
                                                 TRANSITION_KEY_TEXT,
                                                 Transition.TransitionKeyType.GLOBAL),
-                                    textSize = 12f.dp,
+                                    textSize = 12.dp,
                                     clipToBounds = true)
                               })
                         }
                         child(
                             Text(
                                 "+1",
-                                style = Style.margin(left = 8f.dp, right = 4f.dp),
-                                textSize = 12f.dp,
+                                style = Style.margin(left = 8.dp, right = 4.dp),
+                                textSize = 12.dp,
                                 textColor = Color.BLUE))
                       })
             })
-        child(Text("So awesome!", textSize = 18f.dp))
+        child(Text("So awesome!", textSize = 18.dp))
       }
 
   private fun ResourcesScope.buildComment2(expanded: Boolean): Component =
-      Column(style = Style.padding(all = 8f.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
+      Column(style = Style.padding(all = 8.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
         child(
             Row(alignItems = YogaAlign.CENTER) {
-              child(Text("Cristobal Castilla", textSize = 16f.dp, textStyle = Typeface.BOLD))
+              child(Text("Cristobal Castilla", textSize = 16.dp, textStyle = Typeface.BOLD))
               child(
                   Row(
                       style =
-                          Style.width((if (expanded) 48f else 24f).dp)
-                              .margin(start = 8f.dp)
-                              .padding(all = 3f.dp)
+                          Style.width(if (expanded) 48.dp else 24.dp)
+                              .margin(start = 8.dp)
+                              .padding(all = 3.dp)
                               .background(RoundedRect(Color.WHITE, 12.dp)),
                       alignItems = YogaAlign.CENTER) {
                         child(
                             Column(
                                 style =
                                     Style.positionType(YogaPositionType.ABSOLUTE)
-                                        .position(start = (if (expanded) 27 else 3).dp)
+                                        .position(start = if (expanded) 27.dp else 3.dp)
                                         .positionType(YogaPositionType.ABSOLUTE)
-                                        .height(18f.dp)
-                                        .width(18f.dp)
+                                        .height(18.dp)
+                                        .width(18.dp)
                                         .background(RoundedRect(0xFFB2CFE5, 9.dp))))
                         child(
                             Column(
                                 style =
                                     Style.positionType(YogaPositionType.ABSOLUTE)
-                                        .position(start = (if (expanded) 15 else 3).dp)
+                                        .position(start = if (expanded) 15.dp else 3.dp)
                                         .positionType(YogaPositionType.ABSOLUTE)
-                                        .height(18f.dp)
-                                        .width(18f.dp)
+                                        .height(18.dp)
+                                        .width(18.dp)
                                         .background(RoundedRect(0xFF4B8C61, 9.dp))))
                         child(
                             Column(
                                 style =
-                                    Style.height(18f.dp)
-                                        .width(18f.dp)
+                                    Style.height(18.dp)
+                                        .width(18.dp)
                                         .background(RoundedRect(0xFFFFB74B, 9.dp))))
                       })
             })
-        child(Text("So awesome!", textSize = 18f.dp))
+        child(Text("So awesome!", textSize = 18.dp))
       }
 }
