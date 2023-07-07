@@ -36,20 +36,21 @@ import com.facebook.samples.litho.R
 class SimpleImageViewPrimitiveComponent(private val style: Style? = null) : PrimitiveComponent() {
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
-    return LithoPrimitive(
-        primitive =
-            Primitive(
-                layoutBehavior = ImageLayoutBehavior,
-                mountBehavior =
-                    MountBehavior(ViewAllocator { context -> ImageView(context) }) {
-                      bind(R.drawable.ic_launcher) { imageView ->
-                        imageView.setImageDrawable(drawableRes(R.drawable.ic_launcher))
-                        onUnbind { imageView.setImageResource(0) }
-                      }
-                    }),
-        style = style)
+    return LithoPrimitive(primitive = SimpleImageViewPrimitive, style = style)
   }
 }
+
+internal val PrimitiveComponentScope.SimpleImageViewPrimitive
+  get() =
+      Primitive(
+          layoutBehavior = ImageLayoutBehavior,
+          mountBehavior =
+              MountBehavior(ViewAllocator { context -> ImageView(context) }) {
+                bind(R.drawable.ic_launcher) { imageView ->
+                  imageView.setImageDrawable(drawableRes(R.drawable.ic_launcher))
+                  onUnbind { imageView.setImageResource(0) }
+                }
+              })
 // end_image_primitive_component_example
 
 // start_image_primitive_layout_behavior_example

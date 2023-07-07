@@ -17,13 +17,13 @@ For information on how Meta is committed to creating a full UI experience for **
 
 Accessibility properties and events for components can be implemented by adding them to the `Style` object.
 
-Following is an example of how to combine a `Style`, that was passed to a mountable component, with a newly created `Style` object that implements accessibility properties and events and will be returned on the `MountableRenderResult` object from the `render()` method:
+Following is an example of how to combine a `Style`, that was passed to a Primitive Component, with a newly created `Style` object that implements accessibility properties and events and will be returned on the `LithoPrimitive` object from the `render()` method:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewWithAccessibility.kt start=start_simple_mountable_component_with_a11y_example end=end_simple_mountable_component_with_a11y_example
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewWithAccessibilityPrimitiveComponent.kt start=start_simple_primitive_component_with_a11y_example end=end_simple_primitive_component_with_a11y_example
 ```
 
 :::note
-In the above example, the returned `MountableRenderResult` object includes `a11y`. This is a reference to the [A11Y Project](https://www.a11yproject.com/), which A11Y describes as a "*a community-driven effort to make digital accessibility easier.*"
+In the above example, the returned `LithoPrimitive` object includes `a11y`. This is a reference to the [A11Y Project](https://www.a11yproject.com/), which A11Y describes as a "*a community-driven effort to make digital accessibility easier.*"
 :::
 
 ## Supported Accessibility properties and events
