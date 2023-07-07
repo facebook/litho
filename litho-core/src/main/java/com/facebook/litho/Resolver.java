@@ -369,7 +369,7 @@ public class Resolver {
     if (commonProps == null && (component instanceof SpecGeneratedComponent)) {
       // for SpecGeneratedComponents we still need to retrieve CommonProps from the Component until
       // we refactor resolve() process
-      commonProps = component.getCommonProps();
+      commonProps = ((SpecGeneratedComponent) component).getCommonProps();
     }
 
     if (!(node instanceof NullNode)) { // only if NOT a NullNode

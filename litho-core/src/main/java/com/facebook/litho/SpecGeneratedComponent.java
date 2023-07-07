@@ -20,6 +20,7 @@ import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.SparseArray;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -49,6 +50,9 @@ public abstract class SpecGeneratedComponent extends Component
 
   private final String mSimpleName;
   private @Nullable String mOwnerGlobalKey;
+
+  // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
+  private @Nullable CommonProps mCommonProps;
 
   protected SpecGeneratedComponent(String simpleName) {
     mSimpleName = simpleName;
@@ -435,6 +439,7 @@ public abstract class SpecGeneratedComponent extends Component
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }
+
   /**
    * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
    * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
@@ -461,9 +466,9 @@ public abstract class SpecGeneratedComponent extends Component
    * possible to either recover from the error here or reraise the exception to catch it at a higher
    * level or crash the application.
    *
-   * @see com.facebook.litho.annotations.OnError
    * @param c The {@link ComponentContext} the Component was constructed with.
    * @param e The exception caught.
+   * @see com.facebook.litho.annotations.OnError
    */
   protected void onError(ComponentContext c, Exception e) {
     EventHandler<ErrorEvent> eventHandler = c.getErrorEventHandler();
@@ -624,6 +629,77 @@ public abstract class SpecGeneratedComponent extends Component
   @Override
   public int poolSize() {
     return DEFAULT_MAX_PREALLOCATION;
+  }
+
+  @Nullable
+  public final CommonProps getCommonProps() {
+    return mCommonProps;
+  }
+
+  final CommonProps getOrCreateCommonProps() {
+    if (mCommonProps == null) {
+      mCommonProps = new CommonProps();
+    }
+
+    return mCommonProps;
+  }
+
+  /**
+   * @return {@link SparseArray} that holds common dynamic Props
+   * @see DynamicPropsManager
+   */
+  @Nullable
+  SparseArray<DynamicValue<?>> getCommonDynamicProps() {
+    if (mCommonProps == null) {
+      return null;
+    }
+    return mCommonProps.getCommonDynamicProps();
+  }
+
+  /**
+   * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
+   *     needed
+   * @see DynamicPropsManager
+   */
+  final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
+    return getOrCreateCommonProps().getOrCreateCommonDynamicProps();
+  }
+
+  /**
+   * @return true if component has common dynamic props, false - otherwise. If so {@link
+   *     #getCommonDynamicProps()} will return not null value
+   * @see DynamicPropsManager
+   */
+  boolean hasCommonDynamicProps() {
+    if (mCommonProps == null) {
+      return false;
+    }
+    return mCommonProps.hasCommonDynamicProps();
+  }
+
+  @Override
+  public boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
+    if (shouldCompareCommonProps
+        && other instanceof SpecGeneratedComponent
+        && !isEquivalentCommonProps((SpecGeneratedComponent) other)) {
+      return false;
+    }
+    return isEquivalentProps(other, shouldCompareCommonProps);
+  }
+
+  protected final boolean isEquivalentCommonProps(@Nullable SpecGeneratedComponent other) {
+    if (other == null) {
+      return false;
+    }
+
+    return (mCommonProps == null && other.mCommonProps == null)
+        || (mCommonProps != null && mCommonProps.isEquivalentTo(other.mCommonProps));
+  }
+
+  public final boolean hasClickHandlerSet() {
+    return mCommonProps != null
+        && mCommonProps.getNullableNodeInfo() != null
+        && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
   }
 
   @Override

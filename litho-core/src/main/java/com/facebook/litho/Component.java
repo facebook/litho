@@ -127,9 +127,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   private boolean mHasManualKey;
   private @Nullable Handle mHandle;
 
-  // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
-  private @Nullable CommonProps mCommonProps;
-
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
    * is a root component - a default handler that reraises the exception.
@@ -459,19 +456,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    */
   public interface RenderData {}
 
-  @Nullable
-  public final CommonProps getCommonProps() {
-    return mCommonProps;
-  }
-
   public String getSimpleName() {
     return getClass().getSimpleName();
-  }
-
-  public final boolean hasClickHandlerSet() {
-    return mCommonProps != null
-        && mCommonProps.getNullableNodeInfo() != null
-        && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
   }
 
   /**
@@ -494,15 +480,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return ComponentUtils.hasEquivalentFields(this, other);
   }
 
-  protected final boolean isEquivalentCommonProps(@Nullable Component other) {
-    if (other == null) {
-      return false;
-    }
-
-    return (mCommonProps == null && other.mCommonProps == null)
-        || (mCommonProps != null && mCommonProps.isEquivalentTo(other.mCommonProps));
-  }
-
   /**
    * Compares this component to a different one to check if they are the same
    *
@@ -518,10 +495,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return isEquivalentTo(other, ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo);
   }
 
-  public final boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
-    if (shouldCompareCommonProps && !isEquivalentCommonProps(other)) {
-      return false;
-    }
+  public boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
     return isEquivalentProps(other, shouldCompareCommonProps);
   }
 
@@ -764,18 +738,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   /**
-   * @return {@link SparseArray} that holds common dynamic Props
-   * @see DynamicPropsManager
-   */
-  @Nullable
-  SparseArray<DynamicValue<?>> getCommonDynamicProps() {
-    if (mCommonProps == null) {
-      return null;
-    }
-    return mCommonProps.getCommonDynamicProps();
-  }
-
-  /**
    * @return The error handler dispatching to either the parent component if available, or reraising
    *     the exception. Null if the component isn't initialized.
    */
@@ -833,18 +795,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mKey = key;
   }
 
-  /**
-   * @return true if component has common dynamic props, false - otherwise. If so {@link
-   *     #getCommonDynamicProps()} will return not null value
-   * @see DynamicPropsManager
-   */
-  boolean hasCommonDynamicProps() {
-    if (mCommonProps == null) {
-      return false;
-    }
-    return mCommonProps.hasCommonDynamicProps();
-  }
-
   /** @return if has a handle set */
   final boolean hasHandle() {
     return mHandle != null;
@@ -877,23 +827,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   @Override
   public final String toString() {
     return getSimpleName();
-  }
-
-  /**
-   * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
-   *     needed
-   * @see DynamicPropsManager
-   */
-  final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
-    return getOrCreateCommonProps().getOrCreateCommonDynamicProps();
-  }
-
-  final CommonProps getOrCreateCommonProps() {
-    if (mCommonProps == null) {
-      mCommonProps = new CommonProps();
-    }
-
-    return mCommonProps;
   }
 
   private boolean hasCachedNode(final ResolveStateContext resolveStateContext) {

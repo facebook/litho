@@ -241,7 +241,7 @@ public class TestLayoutState {
       return null;
     }
 
-    final CommonProps commonProps = component.getCommonProps();
+    final CommonProps commonProps = ((SpecGeneratedComponent) component).getCommonProps();
     if (commonProps != null && (!isLayoutSpecWithSizeSpec(component))) {
       commonProps.copyInto(c, node);
     }
@@ -290,7 +290,7 @@ public class TestLayoutState {
     if (node != null) {
       Component testComponent = new TestComponent(component);
       ScopedComponentInfo scopedComponentInfo = new ScopedComponentInfo(testComponent, c, null);
-      scopedComponentInfo.setCommonProps(testComponent.getCommonProps());
+      scopedComponentInfo.setCommonProps(((SpecGeneratedComponent) testComponent).getCommonProps());
       node.appendComponent(scopedComponentInfo);
     }
 
