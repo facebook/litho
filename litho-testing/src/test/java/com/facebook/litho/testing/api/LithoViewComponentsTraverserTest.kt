@@ -27,7 +27,6 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Row
-import com.facebook.litho.SpecGeneratedComponent
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.kotlin.widget.VerticalScroll
@@ -253,7 +252,7 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
     append(label)
     append("[type=${component.javaClass.simpleName}")
 
-    val testKey = if (component is SpecGeneratedComponent) component.commonProps?.testKey else null
+    val testKey = component.commonProps?.testKey
     if (!testKey.isNullOrBlank() && testKey != "null") {
       append(", testKey=$testKey")
     }

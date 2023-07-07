@@ -73,10 +73,7 @@ fun ResourcesScope.createColumn(
             wrap,
             isReversed,
             resolvedContainerScope?.children)
-        .apply {
-          style?.applyCommonProps(
-              context, (this as SpecGeneratedComponent).getOrCreateCommonProps())
-        }
+        .apply { style?.applyCommonProps(context, getCommonPropsHolder()) }
 
 /**
  * Constructs a new [Row]. Add children by using [FlexboxContainerScope.child] or
@@ -131,10 +128,7 @@ fun ResourcesScope.createRow(
             wrap,
             isReversed,
             resolvedContainerScope?.children)
-        .apply {
-          style?.applyCommonProps(
-              context, (this as SpecGeneratedComponent).getOrCreateCommonProps())
-        }
+        .apply { style?.applyCommonProps(context, getCommonPropsHolder()) }
 
 /**
  * The implicit receiver for the trailing lambda on [ResourcesScope.Column] or [ResourcesScope.Row].

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.util.SparseArray
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -85,12 +86,14 @@ abstract class PrimitiveComponent : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  final override fun isEquivalentTo(other: Component?, shouldCompareCommonProps: Boolean) =
-      super.isEquivalentTo(other, shouldCompareCommonProps)
-
   final override fun canResolve(): Boolean = false
 
+  internal final override fun getCommonDynamicProps(): SparseArray<DynamicValue<*>>? =
+      super.getCommonDynamicProps()
+
   final override fun getSimpleName(): String = super.getSimpleName()
+
+  internal final override fun hasCommonDynamicProps(): Boolean = super.hasCommonDynamicProps()
 
   final override fun isPureRender(): Boolean = true
 

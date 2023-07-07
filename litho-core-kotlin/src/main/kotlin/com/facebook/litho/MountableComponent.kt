@@ -108,12 +108,13 @@ abstract class MountableComponent() : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  final override fun isEquivalentTo(other: Component?, shouldCompareCommonProps: Boolean) =
-      super.isEquivalentTo(other, shouldCompareCommonProps)
-
   final override fun canResolve(): Boolean = false
 
+  internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
+
   final override fun getSimpleName(): String = super.getSimpleName()
+
+  internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
   final override fun isPureRender(): Boolean = true
 

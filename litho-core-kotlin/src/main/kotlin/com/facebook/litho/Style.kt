@@ -33,6 +33,11 @@ interface StyleItem<T> {
   fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) = Unit
 }
 
+/** exposed to avoid package-private error on [Component] */
+internal fun Component.getCommonPropsHolder() = getOrCreateCommonProps()
+
+internal fun Component.getOrCreateCommonDynamicPropsHolder() = getOrCreateCommonDynamicProps()
+
 /**
  * An immutable ordered collection of attributes ( [StyleItem] s) that can be applied to a
  * component, like width or click handling.

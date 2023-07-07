@@ -1579,9 +1579,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   static boolean needsHostViewForCommonDynamicProps(final LithoNode node) {
     final List<ScopedComponentInfo> infos = node.getScopedComponentInfos();
     for (ScopedComponentInfo info : infos) {
-      if (info != null
-          && info.getCommonProps() != null
-          && info.getCommonProps().hasCommonDynamicProps()) {
+      if (info != null && info.getComponent().hasCommonDynamicProps()) {
         // Need a host View to apply the dynamic props to
         return true;
       }
