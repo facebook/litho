@@ -241,9 +241,6 @@ public class ComponentsConfiguration {
   public static boolean enableMountableRecycler = false;
 
   public static boolean enableMountableTwoBindersRecycler = false;
-
-  public static boolean enableMountableInNewsFeed = false;
-
   public static boolean enableMountableInMessenger = false;
 
   public static boolean enableSeparateAnimatorBinder = false;
