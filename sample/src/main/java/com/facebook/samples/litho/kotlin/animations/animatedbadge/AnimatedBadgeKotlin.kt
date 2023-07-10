@@ -55,7 +55,7 @@ class AnimatedBadgeKotlin : KComponent() {
     val expanded1 = state.value == 1 || state.value == 2
     val expanded2 = state.value == 2 || state.value == 3
 
-    // start
+    // start_example
     useTransition(
         Transition.parallel<Transition.BaseTransitionUnitsBuilder>(
             Transition.allLayout().animator(ANIMATOR),
@@ -68,7 +68,7 @@ class AnimatedBadgeKotlin : KComponent() {
                 .appearFrom(0f)
                 .disappearTo(0f)
                 .animator(ANIMATOR)))
-    // end
+    // end_example
 
     return Column(style = Style.padding(all = 8.dp).onClick { state.update { (it + 1) % 4 } }) {
       child(Row(style = Style.margin(top = 8.dp)) { child(buildComment1(expanded1)) })

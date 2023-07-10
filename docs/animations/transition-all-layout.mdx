@@ -4,7 +4,7 @@ title: Animating All Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-The Transition method [allLayout](pathname:///javadoc/com/facebook/litho/Transition.html#allLayout--) enables all layout changes to be easily animated without having to assign `transitionKey`s to all components:
+The [`Transition.allLayout()`](pathname:///javadoc/com/facebook/litho/Transition.html#allLayout--) method enables all layout changes to be easily animated without having to assign `transitionKey`s to all components:
 
 ```kotlin
 useTransition(Transition.allLayout().animator(ANIMATOR))
@@ -18,7 +18,7 @@ The following key points apply to `Transition.allLayout()`:
 
 The following example can be found in `Litho Sample App -> API Demos -> Animated Badge`:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedbadge/AnimatedBadgeKotlin.kt start=start end=end
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedbadge/AnimatedBadgeKotlin.kt start=start_example end=end_example
 ```
 
 The following animation shows the above 'AnimatedBadge' in action.
