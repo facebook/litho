@@ -30,7 +30,7 @@ The following code and animation show a simple Component that renders a yellow s
 When the value of the state changes, the `ComponentTree` is re-rendered, which makes the square appear to 'jump' from its previous position to the new one.
 The following section shows how to replace this 'jump' with a transition animation.
 
-## Bounds Transitions
+## Bounds transitions
 
 To add bounds animations to all transitioning components between tree changes, use the following:
 
@@ -66,7 +66,7 @@ The following sample shows the APIs in use:
 The above code features the following:
 
 * `transitionKey`- assigned to the component using the `Style.transitionKey` method.
-* `Transition` - created using [Transition.create()](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and specifies the property of the component using the [.animate()](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method, which takes an [AnimatedProperty](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html). Both of these methods take a [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), which means multiple `Transition`s may be expressed as follows:
+* `Transition` - created using [`Transition.create()`](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and specifies the property of the component using the [`.animate()`](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method, which takes [`AnimatedProperties`](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html). Both of these methods take a [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), which means multiple `Transition`s may be expressed as follows:
 
 ```kotlin
 private const val SQUARE_KEY: String = "square"
@@ -75,12 +75,12 @@ private const val ANOTHER_SHAPE: String = "another_shape"
 
 // ...
 useTransition(
-        Transition.create(SQUARE_KEY, OVAL_KEY, ANOTHER_SHAPE)
-            .animate(AnimatedProperties.X, AnimatedProperties.Y))
+    Transition.create(SQUARE_KEY, OVAL_KEY, ANOTHER_SHAPE)
+        .animate(AnimatedProperties.X, AnimatedProperties.Y))
 
 ```
 
-The following animation shows the AlphaTransitionComponentSpec in action.
+The following animation shows the `AlphaTransitionComponent` in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="200px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/basics3.webm")}></source>

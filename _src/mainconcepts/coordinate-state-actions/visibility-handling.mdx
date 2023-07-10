@@ -34,18 +34,28 @@ The following example illustrates setting visibility callbacks on a component:
 ```
 
 :::tip
-Visibility change callbacks should be used with particular care since they are invoked on every frame while scrolling. No heavy work should be done inside the visibility changed callbacks. 'Visible', 'Invisible', 'Focused', 'Unfocused', and 'Full Impression' are recommended over 'Visibility Changed' whenever possible.
+'Visibility Changed' callback should be used with particular care since it's invoked on every frame while scrolling — no heavy work should be done inside. 'Visible', 'Invisible', 'Focused', 'Unfocused', and 'Full Impression' are recommended over 'Visibility Changed' whenever possible.
 :::
 
 ### Custom visibility percentage
 
-By default, `VisibleEvent` is triggered when at least 1 pixel of the component is visible. In some cases, it may be a good idea to listen for custom visibility changes and perform an action when the component is only partially visible. A ratio for the component width or height can be specified for the visibility callback to be dispatched by using `visibleHeightRatio` and `visibleWidthRatio` props when specifying a visibility handler.
+By default, `Visible` event is triggered when at least 1 pixel of the component is visible. In some cases, it may be needed to set custom visibility threshold. A ratio of the component's visible width or height that will trigger the 'Visible' event can be set using `visibleWidthRatio` and `visibleHeightRatio` props.
 
-:::info
-Currently, the Kotlin API does not expose `visibleHeightRatio` and `visibleWidthRatio` (use the Codegen APIs).
-:::
+```kotlin
+override fun ComponentScope.render(): Component {
+  return Column(alignItems = YogaAlign.STRETCH) {
+    child(
+        Text(
+            text = "Do you see me?",
+            style =
+                Style.onVisible { logEvent(it) }
+                    .visibleWidthRatio(0.1f)
+                    .visibleHeightRatio(0.8f)))
+  }
+}
+```
 
-For the example above, a Visibility Event is dispatched when at least 80% of the component's height and 10% of the component's width is visible. When the component's visible percentage changes to less than 80% of total height, an invisible event will be dispatched. If not specified, the default width or height ratio is 1f.
+For the example above, a 'Visible' event is dispatched when at least 80% of the component's height **and** 10% of the component's width is visible. When the component's visible percentage changes to less than 80% of total height or to less than 10% of total width, an 'Invisible' event will be dispatched. If not specified, the default width and height ratio is 1f.
 
 ## Changing LithoView visibility
 

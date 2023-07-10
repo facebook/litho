@@ -6,7 +6,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Litho provides several APIs to customise many aspects of transitions and animate different components together.
 
-## Sequence, Stagger, and Parallel Sets
+## Sequence, Stagger, and Parallel sets
 
 Transitions can be composed using the following:
 
@@ -19,7 +19,7 @@ The following code uses a `stagger` set to animate three different rectangles.
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/StaggerTransitionComponentSpec.java start=start end=end
 ```
 
-The following animation shows the above LayoutSpec in action.
+The following animation shows this component in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger.webm")}></source>
@@ -35,7 +35,7 @@ The sets can also be used to animate different properties of the same component,
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/StaggerTransitionSameComponentSpec.java start=start end=end
 ```
 
-The following animation shows the above LayoutSpec in action.
+The following animation shows this component in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger3.webm")}></source>
@@ -44,7 +44,7 @@ The following animation shows the above LayoutSpec in action.
 
 ## Animators
 
-Animators affect the rate in which new values are pushed to the animated components. An `Animator` can be added to any transition with the `.animator()` builder setting.
+Animators affect the rate in which new values are pushed to the animated components. An `Animator` can be added to any transition with the `.animator()` builder method.
 
 Litho provides two Animators:
 
@@ -66,7 +66,7 @@ The default interpolator for the [TimingTransitionAnimator](pathname:///javadoc/
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/ParallelTransitionWithAnimatorsComponentSpec.java start=start end=end
 ```
 
-The following animation shows the above ComponentSpec in action.
+The following animation shows this component in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger4.webm")}></source>
@@ -74,7 +74,7 @@ The following animation shows the above ComponentSpec in action.
 </video>
 
 
-### Transition End Callback
+### TransitionEnd callback
 
 A Listener can be added to receive a callback when an individual transition has ended. This is done through Litho event dispatcher methods (see [Events Overview](../codegen/events-for-specs.md)).
 
@@ -87,7 +87,7 @@ The `TransitionEndEvent` will be called with the transition key and the specific
 Many examples can be found in the Litho Sample app: `API Demos`->`Animation Callbacks`.
 :::
 
-A transition end handler (`transitionEndHandler`) can be added to `Transition.allLayout()` where the same logic applies:
+A `transitionEndHandler` can also be added to `Transition.allLayout()` where the same logic applies:
 
 ```java
 @OnCreateTransition
