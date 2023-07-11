@@ -31,6 +31,7 @@ import com.facebook.samples.litho.kotlin.animations.dynamicprops.SeekBar
 
 class PrimitiveBindToExampleComponent : KComponent() {
 
+  // start_bindTo_seekbar_code
   override fun ComponentScope.render(): Component? {
     val background = useBinding(50f)
     val rotation = useBinding(0f)
@@ -53,12 +54,13 @@ class PrimitiveBindToExampleComponent : KComponent() {
               initialValue = 1f,
               label = "scale",
               onProgressChanged = { scaleValue -> scale.set(evaluate(scaleValue, .75f, 1.25f)) }))
+      // end_bindTo_seekbar_code
+      // start_bindTo_imagecomponent_def
       child(
           Column(style = Style.width(100.dp).height(100.dp).margin(all = 50.dp)) {
-            child(
-                ImageViewPrimitiveComponent(
-                    background = background, rotation = rotation, scale = scale))
+            child(ImageViewComponent(background = background, rotation = rotation, scale = scale))
           })
+      // end_bindTo_imagecomponent_def
     }
   }
 }

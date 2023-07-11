@@ -33,12 +33,15 @@ import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.utils.withEqualDimensions
 import com.facebook.samples.litho.R
 
-class ImageViewPrimitiveComponent(
+// start_bindTo_imagecomponent_code
+class ImageViewComponent(
     private val rotation: DynamicValue<Float>,
     private val background: DynamicValue<Float>,
     private val scale: DynamicValue<Float>,
     private val style: Style? = null
 ) : PrimitiveComponent() {
+  // end_bindTo_imagecomponent_code
+  // start_bindTo_binding_code
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
         layoutBehavior = ImageLayoutBehavior,
@@ -65,6 +68,7 @@ class ImageViewPrimitiveComponent(
             },
         style)
   }
+  // end_bindTo_binding_code
 }
 
 internal object ImageLayoutBehavior : LayoutBehavior {
