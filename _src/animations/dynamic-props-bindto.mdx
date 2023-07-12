@@ -20,7 +20,7 @@ In `KComponents`, a `DynamicValue` can be created using `useBinding()`. You can 
 `DynamicValue`s should only be updated on the main thread.
 :::
 
-## Common Dynamic Props
+## Common dynamic props
 
 The dynamic properties that are available for all `Component`s are:
 
@@ -32,7 +32,7 @@ The dynamic properties that are available for all `Component`s are:
 * Rotation
 * Elevation (from Lollipop and above)
 
-For `KComponent`s they should be applied as a Style item:
+For `KComponent`s they should be applied as a `Style` item:
 
 ```kotlin
 MyKComponent(style = Style.alpha(dynamicAlpha))
@@ -40,7 +40,7 @@ MyKComponent(style = Style.alpha(dynamicAlpha))
 
 The `DynamicValue` can be updated by calling its [set()](pathname:///javadoc/com/facebook/litho/DynamicValue.html#set-T-) function.
 
-The following code sample shows a `Component` that renders a square in the middle of the screen. The alpha and scale props have been set to the DynamicValue's, which are updated by two SeekBars.
+The following code sample shows a `Component` that renders a square in the middle of the screen. The `alpha` and `scale` props have been set to the `DynamicValue`s, which are updated by two `SeekBar`s.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CommonDynamicPropsKComponent.kt  start=start_example end=end_example
 ```
@@ -59,57 +59,57 @@ To see how other common dynamic props can be modified, see the [All Common Dynam
   <p>Your browser does not support the video element.</p>
 </video>
 
-## Custom Dynamic Props for SimpleMountable
+## Custom dynamic drops for `PrimitiveComponent`
 
-Dynamic Mount Props property types enable the value of the property, on the content mounted by the SimpleMountable, to be updated without triggering a new layout (such as when animating the text colour of a Text component).
+Dynamic Mount Props property types enable the value of the property, on the content mounted by the `PrimitiveComponent`, to be updated without triggering a new layout (such as when animating the text colour of a Text component).
 
-### BindTo - Dynamic Values API in Practice
+### `bindDynamic` - dynamic props in practice
 
-To illustrate the use of BindTo API in practice, you will implement a simple `ImageViewComponent` that will have `background`, `rotation` and `scale` properties animated, based on the `SeekBar` value.
+To illustrate the use of `bindDynamic` in practice, you will implement a simple `ImageViewComponent` that will have `background`, `rotation` and `scale` properties animated, based on the `SeekBar` value.
 
 Start off by defining each `DynamicValue` by using the `useBinding` hook and attaching it to the `SeekBar.onProgressChanged` callback that will change them accordingly:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/MountableBindToExampleComponent.kt start=start_bindTo_seekbar_code end=end_bindTo_seekbar_code
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/PrimitiveBindToExampleComponent.kt start=start_bindTo_seekbar_code end=end_bindTo_seekbar_code
 ```
 
-The MountableComponent, `ImageViewComponent`, will be defined as a child below the SeekBar children in the `render()` function and will take each `DynamicValue` as a constructor parameter:
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/MountableBindToExampleComponent.kt start=start_bindTo_imagecomponent_def end=end_bindTo_imagecomponent_def
+The `PrimitiveComponent`, `ImageViewComponent`, will be defined as a child below the `SeekBar` children in the `render()` function and will take each `DynamicValue` as a constructor parameter:
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/PrimitiveBindToExampleComponent.kt start=start_bindTo_imagecomponent_def end=end_bindTo_imagecomponent_def
 ```
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=start_bindTo_imagecomponent_code end=end_bindTo_imagecomponent_code
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewComponent.kt start=start_bindTo_imagecomponent_code end=end_bindTo_imagecomponent_code
 ```
 
-Now, in the MountableComponent `render()` call, use the `bindTo` API to bind each `DynamicValue` to the `ImageView` properties.
+Now, in the `PrimitiveComponent.render()` call, use the `bindDynamic` method to bind each `DynamicValue` to the `ImageView` properties.
 
-There are two ways of using `BindTo`:
+There are two ways of using `bindDynamic`:
 
 1. The simpler way is to create a binding between the `DynamicValue` and function reference to the setter of the property.
-   * The setter will be invoked for every update of the DynamicValue.
+   * The setter will be invoked for every update of the `DynamicValue`.
 1. The more complex binding can be achieved by using a lambda and accessing the view directly, as shown in the following snippet.
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=start_bindTo_binding_code end=end_bindTo_binding_code
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewComponent.kt start=start_bindTo_binding_code end=end_bindTo_binding_code
 ```
 
-The following short video shows the BindTo API in action:
+The following short video shows the `bindDynamic` in action:
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
   <source type="video/webm" src={useBaseUrl("/videos/bindToAPI.mov")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-### Key points for the BindTo API
+### Key points for the `bindDynamic`
 
-* A `DynamicValue` has to be bound to the SimpleMountable in `MountableComponentScope.render()`.
-* A SimpleMountable can have several dynamic props.
-* It is possible to automatically unbind the `DynamicValue` by setting the default value after `unmount()` is called.
+* A `DynamicValue` has to be bound to the `PrimitiveComponent` in `MountConfigurationScope` which is passed as a trailing lambda to `MountBehavior`.
+* A `PrimitiveComponent` can have several dynamic props.
+* It is possible to automatically unbind the `DynamicValue` after `unmount()` is called by setting the default value or using `onUnbindDynamic {}` block.
 
-## Animating Dynamic Props
+## Animating dynamic props
 
-Dynamic Props values can be used with Android Animators to create custom animations. The following example uses a [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) to animate the dynamic value `time`, defined in the previous value.
+Dynamic props values can be used with Android Animators to create custom animations. The following example uses a [`ValueAnimator`](https://developer.android.com/reference/android/animation/ValueAnimator) to animate the dynamic value `time`, defined in the previous value.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AnimateDynamicPropsKComponent.kt  start=start_example end=end_example
 ```
 
-A `DynamicValue` is used to represent time.  This is passed to the `Component` as a prop and kept as a reference to it so it can be updated. In a click event, a ValueAnimator is set up that updates the time `DynamicValue` each frame (see the following animation). The [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) is stored in a reference so that it can be cancelled if necessary.
+A `DynamicValue` is used to represent time.  This is passed to the `Component` as a prop and kept as a reference to it so it can be updated. In a click event, a `ValueAnimator` is set up that updates the time `DynamicValue` each frame (see the following animation). The `ValueAnimator` is stored in a reference so that it can be cancelled if necessary.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
   <source type="video/webm" src={useBaseUrl("/videos/custom_prop_animation.webm")}></source>
