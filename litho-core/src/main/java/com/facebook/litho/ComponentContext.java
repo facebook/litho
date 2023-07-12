@@ -761,7 +761,8 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldReuseOutputs() {
-    return mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
+    return isReconciliationEnabled()
+        && mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
   }
 
   boolean isNestedTreeContext() {
