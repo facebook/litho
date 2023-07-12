@@ -19,6 +19,7 @@ com.facebook.litho
 com.facebook.litho.accessibility
 com.facebook.litho.animated
 com.facebook.litho.annotations
+com.facebook.litho.binders
 com.facebook.litho.core
 com.facebook.litho.flexbox
 com.facebook.litho.transition
