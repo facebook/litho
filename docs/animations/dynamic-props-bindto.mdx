@@ -75,7 +75,7 @@ Start off by defining each `DynamicValue` by using the `useBinding` hook and att
 The `PrimitiveComponent`, `ImageViewComponent`, will be defined as a child below the `SeekBar` children in the `render()` function and will take each `DynamicValue` as a constructor parameter:
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/PrimitiveBindToExampleComponent.kt start=start_bindTo_imagecomponent_def end=end_bindTo_imagecomponent_def
 ```
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewPrimitiveComponent.kt start=start_bindTo_imagecomponent_code end=end_bindTo_imagecomponent_code
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewComponent.kt start=start_bindTo_imagecomponent_code end=end_bindTo_imagecomponent_code
 ```
 
 Now, in the `PrimitiveComponent.render()` call, use the `bindDynamic` method to bind each `DynamicValue` to the `ImageView` properties.
@@ -86,7 +86,7 @@ There are two ways of using `bindDynamic`:
    * The setter will be invoked for every update of the `DynamicValue`.
 1. The more complex binding can be achieved by using a lambda and accessing the view directly, as shown in the following snippet.
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewPrimitiveComponent.kt start=start_bindTo_binding_code end=end_bindTo_binding_code
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewComponent.kt start=start_bindTo_binding_code end=end_bindTo_binding_code
 ```
 
 The following short video shows the `bindDynamic` in action:
