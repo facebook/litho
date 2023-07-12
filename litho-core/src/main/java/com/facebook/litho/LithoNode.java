@@ -83,6 +83,7 @@ import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,6 +117,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
   protected static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
   protected static final long PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1L << 33;
+  protected static final long PFLAG_BINDER_IS_SET = 1L << 34;
 
   private List<LithoNode> mChildren = new ArrayList<>(4);
 
@@ -136,6 +138,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected @Nullable Drawable mBackground;
   protected @Nullable Rect mPaddingFromBackground;
   protected @Nullable Drawable mForeground;
+  protected @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> mTypeToViewBinders;
+  protected @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>>
+      mTypeToDrawableBinders;
+
   protected @Nullable PathEffect mBorderPathEffect;
   protected @Nullable StateListAnimator mStateListAnimator;
   private @Nullable Edges mTouchExpansion;
@@ -270,6 +276,24 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mUnresolvedComponents.add(component);
   }
 
+  @Nullable
+  public List<RenderUnit.Binder<Object, Object, Object>> getBinders() {
+    if (mTypeToViewBinders == null && mTypeToDrawableBinders == null) {
+      return null;
+    }
+
+    List<RenderUnit.Binder<Object, Object, Object>> binders = new ArrayList<>();
+    if (mTypeToViewBinders != null) {
+      binders.addAll(mTypeToViewBinders.values());
+    }
+
+    if (mTypeToDrawableBinders != null) {
+      binders.addAll(mTypeToDrawableBinders.values());
+    }
+
+    return binders;
+  }
+
   public void background(@Nullable Drawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
@@ -287,6 +311,22 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
+  public void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
+    mPrivateFlags |= PFLAG_BINDER_IS_SET;
+    if (mTypeToViewBinders == null) {
+      mTypeToViewBinders = new LinkedHashMap<>();
+    }
+    mTypeToViewBinders.put(binder.getClass(), binder);
+  }
+
+  public void mountDrawableBinder(RenderUnit.Binder<Object, Object, Object> binder) {
+    mPrivateFlags |= PFLAG_BINDER_IS_SET;
+    if (mTypeToDrawableBinders == null) {
+      mTypeToDrawableBinders = new LinkedHashMap<>();
+    }
+    mTypeToDrawableBinders.put(binder.getClass(), binder);
+  }
+
   public void setPaddingFromBackground(@Nullable Rect padding) {
     mPaddingFromBackground = padding;
   }
@@ -301,6 +341,18 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     System.arraycopy(colors, 0, mBorderColors, 0, mBorderColors.length);
     System.arraycopy(radii, 0, mBorderRadius, 0, mBorderRadius.length);
     mBorderPathEffect = effect;
+  }
+
+  public boolean hasMountBinders() {
+    return hasDrawableBinders() || hasViewBinders();
+  }
+
+  public boolean hasViewBinders() {
+    return mTypeToViewBinders != null && !mTypeToViewBinders.isEmpty();
+  }
+
+  public boolean hasDrawableBinders() {
+    return mTypeToDrawableBinders != null && !mTypeToDrawableBinders.isEmpty();
   }
 
   protected void applyDiffNode(
@@ -1340,6 +1392,42 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       }
     }
 
+    //    if (mPrimitive != null) {
+    //      RenderUnit<?> renderUnit = mPrimitive.getRenderUnit();
+    //
+    //      if (mTypeToViewBinders != null) {
+    //        for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToViewBinders.values()) {
+    //          renderUnit.addOptionalMountBinders(
+    //              RenderUnit.DelegateBinder.createDelegateBinder(renderUnit, binder));
+    //        }
+    //      }
+    //
+    //      if (mTypeToDrawableBinders != null) {
+    //        for (RenderUnit.Binder<Object, Object, Object> binder :
+    // mTypeToDrawableBinders.values()) {
+    //          renderUnit.addOptionalMountBinders(
+    //              RenderUnit.DelegateBinder.createDelegateBinder(renderUnit, binder));
+    //        }
+    //      }
+    //    }
+    //
+    //    if (mMountable != null) {
+    //      if (mTypeToViewBinders != null) {
+    //        for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToViewBinders.values()) {
+    //          mMountable.addOptionalMountBinders(
+    //              RenderUnit.DelegateBinder.createDelegateBinder(mMountable, binder));
+    //        }
+    //      }
+    //
+    //      if (mTypeToDrawableBinders != null) {
+    //        for (RenderUnit.Binder<Object, Object, Object> binder :
+    // mTypeToDrawableBinders.values()) {
+    //          mMountable.addOptionalMountBinders(
+    //              RenderUnit.DelegateBinder.createDelegateBinder(mMountable, binder));
+    //        }
+    //      }
+    //    }
+
     // Apply the border widths
     if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
       for (int i = 0, length = mBorderEdgeWidths.length; i < length; ++i) {
@@ -1426,6 +1514,17 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
+  public static boolean willMountDrawable(final LithoNode node) {
+    if (node.getMountable() != null) {
+      return node.getMountable().getRenderType() == RenderUnit.RenderType.DRAWABLE;
+    } else if (node.getPrimitive() != null) {
+      return node.getPrimitive().getRenderUnit().getRenderType() == RenderUnit.RenderType.DRAWABLE;
+    } else {
+      final Component component = node.getTailComponent();
+      return (component != null && component.getMountType() == Component.MountType.DRAWABLE);
+    }
+  }
+
   /**
    * Returns true if this is the root node (which always generates a matching layout output), if the
    * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
@@ -1434,7 +1533,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * @param node The LithoNode to check
    */
   static boolean needsHostView(final LithoNode node) {
-
     if (node.willMountView()) {
       // Component already represents a View.
       return false;
@@ -1460,6 +1558,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
 
     if (hasSelectedStateWhenDisablingDrawableOutputs(node)) {
+      return true;
+    }
+
+    if (Component.isLayoutSpec(node.getTailComponent()) && node.hasViewBinders()) {
+      return true;
+    }
+
+    if (willMountDrawable(node) && node.hasViewBinders()) {
       return true;
     }
 

@@ -192,6 +192,11 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
     return getComponent().getSimpleName();
   }
 
+  @Override
+  public void addOptionalMountBinder(DelegateBinder<?, ? super Object, ?> binder) {
+    mPrimitiveRenderUnit.addOptionalMountBinder(binder);
+  }
+
   public PrimitiveRenderUnit<?> getPrimitiveRenderUnit() {
     return mPrimitiveRenderUnit;
   }

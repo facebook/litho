@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -86,7 +87,8 @@ public class InternalNodeUtils {
         node.isDuplicateParentStateEnabled(),
         false,
         node.needsHostView(),
-        node.willMountView());
+        node.willMountView(),
+        node.needsHostView() ? null : node.getBinders());
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
@@ -120,7 +122,8 @@ public class InternalNodeUtils {
         node.isHostDuplicateParentState(),
         node.isDuplicateChildrenStatesEnabled(),
         false,
-        true);
+        true,
+        node.needsHostView() ? node.getBinders() : null);
   }
 
   /** Creates a {@link LithoRenderUnit} for the root host */
@@ -147,7 +150,8 @@ public class InternalNodeUtils {
         node.isHostDuplicateParentState(),
         node.isDuplicateChildrenStatesEnabled(),
         false,
-        true);
+        true,
+        null);
   }
 
   /**
@@ -280,7 +284,8 @@ public class InternalNodeUtils {
         node.isDuplicateParentStateEnabled(),
         false,
         node.needsHostView(),
-        false);
+        false,
+        null);
   }
 
   /** Generic method to create a {@link LithoRenderUnit}. */
@@ -295,7 +300,8 @@ public class InternalNodeUtils {
       boolean duplicateParentState,
       boolean duplicateChildrenStates,
       boolean hasHostView,
-      boolean isMountViewSpec) {
+      boolean isMountViewSpec,
+      @Nullable List<RenderUnit.Binder<Object, Object, Object>> binders) {
 
     int flags = 0;
 
@@ -339,37 +345,67 @@ public class InternalNodeUtils {
 
     Mountable<?> mountable = node.getMountable();
     if (mountable != null && isMountable(component)) {
-      return MountableLithoRenderUnit.create(
-          component,
-          commonDynamicProps,
-          context,
-          layoutOutputNodeInfo,
-          flags,
-          importantForAccessibility,
-          mountable);
+      MountableLithoRenderUnit mountableLithoRenderUnit =
+          MountableLithoRenderUnit.create(
+              component,
+              commonDynamicProps,
+              context,
+              layoutOutputNodeInfo,
+              flags,
+              importantForAccessibility,
+              mountable);
+
+      if (binders != null) {
+        for (RenderUnit.Binder<Object, Object, Object> binder : binders) {
+          mountableLithoRenderUnit.addOptionalMountBinder(
+              RenderUnit.DelegateBinder.createDelegateBinder(mountableLithoRenderUnit, binder));
+        }
+      }
+
+      return mountableLithoRenderUnit;
     }
 
     Primitive primitive = node.getPrimitive();
     if (primitive != null && isPrimitive(component)) {
-      return PrimitiveLithoRenderUnit.create(
-          component,
-          commonDynamicProps,
-          context,
-          layoutOutputNodeInfo,
-          flags,
-          importantForAccessibility,
-          primitive.getRenderUnit());
+      PrimitiveLithoRenderUnit primitiveLithoRenderUnit =
+          PrimitiveLithoRenderUnit.create(
+              component,
+              commonDynamicProps,
+              context,
+              layoutOutputNodeInfo,
+              flags,
+              importantForAccessibility,
+              primitive.getRenderUnit());
+
+      if (binders != null) {
+        for (RenderUnit.Binder<Object, Object, Object> binder : binders) {
+          primitiveLithoRenderUnit.addOptionalMountBinder(
+              RenderUnit.DelegateBinder.createDelegateBinder(primitiveLithoRenderUnit, binder));
+        }
+      }
+
+      return primitiveLithoRenderUnit;
     }
 
-    return MountSpecLithoRenderUnit.create(
-        id,
-        component,
-        (SparseArray) commonDynamicProps,
-        context,
-        layoutOutputNodeInfo,
-        flags,
-        importantForAccessibility,
-        updateState);
+    LithoRenderUnit renderUnit =
+        MountSpecLithoRenderUnit.create(
+            id,
+            component,
+            (SparseArray) commonDynamicProps,
+            context,
+            layoutOutputNodeInfo,
+            flags,
+            importantForAccessibility,
+            updateState);
+
+    if (binders != null) {
+      for (RenderUnit.Binder<Object, Object, Object> binder : binders) {
+        renderUnit.addOptionalMountBinder(
+            RenderUnit.DelegateBinder.createDelegateBinder(renderUnit, binder));
+      }
+    }
+
+    return renderUnit;
   }
 
   private static SparseArray<DynamicValue<?>> mergeCommonDynamicProps(

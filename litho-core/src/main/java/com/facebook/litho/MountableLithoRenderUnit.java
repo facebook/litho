@@ -182,6 +182,11 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   }
 
   @Override
+  public void addOptionalMountBinder(DelegateBinder<?, ? super Object, ?> binder) {
+    mMountable.addOptionalMountBinder(binder);
+  }
+
+  @Override
   public Class<?> getRenderContentType() {
     return mMountable.getRenderContentType();
   }

@@ -31,6 +31,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.DrawableUtils;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Equivalence;
 import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import com.facebook.yoga.YogaAlign;
@@ -39,7 +40,9 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Internal class that holds props that are common to all {@link Component}s. */
 @ThreadConfined(ThreadConfined.ANY)
@@ -639,6 +642,14 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     getOrCreateOtherProps().transitionKey(key, ownerKey);
   }
 
+  public void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
+    getOrCreateOtherProps().mountViewBinder(binder);
+  }
+
+  public void mountDrawableBinder(RenderUnit.Binder<Object, Object, Object> binder) {
+    getOrCreateOtherProps().mountDrawableBinder(binder);
+  }
+
   @Nullable
   public String getTransitionKey() {
     return getOrCreateOtherProps().mTransitionKey;
@@ -754,6 +765,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     private static final int PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1 << 16;
     private static final int PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1 << 17;
     private static final int PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1 << 18;
+    private static final int PFLAG_BINDER_IS_SET = 1 << 19;
 
     private int mPrivateFlags;
 
@@ -765,6 +777,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     @Nullable private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
     @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
     @Nullable private EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
+
+    private @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> mTypeToViewBinder;
+    private @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>>
+        mTypeToDrawableBinder;
+
     private int mImportantForAccessibility;
     private boolean mDuplicateParentState;
     private boolean mDuplicateChildrenStates;
@@ -778,6 +795,24 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     @DrawableRes private int mStateListAnimatorRes;
     private int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
     private @Nullable Paint mLayerPaint;
+
+    private void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
+      mPrivateFlags |= PFLAG_BINDER_IS_SET;
+      if (mTypeToViewBinder == null) {
+        mTypeToViewBinder = new LinkedHashMap<>();
+      }
+
+      mTypeToViewBinder.put(binder.getClass(), binder);
+    }
+
+    private void mountDrawableBinder(RenderUnit.Binder<Object, Object, Object> binder) {
+      mPrivateFlags |= PFLAG_BINDER_IS_SET;
+      if (mTypeToDrawableBinder == null) {
+        mTypeToDrawableBinder = new LinkedHashMap<>();
+      }
+
+      mTypeToDrawableBinder.put(binder.getClass(), binder);
+    }
 
     private void importantForAccessibility(int importantForAccessibility) {
       mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
@@ -895,6 +930,19 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
         node.foreground(mForeground);
       }
+      if ((mPrivateFlags & PFLAG_BINDER_IS_SET) != 0L) {
+        if (mTypeToViewBinder != null) {
+          for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToViewBinder.values()) {
+            node.mountViewBinder(binder);
+          }
+        }
+        if (mTypeToDrawableBinder != null) {
+          for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToDrawableBinder.values()) {
+            node.mountDrawableBinder(binder);
+          }
+        }
+      }
+
       if ((mPrivateFlags & PFLAG_WRAP_IN_VIEW_IS_SET) != 0L) {
         node.wrapInView();
       }
