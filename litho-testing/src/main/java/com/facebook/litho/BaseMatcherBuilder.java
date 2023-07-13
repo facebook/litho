@@ -28,7 +28,10 @@ public final class BaseMatcherBuilder {
       @Override
       public boolean matches(InspectableComponent component) {
         final Component underlyingComponent = component.getComponent();
-        final CommonProps commonProps = underlyingComponent.getCommonProps();
+        final CommonProps commonProps =
+            (underlyingComponent instanceof SpecGeneratedComponent)
+                ? ((SpecGeneratedComponent) underlyingComponent).getCommonProps()
+                : null;
         if (matcher.mClickHandlerMatcher != null
             && commonProps != null
             && !matcher.mClickHandlerMatcher.matches(commonProps.getClickHandler())) {

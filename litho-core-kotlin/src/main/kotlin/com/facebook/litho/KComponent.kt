@@ -75,17 +75,16 @@ abstract class KComponent : Component() {
   // All other Component lifecycle methods are made final and no-op here as they shouldn't be
   // overriden.
 
+  final override fun isEquivalentTo(other: Component?, shouldCompareCommonProps: Boolean) =
+      super.isEquivalentTo(other, shouldCompareCommonProps)
+
   final override fun canMeasure() = false
 
   final override fun canResolve() = false
 
-  internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
-
   final override fun getMountType() = super.getMountType()
 
   final override fun getSimpleName(): String = super.getSimpleName()
-
-  internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
   final override fun isPureRender() = false
 

@@ -423,7 +423,7 @@ class LayoutStateCreateTreeTest {
             .build()
     val node = Resolver.resolve(resolveStateContext, componentContext, component)
     val output: LayoutProps = Mockito.spy(LayoutProps::class.java)
-    component.commonProps?.copyLayoutProps(output)
+    (component as SpecGeneratedComponent).commonProps?.copyLayoutProps(output)
     verify(output).layoutDirection(YogaDirection.INHERIT)
     verify(output).alignSelf(YogaAlign.AUTO)
     verify(output).positionType(YogaPositionType.ABSOLUTE)

@@ -21,6 +21,7 @@ import com.facebook.litho.AttributeKey
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.EventHandler
+import com.facebook.litho.SpecGeneratedComponent
 
 /**
  * A test node is used to hold all the information needed to represent a given component in the
@@ -33,15 +34,22 @@ class TestNode(private val component: Component) {
 
   private val commonPropsAttributes: Map<AttributeKey<*>, *> =
       mapOf(
-          TestNodeAttributes.TestKey to component.commonProps?.testKey,
-          TestNodeAttributes.Enabled to (component.commonProps?.isEnabled ?: false),
-          TestNodeAttributes.ContentDescription to component.commonProps?.contentDescription,
-          TestNodeActionAttributes.OnClick to component.commonProps?.clickHandler)
+          TestNodeAttributes.TestKey to
+              if (component is SpecGeneratedComponent) component.commonProps?.testKey else null,
+          TestNodeAttributes.Enabled to
+              if (component is SpecGeneratedComponent) (component.commonProps?.isEnabled ?: false)
+              else false,
+          TestNodeAttributes.ContentDescription to
+              if (component is SpecGeneratedComponent) component.commonProps?.contentDescription
+              else null,
+          TestNodeActionAttributes.OnClick to
+              if (component is SpecGeneratedComponent) component.commonProps?.clickHandler
+              else null)
 
   private val componentAttributes: Map<AttributeKey<*>, *> = component.debugAttributes
 
   val clickHandler: EventHandler<ClickEvent>?
-    get() = component.commonProps?.clickHandler
+    get() = if (component is SpecGeneratedComponent) component.commonProps?.clickHandler else null
 
   fun <T> getAttribute(key: AttributeKey<T>): T =
       commonPropsAttributes[key] as? T ?: component.getDebugAttribute(key)
