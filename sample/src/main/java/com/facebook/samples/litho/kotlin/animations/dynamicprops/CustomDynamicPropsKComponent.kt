@@ -40,7 +40,7 @@ class CustomDynamicPropsKComponent : KComponent() {
     return Column(style = Style.padding(all = 20.dp)) {
       child(SeekBar { time.set((it * TimeUnit.HOURS.toMillis(12)).toLong()) })
       child(
-          ClockFaceMountable(
+          ClockFacePrimitive(
               time = time,
               style =
                   Style.width(200.dp)
