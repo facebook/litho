@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.mountables.widgets
+package com.facebook.samples.litho.kotlin.primitives.widgets
 
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
@@ -28,21 +28,21 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Tests for [CardShadow] */
+/** Tests for [CardClip] */
 @RunWith(LithoTestRunner::class)
-class CardShadowTest {
+class CardClipTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
-  fun `CardShadow should render`() {
+  fun `CardClip should render`() {
     val testLithoView =
-        lithoViewRule.render { CardShadow(style = Style.width(100.px).height(100.px)) }
+        lithoViewRule.render { CardClip(style = Style.width(100.px).height(100.px)) }
 
-    // should find an CardShadow in the tree
-    assertNotNull(testLithoView.findComponent(CardShadow::class))
+    // should find an CardClip in the tree
+    assertNotNull(testLithoView.findComponent(CardClip::class))
 
-    // should mount an CardShadow
+    // should mount an CardClip
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
   }
 }

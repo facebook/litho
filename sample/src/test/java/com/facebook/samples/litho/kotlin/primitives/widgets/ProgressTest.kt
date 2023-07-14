@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.mountables.widgets
+package com.facebook.samples.litho.kotlin.primitives.widgets
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable

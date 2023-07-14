@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.primitives
+package com.facebook.samples.litho.kotlin.canvas
 
 import com.facebook.litho.Column
 import com.facebook.litho.Component
@@ -27,6 +27,7 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.samples.litho.kotlin.primitives.SimpleImageViewPrimitiveComponent
 
 class SimpleImageViewExamplePrimitiveComponent : KComponent() {
 

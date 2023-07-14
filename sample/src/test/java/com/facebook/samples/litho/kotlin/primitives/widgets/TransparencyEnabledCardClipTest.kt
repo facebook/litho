@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.mountables.widgets
+package com.facebook.samples.litho.kotlin.primitives.widgets
 
 import com.facebook.litho.Style
 import com.facebook.litho.core.height

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.mountables
+package com.facebook.samples.litho.kotlin.primitives
 
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator

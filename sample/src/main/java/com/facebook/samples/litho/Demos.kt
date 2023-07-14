@@ -98,6 +98,7 @@ import com.facebook.samples.litho.kotlin.canvas.DrawRotatedGroupCanvasKComponent
 import com.facebook.samples.litho.kotlin.canvas.DrawShapeCanvasKComponent
 import com.facebook.samples.litho.kotlin.canvas.DrawStrokedShapeCanvasKComponent
 import com.facebook.samples.litho.kotlin.canvas.DrawTransparentHoleCanvasKComponent
+import com.facebook.samples.litho.kotlin.canvas.SimpleImageViewExamplePrimitiveComponent
 import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.DepsCollectionKComponent
@@ -119,16 +120,10 @@ import com.facebook.samples.litho.kotlin.gettingstarted.ClickableText
 import com.facebook.samples.litho.kotlin.gettingstartedsolution.VerticalSpeller
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
-import com.facebook.samples.litho.kotlin.mountables.SimpleCanvasExampleComponent
-import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewExampleComponent
-import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewWithAccessibilityExampleComponent
-import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
-import com.facebook.samples.litho.kotlin.mountables.controllers.ControllersExampleComponent
-import com.facebook.samples.litho.kotlin.mountables.widgets.WidgetsExampleComponent
 import com.facebook.samples.litho.kotlin.observability.UseFlowComponent
 import com.facebook.samples.litho.kotlin.observability.UseLiveDataComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
-import com.facebook.samples.litho.kotlin.primitives.SimpleImageViewExamplePrimitiveComponent
+import com.facebook.samples.litho.kotlin.primitives.SimpleCanvasExampleComponent
 import com.facebook.samples.litho.kotlin.primitives.SimpleImageViewWithAccessibilityExamplePrimitiveComponent
 import com.facebook.samples.litho.kotlin.primitives.bindto.PrimitiveBindToExampleComponent
 import com.facebook.samples.litho.kotlin.primitives.controllers.ControllersExamplePrimitiveComponent
@@ -263,27 +258,6 @@ class Demos {
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),
                     DemoGrouping(
-                        name = "Mountables",
-                        listOf(
-                            SingleDemo(
-                                name = "Canvas Component Example",
-                                component = SimpleCanvasExampleComponent()),
-                            SingleDemo(
-                                name = "Simple ImageView Mountable Component Example",
-                                component = SimpleImageViewExampleComponent()),
-                            SingleDemo(
-                                name = "Simple ImageView Mountable Component With A11Y Example",
-                                component = SimpleImageViewWithAccessibilityExampleComponent()),
-                            SingleDemo(
-                                name = "Sample Mountable Components Example",
-                                component = WidgetsExampleComponent()),
-                            SingleDemo(
-                                name = "BindTo - Dynamic Values API",
-                                component = MountableBindToExampleComponent()),
-                            SingleDemo(
-                                name = "Controllers", component = ControllersExampleComponent()),
-                        )),
-                    DemoGrouping(
                         name = "Primitives",
                         listOf(
                             SingleDemo(
@@ -306,6 +280,9 @@ class Demos {
                     DemoGrouping(
                         name = "Canvas",
                         listOf(
+                            SingleDemo(
+                                name = "Canvas Component Example",
+                                component = SimpleCanvasExampleComponent()),
                             SingleDemo(
                                 name = "Draw Shape", component = DrawShapeCanvasKComponent()),
                             SingleDemo(name = "Draw Path", component = DrawPathCanvasKComponent()),
