@@ -85,7 +85,7 @@ fun ResourcesScope.SeekBar(
 ): Component = Row {
   label?.let { child(Text(label, style = Style.margin(end = 10.dp))) }
   child(
-      SeekBarMountable(
+      SeekBarPrimitive(
           initialValue = initialValue,
           onProgressChange = onProgressChanged,
           style = Style.height(14.dp).flex(grow = 1f) + style))
