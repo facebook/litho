@@ -34,6 +34,7 @@ import com.facebook.litho.editor.instances.ObjectEditorInstance;
 import com.facebook.litho.editor.instances.StringEditorInstance;
 import com.facebook.litho.editor.instances.StyleEditorInstance;
 import com.facebook.litho.editor.instances.UtilSizeEditorInstance;
+import com.facebook.litho.editor.model.EditorString;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -96,7 +97,13 @@ public final class EditorRegistry {
   public static @Nullable EditorValue read(final Class<?> c, final Field f, final Object node) {
     final Editor editor = getEditor(c);
     if (editor == null) {
-      return null;
+      if (node instanceof TransientField) {
+        return new EditorString(((TransientField<?>) node).content.toString());
+      }
+      Object value = Reflection.INSTANCE.getValueUNSAFE(f, node);
+      String fallback = value != null ? value.toString() : "null";
+
+      return new EditorString(fallback);
     }
     return editor.read(f, node);
   }

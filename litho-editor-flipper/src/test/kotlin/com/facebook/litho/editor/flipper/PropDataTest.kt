@@ -19,6 +19,8 @@ package com.facebook.litho.editor.flipper
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -46,10 +48,14 @@ class PropDataTest {
     assertThat(props).isNull()
   }
 
+  @DataClassGenerate(toString = Mode.KEEP, equalsHashCode = Mode.KEEP)
+  data class Data(val d: String)
+
   @Test
   fun `test KComponent props included in Props scetion`() {
+
     class ComponentWithProps(
-        val a: Any? = null,
+        val a: Data = Data("data"),
         val b: Int = 2,
         val c: Boolean = true,
     ) : KComponent() {
@@ -64,7 +70,7 @@ class PropDataTest {
 
     val flipperObject = props.value
     // Fallback to class name
-    assertThat(flipperObject.getObject("a").get("value")).isEqualTo("class java.lang.Object")
+    assertThat(flipperObject.getObject("a").get("value")).isEqualTo("Data(d=data)")
     assertThat(flipperObject.getObject("b").getInt("value")).isEqualTo(2)
     assertThat(flipperObject.getObject("c").getBoolean("value")).isTrue
   }
@@ -147,7 +153,7 @@ class PropDataTest {
 
     val flipperObject = props.value
     // Fallback to class name
-    assertThat(flipperObject.getObject("a").get("value")).isEqualTo("class java.lang.Object")
+    assertThat(flipperObject.getObject("a").get("value")).isEqualTo("null")
     assertThat(flipperObject.getObject("b").getInt("value")).isEqualTo(2)
     assertThat(flipperObject.getObject("c").getBoolean("value")).isTrue
   }
