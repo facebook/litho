@@ -1147,7 +1147,9 @@ public class SectionTree {
         mIsChangeSetCalculationInProgress = true;
       }
 
-      clearUnusedTriggerHandlers();
+      if (nextRoot != null) {
+        clearUnusedTriggerHandlers();
+      }
 
       // Checking nextRoot is enough here since whenever we enqueue a new state update we also
       // re-assign nextRoot.
