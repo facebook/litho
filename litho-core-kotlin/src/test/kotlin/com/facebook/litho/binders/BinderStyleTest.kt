@@ -30,7 +30,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.TextDrawable
-import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.ViewAllocator
@@ -127,27 +126,6 @@ class BinderStyleTest {
 
     val lithoView =
         lithoViewRule.render { ComponentWithPrimitive(style = Style.viewBinder(binder)) }
-    LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
-
-    binder.assertNumOfBindInvocations(1)
-    binder.assertBoundContentType(0, TextView::class.java)
-    binder.assertNoContentHasBeenUnbound()
-
-    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
-
-    binder.assertNumOfBindInvocations(1)
-    binder.assertBoundContentType(0, TextView::class.java)
-
-    binder.assertNumOfUnbindInvocations(1)
-    binder.assertUnboundContentType(0, TextView::class.java)
-  }
-
-  @Test
-  fun `binder around Mountable invoked on mount and unmount`() {
-    val binder = ViewTestBinder()
-
-    val lithoView =
-        lithoViewRule.render { HelloMountableComponent(style = Style.viewBinder(binder)) }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
     binder.assertNumOfBindInvocations(1)
@@ -383,31 +361,5 @@ class BinderStyleTest {
     override fun PrimitiveComponentScope.render(): LithoPrimitive {
       return LithoPrimitive(TextPrimitive(text = "Hello"), style = style)
     }
-  }
-
-  private class HelloMountableComponent(
-      private val style: Style,
-  ) : MountableComponent() {
-
-    override fun MountableComponentScope.render(): MountableRenderResult {
-      return MountableRenderResult(SimpleTextMountable("Hello"), style = style)
-    }
-  }
-
-  private class SimpleTextMountable(private val text: String) :
-      SimpleMountable<TextView>(RenderType.VIEW) {
-
-    override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
-        withEqualSize(widthSpec, heightSpec)
-
-    override fun mount(c: Context, content: TextView, layoutData: Any?) {
-      content.text = text
-    }
-
-    override fun unmount(c: Context, content: TextView, layoutData: Any?) {
-      content.text = null
-    }
-
-    override fun createContent(context: Context): TextView = TextView(context)
   }
 }
