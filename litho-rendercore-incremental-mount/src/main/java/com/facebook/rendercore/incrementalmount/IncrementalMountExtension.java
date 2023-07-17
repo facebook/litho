@@ -461,9 +461,7 @@ public class IncrementalMountExtension
           }
         }
 
-        if (!state.usesGapWorker) {
-          state.mPreviousBottomsIndex++;
-        }
+        state.mPreviousBottomsIndex++;
       }
 
       while (state.mPreviousBottomsIndex > 0
@@ -530,9 +528,7 @@ public class IncrementalMountExtension
           }
         }
 
-        if (!state.usesGapWorker) {
-          state.mPreviousTopsIndex--;
-        }
+        state.mPreviousTopsIndex--;
       }
     }
 
