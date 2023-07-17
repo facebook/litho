@@ -288,7 +288,7 @@ private constructor(
 
   fun canResolve(): Boolean = component.canResolve()
 
-  private val mountedContent: Any?
+  val mountedContent: Any?
     get() {
       if (!isLayoutNode) {
         return null
