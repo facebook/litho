@@ -30,7 +30,7 @@ will be a reference to that content.
 
 The following example illustrates setting visibility callbacks on a component:
 
-``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/VisibilityHandlingExampleComponent.kt start=start_example end=end_example
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/VisibilityHandlingExampleComponent.kt start=start_example end=end_example
 ```
 
 :::tip
@@ -68,11 +68,11 @@ The `LithoLifecycleProvider` API can be used to inform LithoView about  changes 
 
 The `LithoLifecycleProvider.moveToLifecycle()` method should be called from the `Fragment.setUserVisibleHint()` or `onResume()/onPause()` methods of `Activity` or `Fragment`.
 
-```java
-public interface LithoLifecycleProvider {
+```kotlin
+interface LithoLifecycleProvider {
 
   // Should be called to inform Litho that its visibility state has changed
-  void moveToLifecycle(LithoLifecycle lithoLifecycle);
+  fun moveToLifecycle(lithoLifecycle: LithoLifecycle)
 
 }
 ```
@@ -94,10 +94,10 @@ public interface LithoLifecycleProvider {
 
 #### Listening to a `LithoLifecycleProvider` state changes
 
-A`LithoView` can be registered to listen to state changes of a `LithoLifecycleProvider` instance when created:
+A `LithoView` can be registered to listen to state changes of a `LithoLifecycleProvider` instance when created:
 
-```java
-final LithoView lithoView = LithoView.create(c, component, lithoLifecycleProvider);
+```kotlin
+val lithoView = LithoView.create(c, component, lithoLifecycleProvider)
 ```
 
 ### Android AOSP implementation
@@ -135,7 +135,7 @@ When state changes need to be handled manually, use `LithoLifecycleProviderDeleg
 
 ### Nested Component Trees
 
-The Litho components for building Lists (`Section`s, `VerticalScrollSpec`, `HorizontalScrollSpec`) create hierarchies of nested `ComponentTree`s:
+The Litho components for building Lists (`LazyCollection`s, `Section`s, `VerticalScrollSpec`, `HorizontalScrollSpec`) create hierarchies of nested `ComponentTree`s:
 
 * A ComponentTree at the root of the hierarchy, encapsulating the entire list (associated with a root LithoView)
 * A ComponentTree for each item in the List (associated with a LithoView child of the root LithoView)
@@ -155,10 +155,10 @@ Resetting the visibility hint to true after it was set to false will also trigge
 
 Example usage:
 
-```java
+```kotlin
 // To dispatch visible/focused events as necessary on all components inside this LithoView
-LithoView.setVisibilityHint(true);
+lithoView.setVisibilityHint(true)
 
 // To dispatch invisible/unfocused events as necessary on all components inside this LithoView
-LithoView.setVisibilityHint(false);
+lithoView.setVisibilityHint(false)
 ```
