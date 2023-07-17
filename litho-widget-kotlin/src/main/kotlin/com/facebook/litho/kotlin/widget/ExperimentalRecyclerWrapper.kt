@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.SnapHelper
 import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.dp
-import com.facebook.litho.kotlin.widget.ExperimentalPrimitiveRecycler
+import com.facebook.litho.kotlin.widget.ExperimentalRecycler
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerEventsController
@@ -45,7 +45,7 @@ fun ExperimentalRecyclerWrapper(
     recyclerViewId: Int? = null,
     overScrollMode: Int? = null,
     contentDescription: CharSequence? = null,
-    itemAnimator: RecyclerView.ItemAnimator? = ExperimentalPrimitiveRecycler.DEFAULT_ITEM_ANIMATOR,
+    itemAnimator: RecyclerView.ItemAnimator? = ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR,
     recyclerEventsController: RecyclerEventsController? = null,
     onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     snapHelper: SnapHelper? = null,
@@ -61,8 +61,8 @@ fun ExperimentalRecyclerWrapper(
     rightPadding: Int = 0,
     bottomPadding: Int = 0,
     style: Style? = null
-): ExperimentalPrimitiveRecycler =
-    ExperimentalPrimitiveRecycler(
+): ExperimentalRecycler =
+    ExperimentalRecycler(
         binder = binder,
         hasFixedSize = hasFixedSize ?: true,
         isClipToPaddingEnabled = isClipToPaddingEnabled ?: true,
@@ -78,7 +78,7 @@ fun ExperimentalRecyclerWrapper(
         recyclerViewId = recyclerViewId ?: View.NO_ID,
         overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
         contentDescription = contentDescription,
-        itemAnimator = itemAnimator ?: ExperimentalPrimitiveRecycler.DEFAULT_ITEM_ANIMATOR,
+        itemAnimator = itemAnimator ?: ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR,
         recyclerEventsController = recyclerEventsController,
         onScrollListeners = onScrollListeners ?: emptyList(),
         snapHelper = snapHelper,
