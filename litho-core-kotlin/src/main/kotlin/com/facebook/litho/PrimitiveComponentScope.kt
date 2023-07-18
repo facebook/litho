@@ -40,7 +40,8 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
       contentAllocator: ContentAllocator<ContentType>,
       noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
   ): PrimitiveMountBehavior<ContentType> {
-    return PrimitiveMountBehavior(id = createId(), contentAllocator, mountConfigurationCall)
+    return PrimitiveMountBehavior(
+        id = createPrimitiveId(), contentAllocator, mountConfigurationCall)
   }
 
   /**
@@ -60,7 +61,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
       noinline mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
   ): PrimitiveMountBehavior<ContentType> {
     return PrimitiveMountBehavior(
-        id = createId(), description, contentAllocator, mountConfigurationCall)
+        id = createPrimitiveId(), description, contentAllocator, mountConfigurationCall)
   }
 
   /**
@@ -171,8 +172,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
   }
 
   /** Creates an unique ID for a given component. */
-  @PublishedApi
-  internal fun createId(): Long {
+  fun createPrimitiveId(): Long {
     // TODO(zielinskim): calculateLayoutOutputId is mutated during resolve/layout and it may race.
     // Ideally, we'd like to replace this hacky solution with something else.
     return context.renderUnitIdGenerator?.calculateLayoutOutputId(
