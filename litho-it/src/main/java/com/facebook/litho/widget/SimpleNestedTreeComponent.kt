@@ -16,60 +16,67 @@
 
 package com.facebook.litho.widget
 
-import android.content.Context
 import android.widget.FrameLayout
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
+import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.LithoView
-import com.facebook.litho.MeasureScope
-import com.facebook.litho.MountableComponent
-import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableRenderResult
-import com.facebook.litho.SimpleMountable
+import com.facebook.litho.PrimitiveComponent
+import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Size
 import com.facebook.litho.useState
-import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.primitives.LayoutBehavior
+import com.facebook.rendercore.primitives.LayoutScope
+import com.facebook.rendercore.primitives.PrimitiveLayoutResult
+import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
+import kotlin.math.max
 
 /** Renders the given component in a nested LithoView. */
-class SimpleNestedTreeComponent(private val contentComponent: Component) : MountableComponent() {
-  override fun MountableComponentScope.render(): MountableRenderResult {
+class SimpleNestedTreeComponent(private val contentComponent: Component) : PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val componentTree = useState {
       ComponentTree.create(ComponentContext.makeCopyForNestedTree(context))
           .incrementalMount(false)
           .build()
     }
-    return MountableRenderResult(
-        SimpleNestedTreeMountable(contentComponent, componentTree.value), null)
+    return LithoPrimitive(
+        layoutBehavior = SimpleNestedTreeLayoutBehavior(contentComponent, componentTree.value),
+        mountBehavior =
+            MountBehavior(
+                ViewAllocator { context ->
+                  // FrameLayout is used here due to some bugs around having a LithoView as the
+                  // direct content type.
+                  val frameLayout = FrameLayout(context)
+                  frameLayout.addView(
+                      LithoView(context),
+                      FrameLayout.LayoutParams.MATCH_PARENT,
+                      FrameLayout.LayoutParams.MATCH_PARENT)
+                  frameLayout
+                }) {
+                  bind(componentTree.value) { content ->
+                    val lithoView = content.getChildAt(0) as LithoView
+                    lithoView.componentTree = componentTree.value
+                    onUnbind { lithoView.componentTree = null }
+                  }
+                },
+        style = null)
   }
 }
 
-private class SimpleNestedTreeMountable(
+private class SimpleNestedTreeLayoutBehavior(
     private val contentComponent: Component,
     private val componentTree: ComponentTree
-) : SimpleMountable<FrameLayout>(RenderType.VIEW) {
-  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
+) : LayoutBehavior {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val size = Size()
-    componentTree.setRootAndSizeSpecSync(contentComponent, widthSpec, heightSpec, size)
-    return MeasureResult(size.width, size.height)
-  }
-
-  override fun mount(c: Context, content: FrameLayout, layoutData: Any?) {
-    val lithoView = content.getChildAt(0) as LithoView
-    lithoView.componentTree = componentTree
-  }
-
-  override fun unmount(c: Context, content: FrameLayout, layoutData: Any?) {
-    val lithoView = content.getChildAt(0) as LithoView
-    lithoView.componentTree = null
-  }
-
-  // FrameLayout is used here due to some bugs around having a LithoView as the direct content type.
-  override fun createContent(context: Context): FrameLayout {
-    val lithoView = LithoView(context)
-    val frameLayout = FrameLayout(context)
-    frameLayout.addView(
-        lithoView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
-    return frameLayout
+    componentTree.setRootAndSizeSpecSync(
+        contentComponent, sizeConstraints.toWidthSpec(), sizeConstraints.toHeightSpec(), size)
+    return PrimitiveLayoutResult(
+        width = max(sizeConstraints.minWidth, size.width),
+        height = max(sizeConstraints.minHeight, size.height))
   }
 }
