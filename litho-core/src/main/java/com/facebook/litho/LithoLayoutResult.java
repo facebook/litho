@@ -528,13 +528,14 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   }
 
   /**
-   * Since layout data(layout context and result itself) is useless once we finish layout
-   * calculation with layout caching, clean up recursively to reduce the cost of memory.
+   * Since layout data like the layout context and the diff node are not required after layout
+   * calculation they can be released to free up memory.
    */
-  void clearYogaNodeData() {
+  void releaseLayoutPhaseData() {
+    setDiffNode(null);
     getYogaNode().setData(null);
     for (int i = 0, count = getChildCount(); i < count; i++) {
-      getChildAt(i).clearYogaNodeData();
+      getChildAt(i).releaseLayoutPhaseData();
     }
   }
 

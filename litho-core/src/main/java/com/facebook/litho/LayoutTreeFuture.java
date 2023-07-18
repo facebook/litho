@@ -23,8 +23,6 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LayoutCache;
-import com.facebook.rendercore.LayoutResult;
-import java.util.Collection;
 
 public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final ResolveResult mResolveResult;
@@ -208,16 +206,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
         }
 
         if (c.shouldCacheLayouts() && root != null) {
-          root.clearYogaNodeData();
-          // Try to clear diff nodes because we're reusing LayoutResult which is a super set of
-          // DiffNode.
-          final LayoutCache.CachedData cachedData = layoutState.mLayoutCacheData;
-          if (cachedData != null) {
-            Collection<LayoutResult> layoutResultList = cachedData.getCacheByNode().values();
-            for (LayoutResult result : layoutResultList) {
-              ((LithoLayoutResult) result).setDiffNode(null);
-            }
-          }
+          // release diff node and layout state context since they are no longer required
+          // this is not required in the control behaviour because the layout results is
+          // cleared from the LayoutState before after collect-results.
+          root.releaseLayoutPhaseData();
         }
 
         layoutState.setCreatedEventHandlers(

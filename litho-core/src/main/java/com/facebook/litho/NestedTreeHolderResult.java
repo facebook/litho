@@ -107,4 +107,12 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
       }
     }
   }
+
+  @Override
+  void releaseLayoutPhaseData() {
+    super.releaseLayoutPhaseData();
+    if (mNestedTree != null) {
+      mNestedTree.releaseLayoutPhaseData();
+    }
+  }
 }
