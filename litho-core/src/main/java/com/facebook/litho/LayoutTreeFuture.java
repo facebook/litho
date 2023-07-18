@@ -208,7 +208,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
           perfEventLogger.markerPoint("end_collect_results");
         }
 
-        if (ComponentsConfiguration.enableLayoutCaching && root != null) {
+        if (c.shouldCacheLayouts() && root != null) {
           root.clearYogaNodeData();
           // Try to clear diff nodes because we're reusing LayoutResult which is a super set of
           // DiffNode.

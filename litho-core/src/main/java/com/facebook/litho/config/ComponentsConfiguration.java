@@ -309,6 +309,8 @@ public class ComponentsConfiguration {
 
   private final boolean mUseInterruptibleResolution;
 
+  private boolean mShouldCacheLayouts;
+
   private final boolean mShouldReuseOutputs;
 
   private final boolean mShouldAddHostViewForRootComponent;
@@ -340,6 +342,7 @@ public class ComponentsConfiguration {
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mUseInterruptibleResolution = builder.mUseInterruptibleResolution;
+    mShouldCacheLayouts = builder.mShouldCacheLayouts;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
@@ -361,9 +364,15 @@ public class ComponentsConfiguration {
         .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs());
   }
 
+  public boolean shouldCacheLayouts() {
+    return mShouldCacheLayouts;
+  }
+
   public static class Builder {
+
     boolean mUseCancelableLayoutFutures = true;
     boolean mUseInterruptibleResolution = true;
+    boolean mShouldCacheLayouts = ComponentsConfiguration.enableLayoutCaching;
     boolean mShouldReuseOutputs = false;
     boolean mIsLayoutCancellationEnabled = false;
     boolean mShouldAddHostViewForRootComponent = false;
@@ -389,6 +398,11 @@ public class ComponentsConfiguration {
 
     public Builder shouldDisableBgFgOutputs(boolean enabled) {
       mShouldDisableBgFgOutputs = enabled;
+      return this;
+    }
+
+    public Builder shouldCacheLayouts(boolean enabled) {
+      mShouldCacheLayouts = enabled;
       return this;
     }
 

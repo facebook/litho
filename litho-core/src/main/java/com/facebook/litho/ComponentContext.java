@@ -760,8 +760,14 @@ public class ComponentContext implements Cloneable {
     }
   }
 
+  boolean shouldCacheLayouts() {
+    return isReconciliationEnabled()
+        && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
+  }
+
   boolean shouldReuseOutputs() {
     return isReconciliationEnabled()
+        && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts()
         && mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
   }
 

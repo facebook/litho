@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MeasureResult;
@@ -624,7 +623,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     final DiffNode diffNode = areCachedMeasuresValid() ? getDiffNode() : null;
 
     // If layout cache is valid then we can reuse measurements from the previous pass
-    if (ComponentsConfiguration.enableLayoutCaching
+    if (componentScopedContext.shouldCacheLayouts()
         && isCachedLayout()
         && getLastWidthSpec() == widthSpec
         && getLastHeightSpec() == heightSpec

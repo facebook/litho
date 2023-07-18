@@ -497,7 +497,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     LithoLayoutResult layoutResult = null;
     YogaNode yogaNode = null;
-    if (ComponentsConfiguration.enableLayoutCaching) {
+    if (currentNode.getTailComponentContext().shouldCacheLayouts()) {
       final LayoutCache layoutCache = context.getLayoutCache();
       LayoutResult cachedLayoutResult = layoutCache.get(currentNode);
       if (cachedLayoutResult != null) {
@@ -612,7 +612,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   /** Save LithoLayoutResult into LayoutCache, using node itself and id as keys. */
   private static void saveLithoLayoutResultIntoCache(
       LayoutContext<LithoRenderContext> context, LithoNode node, LithoLayoutResult result) {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    if (!node.getTailComponentContext().shouldCacheLayouts()) {
       return;
     }
     final LayoutCache layoutCache = context.getLayoutCache();
