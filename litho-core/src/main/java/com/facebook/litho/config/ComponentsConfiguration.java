@@ -232,8 +232,6 @@ public class ComponentsConfiguration {
 
   public static boolean enableLayoutCaching = false;
 
-  public static boolean enableMeasurePendingSubtrees = false;
-
   public static boolean enableFixForJniLocalRefOverflow = false;
 
   public static int recyclerBinderStrategy = 0;

@@ -22,15 +22,12 @@ import org.junit.runners.model.FrameworkMethod;
 public class LayoutCachingTestRunConfiguration implements LithoTestRunConfiguration {
 
   private final boolean layoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
-  private final boolean enableMeasurePendingSubtrees =
-      ComponentsConfiguration.enableMeasurePendingSubtrees;
   private final ComponentsConfiguration.Builder mDefaultComponentsConfiguration =
       ComponentsConfiguration.getDefaultComponentsConfigurationBuilder();
 
   @Override
   public void beforeTest(FrameworkMethod method) {
     ComponentsConfiguration.enableLayoutCaching = true;
-    ComponentsConfiguration.enableMeasurePendingSubtrees = true;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
         ComponentsConfiguration.create().shouldReuseOutputs(true));
   }
@@ -38,7 +35,6 @@ public class LayoutCachingTestRunConfiguration implements LithoTestRunConfigurat
   @Override
   public void afterTest(FrameworkMethod method) {
     ComponentsConfiguration.enableLayoutCaching = layoutCachingEnabled;
-    ComponentsConfiguration.enableMeasurePendingSubtrees = enableMeasurePendingSubtrees;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
         mDefaultComponentsConfiguration);
   }

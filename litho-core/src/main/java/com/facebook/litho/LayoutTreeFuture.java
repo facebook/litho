@@ -20,7 +20,6 @@ import static android.content.Context.ACCESSIBILITY_SERVICE;
 
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LayoutCache;
@@ -191,7 +190,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
                 heightSpec,
                 perfEventLogger);
 
-        if (root != null && ComponentsConfiguration.enableMeasurePendingSubtrees) {
+        if (root != null && c.shouldCacheLayouts()) {
           Layout.measurePendingSubtrees(c, root, layoutCache, root.getNode(), layoutState, lsc);
         }
 

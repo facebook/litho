@@ -246,7 +246,7 @@ public class LayoutState
 
     final @Nullable MeasureResult measure;
     final boolean hasExactSize = !result.wasMeasured();
-    if (!ComponentsConfiguration.enableMeasurePendingSubtrees) {
+    if (!node.getTailComponentContext().shouldCacheLayouts()) {
       if ((isMountable(node.getTailComponent()) || isPrimitive(node.getTailComponent()))
           && hasExactSize) {
         final int width =
@@ -575,7 +575,7 @@ public class LayoutState
         return;
       }
 
-      if (!ComponentsConfiguration.enableMeasurePendingSubtrees) {
+      if (!parentContext.shouldCacheLayouts()) {
         if (parentContext.isNullNodeEnabled()) {
           final @Nullable List<Attachable> attachables =
               Resolver.collectAttachables(nestedTree.mNode);
@@ -686,7 +686,7 @@ public class LayoutState
       final LithoRenderUnit contentRenderUnit =
           (LithoRenderUnit) contentRenderTreeNode.getRenderUnit();
 
-      if (!ComponentsConfiguration.enableMeasurePendingSubtrees) {
+      if (!context.shouldCacheLayouts()) {
         final LithoLayoutData layoutData =
             (LithoLayoutData) Preconditions.checkNotNull(contentRenderTreeNode.getLayoutData());
 
