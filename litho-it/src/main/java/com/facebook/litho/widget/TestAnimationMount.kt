@@ -16,19 +16,15 @@
 
 package com.facebook.litho.widget
 
-import android.content.Context
 import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
+import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.LithoView
-import com.facebook.litho.MeasureScope
-import com.facebook.litho.MountableComponent
-import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableRenderResult
+import com.facebook.litho.PrimitiveComponent
+import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Row
-import com.facebook.litho.SimpleMountable
-import com.facebook.litho.SizeSpec
 import com.facebook.litho.StateCaller
 import com.facebook.litho.Style
 import com.facebook.litho.Transition
@@ -37,67 +33,76 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.transition.transitionKey
+import com.facebook.litho.useCached
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.viewTag
-import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.primitives.LayoutBehavior
+import com.facebook.rendercore.primitives.LayoutScope
+import com.facebook.rendercore.primitives.PrimitiveLayoutResult
+import com.facebook.rendercore.primitives.ViewAllocator
 
 class TestAnimationMount(
     private val stateCaller: StateCaller,
-) : MountableComponent() {
-  override fun MountableComponentScope.render(): MountableRenderResult {
-    return MountableRenderResult(TestAnimationMountable(stateCaller), null)
+) : PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    val transitionKey = "TRANSITION_KEY"
+    val component =
+        useCached(stateCaller) {
+          TestAnimationsComponent(
+              stateCaller,
+              Transition.create(transitionKey)
+                  .animator(Transition.timing(144))
+                  .animate(AnimatedProperties.ALPHA)
+                  .disappearTo(0f)) { state ->
+                Column {
+                  child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
+                  child(
+                      if (!state)
+                          Row(
+                              style =
+                                  Style.height(50.dp)
+                                      .width(50.dp)
+                                      .backgroundColor(Color.RED)
+                                      .transitionKey(context, transitionKey)
+                                      .viewTag("TestAnimationMount"))
+                      else null)
+                }
+              }
+        }
+
+    return LithoPrimitive(
+        layoutBehavior = TestAnimationMountLayoutBehavior,
+        mountBehavior =
+            MountBehavior(ViewAllocator { context -> LithoView(context) }) {
+              bind(component) { content ->
+                content.componentTree =
+                    ComponentTree.create(ComponentContext(androidContext), component).build()
+                onUnbind { content.componentTree = null }
+              }
+            },
+        style = null)
   }
 }
 
-private class TestAnimationMountable(private val stateCaller: StateCaller) :
-    SimpleMountable<LithoView>(RenderType.VIEW) {
-  override fun createContent(context: Context): LithoView = LithoView(context)
-
-  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
+private object TestAnimationMountLayoutBehavior : LayoutBehavior {
+  override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     // If width is undefined, set default size.
     val width =
-        if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+        if (!sizeConstraints.hasBoundedWidth) {
           50
         } else {
-          SizeSpec.getSize(widthSpec)
+          sizeConstraints.maxWidth
         }
 
-    // If height is undefined, use 1.5 aspect ratio.
+    // If height is undefined, set default size.
     val height =
-        if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+        if (!sizeConstraints.hasBoundedHeight) {
           50
         } else {
-          SizeSpec.getSize(heightSpec)
+          sizeConstraints.maxHeight
         }
 
-    return MeasureResult(width, height)
+    return PrimitiveLayoutResult(width, height)
   }
-
-  override fun mount(c: Context, content: LithoView, layoutData: Any?) {
-    val transitionKey = "TRANSITION_KEY"
-    val component =
-        TestAnimationsComponent(
-            stateCaller,
-            Transition.create(transitionKey)
-                .animator(Transition.timing(144))
-                .animate(AnimatedProperties.ALPHA)
-                .disappearTo(0f)) { state ->
-              Column {
-                child(Row(style = Style.height(50.dp).width(50.dp).backgroundColor(Color.YELLOW)))
-                child(
-                    if (!state)
-                        Row(
-                            style =
-                                Style.height(50.dp)
-                                    .width(50.dp)
-                                    .backgroundColor(Color.RED)
-                                    .transitionKey(context, transitionKey)
-                                    .viewTag("TestAnimationMount"))
-                    else null)
-              }
-            }
-    content.componentTree = ComponentTree.create(ComponentContext(c), component).build()
-  }
-
-  override fun unmount(c: Context, content: LithoView, layoutData: Any?) {}
 }
