@@ -145,7 +145,9 @@ public class MountItemsPool {
 
   private static @Nullable ItemPool getMountContentPool(
       Context context, ContentAllocator poolableMountContent, int size) {
-    if (poolableMountContent.isRecyclingDisabled() || isPoolingDisabled) {
+    if (poolableMountContent.isRecyclingDisabled()
+        || isPoolingDisabled
+        || poolableMountContent.poolSize() == 0) {
       return null;
     }
 

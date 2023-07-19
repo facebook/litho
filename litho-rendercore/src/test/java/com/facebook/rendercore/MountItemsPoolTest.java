@@ -39,11 +39,13 @@ public class MountItemsPoolTest {
   @Test
   public void testPrefillMountContentPool() {
     final int prefillCount = 4;
-    final TestRenderUnit testRenderUnit = new TestRenderUnit(0);
+    final TestRenderUnit testRenderUnit =
+        new TestRenderUnit(/*id*/ 0, /*customPoolSize*/ prefillCount);
     MountItemsPool.prefillMountContentPool(mContext, prefillCount, testRenderUnit);
     assertThat(testRenderUnit.getCreatedCount()).isEqualTo(prefillCount);
 
-    final TestRenderUnit testRenderUnitToAcquire = new TestRenderUnit(0);
+    final TestRenderUnit testRenderUnitToAcquire =
+        new TestRenderUnit(0, /*customPoolSize*/ prefillCount);
 
     for (int i = 0; i < prefillCount; i++) {
       MountItemsPool.acquireMountContent(mContext, testRenderUnitToAcquire);
@@ -126,6 +128,54 @@ public class MountItemsPoolTest {
     assertThat(content1).isSameAs(content2);
   }
 
+  @Test
+  public void testAcquireAndReleaseReturnsCorrectContentInstances() {
+    final TestRenderUnit testRenderUnitToAcquire =
+        new TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 2);
+
+    // acquire content objects
+    Object firstContent = MountItemsPool.acquireMountContent(mContext, testRenderUnitToAcquire);
+    Object secondContent = MountItemsPool.acquireMountContent(mContext, testRenderUnitToAcquire);
+
+    // both of them should be created and they shouldn't be the same instance
+    assertThat(testRenderUnitToAcquire.getCreatedCount()).isEqualTo(2);
+    assertThat(firstContent).isNotNull();
+    assertThat(secondContent).isNotSameAs(firstContent);
+
+    // release the second content instance
+    MountItemsPool.release(mContext, testRenderUnitToAcquire, secondContent);
+
+    // acquire the third content instance
+    Object thirdContent = MountItemsPool.acquireMountContent(mContext, testRenderUnitToAcquire);
+
+    // it should be the same instance that was just released
+    assertThat(thirdContent).isSameAs(secondContent);
+  }
+
+  @Test
+  public void testAcquireContentWhenPoolingIsDisabledReturnsNewContentEveryTime() {
+    final TestRenderUnit testRenderUnitToAcquire =
+        new TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 0); // disable Pooling
+
+    // acquire content objects
+    Object firstContent = MountItemsPool.acquireMountContent(mContext, testRenderUnitToAcquire);
+    Object secondContent = MountItemsPool.acquireMountContent(mContext, testRenderUnitToAcquire);
+
+    // both of them should be created and they shouldn't be the same instance
+    assertThat(testRenderUnitToAcquire.getCreatedCount()).isEqualTo(2);
+    assertThat(firstContent).isNotNull();
+    assertThat(secondContent).isNotSameAs(firstContent);
+
+    // release the second content instance
+    MountItemsPool.release(mContext, testRenderUnitToAcquire, secondContent);
+
+    // acquire the third content instance
+    Object thirdContent = MountItemsPool.acquireMountContent(mContext, testRenderUnitToAcquire);
+
+    // it should not be the same as just released instance because pool size is 0
+    assertThat(thirdContent).isNotSameAs(secondContent);
+  }
+
   public static final class TestRenderUnit extends RenderUnit<View>
       implements ContentAllocator<View> {
 
@@ -137,7 +187,7 @@ public class MountItemsPoolTest {
       super(RenderType.VIEW);
       mId = id;
       mCreatedCount = 0;
-      mCustomPoolSize = 0;
+      mCustomPoolSize = DEFAULT_MAX_PREALLOCATION;
     }
 
     public TestRenderUnit(long id, int customPoolSize) {
@@ -156,10 +206,7 @@ public class MountItemsPoolTest {
     @Nullable
     @Override
     public MountItemsPool.ItemPool createRecyclingPool() {
-      if (mCustomPoolSize > 0)
-        return new MountItemsPool.DefaultItemPool(new Object(), mCustomPoolSize);
-
-      return null;
+      return new MountItemsPool.DefaultItemPool(new Object(), mCustomPoolSize);
     }
 
     @Override
@@ -170,6 +217,11 @@ public class MountItemsPoolTest {
     @Override
     public long getId() {
       return mId;
+    }
+
+    @Override
+    public int poolSize() {
+      return mCustomPoolSize;
     }
 
     public int getCreatedCount() {
