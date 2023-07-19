@@ -20,7 +20,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -614,64 +613,6 @@ public class IncrementalMountExtensionTest {
 
     assertThat(extensionState.ownsReference(1)).isTrue();
     assertThat(extensionState.ownsReference(2)).isTrue();
-  }
-
-  @Test
-  public void
-      shouldExcludeFromIMExtra_whenRenderUnitLeavesTheViewport_renderUnitWithExtraShouldNotUnmount() {
-    final Context c = mRenderCoreTestRule.getContext();
-
-    final FrameLayout parent = new FrameLayout(c);
-    parent.measure(
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY));
-    parent.layout(0, 0, 100, 300);
-
-    final RootHostView host = new RootHostView(c);
-    parent.addView(host);
-
-    final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
-
-    final SparseArray<Object> renderUnitExtras = new SparseArray<>();
-    renderUnitExtras.put(R.id.should_exclude_from_incremental_mount, true);
-
-    final LayoutResult root =
-        SimpleLayoutResult.create()
-            .width(100)
-            .height(300)
-            .child(
-                SimpleLayoutResult.create()
-                    .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
-                    .width(100)
-                    .height(100))
-            .child(
-                SimpleLayoutResult.create()
-                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2, renderUnitExtras))
-                    .y(100)
-                    .width(100)
-                    .height(100))
-            .build();
-
-    mRenderCoreTestRule
-        .useRootHost(host)
-        .useExtensions(extensions)
-        .useRootNode(new LayoutResultWrappingNode(root))
-        .setSizePx(100, 300)
-        .render();
-
-    // Should mount all 2 children initially
-    assertThat(host.getChildCount()).isEqualTo(2);
-
-    // Translate host up so that the first item leaves the viewport - should unmount the first
-    // item because it doesn't have renderUnitExtras with should_exclude_from_incremental_mount flag
-    host.offsetTopAndBottom(-100);
-    assertThat(host.getChildCount()).isEqualTo(1);
-
-    // Translate host up so that the second item leaves the viewport - should not unmount the
-    // second item because it has renderUnitExtras with should_exclude_from_incremental_mount flag
-    host.offsetTopAndBottom(-100);
-    assertThat(host.getChildCount()).isEqualTo(1);
   }
 
   private static MountState createMountState(Context c) {

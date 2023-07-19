@@ -55,8 +55,6 @@ import com.facebook.litho.widget.LithoScrollView
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
-import com.facebook.rendercore.extensions.doesMountRenderTreeHosts
-import com.facebook.rendercore.incrementalmount.shouldExcludeFromIncrementalMount
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -1097,10 +1095,10 @@ class TestViewPrimitiveComponent(
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
 
-    return LithoPrimitive(
-        ViewPrimitive(
-            identity, view, steps, dynamicTag, null, null, shouldExcludeFromIncrementalMount),
-        style)
+    shouldExcludeFromIncrementalMount =
+        this@TestViewPrimitiveComponent.shouldExcludeFromIncrementalMount == true
+
+    return LithoPrimitive(ViewPrimitive(identity, view, steps, dynamicTag), style)
   }
 }
 
@@ -1112,7 +1110,6 @@ private fun PrimitiveComponentScope.ViewPrimitive(
     dynamicTag: DynamicValue<Any?>? = null,
     updateState: ((String) -> Unit)? = null,
     str: String? = null,
-    shouldExcludeFromIncrementalMount: Boolean? = null,
 ): Primitive {
 
   class ViewPrimitiveLayoutBehavior(private val id: Int = 0) : LayoutBehavior {
@@ -1133,10 +1130,6 @@ private fun PrimitiveComponentScope.ViewPrimitive(
                 steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
                 view
               }) {
-                if (shouldExcludeFromIncrementalMount == true) {
-                  this.shouldExcludeFromIncrementalMount = true
-                }
-
                 // using tag for convenience of tests
                 bindDynamic(dynamicTag, View::setTag, "default_value")
 

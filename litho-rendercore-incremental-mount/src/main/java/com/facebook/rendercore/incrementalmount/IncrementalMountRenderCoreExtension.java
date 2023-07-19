@@ -214,15 +214,9 @@ public class IncrementalMountRenderCoreExtension
 
       final Rect rect = new Rect(x, y, x + bounds.width(), y + bounds.height());
 
-      results.addOutput(
-          new IncrementalMountOutput(
-              id,
-              position,
-              rect,
-              IncrementalMountUtils.getShouldExcludeFromIncrementalMount(unit),
-              host));
-
-      if (IncrementalMountUtils.getDoesMountRenderTreeHosts(unit)) {
+      // TODO(T115614172): implement excludeFromIncrementalMount for RenderCore
+      results.addOutput(new IncrementalMountOutput(id, position, rect, false, host));
+      if (unit.doesMountRenderTreeHosts()) {
         results.addRenderTreeHostId(id);
       }
     }

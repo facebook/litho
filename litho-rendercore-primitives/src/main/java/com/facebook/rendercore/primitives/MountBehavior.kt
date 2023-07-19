@@ -17,7 +17,6 @@
 package com.facebook.rendercore.primitives
 
 import android.content.Context
-import android.util.SparseArray
 import com.facebook.rendercore.BindData
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountDelegate
@@ -56,7 +55,7 @@ class MountBehavior<ContentType : Any>(
             PrimitiveRenderUnit<ContentType>(
                 contentAllocator.renderType,
                 mountConfigurationScope.fixedBinders,
-                mountConfigurationScope.renderUnitExtras) {
+                mountConfigurationScope.doesMountRenderTreeHosts) {
           override fun getContentAllocator(): ContentAllocator<ContentType> {
             return this@MountBehavior.contentAllocator
           }
@@ -76,14 +75,16 @@ class MountBehavior<ContentType : Any>(
 abstract class PrimitiveRenderUnit<ContentType>(
     renderType: RenderType,
     fixedMountBinders: List<DelegateBinder<*, ContentType, *>>,
-    extras: SparseArray<Any?>? = null
+    private val doesMountRenderTreeHosts: Boolean
 ) :
     RenderUnit<ContentType>(
         renderType,
         fixedMountBinders,
         emptyList(), // optional binders
-        emptyList(), // attach binders
-        extras) {
+        emptyList() // attach binders
+        ) {
+
+  override fun doesMountRenderTreeHosts(): Boolean = doesMountRenderTreeHosts
 
   /**
    * This method is an override that calls super impl to make it public on RenderUnit because it

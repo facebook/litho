@@ -29,6 +29,12 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
     ComponentScope(context, resolveStateContext) {
 
   /**
+   * Indicates whether the component skips Incremental Mount. If this is true then the Component
+   * will not be involved in Incremental Mount.
+   */
+  var shouldExcludeFromIncrementalMount: Boolean = false
+
+  /**
    * Generates an unique id and creates a [com.facebook.rendercore.primitives.MountBehavior] with
    * it.
    *

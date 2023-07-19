@@ -273,7 +273,7 @@ public class IncrementalMountExtension
     final IncrementalMountExtensionState state = extensionState.getState();
     final long id = renderUnit.getId();
 
-    if (!IncrementalMountUtils.getDoesMountRenderTreeHosts(renderUnit)) {
+    if (!renderUnit.doesMountRenderTreeHosts()) {
       return;
     }
     recursivelyNotifyVisibleBoundsChanged(extensionState, id, content);

@@ -28,7 +28,6 @@ import com.facebook.litho.VisibilityChangedEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.RenderCoreSystrace;
-import com.facebook.rendercore.RenderUnit;
 
 public class VisibilityUtils {
 
@@ -137,14 +136,5 @@ public class VisibilityUtils {
     }
 
     visibilityChangedHandler.call(sVisibleRectChangedEvent);
-  }
-
-  public static boolean getDoesMountRenderTreeHosts(final RenderUnit<?> renderUnit) {
-    @Nullable
-    final Boolean doesMountRenderTreeHostsExtra =
-        renderUnit.<Boolean>getExtra(
-            com.facebook.rendercore.extensions.R.id.does_mount_render_tree_hosts);
-    return (doesMountRenderTreeHostsExtra != null && doesMountRenderTreeHostsExtra)
-        || renderUnit.doesMountRenderTreeHosts();
   }
 }

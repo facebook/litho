@@ -19,6 +19,8 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.Primitive
@@ -43,6 +45,12 @@ abstract class PrimitiveComponent : Component() {
     if (lithoPrimitive.style != null) {
       commonProps = CommonProps()
       lithoPrimitive.style.applyCommonProps(c, commonProps)
+    }
+
+    if (primitiveComponentScope.shouldExcludeFromIncrementalMount) {
+      lithoPrimitive.primitive.renderUnit.addAttachBinder(
+          RenderUnit.DelegateBinder.createDelegateBinder(
+              lithoPrimitive.primitive.renderUnit, ExcludeFromIncrementalMountBinder.INSTANCE))
     }
 
     return PrepareResult(
