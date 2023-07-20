@@ -1,6 +1,7 @@
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET",
     "LITHO_RENDERCORE_TARGET",
     "fb_android_library",
 )
@@ -19,5 +20,6 @@ fb_android_library(
     ],
     deps = [
         LITHO_RENDERCORE_TARGET,
+        LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
     ],
 )

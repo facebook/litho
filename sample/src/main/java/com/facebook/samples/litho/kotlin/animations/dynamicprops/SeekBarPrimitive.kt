@@ -34,7 +34,7 @@ class SeekBarPrimitive(
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
-        layoutBehavior = EqualDimensionsLayoutBehavior(),
+        layoutBehavior = EqualDimensionsLayoutBehavior,
         mountBehavior =
             MountBehavior(ViewAllocator { context -> SeekBar(context) }) {
               bind(initialValue) { content ->

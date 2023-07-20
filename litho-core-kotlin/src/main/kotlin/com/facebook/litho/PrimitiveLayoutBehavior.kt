@@ -31,15 +31,13 @@ import com.facebook.rendercore.primitives.LayoutBehavior
  *   UNSPECIFIED mode.
  * @param defaultHeight The [Dimen] value for the height of the measured component using the
  *   UNSPECIFIED mode.
- * @param layoutData The data to be returned from the layout pass.
  */
 inline fun ResourcesScope.FillLayoutBehavior(
     defaultWidth: Dimen,
     defaultHeight: Dimen,
-    layoutData: Any? = null
 ): LayoutBehavior {
   return PrimitiveFillLayoutBehavior(
-      defaultWidth = defaultWidth.toPixels(), defaultHeight = defaultHeight.toPixels(), layoutData)
+      defaultWidth = defaultWidth.toPixels(), defaultHeight = defaultHeight.toPixels())
 }
 
 /**
@@ -47,15 +45,12 @@ inline fun ResourcesScope.FillLayoutBehavior(
  *
  * @param width The [Dimen] value for the width of the measured component.
  * @param height The [Dimen] value for the height of the measured component.
- * @param layoutData The data to be returned from the layout pass.
  */
 inline fun ResourcesScope.FixedSizeLayoutBehavior(
     width: Dimen,
     height: Dimen,
-    layoutData: Any? = null,
 ): LayoutBehavior {
-  return PrimitiveFixedSizeLayoutBehavior(
-      width = width.toPixels(), height = height.toPixels(), layoutData)
+  return PrimitiveFixedSizeLayoutBehavior(width = width.toPixels(), height = height.toPixels())
 }
 
 /**
@@ -65,17 +60,14 @@ inline fun ResourcesScope.FixedSizeLayoutBehavior(
  * @param aspectRatio The aspect ratio for calculating size.
  * @param intrinsicWidth The [Dimen] value for the intrinsic width of the measured component.
  * @param intrinsicHeight The [Dimen] value for the intrinsic height of the measured component.
- * @param layoutData The data to be returned from the layout pass.
  */
 inline fun ResourcesScope.AspectRatioLayoutBehavior(
     aspectRatio: Float,
     intrinsicWidth: Dimen,
     intrinsicHeight: Dimen,
-    layoutData: Any? = null
 ): LayoutBehavior {
   return PrimitiveAspectRatioLayoutBehavior(
       aspectRatio = aspectRatio,
       intrinsicWidth = intrinsicWidth.toPixels(),
-      intrinsicHeight = intrinsicHeight.toPixels(),
-      layoutData)
+      intrinsicHeight = intrinsicHeight.toPixels())
 }
