@@ -70,12 +70,8 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
             throw new RuntimeException("Missing text layout context!");
           }
           final TextLayout textLayout = (TextLayout) layoutData;
-
           textView.mount(textLayout);
 
-          if (textLayout.processedText instanceof MountableCharSequence) {
-            ((MountableCharSequence) textLayout.processedText).onMount(textView);
-          }
           return null;
         }
 
@@ -87,15 +83,6 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
             @Nullable Object layoutData,
             Void bindData) {
           textView.unmount();
-          final TextLayout textLayout = (TextLayout) layoutData;
-
-          if (textLayout == null) {
-            throw new RuntimeException("Missing text layout context!");
-          }
-
-          if (textLayout.processedText instanceof MountableCharSequence) {
-            ((MountableCharSequence) textLayout.processedText).onUnmount(textView);
-          }
         }
       };
 }
