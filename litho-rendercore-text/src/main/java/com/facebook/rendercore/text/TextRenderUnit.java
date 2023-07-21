@@ -71,21 +71,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
           }
           final TextLayout textLayout = (TextLayout) layoutData;
 
-          textView.mount(
-              textLayout.processedText,
-              textLayout.layout,
-              textLayout.textLayoutTranslationX,
-              textLayout.textLayoutTranslationY,
-              textLayout.textStyle.clipToBounds,
-              textLayout.textStyle.textColorStateList,
-              textLayout.textStyle.textColor,
-              textLayout.textStyle.highlightColor,
-              textLayout.imageSpans,
-              textLayout.clickableSpans,
-              textLayout.textStyle.highlightStartOffset,
-              textLayout.textStyle.highlightEndOffset,
-              textLayout.textStyle.highlightCornerRadius,
-              textLayout.isExplicitlyTruncated);
+          textView.mount(textLayout);
 
           if (textLayout.processedText instanceof MountableCharSequence) {
             ((MountableCharSequence) textLayout.processedText).onMount(textView);

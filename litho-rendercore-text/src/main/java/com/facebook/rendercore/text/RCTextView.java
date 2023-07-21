@@ -46,6 +46,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 import com.facebook.rendercore.text.accessibility.AccessibilityUtils;
 import com.facebook.rendercore.text.accessibility.RCAccessibleClickableSpan;
 import java.util.List;
@@ -63,7 +64,7 @@ public class RCTextView extends View {
   private float mLayoutTranslationX;
   private float mLayoutTranslationY;
   private boolean mClipToBounds;
-  private ColorStateList mColorStateList;
+  @Nullable private ColorStateList mColorStateList;
   private int mLinkColor;
   private int mHighlightColor;
   private int mHighlightCornerRadius;
@@ -119,32 +120,19 @@ public class RCTextView extends View {
     }
   }
 
-  public void mount(
-      CharSequence text,
-      Layout layout,
-      float layoutTranslationX,
-      float layoutTranslationY,
-      boolean clipToBounds,
-      ColorStateList colorStateList,
-      int linkColor,
-      int highlightColor,
-      ImageSpan[] imageSpans,
-      ClickableSpan[] clickableSpans,
-      int highlightStartOffset,
-      int highlightEndOffset,
-      int highlightCornerRadius,
-      boolean isExplicitlyTruncated) {
-    mText = text;
-    mLayout = layout;
-    mLayoutTranslationX = layoutTranslationX;
-    mLayoutTranslationY = layoutTranslationY;
-    mClipToBounds = clipToBounds;
-    mHighlightColor = highlightColor;
-    mHighlightCornerRadius = highlightCornerRadius;
-    mIsExplicitlyTruncated = isExplicitlyTruncated;
-    if (linkColor != 0) {
+  public void mount(TextLayout textLayout) {
+    final ColorStateList colorStateList = textLayout.textStyle.textColorStateList;
+    mText = textLayout.processedText;
+    mLayout = textLayout.layout;
+    mLayoutTranslationX = textLayout.textLayoutTranslationX;
+    mLayoutTranslationY = textLayout.textLayoutTranslationY;
+    mClipToBounds = textLayout.textStyle.clipToBounds;
+    mHighlightColor = textLayout.textStyle.highlightColor;
+    mHighlightCornerRadius = textLayout.textStyle.highlightCornerRadius;
+    mIsExplicitlyTruncated = textLayout.isExplicitlyTruncated;
+    if (textLayout.textStyle.textColor != 0) {
       mColorStateList = null;
-      mLinkColor = linkColor;
+      mLinkColor = textLayout.textStyle.textColor;
     } else {
       mColorStateList = colorStateList;
       mLinkColor = mColorStateList.getDefaultColor();
@@ -155,21 +143,26 @@ public class RCTextView extends View {
       }
     }
 
-    if (highlightOffsetsValid(text, highlightStartOffset, highlightEndOffset)) {
-      setSelection(highlightStartOffset, highlightEndOffset);
+    if (highlightOffsetsValid(
+        mText,
+        textLayout.textStyle.highlightStartOffset,
+        textLayout.textStyle.highlightEndOffset)) {
+      setSelection(
+          textLayout.textStyle.highlightStartOffset, textLayout.textStyle.highlightEndOffset);
     } else {
       clearSelection();
     }
 
-    if (imageSpans != null) {
-      for (int i = 0, size = imageSpans.length; i < size; i++) {
-        Drawable drawable = imageSpans[i].getDrawable();
+    if (textLayout.imageSpans != null) {
+      mImageSpans = textLayout.imageSpans;
+
+      for (int i = 0, size = mImageSpans.length; i < size; i++) {
+        Drawable drawable = mImageSpans[i].getDrawable();
         drawable.setCallback(this);
         drawable.setVisible(true, false);
       }
     }
-    mImageSpans = imageSpans;
-    mClickableSpans = clickableSpans;
+    mClickableSpans = textLayout.clickableSpans;
     invalidate();
   }
 
