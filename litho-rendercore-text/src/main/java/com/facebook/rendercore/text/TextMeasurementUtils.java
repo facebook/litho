@@ -29,6 +29,7 @@ import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.MetricAffectingSpan;
+import android.util.Pair;
 import android.util.SparseIntArray;
 import android.view.View;
 import androidx.annotation.GuardedBy;
@@ -88,16 +89,29 @@ public class TextMeasurementUtils {
     if (debugListener != null) {
       debugListener.onTextMeasured(renderUnit, text, widthSpec, heightSpec);
     }
+    final Pair<Rect, TextLayout> result =
+        layout(androidContext, widthSpec, heightSpec, text, textStyle);
+
+    return new MountableLayoutResult(
+        renderUnit,
+        widthSpec,
+        heightSpec,
+        result.first.width(),
+        result.first.height(),
+        result.second);
+  }
+
+  public static Pair<Rect, TextLayout> layout(
+      Context context, int widthSpec, int heightSpec, CharSequence text, TextStyle textStyle) {
     final TextLayout textLayout = new TextLayout();
     textLayout.textStyle = textStyle;
+
     if (TextUtils.isEmpty(text) && !textStyle.shouldLayoutEmptyText) {
       textLayout.processedText = text;
-      return new MountableLayoutResult(renderUnit, widthSpec, heightSpec, 0, 0, textLayout);
+      return new Pair<>(new Rect(0, 0, 0, 0), textLayout);
     }
-
     Layout layout =
-        TextMeasurementUtils.createTextLayout(
-            androidContext, textStyle, widthSpec, heightSpec, text);
+        TextMeasurementUtils.createTextLayout(context, textStyle, widthSpec, heightSpec, text);
 
     final int layoutWidth =
         View.resolveSize(
@@ -174,7 +188,7 @@ public class TextMeasurementUtils {
 
         Layout newLayout =
             TextMeasurementUtils.createTextLayout(
-                androidContext,
+                context,
                 textStyle,
                 View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
                 heightSpec,
@@ -200,8 +214,7 @@ public class TextMeasurementUtils {
       textLayout.imageSpans = spanned.getSpans(0, processedText.length(), ImageSpan.class);
     }
 
-    return new MountableLayoutResult(
-        renderUnit, widthSpec, heightSpec, layoutWidth, layoutHeight, textLayout);
+    return new Pair<>(new Rect(0, 0, layoutWidth, layoutHeight), textLayout);
   }
 
   static Layout createTextLayout(
