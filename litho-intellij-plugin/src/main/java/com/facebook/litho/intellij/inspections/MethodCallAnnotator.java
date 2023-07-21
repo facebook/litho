@@ -32,6 +32,7 @@ import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.project.Project;
@@ -122,7 +123,8 @@ public class MethodCallAnnotator implements Annotator {
         .ifPresent(
             element ->
                 holder
-                    .createInfoAnnotation(element, null)
-                    .setTextAttributes(DefaultLanguageHighlighterColors.KEYWORD));
+                    .newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .textAttributes(DefaultLanguageHighlighterColors.KEYWORD)
+                    .create());
   }
 }
