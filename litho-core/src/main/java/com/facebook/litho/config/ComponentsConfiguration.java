@@ -246,6 +246,8 @@ public class ComponentsConfiguration {
   public static boolean enableMountableInIGDS = false;
   public static boolean enableMountableInIG4A = false;
 
+  public static boolean usePrimitiveSmartCropViewPager = false;
+
   public static boolean hostComponentAlwaysShouldUpdate = true;
 
   private static boolean sReduceMemorySpikeUserSession = false;
