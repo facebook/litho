@@ -64,7 +64,7 @@ public class TextMeasurementUtils {
 
   @VisibleForTesting public static DebugMeasureListener sDebugMeasureListener;
 
-  public static class TextLayoutContext {
+  public static class TextLayout {
     public Layout layout;
     public CharSequence processedText;
     @Nullable public String accessibilityLabel;
@@ -88,11 +88,11 @@ public class TextMeasurementUtils {
     if (debugListener != null) {
       debugListener.onTextMeasured(renderUnit, text, widthSpec, heightSpec);
     }
-    final TextLayoutContext textLayoutContext = new TextLayoutContext();
-    textLayoutContext.textStyle = textStyle;
+    final TextLayout textLayout = new TextLayout();
+    textLayout.textStyle = textStyle;
     if (TextUtils.isEmpty(text) && !textStyle.shouldLayoutEmptyText) {
-      textLayoutContext.processedText = text;
-      return new MountableLayoutResult(renderUnit, widthSpec, heightSpec, 0, 0, textLayoutContext);
+      textLayout.processedText = text;
+      return new MountableLayoutResult(renderUnit, widthSpec, heightSpec, 0, 0, textLayout);
     }
 
     Layout layout =
@@ -182,27 +182,26 @@ public class TextMeasurementUtils {
 
         processedText = truncated;
         layout = newLayout;
-        textLayoutContext.isExplicitlyTruncated = true;
+        textLayout.isExplicitlyTruncated = true;
       }
     }
 
-    textLayoutContext.processedText = processedText;
-    textLayoutContext.layout = layout;
+    textLayout.processedText = processedText;
+    textLayout.layout = layout;
     if (textStyle.alignment == TextAlignment.TEXT_START) {
-      textLayoutContext.textLayoutTranslationX = textStyle.extraSpacingLeft;
+      textLayout.textLayoutTranslationX = textStyle.extraSpacingLeft;
     } else if (textStyle.alignment == TextAlignment.TEXT_END) {
-      textLayoutContext.textLayoutTranslationX = -textStyle.extraSpacingRight;
+      textLayout.textLayoutTranslationX = -textStyle.extraSpacingRight;
     }
-    textLayoutContext.textLayoutTranslationY = textLayoutTranslationY;
+    textLayout.textLayoutTranslationY = textLayoutTranslationY;
     if (processedText instanceof Spanned) {
       Spanned spanned = (Spanned) processedText;
-      textLayoutContext.clickableSpans =
-          spanned.getSpans(0, processedText.length(), ClickableSpan.class);
-      textLayoutContext.imageSpans = spanned.getSpans(0, processedText.length(), ImageSpan.class);
+      textLayout.clickableSpans = spanned.getSpans(0, processedText.length(), ClickableSpan.class);
+      textLayout.imageSpans = spanned.getSpans(0, processedText.length(), ImageSpan.class);
     }
 
     return new MountableLayoutResult(
-        renderUnit, widthSpec, heightSpec, layoutWidth, layoutHeight, textLayoutContext);
+        renderUnit, widthSpec, heightSpec, layoutWidth, layoutHeight, textLayout);
   }
 
   static Layout createTextLayout(

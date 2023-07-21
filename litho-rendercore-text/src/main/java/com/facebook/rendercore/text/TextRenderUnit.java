@@ -23,7 +23,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
-import com.facebook.rendercore.text.TextMeasurementUtils.TextLayoutContext;
+import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 
 public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAllocator<RCTextView> {
   private long mId;
@@ -69,26 +69,26 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
           if (layoutData == null) {
             throw new RuntimeException("Missing text layout context!");
           }
-          final TextLayoutContext textLayoutContext = (TextLayoutContext) layoutData;
+          final TextLayout textLayout = (TextLayout) layoutData;
 
           textView.mount(
-              textLayoutContext.processedText,
-              textLayoutContext.layout,
-              textLayoutContext.textLayoutTranslationX,
-              textLayoutContext.textLayoutTranslationY,
-              textLayoutContext.textStyle.clipToBounds,
-              textLayoutContext.textStyle.textColorStateList,
-              textLayoutContext.textStyle.textColor,
-              textLayoutContext.textStyle.highlightColor,
-              textLayoutContext.imageSpans,
-              textLayoutContext.clickableSpans,
-              textLayoutContext.textStyle.highlightStartOffset,
-              textLayoutContext.textStyle.highlightEndOffset,
-              textLayoutContext.textStyle.highlightCornerRadius,
-              textLayoutContext.isExplicitlyTruncated);
+              textLayout.processedText,
+              textLayout.layout,
+              textLayout.textLayoutTranslationX,
+              textLayout.textLayoutTranslationY,
+              textLayout.textStyle.clipToBounds,
+              textLayout.textStyle.textColorStateList,
+              textLayout.textStyle.textColor,
+              textLayout.textStyle.highlightColor,
+              textLayout.imageSpans,
+              textLayout.clickableSpans,
+              textLayout.textStyle.highlightStartOffset,
+              textLayout.textStyle.highlightEndOffset,
+              textLayout.textStyle.highlightCornerRadius,
+              textLayout.isExplicitlyTruncated);
 
-          if (textLayoutContext.processedText instanceof MountableCharSequence) {
-            ((MountableCharSequence) textLayoutContext.processedText).onMount(textView);
+          if (textLayout.processedText instanceof MountableCharSequence) {
+            ((MountableCharSequence) textLayout.processedText).onMount(textView);
           }
           return null;
         }
@@ -101,14 +101,14 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
             @Nullable Object layoutData,
             Void bindData) {
           textView.unmount();
-          final TextLayoutContext textLayoutContext = (TextLayoutContext) layoutData;
+          final TextLayout textLayout = (TextLayout) layoutData;
 
-          if (textLayoutContext == null) {
+          if (textLayout == null) {
             throw new RuntimeException("Missing text layout context!");
           }
 
-          if (textLayoutContext.processedText instanceof MountableCharSequence) {
-            ((MountableCharSequence) textLayoutContext.processedText).onUnmount(textView);
+          if (textLayout.processedText instanceof MountableCharSequence) {
+            ((MountableCharSequence) textLayout.processedText).onUnmount(textView);
           }
         }
       };
