@@ -16,13 +16,16 @@
 
 package com.facebook.rendercore.text;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
+import android.view.Gravity;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.text.TextDirectionHeuristicCompat;
+import androidx.core.text.TextDirectionHeuristicsCompat;
 
 public class TextStyle implements Cloneable {
   static final int UNSET = -1;
@@ -82,6 +85,83 @@ public class TextStyle implements Cloneable {
       return (TextStyle) super.clone();
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public static TextStyle createDefaultConfiguredTextStyle(final Context context) {
+    final TextStyle textStyle = TextStylesAttributeHelper.createThemedTextStyle(context);
+    textStyle.setShouldLayoutEmptyText(true);
+    textStyle.setHighlightColor(Color.TRANSPARENT);
+    return textStyle;
+  }
+
+  public static void maybeSetTextAlignment(final TextStyle textStyle, final Integer textAlign) {
+    if (textAlign != null) {
+      final TextAlignment textAlignment;
+      switch (textAlign) {
+        case Gravity.CENTER_HORIZONTAL:
+          textAlignment = TextAlignment.CENTER;
+          break;
+        case Gravity.START:
+          textAlignment = TextAlignment.TEXT_START;
+          break;
+        case Gravity.END:
+          textAlignment = TextAlignment.TEXT_END;
+          break;
+        default:
+          textAlignment = TextAlignment.TEXT_START;
+      }
+      textStyle.setAlignment(textAlignment);
+    }
+  }
+
+  public static void maybeSetTextDirection(
+      final TextStyle textStyle, final @Nullable String textDirectionStr, final boolean isRTL) {
+    if (textDirectionStr != null) {
+      final TextDirectionHeuristicCompat textDirection;
+
+      switch (textDirectionStr) {
+        case "device_locale":
+          textDirection = TextDirectionHeuristicsCompat.LOCALE;
+          break;
+        case "text_first_strong":
+          textDirection =
+              isRTL
+                  ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
+                  : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
+          break;
+        default:
+          textDirection = TextDirectionHeuristicsCompat.LOCALE;
+      }
+      textStyle.setTextDirection(textDirection);
+    }
+  }
+
+  public static void maybeSetLineHeight(final TextStyle textStyle, final float lineHeight) {
+    if (lineHeight >= 0) {
+      textStyle.setLineHeight(lineHeight);
+    }
+  }
+
+  public static void maybeSetLineHeightMultiplier(
+      final TextStyle textStyle, final float lineHeightMultiplier) {
+    maybeSetLineHeightMultiplier(textStyle, lineHeightMultiplier, true);
+  }
+
+  public static void maybeSetMaxNumberOfLines(
+      final TextStyle textStyle, final int maxNumberOfLines) {
+    if (maxNumberOfLines > -1) {
+      textStyle.setMaxLines(maxNumberOfLines);
+      textStyle.setEllipsize(TextUtils.TruncateAt.END);
+    }
+  }
+
+  public static void maybeSetLineHeightMultiplier(
+      final TextStyle textStyle, final float lineHeightMultiplier, boolean applyToFirstLine) {
+    if (lineHeightMultiplier > 0) {
+      // This is a special behavior to match Bloks classic and the iOS behavior.
+      textStyle.setShouldAddSpacingExtraToFirstLine(applyToFirstLine);
+      textStyle.setLineHeightMultiplier(lineHeightMultiplier);
     }
   }
 
