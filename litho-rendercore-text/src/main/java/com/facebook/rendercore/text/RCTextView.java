@@ -63,7 +63,6 @@ public class RCTextView extends View {
   private Layout mLayout;
   private float mLayoutTranslationX;
   private float mLayoutTranslationY;
-  private boolean mClipToBounds;
   @Nullable private ColorStateList mColorStateList;
   private int mLinkColor;
   private int mHighlightColor;
@@ -126,7 +125,6 @@ public class RCTextView extends View {
     mLayout = textLayout.layout;
     mLayoutTranslationX = textLayout.textLayoutTranslationX;
     mLayoutTranslationY = textLayout.textLayoutTranslationY;
-    mClipToBounds = textLayout.textStyle.clipToBounds;
     mHighlightColor = textLayout.textStyle.highlightColor;
     mHighlightCornerRadius = textLayout.textStyle.highlightCornerRadius;
     mIsExplicitlyTruncated = textLayout.isExplicitlyTruncated;
