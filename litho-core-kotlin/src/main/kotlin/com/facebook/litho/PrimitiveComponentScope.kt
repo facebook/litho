@@ -144,9 +144,9 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
   ) = bindDynamic(dynamicValue, setter, null)
 
   /**
-   * Adds a binder for a [DynamicValue] using [MountConfigurationScope.bind] and passing Any() as
-   * deps in order to make sure that the binder will always update. This is equivalent to returning
-   * true from shouldUpdate().
+   * Adds a binder for a [DynamicValue] using [MountConfigurationScope.bind] and passing
+   * [dynamicValue] as deps in order to make sure that the binder will update only when
+   * [dynamicValue] has changed.
    */
   private inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.addBinder(
       dynamicValue: DynamicValue<T>?,
