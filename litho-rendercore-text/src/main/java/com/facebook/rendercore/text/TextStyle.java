@@ -19,6 +19,7 @@ package com.facebook.rendercore.text;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -70,6 +71,8 @@ public class TextStyle implements Cloneable {
   int manualCapSpacing = Integer.MIN_VALUE;
   float extraSpacingLeft = 0;
   float extraSpacingRight = 0;
+
+  RoundedBackgroundProps roundedBackgroundProps = null;
 
   public void setShouldLayoutEmptyText(boolean shouldLayoutEmptyText) {
     this.shouldLayoutEmptyText = shouldLayoutEmptyText;
@@ -265,5 +268,21 @@ public class TextStyle implements Cloneable {
 
   public void setShadowColor(int shadowColor) {
     this.shadowColor = shadowColor;
+  }
+
+  public void setRoundedBackgroundColor(RoundedBackgroundProps roundedBackgroundProps) {
+    this.roundedBackgroundProps = roundedBackgroundProps;
+  }
+
+  public static class RoundedBackgroundProps {
+    final RectF padding;
+    final float cornerRadius;
+    final @ColorInt int backgroundColor;
+
+    public RoundedBackgroundProps(RectF padding, float cornerRadius, int backgroundColor) {
+      this.padding = padding;
+      this.cornerRadius = cornerRadius;
+      this.backgroundColor = backgroundColor;
+    }
   }
 }

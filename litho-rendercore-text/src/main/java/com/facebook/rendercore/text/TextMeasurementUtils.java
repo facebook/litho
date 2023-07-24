@@ -23,6 +23,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
+import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -89,9 +90,12 @@ public class TextMeasurementUtils {
     if (debugListener != null) {
       debugListener.onTextMeasured(renderUnit, text, widthSpec, heightSpec);
     }
-    final Pair<Rect, TextLayout> result =
-        layout(androidContext, widthSpec, heightSpec, text, textStyle);
-
+    Pair<Rect, TextLayout> result = layout(androidContext, widthSpec, heightSpec, text, textStyle);
+    if (textStyle.roundedBackgroundProps != null && text instanceof Spannable) {
+      result =
+          calculateLayoutWithBackgroundSpan(
+              androidContext, result, textStyle, (Spannable) text, widthSpec, heightSpec);
+    }
     return new MountableLayoutResult(
         renderUnit,
         widthSpec,
@@ -99,6 +103,101 @@ public class TextMeasurementUtils {
         result.first.width(),
         result.first.height(),
         result.second);
+  }
+
+  public static Pair<Rect, TextLayout> calculateLayoutWithBackgroundSpan(
+      final Context context,
+      final Pair<Rect, TextLayout> result,
+      final TextStyle textStyle,
+      final Spannable text,
+      int widthSpec,
+      int heightSpec) {
+
+    final TextStyle.RoundedBackgroundProps roundedBackgroundProps =
+        textStyle.roundedBackgroundProps;
+
+    TextMeasurementUtils.TextLayout textLayout = result.second;
+    float topPadding = roundedBackgroundProps.padding.top;
+    float bottomPadding = roundedBackgroundProps.padding.bottom;
+    float startPadding = roundedBackgroundProps.padding.left;
+    float endPadding = roundedBackgroundProps.padding.right;
+    float cornerRadius = roundedBackgroundProps.cornerRadius;
+    int backgroundColor = roundedBackgroundProps.backgroundColor;
+
+    if (View.MeasureSpec.getMode(heightSpec) != View.MeasureSpec.UNSPECIFIED) {
+      // check if the specified vertical paddings can be applied without the background being cut
+      // off and adjust if needed
+      final int availableHeight = View.MeasureSpec.getSize(heightSpec);
+      final float measuredHeight =
+          LayoutMeasureUtil.getHeight(textLayout.layout) + topPadding + bottomPadding;
+      final float maximumYPadding = (availableHeight - measuredHeight) / 2;
+      if (availableHeight < measuredHeight) {
+        topPadding = Math.abs(Math.min(topPadding, Math.max(0, maximumYPadding)));
+        bottomPadding = Math.abs(Math.min(bottomPadding, Math.max(0, maximumYPadding)));
+      }
+    }
+
+    if (View.MeasureSpec.getMode(widthSpec) != View.MeasureSpec.UNSPECIFIED) {
+      // check if the specified horizontal paddings can be applied without the background being cut
+      // off and adjust if needed
+      final int availableWidth = View.MeasureSpec.getSize(widthSpec);
+      int maxLineWidth = 0;
+      final Layout layout = textLayout.layout;
+      for (int i = 0; i < layout.getLineCount(); i++) {
+        maxLineWidth = (int) Math.max(maxLineWidth, layout.getLineWidth(i));
+      }
+      final float measuredWidth = maxLineWidth + startPadding + endPadding;
+      final int maximumXPadding = (availableWidth - maxLineWidth) / 2;
+      if (availableWidth < measuredWidth) {
+        startPadding = Math.min(startPadding, Math.max(0, maximumXPadding));
+        endPadding = Math.min(endPadding, Math.max(0, maximumXPadding));
+      }
+    }
+
+    final RoundedBackgroundColorSpan span =
+        new RoundedBackgroundColorSpan(
+            textLayout.layout,
+            backgroundColor,
+            startPadding,
+            endPadding,
+            topPadding,
+            bottomPadding,
+            cornerRadius);
+    text.setSpan(span, 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+    textStyle.setExtraSpacingLeft(startPadding);
+    textStyle.setExtraSpacingRight(endPadding);
+
+    // run layout to ensure that spacing and spans are applied to processed text
+    final Pair<Rect, TextLayout> intermediateResult =
+        TextMeasurementUtils.layout(context, widthSpec, heightSpec, text, textStyle);
+    textLayout = (TextMeasurementUtils.TextLayout) intermediateResult.second;
+    // we just ran layout, so textLayoutContext should not be null
+    textLayout.textLayoutTranslationY = topPadding;
+
+    switch (textStyle.alignment) {
+      case CENTER:
+        if (textLayout.layout.getLineCount() == 1) {
+          // This is required for padding to work correctly with one line
+          textLayout.textLayoutTranslationX = (startPadding + endPadding) / 2f;
+        }
+        break;
+      case TEXT_START:
+        textLayout.textLayoutTranslationX = startPadding;
+        break;
+      case TEXT_END:
+        textLayout.textLayoutTranslationX =
+            intermediateResult.first.width()
+                - (LayoutMeasureUtil.getWidth(textLayout.layout) + endPadding);
+        break;
+    }
+
+    return new Pair<>(
+        new Rect(
+            0,
+            0,
+            intermediateResult.first.width(),
+            LayoutMeasureUtil.getHeight(textLayout.layout) + (int) (topPadding + bottomPadding)),
+        textLayout);
   }
 
   public static Pair<Rect, TextLayout> layout(
