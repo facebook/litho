@@ -71,8 +71,12 @@ public class TextStyle implements Cloneable {
   int manualCapSpacing = Integer.MIN_VALUE;
   float extraSpacingLeft = 0;
   float extraSpacingRight = 0;
-
   RoundedBackgroundProps roundedBackgroundProps = null;
+  @Nullable String accessibilityLabel;
+
+  public void setAccessibilityLabel(String accessibilityLabel) {
+    this.accessibilityLabel = accessibilityLabel;
+  }
 
   public void setShouldLayoutEmptyText(boolean shouldLayoutEmptyText) {
     this.shouldLayoutEmptyText = shouldLayoutEmptyText;

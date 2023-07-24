@@ -161,6 +161,9 @@ public class RCTextView extends View {
       }
     }
     mClickableSpans = textLayout.clickableSpans;
+    if (textLayout.textStyle.accessibilityLabel != null) {
+      setContentDescription(textLayout.textStyle.accessibilityLabel);
+    }
     invalidate();
   }
 
@@ -186,6 +189,8 @@ public class RCTextView extends View {
       mImageSpans = null;
     }
     mClickableSpans = null;
+    setContentDescription("");
+
     if (mRCTextAccessibilityDelegate != null) {
       mRCTextAccessibilityDelegate.invalidateRoot();
     }
