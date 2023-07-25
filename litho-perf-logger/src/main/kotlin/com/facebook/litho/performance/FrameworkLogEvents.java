@@ -39,6 +39,7 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
     FrameworkLogEvents.EVENT_INIT_RANGE,
     FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
+    FrameworkLogEvents.EVENT_COMPONENT_RESOLVE,
     FrameworkLogEvents.EVENT_COMPONENT_PREPARE,
   })
   @Retention(RetentionPolicy.SOURCE)
