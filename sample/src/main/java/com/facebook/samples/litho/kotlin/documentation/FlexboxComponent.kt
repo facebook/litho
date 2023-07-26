@@ -29,11 +29,11 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
-import com.facebook.litho.drawableRes
 import com.facebook.litho.flexbox.aspectRatio
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.drawableRes
 import com.facebook.yoga.YogaAlign
 
 // start_example

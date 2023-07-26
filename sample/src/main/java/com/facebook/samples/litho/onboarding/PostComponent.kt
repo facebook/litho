@@ -24,10 +24,10 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
-import com.facebook.litho.drawableRes
 import com.facebook.litho.flexbox.aspectRatio
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.rendercore.drawableRes
 import com.facebook.samples.litho.onboarding.model.Post
 
 // start_example

@@ -22,9 +22,9 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.SizeSpec.UNSPECIFIED
-import com.facebook.litho.drawableRes
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.rendercore.drawableRes
 import com.facebook.rendercore.sp
 import com.facebook.samples.litho.R
 

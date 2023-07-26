@@ -21,9 +21,5 @@ import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.px
 
 /** Resolve a dimen resource ID as a [Dimen] value. */
-inline fun ResourcesScope.dimenRes(@DimenRes id: Int): Dimen =
-    resourceResolver.resolveDimenSizeRes(id).px
-
-/** Resolve a dimen resource ID as a [Dimen] value. */
 inline fun ComponentContext.dimenRes(@DimenRes id: Int): Dimen =
     resourceResolver.resolveDimenSizeRes(id).px

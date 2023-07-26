@@ -19,7 +19,7 @@ package com.facebook.samples.litho.documentation.props
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.stringRes
+import com.facebook.rendercore.stringRes
 import com.facebook.samples.litho.R
 
 class VariableArgumentPropParentKComponent(private val useVarArgWithResType: Boolean) :

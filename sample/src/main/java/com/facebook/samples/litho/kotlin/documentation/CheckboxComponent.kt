@@ -21,10 +21,10 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.drawableRes
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.drawableRes
 
 // start_example
 class CheckboxComponent : KComponent() {

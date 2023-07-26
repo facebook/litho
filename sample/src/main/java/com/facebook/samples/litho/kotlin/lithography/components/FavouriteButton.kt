@@ -25,11 +25,11 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.drawableRes
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.drawableRes
 
 class FavouriteButton : KComponent() {
   override fun ComponentScope.render(): Component {

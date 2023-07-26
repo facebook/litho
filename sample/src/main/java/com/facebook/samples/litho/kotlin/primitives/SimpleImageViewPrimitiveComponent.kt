@@ -21,9 +21,9 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
-import com.facebook.litho.drawableRes
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.drawableRes
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.Primitive

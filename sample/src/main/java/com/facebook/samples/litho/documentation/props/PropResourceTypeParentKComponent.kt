@@ -21,9 +21,9 @@ import androidx.core.content.ContextCompat
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.colorRes
-import com.facebook.litho.dimenRes
-import com.facebook.litho.stringRes
+import com.facebook.rendercore.colorRes
+import com.facebook.rendercore.dimenRes
+import com.facebook.rendercore.stringRes
 import com.facebook.samples.litho.R
 
 // start_example

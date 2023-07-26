@@ -25,7 +25,6 @@ import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Row
 import com.facebook.litho.State
 import com.facebook.litho.Style
-import com.facebook.litho.colorRes
 import com.facebook.litho.core.padding
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
@@ -34,6 +33,7 @@ import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.TextAlignment
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.colorRes
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
 import com.facebook.samples.litho.R

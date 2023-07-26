@@ -25,12 +25,12 @@ import com.facebook.litho.animated.alpha
 import com.facebook.litho.animated.scaleX
 import com.facebook.litho.animated.scaleY
 import com.facebook.litho.animated.useBinding
-import com.facebook.litho.colorRes
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.view.backgroundColor
+import com.facebook.rendercore.colorRes
 import com.facebook.rendercore.dp
 import com.facebook.samples.litho.R
 import com.facebook.yoga.YogaAlign

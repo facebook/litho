@@ -28,11 +28,11 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
-import com.facebook.litho.drawableRes
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.view.background
 import com.facebook.litho.view.backgroundColor
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.drawableRes
 import com.facebook.samples.litho.R.drawable.ic_launcher
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
