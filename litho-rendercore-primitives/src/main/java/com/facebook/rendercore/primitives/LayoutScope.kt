@@ -17,14 +17,23 @@
 package com.facebook.rendercore.primitives
 
 import android.content.Context
+import com.facebook.rendercore.BaseResourcesScope
 import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.ResourceCache
+import com.facebook.rendercore.ResourceResolver
 
 /**
  * The scope for the [Primitive] layout method. Provides access to [LayoutContext], the previous
  * layout data and utility methods that may help to compute the [PrimitiveLayoutResult].
  */
 class LayoutScope
-internal constructor(val layoutContext: LayoutContext<Any?>, val previousLayoutData: Any?) {
-  val androidContext: Context
+internal constructor(val layoutContext: LayoutContext<Any?>, val previousLayoutData: Any?) :
+    BaseResourcesScope {
+  override val androidContext: Context
     get() = layoutContext.androidContext
+
+  override val resourceResolver: ResourceResolver
+    get() =
+        ResourceResolver(
+            androidContext, ResourceCache.getLatest(androidContext.resources.configuration))
 }
