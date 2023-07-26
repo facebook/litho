@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.annotation.StyleableRes
-import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.BaseResourcesScope
 import com.facebook.rendercore.ResourceResolver
 
 /**
@@ -26,15 +26,13 @@ import com.facebook.rendercore.ResourceResolver
  * [Column], and [Text]. This class exposes the ability to access functions defined in [Resources]
  * like [stringRes]/[drawableRes] etc.
  */
-interface ResourcesScope {
+interface ResourcesScope : BaseResourcesScope {
   val context: ComponentContext
-  val androidContext: Context
+  override val androidContext: Context
     get() = context.androidContext
 
-  val resourceResolver: ResourceResolver
+  override val resourceResolver: ResourceResolver
     get() = context.resourceResolver
-
-  fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
 
   /** Retrieves a styled attribute value for provided {@param id}. */
   fun getIntAttrValue(
