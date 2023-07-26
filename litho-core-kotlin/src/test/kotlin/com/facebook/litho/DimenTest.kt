@@ -21,6 +21,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.ResourceCache
+import com.facebook.rendercore.ResourceResolver
 import java.lang.IllegalArgumentException
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
@@ -203,9 +204,7 @@ class DimenTest {
       ResourceResolver(
           ApplicationProvider.getApplicationContext<Context>(),
           ResourceCache.getLatest(
-              ApplicationProvider.getApplicationContext<Context>()
-                  .getResources()
-                  .getConfiguration())) {
+              ApplicationProvider.getApplicationContext<Context>().resources.configuration)) {
     override fun dipsToPixels(dips: Float): Int = FastMath.round(dips * density)
 
     override fun sipsToPixels(sips: Float): Int = FastMath.round(sips * scaledDensity)

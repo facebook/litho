@@ -32,6 +32,7 @@ import androidx.annotation.Dimension;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.rendercore.ResourceResolver;
 import com.facebook.rendercore.primitives.Equivalence;
 import com.facebook.yoga.YogaEdge;
 import java.lang.annotation.Retention;

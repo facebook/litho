@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import androidx.annotation.DimenRes
+import com.facebook.rendercore.ResourceResolver
 import java.lang.Double.doubleToRawLongBits
 import java.lang.Double.longBitsToDouble
 import java.lang.Float.intBitsToFloat

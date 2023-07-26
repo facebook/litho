@@ -24,6 +24,7 @@ import com.facebook.rendercore.LruResourceCache
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.ResourceCache
+import com.facebook.rendercore.ResourceResolver
 import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.primitives.Allocator
 import com.facebook.rendercore.primitives.AspectRatioLayoutBehavior

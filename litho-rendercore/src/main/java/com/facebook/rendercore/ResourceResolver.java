@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -31,23 +31,25 @@ import androidx.annotation.IntegerRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
-import com.facebook.rendercore.FastMath;
-import com.facebook.rendercore.ResourceCache;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ResourceResolver {
   private final Resources mResources;
   private final Resources.Theme mTheme;
-  private final ResourceCache mResourceCache;
+
+  @Nullable private final ResourceCache mResourceCache;
   private final Context mAndroidContext;
 
-  ResourceResolver(Context context, ResourceCache resourceCache) {
+  public ResourceResolver(Context context, @Nullable ResourceCache resourceCache) {
     mAndroidContext = context;
     mResources = mAndroidContext.getResources();
     mTheme = mAndroidContext.getTheme();
     mResourceCache = resourceCache;
   }
 
-  ResourceCache getResourceCache() {
+  @Nullable
+  public ResourceCache getResourceCache() {
     return mResourceCache;
   }
 
@@ -72,7 +74,7 @@ public class ResourceResolver {
   }
 
   public @Nullable String resolveStringRes(@StringRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       String cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -93,7 +95,7 @@ public class ResourceResolver {
 
   @Nullable
   public String[] resolveStringArrayRes(@ArrayRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       String[] cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -109,7 +111,7 @@ public class ResourceResolver {
   }
 
   public int resolveIntRes(@IntegerRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -126,7 +128,7 @@ public class ResourceResolver {
 
   @Nullable
   public final int[] resolveIntArrayRes(@ArrayRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       int[] cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -144,7 +146,9 @@ public class ResourceResolver {
   @Nullable
   public Integer[] resolveIntegerArrayRes(@ArrayRes int resId) {
     int[] resIds = resolveIntArrayRes(resId);
-    if (resIds == null) return null;
+    if (resIds == null) {
+      return null;
+    }
     Integer[] result = new Integer[resIds.length];
     for (int i = 0; i < resIds.length; i++) {
       result[i] = resIds[i];
@@ -153,7 +157,7 @@ public class ResourceResolver {
   }
 
   public boolean resolveBoolRes(@BoolRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       Boolean cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -169,13 +173,13 @@ public class ResourceResolver {
   }
 
   public @ColorInt int resolveColorRes(@ColorRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
       }
 
-      int result = mResources.getColor(resId);
+      int result = ContextCompat.getColor(mAndroidContext, resId);
       mResourceCache.set(resId, result);
 
       return result;
@@ -185,7 +189,7 @@ public class ResourceResolver {
   }
 
   public int resolveDimenSizeRes(@DimenRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -201,7 +205,7 @@ public class ResourceResolver {
   }
 
   public int resolveDimenOffsetRes(@DimenRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -217,7 +221,7 @@ public class ResourceResolver {
   }
 
   public float resolveFloatRes(@DimenRes int resId) {
-    if (resId != 0) {
+    if (mResourceCache != null && resId != 0) {
       Float cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -240,6 +244,7 @@ public class ResourceResolver {
     return ContextCompat.getDrawable(mAndroidContext, resId);
   }
 
+  @Nullable
   public String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
     TypedArray a = mTheme.obtainStyledAttributes(new int[] {attrResId});
 
@@ -290,7 +295,9 @@ public class ResourceResolver {
   @Nullable
   public Integer[] resolveIntegerArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     int[] resIds = resolveIntArrayAttr(attrResId, defResId);
-    if (resIds == null) return null;
+    if (resIds == null) {
+      return null;
+    }
     Integer[] result = new Integer[resIds.length];
     for (int i = 0; i < resIds.length; i++) {
       result[i] = resIds[i];
@@ -363,7 +370,7 @@ public class ResourceResolver {
     }
   }
 
-  final int resolveResIdAttr(@AttrRes int attrResId, int defResId) {
+  public final int resolveResIdAttr(@AttrRes int attrResId, int defResId) {
     TypedArray a = mTheme.obtainStyledAttributes(new int[] {attrResId});
 
     try {

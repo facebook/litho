@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.annotation.StyleableRes
+import com.facebook.rendercore.ResourceResolver
 
 /**
  * The receiver for [KComponent] methods which need to access resources and widgets like [Row],

@@ -20,6 +20,7 @@ import android.content.Context
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.ResourceCache
+import com.facebook.rendercore.ResourceResolver
 import com.facebook.rendercore.utils.MeasureSpecUtils
 
 /**

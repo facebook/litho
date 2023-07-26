@@ -68,7 +68,7 @@ public interface ClassNames {
   ClassName DIFF = ClassName.bestGuess("com.facebook.litho.Diff");
   ClassName SIZE = ClassName.bestGuess("com.facebook.litho.Size");
 
-  ClassName RESOURCE_RESOLVER = ClassName.bestGuess("com.facebook.litho.ResourceResolver");
+  ClassName RESOURCE_RESOLVER = ClassName.bestGuess("com.facebook.rendercore.ResourceResolver");
 
   ClassName TRANSITION = ClassName.bestGuess("com.facebook.litho.Transition");
 

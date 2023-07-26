@@ -35,6 +35,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.ComponentTree.LithoConfiguration;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.ResourceCache;
+import com.facebook.rendercore.ResourceResolver;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 
@@ -648,6 +649,7 @@ public class ComponentContext implements Cloneable {
             + "Please only invoke getLayoutVersion from OnCreateLayout/OnMeasure/OnPrepare");
   }
 
+  @Nullable
   public ResourceCache getResourceCache() {
     return mResourceResolver.getResourceCache();
   }
