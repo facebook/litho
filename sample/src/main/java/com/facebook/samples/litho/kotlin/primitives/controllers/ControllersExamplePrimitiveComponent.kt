@@ -23,8 +23,8 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.useCached
+import com.facebook.rendercore.dp
 import com.facebook.samples.litho.kotlin.collection.Button
 
 class ControllersExamplePrimitiveComponent : KComponent() {

@@ -19,9 +19,9 @@ package com.facebook.samples.litho.documentation.props
 import androidx.annotation.ColorInt
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.rendercore.Dimen
 
 // start_example
 class PropWithoutResourceTypeKComponent(

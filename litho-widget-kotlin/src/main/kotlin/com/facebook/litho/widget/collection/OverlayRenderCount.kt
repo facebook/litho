@@ -23,17 +23,17 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.px
-import com.facebook.litho.sp
 import com.facebook.litho.useEffect
 import com.facebook.litho.useRef
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
+import com.facebook.rendercore.sp
 import com.facebook.yoga.YogaPositionType
 
 /** A component that overlays a render count on top of its children. */

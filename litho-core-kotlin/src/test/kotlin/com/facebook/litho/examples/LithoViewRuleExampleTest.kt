@@ -29,9 +29,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.px
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.ComponentConditions.typeIs
@@ -43,6 +41,8 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
 import java.lang.AssertionError
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat

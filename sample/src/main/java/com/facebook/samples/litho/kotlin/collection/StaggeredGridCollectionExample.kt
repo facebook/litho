@@ -20,16 +20,16 @@ import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
-import com.facebook.litho.px
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.collection.LazyStaggeredGrid
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 class StaggeredGridCollectionExample : KComponent() {

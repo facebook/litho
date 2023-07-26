@@ -25,8 +25,8 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.rendercore.dp
 import com.facebook.samples.litho.kotlin.primitives.SimpleImageViewPrimitiveComponent
 
 class SimpleImageViewExamplePrimitiveComponent : KComponent() {

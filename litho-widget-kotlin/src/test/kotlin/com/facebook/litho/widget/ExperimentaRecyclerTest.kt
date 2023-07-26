@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -34,6 +33,7 @@ import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.px
 import junit.framework.Assert.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

@@ -24,7 +24,6 @@ import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
@@ -33,6 +32,7 @@ import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
+import com.facebook.rendercore.dp
 
 // start_example
 class SectionComponent(private val words: List<String>) : KComponent() {

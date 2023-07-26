@@ -28,14 +28,14 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.SizeConstraintsAwareComponent
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 import com.facebook.samples.litho.R
 import com.facebook.yoga.YogaAlign
 

@@ -30,10 +30,10 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.view.background
+import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 
 class ExpandableElementOther(

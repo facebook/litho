@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.rendercore
 
-import androidx.annotation.DimenRes
-import com.facebook.rendercore.ResourceResolver
 import java.lang.Double.doubleToRawLongBits
 import java.lang.Double.longBitsToDouble
 import java.lang.Float.intBitsToFloat
@@ -39,14 +37,6 @@ value class Dimen(val encodedValue: Long) {
   fun toPixels(resourceResolver: ResourceResolver): Int =
       convertEncodedValueToPixels(resourceResolver, encodedValue)
 }
-
-/** Resolve a dimen resource ID as a [Dimen] value. */
-inline fun ResourcesScope.dimenRes(@DimenRes id: Int): Dimen =
-    resourceResolver.resolveDimenSizeRes(id).px
-
-/** Resolve a dimen resource ID as a [Dimen] value. */
-inline fun ComponentContext.dimenRes(@DimenRes id: Int): Dimen =
-    resourceResolver.resolveDimenSizeRes(id).px
 
 /** Creates a Dimen with a constant dp (density-independent pixels) value. */
 inline val Int.dp: Dimen

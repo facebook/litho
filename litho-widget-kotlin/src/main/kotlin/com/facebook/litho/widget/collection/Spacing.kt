@@ -22,8 +22,8 @@ import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
+import com.facebook.rendercore.Dimen
 
 /**
  * An `ItemDecoration` to add spacing around list items in a [Collection]. It is intended for use

@@ -19,12 +19,12 @@ package com.facebook.litho.widget.collection
 import androidx.annotation.Px
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
-import com.facebook.litho.px
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SmoothScrollAlignmentType
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.px
 
 /**
  * A controller that can be set on a [LazyCollection] to trigger external events. Most calls should

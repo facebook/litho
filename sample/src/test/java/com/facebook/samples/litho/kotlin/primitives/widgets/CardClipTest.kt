@@ -19,9 +19,9 @@ package com.facebook.samples.litho.kotlin.primitives.widgets
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.px
 import junit.framework.Assert.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule

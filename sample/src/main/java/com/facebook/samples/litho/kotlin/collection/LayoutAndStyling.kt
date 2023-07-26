@@ -24,10 +24,10 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.litho.widget.collection.LinearSpacing
+import com.facebook.rendercore.dp
 
 // start_linear_spacing_example
 class LinearSpacingExample : KComponent() {

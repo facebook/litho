@@ -20,8 +20,8 @@ import android.graphics.Path
 import android.graphics.PathDashPathEffect
 import androidx.annotation.ColorInt
 import com.facebook.litho.Border
-import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.ResourceResolver
 import com.facebook.yoga.YogaEdge
 

@@ -44,12 +44,9 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.px
-import com.facebook.litho.sp
 import com.facebook.litho.testing.DEFAULT_HEIGHT_SPEC
 import com.facebook.litho.testing.DEFAULT_WIDTH_SPEC
 import com.facebook.litho.testing.LithoViewRule
@@ -66,6 +63,9 @@ import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.TestAnimationMount
 import com.facebook.litho.widget.TestAnimationsComponent
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
+import com.facebook.rendercore.sp
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 import org.assertj.core.api.Assertions

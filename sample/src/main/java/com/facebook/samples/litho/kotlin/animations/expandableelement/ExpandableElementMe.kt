@@ -24,7 +24,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
+import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaJustify
 
 class ExpandableElementMe(

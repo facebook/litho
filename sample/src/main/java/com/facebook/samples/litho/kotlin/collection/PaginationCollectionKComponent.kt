@@ -24,13 +24,13 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Progress
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.litho.widget.collection.OnNearCallback
+import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 
 class PaginationCollectionKComponent : KComponent() {

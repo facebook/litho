@@ -24,11 +24,11 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
-import com.facebook.litho.px
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.widget.collection.CrossAxisWrapMode
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
 import com.facebook.samples.litho.onboarding.model.Post
 import com.facebook.samples.litho.onboarding.model.User
 

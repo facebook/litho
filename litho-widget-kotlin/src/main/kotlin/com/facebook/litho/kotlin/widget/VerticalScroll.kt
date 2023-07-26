@@ -19,14 +19,14 @@ package com.facebook.litho.kotlin.widget
 import android.view.MotionEvent
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
-import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
-import com.facebook.litho.px
 import com.facebook.litho.widget.VerticalScroll
 import com.facebook.litho.widget.VerticalScrollEventsController
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
 
 /** Builder function for creating [VerticalScrollSpec] components. */
 @Suppress("FunctionName")

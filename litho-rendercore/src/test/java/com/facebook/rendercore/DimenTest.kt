@@ -1,39 +1,22 @@
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-package com.facebook.litho
+package com.facebook.rendercore
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.rendercore.FastMath
-import com.facebook.rendercore.ResourceCache
-import com.facebook.rendercore.ResourceResolver
 import java.lang.IllegalArgumentException
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 const val DENSITY = 2f
 const val SCALED_DENSITY = 10f
 
 /** Unit tests [Dimen]. */
-@RunWith(LithoTestRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class DimenTest {
 
   @Rule @JvmField val expectedException = ExpectedException.none()

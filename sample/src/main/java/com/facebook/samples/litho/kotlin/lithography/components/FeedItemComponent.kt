@@ -25,7 +25,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.flexbox.aspectRatio
 import com.facebook.litho.flexbox.position
@@ -34,9 +33,10 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.SnapUtil
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
 import com.facebook.yoga.YogaPositionType

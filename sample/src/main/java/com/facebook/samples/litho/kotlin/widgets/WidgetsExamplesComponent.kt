@@ -31,7 +31,6 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
 import com.facebook.litho.kotlin.widget.Card
 import com.facebook.litho.kotlin.widget.HorizontalScroll
@@ -42,9 +41,10 @@ import com.facebook.litho.kotlin.widget.Spinner
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.kotlin.widget.VerticalScroll
-import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.TextAlignment
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 import com.facebook.samples.litho.R
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 

@@ -30,7 +30,6 @@ import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.px
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -40,6 +39,7 @@ import com.facebook.litho.viewcompat.ViewCreator
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.ViewRenderInfo
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Rule

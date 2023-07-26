@@ -29,6 +29,8 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewId
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.px
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference

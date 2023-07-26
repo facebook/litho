@@ -25,6 +25,7 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.ComponentWithTreeProp
 import com.facebook.litho.widget.TextDrawable
 import com.facebook.litho.widget.treeprops.SimpleTreeProp
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule

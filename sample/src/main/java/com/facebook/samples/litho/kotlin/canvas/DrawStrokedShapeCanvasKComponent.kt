@@ -24,13 +24,13 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.widthPercent
-import com.facebook.litho.px
 import com.facebook.litho.widget.canvas.CanvasComponent
 import com.facebook.litho.widget.canvas.Gradient
 import com.facebook.litho.widget.canvas.Shading
 import com.facebook.litho.widget.canvas.Shape
 import com.facebook.mountable.utils.types.Point
 import com.facebook.mountable.utils.types.Size
+import com.facebook.rendercore.px
 
 // start_example
 class DrawStrokedShapeCanvasKComponent : KComponent() {

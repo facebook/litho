@@ -36,7 +36,6 @@ import com.facebook.litho.core.minWidth
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
-import com.facebook.litho.px
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
@@ -45,6 +44,7 @@ import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.view.wrapInView
+import com.facebook.rendercore.px
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge

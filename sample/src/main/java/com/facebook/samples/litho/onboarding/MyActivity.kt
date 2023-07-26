@@ -22,8 +22,8 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.rendercore.dp
 
 class MyActivity : AppCompatActivity() {
 

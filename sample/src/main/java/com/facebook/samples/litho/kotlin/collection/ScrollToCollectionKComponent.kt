@@ -23,13 +23,13 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useState
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.dp
 
 class ScrollToCollectionKComponent : KComponent() {
 

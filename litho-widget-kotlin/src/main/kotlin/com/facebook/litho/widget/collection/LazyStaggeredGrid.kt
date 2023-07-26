@@ -19,13 +19,13 @@ package com.facebook.litho.widget.collection
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.Component
-import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
+import com.facebook.rendercore.Dimen
 
 /** A scrollable collection of components arranged in a staggered grid */
 @Suppress("FunctionName")

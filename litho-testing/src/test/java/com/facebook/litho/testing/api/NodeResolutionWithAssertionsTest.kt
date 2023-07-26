@@ -23,13 +23,13 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.dp
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

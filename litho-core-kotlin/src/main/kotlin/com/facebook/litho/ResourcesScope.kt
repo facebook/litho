@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.annotation.StyleableRes
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.ResourceResolver
 
 /**

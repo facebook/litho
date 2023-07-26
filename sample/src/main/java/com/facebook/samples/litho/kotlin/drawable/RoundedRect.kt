@@ -21,8 +21,8 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
-import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
+import com.facebook.rendercore.Dimen
 
 private fun RoundedRect(@ColorInt fillColor: Int, @Px cornerRadiusPx: Float): Drawable =
     ShapeDrawable(RoundRectShape(FloatArray(8) { cornerRadiusPx }, null, null)).apply {

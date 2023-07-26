@@ -25,8 +25,8 @@ import com.facebook.litho.Transition
 import com.facebook.litho.Transition.SPRING_WITH_OVERSHOOT
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.core.height
-import com.facebook.litho.dp
 import com.facebook.litho.view.alpha
+import com.facebook.rendercore.dp
 
 private const val CMPONENT_A_KEY = "componentAKey"
 private const val COMPONENT_B_KEY = "componentBKey"

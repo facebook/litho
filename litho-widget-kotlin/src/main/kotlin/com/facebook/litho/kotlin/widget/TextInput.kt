@@ -27,14 +27,12 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import androidx.annotation.ColorInt
-import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
-import com.facebook.litho.sp
 import com.facebook.litho.widget.EditorActionEvent
 import com.facebook.litho.widget.InputConnectionEvent
 import com.facebook.litho.widget.InputFocusChangedEvent
@@ -43,6 +41,8 @@ import com.facebook.litho.widget.KeyUpEvent
 import com.facebook.litho.widget.SelectionChangedEvent
 import com.facebook.litho.widget.TextChangedEvent
 import com.facebook.litho.widget.TextInput
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.sp
 
 /** Builder function for creating [TextInputSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")

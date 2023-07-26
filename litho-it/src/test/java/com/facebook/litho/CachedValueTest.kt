@@ -24,6 +24,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.widget.LayoutWithSizeSpecWithCachedValue
 import com.facebook.litho.widget.LayoutWithSizeSpecWithCachedValueSpec
+import com.facebook.rendercore.px
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions

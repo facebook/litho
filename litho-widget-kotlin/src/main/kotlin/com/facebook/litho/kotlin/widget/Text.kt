@@ -25,17 +25,17 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import androidx.core.text.TextDirectionHeuristicCompat
-import com.facebook.litho.Dimen
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.Handle
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
-import com.facebook.litho.sp
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextAlignment
 import com.facebook.litho.widget.VerticalGravity
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 
 /**
  * Temporary builder function for creating [TextSpec] components. In the future it will either be

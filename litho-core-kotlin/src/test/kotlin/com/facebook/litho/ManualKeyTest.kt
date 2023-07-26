@@ -23,6 +23,7 @@ import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
+import com.facebook.rendercore.dp
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

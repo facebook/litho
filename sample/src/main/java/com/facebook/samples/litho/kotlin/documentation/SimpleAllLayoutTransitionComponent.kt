@@ -24,11 +24,11 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.core.margin
-import com.facebook.litho.dp
 import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.SolidColor
+import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 
 class SimpleAllLayoutTransitionKComponent : KComponent() {

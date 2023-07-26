@@ -29,7 +29,6 @@ import com.facebook.litho.ClickEvent
 import com.facebook.litho.CommonProps
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.Dimen
 import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
@@ -39,6 +38,7 @@ import com.facebook.litho.TouchEvent
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
+import com.facebook.rendercore.Dimen
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */

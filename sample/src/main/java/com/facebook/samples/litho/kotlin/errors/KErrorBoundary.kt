@@ -22,9 +22,9 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.margin
-import com.facebook.litho.dp
 import com.facebook.litho.useErrorBoundary
 import com.facebook.litho.useState
+import com.facebook.rendercore.dp
 
 // start_example
 class KErrorBoundary(private val childComponent: Component) : KComponent() {

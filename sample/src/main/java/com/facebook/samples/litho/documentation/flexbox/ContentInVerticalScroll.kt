@@ -23,10 +23,10 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.kotlin.widget.VerticalScroll
-import com.facebook.litho.sp
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 
 class ContentInVerticalScroll : KComponent() {
 

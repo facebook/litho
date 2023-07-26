@@ -18,6 +18,7 @@
 
 package com.facebook.litho
 
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.primitives.AspectRatioLayoutBehavior as PrimitiveAspectRatioLayoutBehavior
 import com.facebook.rendercore.primitives.FillLayoutBehavior as PrimitiveFillLayoutBehavior
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior as PrimitiveFixedSizeLayoutBehavior

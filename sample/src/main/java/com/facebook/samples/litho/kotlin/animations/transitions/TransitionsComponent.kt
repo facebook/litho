@@ -26,7 +26,6 @@ import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.transition.useTransition
@@ -34,6 +33,7 @@ import com.facebook.litho.useState
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.dp
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
 

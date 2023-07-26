@@ -48,7 +48,6 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
@@ -77,6 +76,7 @@ import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
 import com.facebook.litho.widget.StickyHeaderControllerFactory
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
+import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType

@@ -30,12 +30,12 @@ import com.facebook.litho.Transition.TransitionUnitsBuilder
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 
 class LeftRightBlocksComponent : KComponent() {

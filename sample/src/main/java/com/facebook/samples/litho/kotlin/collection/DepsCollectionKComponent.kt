@@ -24,12 +24,12 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.alpha
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 
 class DepsCollectionKComponent : KComponent() {
 

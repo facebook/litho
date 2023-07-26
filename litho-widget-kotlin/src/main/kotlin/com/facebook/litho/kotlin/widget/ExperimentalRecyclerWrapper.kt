@@ -20,14 +20,14 @@ import android.graphics.Color
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
-import com.facebook.litho.Dimen
 import com.facebook.litho.Style
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.ExperimentalRecycler
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 
 fun ExperimentalRecyclerWrapper(
     binder: Binder<RecyclerView>,

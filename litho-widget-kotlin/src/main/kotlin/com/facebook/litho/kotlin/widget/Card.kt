@@ -19,12 +19,12 @@ package com.facebook.litho.kotlin.widget
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.facebook.litho.Component
-import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.widget.Card
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 
 /** Builder function for creating [CardSpec] components. */
 @Suppress("FunctionName")

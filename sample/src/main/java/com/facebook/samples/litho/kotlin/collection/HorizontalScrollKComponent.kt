@@ -24,13 +24,13 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.collection.CrossAxisWrapMode
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.litho.widget.collection.LinearSpacing
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 class HorizontalScrollKComponent : KComponent() {

@@ -21,11 +21,11 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
 import com.facebook.litho.kotlin.widget.Border
 import com.facebook.litho.kotlin.widget.BorderEdge
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.rendercore.dp
 
 class AllBorder : KComponent() {
 

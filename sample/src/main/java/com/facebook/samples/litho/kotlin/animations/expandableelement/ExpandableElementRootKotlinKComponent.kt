@@ -24,7 +24,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.flex
@@ -33,12 +32,13 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.widget.NotAnimatedItemAnimator
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.testKey
 import com.facebook.litho.widget.TextAlignment
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.yoga.YogaAlign
 

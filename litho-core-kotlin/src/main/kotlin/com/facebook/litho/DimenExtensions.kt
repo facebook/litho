@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.documentation.props
+package com.facebook.litho
 
-import com.facebook.litho.Column
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentScope
-import com.facebook.litho.KComponent
-import com.facebook.litho.kotlin.widget.Text
-import com.facebook.rendercore.sp
+import androidx.annotation.DimenRes
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.px
 
-// start_example
-class VariableArgumentPropKComponent(private vararg val names: String) : KComponent() {
+/** Resolve a dimen resource ID as a [Dimen] value. */
+inline fun ResourcesScope.dimenRes(@DimenRes id: Int): Dimen =
+    resourceResolver.resolveDimenSizeRes(id).px
 
-  override fun ComponentScope.render(): Component {
-    return Column() {
-      for (name in names) {
-        child(Text(text = name, textSize = 16.sp))
-      }
-    }
-  }
-}
-// end_example
+/** Resolve a dimen resource ID as a [Dimen] value. */
+inline fun ComponentContext.dimenRes(@DimenRes id: Int): Dimen =
+    resourceResolver.resolveDimenSizeRes(id).px

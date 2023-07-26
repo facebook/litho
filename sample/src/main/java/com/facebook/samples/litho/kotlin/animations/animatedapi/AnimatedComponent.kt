@@ -34,12 +34,12 @@ import com.facebook.litho.animated.useBinding
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.wrapInView
+import com.facebook.rendercore.dp
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
 

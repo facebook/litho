@@ -21,12 +21,12 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useCallback
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.dp
 
 // start_list_clicking_example
 private val ONE_TO_TEN =

@@ -22,10 +22,10 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.view.alpha
+import com.facebook.rendercore.dp
 
 // start_combine_style_example
 class OuterTextComponent : KComponent() {

@@ -34,6 +34,7 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRender
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRenderSpec
 import com.facebook.litho.widget.TestWrapperComponent
 import com.facebook.litho.widget.Text
+import com.facebook.rendercore.px
 import java.util.ArrayList
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat

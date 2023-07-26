@@ -23,13 +23,11 @@ import androidx.annotation.IdRes
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
-import com.facebook.litho.Dimen
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Size
 import com.facebook.litho.Style
-import com.facebook.litho.dp
 import com.facebook.litho.eventHandler
 import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.useState
@@ -37,7 +35,9 @@ import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.SizeConstraints
+import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult

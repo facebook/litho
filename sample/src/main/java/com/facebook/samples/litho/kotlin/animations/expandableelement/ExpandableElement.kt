@@ -26,11 +26,11 @@ import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.dp
 
 const val TRANSITION_MSG_PARENT = "transition_msg_parent"
 const val TRANSITION_TOP_DETAIL = "transition_top_detail"

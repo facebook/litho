@@ -29,9 +29,9 @@ import com.facebook.litho.colorRes
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.view.backgroundColor
+import com.facebook.rendercore.dp
 import com.facebook.samples.litho.R
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify

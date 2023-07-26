@@ -29,9 +29,9 @@ import com.facebook.litho.annotations.OnUnmount
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.rendercore.dp
 
 @MountSpec
 object SeekBarSpec {

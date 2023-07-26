@@ -22,10 +22,10 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.sp
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.sp
 
 internal class HeaderComponent(private val name: String) : KComponent() {
 

@@ -25,11 +25,11 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.utils.StacktraceHelper
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
+import com.facebook.rendercore.dp
 
 /**
  * Renders a throwable as a text with a title and provides a touch callback that logs the throwable

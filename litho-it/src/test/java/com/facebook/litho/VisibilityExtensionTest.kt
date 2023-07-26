@@ -23,6 +23,7 @@ import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.visibility.onVisible
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

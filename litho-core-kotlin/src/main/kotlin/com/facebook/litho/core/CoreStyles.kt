@@ -19,10 +19,10 @@ package com.facebook.litho.core
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
+import com.facebook.rendercore.Dimen
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [CoreDimenStyleItem]. */

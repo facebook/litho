@@ -19,7 +19,6 @@ package com.facebook.litho.widget.collection
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
@@ -38,6 +37,7 @@ import com.facebook.litho.useState
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerBinder
+import com.facebook.rendercore.Dimen
 
 typealias OnViewportChanged =
     (

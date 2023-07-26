@@ -26,7 +26,6 @@ import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.dp
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TransitionTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -35,6 +34,7 @@ import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.StateWithTransitionTestComponent
 import com.facebook.litho.widget.TestAnimationsComponent
+import com.facebook.rendercore.dp
 import com.facebook.yoga.YogaAlign
 import org.assertj.core.api.Assertions
 import org.junit.Rule

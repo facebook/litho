@@ -27,7 +27,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.widthPercent
-import com.facebook.litho.px
 import com.facebook.litho.useRef
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
@@ -38,6 +37,7 @@ import com.facebook.litho.widget.canvas.Transform
 import com.facebook.mountable.utils.types.Point
 import com.facebook.mountable.utils.types.Size
 import com.facebook.mountable.utils.types.center
+import com.facebook.rendercore.px
 
 // start_example
 class DrawAnimatedSquareCanvasKComponent : KComponent() {

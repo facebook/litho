@@ -26,6 +26,8 @@ import com.facebook.litho.widget.EventHandlerBindingComponent
 import com.facebook.litho.widget.EventHandlerBindingComponentSpec
 import com.facebook.litho.widget.EventHandlerBindingSection
 import com.facebook.litho.widget.EventHandlerBindingSectionSpec
+import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.sp
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
