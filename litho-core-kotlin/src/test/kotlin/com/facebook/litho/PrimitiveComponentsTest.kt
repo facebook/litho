@@ -1080,6 +1080,73 @@ class PrimitiveComponentsTest {
     testView.lithoView.unmountAllItems()
     assertThat(bindInfo).containsExactly("UNBIND:contentDescription", "UNBIND:text")
   }
+
+  @Test
+  fun `bindWithLayoutData with no deps should work the same as with Unit dep`() {
+    val unitDepLayoutData = mutableListOf<TestPrimitiveLayoutData>()
+    val noDepLayoutData = mutableListOf<TestPrimitiveLayoutData>()
+
+    class TestComponent(private val style: Style) : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        return LithoPrimitive(
+            layoutBehavior =
+                object : LayoutBehavior {
+                  override fun LayoutScope.layout(
+                      sizeConstraints: SizeConstraints
+                  ): PrimitiveLayoutResult {
+                    val layoutData =
+                        TestPrimitiveLayoutData(
+                            width = sizeConstraints.maxWidth,
+                            height = sizeConstraints.maxHeight,
+                        )
+                    return PrimitiveLayoutResult(
+                        width = layoutData.width,
+                        height = layoutData.height,
+                        layoutData = layoutData)
+                  }
+                },
+            mountBehavior =
+                MountBehavior(ViewAllocator { context -> View(context) }) {
+                  bindWithLayoutData<TestPrimitiveLayoutData>(Unit) { _, layoutData ->
+                    unitDepLayoutData.add(layoutData)
+                    onUnbind {}
+                  }
+
+                  bindWithLayoutData<TestPrimitiveLayoutData> { _, layoutData ->
+                    noDepLayoutData.add(layoutData)
+                    onUnbind {}
+                  }
+                },
+            style = style)
+      }
+    }
+
+    // initial render
+    val testView =
+        lithoViewRule.render { TestComponent(style = Style.width(100.px).height(100.px)) }
+
+    assertThat(unitDepLayoutData).containsExactly(TestPrimitiveLayoutData(100, 100))
+    assertThat(noDepLayoutData).isEqualTo(unitDepLayoutData)
+
+    // re-render with the same size
+    lithoViewRule.render(lithoView = testView.lithoView) {
+      TestComponent(style = Style.width(100.px).height(100.px))
+    }
+
+    assertThat(unitDepLayoutData).containsExactly(TestPrimitiveLayoutData(100, 100))
+    assertThat(noDepLayoutData).isEqualTo(unitDepLayoutData)
+
+    // re-render with different size
+    lithoViewRule.render(lithoView = testView.lithoView) {
+      TestComponent(style = Style.width(200.px).height(200.px))
+    }
+
+    assertThat(unitDepLayoutData)
+        .containsExactly(TestPrimitiveLayoutData(100, 100), TestPrimitiveLayoutData(200, 200))
+    assertThat(noDepLayoutData).isEqualTo(unitDepLayoutData)
+
+    testView.lithoView.unmountAllItems()
+  }
 }
 
 class TestViewPrimitiveComponent(

@@ -121,12 +121,14 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    * logic and handling complex cases and for accessing in [bindCall] the layout data that was
    * generated during the layout pass.
    *
-   * Additionally, any time the [deps] changes between updates, the existing [UnbindFunc.onUnbind]
-   * cleanup callback will be invoked, and the new [bindCall] callback will be invoked.
+   * Additionally, any time the [deps] or layout data changes between updates, the existing
+   * [UnbindFunc.onUnbind] cleanup callback will be invoked, and the new [bindCall] callback will be
+   * invoked.
    *
    * @param deps Should contain any props or state your [bindCall]/[UnbindFunc.onUnbind] callbacks
    *   use. For example, if you're using [bind] to set a background based on a color you get as a
-   *   prop, [deps] should include that color.
+   *   prop, [deps] should include that color. If no deps are provided, then only layout data is
+   *   compared between updates.
    * @param bindCall A function that allows for applying properties to the content and accessing the
    *   layout data that was generated during the layout pass.
    */
@@ -358,25 +360,9 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
   fun bind(bindCall: BindScope.(content: ContentType) -> UnbindFunc): Unit =
       throw IllegalStateException(BIND_NO_DEPS_ERROR)
 
-  /**
-   * Creates a binding between the value, and the content’s property. Allows for specifying custom
-   * logic and handling complex cases.
-   *
-   * It is an error to call [bindWithLayoutData] without deps parameter.
-   */
-  // This deprecated-error function shadows the varargs overload so that the varargs version is not
-  // used without key parameters.
-  @Deprecated(BIND_WITH_LAYOUT_DATA_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
-  fun <LayoutDataT> bindWithLayoutData(
-      bindCall: BindScope.(content: ContentType, layoutData: LayoutDataT) -> UnbindFunc
-  ): Unit = throw IllegalStateException(BIND_WITH_LAYOUT_DATA_NO_DEPS_ERROR)
-
   companion object {
     private const val BIND_NO_DEPS_ERROR =
         "bind must provide 'deps' parameter that determines whether the existing 'onUnbind' cleanup callback will be invoked, and the new 'bind' callback will be invoked"
-
-    private const val BIND_WITH_LAYOUT_DATA_NO_DEPS_ERROR =
-        "bindWithLayoutData must provide 'deps' parameter that determines whether the existing 'onUnbind' cleanup callback will be invoked, and the new 'bindWithLayoutData' callback will be invoked"
   }
 }
 
