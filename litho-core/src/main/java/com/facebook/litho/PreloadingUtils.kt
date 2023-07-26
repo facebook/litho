@@ -19,6 +19,7 @@
 package com.facebook.litho
 
 import android.os.Handler
+import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LruResourceCache
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.MountState

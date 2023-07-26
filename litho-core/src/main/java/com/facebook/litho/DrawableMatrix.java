@@ -21,6 +21,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.FastMath;
 import javax.annotation.Nullable;
 
 /** Static class containing a factory method for creating a matrix to apply to a drawable. */

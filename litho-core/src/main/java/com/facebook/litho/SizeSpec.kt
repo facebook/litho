@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.view.View
 import androidx.annotation.IntDef
+import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaMeasureMode
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException

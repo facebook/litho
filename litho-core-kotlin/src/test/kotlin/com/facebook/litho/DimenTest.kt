@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.ResourceCache
 import java.lang.IllegalArgumentException
 import org.assertj.core.api.Java6Assertions.assertThat

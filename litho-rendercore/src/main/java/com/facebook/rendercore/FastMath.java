@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
 import com.facebook.infer.annotation.Nullsafe;
 

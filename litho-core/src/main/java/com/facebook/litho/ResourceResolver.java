@@ -31,6 +31,7 @@ import androidx.annotation.IntegerRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+import com.facebook.rendercore.FastMath;
 import com.facebook.rendercore.ResourceCache;
 
 public class ResourceResolver {
