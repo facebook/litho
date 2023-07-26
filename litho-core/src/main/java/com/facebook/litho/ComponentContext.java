@@ -34,6 +34,7 @@ import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.ComponentTree.LithoConfiguration;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 

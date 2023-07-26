@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.ResourceCache
 import com.facebook.rendercore.utils.MeasureSpecUtils
 
 /**

@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.rendercore
 
 import android.content.res.Configuration
-import androidx.collection.LruCache
 
-open class LruResourceCache(configuration: Configuration) : ResourceCache(configuration) {
+abstract class ResourceCache protected constructor(private val configuration: Configuration) {
 
-  private val cache =
-      object : LruCache<Int?, Any?>(500) {
+  abstract operator fun <T> get(key: Int): T?
 
-        override fun sizeOf(key: Int, value: Any): Int = if (value is String) value.length else 1
+  abstract operator fun set(key: Int, value: Any)
+
+  companion object {
+    private var latest: ResourceCache? = null
+
+    @JvmStatic
+    @Synchronized
+    fun getLatest(configuration: Configuration): ResourceCache? {
+      if (latest?.configuration != configuration) {
+        latest = LruResourceCache(Configuration(configuration))
       }
 
-  override fun <T> get(key: Int): T? = cache[key] as T?
-
-  override fun set(key: Int, value: Any) {
-    cache.put(key, value)
+      return latest
+    }
   }
 }
