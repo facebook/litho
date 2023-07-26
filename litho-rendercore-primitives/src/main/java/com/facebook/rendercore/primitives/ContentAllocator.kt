@@ -27,6 +27,7 @@ import com.facebook.rendercore.RenderUnit
  * A [ContentAllocator] that allocates an instance of a [View].
  *
  * @property poolSize The size of the content pool. The default is [DEFAULT_MAX_PREALLOCATION].
+ *   Setting this to 0 disables pooling of the content [View].
  * @property canPreallocate The flag indicating if the content pool for this Primitive should be
  *   filled ahead of time. See [ContentAllocator.canPreallocate]. The default is false.
  * @property allocator The lambda callback that returns the actual [View].
@@ -51,6 +52,7 @@ class ViewAllocator<Content : View>(
  * A [ContentAllocator] that allocates an instance of a [Drawable].
  *
  * @property poolSize The size of the content pool. The default is [DEFAULT_MAX_PREALLOCATION].
+ *   Setting this to 0 disables pooling of the content [Drawable].
  * @property canPreallocate The flag indicating if the content pool for this Primitive should be
  *   filled ahead of time. See [ContentAllocator.canPreallocate]. The default is false.
  * @property allocator The lambda callback that returns the actual [Drawable].
