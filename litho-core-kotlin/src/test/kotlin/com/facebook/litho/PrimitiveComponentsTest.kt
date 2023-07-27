@@ -57,6 +57,7 @@ import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.DrawableAllocator
+import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.Primitive

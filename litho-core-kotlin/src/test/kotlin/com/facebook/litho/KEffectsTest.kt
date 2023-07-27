@@ -25,6 +25,7 @@ import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.primitives.DrawableAllocator
+import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat

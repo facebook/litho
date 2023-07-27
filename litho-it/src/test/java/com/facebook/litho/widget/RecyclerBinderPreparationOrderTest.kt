@@ -17,12 +17,12 @@
 package com.facebook.litho.widget
 
 import android.view.View
-import com.facebook.litho.FixedSizeLayoutBehavior
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.MeasureSpecUtils.atMost

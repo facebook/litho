@@ -16,11 +16,13 @@
 
 package com.facebook.rendercore.primitives
 
+import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
+import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.exact
 import com.facebook.rendercore.utils.fillSpace
 import com.facebook.rendercore.utils.withAspectRatio
@@ -57,33 +59,39 @@ object ExactSizeConstraintsLayoutBehavior : LayoutBehavior {
  * Returns a [LayoutBehavior] with sizes set based on the [SizeConstraints] if the constraints are
  * bounded, otherwise uses default values.
  *
- * @param defaultWidth The pixel value for the width of the measured component when the provided
+ * @param defaultWidth The [Dimen] value for the width of the measured component when the provided
  *   maxWidth constraint is equal to Infinity.
- * @param defaultHeight The pixel value for the height of the measured component when the provided
+ * @param defaultHeight The [Dimen] value for the height of the measured component when the provided
  *   maxHeight constraint is equal to Infinity.
  */
 class FillLayoutBehavior(
-    private val defaultWidth: Int,
-    private val defaultHeight: Int,
+    private val defaultWidth: Dimen,
+    private val defaultHeight: Dimen,
 ) : LayoutBehavior {
+
+  constructor(defaultWidth: Int, defaultHeight: Int) : this(defaultWidth.px, defaultHeight.px)
+
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
-        size = Size.fillSpace(sizeConstraints, defaultWidth, defaultHeight))
+        size = Size.fillSpace(sizeConstraints, defaultWidth.toPixels(), defaultHeight.toPixels()))
   }
 }
 
 /**
  * Returns a [LayoutBehavior] with sizes set based provided values.
  *
- * @param width The pixel value for the width of the measured component.
- * @param height The pixel value for the height of the measured component.
+ * @param width The [Dimen] value for the width of the measured component.
+ * @param height The [Dimen] value for the height of the measured component.
  */
 class FixedSizeLayoutBehavior(
-    private val width: Int,
-    private val height: Int,
+    private val width: Dimen,
+    private val height: Dimen,
 ) : LayoutBehavior {
+
+  constructor(width: Int, height: Int) : this(width.px, height.px)
+
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    return PrimitiveLayoutResult(width = width, height = height)
+    return PrimitiveLayoutResult(width = width.toPixels(), height = height.toPixels())
   }
 }
 
@@ -92,17 +100,29 @@ class FixedSizeLayoutBehavior(
  * will respect the intrinsic size of the component being measured.
  *
  * @param aspectRatio The aspect ratio for calculating size.
- * @param intrinsicWidth The pixel value for the intrinsic width of the measured component.
- * @param intrinsicHeight The pixel value for the intrinsic height of the measured component.
+ * @param intrinsicWidth The [Dimen] value for the intrinsic width of the measured component.
+ * @param intrinsicHeight The [Dimen] value for the intrinsic height of the measured component.
  */
 class AspectRatioLayoutBehavior(
     private val aspectRatio: Float,
-    private val intrinsicWidth: Int,
-    private val intrinsicHeight: Int,
+    private val intrinsicWidth: Dimen,
+    private val intrinsicHeight: Dimen,
 ) : LayoutBehavior {
+
+  constructor(
+      aspectRatio: Float,
+      intrinsicWidth: Int,
+      intrinsicHeight: Int
+  ) : this(aspectRatio, intrinsicWidth.px, intrinsicHeight.px)
+
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     return PrimitiveLayoutResult(
-        size = Size.withAspectRatio(sizeConstraints, aspectRatio, intrinsicWidth, intrinsicHeight))
+        size =
+            Size.withAspectRatio(
+                sizeConstraints,
+                aspectRatio,
+                intrinsicWidth.toPixels(),
+                intrinsicHeight.toPixels()))
   }
 }
 

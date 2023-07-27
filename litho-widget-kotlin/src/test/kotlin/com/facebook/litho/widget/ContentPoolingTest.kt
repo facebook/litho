@@ -21,7 +21,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.TextView
 import com.facebook.litho.Column
-import com.facebook.litho.FixedSizeLayoutBehavior
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
@@ -34,6 +33,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.MountItemsPool.getMountItemPools
 import com.facebook.rendercore.primitives.DrawableAllocator
+import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat

@@ -31,6 +31,7 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.TextDrawable
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
