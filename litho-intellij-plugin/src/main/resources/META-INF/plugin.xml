@@ -108,8 +108,12 @@
       enabledByDefault="true"
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
 
-    <projectConfigurable parentId="tools" instance="com.facebook.litho.intellij.settings.AppSettingsController"
-      id="com.facebook.litho.intellij.settings.AppSettingsController" nonDefaultProject="false" />
+    <projectConfigurable
+        displayName="Litho"
+        parentId="tools"
+        instance="com.facebook.litho.intellij.settings.AppSettingsController"
+        id="com.facebook.litho.intellij.settings.AppSettingsController"
+        nonDefaultProject="false" />
     <projectService serviceImplementation="com.facebook.litho.intellij.settings.AppSettingsState"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.toolwindows.ComponentStructureView"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.TemplateService"/>
