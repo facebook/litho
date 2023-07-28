@@ -270,6 +270,34 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   @Override
+  public void childHasTransientStateChanged(View child, boolean childHasTransientState) {
+    final boolean oldHasTransientState = hasTransientState();
+    super.childHasTransientStateChanged(child, childHasTransientState);
+    final boolean newHasTransientState = hasTransientState();
+
+    if (oldHasTransientState == newHasTransientState) {
+      return;
+    }
+
+    if (mTransientStateCount != 0) {
+      return;
+    }
+
+    if (!hasTree()) {
+      return;
+    }
+
+    if (newHasTransientState) {
+      notifyVisibleBoundsChanged(new Rect(0, 0, getWidth(), getHeight()), false);
+    } else {
+      // We mounted everything when the transient state was set on this view. We need to do this
+      // partly to unmount content that is not visible but mostly to get the correct visibility
+      // events to be fired.
+      notifyVisibleBoundsChanged();
+    }
+  }
+
+  @Override
   public void setHasTransientState(boolean hasTransientState) {
     super.setHasTransientState(hasTransientState);
 
