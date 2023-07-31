@@ -32,6 +32,7 @@ import com.facebook.litho.componentsfinder.ComponentsFinderKt;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
@@ -453,15 +454,11 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   private boolean iterateOverAllChildren(
       List<InspectableComponent> inspectableComponents, Condition<InspectableComponent> condition) {
-    for (InspectableComponent component : inspectableComponents) {
-      if (condition.matches(component)) {
-        return true;
-      }
-      if (iterateOverAllChildren(component.getChildComponents(), condition)) {
-        return true;
-      }
-    }
-    return false;
+    return inspectableComponents.stream()
+        .anyMatch(
+            component ->
+                condition.matches(component)
+                    || iterateOverAllChildren(component.getChildComponents(), condition));
   }
 
   /**
@@ -531,12 +528,8 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   private <T1, T2> boolean hasMatchingProps(
       List<Component> componentsList, Pair<KProperty1<T2, T1>, T1>[] propsValuePairs) {
-    for (Component component : componentsList) {
-      if (comparedPropsAreEqual(component, propsValuePairs)) {
-        return true;
-      }
-    }
-    return false;
+    return componentsList.stream()
+        .anyMatch(component -> comparedPropsAreEqual(component, propsValuePairs));
   }
 
   /**
@@ -588,12 +581,8 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
    */
   private <T2, T1> boolean hasMatchingPropsWithMatcher(
       List<Component> componentsList, Pair<KProperty1<T2, T1>, Matcher<T1>>[] propsMatcherPairs) {
-    for (Component component : componentsList) {
-      if (comparedPropsMatch(component, propsMatcherPairs)) {
-        return true;
-      }
-    }
-    return false;
+    return componentsList.stream()
+        .anyMatch(component -> comparedPropsMatch(component, propsMatcherPairs));
   }
 
   private <T2, T1> String getPropsFormattedString(Pair<KProperty1<T2, T1>, T1>[] propsValuePairs) {
@@ -632,12 +621,8 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   private <T2, T1> boolean comparedPropsAreEqual(
       Component component, Pair<KProperty1<T2, T1>, T1>[] propsValuePairs) {
-    for (Pair<KProperty1<T2, T1>, T1> pair : propsValuePairs) {
-      if (!(pair.getFirst().get((T2) component).equals(pair.getSecond()))) {
-        return false;
-      }
-    }
-    return true;
+    return Arrays.stream(propsValuePairs)
+        .allMatch(pair -> pair.getFirst().get((T2) component).equals(pair.getSecond()));
   }
 
   public static OccurrenceCount times(int i) {
@@ -665,10 +650,9 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   private static Class<? extends Component>[] getJavaClasses(
       final KClass<? extends Component>... kClazzes) {
-    final Class<? extends Component>[] jClazzes = new Class[kClazzes.length];
-    for (int i = 0; i < kClazzes.length; i++) {
-      jClazzes[i] = JvmClassMappingKt.getJavaClass(kClazzes[i]);
-    }
-    return jClazzes;
+    return (Class<? extends Component>[])
+        Arrays.stream(kClazzes)
+            .map(kClass -> JvmClassMappingKt.getJavaClass(kClass))
+            .toArray(Class[]::new);
   }
 }
