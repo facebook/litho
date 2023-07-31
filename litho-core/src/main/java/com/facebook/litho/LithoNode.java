@@ -138,9 +138,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected @Nullable Drawable mBackground;
   protected @Nullable Rect mPaddingFromBackground;
   protected @Nullable Drawable mForeground;
-  protected @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> mTypeToViewBinders;
+
+  /** These binders are meant to be used only with {@link MountSpecLithoRenderUnit} */
   protected @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>>
-      mTypeToDrawableBinders;
+      mCustomBindersForMountSpec;
 
   protected @Nullable PathEffect mBorderPathEffect;
   protected @Nullable StateListAnimator mStateListAnimator;
@@ -276,22 +277,17 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mUnresolvedComponents.add(component);
   }
 
+  /**
+   * Returns a nullable map of {@link RenderUnit.Binder<Object, Object, Object>} that is aimed to be
+   * used to set the optional mount binders right after creating a {@link MountSpecLithoRenderUnit}.
+   */
   @Nullable
-  public List<RenderUnit.Binder<Object, Object, Object>> getBinders() {
-    if (mTypeToViewBinders == null && mTypeToDrawableBinders == null) {
-      return null;
-    }
+  public Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> getCustomBindersForMountSpec() {
+    return mCustomBindersForMountSpec;
+  }
 
-    List<RenderUnit.Binder<Object, Object, Object>> binders = new ArrayList<>();
-    if (mTypeToViewBinders != null) {
-      binders.addAll(mTypeToViewBinders.values());
-    }
-
-    if (mTypeToDrawableBinders != null) {
-      binders.addAll(mTypeToDrawableBinders.values());
-    }
-
-    return binders;
+  private boolean hasCustomBindersForMountSpec() {
+    return mCustomBindersForMountSpec != null && !mCustomBindersForMountSpec.isEmpty();
   }
 
   public void background(@Nullable Drawable background) {
@@ -311,20 +307,48 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
-  public void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
-    mPrivateFlags |= PFLAG_BINDER_IS_SET;
-    if (mTypeToViewBinders == null) {
-      mTypeToViewBinders = new LinkedHashMap<>();
+  /**
+   * The goal of this method is to add the optional mount binders to the associated to this {@link
+   * LithoNode}. If we are dealing with either a Primitive or a Mountable, we will get the
+   * corresponding {@link RenderUnit} and associate the binders map as optional mount binders. For
+   * this reason, this method should be called as soon as their {@link RenderUnit} is created. In
+   * Litho, this happens in the Resolve phase, specifically when the mount content preparation is
+   * invoked.
+   *
+   * <p>For {@link MountSpecLithoRenderUnit} (e.g., the node is associated with a MountSpec, or the
+   * Primitive/Mountable mounts a Drawable and, therefore will need to be wrapped in a {@link
+   * ComponentHost} to work with the view binders), the addition of the optional mount binders is
+   * delayed until the moment of its creation. For that, we store these binders in the {@link
+   * LithoNode} and use them later.
+   */
+  public void addCustomBinders(
+      @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> bindersMap) {
+    if (bindersMap == null || bindersMap.isEmpty()) {
+      return;
     }
-    mTypeToViewBinders.put(binder.getClass(), binder);
-  }
 
-  public void mountDrawableBinder(RenderUnit.Binder<Object, Object, Object> binder) {
     mPrivateFlags |= PFLAG_BINDER_IS_SET;
-    if (mTypeToDrawableBinders == null) {
-      mTypeToDrawableBinders = new LinkedHashMap<>();
+
+    if (!LithoNode.willMountDrawable(this)) {
+      if (mMountable != null) {
+        for (RenderUnit.Binder<Object, Object, Object> binder : bindersMap.values()) {
+          mMountable.addOptionalMountBinders(
+              RenderUnit.DelegateBinder.createDelegateBinder(mMountable, binder));
+        }
+      } else if (mPrimitive != null) {
+        RenderUnit<?> primitiveRenderUnit = mPrimitive.getRenderUnit();
+        for (RenderUnit.Binder<Object, Object, Object> binder : bindersMap.values()) {
+          primitiveRenderUnit.addOptionalMountBinders(
+              RenderUnit.DelegateBinder.createDelegateBinder(primitiveRenderUnit, binder));
+        }
+      }
     }
-    mTypeToDrawableBinders.put(binder.getClass(), binder);
+
+    if (mCustomBindersForMountSpec == null) {
+      mCustomBindersForMountSpec = new LinkedHashMap<>();
+    }
+
+    mCustomBindersForMountSpec.putAll(bindersMap);
   }
 
   public void setPaddingFromBackground(@Nullable Rect padding) {
@@ -341,18 +365,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     System.arraycopy(colors, 0, mBorderColors, 0, mBorderColors.length);
     System.arraycopy(radii, 0, mBorderRadius, 0, mBorderRadius.length);
     mBorderPathEffect = effect;
-  }
-
-  public boolean hasMountBinders() {
-    return hasDrawableBinders() || hasViewBinders();
-  }
-
-  public boolean hasViewBinders() {
-    return mTypeToViewBinders != null && !mTypeToViewBinders.isEmpty();
-  }
-
-  public boolean hasDrawableBinders() {
-    return mTypeToDrawableBinders != null && !mTypeToDrawableBinders.isEmpty();
   }
 
   protected void applyDiffNode(
@@ -1392,42 +1404,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       }
     }
 
-    //    if (mPrimitive != null) {
-    //      RenderUnit<?> renderUnit = mPrimitive.getRenderUnit();
-    //
-    //      if (mTypeToViewBinders != null) {
-    //        for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToViewBinders.values()) {
-    //          renderUnit.addOptionalMountBinders(
-    //              RenderUnit.DelegateBinder.createDelegateBinder(renderUnit, binder));
-    //        }
-    //      }
-    //
-    //      if (mTypeToDrawableBinders != null) {
-    //        for (RenderUnit.Binder<Object, Object, Object> binder :
-    // mTypeToDrawableBinders.values()) {
-    //          renderUnit.addOptionalMountBinders(
-    //              RenderUnit.DelegateBinder.createDelegateBinder(renderUnit, binder));
-    //        }
-    //      }
-    //    }
-    //
-    //    if (mMountable != null) {
-    //      if (mTypeToViewBinders != null) {
-    //        for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToViewBinders.values()) {
-    //          mMountable.addOptionalMountBinders(
-    //              RenderUnit.DelegateBinder.createDelegateBinder(mMountable, binder));
-    //        }
-    //      }
-    //
-    //      if (mTypeToDrawableBinders != null) {
-    //        for (RenderUnit.Binder<Object, Object, Object> binder :
-    // mTypeToDrawableBinders.values()) {
-    //          mMountable.addOptionalMountBinders(
-    //              RenderUnit.DelegateBinder.createDelegateBinder(mMountable, binder));
-    //        }
-    //      }
-    //    }
-
     // Apply the border widths
     if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
       for (int i = 0, length = mBorderEdgeWidths.length; i < length; ++i) {
@@ -1561,11 +1537,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       return true;
     }
 
-    if (Component.isLayoutSpec(node.getTailComponent()) && node.hasViewBinders()) {
+    if (Component.isLayoutSpec(node.getTailComponent()) && node.hasCustomBindersForMountSpec()) {
       return true;
     }
 
-    if (willMountDrawable(node) && node.hasViewBinders()) {
+    if (willMountDrawable(node) && node.hasCustomBindersForMountSpec()) {
       return true;
     }
 

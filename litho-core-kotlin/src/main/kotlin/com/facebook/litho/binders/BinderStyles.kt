@@ -16,7 +16,6 @@
 
 package com.facebook.litho.binders
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.CommonProps
@@ -45,28 +44,9 @@ import com.facebook.rendercore.RenderUnit
 fun Style.viewBinder(binder: RenderUnit.Binder<Any?, View, Any?>): Style =
     this + ObjectStyleItem(BinderObjectField.MOUNT_VIEW_BINDER, binder)
 
-/**
- * Sets the given [binder] as a *Mount* binder for [Drawable].
- *
- * Once associated, the binder [RenderUnit.Binder#bind] can be called at every *mount* of the render
- * unit associated with this [Style], while the [RenderUnit.Binder#unbind] can be called at every
- * unmount.
- *
- * If this binder is used on a Component that doesn't render into a [Drawable] then it will thrown
- * an exception. The result of the [RenderUnit.Binder.shouldUpdate] will determine if the [bind] and
- * [unbind] methods will be called for any iteration of the mount phase.
- *
- * For example, if you want your binder to be called at first time the content is mount, and finally
- * the last time it is unmounted before going offscreen, you should set the
- * [RenderUnit.Binder.shouldUpdate] to `false`.
- */
-fun Style.drawableBinder(binder: RenderUnit.Binder<Any?, Drawable, Any?>): Style =
-    this + ObjectStyleItem(BinderObjectField.MOUNT_DRAWABLE_BINDER, binder)
-
 @PublishedApi
 internal enum class BinderObjectField : StyleItemField {
   MOUNT_VIEW_BINDER,
-  MOUNT_DRAWABLE_BINDER
 }
 
 @PublishedApi
@@ -79,8 +59,6 @@ internal data class ObjectStyleItem(
     when (field) {
       BinderObjectField.MOUNT_VIEW_BINDER ->
           commonProps.mountViewBinder(value as RenderUnit.Binder<Any?, Any, Any?>)
-      BinderObjectField.MOUNT_DRAWABLE_BINDER ->
-          commonProps.mountDrawableBinder(value as RenderUnit.Binder<Any?, Any, Any?>)
     }
   }
 }

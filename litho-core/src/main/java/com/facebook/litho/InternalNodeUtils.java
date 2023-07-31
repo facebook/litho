@@ -42,6 +42,7 @@ import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.List;
+import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class InternalNodeUtils {
@@ -88,7 +89,9 @@ public class InternalNodeUtils {
         false,
         node.needsHostView(),
         node.willMountView(),
-        node.needsHostView() ? null : node.getBinders());
+        (node.needsHostView() || node.getMountable() != null || node.getPrimitive() != null)
+            ? null
+            : node.getCustomBindersForMountSpec());
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
@@ -123,7 +126,7 @@ public class InternalNodeUtils {
         node.isDuplicateChildrenStatesEnabled(),
         false,
         true,
-        node.needsHostView() ? node.getBinders() : null);
+        node.needsHostView() ? node.getCustomBindersForMountSpec() : null);
   }
 
   /** Creates a {@link LithoRenderUnit} for the root host */
@@ -151,7 +154,7 @@ public class InternalNodeUtils {
         node.isDuplicateChildrenStatesEnabled(),
         false,
         true,
-        null);
+        node.willMountView() ? null : node.getCustomBindersForMountSpec());
   }
 
   /**
@@ -301,7 +304,8 @@ public class InternalNodeUtils {
       boolean duplicateChildrenStates,
       boolean hasHostView,
       boolean isMountViewSpec,
-      @Nullable List<RenderUnit.Binder<Object, Object, Object>> binders) {
+      @Nullable
+          Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> customBindersForMountSpec) {
 
     int flags = 0;
 
@@ -345,46 +349,26 @@ public class InternalNodeUtils {
 
     Mountable<?> mountable = node.getMountable();
     if (mountable != null && isMountable(component)) {
-      MountableLithoRenderUnit mountableLithoRenderUnit =
-          MountableLithoRenderUnit.create(
-              component,
-              commonDynamicProps,
-              context,
-              layoutOutputNodeInfo,
-              flags,
-              importantForAccessibility,
-              mountable);
-
-      if (binders != null) {
-        for (RenderUnit.Binder<Object, Object, Object> binder : binders) {
-          mountableLithoRenderUnit.addOptionalMountBinder(
-              RenderUnit.DelegateBinder.createDelegateBinder(mountableLithoRenderUnit, binder));
-        }
-      }
-
-      return mountableLithoRenderUnit;
+      return MountableLithoRenderUnit.create(
+          component,
+          commonDynamicProps,
+          context,
+          layoutOutputNodeInfo,
+          flags,
+          importantForAccessibility,
+          mountable);
     }
 
     Primitive primitive = node.getPrimitive();
     if (primitive != null && isPrimitive(component)) {
-      PrimitiveLithoRenderUnit primitiveLithoRenderUnit =
-          PrimitiveLithoRenderUnit.create(
-              component,
-              commonDynamicProps,
-              context,
-              layoutOutputNodeInfo,
-              flags,
-              importantForAccessibility,
-              primitive.getRenderUnit());
-
-      if (binders != null) {
-        for (RenderUnit.Binder<Object, Object, Object> binder : binders) {
-          primitiveLithoRenderUnit.addOptionalMountBinder(
-              RenderUnit.DelegateBinder.createDelegateBinder(primitiveLithoRenderUnit, binder));
-        }
-      }
-
-      return primitiveLithoRenderUnit;
+      return PrimitiveLithoRenderUnit.create(
+          component,
+          commonDynamicProps,
+          context,
+          layoutOutputNodeInfo,
+          flags,
+          importantForAccessibility,
+          primitive.getRenderUnit());
     }
 
     LithoRenderUnit renderUnit =
@@ -398,8 +382,8 @@ public class InternalNodeUtils {
             importantForAccessibility,
             updateState);
 
-    if (binders != null) {
-      for (RenderUnit.Binder<Object, Object, Object> binder : binders) {
+    if (customBindersForMountSpec != null) {
+      for (RenderUnit.Binder<Object, Object, Object> binder : customBindersForMountSpec.values()) {
         renderUnit.addOptionalMountBinder(
             RenderUnit.DelegateBinder.createDelegateBinder(renderUnit, binder));
       }

@@ -17,20 +17,25 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.TextView
-import com.facebook.litho.binders.drawableBinder
 import com.facebook.litho.binders.viewBinder
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
+import com.facebook.litho.kotlin.widget.Progress
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
-import com.facebook.litho.view.viewTag
-import com.facebook.litho.widget.TextDrawable
+import com.facebook.litho.view.wrapInView
+import com.facebook.litho.widget.ProgressView
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.dp
+import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.ViewAllocator
@@ -47,87 +52,34 @@ class BinderStyleTest {
   @get:Rule val lithoViewRule = LithoViewRule()
 
   @Test
-  fun `binder around MountSpec invoked on mount and unmount`() {
-    val testBinder = DrawableTestBinder()
+  fun `MountSpec - binder invoked on mount and unmount`() {
+    val testBinder = ViewTestBinder()
 
     val lithoView =
         lithoViewRule.render {
-          ComponentWithMountSpec(textStyle = Style.drawableBinder(testBinder))
+          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
         }
+
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
     testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertBoundContentType(0, TextDrawable::class.java)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
     testBinder.assertNoContentHasBeenUnbound()
 
     lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
 
     testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertBoundContentType(0, TextDrawable::class.java)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
     testBinder.assertNumOfUnbindInvocations(1)
-    testBinder.assertUnboundContentType(0, TextDrawable::class.java)
+    testBinder.assertUnboundContentType(0, ComponentHost::class.java)
   }
 
   @Test
-  fun `binder invoked on re-mount when shouldUpdate is true`() {
-    val testBinder = DrawableTestBinder(shouldUpdate = true)
-
-    val lithoView =
-        lithoViewRule.render {
-          ComponentWithMountSpec(textStyle = Style.drawableBinder(testBinder))
-        }
-    LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
-
-    testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertBoundContentType(0, TextDrawable::class.java)
-    testBinder.assertNoContentHasBeenUnbound()
-
-    lithoViewRule.act(lithoView) { clickOnText("Click me") }
-
-    testBinder.assertNumOfBindInvocations(2)
-    testBinder.assertNumOfUnbindInvocations(1)
-
-    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
-
-    testBinder.assertNumOfBindInvocations(2)
-    testBinder.assertBoundContentType(0, TextDrawable::class.java)
-    testBinder.assertNumOfUnbindInvocations(2)
-    testBinder.assertUnboundContentType(0, TextDrawable::class.java)
-  }
-
-  @Test
-  fun `binder not invoked on re-mount when shouldUpdate is false`() {
-    val testBinder = DrawableTestBinder(shouldUpdate = false)
-
-    val lithoView =
-        lithoViewRule.render {
-          ComponentWithMountSpec(textStyle = Style.drawableBinder(testBinder))
-        }
-    LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
-
-    testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertBoundContentType(0, TextDrawable::class.java)
-    testBinder.assertNoContentHasBeenUnbound()
-
-    lithoViewRule.act(lithoView) { clickOnText("Click me") }
-
-    testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertNumOfUnbindInvocations(0)
-
-    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
-
-    testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertBoundContentType(0, TextDrawable::class.java)
-    testBinder.assertNumOfUnbindInvocations(1)
-    testBinder.assertUnboundContentType(0, TextDrawable::class.java)
-  }
-
-  @Test
-  fun `binder around Primitive invoked on mount and unmount`() {
+  fun `Primitives - binder invoked on mount and unmount`() {
     val binder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render { ComponentWithPrimitive(style = Style.viewBinder(binder)) }
+        lithoViewRule.render { ComponentWithTextViewPrimitive(style = Style.viewBinder(binder)) }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
     binder.assertNumOfBindInvocations(1)
@@ -144,35 +96,68 @@ class BinderStyleTest {
   }
 
   @Test
-  fun `usage of viewBinder around mount binds into wrapping component host`() {
-    val testBinder = ViewTestBinder()
+  fun `binder invoked on re-mount when shouldUpdate is true`() {
+    val testBinder = ViewTestBinder(shouldUpdate = true)
 
     val lithoView =
-        lithoViewRule.render { ComponentWithMountSpec(textStyle = Style.viewBinder(testBinder)) }
+        lithoViewRule.render {
+          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
+        }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
     testBinder.assertNumOfBindInvocations(1)
     testBinder.assertBoundContentType(0, ComponentHost::class.java)
     testBinder.assertNoContentHasBeenUnbound()
 
+    lithoViewRule.act(lithoView) { clickOnText("Click me") }
+
+    testBinder.assertNumOfBindInvocations(2)
+    testBinder.assertNumOfUnbindInvocations(1)
+
+    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
+
+    testBinder.assertNumOfBindInvocations(2)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+    testBinder.assertNumOfUnbindInvocations(2)
+    testBinder.assertUnboundContentType(0, ComponentHost::class.java)
+  }
+
+  @Test
+  fun `binder not invoked on re-mount when shouldUpdate is false`() {
+    val testBinder = ViewTestBinder(shouldUpdate = false)
+
+    val lithoView =
+        lithoViewRule.render {
+          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
+        }
+    LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+    testBinder.assertNoContentHasBeenUnbound()
+
+    lithoViewRule.act(lithoView) { clickOnText("Click me") }
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertNumOfUnbindInvocations(0)
+
     lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
 
     testBinder.assertNumOfBindInvocations(1)
     testBinder.assertBoundContentType(0, ComponentHost::class.java)
-
     testBinder.assertNumOfUnbindInvocations(1)
     testBinder.assertUnboundContentType(0, ComponentHost::class.java)
   }
 
   @Test
-  fun `when setting two binders of the same type binder only the last will be used`() {
-    val overridenBinder = DrawableTestBinder()
-    val usedBinder = DrawableTestBinder()
+  fun `Mount Spec - when setting two binders of the same type binder only the last will be used`() {
+    val overridenBinder = ViewTestBinder()
+    val usedBinder = ViewTestBinder()
 
     val lithoView =
         lithoViewRule.render {
-          ComponentWithMountSpec(
-              textStyle = Style.drawableBinder(overridenBinder).drawableBinder(usedBinder))
+          ComponentWithDrawableMountSpec(
+              textStyle = Style.viewBinder(overridenBinder).viewBinder(usedBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -180,7 +165,7 @@ class BinderStyleTest {
     overridenBinder.assertNoContentHasBeenUnbound()
 
     usedBinder.assertNumOfBindInvocations(1)
-    usedBinder.assertBoundContentType(0, TextDrawable::class.java)
+    usedBinder.assertBoundContentType(0, ComponentHost::class.java)
     usedBinder.assertNoContentHasBeenUnbound()
 
     lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
@@ -189,40 +174,50 @@ class BinderStyleTest {
     overridenBinder.assertNoContentHasBeenUnbound()
 
     usedBinder.assertNumOfBindInvocations(1)
-    usedBinder.assertBoundContentType(0, TextDrawable::class.java)
+    usedBinder.assertBoundContentType(0, ComponentHost::class.java)
 
     usedBinder.assertNumOfUnbindInvocations(1)
-    usedBinder.assertUnboundContentType(0, TextDrawable::class.java)
+    usedBinder.assertUnboundContentType(0, ComponentHost::class.java)
   }
 
   @Test
-  fun `setting a binder in a layout component which has no view properties that elevates it to ComponentHost works correctly`() {
-    val testBinder = ViewTestBinder()
+  fun `Primitive - when setting two binders of the same type binder only the last will be used`() {
+    val overridenBinder = ViewTestBinder()
+    val usedBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render { ComponentWithMountSpec(rowStyle = Style.viewBinder(testBinder)) }
+        lithoViewRule.render {
+          ComponentWithTextViewPrimitive(
+              style = Style.viewBinder(overridenBinder).viewBinder(usedBinder))
+        }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
-    testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertBoundContentType(0, ComponentHost::class.java)
-    testBinder.assertNoContentHasBeenUnbound()
+    overridenBinder.assertNoContentHasBeenBound()
+    overridenBinder.assertNoContentHasBeenUnbound()
+
+    usedBinder.assertNumOfBindInvocations(1)
+    usedBinder.assertBoundContentType(0, TextView::class.java)
+    usedBinder.assertNoContentHasBeenUnbound()
 
     lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
 
-    testBinder.assertNumOfBindInvocations(1)
-    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+    overridenBinder.assertNoContentHasBeenBound()
+    overridenBinder.assertNoContentHasBeenUnbound()
 
-    testBinder.assertNumOfUnbindInvocations(1)
-    testBinder.assertUnboundContentType(0, ComponentHost::class.java)
+    usedBinder.assertNumOfBindInvocations(1)
+    usedBinder.assertBoundContentType(0, TextView::class.java)
+
+    usedBinder.assertNumOfUnbindInvocations(1)
+    usedBinder.assertUnboundContentType(0, TextView::class.java)
   }
 
   @Test
-  fun `setting a binder in a layout component with view properties that require host view works correctly`() {
+  fun `MountSpec - setting a binder in a drawable mount which has no view properties that elevates it to ComponentHost works correctly`() {
     val testBinder = ViewTestBinder()
 
     val lithoView =
         lithoViewRule.render {
-          ComponentWithMountSpec(rowStyle = Style.viewTag("test-tag").viewBinder(testBinder))
+          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -240,46 +235,178 @@ class BinderStyleTest {
   }
 
   @Test
-  fun `setting a drawable binder in a view mount component should throw an exception`() {
-    val testBinder = DrawableTestBinder()
+  fun `Primitive - setting a binder in a drawable mount which has no view properties that elevates it to ComponentHost works correctly`() {
+    val testBinder = ViewTestBinder()
 
-    val throwable =
-        Assertions.catchThrowable {
-          lithoViewRule.render {
-            ComponentWithMountSpec(rowStyle = Style.viewTag("test-tag").drawableBinder(testBinder))
-          }
+    val lithoView =
+        lithoViewRule.render {
+          ComponentWithDrawablePrimitive(style = Style.viewBinder(testBinder))
         }
 
-    Assertions.assertThat(throwable).isNotNull
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+    testBinder.assertNoContentHasBeenUnbound()
+
+    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+
+    testBinder.assertNumOfUnbindInvocations(1)
+    testBinder.assertUnboundContentType(0, ComponentHost::class.java)
   }
 
-  private class ComponentWithMountSpec(
-      private val rowStyle: Style = Style,
+  @Test
+  fun `MountSpec - setting a binder in a drawable mount which requires an host view will set the binder in the host`() {
+    val testBinder = ViewTestBinder()
+
+    val lithoView =
+        lithoViewRule.render {
+          ComponentWithDrawableMountSpec(textStyle = Style.wrapInView().viewBinder(testBinder))
+        }
+    LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+    testBinder.assertNoContentHasBeenUnbound()
+
+    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+
+    testBinder.assertNumOfUnbindInvocations(1)
+    testBinder.assertUnboundContentType(0, ComponentHost::class.java)
+  }
+
+  @Test
+  fun `Primitives - setting a binder in a drawable mount which requires an host view will set the binder in the host`() {
+    val testBinder = ViewTestBinder()
+
+    val lithoView =
+        lithoViewRule.render {
+          ComponentWithDrawablePrimitive(style = Style.wrapInView().viewBinder(testBinder))
+        }
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+    testBinder.assertNoContentHasBeenUnbound()
+
+    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ComponentHost::class.java)
+
+    testBinder.assertNumOfUnbindInvocations(1)
+    testBinder.assertUnboundContentType(0, ComponentHost::class.java)
+  }
+
+  @Test
+  fun `MountSpec - setting a binder in a view mount which requires an host view will set the binder in the view mount`() {
+    val testBinder = ViewTestBinder()
+
+    val lithoView =
+        lithoViewRule.render {
+          ComponentWithViewMountSpec(style = Style.wrapInView().viewBinder(testBinder))
+        }
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ProgressView::class.java)
+    testBinder.assertNoContentHasBeenUnbound()
+
+    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, ProgressView::class.java)
+
+    testBinder.assertNumOfUnbindInvocations(1)
+    testBinder.assertUnboundContentType(0, ProgressView::class.java)
+  }
+
+  @Test
+  fun `Primitives - setting a binder in a view mount which requires an host view will set the binder in the view mount`() {
+    val testBinder = ViewTestBinder()
+
+    val lithoView =
+        lithoViewRule.render {
+          ComponentWithTextViewPrimitive(style = Style.wrapInView().viewBinder(testBinder))
+        }
+    LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, TextView::class.java)
+    testBinder.assertNoContentHasBeenUnbound()
+
+    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, TextView::class.java)
+
+    testBinder.assertNumOfUnbindInvocations(1)
+    testBinder.assertUnboundContentType(0, TextView::class.java)
+  }
+
+  @Test
+  fun `setting a binder in the root host works correctly`() {
+    val testBinder = ViewTestBinder()
+
+    val lithoView =
+        lithoViewRule.render {
+          ComponentWithDrawableMountSpec(rootStyle = Style.viewBinder(testBinder))
+        }
+    LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, LithoView::class.java)
+    testBinder.assertNoContentHasBeenUnbound()
+
+    lithoView.lithoView.notifyVisibleBoundsChanged(Rect(0, 2040, 1080, 3060), true)
+
+    testBinder.assertNumOfBindInvocations(1)
+    testBinder.assertBoundContentType(0, LithoView::class.java)
+
+    testBinder.assertNumOfUnbindInvocations(1)
+    testBinder.assertUnboundContentType(0, LithoView::class.java)
+  }
+
+  private class ComponentWithDrawableMountSpec(
+      private val rootStyle: Style = Style,
       private val textStyle: Style = Style,
   ) : KComponent() {
 
     override fun ComponentScope.render(): Component {
       val dummyState = useState { 0 }
-      return Column {
-        child(Row(style = rowStyle) { child(Text("Hello", style = textStyle)) })
+      return Column(style = rootStyle) {
+        child(Row { child(Text("Hello", style = textStyle)) })
         child(Text("Click me", Style.onClick { dummyState.update { it + 1 } }))
       }
     }
   }
 
-  private class ComponentWithPrimitive(private val style: Style) : KComponent() {
+  private class ComponentWithViewMountSpec(private val style: Style = Style) : KComponent() {
 
     override fun ComponentScope.render(): Component {
-      return Column { child(HelloPrimitiveComponent(style)) }
+      return Column { child(Progress(style = style.width(100.dp).height(100.dp))) }
+    }
+  }
+
+  private class ComponentWithTextViewPrimitive(private val style: Style) : KComponent() {
+
+    override fun ComponentScope.render(): Component {
+      return Column { child(TextPrimitiveComponent(style)) }
+    }
+  }
+
+  private class ComponentWithDrawablePrimitive(private val style: Style) : KComponent() {
+
+    override fun ComponentScope.render(): Component {
+      return Column { child(ColorDrawablePrimitiveComponent(style)) }
     }
   }
 
   private class ViewTestBinder(
       shouldUpdate: Boolean = false,
   ) : TestBinder<View>(shouldUpdate, { view -> view.javaClass })
-
-  private class DrawableTestBinder(shouldUpdate: Boolean = false) :
-      TestBinder<Drawable>(shouldUpdate, { drawable -> drawable.javaClass })
 
   private abstract class TestBinder<T>(
       private val shouldUpdate: Boolean = false,
@@ -343,7 +470,7 @@ class BinderStyleTest {
     }
   }
 
-  private class HelloPrimitiveComponent(private val style: Style) : PrimitiveComponent() {
+  private class TextPrimitiveComponent(private val style: Style) : PrimitiveComponent() {
 
     @Suppress("TestFunctionName")
     private fun PrimitiveComponentScope.TextPrimitive(
@@ -362,6 +489,20 @@ class BinderStyleTest {
 
     override fun PrimitiveComponentScope.render(): LithoPrimitive {
       return LithoPrimitive(TextPrimitive(text = "Hello"), style = style)
+    }
+  }
+
+  private class ColorDrawablePrimitiveComponent(private val style: Style) : PrimitiveComponent() {
+
+    @Suppress("TestFunctionName")
+    private fun PrimitiveComponentScope.ColorDrawablePrimitive(): Primitive {
+      return Primitive(
+          layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+          mountBehavior = MountBehavior(DrawableAllocator { ColorDrawable(Color.RED) }) {})
+    }
+
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      return LithoPrimitive(ColorDrawablePrimitive(), style = style)
     }
   }
 }

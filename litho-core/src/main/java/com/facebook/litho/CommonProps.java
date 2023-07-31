@@ -646,8 +646,9 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     getOrCreateOtherProps().mountViewBinder(binder);
   }
 
-  public void mountDrawableBinder(RenderUnit.Binder<Object, Object, Object> binder) {
-    getOrCreateOtherProps().mountDrawableBinder(binder);
+  @Nullable
+  public Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> getViewBinders() {
+    return getOrCreateOtherProps().mTypeToViewBinder;
   }
 
   @Nullable
@@ -765,7 +766,6 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     private static final int PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1 << 16;
     private static final int PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1 << 17;
     private static final int PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1 << 18;
-    private static final int PFLAG_BINDER_IS_SET = 1 << 19;
 
     private int mPrivateFlags;
 
@@ -779,8 +779,6 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     @Nullable private EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
 
     private @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> mTypeToViewBinder;
-    private @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>>
-        mTypeToDrawableBinder;
 
     private int mImportantForAccessibility;
     private boolean mDuplicateParentState;
@@ -797,21 +795,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     private @Nullable Paint mLayerPaint;
 
     private void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
-      mPrivateFlags |= PFLAG_BINDER_IS_SET;
       if (mTypeToViewBinder == null) {
         mTypeToViewBinder = new LinkedHashMap<>();
       }
 
       mTypeToViewBinder.put(binder.getClass(), binder);
-    }
-
-    private void mountDrawableBinder(RenderUnit.Binder<Object, Object, Object> binder) {
-      mPrivateFlags |= PFLAG_BINDER_IS_SET;
-      if (mTypeToDrawableBinder == null) {
-        mTypeToDrawableBinder = new LinkedHashMap<>();
-      }
-
-      mTypeToDrawableBinder.put(binder.getClass(), binder);
     }
 
     private void importantForAccessibility(int importantForAccessibility) {
@@ -929,18 +917,6 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       }
       if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
         node.foreground(mForeground);
-      }
-      if ((mPrivateFlags & PFLAG_BINDER_IS_SET) != 0L) {
-        if (mTypeToViewBinder != null) {
-          for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToViewBinder.values()) {
-            node.mountViewBinder(binder);
-          }
-        }
-        if (mTypeToDrawableBinder != null) {
-          for (RenderUnit.Binder<Object, Object, Object> binder : mTypeToDrawableBinder.values()) {
-            node.mountDrawableBinder(binder);
-          }
-        }
       }
 
       if ((mPrivateFlags & PFLAG_WRAP_IN_VIEW_IS_SET) != 0L) {
