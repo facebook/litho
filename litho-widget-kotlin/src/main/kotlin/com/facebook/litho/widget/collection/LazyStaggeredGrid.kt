@@ -68,6 +68,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
+    fadingEdgeLength: Dimen? = null,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
@@ -111,5 +112,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
       childEquivalenceIncludesCommonProps,
       overlayRenderCount,
       alwaysDetectDuplicates,
+      fadingEdgeLength,
       lazyStaggeredGridScope.children)
 }

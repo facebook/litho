@@ -66,6 +66,7 @@ inline fun ResourcesScope.LazyGrid(
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
+    fadingEdgeLength: Dimen? = null,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -109,5 +110,6 @@ inline fun ResourcesScope.LazyGrid(
       childEquivalenceIncludesCommonProps,
       overlayRenderCount,
       alwaysDetectDuplicates,
+      fadingEdgeLength,
       lazyGridScope.children)
 }

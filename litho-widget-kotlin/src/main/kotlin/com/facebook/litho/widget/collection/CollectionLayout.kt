@@ -62,6 +62,8 @@ abstract class CollectionLayout(
                   .isReconciliationEnabled(isReconciliationEnabled)
                   .build())
           .build()
+
+  val isVertical: Boolean = orientation == RecyclerView.VERTICAL
 }
 
 /**

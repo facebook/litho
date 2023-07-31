@@ -89,6 +89,7 @@ class LazyCollection(
     private val childEquivalenceIncludesCommonProps: Boolean = true,
     private val overlayRenderCount: Boolean = false,
     private val alwaysDetectDuplicates: Boolean = false,
+    private val fadingEdgeLength: Dimen? = null,
     private val lazyCollectionChildren: LazyCollectionChildren
 ) : KComponent() {
 
@@ -189,6 +190,17 @@ class LazyCollection(
         .onScrollListener(onScrollListener)
         .onScrollListeners(onScrollListeners)
         .lazyCollectionController(lazyCollectionController)
+        .apply {
+          val fadingEdgeLengthPx = fadingEdgeLength?.toPixels()
+          if (fadingEdgeLengthPx != null && fadingEdgeLengthPx > 0) {
+            fadingEdgeLengthPx(fadingEdgeLengthPx)
+            if (layout.isVertical) {
+              verticalFadingEdgeEnabled(true)
+            } else {
+              horizontalFadingEdgeEnabled(true)
+            }
+          }
+        }
         .kotlinStyle(style)
         .build()
   }

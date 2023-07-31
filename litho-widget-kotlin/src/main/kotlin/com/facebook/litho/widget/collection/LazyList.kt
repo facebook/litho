@@ -67,6 +67,7 @@ inline fun ResourcesScope.LazyList(
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
+    fadingEdgeLength: Dimen? = null,
     init: LazyListScope.() -> Unit
 ): Component {
 
@@ -112,5 +113,6 @@ inline fun ResourcesScope.LazyList(
       childEquivalenceIncludesCommonProps,
       overlayRenderCount,
       alwaysDetectDuplicates,
+      fadingEdgeLength,
       lazyListScope.children)
 }
