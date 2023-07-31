@@ -338,10 +338,13 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
    * hierarchy
    */
   public LithoViewAssert containsComponents(Class<? extends Component>... clazz) {
+    final SoftAssertions softAssertions = new SoftAssertions();
+
     List<Component> componentList = findAllComponentsInLithoView(actual, clazz);
     for (Class<? extends Component> componentClass : clazz) {
-      new ListAssert<Component>(componentList).haveAtLeastOne(typeIs(componentClass));
+      softAssertions.assertThat(componentList).haveAtLeastOne(typeIs(componentClass));
     }
+    softAssertions.assertAll();
     return this;
   }
 
@@ -350,11 +353,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
    * hierarchy
    */
   public LithoViewAssert containsComponents(KClass<? extends Component>... clazz) {
-    List<Component> componentList = findAllComponentsInLithoView(actual, clazz);
-    for (KClass<? extends Component> componentClass : clazz) {
-      new ListAssert<Component>(componentList).haveAtLeastOne(typeIs(componentClass));
-    }
-    return this;
+    return containsComponents(getJavaClasses(clazz));
   }
 
   /**

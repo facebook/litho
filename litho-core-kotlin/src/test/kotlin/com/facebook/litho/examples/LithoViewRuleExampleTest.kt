@@ -43,7 +43,6 @@ import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.px
-import java.lang.AssertionError
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -198,6 +197,42 @@ class LithoViewRuleExampleTest {
         .containsExactly(2, InnerComponent::class)
         .containsComponents(DeepComponent::class, InnerSecondComponent::class)
     // contains_components_end
+  }
+
+  @Test
+  fun `verify soft assertions when missing multiple components`() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column(style = Style.height(200.dp).width(200.dp))
+      }
+    }
+    class MissingComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Row(style = Style.height(10.dp).width(10.dp))
+      }
+    }
+    class MissingComponentTwo : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return MissingComponent()
+      }
+    }
+    class MissingComponentThree : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return MissingComponent()
+      }
+    }
+
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    assertThatThrownBy {
+          assertThat(testLithoView)
+              .containsComponents(
+                  MissingComponent::class.java,
+                  MissingComponentTwo::class.java,
+                  MissingComponentThree::class.java)
+        }
+        .hasMessageContaining("\$MissingComponent>")
+        .hasMessageContaining("\$MissingComponentTwo>")
+        .hasMessageContaining("\$MissingComponentThree>")
   }
 
   @Test
