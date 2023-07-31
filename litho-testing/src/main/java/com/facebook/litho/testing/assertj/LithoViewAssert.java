@@ -343,7 +343,12 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
     List<Component> componentList = findAllComponentsInLithoView(actual, clazz);
     for (Class<? extends Component> componentClass : clazz) {
-      softAssertions.assertThat(componentList).haveAtLeastOne(typeIs(componentClass));
+      softAssertions
+          .assertThat(componentList)
+          .overridingErrorMessage(
+              "Expected to have component of type %s in LithoView, but did not find one",
+              componentClass)
+          .haveAtLeastOne(typeIs(componentClass));
     }
     softAssertions.assertAll();
     return this;

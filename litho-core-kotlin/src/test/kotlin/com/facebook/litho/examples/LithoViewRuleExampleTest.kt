@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.EmptyComponent
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -230,9 +231,21 @@ class LithoViewRuleExampleTest {
                   MissingComponentTwo::class.java,
                   MissingComponentThree::class.java)
         }
-        .hasMessageContaining("\$MissingComponent>")
-        .hasMessageContaining("\$MissingComponentTwo>")
-        .hasMessageContaining("\$MissingComponentThree>")
+        .hasMessageContaining("\$MissingComponent")
+        .hasMessageContaining("\$MissingComponentTwo")
+        .hasMessageContaining("\$MissingComponentThree")
+  }
+
+  @Test
+  fun `verify better contains component message`() {
+    val testLithoView = lithoViewRule.render { EmptyComponent() }
+    assertThatThrownBy {
+          assertThat(testLithoView)
+              .containsComponents(Row::class.java, Column::class.java, Text::class.java)
+        }
+        .hasMessageContaining("Row in LithoView, but did not find one")
+        .hasMessageContaining("Column in LithoView, but did not find one")
+        .hasMessageContaining("Text in LithoView, but did not find one")
   }
 
   @Test
