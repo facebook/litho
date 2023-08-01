@@ -23,7 +23,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
+import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
 import com.facebook.litho.widget.LayoutSpecLifecycleTester

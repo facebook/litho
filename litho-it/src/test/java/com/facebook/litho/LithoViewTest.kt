@@ -21,7 +21,7 @@ import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoStatsRule
-import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
+import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.atMost
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec

@@ -20,7 +20,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.assertj.LithoViewAssert
-import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
+import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
