@@ -46,7 +46,7 @@ With the Flexbox style applied, your component should look like the following im
 ### Key Points in PostStyledKComponent.kt
 
 * `Column` and `Row` - the key container types in Litho.
-* `padding` and `margin` - props that set padding and margin using `Dimen` (a class that represents dimension values in different Android units: `Px`, `Dp`, and `Sp`).
+* `padding` and `margin` - props that set padding and margin using `Dimen` (a class that represents dimension values in different Android units: 'px', 'dp', and 'sp').
 * `drawableRes` - returns an Android Drawable from resource ID.
 * `Image` - image is another built-in component that can render a drawable.
 

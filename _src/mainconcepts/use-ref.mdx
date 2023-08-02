@@ -13,8 +13,8 @@ To familiarize yourself with the concept and rules for hooks, see the [Introduct
 
 ## Managing UI Thread State with `useRef`
 
-:::note
-**Ref.value should only be read/written from the main thread.** Since there is no guarantee that a component's render function is executed on the main thread, it should not be accessed during the execution of render.
+:::caution
+**Ref.value should only be read/written from the main thread.** Since there is no guarantee that a component's `render` function is executed on the main thread, it should not be accessed during the execution of `render`.
 
 Some locations where it *is* safe to access and mutate `Ref.value`:
 
@@ -23,22 +23,15 @@ Some locations where it *is* safe to access and mutate `Ref.value`:
 - `useEffect` and its cleanup lambda.
 :::
 
-Appropriate use cases of `useRef` are best shown by example. Note that none of these examples read or write `useRef` off the main thread or during the execution of the main body of the component's `render()` function.
+Appropriate use cases of `useRef` are best shown by example. Note that none of these examples read or write `useRef` off the main thread or during the execution of the main body of the component's `render` function.
 
 ### Example: Logging Seen State
 
-In the below code, `useRef` is used to track whether we've handled the `onVisible` event previously. Updating `hasLoggedVisible.value` to true doesn't trigger a re-render, unlike storing and updating it via `useState`.
+In the code below, `useRef` is used to track whether we've handled the `onVisible` event previously. Updating `hasLoggedVisible.value` to `true` doesn't trigger a re-render, unlike storing and updating it via `useState`.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LogOnceComponent.kt start=start_useref_example end=end_useref_example
 ```
 
-### Example: Starting/Stopping Animators
-
-In the below code, an animator is started and stopped when the Component is attached/detached on the main thread. It uses `useRef` to maintain a reference to the Animator created when the Component was attached.
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
-```
-
 ## Pairing with `useEffect`
 
-Pairing `useRef` with `useEffect` is a common pattern. For more information on `useEffect`, see the code samples in the [useEffect](/mainconcepts/use-effect.mdx) page.
+Pairing `useRef` with `useEffect` is a common pattern. When you need to make objects created in `useEffect`, available outside of its lambda, you can store them using `useRef`. For more information on `useEffect`, see the code samples in the [useEffect](/mainconcepts/use-effect.mdx) page.

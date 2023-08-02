@@ -23,7 +23,6 @@ To illustrate this, the "Hello, World" code (`MyActivity.kt`), from the [Setting
 ### Key Points in MyActivity.kt
 
 * `LithoView` - a hierarchy of Litho components is rendered using a LithoView.
-* `val` - holds an immutable object that cannot be changed during the lifecycle of the component.
 * `Text(...)` - the 'Text' component (this is how you create an instance of a component (both built-in and those you define yourself).
 * `Text(...)` - assigns values to the props `text` and `textsize`.
 
@@ -37,9 +36,9 @@ Previously, you used a built-in `Text` component. Now, you'll define your own us
 ### Key Points in HelloComponent.kt
 
 * `KComponent` - a class needed to extend in order to create components.
-* `name` - a `String` prop named `name`.
+* `val name` - holds an immutable `String` prop named `name` that cannot be changed during the lifecycle of the component.
 * `render` - function override that returns what your component should render.
-* `Text(...)` - returns an instance of the `Text` component with its `text` prop set to the String "Hello $name'.
+* `Text(...)` - returns an instance of the `Text` component with its `text` prop set to the string `"Hello $name'`.
 
 :::tip
 Lots of code autocompletion and class templates can be found in the [Litho Android Studio plugin](../devtools/android-studio-plugin.md)!
