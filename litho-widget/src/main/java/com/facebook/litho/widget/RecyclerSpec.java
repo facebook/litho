@@ -120,7 +120,10 @@ class RecyclerSpec {
 
   @OnCreateMountContent
   static SectionsRecyclerView onCreateMountContent(Context c) {
-    return new SectionsRecyclerView(c, new LithoRecyclerView(c));
+    final SectionsRecyclerView sectionsRecyclerView =
+        new SectionsRecyclerView(c, new LithoRecyclerView(c));
+    sectionsRecyclerView.setId(R.id.recycler_view_container_id);
+    return sectionsRecyclerView;
   }
 
   @OnMount
