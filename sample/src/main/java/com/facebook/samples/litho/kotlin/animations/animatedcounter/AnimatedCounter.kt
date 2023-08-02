@@ -23,7 +23,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.animated.Animated
-import com.facebook.litho.animated.AnimatedAnimation
 import com.facebook.litho.animated.translationY
 import com.facebook.litho.animated.useBinding
 import com.facebook.litho.core.padding
@@ -32,7 +31,6 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.onCleanup
 import com.facebook.litho.useEffect
-import com.facebook.litho.useRef
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
@@ -41,7 +39,7 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 
 class AnimatingCounterRootComponent : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val count = useState { 0 }
     return Column(alignContent = YogaAlign.CENTER) {
       child(
@@ -66,16 +64,14 @@ class AnimatingCounterRootComponent : KComponent() {
 // start_example
 class AnimatingCounter(private val count: Int) : KComponent() {
   override fun ComponentScope.render(): Component? {
-    val animation = useRef<AnimatedAnimation?> { null }
     val translationY = useBinding(0f)
 
     useEffect(count) {
       // Animate the text to a Y-offset based on count
-      val newAnimation = Animated.spring(translationY, to = count * 10.dp.toPixels().toFloat())
-      newAnimation.start()
-      animation.value = newAnimation
+      val animation = Animated.spring(translationY, to = count * 10.dp.toPixels().toFloat())
+      animation.start()
 
-      onCleanup { animation.value?.cancel() }
+      onCleanup { animation.cancel() }
     }
 
     return Text(style = Style.translationY(translationY), text = "$count", textSize = 24.sp)
