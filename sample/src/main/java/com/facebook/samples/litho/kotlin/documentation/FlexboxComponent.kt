@@ -42,7 +42,7 @@ class FlexboxComponent(
     @DrawableRes private val avatarRes: Int,
     @DrawableRes private val imageRes: Int
 ) : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return Column {
       child(
           Row(alignItems = YogaAlign.CENTER, style = Style.padding(all = 8.dp)) {

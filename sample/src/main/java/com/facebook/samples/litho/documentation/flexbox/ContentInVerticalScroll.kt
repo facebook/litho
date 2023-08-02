@@ -31,15 +31,17 @@ import com.facebook.rendercore.sp
 class ContentInVerticalScroll : KComponent() {
 
   // start_example
-  override fun ComponentScope.render(): Component = VerticalScroll {
-    Column {
-      for (i in 0..20) {
-        child(
-            Text(
-                style = Style.padding(16.dp).margin(top = 8.dp),
-                text = "Text counter = " + i,
-                textSize = 20.sp,
-                maxLines = 1))
+  override fun ComponentScope.render(): Component {
+    return VerticalScroll {
+      Column {
+        for (i in 0..20) {
+          child(
+              Text(
+                  style = Style.padding(16.dp).margin(top = 8.dp),
+                  text = "Text counter = " + i,
+                  textSize = 20.sp,
+                  maxLines = 1))
+        }
       }
     }
   }
