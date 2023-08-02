@@ -44,7 +44,7 @@ class KDebugComponent(private val message: String, private val throwable: Throwa
   @ColorInt private val LIGHT_RED_BACKGROUND = 0xfffcece9.toInt()
   @ColorInt private val LIGHT_GRAY_TEXT = 0xff606770.toInt()
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     Log.e(TAG, message, throwable)
 
     return Column(
@@ -54,16 +54,16 @@ class KDebugComponent(private val message: String, private val throwable: Throwa
                 .backgroundColor(DARK_RED_FRAME)) {
           child(
               Text(
-                  style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND),
                   text = message,
-                  textSize = 16.dp))
+                  textSize = 16.dp,
+                  style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND)))
           child(
               Text(
-                  style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND),
                   text = StacktraceHelper.formatStacktrace(throwable),
                   textSize = 12.dp,
                   textColor = LIGHT_GRAY_TEXT,
-                  typeface = Typeface.MONOSPACE))
+                  typeface = Typeface.MONOSPACE,
+                  style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND)))
         }
   }
 

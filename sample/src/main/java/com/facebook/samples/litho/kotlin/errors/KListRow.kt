@@ -28,7 +28,7 @@ import com.facebook.rendercore.dp
 
 class KListRow(private val row: ListRow) : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return Column(style = Style.padding(vertical = 8.dp, horizontal = 32.dp)) {
       child(
           Card.create(context)
