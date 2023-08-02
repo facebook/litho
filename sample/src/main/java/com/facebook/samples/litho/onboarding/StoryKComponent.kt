@@ -42,7 +42,7 @@ class StoryKComponent(private val user: User) : KComponent() {
         style =
             Style.padding(all = 4.dp).onClick {
               Toast.makeText(
-                      context.androidContext, "Open ${user.username} Story", Toast.LENGTH_SHORT)
+                      androidContext, "Open ${user.username} Story", Toast.LENGTH_SHORT)
                   .show()
             }) {
           child(

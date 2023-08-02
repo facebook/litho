@@ -36,6 +36,8 @@ class MyActivity : AppCompatActivity() {
 }
 
 class MyComponent() : KComponent() {
-  override fun ComponentScope.render(): Component = Text(text = "Hello, World!", textSize = 50.dp)
+  override fun ComponentScope.render(): Component {
+    return Text(text = "Hello, World!", textSize = 50.dp)
+  }
 }
 // end_example

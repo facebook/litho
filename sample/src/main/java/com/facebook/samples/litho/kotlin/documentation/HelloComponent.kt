@@ -26,7 +26,7 @@ import com.facebook.litho.view.onClick
 // start_simple_example
 class HelloComponent(private val name: String) : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return Text(text = "Hello $name!")
   }
 }
@@ -35,14 +35,14 @@ class HelloComponent(private val name: String) : KComponent() {
 fun log(s: String) = Unit
 
 // start_styled_example
-class StyledHelloComponent(private val style: Style? = null, private val name: String) :
+class StyledHelloComponent(private val name: String, private val style: Style? = null) :
     KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return Text(style = style, text = "Hello $name!")
   }
 }
 
 val componentWithOnClick =
-    StyledHelloComponent(style = Style.onClick { log("clicked!") }, name = "Common Props")
+    StyledHelloComponent(name = "Common Props", style = Style.onClick { log("clicked!") })
 // end_styled_example
