@@ -33,7 +33,8 @@ import com.facebook.rendercore.RenderUnit;
  * falls back to its default behaviour.
  */
 @OkToExtend
-public abstract class MountExtension<Input, State> implements GapWorkerCallbacks<State> {
+public abstract class MountExtension<Input, State>
+    implements GapWorkerCallbacks<State>, OnItemCallbacks<State> {
 
   public final ExtensionState<State> createExtensionState(final MountDelegate mountDelegate) {
     return new ExtensionState<>(this, mountDelegate, createState());
@@ -72,11 +73,6 @@ public abstract class MountExtension<Input, State> implements GapWorkerCallbacks
       final @Nullable Input input,
       final Rect localVisibleRect) {}
 
-  public void beforeMountItem(
-      final ExtensionState<State> extensionState,
-      final RenderTreeNode renderTreeNode,
-      final int index) {}
-
   /** Called immediately after mounting. */
   public void afterMount(final ExtensionState<State> extensionState) {}
 
@@ -90,10 +86,20 @@ public abstract class MountExtension<Input, State> implements GapWorkerCallbacks
   /** Called after all the Host's children have been unbound. */
   public void onUnbind(ExtensionState<State> extensionState) {}
 
-  /**
-   * Called when an item is already mounted. If true, the old item will be unbound and the new item
-   * will be rebound
-   */
+  @Override
+  public void beforeMountItem(
+      final ExtensionState<State> extensionState,
+      final RenderTreeNode renderTreeNode,
+      final int index) {}
+
+  @Override
+  public void onMountItem(
+      final ExtensionState<State> extensionState,
+      final RenderUnit<?> renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {}
+
+  @Override
   public boolean shouldUpdateItem(
       final ExtensionState<State> extensionState,
       final RenderUnit<?> previousRenderUnit,
@@ -103,34 +109,28 @@ public abstract class MountExtension<Input, State> implements GapWorkerCallbacks
     return false;
   }
 
-  /** Called after an item is bound, after it gets mounted or updated. */
+  @Override
   public void onBindItem(
       final ExtensionState<State> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
 
-  /** Called after an item is unbound. */
+  @Override
   public void onUnbindItem(
       final ExtensionState<State> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
 
-  /** Called after an item is unmounted. */
+  @Override
   public void onUnmountItem(
       final ExtensionState<State> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
 
-  /** Called after an item is mounted. */
-  public void onMountItem(
-      final ExtensionState<State> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {}
-
+  @Override
   public void onBoundsAppliedToItem(
       final ExtensionState<State> extensionState,
       final RenderUnit<?> renderUnit,

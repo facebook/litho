@@ -16,6 +16,9 @@
 
 package com.facebook.rendercore.extensions
 
+import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.RenderUnit
+
 interface GapWorkerCallbacks<State> {
 
   fun onRegisterForPremount(extensionState: ExtensionState<State>, frameTimeMs: Long?)
@@ -25,4 +28,64 @@ interface GapWorkerCallbacks<State> {
   fun hasItemToMount(extensionState: ExtensionState<State>): Boolean
 
   fun premountNext(extensionState: ExtensionState<State>)
+}
+
+interface OnItemCallbacks<State> {
+
+  fun beforeMountItem(
+      extensionState: ExtensionState<State>,
+      renderTreeNode: RenderTreeNode,
+      index: Int
+  )
+
+  /** Called after an item is mounted. */
+  fun onMountItem(
+      extensionState: ExtensionState<State>,
+      renderUnit: RenderUnit<*>,
+      content: Any,
+      layoutData: Any?
+  )
+
+  /**
+   * Called when an item is already mounted. If true, the old item will be unbound and the new item
+   * will be rebound
+   */
+  fun shouldUpdateItem(
+      extensionState: ExtensionState<State>,
+      previousRenderUnit: RenderUnit<*>,
+      previousLayoutData: Any?,
+      nextRenderUnit: RenderUnit<*>,
+      nextLayoutData: Any?
+  ): Boolean
+
+  /** Called after an item is bound, after it gets mounted or updated. */
+  fun onBindItem(
+      extensionState: ExtensionState<State>,
+      renderUnit: RenderUnit<*>,
+      content: Any,
+      layoutData: Any?
+  )
+
+  /** Called after an item is unbound. */
+  fun onUnbindItem(
+      extensionState: ExtensionState<State>,
+      renderUnit: RenderUnit<*>,
+      content: Any,
+      layoutData: Any?
+  )
+
+  /** Called after an item is unmounted. */
+  fun onUnmountItem(
+      extensionState: ExtensionState<State>,
+      renderUnit: RenderUnit<*>,
+      content: Any,
+      layoutData: Any?
+  )
+
+  fun onBoundsAppliedToItem(
+      extensionState: ExtensionState<State>,
+      renderUnit: RenderUnit<*>,
+      content: Any,
+      layoutData: Any?
+  )
 }
