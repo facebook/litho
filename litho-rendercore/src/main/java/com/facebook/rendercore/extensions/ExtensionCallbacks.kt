@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.extensions
 
+import android.graphics.Rect
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
 
@@ -88,4 +89,10 @@ interface OnItemCallbacks<State> {
       content: Any,
       layoutData: Any?
   )
+}
+
+interface VisibleBoundsCallbacks<State> {
+
+  /** Called when the visible bounds of the Host change. */
+  fun onVisibleBoundsChanged(extensionState: ExtensionState<State>, localVisibleRect: Rect?)
 }

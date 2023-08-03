@@ -99,8 +99,8 @@ public class RenderCoreExtension<Input, State> {
   }
 
   /**
-   * Calls {@link MountExtension#onVisibleBoundsChanged(ExtensionState, Rect)} for each {@link
-   * RenderCoreExtension} that has a mount phase.
+   * Calls {@link VisibleBoundsCallbacks#onVisibleBoundsChanged(ExtensionState, Rect)} for each
+   * {@link RenderCoreExtension} that has a mount phase.
    *
    * @param host The {@link Host} of the extensions
    */

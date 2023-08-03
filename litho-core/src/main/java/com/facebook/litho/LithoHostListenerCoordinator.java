@@ -27,6 +27,7 @@ import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
@@ -119,7 +120,11 @@ public class LithoHostListenerCoordinator {
               mVisibilityExtensionState, localVisibleRect, true);
         }
       } else {
-        mVisibilityExtensionState.onVisibleBoundsChanged(localVisibleRect);
+        Object extension = mVisibilityExtensionState.getExtension();
+        if (extension instanceof VisibleBoundsCallbacks) {
+          ((VisibleBoundsCallbacks) extension)
+              .onVisibleBoundsChanged(mVisibilityExtensionState, localVisibleRect);
+        }
       }
     }
 

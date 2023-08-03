@@ -34,7 +34,7 @@ import com.facebook.rendercore.RenderUnit;
  */
 @OkToExtend
 public abstract class MountExtension<Input, State>
-    implements GapWorkerCallbacks<State>, OnItemCallbacks<State> {
+    implements GapWorkerCallbacks<State>, OnItemCallbacks<State>, VisibleBoundsCallbacks<State> {
 
   public final ExtensionState<State> createExtensionState(final MountDelegate mountDelegate) {
     return new ExtensionState<>(this, mountDelegate, createState());
@@ -77,6 +77,7 @@ public abstract class MountExtension<Input, State>
   public void afterMount(final ExtensionState<State> extensionState) {}
 
   /** Called when the visible bounds of the Host change. */
+  @Override
   public void onVisibleBoundsChanged(
       final ExtensionState<State> extensionState, final @Nullable Rect localVisibleRect) {}
 

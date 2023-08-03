@@ -107,10 +107,6 @@ public class ExtensionState<State> {
     mExtension.afterMount(this);
   }
 
-  public void onVisibleBoundsChanged(Rect rect) {
-    mExtension.onVisibleBoundsChanged(this, rect);
-  }
-
   public void onUnbind() {
     mExtension.onUnbind(this);
   }

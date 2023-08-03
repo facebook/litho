@@ -26,6 +26,7 @@ import com.facebook.rendercore.extensions.GapWorkerCallbacks;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -196,7 +197,11 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates.get(i).onVisibleBoundsChanged(rect);
+      ExtensionState state = mExtensionStates.get(i);
+      Object extension = state.getExtension();
+      if (extension instanceof VisibleBoundsCallbacks) {
+        ((VisibleBoundsCallbacks) extension).onVisibleBoundsChanged(state, rect);
+      }
     }
 
     endNotifyVisibleBoundsChangedSection();
