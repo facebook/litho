@@ -33,6 +33,7 @@ import com.facebook.litho.ResolveStateContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
@@ -549,13 +550,12 @@ public class ComponentWarmerTest {
         .start();
   }
 
-  final class TestComponent extends Component {
+  final class TestComponent extends SpecGeneratedComponent {
 
-    private final String mSimpleName;
     AtomicBoolean ranLayout = new AtomicBoolean(false);
 
     protected TestComponent(String simpleName) {
-      mSimpleName = simpleName;
+      super(simpleName);
     }
 
     @Override
@@ -574,11 +574,6 @@ public class ComponentWarmerTest {
       copy.ranLayout = ranLayout;
 
       return copy;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return mSimpleName;
     }
   }
 }

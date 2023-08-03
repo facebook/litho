@@ -25,4 +25,15 @@ class EmptyComponent : Component() {
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult = RenderResult(null)
+
+  override fun resolve(
+      resolveStateContext: ResolveStateContext,
+      scopedComponentInfo: ScopedComponentInfo,
+      parentWidthSpec: Int,
+      parentHeightSpec: Int,
+      componentsLogger: ComponentsLogger?
+  ): ComponentResolveResult {
+    return ComponentResolveResult(
+        if (scopedComponentInfo.context.isNullNodeEnabled) NullNode() else null, null)
+  }
 }

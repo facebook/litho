@@ -299,8 +299,12 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    * ComponentResolveResult will have the {@link LithoNode} and {@link CommonProps} for the resolved
    * component.
    */
-  protected ComponentResolveResult resolveWithResult(
-      final ResolveStateContext resolveStateContext, final ComponentContext c) {
+  protected ComponentResolveResult resolve(
+      final ResolveStateContext resolveStateContext,
+      final ScopedComponentInfo scopedComponentInfo,
+      final int parentWidthSpec,
+      final int parentHeightSpec,
+      final @Nullable ComponentsLogger componentsLogger) {
     throw new RuntimeException(
         "resolveWithResult should not be called on a component which hasn't implemented it! "
             + getSimpleName());

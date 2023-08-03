@@ -507,11 +507,14 @@ class LayoutStateCreateTreeTest {
       return node
     }
 
-    public override fun resolveWithResult(
+    public override fun resolve(
         resolveStateContext: ResolveStateContext,
-        c: ComponentContext
+        scopedComponentInfo: ScopedComponentInfo,
+        parentWidthSpec: Int,
+        parentHeightSpec: Int,
+        componentsLogger: ComponentsLogger?
     ): ComponentResolveResult {
-      val lithoNode = resolve(resolveStateContext, c)
+      val lithoNode = resolve(resolveStateContext, scopedComponentInfo.context)
       return ComponentResolveResult(lithoNode, null)
     }
 

@@ -62,9 +62,13 @@ public final class Wrapper extends SpecGeneratedComponent {
   }
 
   @Override
-  protected ComponentResolveResult resolveWithResult(
-      ResolveStateContext resolveStateContext, ComponentContext c) {
-    LithoNode lithoNode = resolve(resolveStateContext, c);
+  protected ComponentResolveResult resolve(
+      final ResolveStateContext resolveStateContext,
+      final ScopedComponentInfo scopedComponentInfo,
+      final int parentWidthSpec,
+      final int parentHeightSpec,
+      final @Nullable ComponentsLogger componentsLogger) {
+    LithoNode lithoNode = resolve(resolveStateContext, scopedComponentInfo.getContext());
     return new ComponentResolveResult(lithoNode, getCommonProps());
   }
 

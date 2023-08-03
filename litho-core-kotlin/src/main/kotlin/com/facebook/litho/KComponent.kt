@@ -46,6 +46,34 @@ abstract class KComponent : Component() {
         componentResult, componentScope.transitions, componentScope.useEffectEntries)
   }
 
+  final override fun resolve(
+      resolveStateContext: ResolveStateContext,
+      scopedComponentInfo: ScopedComponentInfo,
+      parentWidthSpec: Int,
+      parentHeightSpec: Int,
+      componentsLogger: ComponentsLogger?
+  ): ComponentResolveResult {
+    val c: ComponentContext = scopedComponentInfo.context
+    val renderResult: RenderResult =
+        render(resolveStateContext, c, parentWidthSpec, parentHeightSpec)
+    val root = renderResult.component
+
+    val node: LithoNode? =
+        if (root != null) {
+          Resolver.resolve(resolveStateContext, c, root)
+        } else {
+          if (c.isNullNodeEnabled) NullNode() else null
+        }
+
+    if (node != null) {
+      Resolver.applyTransitionsAndUseEffectEntriesToNode(
+          renderResult.transitions, renderResult.useEffectEntries, node)
+    }
+
+    // KComponent doesn't itself hold any CommonProps so return null
+    return ComponentResolveResult(node, null)
+  }
+
   abstract fun ComponentScope.render(): Component?
 
   /**

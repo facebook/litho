@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho
 
 import android.content.Context
@@ -200,7 +201,7 @@ class LayoutStateFutureReleaseTest {
       private val wait: CountDownLatch? = null,
       private val unlockFinishedLayout: CountDownLatch? = null,
       val waitActions: WaitActions? = null
-  ) : Component() {
+  ) : SpecGeneratedComponent("TestChildComponent") {
     private val layoutStateFutureList: MutableList<TreeFuture<*>?>
     var hasRunLayout = false
 

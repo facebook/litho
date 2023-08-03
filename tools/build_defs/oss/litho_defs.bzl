@@ -61,6 +61,8 @@ LITHO_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/
 
 LITHO_SECTIONS_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/sections/widget:widget")
 
+LITHO_PERF_LOGGER_TARGET = make_dep_path("litho-perf-logger/src/main/kotlin/com/facebook/litho/performance:litho-perf-logger")
+
 LITHO_FRESCO_KOTLIN_TARGET = make_dep_path("litho-fresco-kotlin/src/main/kotlin/com/facebook/litho/fresco:fresco-kotlin")
 
 # Testing targets

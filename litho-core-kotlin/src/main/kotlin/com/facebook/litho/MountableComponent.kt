@@ -19,10 +19,13 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
+import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
+import com.facebook.yoga.YogaFlexDirection
 
 /**
  * Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec APIs.
@@ -71,6 +74,68 @@ abstract class MountableComponent() : Component() {
         mountableComponentScope.transitions,
         mountableComponentScope.useEffectEntries,
         commonProps)
+  }
+
+  final override fun resolve(
+      resolveStateContext: ResolveStateContext,
+      scopedComponentInfo: ScopedComponentInfo,
+      parentWidthSpec: Int,
+      parentHeightSpec: Int,
+      componentsLogger: ComponentsLogger?
+  ): ComponentResolveResult {
+    val node = LithoNode()
+    // TODO(T159448330): run a QE to check if this step is needed here
+    node.flexDirection(YogaFlexDirection.COLUMN)
+    var commonProps: CommonProps? = null
+    val isTracing = ComponentsSystrace.isTracing
+
+    val prepareEvent =
+        Resolver.createPerformanceEvent(
+            this, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE)
+
+    val componentPrepareTraceIdentifier =
+        DebugEventDispatcher.generateTraceIdentifier(
+            com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared)
+    if (componentPrepareTraceIdentifier != null) {
+      val attributes = HashMap<String, Any?>()
+      attributes[LithoDebugEventAttributes.RunsOnMainThread] = ThreadUtils.isMainThread()
+      attributes[LithoDebugEventAttributes.Component] = getSimpleName()
+      DebugEventDispatcher.beginTrace(
+          componentPrepareTraceIdentifier,
+          com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared,
+          resolveStateContext.treeId.toString(),
+          attributes)
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("prepare:" + getSimpleName())
+    }
+
+    val prepareResult: PrepareResult? =
+        try {
+          prepare(resolveStateContext, scopedComponentInfo.context)
+        } finally {
+          if (prepareEvent != null && componentsLogger != null) {
+            componentsLogger.logPerfEvent(prepareEvent)
+          }
+          componentPrepareTraceIdentifier?.let { DebugEventDispatcher.endTrace(it) }
+        }
+
+    if (prepareResult != null) {
+      if (prepareResult.mountable != null) {
+        node.mountable = prepareResult.mountable
+      }
+
+      Resolver.applyTransitionsAndUseEffectEntriesToNode(
+          prepareResult.transitions, prepareResult.useEffectEntries, node)
+
+      commonProps = prepareResult.commonProps
+    }
+    if (isTracing) {
+      // end of prepare
+      ComponentsSystrace.endSection()
+    }
+    return ComponentResolveResult(node, commonProps)
   }
 
   /** This function must return [Mountable] which are immutable. */

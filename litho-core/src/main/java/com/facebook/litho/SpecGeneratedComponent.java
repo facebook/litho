@@ -16,6 +16,10 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
+import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
 import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing;
 
 import android.content.Context;
@@ -32,9 +36,12 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.yoga.YogaFlexDirection;
+import java.util.HashMap;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -226,6 +233,85 @@ public abstract class SpecGeneratedComponent extends Component
       ResolveStateContext resolveStateContext, ComponentContext c) {
     onPrepare(c);
     return null;
+  }
+
+  @Override
+  protected ComponentResolveResult resolve(
+      final ResolveStateContext resolveStateContext,
+      final ScopedComponentInfo scopedComponentInfo,
+      final int parentWidthSpec,
+      final int parentHeightSpec,
+      final @Nullable ComponentsLogger componentsLogger) {
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    final ComponentContext c = scopedComponentInfo.getContext();
+    LithoNode node = null;
+
+    if (Component.isMountSpec(this)) {
+      // Create a blank InternalNode for MountSpecs and set the default flex direction.
+      node = new LithoNode();
+      node.flexDirection(YogaFlexDirection.COLUMN);
+
+      // Call onPrepare for MountSpecs
+      PerfEvent prepareEvent =
+          Resolver.createPerformanceEvent(
+              this, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE);
+
+      Integer componentPrepareTraceIdentifier = generateTraceIdentifier(ComponentPrepared);
+      if (componentPrepareTraceIdentifier != null) {
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put(LithoDebugEventAttributes.RunsOnMainThread, ThreadUtils.isMainThread());
+        attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
+
+        beginTrace(
+            componentPrepareTraceIdentifier,
+            ComponentPrepared,
+            String.valueOf(resolveStateContext.getTreeId()),
+            attributes);
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("prepare:" + getSimpleName());
+      }
+
+      try {
+        prepare(resolveStateContext, scopedComponentInfo.getContext());
+      } finally {
+        if (prepareEvent != null && componentsLogger != null) {
+          componentsLogger.logPerfEvent(prepareEvent);
+        }
+
+        if (componentPrepareTraceIdentifier != null) {
+          endTrace(componentPrepareTraceIdentifier);
+        }
+      }
+
+      if (isTracing) {
+        // end of prepare
+        ComponentsSystrace.endSection();
+      }
+    }
+
+    // If the component is a LayoutSpec.
+    else if (Component.isLayoutSpec(this)) {
+
+      final RenderResult renderResult =
+          render(resolveStateContext, c, parentWidthSpec, parentHeightSpec);
+      final Component root = renderResult.component;
+
+      if (root != null) {
+        node = Resolver.resolve(resolveStateContext, c, root);
+      } else {
+        node = c.isNullNodeEnabled() ? new NullNode() : null;
+      }
+
+      if (renderResult != null && node != null) {
+        Resolver.applyTransitionsAndUseEffectEntriesToNode(
+            renderResult.transitions, renderResult.useEffectEntries, node);
+      }
+    }
+
+    return new ComponentResolveResult(node, getCommonProps());
   }
 
   @Override

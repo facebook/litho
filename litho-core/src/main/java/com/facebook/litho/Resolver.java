@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
-import static com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
@@ -31,7 +30,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
-import com.facebook.yoga.YogaFlexDirection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -206,110 +204,22 @@ public class Resolver {
       final boolean shouldDeferNestedTreeResolution =
           (isNestedTree || hasCachedNode) && !resolveNestedTree;
 
-      // If nested tree resolution is deferred, then create an nested tree holder.
+      // If nested tree resolution is deferred, then create a nested tree holder.
       if (shouldDeferNestedTreeResolution) {
         node =
             new NestedTreeHolder(
                 c.getTreeProps(), resolveStateContext.getCache().getCachedNode(component), parent);
-      }
-
-      // If the component can resolve itself resolve it.
-      else if (component.canResolve()) {
-
+      } else {
         // Resolve the component into an InternalNode.
-        ComponentResolveResult resolveResult = component.resolveWithResult(resolveStateContext, c);
+        ComponentResolveResult resolveResult =
+            component.resolve(
+                resolveStateContext,
+                scopedComponentInfo,
+                parentWidthSpec,
+                parentHeightSpec,
+                componentsLogger);
         node = resolveResult.lithoNode;
         commonProps = resolveResult.commonProps;
-      }
-
-      // If the component is a MountSpec (including MountableComponents and PrimitiveComponents).
-      else if (Component.isMountSpec(component)) {
-
-        // Create a blank InternalNode for MountSpecs and set the default flex direction.
-        node = new LithoNode();
-        node.flexDirection(YogaFlexDirection.COLUMN);
-
-        // Call onPrepare for MountSpecs or prepare for MountableComponents.
-        PerfEvent prepareEvent =
-            createPerformanceEvent(
-                component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE);
-
-        Integer componentPrepareTraceIdentifier = generateTraceIdentifier(ComponentPrepared);
-        if (componentPrepareTraceIdentifier != null) {
-          HashMap<String, Object> attributes = new HashMap<>();
-          attributes.put(LithoDebugEventAttributes.RunsOnMainThread, ThreadUtils.isMainThread());
-          attributes.put(LithoDebugEventAttributes.Component, component.getSimpleName());
-
-          beginTrace(
-              componentPrepareTraceIdentifier,
-              ComponentPrepared,
-              String.valueOf(resolveStateContext.getTreeId()),
-              attributes);
-        }
-
-        if (isTracing) {
-          ComponentsSystrace.beginSection("prepare:" + component.getSimpleName());
-        }
-
-        PrepareResult prepareResult = null;
-        try {
-          prepareResult = component.prepare(resolveStateContext, scopedComponentInfo.getContext());
-        } finally {
-          if (prepareEvent != null && componentsLogger != null) {
-            componentsLogger.logPerfEvent(prepareEvent);
-          }
-
-          if (componentPrepareTraceIdentifier != null) {
-            endTrace(componentPrepareTraceIdentifier);
-          }
-        }
-
-        if (prepareResult != null) {
-          if (Component.isMountable(component) && prepareResult.mountable != null) {
-            node.setMountable(prepareResult.mountable);
-          } else if (Component.isPrimitive(component) && prepareResult.primitive != null) {
-            node.setPrimitive(prepareResult.primitive);
-          }
-          applyTransitionsAndUseEffectEntriesToNode(
-              prepareResult.transitions, prepareResult.useEffectEntries, node);
-
-          commonProps = prepareResult.commonProps;
-        }
-
-        if (isTracing) {
-          // end of prepare
-          ComponentsSystrace.endSection();
-        }
-      }
-
-      // If the component is a LayoutSpec.
-      else if (Component.isLayoutSpec(component)) {
-
-        final RenderResult renderResult =
-            component.render(resolveStateContext, c, parentWidthSpec, parentHeightSpec);
-        final Component root = renderResult.component;
-
-        if (root != null) {
-          // TODO: (T57741374) this step is required because of a bug in redex.
-          if (root == component) {
-            node = root.resolve(resolveStateContext, c);
-          } else {
-            node = resolve(resolveStateContext, c, root);
-          }
-        } else {
-          node = c.isNullNodeEnabled() ? new NullNode() : null;
-        }
-
-        if (renderResult != null && node != null) {
-          applyTransitionsAndUseEffectEntriesToNode(
-              renderResult.transitions, renderResult.useEffectEntries, node);
-        }
-      }
-
-      // What even is this component?
-      else {
-        throw new IllegalArgumentException(
-            "Component type unrecognized:" + component.getSimpleName());
       }
 
       // 7. If the layout is null then return immediately.
@@ -366,13 +276,10 @@ public class Resolver {
     // 9. Copy the common props
     // Skip if resolving a layout with size spec because common props were copied in the previous
     // layout pass.
-
     if (commonProps == null && (component instanceof SpecGeneratedComponent)) {
-      // for SpecGeneratedComponents we still need to retrieve CommonProps from the Component until
-      // we refactor resolve() process
+      // this step is still needed to make OCLWSS case work
       commonProps = ((SpecGeneratedComponent) component).getCommonProps();
     }
-
     if (!(node instanceof NullNode)) { // only if NOT a NullNode
       if (commonProps != null
           && !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
@@ -438,7 +345,7 @@ public class Resolver {
    * ComponentsLogger} is not interested in that event, it will return <code>null</code>.
    */
   @Nullable
-  private static PerfEvent createPerformanceEvent(
+  static PerfEvent createPerformanceEvent(
       Component component,
       @Nullable ComponentsLogger componentsLogger,
       @FrameworkLogEvents.LogEventId int eventId) {

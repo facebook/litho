@@ -19,12 +19,19 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import com.facebook.litho.ComponentsSystrace.beginSection
+import com.facebook.litho.ComponentsSystrace.endSection
+import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace
+import com.facebook.rendercore.debug.DebugEventDispatcher.endTrace
+import com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
+import com.facebook.yoga.YogaFlexDirection
 
 /**
  * Base class for Kotlin primitive components. This class encapsulates some of the Mount Spec APIs.
@@ -58,6 +65,67 @@ abstract class PrimitiveComponent : Component() {
         primitiveComponentScope.transitions,
         primitiveComponentScope.useEffectEntries,
         commonProps)
+  }
+
+  final override fun resolve(
+      resolveStateContext: ResolveStateContext,
+      scopedComponentInfo: ScopedComponentInfo,
+      parentWidthSpec: Int,
+      parentHeightSpec: Int,
+      componentsLogger: ComponentsLogger?
+  ): ComponentResolveResult {
+    val node = LithoNode()
+    // TODO(T159448330): run a QE to check if this step is needed here
+    node.flexDirection(YogaFlexDirection.COLUMN)
+    var commonProps: CommonProps? = null
+    val isTracing = ComponentsSystrace.isTracing
+
+    val prepareEvent =
+        Resolver.createPerformanceEvent(
+            this, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE)
+
+    val componentPrepareTraceIdentifier =
+        generateTraceIdentifier(com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared)
+    if (componentPrepareTraceIdentifier != null) {
+      val attributes = HashMap<String, Any?>()
+      attributes[LithoDebugEventAttributes.RunsOnMainThread] = ThreadUtils.isMainThread()
+      attributes[LithoDebugEventAttributes.Component] = getSimpleName()
+      beginTrace(
+          componentPrepareTraceIdentifier,
+          com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared,
+          resolveStateContext.treeId.toString(),
+          attributes)
+    }
+
+    if (isTracing) {
+      beginSection("prepare:" + getSimpleName())
+    }
+
+    val prepareResult: PrepareResult? =
+        try {
+          prepare(resolveStateContext, scopedComponentInfo.context)
+        } finally {
+          if (prepareEvent != null && componentsLogger != null) {
+            componentsLogger.logPerfEvent(prepareEvent)
+          }
+          componentPrepareTraceIdentifier?.let { endTrace(it) }
+        }
+
+    if (prepareResult != null) {
+      if (prepareResult.primitive != null) {
+        node.primitive = prepareResult.primitive
+      }
+
+      Resolver.applyTransitionsAndUseEffectEntriesToNode(
+          prepareResult.transitions, prepareResult.useEffectEntries, node)
+
+      commonProps = prepareResult.commonProps
+    }
+    if (isTracing) {
+      // end of prepare
+      endSection()
+    }
+    return ComponentResolveResult(node, commonProps)
   }
 
   /** This function must return [LithoPrimitive] which are immutable. */
