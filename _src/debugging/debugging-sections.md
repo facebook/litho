@@ -102,8 +102,6 @@ This is a commonly occurring scenario that can occur in surfaces that consist of
 
 If your Section surface is using data queried from multiple sources, and it can be inserted out of order, you can maintain scroll position at the first item in the list by manually scrolling to the top, after the data reaches the adapter, using the [requestFocus APIs](../sections/communicating-with-the-ui.md#scrolling-requestfocus):
 
-#scrolling-requestfocus
-
 ```java
 @OnDataBound
 static void onDataBound(SectionContext c) {
@@ -117,7 +115,7 @@ static void onDataBound(SectionContext c) {
 
 **Scenario**: some items in the Sections list were updated after interacting with them. After some time, the surface appears to blink, and the scroll position is reset. All items are reset, losing any updated state.
 
-This issue has similar symptoms to [Issue #1](#issue-1-the-state-of-an-entire-section-surface-is-getting-reset), but you can use the Flipper Sections Plugin this time to see what’s different and how to find the cause.
+This issue has similar symptoms to [issue #1](#issue-1-the-state-of-an-entire-section-surface-is-getting-reset), but you can use the Flipper Sections Plugin this time to see what’s different and how to find the cause.
 
 <video width="100%" controls="controls">
   <source src={useBaseUrl('videos/debugging-sections-issue3.mov')} />

@@ -51,13 +51,13 @@ As such, there are **three hooks rules** that you need to remember:
  2. Hooks must not be called conditionally.
  ```kotlin
  if (something) {
-   val state = useState{ 1 } // INCORRECT. Called inside an if block
+   val state = useState { 1 } // INCORRECT. Called inside an if block
  }
  ```
 
  ```kotlin
  val cachedValue = useCached(dependendency) {
-   val dynamicColor = useBinding{0} // INCORRECT. The useCached block will only be executed if the dependency changes.
+   val dynamicColor = useBinding {0} // INCORRECT. The useCached block will only be executed if the dependency changes.
    return false
  }
  ```
