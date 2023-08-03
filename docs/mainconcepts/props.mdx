@@ -63,16 +63,16 @@ val combinedStyle = alphaStyle + Style.padding(all = 8.dp).alpha(.5f)
 //   combinedStyle will apply padding of 8.dp and alpha of .5f
 ```
 
-Generally, Style objects are immutable: any time you combine Styles or add new properties to a Style, you get a new Style instance that contains all the properties of the previous Style plus the new properties.
+Generally, `Style` objects are immutable: any time you combine styles or add new properties to a style, you get a new `Style` instance that contains all the properties of the previous style plus the new properties.
 
 ### Java - Kotlin compatibility
 
-If you need to pass down a Style from a Java class to a Kotlin `KComponent`, use `StyleCompat`:
+If you need to pass down a style from a Java class to a Kotlin component, use `StyleCompat`:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/OuterStyleComponentSpec.java start=start_combine_style_outer_example end=end_combine_style_outer_example
 ```
 
-For passing Style from Kotlin code to a Java `Component Spec`, you can use `.kotlinStyle()`, which is equivalent to setting all the common props the Style defines:
+For passing style from Kotlin code to a Java Spec component, you can use `.kotlinStyle()`, which is equivalent to setting all the common props the `Style` defines:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/ChildStylesExample.kt start=start_combine_java_kotlin_style_example end=end_combine_java_kotlin_style_example
 ```

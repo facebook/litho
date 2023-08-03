@@ -26,9 +26,9 @@ import com.facebook.litho.view.onClick
 
 // start_example
 class ClickEventComponent(
-    private val onButtonClicked: ((String) -> Unit),
+    private val onButtonClicked: (String) -> Unit,
 ) : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return Column {
       child(Text(text = "OK", style = Style.onClick { onButtonClicked("OK clicked") }))
       child(Text(text = "Cancel", style = Style.onClick { onButtonClicked("Cancel clicked") }))

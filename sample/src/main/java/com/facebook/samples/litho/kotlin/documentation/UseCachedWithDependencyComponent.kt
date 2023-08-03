@@ -28,7 +28,7 @@ import com.facebook.litho.view.onClick
 
 // start_example
 class UseCachedWithDependencyComponent : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val number = useState { 1 }
 
     val expensiveValue = useCached(number) { expensiveRepeatFunc("hello", number.value) }

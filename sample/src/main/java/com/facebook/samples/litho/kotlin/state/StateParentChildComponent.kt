@@ -28,7 +28,7 @@ class StateParentChildComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val clicks = useState { 0 }
     return Column {
-      child(ChildComponent { clicks.update { c -> c + 1 } })
+      child(ChildComponent(onIncrementCounter = { clicks.update { c -> c + 1 } }))
       child(Text(text = "Counter: ${clicks.value}"))
     }
   }

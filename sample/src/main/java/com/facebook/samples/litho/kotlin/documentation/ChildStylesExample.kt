@@ -29,13 +29,13 @@ import com.facebook.rendercore.dp
 
 // start_combine_style_example
 class OuterTextComponent : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return InnerTextComponent(style = Style.margin(all = 8.dp))
   }
 }
 
 class InnerTextComponent(private val style: Style? = null) : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return Text(
         style = Style.padding(all = 8.dp).alpha(.5f) + style,
         text = "I accept style from a parent!")
@@ -44,7 +44,7 @@ class InnerTextComponent(private val style: Style? = null) : KComponent() {
 // end_combine_style_example
 // start_combine_java_kotlin_style_example
 class OuterStyleKComponent : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val style = Style.margin(all = 8.dp)
     return OuterStyleComponent.create(context).kotlinStyle(style).build()
   }

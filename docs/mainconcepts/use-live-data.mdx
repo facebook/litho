@@ -20,7 +20,6 @@ This hook will start observing the given `LiveData` and return its latest value 
 ### Integrating Litho with the `LifecycleOwner`
 
 A core principle for `LiveData` observation is the `LifecycleOwner`, which defines at what points the Observer can listen to value changes. In order to use `useLiveData`, you **must** create your `LithoView` with the `AOSPLithoLifecycleProvider` and  pass the appropriate `LifecycleOwner` to it. This can be done as shown in the sample below:
-:::
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LithoViewCreationFragment.kt  start=start_example end=end_example
 ```

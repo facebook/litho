@@ -37,7 +37,7 @@ import com.facebook.rendercore.dp
 
 // start_example
 class TransitionComponent : KComponent() {
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val isHalfAlpha = useState { false }
     useTransition(Transition.create("square").animate(AnimatedProperties.ALPHA))
 
