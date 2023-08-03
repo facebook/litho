@@ -8,41 +8,41 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-The following cheatsheet provides a set of links for the migration of individual aspects of existing code from the Java Spec API to Kotlin API.
+The following cheatsheet provides a set of links for the migration of individual aspects of existing code from the Spec API to Kotlin API.
 :::
 
-| Java Spec API | Kotlin API Link |
-| :-- | :-- |
-| @LayoutSpec | [KComponent and Props](basics.mdx) |
-| @OnCreateLayout | [ComponentScope.render()](basics.mdx) |
-| @OnCreateTransition | [useTransition()](/kotlin/hooks-for-spec-developers.mdx#usetransition) |
-| @OnCreateInitialState / @OnUpdateState | [useState()](/mainconcepts/use-state.mdx) |
-| Lazy State | [useRef()](mainconcepts/use-ref.mdx) |
-| @OnError | [useErrorBoundary()](/mainconcepts/use-error-boundary.mdx) |
-| @OnAttached / @OnDetached | [useEffect()](/mainconcepts/use-effect.mdx) |
-| @OnEvent | [Event Handling](event-handling.mdx) |
-| @OnCalculateCachedValue | [useCached()](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-core-kotlin/src/main/kotlin/com/facebook/litho/KCached.kt) |
-| @TreeProp | [getTreeProp()](basics.mdx#treeprops) |
-| @OnCreateTreeProp | [TreePropProvider](basics.mdx#treeprops) |
-| Common Props | [Style](basics.mdx#common-props) |
-| @InjectProp | Use Ultralight, the [New API](https://www.internalfb.com/intern/wiki/Ultralight/Static_Injector/) |
-| Column.create(context) | [Column()](flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
-| Row.create(context) | [Row()](flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
-| Manual Keys | [key()](mainconcepts/coordinate-state-actions/keys-and-identity.md#assigning-manual-keys) |
-| Handle | [handle()](basics.mdx#handles) |
-| @OnCreateLayoutWithSizeSpec | [SizeConstraintsAwareComponent](../custom-layout.md#kotlin-integration)  |
-| @MountSpec | [PrimitiveComponent()](../mainconcepts/primitivecomponents/overview.mdx)|
-| @OnTrigger | [Controllers pattern](../mainconcepts/primitivecomponents/primitive-controllers.mdx) |
-| @OnBind / @OnUnbind | [bindTo() / bind() / bindWithLayoutData() + onUnbind()](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt#L41-L44) |
-| @OnMount / @OnUnmount | [bindTo() / bind() / bindWithLayoutData() + onUnbind()](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt#L41-L44) |
-| @OnBindDynamicValue | [bindDynamic() - Dynamic Values API](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewComponent.kt#L53-L63) |
-| @ShouldUpdate | [shouldUpdate()](../mainconcepts/primitivecomponents/primitive.mdx#mounting-and-unmounting-content-properties) |
-| @OnCreateMountContent |  [createContent()](../mainconcepts/primitivecomponents/primitive.mdx#content-creation) |
-| @OnCreateMountContentPool |  [ViewAllocator / DrawableAllocator](../mainconcepts/primitivecomponents/primitive-preallocation.mdx)|
-| @OnMeasure |  [layout()](../mainconcepts/primitivecomponents/primitive-measuring.mdx) |
-| @OnBoundsDefined |  [layout()](../mainconcepts/primitivecomponents/primitive-measuring.mdx) |
-| @OnPrepare |  [PrimitiveComponentScope.render()](../mainconcepts/primitivecomponents/primitive-component.mdx) |
-| @OnLoadStyle | [PrimitiveComponentScope.render()](../mainconcepts/primitivecomponents/primitive-component.mdx) |
-| Accessibility | [Accessibility for Primitive Components](../accessibility/accessibility.mdx) (see: [AccessibilityStyles](https://fburl.com/code/3ikzp6c7))|
-| hasChildLithoViews | [doesMountRenderTreeHosts](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/HorizontalScroll.kt#L111)|
-| isPureRender | No equivalent. Ignore when converting. |
+| Spec API                                   | Kotlin API |
+| :--                                        | :-- |
+| `@LayoutSpec`                              | [KComponent and Props](basics.mdx) |
+| `@OnCreateLayout`                          | [`ComponentScope.render()`](basics.mdx) |
+| `@OnCreateTransition`                      | [`useTransition()`](/kotlin/hooks-for-spec-developers.mdx#usetransition) |
+| `@OnCreateInitialState` / `@OnUpdateState` | [`useState()`](/mainconcepts/use-state.mdx) |
+| Lazy State                                 | [`useRef()`](mainconcepts/use-ref.mdx) |
+| `@OnError`                                 | [`useErrorBoundary()`](/mainconcepts/use-error-boundary.mdx) |
+| `@OnAttached` / `@OnDetached`              | [`useEffect()`](/mainconcepts/use-effect.mdx) |
+| `@OnEvent`                                 | [Event Handling](event-handling.mdx) |
+| `@OnCalculateCachedValue`                  | [`useCached()`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-core-kotlin/src/main/kotlin/com/facebook/litho/KCached.kt) |
+| `@TreeProp`                                | [`getTreeProp()`](basics.mdx#treeprops) |
+| `@OnCreateTreeProp`                        | [`TreePropProvider`](basics.mdx#treeprops) |
+| Common Props                               | [`Style`](basics.mdx#common-props) |
+| `@InjectProp`                              | Use Ultralight, the [New API](https://www.internalfb.com/intern/wiki/Ultralight/Static_Injector/) |
+| `Column.create(c)`                         | [`Column()`](flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| `Row.create(c)`                            | [`Row()](flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| Manual Keys                                | [`key()](mainconcepts/coordinate-state-actions/keys-and-identity.md#assigning-manual-keys) |
+| `Handle`                                   | [`handle()](basics.mdx#handles) |
+| `@OnCreateLayoutWithSizeSpec`              | [`SizeConstraintsAwareComponent`](../custom-layout.md#kotlin-integration)  | //TODO
+| `@MountSpec`                               | [`PrimitiveComponent()`](../mainconcepts/primitivecomponents/overview.mdx)|
+| `@OnTrigger`                               | [Controllers pattern](../mainconcepts/primitivecomponents/primitive-controllers.mdx) |
+| `@OnBind` / `@OnUnbind`                    | [`bindTo()` / bind()` / `bindWithLayoutData()` + `onUnbind()`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt#L41-L44) |
+| `@OnMount` / `@OnUnmount`                  | [`bindTo()` / bind()` / `bindWithLayoutData()` + `onUnbind()`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/SimpleImageViewPrimitiveComponent.kt#L41-L44) |
+| `@OnBindDynamicValue`                      | [`bindDynamic()` - Dynamic Values API](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/bindto/ImageViewComponent.kt#L53-L63) |
+| `@ShouldUpdate`                            | [`shouldUpdate()`](../mainconcepts/primitivecomponents/primitive.mdx#mounting-and-unmounting-content-properties) |
+| `@OnCreateMountContent`                    | [`createContent()`](../mainconcepts/primitivecomponents/primitive.mdx#content-creation) |
+| `@OnCreateMountContentPool`                | [`ViewAllocator` / `DrawableAllocator`](../mainconcepts/primitivecomponents/primitive-preallocation.mdx)|
+| `@OnMeasure`                               | [`layout()`](../mainconcepts/primitivecomponents/primitive-measuring.mdx) |
+| `@OnBoundsDefined`                         | [`layout()`](../mainconcepts/primitivecomponents/primitive-measuring.mdx) |
+| `@OnPrepare`                               | [`PrimitiveComponentScope.render()`](../mainconcepts/primitivecomponents/primitive-component.mdx) |
+| `@OnLoadStyle`                             | [`PrimitiveComponentScope.render()`](../mainconcepts/primitivecomponents/primitive-component.mdx) |
+| Accessibility                              | [Accessibility for Primitive Components](../accessibility/accessibility.mdx) (see: [AccessibilityStyles](https://fburl.com/code/3ikzp6c7))|
+| `hasChildLithoViews`                       | [`doesMountRenderTreeHosts`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/HorizontalScroll.kt#L111)|
+| `isPureRender`                             | No equivalent. Ignore when converting. |

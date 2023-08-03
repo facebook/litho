@@ -136,9 +136,9 @@ module.exports = {
       'kotlin/kotlin-intro',
       'kotlin/kotlin-api-basics',
       'kotlin/hooks-for-spec-developers',
-      'kotlin/migrating-from-mountspecs-to-primitives',
       'kotlin/kotlin-flexbox-containers',
       'kotlin/event-handling',
+      'kotlin/migrating-from-mountspecs-to-primitives',
       'kotlin/kotlin-api-cheatsheet-primitives',
       {
         'Lazy Collections' : [

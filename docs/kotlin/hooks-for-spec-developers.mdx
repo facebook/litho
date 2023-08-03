@@ -8,14 +8,14 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-This page covers how to convert existing code from lifecycle methods in the Java Specs API to hooks in the Kotlin API.
+This page covers how to convert existing code from lifecycle methods in the Specs API to hooks in the Kotlin API.
 
-For information on the concept and rules for Hooks, see the [Introduction to Hooks](../mainconcepts/hooks-intro.mdx) page.
+For information on the concept and rules for hooks, see the [Introduction to Hooks](../mainconcepts/hooks-intro.mdx) page.
 :::
 
-One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Java Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
+One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Specs API (such as `@OnCreateInitialState` and `@OnAttached`) have hooks equivalents in the Kotlin API.
 
-## useState
+## `@State`, `@OnCreateInitialState` and `@OnUpdateState`
 
 `useState` enables a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The following code shows a comparison of Spec API and Kotlin API code for the same component:
 
@@ -23,8 +23,8 @@ One of the biggest changes in the Litho Kotlin API is the introduction of hooks:
   groupId="state"
   defaultValue="kotlin_state"
   values={[
-    {label: 'Kotlin', value: 'kotlin_state'},
-    {label: 'Java', value: 'java_state'},
+    {label: 'Kotlin API', value: 'kotlin_state'},
+    {label: 'Spec API', value: 'java_state'},
   ]}>
   <TabItem value="kotlin_state">
 
@@ -41,15 +41,15 @@ One of the biggest changes in the Litho Kotlin API is the introduction of hooks:
 
 </Tabs>
 
-### Side Effects in `@OnCreateInitialState`
+### Side-effects in `@OnCreateInitialState`
 
-A common pattern in the Java Spec API was to perform side effects in `@OnCreateInitialState` (such as attaching a listener). Instead, any side effects like this should now be done with the [useEffect Hook](/mainconcepts/use-effect.mdx), which provides functionality to clean up and handle prop changes.
+A common pattern in the Spec API was to perform side-effects in `@OnCreateInitialState` (such as attaching a listener). Instead, any side-effects like this should now be done with the [useEffect hook](/mainconcepts/use-effect.mdx), which provides functionality to clean up and handle prop changes.
 
 For more information, see the [useState](../mainconcepts/use-state.mdx) page in the 'Main Concepts' section.
 
-## useEffect
+## `@OnAttached`/`@OnDetached`
 
-The `useEffect` hook gives the ability to safely perform side-effects from a component and corresponds to the Java Spec API's `@OnAttached`/`@OnDetached` lifecycle methods.
+The `useEffect` hook gives the ability to safely perform side-effects from a component and corresponds to the Spec API's `@OnAttached`/`@OnDetached` lifecycle methods.
 
 ```kotlin
 useEffect(username) {
@@ -58,11 +58,11 @@ useEffect(username) {
 }
 ```
 
-In addition to the existing `@OnAttached`/`@OnDetached` functionality, it provides the ability to perform side-effects in response to changes in committed props or state. Both the effect lambda and the cleanup lambda are invoked on the main thread, meaning it's safe to perform UI-thread confined side effects.
+In addition to the existing `@OnAttached`/`@OnDetached` functionality, it provides the ability to perform side-effects in response to changes in committed props or state. Both the effect lambda and the cleanup lambda are invoked on the main thread, meaning it's safe to perform UI-thread confined side-effects.
 
 ### Changes to Attach/Detach Contract
 
-In the Java Spec API, `@OnAttached`/`@OnDetached` would be called only once, when the component was first attached to/detached from the tree. This could lead to bugs where, for example, when a component subscribes to a data store using a userId prop, and then that prop changes.
+In the Spec API, `@OnAttached`/`@OnDetached` would be called only once, when the component was first attached to/detached from the tree. This could lead to bugs where, for example, when a component subscribes to a data store using a userId prop, and then that prop changes.
 
 `useEffect` tries to solve this by taking a var-arg list of *dependencies*: any time any of these dependencies changes, the cleanup lambda (previously `@OnDetached`) will be called followed by the new effect lambda. If no dependencies are provided, the previous cleanup and new effect lambdas will be invoked again **every time a new layout is committed**.
 
@@ -75,7 +75,7 @@ An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached
 
 For more information, see the [useEffect](../mainconcepts/use-effect.mdx) page in the 'Main Concepts' section.
 
-## useRef
+## Lazy State
 
 The `useRef` hook allows a component to maintain a mutable reference that doesn't trigger a re-render when updated.
 
@@ -88,20 +88,20 @@ It returns an instance of `Ref` that has a single mutable `value` property, whic
 
 For more information, see the [useRef](../mainconcepts/use-ref.mdx) page in the 'Main Concepts' section.
 
-## useErrorBoundary
+## `@OnError`
 
-The `useErrorBoundary` hook allows KComponents to catch and handle errors higher up in the tree and provide appropriate fallback, logging or retry mechanisms. It corresponds to the Java Spec API's `@OnError` functionality.
+The `useErrorBoundary` hook allows KComponents to catch and handle errors higher up in the tree and provide appropriate fallback, logging or retry mechanisms. It corresponds to the Spec API's `@OnError` functionality.
 
 ### Example: providing an 'error' state in the UI
 
-A KComponent becomes an error boundary when it declares a `useErrorBoundary` hook. The example below shows how the implementation of a boundary that renders an error state compares between the Java Spec API and the Kotlin API:
+A KComponent becomes an error boundary when it declares a `useErrorBoundary` hook. The example below shows how the implementation of a boundary that renders an error state compares between the Spec API and the Kotlin API:
 
 <Tabs
   groupId="error_boundary"
   defaultValue="kotlin_state"
   values={[
-    {label: 'Kotlin', value: 'kotlin_state'},
-    {label: 'Java', value: 'java_state'},
+    {label: 'Kotlin API', value: 'kotlin_state'},
+    {label: 'Spec API', value: 'java_state'},
   ]}>
   <TabItem value="kotlin_state">
 
@@ -120,16 +120,16 @@ A KComponent becomes an error boundary when it declares a `useErrorBoundary` hoo
 
 For more information, see the [useErrorBoundary](../mainconcepts/use-error-boundary.mdx) page in the 'Main Concepts' section.
 
-## useTransition
+## `@OnCreateTransition`
 
-`useTransition` registers a transition to be applied when the current layout is committed. It corresponds to the Java Spec API's `@OnCreateTransition` functionality.
+`useTransition` registers a transition to be applied when the current layout is committed. It corresponds to the Spec API's `@OnCreateTransition` functionality.
 
 <Tabs
   groupId="transition"
   defaultValue="kotlin_transition"
   values={[
-    {label: 'Kotlin', value: 'kotlin_transition'},
-    {label: 'Java', value: 'java_transition'},
+    {label: 'Kotlin API', value: 'kotlin_transition'},
+    {label: 'Spec API', value: 'java_transition'},
   ]}>
   <TabItem value="kotlin_transition">
 
