@@ -41,8 +41,7 @@ class StoryKComponent(private val user: User) : KComponent() {
         alignItems = YogaAlign.CENTER,
         style =
             Style.padding(all = 4.dp).onClick {
-              Toast.makeText(
-                      androidContext, "Open ${user.username} Story", Toast.LENGTH_SHORT)
+              Toast.makeText(androidContext, "Open ${user.username} Story", Toast.LENGTH_SHORT)
                   .show()
             }) {
           child(
