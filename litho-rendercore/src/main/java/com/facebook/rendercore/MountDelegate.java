@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.GapWorkerCallbacks;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
@@ -137,16 +138,20 @@ public class MountDelegate {
 
   public void onRegisterForPremount(@Nullable Long frameTimeMs) {
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates
-          .get(i)
-          .getExtension()
-          .onRegisterForPremount(mExtensionStates.get(i), frameTimeMs);
+      Object extension = mExtensionStates.get(i).getExtension();
+      if (extension instanceof GapWorkerCallbacks) {
+        ((GapWorkerCallbacks) extension)
+            .onRegisterForPremount(mExtensionStates.get(i), frameTimeMs);
+      }
     }
   }
 
   public void onUnregisterForPremount() {
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates.get(i).getExtension().onUnregisterForPremount(mExtensionStates.get(i));
+      Object extension = mExtensionStates.get(i).getExtension();
+      if (extension instanceof GapWorkerCallbacks) {
+        ((GapWorkerCallbacks) extension).onUnregisterForPremount(mExtensionStates.get(i));
+      }
     }
   }
 
@@ -500,7 +505,9 @@ public class MountDelegate {
 
   public boolean hasItemToMount() {
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      if (mExtensionStates.get(i).getExtension().hasItemToMount(mExtensionStates.get(i))) {
+      Object extension = mExtensionStates.get(i).getExtension();
+      if (extension instanceof GapWorkerCallbacks
+          && ((GapWorkerCallbacks) extension).hasItemToMount(mExtensionStates.get(i))) {
         return true;
       }
     }
@@ -511,7 +518,10 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mExtensionStates.get(i).getExtension().premountNext(mExtensionStates.get(i));
+      Object extension = mExtensionStates.get(i).getExtension();
+      if (extension instanceof GapWorkerCallbacks) {
+        ((GapWorkerCallbacks) extension).premountNext(mExtensionStates.get(i));
+      }
     }
 
     endNotifyVisibleBoundsChangedSection();
