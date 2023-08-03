@@ -28,7 +28,7 @@ useEffect(Unit) {
 }
 ```
 
-The arguments to `useEffect` are its dependencies, which control when the effect is cleaned up and invoked again. With `Unit` passed as a dependency arg, the effect lambda is invoked **only once** when a component is mounted for the first time, and the cleanup lambda is invoked **only once** when a component is unmounted for the last time.
+The arguments to `useEffect` are its dependencies, which control when the effect is cleaned up and invoked again. With `Unit` passed as a dependency arg, the effect lambda is invoked **only once** when a component is added to UI tree, and the cleanup lambda is invoked **only once** when a component is removed from the UI tree. They won't be called when a component is updated due to the props or state changes.
 
 You can have a finer-grained control of how often your effect and cleanup lambdas need to be executed using dependency args, as shown in the next section.
 
@@ -38,7 +38,7 @@ You can have a finer-grained control of how often your effect and cleanup lambda
 Dependencies are checked for equivalence by calling `equals`. If any are not equal, the hook will be cleaned up and called again.
 :::
 
-In addition, the effect lambda, `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda, if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
+In addition to the effect lambda `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda, if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
 
 In the sample code below, when the first render is committed, Litho will invoke the `useEffect` lambda, subscribing to the current `userId`. On subsequent commits, **if `userId` or `store` changed**, Litho invokes the cleanup callback to unsubscribe the existing subscription (if there is one) and then subscribe to the current `userId` and `store`.
 
@@ -58,11 +58,11 @@ class UserStatusComponent(private val userId: Int, private val store: StatusStor
 }
 ```
 
-In general, your dependencies should include **all** the props/state read by you useEffect/cleanup calls. If they don't, you risk incorrect behavior. For example, in the above component, if `userId` hadn't been specified, then if the component received a different `userId` as a prop, it would remain subscribed to the wrong `userId`.
+In general, your dependencies should include **all** the props/state read by you `useEffect`/`onCleanup` calls. If they don't, you risk incorrect behavior. For example, in the above component, if `userId` hadn't been specified, then if the component received a different `userId` as a prop, it would remain subscribed to the wrong `userId`.
 
 ### Cleanup
 
-The return value of the lambda passed to `useEffect` is a cleanup method. In it, you should perform any cleanup necessary to undo side-effects from the main body of that `useEffect` call. For example, canceling a subscription to a data store, or canceling an animation. If you don't have any cleanup you need to do, you can return `null` instead:
+The return value of the lambda passed to `useEffect` is a cleanup lambda. This is where you should perform any cleanup necessary to undo side-effects from the main body of that `useEffect` call. For example, canceling a subscription to a data store, or canceling an animation. If you don't have any cleanup you need to do, you can return `null` instead:
 
 ```kotlin
 useEffect {
@@ -73,7 +73,7 @@ useEffect {
 
 ### Unconditionally triggering side effects
 
-In rare cases you may need to pass `Any()` as a dependency arg. In such a case, **on each** new commit, the cleanup for the previous `useEffect` call is invoked, followed by the current useEffect call.
+In rare cases you may need to pass `Any()` as a dependency arg. In such a case, **on each** new commit, the cleanup for the previous `useEffect` call is invoked, followed by the current `useEffect` call.
 
 ### Listening to Prop/State Changes
 
@@ -86,6 +86,6 @@ An important functionality that `useEffect` adds is the ability to trigger code 
 
 ### `useEffect` in Components that can return `null` or `EmptyComponent` from `render`
 
-If you specify an effect via `useEffect` and then return null from `render`, or render to a child (which returns null from render, like `EmptyComponent`), then the effect won't run.
+If you specify an effect via `useEffect` and then return `null` from `render`, or render to a child which returns `null` from render (like `EmptyComponent`), then the effect won't run.
 
 Until this is fixed, the workaround is to return an empty `Row()` from render instead of null.
