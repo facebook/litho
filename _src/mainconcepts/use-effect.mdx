@@ -7,13 +7,13 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-`useEffect` is a hook that allows a component to perform side effects[^1] when it's attached and/or detached from the tree, or in response to changes in committed props or state.
+`useEffect` is a hook that allows a component to perform side-effects[^1] when it's attached and/or detached from the tree, or in response to changes in committed props or state.
 
-[^1]: Side effects include operations such as fetch requests, subscriptions, using timers, and manually changing the View tree. By using the useEffect hook, you are stating that the component needs to do someting after its rendered.
+[^1]: Side-effects include operations such as fetch requests, subscriptions, using timers, and manually changing the View tree. By using the useEffect hook, you are stating that the component needs to do someting after its rendered.
 
 To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
 
-## Performing side effects
+## Performing side-effects
 
 :::note
 `useEffect` lambdas and cleanup are both invoked on the main thread. This means it's safe to trigger animations or mutate the view hierarchy from it. However, it's recommended to avoid expensive operations in order to keep your app responsive!
@@ -32,13 +32,13 @@ The arguments to `useEffect` are its dependencies, which control when the effect
 
 You can have a finer-grained control of how often your effect and cleanup lambdas need to be executed using dependency args, as shown in the next section.
 
-## Side effects with dependencies
+## Side-effects with dependencies
 
 :::note
 Dependencies are checked for equivalence by calling `equals`. If any are not equal, the hook will be cleaned up and called again.
 :::
 
-In addition to the effect lambda `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda, if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
+In addition to the effect lambda `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side-effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda, if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
 
 In the sample code below, when the first render is committed, Litho will invoke the `useEffect` lambda, subscribing to the current `userId`. On subsequent commits, **if `userId` or `store` changed**, Litho invokes the cleanup callback to unsubscribe the existing subscription (if there is one) and then subscribe to the current `userId` and `store`.
 
@@ -71,7 +71,7 @@ useEffect {
 }
 ```
 
-### Unconditionally triggering side effects
+### Unconditionally triggering side-effects
 
 In rare cases you may need to pass `Any()` as a dependency arg. In such a case, **on each** new commit, the cleanup for the previous `useEffect` call is invoked, followed by the current `useEffect` call.
 

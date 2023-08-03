@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-**Definition**: *Hooks* are special functions that can persist state across renders and perform side effects[^1] . They begin with `use` and may only be called from `render()` and other hooks. The API is heavily inspired by [React Hooks](https://reactjs.org/docs/hooks-intro.html).
+**Definition**: *Hooks* are special functions that can persist state across renders and perform side-effects[^1] . They begin with `use` and may only be called from `render()` and other hooks. The API is heavily inspired by [React Hooks](https://reactjs.org/docs/hooks-intro.html).
 :::
 
 Hooks are Litho's way to enable components to persist state across renders and register for lifecycle events while remaining immutable. Litho has a suite of built in hooks whose docs you'll find in this section.
@@ -16,11 +16,11 @@ Hooks are Litho's way to enable components to persist state across renders and r
 As a brief introduction, some of the most common ones you'll encounter are:
 
 - **[useState](/mainconcepts/use-state.mdx)** - keeps track of a variable across renders.
-- **[useEffect](/mainconcepts/use-effect.mdx)** - lets a component perform side effects when it's attached or detached from the tree.
+- **[useEffect](/mainconcepts/use-effect.mdx)** - lets a component perform side-effects when it's attached or detached from the tree.
 - **[useRef](/mainconcepts/use-ref.mdx)** - keeps track of a mutable reference across renders.
 - **[useCached](/mainconcepts/use-cached.mdx)** - keeps track of a cached value that is expensive to calculate.
 
-[^1]: Side effects are operations that affect your component. Side effects include operations such as fetch requests, subscriptions, using timers, and manually changing the DOM. Side effects cannot occur during rendering. For more information on side effects, see the [useEffect](use-effect.mdx) hook.
+[^1]: Side-effects are operations that affect your component. Side-effects include operations such as fetch requests, subscriptions, using timers, and manually changing the DOM. Side-effects cannot occur during rendering. For more information on side-effects, see the [useEffect](use-effect.mdx) hook.
 
 ### Hooks in Practice
 

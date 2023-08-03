@@ -12,7 +12,7 @@ When using Litho, the component hierarchy is determined by what is returned by t
 tree of components. Litho uses reconciliation to determine which components should be re-created and which can be re-used (read cloned).
 
 In essence, this means Litho will not call (most) lifecycle methods of components which were unaffected by the update. Reconciliation enforces the requirement that component specs must
-be immutable and should not rely on side effects to achieve any desired behaviour.
+be immutable and should not rely on side-effects to achieve any desired behaviour.
 
 :::note
 As of December 2020, reconciliation is only implemented for state updates.

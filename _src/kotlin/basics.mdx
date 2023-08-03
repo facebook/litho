@@ -17,11 +17,11 @@ This page details how to convert existing components with `@LayoutSpecs` to Kotl
 For information regarding the main Components and Props, refer to the [Components and Props](../tutorial/first-components.md) page of the Tutorial.
 :::
 
-## Code generation
+## `@OnCreateLayout`
 
-The most fundamental change in the Litho Kotlin API is that code generation is no longer used. This means there's no need to mark components as `@LayoutSpecs` or declare any other annotations in the class. Remember to leave off the 'Spec' at the end of the component name!
+The most fundamental change in the Litho Kotlin API is that code generation is no longer used. This means there's no need to mark components as `@LayoutSpec`s or declare any other annotations in the class. Remember to leave off the 'Spec' at the end of the component name!
 
-The static method marked with `@OnCreateLayout` is replaced with a `render` function override, which returns what the component should render.
+The static method marked with `@OnCreateLayout` is replaced with a `render()` function override, which returns what the component should render.
 
 ```kotlin
 import com.facebook.litho.Component
@@ -75,7 +75,7 @@ A *Style* object is an immutable, linked-list of properties to apply to a compon
 
 Common props, such as `margin`, `clickHandler`, and `alpha`, are now set using **Style**.
 
-In the Java Spec API, these common props could be applied to any component on their builder. However, in the Kotlin API, a component must declare it accepts a `Style` as a prop. It can then pass that `Style` object to one of the Components it renders to.
+In the Spec API, these common props could be applied to any component on their builder. However, in the Kotlin API, a component must declare it accepts a `Style` as a prop. It can then pass that `Style` object to one of the Components it renders to.
 
 The following Java and Kotlin code is functionally equivalent and results in `OuterTextComponent` resolving to a `Text` component which has alpha, padding, and a margin set on it:
 
@@ -83,8 +83,8 @@ The following Java and Kotlin code is functionally equivalent and results in `Ou
   groupId="children_style"
   defaultValue="kotlin_children_style"
   values={[
-    {label: 'Kotlin', value: 'kotlin_children_style'},
-    {label: 'Java', value: 'java_children_style'},
+    {label: 'Kotlin API', value: 'kotlin_children_style'},
+    {label: 'Spec API', value: 'java_children_style'},
   ]}>
   <TabItem value="kotlin_children_style">
 
@@ -119,7 +119,7 @@ To pass down a `Style` from a Java class to a Kotlin `KComponent`, use `StyleCom
 ```java file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/OuterStyleComponentSpec.java start=start_combine_style_outer_example end=end_combine_style_outer_example
 ```
 
-For the other way around (passing `style` from Kotlin code to a Java `Component Spec`), use `.kotlinStyle()`, which is equivalent to setting all the common props the Style defines:
+For the other way around, passing `style` from Kotlin code to a Java `Component Spec`, use `.kotlinStyle()`, which is equivalent to setting all the common props the Style defines:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/ChildStylesExample.kt start=start_combine_java_kotlin_style_example end=end_combine_java_kotlin_style_example
 ```

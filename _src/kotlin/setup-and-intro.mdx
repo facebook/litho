@@ -14,17 +14,17 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 ## Introduction
 
-The 'Migrating to the Kotlin API section' of the Litho docs is aimed at Developers already familiar with the general Java Spec API and Litho concepts. Within its pages, comparisons are made between the use of the Java Spec API and the Kotlin API.
+The 'Migrating to the Kotlin API' section of Litho docs is aimed at developers already familiar with the old Spec API and Litho concepts. Within its pages comparisons are made between the use of the Spec API and the Kotlin API.
 
 Before continuing, consider the following options:
 
 * If you aren't familiar with Litho, start with the [Tutorial](../tutorial/overview.md) pages then return here later.
 * If you're new to the Litho Kotlin API, start with [KComponent and Props](basics.mdx).
-* If you just want a reference comparing features in the Spec API to their equivalents in Kotlin, then you'll find the [Cheatsheet](cheatsheet-primitives.mdx) useful.
+* If you just want a reference comparing features in the Spec API to their equivalents in the Kotlin API, then you'll find the [Cheatsheet](cheatsheet-primitives.mdx) useful.
 
 ## Setup - Adding Dependencies
 
-To use the Kotlin Litho API, you'll need to add the following dependencies into your BUCK file:
+To use the Litho Kotlin API, you'll need to add the following dependencies into your BUCK file:
 
 ```python title="BUCK"
 deps = [
@@ -34,5 +34,5 @@ deps = [
 ```
 
 :::note
-If you're getting an `unresolved supertypes: com.facebook.litho.KComponent` or `incompatible types: com.facebook.<Your new KComponent> cannot be converted to com.facebook.litho.Component` error, be sure to also add the `litho_core_kotlin` dependency in the BUCK file for the module that is using the Kotlin component.
+If you're getting an "unresolved supertypes: com.facebook.litho.KComponent" or "incompatible types: com.facebook.&lt;Your new KComponent&gt; cannot be converted to com.facebook.litho.Component" error, be sure to also add the `litho_core_kotlin` dependency in the BUCK file for the module that is using the Kotlin component.
 :::
