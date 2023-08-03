@@ -209,12 +209,16 @@ module.exports = {
             from: ['/docs/transition-all-layout'],
           },
           {
-            to: '/docs/animations/transition-definitions',
-            from: ['/docs/transition-definitions'],
+            to: '/docs/codegen/transition-definitions',
+            from: ['/docs/transition-definitions', '/docs/animations/transition-definitions'],
           },
           {
             to: '/docs/animations/transition-key-types',
             from: ['/docs/transition-key-types'],
+          },
+          {
+            to: '/docs/codegen/coding-style',
+            from: ['/docs/best-practices/coding-style'],
           },
         ],
       },

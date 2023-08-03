@@ -70,22 +70,15 @@ module.exports = {
       'kotlin/lazycollections/lazycollections-interactions',
       'kotlin/lazycollections/lazycollections-working-with-updates',
     ],
-    // TODO: Kotlin-ify this section
     'Animations': [
       'animations/transition-basics',
       'animations/transition-types',
       'animations/transition-all-layout',
       'animations/transition-choreography',
       'animations/dynamic-props-bindto',
-      {
-        'Advanced': [
-          'animations/transition-definitions',
-          'animations/transition-key-types',
-        ],
-      },
+      'animations/transition-key-types',
     ],
     'Visibility': [
-      // TODO: Kotlin-ify
       'mainconcepts/coordinate-state-actions/visibility-handling',
     ],
     'Accessibility': ['accessibility/accessibility'],
@@ -108,6 +101,7 @@ module.exports = {
       'codegen/layout-specs',
       'codegen/mount-specs',
       'codegen/dynamic-props',
+      'codegen/transition-definitions',
       'codegen/accessibility-overview',
       {
         'Sections API': [
@@ -136,6 +130,7 @@ module.exports = {
           'codegen/trigger-events',
         ],
       },
+      'codegen/coding-style',
     ],
     'Migrating to the Kotlin API': [
       'kotlin/kotlin-intro',
@@ -173,7 +168,6 @@ module.exports = {
       'best-practices/props-vs-state',
       'mainconcepts/coordinate-state-actions/hoisting-state',
       'mainconcepts/coordinate-state-actions/communicating-between-components',
-      'best-practices/coding-style',
     ],
     ...fbInternalOnly({
       'Contributing to the Documentation': [
