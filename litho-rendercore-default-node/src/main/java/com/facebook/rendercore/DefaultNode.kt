@@ -47,17 +47,21 @@ open class DefaultNode @JvmOverloads constructor(val layoutParams: YogaProps? = 
       widthSpec: Int,
       heightSpec: Int
   ): LayoutResult {
-    val renderUnit = getRenderUnit(context) ?: return emptyLayout
-    return MountableLayoutResult(
-        renderUnit,
-        widthSpec,
-        heightSpec,
-        if (View.MeasureSpec.getMode(widthSpec) == View.MeasureSpec.EXACTLY)
-            View.MeasureSpec.getSize(widthSpec)
-        else 0,
-        if (View.MeasureSpec.getMode(heightSpec) == View.MeasureSpec.EXACTLY)
-            View.MeasureSpec.getSize(heightSpec)
-        else 0)
+    val renderUnit = getRenderUnit(context)
+    return if (renderUnit != null) {
+      MountableLayoutResult(
+          renderUnit,
+          widthSpec,
+          heightSpec,
+          if (View.MeasureSpec.getMode(widthSpec) == View.MeasureSpec.EXACTLY)
+              View.MeasureSpec.getSize(widthSpec)
+          else 0,
+          if (View.MeasureSpec.getMode(heightSpec) == View.MeasureSpec.EXACTLY)
+              View.MeasureSpec.getSize(heightSpec)
+          else 0)
+    } else {
+      emptyLayout
+    }
   }
 
   companion object {

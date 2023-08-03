@@ -27,6 +27,10 @@ android {
     // We're on an old version of Robolectric which requires this, sadly.
     useLibrary 'org.apache.http.legacy'
 
+    buildFeatures {
+        buildConfig = false
+    }
+
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }

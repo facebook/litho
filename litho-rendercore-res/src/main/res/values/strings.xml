@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="accessibility_link_role" description="Accessibility text used by the screen reader to describe the element to the user when they focus on a text link.">Link</string>
+</resources>

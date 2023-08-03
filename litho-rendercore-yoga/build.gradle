@@ -22,20 +22,12 @@ android {
 
     useLibrary 'org.apache.http.legacy'
 
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
+    buildFeatures {
+        buildConfig = false
     }
 
-    buildTypes {
-        def internalBuildField = 'IS_INTERNAL_BUILD'
-
-        debug {
-            buildConfigField 'boolean', internalBuildField, 'true'
-        }
-
-        release {
-            buildConfigField 'boolean', internalBuildField, 'false'
-        }
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
     }
 
     // TODO(#62): Re-enable abort on error.

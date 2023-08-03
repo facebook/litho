@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    useLibrary 'org.apache.http.legacy'
+    targetCompatibility = targetCompatibilityVersion
+    sourceCompatibility = sourceCompatibilityVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+
+        multiDexEnabled true
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     // TODO(#62): Re-enable abort on error.
     lintOptions {
         abortOnError false
@@ -37,27 +39,13 @@ android {
 }
 
 dependencies {
-    api project(':litho-rendercore')
+    implementation deps.soloader
+    implementation project(':litho-rendercore')
+    implementation project(':litho-rendercore-yoga')
+    implementation project(':litho-rendercore-default-node')
+    implementation project(':litho-rendercore-text')
+    implementation project(':litho-rendercore-default-text-node')
 
-    // Annotations
-    compileOnly deps.jsr305
-    implementation deps.inferAnnotations
-
-    compileOnly deps.proguardAnnotations
-
-    // Android Support Library
-    compileOnly deps.supportAnnotations
-    implementation deps.supportCore
-
-    // Testing deps
-    implementation deps.junit
-    implementation deps.jsr305
-    implementation deps.assertjCore
-    implementation deps.guava
-    implementation(deps.robolectric) {
-        exclude group: "com.google.guava", module: "guava"
-    }
-    implementation deps.supportTestCore
+    // Support
+    implementation deps.supportAppCompat
 }
-
-apply plugin: "com.vanniktech.maven.publish"

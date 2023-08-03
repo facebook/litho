@@ -15,21 +15,35 @@
  */
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+project.group = GROUP
+version = VERSION_NAME
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
+    // We're on an old version of Robolectric which requires this, sadly.
     useLibrary 'org.apache.http.legacy'
+
+    buildFeatures {
+        buildConfig = false
+    }
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    buildTypes {
+
+        debug {
+        }
+
+        release {
+        }
     }
+
     // TODO(#62): Re-enable abort on error.
     lintOptions {
         abortOnError false
@@ -38,26 +52,11 @@ android {
 
 dependencies {
     api project(':litho-rendercore')
+    api project(':litho-rendercore-default-node')
+    implementation project(':litho-rendercore-text')
 
-    // Annotations
-    compileOnly deps.jsr305
-    implementation deps.inferAnnotations
-
-    compileOnly deps.proguardAnnotations
-
-    // Android Support Library
     compileOnly deps.supportAnnotations
     implementation deps.supportCore
-
-    // Testing deps
-    implementation deps.junit
-    implementation deps.jsr305
-    implementation deps.assertjCore
-    implementation deps.guava
-    implementation(deps.robolectric) {
-        exclude group: "com.google.guava", module: "guava"
-    }
-    implementation deps.supportTestCore
 }
 
 apply plugin: "com.vanniktech.maven.publish"
