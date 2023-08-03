@@ -60,7 +60,7 @@ We can rewrite our sample code to look like this:
 
 ```
 
-Our method is now completely thread safe as it never modifies any internal state of `SomeExampleClass`. In this example, `getThisOrThat()` is what's called a 'pure function' as its results only depend on the inputs and it doesn't have any side effect.
+Our method is now completely thread safe as it never modifies any internal state of `SomeExampleClass`. In this example, `getThisOrThat()` is what's called a 'pure function' as its results only depend on the inputs and it doesn't have any side-effect.
 
 In Litho, we try to apply exactly the same concepts to layout computation. A `Component` is an immutable object that contains all the inputs for the layout function in form of `@Prop` and `@State` values. This also explains why we need `@Prop` and `@State` to be immutable. If they weren't, we would lose the property of having layout as a 'pure function'.
 

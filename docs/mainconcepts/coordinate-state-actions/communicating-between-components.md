@@ -105,5 +105,5 @@ To send events from a component to a listener outside of the Litho hierarchy, de
 ```
 
 :::tip
-Keep in mind that some lifecycle methods of Litho components can be invoked on background threads, so invoking callbacks from these methods might not be thread-safe if the callback produces side effects.
+Keep in mind that some lifecycle methods of Litho components can be invoked on background threads, so invoking callbacks from these methods might not be thread-safe if the callback produces side-effects.
 :::
