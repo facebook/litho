@@ -164,8 +164,6 @@ abstract class PrimitiveComponent : Component() {
   final override fun isEquivalentTo(other: Component?, shouldCompareCommonProps: Boolean) =
       super.isEquivalentTo(other, shouldCompareCommonProps)
 
-  final override fun canResolve(): Boolean = false
-
   final override fun getSimpleName(): String = super.getSimpleName()
 
   final override fun isPureRender(): Boolean = true

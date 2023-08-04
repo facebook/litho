@@ -286,7 +286,9 @@ private constructor(
     lithoView?.forceRelayout()
   }
 
-  fun canResolve(): Boolean = component.canResolve()
+  fun canResolve(): Boolean {
+    return component is SpecGeneratedComponent && (component as SpecGeneratedComponent).canResolve()
+  }
 
   val mountedContent: Any?
     get() {

@@ -816,14 +816,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return component;
   }
 
-  /**
-   * Indicate that this component implements its own {@link #resolve(LayoutStateContext,
-   * ComponentContext)} logic instead of going through {@link #render(ComponentContext)}.
-   */
-  boolean canResolve() {
-    return false;
-  }
-
   // Get an id that is identical across cloned instances, but otherwise unique
   final int getId() {
     return mId;

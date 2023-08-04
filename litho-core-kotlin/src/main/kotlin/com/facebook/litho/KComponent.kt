@@ -108,8 +108,6 @@ abstract class KComponent : Component() {
 
   final override fun canMeasure() = false
 
-  final override fun canResolve() = false
-
   final override fun getMountType() = super.getMountType()
 
   final override fun getSimpleName(): String = super.getSimpleName()

@@ -101,7 +101,8 @@ public class TestLayoutState {
       return null;
     }
 
-    if (component.canResolve()) {
+    if (component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).canResolve()) {
       if (component instanceof Wrapper) {
         return createImmediateLayout(resolveStateContext, c, widthSpec, heightSpec, component);
       }
@@ -217,7 +218,8 @@ public class TestLayoutState {
       } else {
         return newImmediateLayoutBuilder(resolveStateContext, c, widthSpec, heightSpec, delegate);
       }
-    } else if (component.canResolve()) {
+    } else if (component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
       if (component instanceof Column || component instanceof Row) {
         node = resolve(resolveStateContext, c, widthSpec, heightSpec, component);
@@ -283,7 +285,8 @@ public class TestLayoutState {
       } else {
         node = newImmediateLayoutBuilder(resolveStateContext, c, widthSpec, heightSpec, delegate);
       }
-    } else if (component.canResolve()) {
+    } else if (component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).canResolve()) {
       node = create(resolveStateContext, c, widthSpec, heightSpec, component);
     } else {
 
@@ -291,12 +294,9 @@ public class TestLayoutState {
     }
 
     if (node != null) {
-      Component testComponent = new TestComponent(component);
+      SpecGeneratedComponent testComponent = new TestComponent(component);
       ScopedComponentInfo scopedComponentInfo = new ScopedComponentInfo(testComponent, c, null);
-      final CommonProps commonProps =
-          (testComponent instanceof SpecGeneratedComponent)
-              ? ((SpecGeneratedComponent) testComponent).getCommonProps()
-              : null;
+      final CommonProps commonProps = testComponent.getCommonProps();
       scopedComponentInfo.setCommonProps(commonProps);
       node.appendComponent(scopedComponentInfo);
     }
@@ -358,7 +358,8 @@ public class TestLayoutState {
       }
 
       // If the component can resolve itself resolve it.
-      else if (component.canResolve()) {
+      else if (component instanceof SpecGeneratedComponent
+          && ((SpecGeneratedComponent) component).canResolve()) {
 
         // Resolve the component into an InternalNode.
         if (component instanceof Column || component instanceof Row) {
