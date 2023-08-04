@@ -35,11 +35,11 @@ import com.facebook.rendercore.RenderUnit;
  * <p>Implementations of MountExtension may also implement extra extension callbacks, to get
  * notified when events for such callbacks are triggered.
  *
+ * @see GapWorkerCallbacks
  * @see VisibleBoundsCallbacks
  */
 @OkToExtend
-public abstract class MountExtension<Input, State>
-    implements GapWorkerCallbacks<State>, OnItemCallbacks<State> {
+public abstract class MountExtension<Input, State> implements OnItemCallbacks<State> {
 
   public final ExtensionState<State> createExtensionState(final MountDelegate mountDelegate) {
     return new ExtensionState<>(this, mountDelegate, createState());
@@ -51,21 +51,6 @@ public abstract class MountExtension<Input, State>
   public boolean canPreventMount() {
     return false;
   }
-
-  @Override
-  public void onRegisterForPremount(
-      final ExtensionState<State> extensionState, final @Nullable Long frameTimeMs) {}
-
-  @Override
-  public void onUnregisterForPremount(ExtensionState<State> extensionState) {}
-
-  @Override
-  public boolean hasItemToMount(final ExtensionState<State> extensionState) {
-    return false;
-  }
-
-  @Override
-  public void premountNext(final ExtensionState<State> extensionState) {}
 
   /**
    * Called for setting up input on the extension before mounting.

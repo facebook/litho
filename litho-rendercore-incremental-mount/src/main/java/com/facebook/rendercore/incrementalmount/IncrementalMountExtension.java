@@ -29,6 +29,7 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.GapWorkerCallbacks;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
@@ -41,7 +42,8 @@ import java.util.Set;
 /** Extension for performing incremental mount. */
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState>
-    implements VisibleBoundsCallbacks<IncrementalMountExtensionState> {
+    implements VisibleBoundsCallbacks<IncrementalMountExtensionState>,
+        GapWorkerCallbacks<IncrementalMountExtensionState> {
 
   private static final IncrementalMountExtension sInstance = new IncrementalMountExtension(false);
   private static final IncrementalMountExtension sGapWorkerInstance =
