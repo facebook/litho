@@ -283,11 +283,11 @@ public class MountDelegate {
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       ExtensionState state = mExtensionStates.get(i);
-      Object extension = state.getExtension();
+      MountExtension extension = state.getExtension();
       if (extension instanceof OnItemCallbacks) {
         final boolean isTracing = tracer.isTracing();
         if (isTracing) {
-          tracer.beginSection("Extension:onBindItem " + getExtensionName(extension));
+          tracer.beginSection("Extension:onBindItem " + extension.getName());
         }
         ((OnItemCallbacks) extension).onBindItem(state, renderUnit, content, layoutData);
         if (isTracing) {
@@ -308,11 +308,11 @@ public class MountDelegate {
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       ExtensionState state = mExtensionStates.get(i);
-      Object extension = state.getExtension();
+      MountExtension extension = state.getExtension();
       if (extension instanceof OnItemCallbacks) {
         final boolean isTracing = tracer.isTracing();
         if (isTracing) {
-          tracer.beginSection("Extension:onUnbindItem " + getExtensionName(extension));
+          tracer.beginSection("Extension:onUnbindItem " + extension.getName());
         }
         ((OnItemCallbacks) extension).onUnbindItem(state, renderUnit, content, layoutData);
         if (isTracing) {
@@ -338,12 +338,12 @@ public class MountDelegate {
     List<ExtensionState> extensionStatesToUpdate = null;
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       final ExtensionState state = mExtensionStates.get(i);
-      final Object extension = state.getExtension();
+      final MountExtension extension = state.getExtension();
       if (extension instanceof OnItemCallbacks) {
         final boolean shouldUpdate;
         final boolean isTracing = tracer.isTracing();
         if (isTracing) {
-          tracer.beginSection("Extension:shouldUpdateItem " + getExtensionName(extension));
+          tracer.beginSection("Extension:shouldUpdateItem " + extension.getName());
         }
         shouldUpdate =
             ((OnItemCallbacks) extension)
@@ -376,11 +376,11 @@ public class MountDelegate {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         ExtensionState state = extensionStatesToUpdate.get(i);
-        Object extension = state.getExtension();
+        MountExtension extension = state.getExtension();
         if (extension instanceof OnItemCallbacks) {
           final boolean isTracing = tracer.isTracing();
           if (isTracing) {
-            tracer.beginSection("Extension:onUnbindItem " + getExtensionName(extension));
+            tracer.beginSection("Extension:onUnbindItem " + extension.getName());
           }
           ((OnItemCallbacks) extension)
               .onUnbindItem(state, previousRenderUnit, content, previousLayoutData);
@@ -404,11 +404,11 @@ public class MountDelegate {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         ExtensionState state = extensionStatesToUpdate.get(i);
-        Object extension = state.getExtension();
+        MountExtension extension = state.getExtension();
         if (extension instanceof OnItemCallbacks) {
           final boolean isTracing = tracer.isTracing();
           if (isTracing) {
-            tracer.beginSection("Extension:onUnmountItem " + getExtensionName(extension));
+            tracer.beginSection("Extension:onUnmountItem " + extension.getName());
           }
           ((OnItemCallbacks) extension)
               .onUnmountItem(state, previousRenderUnit, content, previousLayoutData);
@@ -432,11 +432,11 @@ public class MountDelegate {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         final ExtensionState state = extensionStatesToUpdate.get(i);
-        final Object extension = state.getExtension();
+        final MountExtension extension = state.getExtension();
         if (extension instanceof OnItemCallbacks) {
           final boolean isTracing = tracer.isTracing();
           if (isTracing) {
-            tracer.beginSection("Extension:onMountItem " + getExtensionName(extension));
+            tracer.beginSection("Extension:onMountItem " + extension.getName());
           }
           ((OnItemCallbacks) extension).onMountItem(state, nextRenderUnit, content, nextLayoutData);
           if (isTracing) {
@@ -459,11 +459,11 @@ public class MountDelegate {
       final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         ExtensionState state = extensionStatesToUpdate.get(i);
-        Object extension = state.getExtension();
+        MountExtension extension = state.getExtension();
         if (extension instanceof OnItemCallbacks) {
           final boolean isTracing = tracer.isTracing();
           if (isTracing) {
-            tracer.beginSection("Extension:onBindItem " + getExtensionName(extension));
+            tracer.beginSection("Extension:onBindItem " + extension.getName());
           }
           ((OnItemCallbacks) extension).onBindItem(state, nextRenderUnit, content, nextLayoutData);
           if (isTracing) {
@@ -483,11 +483,11 @@ public class MountDelegate {
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       final ExtensionState state = mExtensionStates.get(i);
-      final Object extension = state.getExtension();
+      final MountExtension extension = state.getExtension();
       if (extension instanceof OnItemCallbacks) {
         final boolean isTracing = tracer.isTracing();
         if (isTracing) {
-          tracer.beginSection("Extension:onMountItem " + getExtensionName(extension));
+          tracer.beginSection("Extension:onMountItem " + extension.getName());
         }
         ((OnItemCallbacks) extension).onMountItem(state, renderUnit, content, layoutData);
         if (isTracing) {
@@ -508,11 +508,11 @@ public class MountDelegate {
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       ExtensionState state = mExtensionStates.get(i);
-      Object extension = state.getExtension();
+      MountExtension extension = state.getExtension();
       if (extension instanceof OnItemCallbacks) {
         final boolean isTracing = tracer.isTracing();
         if (isTracing) {
-          tracer.beginSection("Extension:onUnmountItem " + getExtensionName(extension));
+          tracer.beginSection("Extension:onUnmountItem " + extension.getName());
         }
         ((OnItemCallbacks) extension).onUnmountItem(state, renderUnit, content, layoutData);
         if (isTracing) {
@@ -529,11 +529,11 @@ public class MountDelegate {
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       ExtensionState state = mExtensionStates.get(i);
-      Object extension = state.getExtension();
+      MountExtension extension = state.getExtension();
       if (extension instanceof OnItemCallbacks) {
         final boolean isTracing = tracer.isTracing();
         if (isTracing) {
-          tracer.beginSection("Extension:onBoundsAppliedToItem " + getExtensionName(extension));
+          tracer.beginSection("Extension:onBoundsAppliedToItem " + extension.getName());
         }
         ((OnItemCallbacks) extension)
             .onBoundsAppliedToItem(state, node.getRenderUnit(), content, node.getLayoutData());
@@ -572,7 +572,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      Object extension = mExtensionStates.get(i).getExtension();
+      MountExtension extension = mExtensionStates.get(i).getExtension();
       if (extension instanceof OnItemCallbacks) {
         ((OnItemCallbacks) extension)
             .beforeMountItem(mExtensionStates.get(i), renderTreeNode, index);
@@ -736,13 +736,5 @@ public class MountDelegate {
     if (mMountStateListener != null) {
       mMountStateListener.onRenderTreeUpdated(host);
     }
-  }
-
-  private static String getExtensionName(Object extension) {
-    // This API is primarily used for tracing, and the section names have a char limit of 127.
-    // If the class name exceeds that it will be replace by the simple name.
-    // In a release build the class name will be minified, so it is unlikely to hit the limit.
-    final String name = extension.getClass().getName();
-    return name.length() > 80 ? extension.getClass().getSimpleName() : "<cls>" + name + "</cls>";
   }
 }
