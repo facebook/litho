@@ -25,8 +25,8 @@ litho_android_library(
         LITHO_TEXTLAYOUTBUILDER_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
-        "//fbandroid/java/com/facebook/proguard/annotations:annotations",
         "//fbandroid/android_res/rendercore:rendercore",
+        "//fbandroid/java/com/facebook/proguard/annotations:annotations",
     ],
 )
 
