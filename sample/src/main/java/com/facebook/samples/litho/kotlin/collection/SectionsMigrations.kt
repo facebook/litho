@@ -32,10 +32,12 @@ import com.facebook.litho.widget.collection.LazyList
 
 // start_simple_group
 class SimpleGroupMigration(private val title: String) : KComponent() {
-  override fun ComponentScope.render(): Component = LazyList {
-    // Add SingleComponentSection components as children:
-    child(Text(title))
-    child(MyComponent())
+  override fun ComponentScope.render(): Component {
+    return LazyList {
+      // Add SingleComponentSection components as children:
+      child(Text(title))
+      child(MyComponent())
+    }
   }
 }
 // end_simple_group
@@ -43,10 +45,16 @@ class SimpleGroupMigration(private val title: String) : KComponent() {
 class Model(val id: String, val field1: String, val field2: String)
 
 // start_list
-class ListMigration(private val data: List<Model>) : KComponent() {
-  override fun ComponentScope.render(): Component = LazyList {
-    // Add DataDiffSection contents as children with ids
-    children(items = data, id = { it.id }) { Text("${it.field1} ${it.field2}") }
+class ListMigration(private val models: List<Model>) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return LazyList {
+      // Add DataDiffSection contents as children with ids
+      children(items = models, id = { it.id }) { model ->
+        // highlight-start
+        Text("${model.field1} ${model.field2}")
+        // highlight-end
+      }
+    }
   }
 }
 // end_list
@@ -55,6 +63,7 @@ class ListMigration(private val data: List<Model>) : KComponent() {
 class EventHandlerMigration : KComponent() {
   override fun ComponentScope.render(): Component {
     val onClick = useCallback { _: ClickEvent -> println("Hello World!") }
+
     return LazyList {
       // Using Style.onClick(..)
       child(Text("Say Hello", style = Style.onClick(action = onClick)))
@@ -71,6 +80,7 @@ class StateMigration : KComponent() {
   override fun ComponentScope.render(): Component {
     val counter = useState { 0 }
     val onClick = useCallback { _: ClickEvent -> counter.update { it + 1 } }
+
     return LazyList {
       child(Text("Increment ${counter.value}", style = Style.onClick(action = onClick)))
     }

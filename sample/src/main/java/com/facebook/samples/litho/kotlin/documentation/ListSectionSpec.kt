@@ -40,11 +40,11 @@ class Model(val id: String, val field1: String, val field2: String)
 object ListSectionSpec {
 
   @OnCreateChildren
-  fun onCreateChildren(c: SectionContext, @Prop data: List<Model>): Children =
+  fun onCreateChildren(c: SectionContext, @Prop models: List<Model>): Children =
       Children.create()
           .child(
               DataDiffSection.create<Model>(c)
-                  .data(data)
+                  .data(models)
                   .renderEventHandler(ListSection.onRenderItem(c))
                   .onCheckIsSameItemEventHandler(ListSection.onCheckIsSameItem(c))
                   .onCheckIsSameContentEventHandler(ListSection.onCheckIsSameContent(c)))
@@ -66,7 +66,7 @@ object ListSectionSpec {
   ): Boolean =
       // highlight-start
       previousItem.id == nextItem.id
-  // highlight-end
+      // highlight-end
 
   @OnEvent(OnCheckIsSameContentEvent::class)
   fun onCheckIsSameContent(

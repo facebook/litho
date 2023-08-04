@@ -139,14 +139,9 @@ module.exports = {
       'kotlin/kotlin-flexbox-containers',
       'kotlin/event-handling',
       'kotlin/migrating-from-mountspecs-to-primitives',
+      'kotlin/lazycollections/lazycollections-sections-migration',
+      ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
       'kotlin/kotlin-api-cheatsheet-primitives',
-      {
-        'Lazy Collections' : [
-
-         'kotlin/lazycollections/lazycollections-sections-migration',
-         ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
-        ],
-      },
     ],
     // TODO: clean this section up, add intro page
     'Tooling': [
