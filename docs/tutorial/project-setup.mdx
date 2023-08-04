@@ -28,11 +28,15 @@ dependencies {
 }
 `} />
 
-## 2. Using the Annotation Processor
+## 2. Using the Annotation Processor (only for Spec API)
 
-The Annotation Processor is a part of the application build/compile process that generates code by reading annotations (such as @Override and @SuppressWanings).
+:::info
+If you don't plan to create new Spec-based components and only will work with new Kotlin API, you don't need neither `kotlin-kapt` plugin nor `kapt 'com.facebook.litho:litho-processor:<version>'` dependency.
+:::
 
-In order to use your project's dependencies (from Step 2) with Annotation Processors, you need to apply the `kotlin-kapt` plugin at the top of your app's `build.gradle` file:
+The Annotation Processor is a part of the application build/compile process that generates code by reading annotations (such as `@Override` and `@SuppressWarnings`).
+The old Litho Spec API relies on annotation processing to generate real components implementations based on developer-written Specs.
+In order to enable Litho annotation processors in your project you need to apply the `kotlin-kapt` plugin at the top of your app's `build.gradle` file:
 
 ```groovy
 apply plugin: 'kotlin-kapt'
