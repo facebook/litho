@@ -26,6 +26,7 @@ import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
@@ -226,7 +227,8 @@ public class RenderCoreExtensionTest {
     }
   }
 
-  public static class TrackingMountExtension extends MountExtension {
+  public static class TrackingMountExtension extends MountExtension
+      implements VisibleBoundsCallbacks {
 
     int beforeMount;
     int afterMount;

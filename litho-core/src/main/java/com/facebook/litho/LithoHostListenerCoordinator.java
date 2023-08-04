@@ -120,7 +120,7 @@ public class LithoHostListenerCoordinator {
               mVisibilityExtensionState, localVisibleRect, true);
         }
       } else {
-        Object extension = mVisibilityExtensionState.getExtension();
+        MountExtension extension = mVisibilityExtensionState.getExtension();
         if (extension instanceof VisibleBoundsCallbacks) {
           ((VisibleBoundsCallbacks) extension)
               .onVisibleBoundsChanged(mVisibilityExtensionState, localVisibleRect);

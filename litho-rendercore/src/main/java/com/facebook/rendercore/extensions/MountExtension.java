@@ -31,10 +31,15 @@ import com.facebook.rendercore.RenderUnit;
  * mounting behaviour. MountState will rely on the extensions registered on the MountDelegate to
  * decide what to mount or unmount. If no extensions are registered on the MountState's delegate, it
  * falls back to its default behaviour.
+ *
+ * <p>Implementations of MountExtension may also implement extra extension callbacks, to get
+ * notified when events for such callbacks are triggered.
+ *
+ * @see VisibleBoundsCallbacks
  */
 @OkToExtend
 public abstract class MountExtension<Input, State>
-    implements GapWorkerCallbacks<State>, OnItemCallbacks<State>, VisibleBoundsCallbacks<State> {
+    implements GapWorkerCallbacks<State>, OnItemCallbacks<State> {
 
   public final ExtensionState<State> createExtensionState(final MountDelegate mountDelegate) {
     return new ExtensionState<>(this, mountDelegate, createState());
@@ -75,11 +80,6 @@ public abstract class MountExtension<Input, State>
 
   /** Called immediately after mounting. */
   public void afterMount(final ExtensionState<State> extensionState) {}
-
-  /** Called when the visible bounds of the Host change. */
-  @Override
-  public void onVisibleBoundsChanged(
-      final ExtensionState<State> extensionState, final @Nullable Rect localVisibleRect) {}
 
   /** Called after all the Host's children have been unmounted. */
   public void onUnmount(ExtensionState<State> extensionState) {}

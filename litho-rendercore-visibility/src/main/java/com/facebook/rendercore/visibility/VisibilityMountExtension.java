@@ -37,6 +37,7 @@ import com.facebook.rendercore.debug.DebugEvent;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +46,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
-    extends MountExtension<Input, VisibilityMountExtension.VisibilityMountExtensionState> {
+    extends MountExtension<Input, VisibilityMountExtension.VisibilityMountExtensionState>
+    implements VisibleBoundsCallbacks<VisibilityMountExtension.VisibilityMountExtensionState> {
 
   private static final VisibilityMountExtension sInstance = new VisibilityMountExtension();
   private static final boolean IS_JELLYBEAN_OR_HIGHER =

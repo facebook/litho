@@ -198,7 +198,7 @@ public class MountDelegate {
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       ExtensionState state = mExtensionStates.get(i);
-      Object extension = state.getExtension();
+      MountExtension extension = state.getExtension();
       if (extension instanceof VisibleBoundsCallbacks) {
         ((VisibleBoundsCallbacks) extension).onVisibleBoundsChanged(state, rect);
       }

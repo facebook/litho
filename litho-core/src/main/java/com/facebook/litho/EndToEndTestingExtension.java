@@ -75,9 +75,6 @@ public class EndToEndTestingExtension
   }
 
   @Override
-  public void onVisibleBoundsChanged(ExtensionState<Void> extensionState, Rect localVisibleRect) {}
-
-  @Override
   public void onUnmount(ExtensionState<Void> extensionState) {}
 
   @Override
