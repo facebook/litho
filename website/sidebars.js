@@ -141,7 +141,7 @@ module.exports = {
       'kotlin/migrating-from-mountspecs-to-primitives',
       'kotlin/lazycollections/lazycollections-sections-migration',
       ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
-      'kotlin/kotlin-api-cheatsheet-primitives',
+      'kotlin/kotlin-api-cheatsheet',
     ],
     // TODO: clean this section up, add intro page
     'Tooling': [

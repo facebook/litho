@@ -220,6 +220,10 @@ module.exports = {
             to: '/docs/codegen/coding-style',
             from: ['/docs/best-practices/coding-style'],
           },
+          {
+            to: '/docs/kotlin/kotlin-api-cheatsheet',
+            from: ['/docs/kotlin/kotlin-api-cheatsheet-primitives'],
+          },
         ],
       },
     ]
