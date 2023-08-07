@@ -66,7 +66,7 @@ object ListSectionSpec {
   ): Boolean =
       // highlight-start
       previousItem.id == nextItem.id
-      // highlight-end
+  // highlight-end
 
   @OnEvent(OnCheckIsSameContentEvent::class)
   fun onCheckIsSameContent(
