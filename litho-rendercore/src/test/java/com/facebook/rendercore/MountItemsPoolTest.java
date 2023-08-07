@@ -73,9 +73,12 @@ public class MountItemsPoolTest {
   @Test
   public void testPrefillMountContentPoolWithCustomPool() {
     final int prefillCount = 4;
-    final TestRenderUnit testRenderUnit = new TestRenderUnit(0, 2);
+    final int customPoolSize = 2;
+    final TestRenderUnit testRenderUnit = new TestRenderUnit(0, customPoolSize);
     MountItemsPool.prefillMountContentPool(mContext, prefillCount, testRenderUnit);
-    assertThat(testRenderUnit.getCreatedCount()).isEqualTo(prefillCount);
+    // it is "+ 1" because as soon as it tries to prefill a mount content that doesn't fill the
+    // pool, then we stop
+    assertThat(testRenderUnit.getCreatedCount()).isEqualTo(customPoolSize + 1);
 
     final TestRenderUnit testRenderUnitToAcquire = new TestRenderUnit(0, 2);
 

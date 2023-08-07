@@ -132,8 +132,11 @@ public class MountItemsPool {
 
     final ItemPool pool = getMountContentPool(context, poolableMountContent, poolSize);
     if (pool != null) {
+
       for (int i = 0; i < poolSize; i++) {
-        pool.release(poolableMountContent.createPoolableContent(context));
+        if (!pool.release(poolableMountContent.createPoolableContent(context))) {
+          break;
+        }
       }
     }
   }
