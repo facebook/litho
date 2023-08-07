@@ -98,7 +98,16 @@ import java.lang.annotation.RetentionPolicy;
  * @see InjectProp
  * @see State
  * @see Param
+ * @deprecated Use {@link com.facebook.litho.KComponent}s for new derived components instead of
+ *     {@code LayoutSpec}s. Specs should only be used in Java.
+ *     <p>
+ *     <p>If you're new to Kotlin API, read <a href="https://fblitho.com/docs/kotlin/kotlin-intro/">
+ *     Migrating to the Kotlin API docs</a>.
+ *     <p>If you're familiar with it, you can go straight to <a
+ *     href="https://fblitho.com/docs/kotlin/kotlin-api-cheatsheet/">the APIs matching
+ *     cheatsheet</a>.
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LayoutSpec {
 

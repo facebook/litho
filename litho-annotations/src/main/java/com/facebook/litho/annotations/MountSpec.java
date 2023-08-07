@@ -61,7 +61,18 @@ import java.lang.annotation.RetentionPolicy;
  *     myDrawable.setMyProp(prop);
  *   }
  * }</code></pre>
+ *
+ * @deprecated Use {@link com.facebook.litho.PrimitiveComponent}s for new bridged components instead
+ *     of {@code MountSpec}s. Specs should only be used in Java.
+ *     <p>
+ *     <p>For detailed information read <a
+ *     href="https://fblitho.com/docs/mainconcepts/primitivecomponents/overview/">PrimitiveComponents
+ *     docs</a>.
+ *     <p>For migration guide from MountSpecs to PrimitiveComponents read this: <a
+ *     href="https://fblitho.com/docs/kotlin/migrating-from-mountspecs-to-primitives/">Migrating
+ *     MountSpecs doc</a>.
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface MountSpec {
