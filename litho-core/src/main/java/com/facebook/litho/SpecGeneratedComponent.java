@@ -26,7 +26,9 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.View;
+import androidx.annotation.AttrRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import androidx.customview.widget.ExploreByTouchHelper;
@@ -404,6 +406,18 @@ public abstract class SpecGeneratedComponent extends Component
   protected @Nullable PrepareInterStagePropsContainer createPrepareInterStagePropsContainer() {
     return null;
   }
+
+  final void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    c.setDefStyle(defStyleAttr, defStyleRes);
+    onLoadStyle(c);
+    c.setDefStyle(0, 0);
+  }
+
+  final void loadStyle(ComponentContext c) {
+    onLoadStyle(c);
+  }
+
+  protected void onLoadStyle(ComponentContext c) {}
 
   protected void dispatchOnEnteredRange(
       final ComponentContext c,

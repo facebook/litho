@@ -189,16 +189,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return mTypeId;
   }
 
-  final void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    c.setDefStyle(defStyleAttr, defStyleRes);
-    onLoadStyle(c);
-    c.setDefStyle(0, 0);
-  }
-
-  final void loadStyle(ComponentContext c) {
-    onLoadStyle(c);
-  }
-
   /**
    * Whether this {@link com.facebook.litho.Component} is able to measure itself according to
    * specific size constraints.
@@ -250,8 +240,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   protected @Nullable Transition onCreateTransition(ComponentContext c) {
     return null;
   }
-
-  protected void onLoadStyle(ComponentContext c) {}
 
   /**
    * Populate an accessibility node with information about the component.
@@ -1016,7 +1004,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       if (defStyleAttr != 0 || defStyleRes != 0) {
         mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
         try {
-          component.loadStyle(c, defStyleAttr, defStyleRes);
+          mComponent.loadStyle(c, defStyleAttr, defStyleRes);
         } catch (Exception e) {
           ComponentUtils.handleWithHierarchy(c, component, e);
         }
