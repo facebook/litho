@@ -160,7 +160,6 @@ module.exports = {
     ossRepoPath: 'fbandroid/libraries/components'
   },
   plugins: [
-    'docusaurus-plugin-sass',
     [
       '@docusaurus/plugin-client-redirects',
       {
@@ -244,7 +243,7 @@ module.exports = {
           baseDir: '..'
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.scss'),
+          customCss: require.resolve('./src/css/custom.css'),
         },
         enableEditor: fbContent({
           internal: 'top',

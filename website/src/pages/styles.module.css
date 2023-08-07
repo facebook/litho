@@ -11,7 +11,7 @@
  * and scoped locally.
  */
 
-// --- css for the hero section ---
+/* --- css for the hero section --- */
 
 .heroBanner {
   background-color: var(--ifm-color-primary);
@@ -80,7 +80,9 @@
   padding: 10px 20px;
   transition: background 0.3s, color 0.3s;
   border: 2px solid var(--litho-light);
-  @media screen and (max-width: 600px) {
+}
+@media screen and (max-width: 600px) {
+  .button {
     padding: 8px 12px;
     margin: 0px 3px 0px 3px;
   }
@@ -92,7 +94,7 @@
   border-color: var(--litho-light);
 }
 
-// --- css for the video container ---
+/* --- css for the video container --- */
 
 .ytVideoIframe {
     width: 100%;
@@ -100,7 +102,7 @@
     aspect-ratio: 16/9;
 }
 
-// --- css for the features --- 
+/* --- css for the features --- */
 
 main section {
   display: flex;
@@ -112,8 +114,9 @@ main section {
   width: 100%;
   height: 500px;
   background-color: var(--litho-light);
-
-  @media screen and (max-width: 750px) {
+}
+@media screen and (max-width: 750px) {
+  main section {
     height: auto;
     padding-top: 50px;
     padding-bottom: 50px;
@@ -159,9 +162,11 @@ main section {
 
 .featureImage {
   width: 350px;
-  @media screen and (max-width: 966px) {
+}
+@media screen and (max-width: 966px) {
+  .featureImage {
     width: 300px;
-  } 
+  }
 }
 
 

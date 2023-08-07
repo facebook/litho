@@ -25,7 +25,7 @@
   --ifm-button-border-width: 2px;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: #e7e7e7;
-  //--ifm-font-color-base: #484848;
+  /* --ifm-font-color-base: #484848; */
 }
 
 .navbar {
@@ -42,16 +42,16 @@
 
 .navbar__toggle {
   color: var(--litho-light);
-  &:hover {
-    color: var(--ifm-navbar-link-hover-color);
-  }
+}
+.navbar__toggle:hover {
+  color: var(--ifm-navbar-link-hover-color);
 }
 
 .menu__link {
   color: var(--ifm-menu-color);
 }
 
-// Lock the search bar to always be light
+/* Lock the search bar to always be light */
 .navbar__search-input {
   background-color: var(--litho-light);
   color: #000;
@@ -78,9 +78,9 @@
   margin-right: 8px;
   margin-bottom: 10px;
   font-family: Arial;
-  &:hover {
-    background-color: var(--ifm-color-primary-dark);
-  }
+}
+.widget-button:hover {
+  background-color: var(--ifm-color-primary-dark);
 }
 
 html {
