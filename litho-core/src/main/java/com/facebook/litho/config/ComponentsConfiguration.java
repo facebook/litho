@@ -112,6 +112,13 @@ public class ComponentsConfiguration {
   /** Sets if is reconciliation is enabled */
   public static boolean isReconciliationEnabled = true;
 
+  /**
+   * The LazyList is having a default of {@code false} for the reconciliation being enabled.
+   * Ideally, it would default to whatever value is used in its ComponentContext. By enabling this
+   * setting, the default will be retrieve via the ComponentContext.
+   */
+  public static boolean isLazyListUsingComponentContextReconciliationConfig = true;
+
   public static @Nullable Boolean overrideReconciliation = null;
 
   public static @Nullable Boolean overrideLayoutDiffing = null;

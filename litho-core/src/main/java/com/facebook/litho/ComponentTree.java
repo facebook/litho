@@ -3073,7 +3073,7 @@ public class ComponentTree
   public static final class LithoConfiguration {
     public ComponentsConfiguration mComponentsConfiguration;
     final boolean areTransitionsEnabled;
-    final boolean isReconciliationEnabled;
+    public final boolean isReconciliationEnabled;
     final boolean isVisibilityProcessingEnabled;
     final boolean isNullNodeEnabled;
     @Nullable final RunnableHandler mountContentPreallocationHandler;

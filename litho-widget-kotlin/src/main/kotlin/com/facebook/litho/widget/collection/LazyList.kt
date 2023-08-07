@@ -22,6 +22,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
@@ -63,7 +64,12 @@ inline fun ResourcesScope.LazyList(
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean = false,
+    isReconciliationEnabled: Boolean =
+        if (ComponentsConfiguration.isLazyListUsingComponentContextReconciliationConfig) {
+          context.lithoConfiguration.isReconciliationEnabled
+        } else {
+          false
+        },
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
