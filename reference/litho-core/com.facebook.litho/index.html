@@ -2015,7 +2015,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-mount-content-pool/index.html">MountContentPool</a> : <a href="-pool-with-debug-info/index.html">PoolWithDebugInfo</a>, <span data-unresolved-link="com.facebook.rendercore/MountItemsPool.ItemPool///PointingToDeclaration/">MountItemsPool.ItemPool</span></div><div class="brief ">A pool dedicated to recycling mount content.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-mount-content-pool/index.html">MountContentPool</a> : <span data-unresolved-link="com.facebook.rendercore/MountItemsPool.ItemPool///PointingToDeclaration/">MountItemsPool.ItemPool</span></div><div class="brief ">A pool dedicated to recycling mount content.</div></div></div>
               </div>
             </div>
           </div>
@@ -2305,21 +2305,6 @@
             </div>
           </div>
         </div>
-<a data-name="1880730430%2FClasslikes%2F947585829" anchor-label="PoolWithDebugInfo" id="1880730430%2FClasslikes%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-pool-with-debug-info/index.html"><span>Pool</span><wbr><span>With</span><wbr><span>Debug</span><wbr><span><span>Info</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1880730430%2FClasslikes%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-pool-with-debug-info/index.html">PoolWithDebugInfo</a></div><div class="brief "><p class="paragraph">A object pool that has debug info for display in tools like Stetho.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
 <a data-name="-1186048366%2FClasslikes%2F947585829" anchor-label="PotentiallyPartialResult" id="-1186048366%2FClasslikes%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
@@ -2390,7 +2375,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-recycle-pool/index.html">RecyclePool</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-recycle-pool/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">_name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">_maxSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">isSync<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span> : <a href="-pool-with-debug-info/index.html">PoolWithDebugInfo</a></div><div class="brief "><p class="paragraph">Used to recycle objects in Litho. Can be configured to be either synchronized or not. A <a href="-recycle-pool/index.html">RecyclePool</a> will keep track of its own size so that it can be queried to debug pool sizes.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-recycle-pool/index.html">RecyclePool</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-recycle-pool/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">isSync<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Used to recycle objects in Litho. Can be configured to be either synchronized or not. A <a href="-recycle-pool/index.html">RecyclePool</a> will keep track of its own size so that it can be queried to debug pool sizes.</p></div></div></div>
               </div>
             </div>
           </div>
