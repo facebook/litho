@@ -57,6 +57,7 @@ import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.rotation
+import com.facebook.litho.view.rotationY
 import com.facebook.litho.view.scale
 import com.facebook.litho.view.testKey
 import com.facebook.litho.view.viewTag
@@ -312,6 +313,46 @@ class AnimationTest {
         .isEqualTo(18.592915f)
     transitionTestRule.step(5)
     Assertions.assertThat(view.rotation).describedAs("view rotation after 10 frames").isEqualTo(45f)
+  }
+
+  @Test
+  fun animationProperties_animatingPropertyRotationY_elementShouldAnimateRotationY() {
+    val component =
+        TestAnimationsComponent(
+            stateCaller,
+            Transition.create(TRANSITION_KEY)
+                .animator(Transition.timing(144))
+                .animate(AnimatedProperties.ROTATION_Y)) { state ->
+              Row {
+                child(
+                    Row(
+                        style =
+                            Style.height(40.dp)
+                                .width(40.dp)
+                                .rotationY(if (state) 180f else 0f)
+                                .backgroundColor(Color.parseColor("#ee1111"))
+                                .transitionKey(context, TRANSITION_KEY)
+                                .viewTag(TRANSITION_KEY)))
+              }
+            }
+    val testLithoView = lithoViewRule.render { component }
+    activityController.get().setContentView(testLithoView.lithoView)
+    activityController.resume().visible()
+    val view = testLithoView.findViewWithTag(TRANSITION_KEY)
+    Assertions.assertThat(view.rotationY).describedAs("view rotationY initial state").isEqualTo(0f)
+    stateCaller.update()
+    lithoViewRule.idle()
+    Assertions.assertThat(view.rotationY).describedAs("view rotationY after toggle").isEqualTo(0f)
+    transitionTestRule.step(5)
+
+    // Check kdoc for how we calculate this value.
+    Assertions.assertThat(view.rotationY)
+        .describedAs("view rotationY after 5 frames")
+        .isEqualTo(74.37166f)
+    transitionTestRule.step(5)
+    Assertions.assertThat(view.rotationY)
+        .describedAs("view rotationY after 10 frames")
+        .isEqualTo(180f)
   }
 
   @Test

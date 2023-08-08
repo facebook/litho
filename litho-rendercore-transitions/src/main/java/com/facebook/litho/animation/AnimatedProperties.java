@@ -83,6 +83,12 @@ public final class AnimatedProperties {
    */
   public static final AnimatedProperty ROTATION = new RotationAnimatedProperty();
 
+  /**
+   * The rotated degree around the Y-axis of a mount content. Increasing the value results in
+   * clockwise rotation.
+   */
+  public static final AnimatedProperty ROTATION_Y = new RotationYAnimatedProperty();
+
   public static final AnimatedProperty[] AUTO_LAYOUT_PROPERTIES =
       new AnimatedProperty[] {X, Y, WIDTH, HEIGHT};
 
@@ -500,6 +506,33 @@ public final class AnimatedProperties {
     @Override
     public void reset(Object mountContent) {
       assertIsView(mountContent, this).setRotation(0);
+    }
+  }
+
+  private static class RotationYAnimatedProperty implements AnimatedProperty {
+    @Override
+    public String getName() {
+      return "rotationY";
+    }
+
+    @Override
+    public float get(Object mountContent) {
+      return assertIsView(mountContent, this).getRotationY();
+    }
+
+    @Override
+    public float get(AnimatableItem animatableItem) {
+      return animatableItem.isRotationYSet() ? animatableItem.getRotationY() : 0;
+    }
+
+    @Override
+    public void set(Object mountContent, float value) {
+      assertIsView(mountContent, this).setRotationY(value);
+    }
+
+    @Override
+    public void reset(Object mountContent) {
+      assertIsView(mountContent, this).setRotationY(0);
     }
   }
 
