@@ -175,9 +175,6 @@ abstract class PrimitiveComponent : Component() {
   final override fun onCreateMountContent(context: Context): Any =
       super.onCreateMountContent(context)
 
-  final override fun onCreateTransition(c: ComponentContext): Transition? =
-      super.onCreateTransition(c)
-
   final override fun onPopulateAccessibilityNode(
       c: ComponentContext,
       host: View,

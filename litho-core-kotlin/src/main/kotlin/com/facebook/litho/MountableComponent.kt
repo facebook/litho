@@ -186,8 +186,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
-  final override fun onCreateTransition(c: ComponentContext) = super.onCreateTransition(c)
-
   final override fun onPopulateAccessibilityNode(
       c: ComponentContext,
       host: View,

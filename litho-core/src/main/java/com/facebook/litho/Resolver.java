@@ -299,7 +299,10 @@ public class Resolver {
       } else {
         try {
           // Calls onCreateTransition on the Spec.
-          final Transition transition = component.createTransition(c);
+          final Transition transition =
+              (component instanceof SpecGeneratedComponent)
+                  ? ((SpecGeneratedComponent) component).createTransition(c)
+                  : null;
           if (transition != null) {
             node.addTransition(transition);
           }

@@ -42,6 +42,7 @@ import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaFlexDirection;
 import java.util.HashMap;
 
@@ -431,6 +432,22 @@ public abstract class SpecGeneratedComponent extends Component
       final String name,
       final @Nullable InterStagePropsContainer interStageProps) {
     // Do nothing by default
+  }
+
+  /**
+   * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
+   *     props.
+   */
+  protected @Nullable Transition onCreateTransition(ComponentContext c) {
+    return null;
+  }
+
+  final @Nullable Transition createTransition(ComponentContext c) {
+    final Transition transition = onCreateTransition(c);
+    if (transition != null) {
+      TransitionUtils.setOwnerKey(transition, c.getGlobalKey());
+    }
+    return transition;
   }
 
   /**

@@ -64,7 +64,6 @@ import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceResolver;
 import com.facebook.rendercore.primitives.Equivalence;
-import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -177,14 +176,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return com.facebook.litho.Component.MountType.NONE;
   }
 
-  final @Nullable Transition createTransition(ComponentContext c) {
-    final Transition transition = onCreateTransition(c);
-    if (transition != null) {
-      TransitionUtils.setOwnerKey(transition, c.getGlobalKey());
-    }
-    return transition;
-  }
-
   public final int getTypeId() {
     return mTypeId;
   }
@@ -231,14 +222,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   protected Object onCreateMountContent(Context context) {
     throw new RuntimeException(
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
-  }
-
-  /**
-   * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
-   *     props.
-   */
-  protected @Nullable Transition onCreateTransition(ComponentContext c) {
-    return null;
   }
 
   /**

@@ -1783,7 +1783,10 @@ public class LayoutState
         final ComponentContext scopedContext = scopedComponentInfo.getContext();
         final Component component = scopedComponentInfo.getComponent();
         try {
-          final Transition transition = component.createTransition(scopedContext);
+          final Transition transition =
+              (component instanceof SpecGeneratedComponent)
+                  ? ((SpecGeneratedComponent) component).createTransition(scopedContext)
+                  : null;
           if (transition != null) {
             mountTimeTransitions.add(transition);
           }
