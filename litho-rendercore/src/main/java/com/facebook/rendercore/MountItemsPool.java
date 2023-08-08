@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pools;
 import java.util.ArrayList;
@@ -59,10 +58,6 @@ public class MountItemsPool {
 
   @GuardedBy("sMountContentLock")
   private static final Map<Context, Map<Object, ItemPool>> sMountContentPoolsByContext =
-      new HashMap<>(4);
-
-  @GuardedBy("sMountContentLock")
-  private static final Map<Context, WeakHashMap<IBinder, ItemPool>> sHostPoolsByWindowAndContext =
       new HashMap<>(4);
 
   // This Map is used as a set and the values are ignored.
@@ -188,7 +183,6 @@ public class MountItemsPool {
   public static void clear() {
     synchronized (sMountContentLock) {
       sMountContentPoolsByContext.clear();
-      sHostPoolsByWindowAndContext.clear();
       sDestroyedRootContexts.clear();
     }
   }
@@ -197,60 +191,6 @@ public class MountItemsPool {
   public static void setMountContentPoolFactory(@Nullable final MountItemsPool.Factory factory) {
     sMountContentPoolFactory.set(factory);
     sHasMountContentPoolFactory = factory != null;
-  }
-
-  public static Object acquireHostMountContent(
-      Context context, @Nullable IBinder windowToken, ContentAllocator hostContentProvider) {
-    final ItemPool pool = getHostMountContentPool(context, windowToken, hostContentProvider);
-    if (pool == null) {
-      return hostContentProvider.createPoolableContent(context);
-    }
-
-    return pool.acquire(context, hostContentProvider);
-  }
-
-  public static void releaseHostMountContent(
-      Context context,
-      @Nullable IBinder windowToken,
-      ContentAllocator hostContentProvider,
-      Object content) {
-    final ItemPool pool = getHostMountContentPool(context, windowToken, hostContentProvider);
-    if (pool == null) {
-      return;
-    }
-
-    pool.release(content);
-  }
-
-  private static @Nullable ItemPool getHostMountContentPool(
-      Context context, @Nullable IBinder windowToken, ContentAllocator hostContentProvider) {
-    // Currently, this seems most likely to occur when we call unmountAllItems from onViewRecycled
-    // in an RV as the RootHost will have already been detached.
-    if (windowToken == null) {
-      return null;
-    }
-
-    synchronized (sMountContentLock) {
-      WeakHashMap<IBinder, ItemPool> poolsByWindowToken = sHostPoolsByWindowAndContext.get(context);
-      if (poolsByWindowToken == null) {
-        final Context rootContext = getRootContext(context);
-        if (sDestroyedRootContexts.containsKey(rootContext)) {
-          return null;
-        }
-
-        ensureActivityCallbacks(context);
-        poolsByWindowToken = new WeakHashMap<>();
-        sHostPoolsByWindowAndContext.put(context, poolsByWindowToken);
-      }
-
-      ItemPool pool = poolsByWindowToken.get(windowToken);
-      if (pool == null) {
-        pool = createRecyclingPool(hostContentProvider);
-        poolsByWindowToken.put(windowToken, pool);
-      }
-
-      return pool;
-    }
   }
 
   @Nullable
@@ -348,7 +288,6 @@ public class MountItemsPool {
   public static void onContextDestroyed(Context context) {
     synchronized (sMountContentLock) {
       clearMatchingContexts(context, sMountContentPoolsByContext);
-      clearMatchingContexts(context, sHostPoolsByWindowAndContext);
 
       sDestroyedRootContexts.put(getRootContext(context), true);
     }
