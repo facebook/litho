@@ -2974,6 +2974,10 @@ public class ComponentTree
         });
   }
 
+  public int getId() {
+    return mId;
+  }
+
   public static int generateComponentTreeId() {
     return sIdGenerator.getAndIncrement();
   }
