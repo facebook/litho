@@ -1740,9 +1740,9 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
     synchronized (this) {
-      if (mComponentTreeHolders.isEmpty()) {
+      if (position < 0 || position >= mComponentTreeHolders.size()) {
         throw new RuntimeException(
-            "Trying to update an item while the list of components is empty (index="
+            "Trying to update an item while index is out of bounds (index="
                 + position
                 + ", size="
                 + mComponentTreeHolders.size()
