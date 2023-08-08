@@ -42,7 +42,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final int flags,
       final int importantForAccessibility,
       final Mountable mountable,
-      final @Nullable ComponentContext context) {
+      final @Nullable ComponentContext context,
+      final @Nullable String debugKey) {
     super(
         mountable.getId(),
         component,
@@ -51,7 +52,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
         flags,
         importantForAccessibility,
         mountable.getRenderType(),
-        context);
+        context,
+        debugKey);
 
     mMountable = mountable;
   }
@@ -63,7 +65,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final Mountable mountable) {
+      final Mountable mountable,
+      final @Nullable String debugKey) {
     return new MountableLithoRenderUnit(
         component,
         commonDynamicProps,
@@ -71,7 +74,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
         flags,
         importantForAccessibility,
         mountable,
-        context);
+        context,
+        debugKey);
   }
 
   @Override

@@ -42,7 +42,8 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
       final int flags,
       final int importantForAccessibility,
       final PrimitiveRenderUnit primitiveRenderUnit,
-      final @Nullable ComponentContext context) {
+      final @Nullable ComponentContext context,
+      final @Nullable String debugKey) {
     super(
         primitiveRenderUnit.getId(),
         component,
@@ -51,7 +52,8 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
         flags,
         importantForAccessibility,
         primitiveRenderUnit.getRenderType(),
-        context);
+        context,
+        debugKey);
 
     mPrimitiveRenderUnit = primitiveRenderUnit;
   }
@@ -63,7 +65,8 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final PrimitiveRenderUnit primitiveRenderUnit) {
+      final PrimitiveRenderUnit primitiveRenderUnit,
+      final @Nullable String debugKey) {
     return new PrimitiveLithoRenderUnit(
         component,
         commonDynamicProps,
@@ -71,7 +74,8 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
         flags,
         importantForAccessibility,
         primitiveRenderUnit,
-        context);
+        context,
+        debugKey);
   }
 
   @Override

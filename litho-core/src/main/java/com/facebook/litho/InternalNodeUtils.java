@@ -35,6 +35,7 @@ import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.RenderUnit;
@@ -91,7 +92,8 @@ public class InternalNodeUtils {
         node.willMountView(),
         (node.needsHostView() || node.getMountable() != null || node.getPrimitive() != null)
             ? null
-            : node.getCustomBindersForMountSpec());
+            : node.getCustomBindersForMountSpec(),
+        getLithoNodeDebugKey(node, OutputUnitType.CONTENT));
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
@@ -126,7 +128,8 @@ public class InternalNodeUtils {
         node.isDuplicateChildrenStatesEnabled(),
         false,
         true,
-        node.needsHostView() ? node.getCustomBindersForMountSpec() : null);
+        node.needsHostView() ? node.getCustomBindersForMountSpec() : null,
+        getLithoNodeDebugKey(node, OutputUnitType.HOST));
   }
 
   /** Creates a {@link LithoRenderUnit} for the root host */
@@ -154,7 +157,8 @@ public class InternalNodeUtils {
         node.isDuplicateChildrenStatesEnabled(),
         false,
         true,
-        node.willMountView() ? null : node.getCustomBindersForMountSpec());
+        node.willMountView() ? null : node.getCustomBindersForMountSpec(),
+        getLithoNodeDebugKey(node, OutputUnitType.HOST));
   }
 
   /**
@@ -288,7 +292,8 @@ public class InternalNodeUtils {
         false,
         node.needsHostView(),
         false,
-        null);
+        null,
+        getLithoNodeDebugKey(node, outputType));
   }
 
   /** Generic method to create a {@link LithoRenderUnit}. */
@@ -304,8 +309,8 @@ public class InternalNodeUtils {
       boolean duplicateChildrenStates,
       boolean hasHostView,
       boolean isMountViewSpec,
-      @Nullable
-          Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> customBindersForMountSpec) {
+      @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> customBindersForMountSpec,
+      @Nullable String debugKey) {
 
     int flags = 0;
 
@@ -356,7 +361,8 @@ public class InternalNodeUtils {
           layoutOutputNodeInfo,
           flags,
           importantForAccessibility,
-          mountable);
+          mountable,
+          debugKey);
     }
 
     Primitive primitive = node.getPrimitive();
@@ -368,7 +374,8 @@ public class InternalNodeUtils {
           layoutOutputNodeInfo,
           flags,
           importantForAccessibility,
-          primitive.getRenderUnit());
+          primitive.getRenderUnit(),
+          debugKey);
     }
 
     LithoRenderUnit renderUnit =
@@ -380,7 +387,8 @@ public class InternalNodeUtils {
             layoutOutputNodeInfo,
             flags,
             importantForAccessibility,
-            updateState);
+            updateState,
+            debugKey);
 
     if (customBindersForMountSpec != null) {
       for (RenderUnit.Binder<Object, Object, Object> binder : customBindersForMountSpec.values()) {
@@ -412,6 +420,34 @@ public class InternalNodeUtils {
     }
 
     return mergedDynamicProps;
+  }
+
+  @Nullable
+  private static String getLithoNodeDebugKey(LithoNode node, @OutputUnitType int outputUnitType) {
+    return getDebugKey(node.getTailComponentKey(), outputUnitType);
+  }
+
+  @Nullable
+  public static String getDebugKey(
+      @Nullable String componentKey, @OutputUnitType int outputUnitType) {
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      return null;
+    }
+
+    switch (outputUnitType) {
+      case OutputUnitType.BACKGROUND:
+        return componentKey + "$background";
+      case OutputUnitType.BORDER:
+        return componentKey + "$border";
+      case OutputUnitType.FOREGROUND:
+        return componentKey + "$foreground";
+      case OutputUnitType.CONTENT:
+        return componentKey;
+      case OutputUnitType.HOST:
+        return componentKey + "$host";
+      default:
+        return null;
+    }
   }
 
   private static Drawable getBorderColorDrawable(LithoLayoutResult result) {

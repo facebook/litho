@@ -43,6 +43,7 @@ private constructor(
     importantForAccessibility: Int,
     @UpdateState val updateState: Int,
     context: ComponentContext?,
+    debugKey: String?
 ) :
     LithoRenderUnit(
         id,
@@ -53,7 +54,7 @@ private constructor(
         importantForAccessibility,
         getRenderType(component),
         context,
-    ),
+        debugKey),
     ContentAllocator<Any?> {
 
   private var isShouldUpdateCachingEnabled = false
@@ -220,6 +221,7 @@ private constructor(
         flags: Int,
         importantForAccessibility: Int,
         @UpdateState updateState: Int,
+        debugKey: String?
     ): MountSpecLithoRenderUnit {
       return MountSpecLithoRenderUnit(
           id,
@@ -230,7 +232,7 @@ private constructor(
           importantForAccessibility,
           updateState,
           context,
-      )
+          debugKey)
     }
 
     @JvmStatic

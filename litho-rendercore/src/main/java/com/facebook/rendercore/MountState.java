@@ -18,6 +18,7 @@ package com.facebook.rendercore;
 
 import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Description;
+import static com.facebook.rendercore.debug.DebugEventAttribute.GlobalKey;
 import static com.facebook.rendercore.debug.DebugEventAttribute.HashCode;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RootHostHashCode;
@@ -754,6 +755,7 @@ public class MountState implements MountDelegateTarget {
       attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
       attributes.put(Bounds, renderTreeNode.getBounds());
       attributes.put(RootHostHashCode, mRootHost.hashCode());
+      attributes.put(GlobalKey, renderTreeNode.getRenderUnit().getDebugKey());
 
       beginTrace(
           traceIdentifier,
@@ -875,6 +877,7 @@ public class MountState implements MountDelegateTarget {
       attributes.put(Description, unit.getDescription());
       attributes.put(Bounds, node.getBounds());
       attributes.put(RootHostHashCode, mRootHost.hashCode());
+      attributes.put(GlobalKey, unit.getDebugKey());
 
       beginTrace(
           traceIdentifier,
@@ -1072,6 +1075,7 @@ public class MountState implements MountDelegateTarget {
       attributes.put(Description, unit.getDescription());
       attributes.put(HashCode, content.hashCode());
       attributes.put(Bounds, node.getBounds());
+      attributes.put(GlobalKey, unit.getDebugKey());
 
       beginTrace(
           traceIdentifier,
@@ -1163,6 +1167,7 @@ public class MountState implements MountDelegateTarget {
         attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
         attributes.put(Bounds, renderTreeNode.getBounds());
         attributes.put(RootHostHashCode, mRootHost.hashCode());
+        attributes.put(GlobalKey, renderTreeNode.getRenderUnit().getDebugKey());
 
         beginTrace(
             traceIdentifier,

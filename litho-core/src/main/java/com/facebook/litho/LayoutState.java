@@ -301,7 +301,9 @@ public class LayoutState
             null,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            MountSpecLithoRenderUnit.STATE_DIRTY);
+            MountSpecLithoRenderUnit.STATE_DIRTY,
+            InternalNodeUtils.getDebugKey(
+                layoutState.getComponentContext().mGlobalKey, OutputUnitType.HOST));
 
     final RenderTreeNode node =
         RenderTreeNodeUtils.create(

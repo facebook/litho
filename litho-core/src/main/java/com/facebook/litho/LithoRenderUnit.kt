@@ -33,9 +33,12 @@ protected constructor(
     importantForAccessibility: Int,
     renderType: RenderType?,
     @field:JvmField val componentContext: ComponentContext?,
+    private val debugKey: String?
 ) : RenderUnit<Any?>(renderType), TransitionRenderUnit {
 
   override fun getId(): Long = _id
+
+  override fun getDebugKey(): String = debugKey ?: componentContext?.globalKey ?: _id.toString()
 
   // TODO: remove
   var hierarchy: DebugHierarchy.Node? = null

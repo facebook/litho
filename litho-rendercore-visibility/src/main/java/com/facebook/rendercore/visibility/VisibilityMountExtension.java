@@ -17,6 +17,7 @@
 package com.facebook.rendercore.visibility;
 
 import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
+import static com.facebook.rendercore.debug.DebugEventAttribute.GlobalKey;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
@@ -451,6 +452,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     attributes.put(RenderUnitId, visibilityItem.getRenderUnitId());
     attributes.put(Name, visibilityItem.getComponentName());
     attributes.put(Bounds, visibilityItem.getBounds());
+    attributes.put(GlobalKey, visibilityItem.getKey());
     return attributes;
   }
 

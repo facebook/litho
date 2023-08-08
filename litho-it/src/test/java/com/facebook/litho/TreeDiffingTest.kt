@@ -714,7 +714,7 @@ class TreeDiffingTest {
     private fun createNode(component: Component): RenderTreeNode {
       val unit: LithoRenderUnit =
           MountSpecLithoRenderUnit.create(
-              0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN)
+              0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN, null)
       return create(unit, Rect(), LithoLayoutData(0, 0, 0, 0, null, null), null)
     }
   }

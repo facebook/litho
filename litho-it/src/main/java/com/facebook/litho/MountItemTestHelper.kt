@@ -32,7 +32,7 @@ object MountItemTestHelper {
   ): MountItem {
     val unit: LithoRenderUnit =
         MountSpecLithoRenderUnit.create(
-            0, component, null, null, info, flags, importantForAccessibility, STATE_UNKNOWN)
+            0, component, null, null, info, flags, importantForAccessibility, STATE_UNKNOWN, null)
     val width = bounds?.width() ?: 0
     val height = bounds?.height() ?: 0
     val node =

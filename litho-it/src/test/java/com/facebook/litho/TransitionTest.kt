@@ -106,7 +106,7 @@ class TransitionTest {
         }
     val rootUnit: LithoRenderUnit =
         MountSpecLithoRenderUnit.create(
-            0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN)
+            0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN, null)
     whenever(layoutState.getMountableOutputAt(0))
         .thenReturn(create(rootUnit, Rect(0, 0, 300, 100), null, null))
     val animateFrom =
