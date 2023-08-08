@@ -29,8 +29,8 @@ public class DefaultMountContentPool extends RecyclePool implements MountContent
   private final AtomicInteger mAllocationCount = new AtomicInteger(0);
   private final int mPoolSize;
 
-  public DefaultMountContentPool(String name, int maxSize, boolean sync) {
-    super(name, maxSize, sync);
+  public DefaultMountContentPool(int maxSize, boolean sync) {
+    super(maxSize, sync);
     mPoolSize = maxSize;
   }
 

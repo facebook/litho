@@ -19,8 +19,8 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.rendercore.ContentAllocator
 
-class TrackingMountContentPool(name: String, maxSize: Int, sync: Boolean) :
-    DefaultMountContentPool(name, maxSize, sync) {
+class TrackingMountContentPool(maxSize: Int, sync: Boolean) :
+    DefaultMountContentPool(maxSize, sync) {
   var acquireCount: Int = 0
     private set
 

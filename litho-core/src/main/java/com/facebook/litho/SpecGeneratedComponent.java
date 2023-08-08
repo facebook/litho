@@ -747,7 +747,7 @@ public abstract class SpecGeneratedComponent extends Component
    */
   @Override
   public MountContentPool onCreateMountContentPool() {
-    return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
+    return new DefaultMountContentPool(poolSize(), true);
   }
 
   @ThreadSafe

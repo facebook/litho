@@ -138,7 +138,7 @@ object CrashingMountableSpec {
     if (lifecycle == LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL) {
       throw MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL)
     }
-    return TrackingMountContentPool("MountSpecLifecycleTester", 1, true)
+    return TrackingMountContentPool(1, true)
   }
 
   @JvmStatic

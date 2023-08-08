@@ -42,7 +42,6 @@ class HostComponent extends SpecGeneratedComponent {
   @Override
   public MountContentPool onCreateMountContentPool() {
     return new HostMountContentPool(
-        "HostComponent",
         ComponentsConfiguration.hostComponentPoolSize,
         ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled);
   }

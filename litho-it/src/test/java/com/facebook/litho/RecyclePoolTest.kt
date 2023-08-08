@@ -25,7 +25,7 @@ import org.junit.runner.RunWith
 class RecyclePoolTest {
   @Test
   fun testClear() {
-    val pool = RecyclePool<Any>("test", 10, false)
+    val pool = RecyclePool<Any>(10, false)
     val elemNum = 7
     for (i in 0 until elemNum) {
       pool.release(Any())

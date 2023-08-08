@@ -194,7 +194,7 @@ public class TestMountSpec<S extends View> implements TestTag {
 
   @OnCreateMountContentPool
   static MountContentPool onCreateMountContentPool() {
-    return new DefaultMountContentPool("MyCustomPool", 3, true);
+    return new DefaultMountContentPool(3, true);
   }
 
   @OnCalculateCachedValue(name = "cached")

@@ -39,19 +39,4 @@ public class DisabledMountContentPool implements MountContentPool {
 
   @Override
   public void maybePreallocateContent(Context c, ContentAllocator component) {}
-
-  @Override
-  public String getName() {
-    return "DisabledMountContentPool";
-  }
-
-  @Override
-  public int getMaxSize() {
-    return 0;
-  }
-
-  @Override
-  public int getCurrentSize() {
-    return 0;
-  }
 }

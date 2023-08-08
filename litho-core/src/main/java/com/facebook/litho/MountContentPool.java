@@ -23,6 +23,6 @@ import com.facebook.rendercore.MountItemsPool;
  *
  * <p>Note! This class MUST be implemented in a thread safe manner! See info in the javadocs below.
  */
-public interface MountContentPool extends PoolWithDebugInfo, MountItemsPool.ItemPool {
-  // All relevant methods extended from MountItemsPool.ItemPool<T> and PoolWithDebugInfo
+public interface MountContentPool extends MountItemsPool.ItemPool {
+  // All relevant methods extended from MountItemsPool.ItemPool<T>
 }

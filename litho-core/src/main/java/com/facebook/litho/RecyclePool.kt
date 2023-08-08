@@ -26,17 +26,18 @@ import kotlin.math.min
  * [RecyclePool] will keep track of its own size so that it can be queried to debug pool sizes.
  */
 @ThreadSafe(enableChecks = false)
-open class RecyclePool<T : Any>(
-    private val _name: String,
-    private val _maxSize: Int,
-    private val isSync: Boolean
-) : PoolWithDebugInfo {
+open class RecyclePool<T : Any>(private val maxSize: Int, private val isSync: Boolean) {
 
   private val pool: Pools.Pool<T> =
-      if (isSync) Pools.SynchronizedPool(_maxSize) else Pools.SimplePool(_maxSize)
+      if (isSync) Pools.SynchronizedPool(maxSize) else Pools.SimplePool(maxSize)
+
   private var _currentSize = 0
+
+  val currentSize: Int
+    get() = _currentSize
+
   val isFull: Boolean
-    get() = _currentSize >= _maxSize
+    get() = _currentSize >= maxSize
 
   open fun acquire(): T? {
     return if (isSync) {
@@ -58,15 +59,6 @@ open class RecyclePool<T : Any>(
     }
   }
 
-  override val name: String
-    get() = _name
-
-  override val maxSize: Int
-    get() = _maxSize
-
-  override val currentSize: Int
-    get() = _currentSize
-
   fun clear() {
     if (isSync) {
       synchronized(this) { clearInternal() }
@@ -82,7 +74,7 @@ open class RecyclePool<T : Any>(
   }
 
   private fun releaseInternal(item: T): Boolean {
-    _currentSize = min(_maxSize, _currentSize + 1)
+    _currentSize = min(maxSize, _currentSize + 1)
     return pool.release(item)
   }
 

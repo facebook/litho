@@ -29,8 +29,8 @@ public class HostMountContentPool extends RecyclePool implements MountContentPoo
 
   private final boolean mIsEnabled;
 
-  public HostMountContentPool(String name, int maxSize, boolean isEnabled) {
-    super(name, maxSize, true);
+  public HostMountContentPool(int maxSize, boolean isEnabled) {
+    super(maxSize, true);
     mIsEnabled = isEnabled;
   }
 
