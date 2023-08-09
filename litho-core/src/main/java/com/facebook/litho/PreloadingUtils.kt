@@ -111,7 +111,6 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 Touchable::class.java,
                 ImageContent::class.java,
                 AttachDetachHandler::class.java,
-                DisabledMountContentPool::class.java,
                 ComponentClickListener::class.java,
                 CommonUtils::class.java,
                 MatrixDrawable::class.java,
