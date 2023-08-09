@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.litho.ComponentsSystrace.beginSection
 import com.facebook.litho.ComponentsSystrace.endSection
@@ -174,13 +173,6 @@ abstract class PrimitiveComponent : Component() {
 
   final override fun onCreateMountContent(context: Context): Any =
       super.onCreateMountContent(context)
-
-  final override fun onPopulateAccessibilityNode(
-      c: ComponentContext,
-      host: View,
-      accessibilityNode: AccessibilityNodeInfoCompat,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onPopulateAccessibilityNode(c, host, accessibilityNode, interStagePropsContainer)
 
   final override fun onPopulateExtraAccessibilityNode(
       c: ComponentContext,

@@ -94,8 +94,11 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       try {
         dispatchOnPopulateAccessibilityNodeEvent(host, node);
-        component.onPopulateAccessibilityNode(
-            scopedContext, host, node, getInterStageProps(mountItem));
+        if (component instanceof SpecGeneratedComponent) {
+          ((SpecGeneratedComponent) component)
+              .onPopulateAccessibilityNode(
+                  scopedContext, host, node, getInterStageProps(mountItem));
+        }
       } catch (Exception e) {
         ComponentUtils.handle(scopedContext, e);
       }

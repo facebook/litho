@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 
@@ -117,13 +116,6 @@ abstract class KComponent : Component() {
   final override fun makeShallowCopy() = super.makeShallowCopy()
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
-
-  final override fun onPopulateAccessibilityNode(
-      c: ComponentContext,
-      host: View,
-      accessibilityNode: AccessibilityNodeInfoCompat,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onPopulateAccessibilityNode(c, host, accessibilityNode, interStagePropsContainer)
 
   final override fun onPopulateExtraAccessibilityNode(
       c: ComponentContext,

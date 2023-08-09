@@ -37,7 +37,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
-import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.AttrRes;
@@ -223,17 +222,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     throw new RuntimeException(
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
   }
-
-  /**
-   * Populate an accessibility node with information about the component.
-   *
-   * @param accessibilityNode node to populate
-   */
-  protected void onPopulateAccessibilityNode(
-      final ComponentContext c,
-      final View host,
-      final AccessibilityNodeInfoCompat accessibilityNode,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   /**
    * Populate an extra accessibility node.

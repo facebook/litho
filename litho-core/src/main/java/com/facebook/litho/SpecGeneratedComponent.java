@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -449,6 +450,17 @@ public abstract class SpecGeneratedComponent extends Component
     }
     return transition;
   }
+
+  /**
+   * Populate an accessibility node with information about the component.
+   *
+   * @param accessibilityNode node to populate
+   */
+  protected void onPopulateAccessibilityNode(
+      final ComponentContext c,
+      final View host,
+      final AccessibilityNodeInfoCompat accessibilityNode,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   /**
    * Get extra accessibility node id at a given point within the component.
