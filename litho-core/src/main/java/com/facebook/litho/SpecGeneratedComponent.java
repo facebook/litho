@@ -463,6 +463,23 @@ public abstract class SpecGeneratedComponent extends Component
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   /**
+   * Populate an extra accessibility node.
+   *
+   * @param accessibilityNode node to populate
+   * @param extraNodeIndex index of extra node
+   * @param componentBoundsX left bound of the mounted component
+   * @param componentBoundsY top bound of the mounted component
+   * @param interStagePropsContainer
+   */
+  protected void onPopulateExtraAccessibilityNode(
+      final ComponentContext c,
+      final AccessibilityNodeInfoCompat accessibilityNode,
+      final int extraNodeIndex,
+      final int componentBoundsX,
+      final int componentBoundsY,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
+
+  /**
    * Get extra accessibility node id at a given point within the component.
    *
    * @param x x co-ordinate within the mounted component

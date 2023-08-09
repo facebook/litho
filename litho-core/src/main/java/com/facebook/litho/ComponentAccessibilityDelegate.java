@@ -203,13 +203,16 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         return;
       }
 
-      component.onPopulateExtraAccessibilityNode(
-          scopedContext,
-          node,
-          virtualViewId,
-          bounds.left,
-          bounds.top,
-          getInterStageProps(mountItem));
+      if (component instanceof SpecGeneratedComponent) {
+        ((SpecGeneratedComponent) component)
+            .onPopulateExtraAccessibilityNode(
+                scopedContext,
+                node,
+                virtualViewId,
+                bounds.left,
+                bounds.top,
+                getInterStageProps(mountItem));
+      }
     } catch (Exception e) {
       ComponentUtils.handle(scopedContext, e);
     }

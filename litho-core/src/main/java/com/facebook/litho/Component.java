@@ -52,7 +52,6 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Preconditions;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -222,23 +221,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     throw new RuntimeException(
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
   }
-
-  /**
-   * Populate an extra accessibility node.
-   *
-   * @param accessibilityNode node to populate
-   * @param extraNodeIndex index of extra node
-   * @param componentBoundsX left bound of the mounted component
-   * @param componentBoundsY top bound of the mounted component
-   * @param interStagePropsContainer
-   */
-  protected void onPopulateExtraAccessibilityNode(
-      final ComponentContext c,
-      final AccessibilityNodeInfoCompat accessibilityNode,
-      final int extraNodeIndex,
-      final int componentBoundsX,
-      final int componentBoundsY,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   protected @Nullable PrepareResult prepare(
       ResolveStateContext resolveStateContext, ComponentContext c) {
