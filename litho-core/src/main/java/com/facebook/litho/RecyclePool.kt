@@ -59,14 +59,6 @@ open class RecyclePool<T : Any>(private val maxSize: Int, private val isSync: Bo
     }
   }
 
-  fun clear() {
-    if (isSync) {
-      synchronized(this) { clearInternal() }
-    } else {
-      clearInternal()
-    }
-  }
-
   private fun acquireInternal(): T? {
     val item = pool.acquire()
     _currentSize = max(0, _currentSize - 1)
@@ -76,11 +68,5 @@ open class RecyclePool<T : Any>(private val maxSize: Int, private val isSync: Bo
   private fun releaseInternal(item: T): Boolean {
     _currentSize = min(maxSize, _currentSize + 1)
     return pool.release(item)
-  }
-
-  private fun clearInternal() {
-    while (acquire() != null) {
-      // no-op.
-    }
   }
 }
