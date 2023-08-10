@@ -470,10 +470,10 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       String[] path,
       @Nullable SetDataOperations.FlipperValueHint kind,
       FlipperDynamic value) {
-    ComponentTreeTimeMachine timeMachine = node.getComponentTreeTimeMachine();
-    if (timeMachine == null) return;
 
     if (path[0].contains("Time Travel")) {
+      ComponentTreeTimeMachine timeMachine = node.getComponentTreeTimeMachine();
+      if (timeMachine == null) return;
       timeMachine.restoreRevision(value.asString());
     } else {
       setNodeOverrides(node, path, kind, value);

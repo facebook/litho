@@ -408,8 +408,10 @@ private constructor(
       val overrider = overriders[key]
       if (overrider != null) {
         overrider.applyComponentOverrides(key, component)
-        val stateContainer = checkNotNull(context.scopedComponentInfo.stateContainer)
-        overrider.applyStateOverrides(key, stateContainer)
+        val stateContainer = context.scopedComponentInfo.stateContainer
+        if (stateContainer != null) {
+          overrider.applyStateOverrides(key, stateContainer)
+        }
       }
     }
 
