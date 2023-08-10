@@ -264,7 +264,7 @@ object DebugEventDispatcher {
             type = type,
             renderStateId = renderStateId,
             attributes = attributes,
-            startTimestamp = System.nanoTime())
+        )
   }
 
   @JvmStatic
@@ -286,9 +286,9 @@ object DebugEventDispatcher {
     val event =
         DebugProcessEvent(
             type = type,
-            timestamp = last.startTimestamp, // for calender time
+            timestamp = last.timestamp, // for calender time
             renderStateId = last.renderStateId,
-            duration = Duration(value = endTime - last.startTimestamp),
+            duration = Duration(value = endTime - last.startTime),
             attributes = last.attributes,
         )
 
@@ -359,7 +359,8 @@ object DebugEventDispatcher {
       val type: String,
       val renderStateId: String,
       val attributes: Map<String, Any?>,
-      val startTimestamp: Long
+      val timestamp: Long = System.currentTimeMillis(),
+      val startTime: Long = System.nanoTime()
   )
 }
 
