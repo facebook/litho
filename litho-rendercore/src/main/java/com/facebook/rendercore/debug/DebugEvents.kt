@@ -315,6 +315,7 @@ object DebugEventDispatcher {
     val attributes = LinkedHashMap<String, Any?>()
     attributesAccumulator(attributes)
 
+    val timestamp = System.currentTimeMillis()
     val startTime = System.nanoTime()
     val res = block(TraceScope(attributes = attributes))
     val endTime = System.nanoTime()
@@ -322,7 +323,7 @@ object DebugEventDispatcher {
     val event =
         DebugProcessEvent(
             type = type,
-            timestamp = startTime,
+            timestamp = timestamp,
             renderStateId = renderStateId(),
             duration = Duration(value = endTime - startTime),
             attributes = attributes,
