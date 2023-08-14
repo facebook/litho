@@ -299,12 +299,48 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mCachedMeasuresValid;
   }
 
+  public boolean isCachedLayout() {
+    return mIsCachedLayout;
+  }
+
+  public void setCachedLayout(boolean isCachedLayout) {
+    mIsCachedLayout = isCachedLayout;
+  }
+
   public float getWidthFromStyle() {
     return mWidthFromStyle;
   }
 
+  public void setWidthFromStyle(float widthFromStyle) {
+    mWidthFromStyle = widthFromStyle;
+  }
+
   public float getHeightFromStyle() {
     return mHeightFromStyle;
+  }
+
+  public void setHeightFromStyle(float heightFromStyle) {
+    mHeightFromStyle = heightFromStyle;
+  }
+
+  private void setContentRenderUnit(@Nullable LithoRenderUnit contentRenderUnit) {
+    mContentRenderUnit = contentRenderUnit;
+  }
+
+  private void setHostRenderUnit(@Nullable LithoRenderUnit hostRenderUnit) {
+    mHostRenderUnit = hostRenderUnit;
+  }
+
+  private void setBackgroundRenderUnit(@Nullable LithoRenderUnit backgroundRenderUnit) {
+    mBackgroundRenderUnit = backgroundRenderUnit;
+  }
+
+  private void setForegroundRenderUnit(@Nullable LithoRenderUnit foregroundRenderUnit) {
+    mForegroundRenderUnit = foregroundRenderUnit;
+  }
+
+  private void setBorderRenderUnit(@Nullable LithoRenderUnit borderRenderUnit) {
+    mBorderRenderUnit = borderRenderUnit;
   }
 
   public @Nullable DiffNode getDiffNode() {
@@ -386,21 +422,20 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
   public LithoLayoutResult copyLayoutResult(LithoNode node, YogaNode yogaNode) {
     LithoLayoutResult copiedResult = node.createLayoutResult(yogaNode, null);
-    copiedResult.mIsCachedLayout = true;
-    copiedResult.mCachedMeasuresValid = true;
-    copiedResult.mWidthSpec = mWidthSpec;
-    copiedResult.mHeightSpec = mHeightSpec;
+    copiedResult.setCachedLayout(true);
+    copiedResult.setCachedMeasuresValid(true);
+    copiedResult.setSizeSpec(mWidthSpec, mHeightSpec);
     copiedResult.mLastMeasuredSize = mLastMeasuredSize;
     copiedResult.mDelegate = mDelegate;
-    copiedResult.mLayoutData = mLayoutData;
-    copiedResult.mWidthFromStyle = mWidthFromStyle;
-    copiedResult.mHeightFromStyle = mHeightFromStyle;
+    copiedResult.setLayoutData(mLayoutData);
+    copiedResult.setWidthFromStyle(mWidthFromStyle);
+    copiedResult.setHeightFromStyle(mHeightFromStyle);
     if (mContext.shouldReuseOutputs()) {
-      copiedResult.mContentRenderUnit = mContentRenderUnit;
-      copiedResult.mHostRenderUnit = mHostRenderUnit;
-      copiedResult.mBackgroundRenderUnit = mBackgroundRenderUnit;
-      copiedResult.mForegroundRenderUnit = mForegroundRenderUnit;
-      copiedResult.mBorderRenderUnit = mBorderRenderUnit;
+      copiedResult.setContentRenderUnit(mContentRenderUnit);
+      copiedResult.setHostRenderUnit(mHostRenderUnit);
+      copiedResult.setBackgroundRenderUnit(mBackgroundRenderUnit);
+      copiedResult.setForegroundRenderUnit(mForegroundRenderUnit);
+      copiedResult.setBorderRenderUnit(mBorderRenderUnit);
     }
     return copiedResult;
   }
@@ -685,8 +720,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
       if (!wasMeasured()) {
         mWasMeasured = true;
-        mWidthSpec = MeasureSpecUtils.exactly(getWidth());
-        mHeightSpec = MeasureSpecUtils.exactly(getHeight());
+        final int width = getHeight();
+        final int height = getHeight();
+        mWidthSpec = MeasureSpecUtils.exactly(width);
+        mHeightSpec = MeasureSpecUtils.exactly(height);
       }
 
     } else if ((Component.isMountable(component) || Component.isPrimitive(component))
