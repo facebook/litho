@@ -736,13 +736,14 @@ public class LayoutState
 
     // Set the measurements, and the layout data on the diff node
     if (diffNode != null) {
-      diffNode.setLastWidthSpec(result.getLastWidthSpec());
-      diffNode.setLastHeightSpec(result.getLastHeightSpec());
-      diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
-      diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
+      diffNode.setLastWidthSpec(result.getWidthSpec());
+      diffNode.setLastHeightSpec(result.getHeightSpec());
+      diffNode.setLastMeasuredWidth(result.getWidth());
+      diffNode.setLastMeasuredHeight(result.getHeight());
       diffNode.setLayoutData(result.getLayoutData());
       diffNode.setMountable(result.getNode().getMountable());
       diffNode.setPrimitive(result.getNode().getPrimitive());
+      diffNode.setDelegate(result.getDelegate());
     }
 
     // 4. Extract the Transitions.

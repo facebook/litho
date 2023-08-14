@@ -80,9 +80,13 @@ fun <T> isEqualOrEquivalentTo(a: T?, b: T?): Boolean {
 }
 
 /** Checks if all private final fields in two objects are equivalent. */
-fun hasEquivalentFields(a: Any, b: Any): Boolean {
+fun hasEquivalentFields(a: Any?, b: Any?): Boolean {
   if (a === b) {
     return true
+  }
+
+  if (a == null || b == null) {
+    return false
   }
 
   if (a.javaClass != b.javaClass) {

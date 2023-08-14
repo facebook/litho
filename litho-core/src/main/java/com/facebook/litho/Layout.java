@@ -84,12 +84,12 @@ class Layout {
 
     if (currentLayout != null
         && MeasureComparisonUtils.hasCompatibleSizeSpec(
-            currentLayout.getLastWidthSpec(),
-            currentLayout.getLastHeightSpec(),
+            currentLayout.getWidthSpec(),
+            currentLayout.getHeightSpec(),
             widthSpec,
             heightSpec,
-            currentLayout.getLastMeasuredWidth(),
-            currentLayout.getLastMeasuredHeight())) {
+            currentLayout.getWidth(),
+            currentLayout.getHeight())) {
       return currentLayout;
     }
 
@@ -224,16 +224,8 @@ class Layout {
             layoutStateContext, parentContext, layoutCache, holder, widthSpec, heightSpec);
 
     final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
-
+    // Set new created LayoutResult for future access
     if (layout != null && layout != currentLayout) {
-      // If layout created is not same as previous layout then set last width / height, measured
-      // width and height specs
-      layout.setLastWidthSpec(widthSpec);
-      layout.setLastHeightSpec(heightSpec);
-      layout.setLastMeasuredHeight(layout.getHeight());
-      layout.setLastMeasuredWidth(layout.getWidth());
-
-      // Set new created LayoutResult for future access
       holder.setNestedResult(layout);
     }
 
@@ -267,12 +259,12 @@ class Layout {
           hasValidLayoutDirectionInNestedTree(holderResult, cachedLayout);
       final boolean hasCompatibleSizeSpec =
           MeasureComparisonUtils.hasCompatibleSizeSpec(
-              cachedLayout.getLastWidthSpec(),
-              cachedLayout.getLastHeightSpec(),
+              cachedLayout.getWidthSpec(),
+              cachedLayout.getHeightSpec(),
               widthSpec,
               heightSpec,
-              cachedLayout.getLastMeasuredWidth(),
-              cachedLayout.getLastMeasuredHeight());
+              cachedLayout.getWidth(),
+              cachedLayout.getHeight());
 
       // Transfer the cached layout to the node it if it's compatible.
       if (hasValidDirection) {
