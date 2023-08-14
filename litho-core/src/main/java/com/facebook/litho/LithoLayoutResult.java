@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -697,6 +698,59 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         if (isTracing) {
           ComponentsSystrace.endSection();
         }
+      }
+    }
+  }
+
+  public void onBoundsDefined() {
+    final Component component = getNode().getTailComponent();
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
+      if (!wasMeasured()) {
+        // Check if we need to recreate render unit for MountSpec that skips measurement due
+        // to fixed size
+        final boolean hasSizeChanged =
+            getWidth() != getLastMeasuredWidth() || getHeight() != getLastMeasuredHeight();
+        createAdditionalRenderUnitsIfNeeded(hasSizeChanged);
+      }
+
+      // Invoke onBoundsDefined for all MountSpecs
+      final ComponentContext context = getNode().getTailComponentContext();
+      if (isTracing) {
+        ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
+      }
+      try {
+        ((SpecGeneratedComponent) component)
+            .onBoundsDefined(context, this, (InterStagePropsContainer) getLayoutData());
+      } catch (Exception e) {
+        ComponentUtils.handleWithHierarchy(context, component, e);
+        setMeasureHadExceptions(true);
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+      }
+
+    } else if (Component.isMountable(component) || Component.isPrimitive(component)) {
+      if (!wasMeasured()) {
+        // Check if we need to run measure for Mountable or Primitive that was skipped due to with
+        // fixed size
+        final int width =
+            getWidth()
+                - getPaddingRight()
+                - getPaddingLeft()
+                - getLayoutBorder(YogaEdge.RIGHT)
+                - getLayoutBorder(YogaEdge.LEFT);
+        final int height =
+            getHeight()
+                - getPaddingTop()
+                - getPaddingBottom()
+                - getLayoutBorder(YogaEdge.TOP)
+                - getLayoutBorder(YogaEdge.BOTTOM);
+        final LayoutContext layoutContext =
+            LithoLayoutResult.getLayoutContextFromYogaNode(getYogaNode());
+        measure(layoutContext, MeasureSpecUtils.exactly(width), MeasureSpecUtils.exactly(height));
       }
     }
   }
