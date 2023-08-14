@@ -764,13 +764,17 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldCacheLayouts() {
-    return isReconciliationEnabled()
-        && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
+    if (isNestedTreeContext()) {
+      return isReconciliationEnabled()
+          && mLithoConfiguration.mComponentsConfiguration.shouldCacheNestedLayouts();
+    } else {
+      return isReconciliationEnabled()
+          && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
+    }
   }
 
   boolean shouldReuseOutputs() {
-    return isReconciliationEnabled()
-        && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts()
+    return shouldCacheLayouts()
         && mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
   }
 

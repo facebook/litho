@@ -318,6 +318,8 @@ public class ComponentsConfiguration {
 
   private boolean mShouldCacheLayouts;
 
+  private final boolean mShouldCacheNestedLayouts;
+
   private final boolean mShouldReuseOutputs;
 
   private final boolean mShouldAddHostViewForRootComponent;
@@ -350,6 +352,7 @@ public class ComponentsConfiguration {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mUseInterruptibleResolution = builder.mUseInterruptibleResolution;
     mShouldCacheLayouts = builder.mShouldCacheLayouts;
+    mShouldCacheNestedLayouts = builder.mShouldCacheNestedLayouts;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
@@ -375,11 +378,16 @@ public class ComponentsConfiguration {
     return mShouldCacheLayouts;
   }
 
+  public boolean shouldCacheNestedLayouts() {
+    return mShouldCacheNestedLayouts;
+  }
+
   public static class Builder {
 
     boolean mUseCancelableLayoutFutures = true;
     boolean mUseInterruptibleResolution = true;
     boolean mShouldCacheLayouts = ComponentsConfiguration.enableLayoutCaching;
+    boolean mShouldCacheNestedLayouts = ComponentsConfiguration.enableLayoutCaching;
     boolean mShouldReuseOutputs = false;
     boolean mIsLayoutCancellationEnabled = false;
     boolean mShouldAddHostViewForRootComponent = false;
@@ -410,6 +418,11 @@ public class ComponentsConfiguration {
 
     public Builder shouldCacheLayouts(boolean enabled) {
       mShouldCacheLayouts = enabled;
+      return this;
+    }
+
+    public Builder shouldCacheNestedLayouts(boolean enabled) {
+      mShouldCacheNestedLayouts = enabled;
       return this;
     }
 
