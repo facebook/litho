@@ -43,11 +43,11 @@ import com.facebook.litho.widget.ComponentCaching
 import com.facebook.litho.widget.ItemCardComponent
 import com.facebook.litho.widget.ItemCardComponentSpec
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
+import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.SolidColor
 import com.facebook.litho.widget.TestNullLayoutComponent
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.Function
-import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.yoga.YogaAlign
@@ -1960,52 +1960,23 @@ class LayoutStateCalculateTest {
   }
 
   @Test
-  fun testMeasure() {
-    if (ComponentsConfiguration.enableLayoutCaching) {
-      return
-    }
+  fun `the size of layout results should be equal to measured size of the component`() {
     val width = 50
     val height = 30
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext: ResolveStateContext = c.setRenderStateContextForTests()
-    val component: Component =
-        object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
-              Column.create(c)
-                  .child(
-                      TestDrawableComponent.create(c).measuredWidth(width).measuredHeight(height))
-                  .build()
-        }
-    val widthSpec = makeSizeSpec(width, AT_MOST)
-    val heightSpec = makeSizeSpec(height, AT_MOST)
-    val lithoNode = Resolver.resolveTree(resolveStateContext, c, component)
-    c.clearCalculationStateContext()
-    val layoutStateContext =
-        LayoutStateContext(
-            resolveStateContext.treeId,
-            resolveStateContext.cache,
-            c,
-            resolveStateContext.treeState,
-            resolveStateContext.layoutVersion,
-            resolveStateContext.rootComponentId,
-            resolveStateContext.isAccessibilityEnabled,
-            null,
-            null)
-    c.setLayoutStateContext(layoutStateContext)
-    val node =
-        Layout.measureTree(
-            layoutStateContext,
-            c.androidContext,
-            lithoNode,
-            LayoutCache(),
-            widthSpec,
-            heightSpec,
-            null)
-    assertThat(node?.width).isEqualTo(width)
-    assertThat(node?.height).isEqualTo(height)
-    assertThat(node?.childCount).isEqualTo(1)
-    assertThat(node?.getChildAt(0)?.width).isEqualTo(width)
-    assertThat(node?.getChildAt(0)?.height).isEqualTo(height)
+    legacyLithoViewRule.render {
+      Row.create(context)
+          .child(
+              MountSpecLifecycleTester.create(context)
+                  .lifecycleTracker(LifecycleTracker())
+                  .intrinsicSize(Size(width, height)))
+          .build()
+    }
+
+    val result = legacyLithoViewRule.committedLayoutState!!.mLayoutResult!!.getChildAt(0)!!
+
+    assertThat(result.node.tailComponent).isInstanceOf(MountSpecLifecycleTester::class.java)
+    assertThat(result.width).isEqualTo(width)
+    assertThat(result.height).isEqualTo(height)
   }
 
   @Test
