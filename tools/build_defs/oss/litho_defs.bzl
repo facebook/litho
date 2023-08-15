@@ -214,9 +214,7 @@ LITHO_ROBOLECTRIC_V4_TARGET = make_dep_path("lib/robolectric4:robolectric4")
 
 LITHO_JUNIT_TARGET = make_dep_path("lib/junit:junit")
 
-LITHO_HAMCREST_CORE_TARGET = make_dep_path("lib/hamcrest:hamcrest")
-
-LITHO_HAMCREST_LIBRARY_TARGET = make_dep_path("lib/hamcrest:hamcrest")
+LITHO_HAMCREST_TARGET = make_dep_path("lib/hamcrest:hamcrest")
 
 # Annotation processors
 LITHO_PROCESSOR_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor")
