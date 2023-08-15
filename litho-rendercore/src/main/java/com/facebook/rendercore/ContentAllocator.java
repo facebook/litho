@@ -43,10 +43,8 @@ public interface ContentAllocator<Content> {
     return createContent(context);
   }
 
-  /**
-   * Returns an object defining the type of the mount-content. Typically the mount-content's Class.
-   */
-  default Object getPoolableContentType() {
+  /** Returns the class of the content of the mountable content. */
+  default Class<?> getPoolableContentType() {
     return getClass();
   }
 
@@ -81,6 +79,6 @@ public interface ContentAllocator<Content> {
 
   /** Creates the content pool the framework should use for this Mountable. */
   default MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new MountItemsPool.DefaultItemPool(this.getClass(), poolSize());
+    return new MountItemsPool.DefaultItemPool(this.getClass(), poolSize(), false);
   }
 }

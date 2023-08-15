@@ -19,34 +19,39 @@ package com.facebook.litho;
 import android.content.Context;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
+import com.facebook.rendercore.MountItemsPool;
+import javax.annotation.Nullable;
 
 /**
  * A specific MountContentPool for HostComponent - needed to do correct recycling with things like
  * duplicateParentState.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class HostMountContentPool extends RecyclePool implements MountContentPool {
+public class HostMountContentPool implements MountItemsPool.ItemPool {
 
-  private final boolean mIsEnabled;
+  @Nullable private final MountItemsPool.DefaultItemPool mPool;
 
   public HostMountContentPool(int maxSize, boolean isEnabled) {
-    super(maxSize, true);
-    mIsEnabled = isEnabled;
+    if (isEnabled) {
+      mPool = new MountItemsPool.DefaultItemPool(ComponentHost.class, maxSize, true);
+    } else {
+      mPool = null;
+    }
   }
 
   @Override
-  public Object acquire(Context c, ContentAllocator component) {
-    if (!mIsEnabled) {
-      return component.createPoolableContent(c);
+  @Nullable
+  public Object acquire(ContentAllocator contentAllocator) {
+    if (mPool == null) {
+      return null;
+    } else {
+      return mPool.acquire(contentAllocator);
     }
-
-    final Object fromPool = super.acquire();
-    return fromPool != null ? fromPool : component.createPoolableContent(c);
   }
 
   @Override
   public boolean release(Object item) {
-    if (!mIsEnabled) {
+    if (mPool == null) {
       return false;
     }
 
@@ -55,11 +60,11 @@ public class HostMountContentPool extends RecyclePool implements MountContentPoo
       return false;
     }
 
-    return super.release(item);
+    return mPool.release(item);
   }
 
   @Override
-  public void maybePreallocateContent(Context c, ContentAllocator component) {
+  public void maybePreallocateContent(Context c, ContentAllocator contentAllocator) {
     // Pre-allocation not yet supported
   }
 }

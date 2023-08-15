@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -89,7 +90,7 @@ public class MountItemsPool {
       return poolableMountContent.createPoolableContent(context);
     }
 
-    final Object content = pool.acquire(context, poolableMountContent);
+    final Object content = pool.acquire(poolableMountContent);
     if (content != null) {
       return content;
     }
@@ -161,18 +162,18 @@ public class MountItemsPool {
         poolsMap = new HashMap<>();
         sMountContentPoolsByContext.put(context, poolsMap);
       }
-      final Object lifecycle = poolableMountContent.getPoolableContentType();
+      final Class<?> poolableContentType = poolableMountContent.getPoolableContentType();
 
-      ItemPool pool = poolsMap.get(lifecycle);
+      ItemPool pool = poolsMap.get(poolableContentType);
       if (pool == null) {
         pool = createRecyclingPool(poolableMountContent);
 
         // PoolableMountContent might produce a null pool. In this case, just create a default one.
         if (pool == null) {
-          pool = new DefaultItemPool(lifecycle, size);
+          pool = new DefaultItemPool(poolableContentType, size, false);
         }
 
-        poolsMap.put(lifecycle, pool);
+        poolsMap.put(poolableContentType, pool);
       }
 
       return pool;
@@ -341,11 +342,11 @@ public class MountItemsPool {
     /**
      * Acquire a pooled content item from the pool
      *
-     * @param c the Android context
-     * @param renderUnit the RenderUnit for the item
+     * @param contentAllocator the content allocator used.
      * @return a pooled content item
      */
-    Object acquire(Context c, ContentAllocator poolableMountContent);
+    @Nullable
+    Object acquire(ContentAllocator contentAllocator);
 
     /**
      * Called when an item is released and can return to the pool
@@ -356,47 +357,80 @@ public class MountItemsPool {
     boolean release(Object item);
 
     /**
-     * Called early in the lifecycle to allow the pool implementation to preallocate items in the
-     * pool (as released items)
+     * This method can be called to allocate mount content to a Pool ahead of time.
      *
      * @param c the android context
-     * @param renderUnit the RenderUnit for the item
+     * @param contentAllocator the content allocator used.
      */
-    void maybePreallocateContent(Context c, ContentAllocator poolableMountContent);
+    void maybePreallocateContent(Context c, ContentAllocator contentAllocator);
   }
 
   public static class DefaultItemPool implements ItemPool {
 
-    private final Pools.SimplePool<Object> mPool;
-    private final Object mLifecycle;
+    private final Pools.Pool<Object> mPool;
+    private Object mDebugIdentifier;
+    private final boolean mIsSync;
+    private final AtomicInteger mCurrentPoolSize = new AtomicInteger(0);
+    private final int mMaxPoolSize;
+    private final Object mLock = new Object();
 
-    public DefaultItemPool(Object lifecycle, int size) {
-      mLifecycle = lifecycle;
-      mPool = new Pools.SimplePool<Object>(size);
+    public DefaultItemPool(Class<?> poolableContentType, int maxPoolSize, boolean isSync) {
+      mPool =
+          isSync ? new Pools.SynchronizedPool<>(maxPoolSize) : new Pools.SimplePool<>(maxPoolSize);
+      mIsSync = isSync;
+      mMaxPoolSize = maxPoolSize;
+      mDebugIdentifier = poolableContentType.getName();
     }
 
     @Override
-    public @Nullable Object acquire(Context c, ContentAllocator poolableMountContent) {
-      return mPool.acquire();
+    public @Nullable Object acquire(ContentAllocator contentAllocator) {
+      if (mIsSync) {
+        synchronized (mLock) {
+          return getFromPool();
+        }
+      } else {
+        return getFromPool();
+      }
     }
 
     @Override
     public boolean release(Object item) {
       try {
-        return mPool.release(item);
+        if (mIsSync) {
+          synchronized (mLock) {
+            return addToPool(item);
+          }
+        } else {
+          return addToPool(item);
+        }
       } catch (IllegalStateException e) {
-        String metadata =
-            "Lifecycle: "
-                + ((mLifecycle instanceof Class)
-                    ? " <cls>" + ((Class) mLifecycle).getName() + "</cls>"
-                    : mLifecycle.toString());
+        String metadata = "Failed to release item to MountItemPool: " + mDebugIdentifier;
         throw new IllegalStateException(metadata, e);
       }
     }
 
     @Override
-    public void maybePreallocateContent(Context c, ContentAllocator poolableMountContent) {
-      // Do Nothing.
+    public void maybePreallocateContent(Context c, ContentAllocator contentAllocator) {
+      if (mCurrentPoolSize.get() < mMaxPoolSize) {
+        release(contentAllocator.createContent(c));
+      }
+    }
+
+    private boolean addToPool(Object item) {
+      boolean releasedIntoPool = mPool.release(item);
+      if (releasedIntoPool) {
+        mCurrentPoolSize.incrementAndGet();
+      }
+      return releasedIntoPool;
+    }
+
+    @Nullable
+    private Object getFromPool() {
+      Object content = mPool.acquire();
+      if (content != null) {
+        mCurrentPoolSize.decrementAndGet();
+      }
+      return content;
     }
   }
 }

@@ -24,7 +24,6 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.MountContentPool
 import com.facebook.litho.Size
 import com.facebook.litho.TrackingMountContentPool
 import com.facebook.litho.annotations.MountSpec
@@ -41,6 +40,7 @@ import com.facebook.litho.annotations.OnPrepare
 import com.facebook.litho.annotations.OnUnbind
 import com.facebook.litho.annotations.OnUnmount
 import com.facebook.litho.annotations.Prop
+import com.facebook.rendercore.MountItemsPool
 
 @MountSpec(canPreallocate = true)
 object PreallocatedMountSpecLifecycleTesterSpec {
@@ -85,7 +85,7 @@ object PreallocatedMountSpecLifecycleTesterSpec {
   @JvmStatic
   @UiThread
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(): MountContentPool = TrackingMountContentPool(1, true)
+  fun onCreateMountContentPool(): MountItemsPool.ItemPool = TrackingMountContentPool(1, true)
 
   @JvmStatic
   @UiThread

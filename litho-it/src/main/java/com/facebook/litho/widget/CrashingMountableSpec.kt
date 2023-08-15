@@ -23,7 +23,6 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Diff
 import com.facebook.litho.LifecycleStep
-import com.facebook.litho.MountContentPool
 import com.facebook.litho.Size
 import com.facebook.litho.TrackingMountContentPool
 import com.facebook.litho.annotations.InjectProp
@@ -40,6 +39,7 @@ import com.facebook.litho.annotations.OnUnmount
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ShouldUpdate
 import com.facebook.litho.annotations.State
+import com.facebook.rendercore.MountItemsPool
 
 @MountSpec(isPureRender = true)
 object CrashingMountableSpec {
@@ -134,7 +134,7 @@ object CrashingMountableSpec {
 
   @JvmStatic
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(@InjectProp lifecycle: LifecycleStep): MountContentPool {
+  fun onCreateMountContentPool(@InjectProp lifecycle: LifecycleStep): MountItemsPool.ItemPool {
     if (lifecycle == LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL) {
       throw MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL)
     }

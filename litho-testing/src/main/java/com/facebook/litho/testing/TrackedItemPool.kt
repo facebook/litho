@@ -16,16 +16,17 @@
 
 package com.facebook.litho.testing
 
-import android.content.Context
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountItemsPool
 
-class TrackedItemPool(lifecycle: Any, size: Int) : MountItemsPool.DefaultItemPool(lifecycle, size) {
+class TrackedItemPool(lifecycle: Any, size: Int) :
+    MountItemsPool.DefaultItemPool(lifecycle::class.java, size, false) {
+
   var currentSize: Int = 0
     private set
 
-  override fun acquire(c: Context?, poolableMountContent: ContentAllocator<*>?): Any? {
-    return super.acquire(c, poolableMountContent).apply {
+  override fun acquire(contentAllocator: ContentAllocator<*>?): Any? {
+    return super.acquire(contentAllocator).apply {
       if (this != null) {
         currentSize--
       }

@@ -22,6 +22,7 @@ import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.MountItemsPool;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class HostComponent extends SpecGeneratedComponent {
@@ -40,7 +41,7 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public MountContentPool onCreateMountContentPool() {
+  public MountItemsPool.ItemPool onCreateMountContentPool() {
     return new HostMountContentPool(
         ComponentsConfiguration.hostComponentPoolSize,
         ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled);

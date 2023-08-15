@@ -230,7 +230,7 @@ public class Reducer {
     }
 
     @Override
-    public Object getPoolableContentType() {
+    public Class<?> getPoolableContentType() {
       return getRenderContentType();
     }
 

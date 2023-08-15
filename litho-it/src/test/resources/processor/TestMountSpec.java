@@ -29,9 +29,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.DefaultMountContentPool;
 import com.facebook.litho.Diff;
-import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
@@ -67,6 +65,7 @@ import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.rendercore.MountItemsPool;
 import javax.annotation.Nullable;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -193,8 +192,8 @@ public class TestMountSpec<S extends View> implements TestTag {
   }
 
   @OnCreateMountContentPool
-  static MountContentPool onCreateMountContentPool() {
-    return new DefaultMountContentPool(3, true);
+  static MountItemsPool.ItemPool onCreateMountContentPool() {
+    return new MountItemsPool.DefaultItemPool(TestMountSpec.class, 3, true);
   }
 
   @OnCalculateCachedValue(name = "cached")

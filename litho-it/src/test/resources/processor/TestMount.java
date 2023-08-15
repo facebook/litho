@@ -38,7 +38,6 @@ import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.InterStagePropsContainer;
-import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SpecGeneratedComponent;
@@ -53,6 +52,7 @@ import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.rendercore.MountItemsPool;
 import java.util.Arrays;
 import java.util.BitSet;
 import javax.annotation.Nullable;
@@ -422,9 +422,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  public MountContentPool onCreateMountContentPool() {
-    MountContentPool _result;
-    _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
+  public MountItemsPool.ItemPool onCreateMountContentPool() {
+    MountItemsPool.ItemPool _result;
+    _result = (MountItemsPool.ItemPool) TestMountSpec.onCreateMountContentPool();
     return _result;
   }
 

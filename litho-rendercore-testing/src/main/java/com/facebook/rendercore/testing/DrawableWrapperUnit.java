@@ -39,7 +39,7 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   }
 
   @Override
-  public Object getPoolableContentType() {
+  public Class<?> getPoolableContentType() {
     return getRenderContentType();
   }
 

@@ -45,7 +45,7 @@ class ViewAllocator<Content : View>(
 
   override fun canPreallocate(): Boolean = canPreallocate
 
-  override fun getPoolableContentType(): Any = allocator.javaClass
+  override fun getPoolableContentType(): Class<*> = allocator.javaClass
 }
 
 /**
@@ -70,7 +70,7 @@ class DrawableAllocator<Content : Drawable>(
 
   override fun canPreallocate(): Boolean = canPreallocate
 
-  override fun getPoolableContentType(): Any = allocator.javaClass
+  override fun getPoolableContentType(): Class<*> = allocator.javaClass
 }
 
 /**

@@ -90,7 +90,8 @@ public class MountItemsPoolTest {
 
   @Test
   public void testPrefillMountContentPoolWithCustomPoolFactory() {
-    final MountItemsPool.ItemPool customPool = new MountItemsPool.DefaultItemPool(new Object(), 10);
+    final MountItemsPool.ItemPool customPool =
+        new MountItemsPool.DefaultItemPool(MountItemsPoolTest.class, 10, false);
     MountItemsPool.setMountContentPoolFactory(() -> customPool);
 
     final int prefillCount = 10;
@@ -223,7 +224,7 @@ public class MountItemsPoolTest {
     @Nullable
     @Override
     public MountItemsPool.ItemPool createRecyclingPool() {
-      return new MountItemsPool.DefaultItemPool(new Object(), mCustomPoolSize);
+      return new MountItemsPool.DefaultItemPool(MountItemsPoolTest.class, mCustomPoolSize, false);
     }
 
     @Override

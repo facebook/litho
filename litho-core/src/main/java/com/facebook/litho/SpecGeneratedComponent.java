@@ -750,7 +750,7 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
-  public Object getPoolableContentType() {
+  public Class<?> getPoolableContentType() {
     return getClass();
   }
 
@@ -775,8 +775,8 @@ public abstract class SpecGeneratedComponent extends Component
    * @return the MountContentPool that should be used to recycle mount content for this mount spec.
    */
   @Override
-  public MountContentPool onCreateMountContentPool() {
-    return new DefaultMountContentPool(poolSize(), true);
+  public MountItemsPool.ItemPool onCreateMountContentPool() {
+    return new MountItemsPool.DefaultItemPool(getPoolableContentType(), poolSize(), true);
   }
 
   @ThreadSafe
