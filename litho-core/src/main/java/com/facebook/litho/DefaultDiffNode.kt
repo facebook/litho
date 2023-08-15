@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.visibility.VisibilityOutput
@@ -42,7 +41,6 @@ internal constructor(
   override var lastMeasuredHeight: Float = 0f
   override var lastWidthSpec: Int = 0
   override var lastHeightSpec: Int = 0
-  override var delegate: LayoutResult? = null
   override var layoutData: Any? = null
 
   override val childCount: Int

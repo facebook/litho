@@ -26,13 +26,11 @@ import com.facebook.litho.ComponentLayout
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.LifecycleTracker
 import com.facebook.litho.MountContentPool
-import com.facebook.litho.Output
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.StateValue
 import com.facebook.litho.TrackingMountContentPool
 import com.facebook.litho.annotations.CachedValue
-import com.facebook.litho.annotations.FromBoundsDefined
 import com.facebook.litho.annotations.MountSpec
 import com.facebook.litho.annotations.OnAttached
 import com.facebook.litho.annotations.OnBind
@@ -105,11 +103,9 @@ object MountSpecLifecycleTesterSpec {
       c: ComponentContext,
       layout: ComponentLayout,
       @Prop lifecycleTracker: LifecycleTracker,
-      fromMeasureOutput: Output<Any>,
   ) {
     val bounds = Rect(layout.x, layout.y, layout.x + layout.width, layout.y + layout.height)
     lifecycleTracker.addStep(LifecycleStep.ON_BOUNDS_DEFINED, bounds)
-    fromMeasureOutput.set(Any())
   }
 
   @JvmStatic
@@ -132,7 +128,6 @@ object MountSpecLifecycleTesterSpec {
       view: View,
       @Prop lifecycleTracker: LifecycleTracker,
       @Prop(optional = true) defaultAlpha: Float,
-      @FromBoundsDefined fromMeasureOutput: Any,
   ) {
     // TODO: (T64290961) Remove the StaticContainer hack for tracing OnCreateMountContent callback.
     if (view === StaticContainer.sLastCreatedView) {

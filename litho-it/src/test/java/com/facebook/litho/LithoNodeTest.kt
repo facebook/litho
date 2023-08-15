@@ -324,8 +324,8 @@ class LithoNodeTest {
     assertThat(resultCache.getCachedResult(textComponent)).isNotNull
     val cachedLayout = resultCache.getCachedResult(textComponent)
     assertThat(cachedLayout).isNotNull
-    assertThat(cachedLayout?.widthSpec).isEqualTo(exactSizeSpec)
-    assertThat(cachedLayout?.heightSpec).isEqualTo(unspecifiedSizeSpec)
+    assertThat(cachedLayout?.lastWidthSpec).isEqualTo(exactSizeSpec)
+    assertThat(cachedLayout?.lastHeightSpec).isEqualTo(unspecifiedSizeSpec)
     resultCache.clearCache(textComponent)
     assertThat(resultCache.getCachedResult(textComponent)).isNull()
   }
@@ -346,8 +346,8 @@ class LithoNodeTest {
     assertThat(resultCache.getCachedResult(textComponent)).isNotNull
     val cachedLayout = resultCache.getCachedResult(textComponent)
     assertThat(cachedLayout).isNotNull
-    assertThat(cachedLayout?.widthSpec).isEqualTo(exactSizeSpec)
-    assertThat(cachedLayout?.heightSpec).isEqualTo(unspecifiedSizeSpec)
+    assertThat(cachedLayout?.lastWidthSpec).isEqualTo(exactSizeSpec)
+    assertThat(cachedLayout?.lastHeightSpec).isEqualTo(unspecifiedSizeSpec)
     resultCache.clearCache(textComponent)
     assertThat(resultCache.getCachedResult(textComponent)).isNull()
   }

@@ -692,8 +692,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     yogaRoot.calculateLayout(width, height);
 
-    layoutResult.setSizeSpec(widthSpec, heightSpec);
-
     if (isTracing) {
       ComponentsSystrace.endSection();
     }

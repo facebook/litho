@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.visibility.VisibilityOutput
@@ -62,7 +61,6 @@ interface DiffNode : java.lang.Cloneable {
   var borderOutput: LithoRenderUnit?
   var hostOutput: LithoRenderUnit?
   var mountable: Mountable<*>?
-  var delegate: LayoutResult?
   var primitive: Primitive?
 
   companion object {

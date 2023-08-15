@@ -109,8 +109,7 @@ object MountSpecInterStagePropsTesterSpec {
       view: View,
       @Prop lifecycleTracker: LifecycleTracker,
       @FromPrepare addOnBindLifecycleStep: Boolean,
-      @State addOnUnbindLifecycleStep: AtomicReference<Boolean>,
-      @FromMeasure addOnMountLifecycleStep: Boolean
+      @State addOnUnbindLifecycleStep: AtomicReference<Boolean>
   ) {
     if (addOnBindLifecycleStep) {
       lifecycleTracker.addStep(LifecycleStep.ON_BIND)

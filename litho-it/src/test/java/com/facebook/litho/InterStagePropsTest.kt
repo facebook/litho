@@ -50,11 +50,9 @@ class InterStagePropsTest {
     legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
     lifecycleTracker.reset()
     stateUpdater.increment()
-    legacyLithoViewRule.lithoView.onDetachedFromWindowForTest()
-    legacyLithoViewRule.lithoView.onAttachedToWindowForTest()
     assertThat(lifecycleTracker.steps)
         .describedAs("On Bind should be called")
-        .contains(LifecycleStep.ON_UNBIND, LifecycleStep.ON_BIND)
+        .contains(LifecycleStep.ON_BIND)
   }
 
   @Test

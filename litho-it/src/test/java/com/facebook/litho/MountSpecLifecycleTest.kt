@@ -214,7 +214,6 @@ class MountSpecLifecycleTest {
     legacyLithoViewRule.attachToWindow().measure().layout()
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizePx(800, 600).measure().layout()
-
     assertThat(lifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(

@@ -898,7 +898,10 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(100, EXACTLY)
     innerComponent.measure(c, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.lastWidthSpec = widthSpec
+    internalNode?.lastHeightSpec = heightSpec
+    internalNode?.lastMeasuredWidth = internalNode?.width?.toFloat() ?: -1f
+    internalNode?.lastMeasuredHeight = internalNode?.height?.toFloat() ?: -1f
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -936,7 +939,10 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(100, AT_MOST)
     innerComponent.measure(c, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.lastWidthSpec = widthSpec
+    internalNode?.lastHeightSpec = heightSpec
+    internalNode?.lastMeasuredWidth = 100f
+    internalNode?.lastMeasuredHeight = 100f
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -974,7 +980,10 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(0, UNSPECIFIED)
     innerComponent.measure(c, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.lastWidthSpec = widthSpec
+    internalNode?.lastHeightSpec = heightSpec
+    internalNode?.lastMeasuredWidth = 99f
+    internalNode?.lastMeasuredHeight = 99f
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -1010,7 +1019,10 @@ class LayoutStateCalculateTest {
     val heightSpec = makeSizeSpec(100, AT_MOST)
     innerComponent.measure(c, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    internalNode?.lastWidthSpec = widthSpec
+    internalNode?.lastHeightSpec = heightSpec
+    internalNode?.lastMeasuredWidth = 50f
+    internalNode?.lastMeasuredHeight = 50f
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
