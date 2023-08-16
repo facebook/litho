@@ -19,7 +19,6 @@ package com.facebook.rendercore.primitives
 import android.content.Context
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.utils.areObjectsEquivalent
-import com.facebook.rendercore.primitives.utils.useEquivalenceInShouldUpdate
 import kotlin.reflect.KFunction2
 import kotlin.reflect.KMutableProperty1
 
@@ -80,11 +79,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
 
                 if (currentModel != null && newModel != null) {
                   // return true if model has changed
-                  return if (useEquivalenceInShouldUpdate) {
-                    !areObjectsEquivalent(currentModel, newModel)
-                  } else {
-                    !currentModel.contentDeepEquals(newModel)
-                  }
+                  return !areObjectsEquivalent(currentModel, newModel)
                 }
 
                 // model was null and became non null or was non null and became null
@@ -158,25 +153,14 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   return false
                 }
 
-                if (useEquivalenceInShouldUpdate) {
-                  if (!areObjectsEquivalent(currentLayoutData, nextLayoutData)) {
-                    // layout data has changed
-                    return true
-                  }
-                } else {
-                  if (currentLayoutData != nextLayoutData) {
-                    // layout data has changed
-                    return true
-                  }
+                if (!areObjectsEquivalent(currentLayoutData, nextLayoutData)) {
+                  // layout data has changed
+                  return true
                 }
 
                 if (currentModel != null && newModel != null) {
                   // return true if model has changed
-                  return if (useEquivalenceInShouldUpdate) {
-                    !areObjectsEquivalent(currentModel, newModel)
-                  } else {
-                    !currentModel.contentDeepEquals(newModel)
-                  }
+                  return !areObjectsEquivalent(currentModel, newModel)
                 }
 
                 // model was null and became non null or was non null and became null
@@ -229,11 +213,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   currentLayoutData: Any?,
                   nextLayoutData: Any?
               ): Boolean {
-                return if (useEquivalenceInShouldUpdate) {
-                  !areObjectsEquivalent(currentModel, newModel)
-                } else {
-                  currentModel != newModel
-                }
+                return !areObjectsEquivalent(currentModel, newModel)
               }
 
               override fun bind(
@@ -282,11 +262,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   currentLayoutData: Any?,
                   nextLayoutData: Any?
               ): Boolean {
-                return if (useEquivalenceInShouldUpdate) {
-                  !areObjectsEquivalent(currentModel, newModel)
-                } else {
-                  currentModel != newModel
-                }
+                return !areObjectsEquivalent(currentModel, newModel)
               }
 
               override fun bind(
