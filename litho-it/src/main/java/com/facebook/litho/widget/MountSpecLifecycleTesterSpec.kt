@@ -25,7 +25,6 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.LifecycleTracker
-import com.facebook.litho.Output
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.StateValue
