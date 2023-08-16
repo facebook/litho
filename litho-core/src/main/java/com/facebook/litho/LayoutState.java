@@ -563,7 +563,6 @@ public class LayoutState
           Layout.measure(
               layoutStateContext,
               Preconditions.checkNotNull(immediateParentContext),
-              new LayoutCache(),
               (NestedTreeHolderResult) result,
               SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY));

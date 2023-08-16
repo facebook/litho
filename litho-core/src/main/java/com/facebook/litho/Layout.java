@@ -29,7 +29,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
@@ -44,7 +43,6 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final Context androidContext,
       final @Nullable LithoNode node,
-      final LayoutCache layoutCache,
       final int widthSpec,
       final int heightSpec,
       final @Nullable PerfEvent layoutStatePerfEvent) {
@@ -58,7 +56,11 @@ class Layout {
 
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
-            androidContext, new LithoRenderContext(layoutStateContext), 0, layoutCache, null);
+            androidContext,
+            new LithoRenderContext(layoutStateContext),
+            0,
+            layoutStateContext.getLayoutCache(),
+            null);
 
     final LithoLayoutResult result = node.calculateLayout(context, widthSpec, heightSpec);
 
@@ -72,16 +74,12 @@ class Layout {
   private static @Nullable LithoLayoutResult measureNestedTree(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
-      final LayoutCache layoutCache,
       final NestedTreeHolderResult holderResult,
       final int widthSpec,
       final int heightSpec) {
 
     // 1. Check if current layout result is compatible with size spec and can be reused or not
     final @Nullable LithoLayoutResult currentLayout = holderResult.getNestedResult();
-    final NestedTreeHolder node = holderResult.getNode();
-    final Component component = node.getTailComponent();
-
     if (currentLayout != null
         && MeasureComparisonUtils.hasCompatibleSizeSpec(
             currentLayout.getLastWidthSpec(),
@@ -94,9 +92,9 @@ class Layout {
     }
 
     // 2. Check if cached layout result is compatible and can be reused or not.
+    final NestedTreeHolder node = holderResult.getNode();
     final @Nullable LithoLayoutResult cachedLayout =
-        consumeCachedLayout(
-            layoutStateContext, layoutCache, node, holderResult, widthSpec, heightSpec);
+        consumeCachedLayout(layoutStateContext, node, holderResult, widthSpec, heightSpec);
 
     if (cachedLayout != null) {
       return cachedLayout;
@@ -106,12 +104,12 @@ class Layout {
     // and we can simply re-measure the tree. This is for cases where component was measured with
     // Component.measure API but we could not find the cached layout result or cached layout result
     // was not compatible with given size spec.
+    final Component component = node.getTailComponent();
     if (currentLayout != null && !isLayoutSpecWithSizeSpec(component)) {
       return measureTree(
           layoutStateContext,
           currentLayout.getContext().getAndroidContext(),
           currentLayout.getNode(),
-          layoutCache,
           widthSpec,
           heightSpec,
           null);
@@ -189,6 +187,7 @@ class Layout {
               nestedRsc.getLayoutVersion(),
               nestedRsc.getRootComponentId(),
               layoutStateContext.isAccessibilityEnabled(),
+              layoutStateContext.getLayoutCache(),
               layoutStateContext.getCurrentDiffTree(),
               null);
 
@@ -199,13 +198,7 @@ class Layout {
 
       // 4.b Measure the tree
       return measureTree(
-          nestedLsc,
-          parentContext.getAndroidContext(),
-          newNode,
-          layoutCache,
-          widthSpec,
-          heightSpec,
-          null);
+          nestedLsc, parentContext.getAndroidContext(), newNode, widthSpec, heightSpec, null);
     } finally {
       parentContext.setCalculationStateContext(prevContext);
     }
@@ -214,14 +207,12 @@ class Layout {
   static @Nullable LithoLayoutResult measure(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
-      final LayoutCache layoutCache,
       final NestedTreeHolderResult holder,
       final int widthSpec,
       final int heightSpec) {
 
     final LithoLayoutResult layout =
-        measureNestedTree(
-            layoutStateContext, parentContext, layoutCache, holder, widthSpec, heightSpec);
+        measureNestedTree(layoutStateContext, parentContext, holder, widthSpec, heightSpec);
 
     final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
 
@@ -243,7 +234,6 @@ class Layout {
   @Nullable
   static LithoLayoutResult consumeCachedLayout(
       final LayoutStateContext layoutStateContext,
-      final LayoutCache layoutCache,
       final NestedTreeHolder holder,
       final NestedTreeHolderResult holderResult,
       final int widthSpec,
@@ -283,7 +273,6 @@ class Layout {
               layoutStateContext,
               cachedLayout.getContext().getAndroidContext(),
               cachedLayout.getNode(),
-              layoutCache,
               widthSpec,
               heightSpec,
               null);
@@ -304,7 +293,6 @@ class Layout {
   static void measurePendingSubtrees(
       final ComponentContext parentContext,
       final LithoLayoutResult result,
-      final LayoutCache layoutCache,
       final LithoNode node,
       final LayoutState layoutState,
       final LayoutStateContext layoutStateContext) {
@@ -340,7 +328,6 @@ class Layout {
           Layout.measure(
               layoutStateContext,
               Preconditions.checkNotNull(immediateParentContext),
-              layoutCache,
               (NestedTreeHolderResult) result,
               MeasureSpecUtils.exactly(result.getWidth()),
               MeasureSpecUtils.exactly(result.getHeight()));
@@ -365,19 +352,13 @@ class Layout {
       }
 
       measurePendingSubtrees(
-          parentContext,
-          nestedTree,
-          layoutCache,
-          nestedTree.getNode(),
-          layoutState,
-          layoutStateContext);
+          parentContext, nestedTree, nestedTree.getNode(), layoutState, layoutStateContext);
       return;
     } else if (result.getChildrenCount() > 0) {
       final ComponentContext context = result.getNode().getTailComponentContext();
       for (int i = 0, count = result.getChildrenCount(); i < count; i++) {
         LithoLayoutResult child = result.getChildAt(i);
-        measurePendingSubtrees(
-            context, child, layoutCache, child.getNode(), layoutState, layoutStateContext);
+        measurePendingSubtrees(context, child, child.getNode(), layoutState, layoutStateContext);
       }
       return;
     }

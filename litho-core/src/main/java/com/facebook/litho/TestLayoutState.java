@@ -76,13 +76,13 @@ public class TestLayoutState {
             resolveStateContext.getLayoutVersion(),
             resolveStateContext.getRootComponentId(),
             resolveStateContext.isAccessibilityEnabled(),
+            new LayoutCache(),
             null,
             null);
 
     c.setLayoutStateContext(lsc);
 
-    Layout.measureTree(
-        lsc, c.getAndroidContext(), root, new LayoutCache(), widthSpec, heightSpec, null);
+    Layout.measureTree(lsc, c.getAndroidContext(), root, widthSpec, heightSpec, null);
 
     c.clearCalculationStateContext();
 

@@ -548,18 +548,12 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                 layoutVersion,
                 rootComponentId,
                 calculationStateContext.isAccessibilityEnabled(),
+                new LayoutCache(),
                 null,
                 null);
 
         lastMeasuredLayout =
-            Layout.measureTree(
-                nestedLsc,
-                c.getAndroidContext(),
-                node,
-                new LayoutCache(),
-                widthSpec,
-                heightSpec,
-                null);
+            Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec, null);
 
         if (lastMeasuredLayout == null) {
           outputSize.width = 0;

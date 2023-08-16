@@ -20,6 +20,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.LayoutCache;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,13 +39,14 @@ public class LayoutStateContext implements CalculationStateContext {
   private @Nullable TreeState mTreeState;
   private @Nullable TreeFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
+  private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private @Nullable ComponentContext mRootComponentContext;
   private final int mLayoutVersion;
   private final int mRootComponentId;
   private final boolean mIsAccessibilityEnabled;
   private @Nullable ArrayList<Pair<String, EventHandler<?>>> mCreatedEventHandlers = null;
+  private final LayoutCache mLayoutCache;
 
-  private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mIsReleased = false;
 
   private @Nullable PerfEvent mPerfEvent;
@@ -63,6 +65,7 @@ public class LayoutStateContext implements CalculationStateContext {
       final int layoutVersion,
       final int rootComponentId,
       final boolean isAccessibilityEnabled,
+      final LayoutCache layoutCache,
       final @Nullable DiffNode currentDiffTree,
       final @Nullable TreeFuture layoutStateFuture) {
     mComponentTreeId = componentTreeId;
@@ -71,6 +74,7 @@ public class LayoutStateContext implements CalculationStateContext {
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
     mRootComponentId = rootComponentId;
+    mLayoutCache = layoutCache;
     mCurrentDiffTree = currentDiffTree;
     mLayoutStateFuture = layoutStateFuture;
     mIsAccessibilityEnabled = isAccessibilityEnabled;
@@ -165,6 +169,10 @@ public class LayoutStateContext implements CalculationStateContext {
 
   public void markLayoutResumed() {
     mThreadResumedOn.add(Thread.currentThread().getName());
+  }
+
+  public LayoutCache getLayoutCache() {
+    return mLayoutCache;
   }
 
   @Override

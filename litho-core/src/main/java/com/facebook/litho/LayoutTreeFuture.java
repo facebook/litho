@@ -138,7 +138,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       final LithoNode node = resolveResult.node;
       final MeasuredResultCache renderPhaseCache = resolveResult.consumeCache();
       final ComponentContext c = resolveResult.context;
-
+      final LayoutCache layoutCache =
+          currentLayoutState != null
+              ? new LayoutCache(currentLayoutState.mLayoutCacheData)
+              : new LayoutCache();
       final LayoutStateContext lsc =
           new LayoutStateContext(
               treeId,
@@ -150,6 +153,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               AccessibilityUtils.isAccessibilityEnabled(
                   (AccessibilityManager)
                       c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),
+              layoutCache,
               diffTreeRoot,
               future);
 
@@ -167,8 +171,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               isLayoutDiffingEnabled,
               lsc.isAccessibilityEnabled());
 
-      final LayoutCache layoutCache = new LayoutCache(layoutState.mLayoutCacheData);
-
       if (perfEventLogger != null) {
         lsc.setPerfEvent(perfEventLogger);
       }
@@ -178,18 +180,13 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       try {
         c.setLayoutStateContext(lsc);
 
-        final @Nullable LithoLayoutResult root =
+        @Nullable
+        LithoLayoutResult root =
             Layout.measureTree(
-                lsc,
-                c.getAndroidContext(),
-                node,
-                layoutCache,
-                widthSpec,
-                heightSpec,
-                perfEventLogger);
+                lsc, c.getAndroidContext(), node, widthSpec, heightSpec, perfEventLogger);
 
         if (root != null && c.shouldCacheLayouts()) {
-          Layout.measurePendingSubtrees(c, root, layoutCache, root.getNode(), layoutState, lsc);
+          Layout.measurePendingSubtrees(c, root, root.getNode(), layoutState, lsc);
         }
 
         layoutState.mLayoutResult = root;

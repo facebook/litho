@@ -34,6 +34,7 @@ import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.ComponentTree.LithoConfiguration;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
 import com.facebook.rendercore.RunnableHandler;
@@ -262,7 +263,16 @@ public class ComponentContext implements Cloneable {
   public void setLayoutStateContextForTesting() {
     setLayoutStateContext(
         new LayoutStateContext(
-            -1, new MeasuredResultCache(), this, new TreeState(), 0, -1, true, null, null));
+            -1,
+            new MeasuredResultCache(),
+            this,
+            new TreeState(),
+            0,
+            -1,
+            true,
+            new LayoutCache(),
+            null,
+            null));
   }
 
   /**

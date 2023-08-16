@@ -52,6 +52,7 @@ class LithoNodeTouchExpansionTest {
             resolveStateContext.layoutVersion,
             resolveStateContext.rootComponentId,
             resolveStateContext.isAccessibilityEnabled,
+            LayoutCache(),
             null,
             null)
   }
