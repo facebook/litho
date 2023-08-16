@@ -34,6 +34,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
@@ -2264,33 +2265,84 @@ public class RecyclerBinder
     // Nothing to do here.
   }
 
+  /*
+   * Print the view hierarchy to help identify the incorrect usage of Recycler.
+   */
+  private static String printViewHierarchy(
+      @Nullable ViewParent parent, List<ViewParent> hierarchy) {
+    if (parent == null) {
+      StringBuilder builder = new StringBuilder();
+      final String indent = "  ";
+      int level = 0;
+      for (int i = hierarchy.size() - 1; i >= 0; i--) {
+        ViewParent view = hierarchy.get(i);
+        for (int j = 0; j < level; j++) {
+          builder.append(indent);
+        }
+        builder.append(view).append("\n");
+        level++;
+      }
+      return builder.toString();
+    }
+    hierarchy.add(parent);
+    return printViewHierarchy(parent.getParent(), hierarchy);
+  }
+
   private static void validateMeasureSpecs(
-      int widthSpec, int heightSpec, boolean canRemeasure, int scrollDirection) {
+      @Nullable View mountView,
+      int widthSpec,
+      int heightSpec,
+      boolean canRemeasure,
+      int scrollDirection) {
     switch (scrollDirection) {
       case HORIZONTAL:
         if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+          String viewHierarchy = "EMPTY";
+          if (mountView != null) {
+            viewHierarchy = printViewHierarchy(mountView.getParent(), new ArrayList<>());
+          }
           throw new IllegalStateException(
-              "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
+              "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView. "
+                  + "The view hierarchy is: "
+                  + viewHierarchy);
         }
 
         if (!canRemeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+          String viewHierarchy = "EMPTY";
+          if (mountView != null) {
+            viewHierarchy = printViewHierarchy(mountView.getParent(), new ArrayList<>());
+          }
           throw new IllegalStateException(
               "Can't use Unspecified height on an horizontal "
-                  + "scrolling Recycler if dynamic measurement is not allowed");
+                  + "scrolling Recycler if dynamic measurement is not allowed."
+                  + "The view hierarchy is: "
+                  + viewHierarchy);
         }
 
         break;
 
       case VERTICAL:
         if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+          String viewHierarchy = "EMPTY";
+          if (mountView != null) {
+            viewHierarchy = printViewHierarchy(mountView.getParent(), new ArrayList<>());
+          }
           throw new IllegalStateException(
-              "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
+              "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView. "
+                  + "The view hierarchy is: "
+                  + viewHierarchy);
         }
 
         if (!canRemeasure && SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+          String viewHierarchy = "EMPTY";
+          if (mountView != null) {
+            viewHierarchy = printViewHierarchy(mountView.getParent(), new ArrayList<>());
+          }
           throw new IllegalStateException(
               "Can't use Unspecified width on a vertical scrolling "
-                  + "Recycler if dynamic measurement is not allowed");
+                  + "Recycler if dynamic measurement is not allowed. "
+                  + "The view hierarchy is: "
+                  + viewHierarchy);
         }
         break;
 
@@ -2332,7 +2384,7 @@ public class RecyclerBinder
     final boolean canRemeasure = reMeasureEventHandler != null;
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
-    validateMeasureSpecs(widthSpec, heightSpec, canRemeasure, scrollDirection);
+    validateMeasureSpecs(mMountedView, widthSpec, heightSpec, canRemeasure, scrollDirection);
 
     final boolean shouldMeasureItemForSize =
         shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
