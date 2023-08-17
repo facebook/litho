@@ -110,14 +110,7 @@ class SplitFuturesTest {
       // SHOULD_UPDATE happens after ON_MEASURE with layout caching
       assertThat(tracker.steps)
           .describedAs("Changing width and height triggers only re-measure steps")
-          .containsOnly(
-              LifecycleStep.SHOULD_UPDATE,
-              LifecycleStep.ON_MEASURE,
-              LifecycleStep.ON_BOUNDS_DEFINED,
-              LifecycleStep.ON_UNBIND,
-              LifecycleStep.ON_UNMOUNT,
-              LifecycleStep.ON_MOUNT,
-              LifecycleStep.ON_BIND)
+          .containsOnly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
     } else {
       assertThat(tracker.steps)
           .describedAs("Changing width and height triggers only re-measure steps")

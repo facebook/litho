@@ -503,9 +503,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
-            lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
+            lastMeasuredLayout.getWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
-            lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
+            lastMeasuredLayout.getHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       resultCache.clearCache(this);
 
       final CalculationStateContext prevContext = calculationStateContext;
@@ -566,16 +566,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
       // Add the cached result.
       resultCache.addCachedResult(this, lastMeasuredLayout.mNode, lastMeasuredLayout);
-
-      // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
-      // In that case it needs to manually save the latest saze specs.
-      // The size specs will be checked during the calculation (or collection) of the main tree.
-      if (Component.isLayoutSpec(this)) {
-        lastMeasuredLayout.setLastWidthSpec(widthSpec);
-        lastMeasuredLayout.setLastHeightSpec(heightSpec);
-        lastMeasuredLayout.setLastMeasuredWidth(lastMeasuredLayout.getWidth());
-        lastMeasuredLayout.setLastMeasuredHeight(lastMeasuredLayout.getHeight());
-      }
     }
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();

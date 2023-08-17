@@ -118,7 +118,7 @@ class LayoutCachingTest {
     Assertions.assertThat(lifecycleTracker.steps)
         .describedAs(
             "Node without inter stage props doesn't need rebinding if layout caching is turned on")
-        .containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
+        .isEmpty()
   }
 
   @Test
@@ -177,8 +177,8 @@ class LayoutCachingTest {
     lifecycleTracker1.reset()
     lifecycleTracker2.reset()
     caller.increment()
-    Assertions.assertThat(lifecycleTracker1.steps).containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
-    Assertions.assertThat(lifecycleTracker2.steps).containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
+    Assertions.assertThat(lifecycleTracker1.steps).isEmpty()
+    Assertions.assertThat(lifecycleTracker2.steps).isEmpty()
   }
 
   @Test
@@ -217,55 +217,20 @@ class LayoutCachingTest {
 
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizeSpecs(exactly(200), unspecified()).measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps)
-        .containsExactly(
-            LifecycleStep.ON_MEASURE,
-            LifecycleStep.ON_BOUNDS_DEFINED,
-            LifecycleStep.SHOULD_UPDATE,
-            LifecycleStep.ON_UNBIND,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
-  }
-
-  @Test
-  fun `changing size spec but end up with same measured size should reuse render unit`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
-      return
+    if (legacyLithoViewRule.componentTree.context.shouldCacheLayouts()) {
+      Assertions.assertThat(lifecycleTracker.steps)
+          .containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
+    } else {
+      Assertions.assertThat(lifecycleTracker.steps)
+          .containsExactly(
+              LifecycleStep.ON_MEASURE,
+              LifecycleStep.ON_BOUNDS_DEFINED,
+              LifecycleStep.SHOULD_UPDATE,
+              LifecycleStep.ON_UNBIND,
+              LifecycleStep.ON_UNMOUNT,
+              LifecycleStep.ON_MOUNT,
+              LifecycleStep.ON_BIND)
     }
-
-    val c = legacyLithoViewRule.context
-    val lifecycleTracker = LifecycleTracker()
-    val component =
-        MountSpecPureRenderLifecycleTester.create(c)
-            .lifecycleTracker(lifecycleTracker)
-            .intrinsicSize(Size(100, 100))
-            .build()
-
-    // Make the target component to be the root component and change the size spec
-    legacyLithoViewRule
-        .setRoot(component)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), unspecified())
-        .measure()
-        .layout()
-    Assertions.assertThat(lifecycleTracker.steps)
-        .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_PREPARE,
-            LifecycleStep.ON_MEASURE,
-            LifecycleStep.ON_BOUNDS_DEFINED,
-            LifecycleStep.ON_ATTACHED,
-            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
-            LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
-
-    lifecycleTracker.reset()
-    legacyLithoViewRule.setSizeSpecs(unspecified(), unspecified()).measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps)
-        .containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
   }
 
   @Test
@@ -280,7 +245,10 @@ class LayoutCachingTest {
     val component =
         Column.create(c)
             .child(SimpleStateUpdateEmulator.create(c).caller(caller))
-            .child(MountSpecInterStagePropsTester.create(c).lifecycleTracker(lifecycleTracker))
+            .child(
+                MountSpecInterStagePropsTester.create(c)
+                    .lifecycleTracker(lifecycleTracker)
+                    .viewTag("test"))
             .build()
 
     legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
@@ -294,13 +262,13 @@ class LayoutCachingTest {
 
     lifecycleTracker.reset()
     caller.increment()
+    legacyLithoViewRule.lithoView.onDetachedFromWindowForTest()
+    legacyLithoViewRule.lithoView.onAttachedToWindowForTest()
+
+    // Will throw a NPE if the inter stage props are missing
     Assertions.assertThat(lifecycleTracker.steps)
         .describedAs("prepare and measure should not be called for cached node")
-        .containsExactly(
-            LifecycleStep.ON_UNBIND,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+        .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_BIND)
   }
 
   @Test
@@ -341,7 +309,7 @@ class LayoutCachingTest {
 
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
-    Assertions.assertThat(lifecycleTracker.steps).containsExactly(LifecycleStep.ON_BOUNDS_DEFINED)
+    Assertions.assertThat(lifecycleTracker.steps).isEmpty()
   }
 
   /**
