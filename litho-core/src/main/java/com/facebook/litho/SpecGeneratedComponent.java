@@ -314,7 +314,7 @@ public abstract class SpecGeneratedComponent extends Component
       if (root != null) {
         node = Resolver.resolve(resolveStateContext, c, root);
       } else {
-        node = c.isNullNodeEnabled() ? new NullNode() : null;
+        node = new NullNode();
       }
 
       if (renderResult != null && node != null) {

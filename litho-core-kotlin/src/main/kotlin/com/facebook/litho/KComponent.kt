@@ -60,7 +60,7 @@ abstract class KComponent : Component() {
         if (root != null) {
           Resolver.resolve(resolveStateContext, c, root)
         } else {
-          if (c.isNullNodeEnabled) NullNode() else null
+          NullNode()
         }
 
     if (node != null) {

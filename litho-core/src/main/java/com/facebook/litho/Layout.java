@@ -340,15 +340,12 @@ class Layout {
         return;
       }
 
-      if (parentContext.isNullNodeEnabled()) {
-        final @Nullable List<Attachable> attachables =
-            Resolver.collectAttachables(nestedTree.mNode);
-        if (attachables != null) {
-          if (layoutState.mAttachables == null) {
-            layoutState.mAttachables = new ArrayList<>(attachables.size());
-          }
-          layoutState.mAttachables.addAll(attachables);
+      final @Nullable List<Attachable> attachables = Resolver.collectAttachables(nestedTree.mNode);
+      if (attachables != null) {
+        if (layoutState.mAttachables == null) {
+          layoutState.mAttachables = new ArrayList<>(attachables.size());
         }
+        layoutState.mAttachables.addAll(attachables);
       }
 
       measurePendingSubtrees(

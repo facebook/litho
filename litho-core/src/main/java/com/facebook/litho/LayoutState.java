@@ -576,15 +576,13 @@ public class LayoutState
       }
 
       if (!parentContext.shouldCacheLayouts()) {
-        if (parentContext.isNullNodeEnabled()) {
-          final @Nullable List<Attachable> attachables =
-              Resolver.collectAttachables(nestedTree.mNode);
-          if (attachables != null) {
-            if (layoutState.mAttachables == null) {
-              layoutState.mAttachables = new ArrayList<>(attachables.size());
-            }
-            layoutState.mAttachables.addAll(attachables);
+        final @Nullable List<Attachable> attachables =
+            Resolver.collectAttachables(nestedTree.mNode);
+        if (attachables != null) {
+          if (layoutState.mAttachables == null) {
+            layoutState.mAttachables = new ArrayList<>(attachables.size());
           }
+          layoutState.mAttachables.addAll(attachables);
         }
       }
 
@@ -884,16 +882,6 @@ public class LayoutState
           layoutState.mWorkingRangeContainer.registerWorkingRange(
               registration.name, registration.workingRange, registration.scopedComponentInfo, null);
         }
-      }
-    }
-
-    if (!parentContext.isNullNodeEnabled()) {
-      final List<Attachable> attachables = result.getNode().getAttachables();
-      if (attachables != null) {
-        if (layoutState.mAttachables == null) {
-          layoutState.mAttachables = new ArrayList<>();
-        }
-        layoutState.mAttachables.addAll(attachables);
       }
     }
 

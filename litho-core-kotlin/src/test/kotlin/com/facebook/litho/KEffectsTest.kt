@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.exactly
@@ -636,8 +635,6 @@ class KEffectsTest {
 
   @Test
   fun `effects should work with components that render to null`() {
-    ComponentsConfiguration.isNullNodeEnabled = true
-
     var renderCount = 0
     var attachCount = 0
     var detachCount = 0
@@ -685,8 +682,6 @@ class KEffectsTest {
     assertThat(renderCount).isEqualTo(4)
     assertThat(attachCount).isEqualTo(1)
     assertThat(detachCount).isEqualTo(1)
-
-    ComponentsConfiguration.isNullNodeEnabled = false
   }
 }
 

@@ -33,7 +33,6 @@ class EmptyComponent : Component() {
       parentHeightSpec: Int,
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
-    return ComponentResolveResult(
-        if (scopedComponentInfo.context.isNullNodeEnabled) NullNode() else null, null)
+    return ComponentResolveResult(NullNode(), null)
   }
 }

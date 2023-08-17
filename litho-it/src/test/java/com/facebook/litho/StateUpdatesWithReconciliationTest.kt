@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -125,7 +124,6 @@ class StateUpdatesWithReconciliationTest() {
 
   @Test
   fun `should reuse unaffected part of layout when component renders to null`() {
-    ComponentsConfiguration.isNullNodeEnabled = true
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent : KComponent() {
@@ -155,13 +153,10 @@ class StateUpdatesWithReconciliationTest() {
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
     assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 1")
-
-    ComponentsConfiguration.isNullNodeEnabled = false
   }
 
   @Test
   fun `should reconcile correctly component renders to null on update`() {
-    ComponentsConfiguration.isNullNodeEnabled = true
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
     val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
     class TestComponent : KComponent() {
@@ -197,8 +192,6 @@ class StateUpdatesWithReconciliationTest() {
 
     assertThat(lithoViewRule.lithoView).hasVisibleText("hello world")
     assertThat(lithoViewRule.lithoView).doesNotHaveVisibleTextContaining("Count")
-
-    ComponentsConfiguration.isNullNodeEnabled = false
   }
 
   @Test

@@ -802,10 +802,6 @@ public class ComponentContext implements Cloneable {
     return mLithoConfiguration.areTransitionsEnabled;
   }
 
-  public boolean isNullNodeEnabled() {
-    return isReconciliationEnabled() && mLithoConfiguration.isNullNodeEnabled;
-  }
-
   @Nullable
   RenderUnitIdGenerator getRenderUnitIdGenerator() {
     return mLithoConfiguration.renderUnitIdGenerator;

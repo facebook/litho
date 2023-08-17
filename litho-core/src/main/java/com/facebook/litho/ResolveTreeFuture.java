@@ -271,7 +271,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       if (rsc.isLayoutInterrupted()) {
         attachables = null;
       } else {
-        attachables = context.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
+        attachables = Resolver.collectAttachables(node);
         rsc.getCache().freezeCache();
       }
 
@@ -345,8 +345,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         context.setCalculationStateContext(previousStateContext);
       }
 
-      final @Nullable List<Attachable> attachables =
-          context.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
+      final @Nullable List<Attachable> attachables = Resolver.collectAttachables(node);
 
       partialResult.contextForResuming.getCache().freezeCache();
       final List<Pair<String, EventHandler<?>>> createdEventHandlers =

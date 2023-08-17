@@ -80,7 +80,6 @@ public class ComponentContextUtils {
         lithoConfiguration.areTransitionsEnabled,
         lithoConfiguration.isReconciliationEnabled,
         lithoConfiguration.isVisibilityProcessingEnabled,
-        lithoConfiguration.isNullNodeEnabled,
         lithoConfiguration.mountContentPreallocationHandler,
         lithoConfiguration.incrementalMountEnabled,
         lithoConfiguration.errorEventHandler,
@@ -112,7 +111,6 @@ public class ComponentContextUtils {
             ? ComponentsConfiguration.overrideReconciliation
             : true,
         true,
-        ComponentsConfiguration.isNullNodeEnabled,
         null,
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
         DefaultErrorEventHandler.INSTANCE,
