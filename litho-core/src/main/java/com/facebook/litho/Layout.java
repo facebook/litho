@@ -124,10 +124,17 @@ class Layout {
     // For components measured with measure API, we want to reuse the same global key calculated
     // during measure API call and for that we are using the cached node and accessing the global
     // key from it since NestedTreeHolder will have incorrect global key for it.
-    final String globalKeyToReuse =
-        isLayoutSpecWithSizeSpec(component)
-            ? node.getTailComponentKey()
-            : Preconditions.checkNotNull(node.getCachedNode()).getTailComponentKey();
+    final String globalKeyToReuse;
+    final @Nullable TreeProps treePropsToReuse;
+
+    if (isLayoutSpecWithSizeSpec(component)) {
+      globalKeyToReuse = node.getTailComponentKey();
+      treePropsToReuse = node.getTailComponentContext().getTreeProps();
+    } else {
+      globalKeyToReuse = Preconditions.checkNotNull(node.getCachedNode()).getTailComponentKey();
+      treePropsToReuse =
+          Preconditions.checkNotNull(node.getCachedNode()).getTailComponentContext().getTreeProps();
+    }
 
     // 4.a Apply state updates early for layout phase
     layoutStateContext.getTreeState().applyStateUpdatesEarly(parentContext, component, null, true);
@@ -159,7 +166,8 @@ class Layout {
               heightSpec,
               component,
               true,
-              Preconditions.checkNotNull(globalKeyToReuse));
+              Preconditions.checkNotNull(globalKeyToReuse),
+              treePropsToReuse);
 
       if (newNode == null) {
         if (parentContext.shouldCacheLayouts()) {

@@ -56,7 +56,8 @@ public class TestLayoutState {
             resolveStateContext,
             context,
             component,
-            ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component));
+            ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component),
+            null);
 
     final LithoNode root =
         createImmediateLayout(resolveStateContext, c, widthSpec, heightSpec, component);
@@ -344,7 +345,7 @@ public class TestLayoutState {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = Resolver.createScopedContext(resolveStateContext, parent, component, null);
+      c = Resolver.createScopedContext(resolveStateContext, parent, component, null, null);
       globalKey = c.getGlobalKey();
 
       scopedComponentInfo = c.getScopedComponentInfo();

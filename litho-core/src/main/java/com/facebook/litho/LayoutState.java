@@ -593,7 +593,7 @@ public class LayoutState
       layoutState.mCurrentY += result.getY();
 
       collectResults(
-          parentContext,
+          immediateParentContext,
           nestedTree,
           nestedTree.getNode(),
           layoutState,

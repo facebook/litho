@@ -81,8 +81,6 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED)
 
     // Mid and bot steps will be the same on update 1
@@ -91,7 +89,7 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_TREE_PROP)
+        )
 
     // Testing OCL -> OCL -> OCL
     TestHierarchyBuilder.create(this, true, true, true)
@@ -139,29 +137,19 @@ class NestedTreeResolutionWithStateTest {
             arrayOf(
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-                LifecycleStep.ON_CREATE_LAYOUT,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED))
+                LifecycleStep.ON_CREATE_LAYOUT))
         .setBotStepsUpdate2(
             arrayOf(
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-                LifecycleStep.ON_CREATE_LAYOUT,
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
-                LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED))
+                LifecycleStep.ON_CREATE_LAYOUT))
         .setMountSpecStepsUpdate2(
             arrayOf(
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
                 LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_PREPARE,
                 LifecycleStep.ON_MEASURE,
                 LifecycleStep.ON_BOUNDS_DEFINED,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED,
+                LifecycleStep.SHOULD_UPDATE, // TODO(T160790123): Why?
                 LifecycleStep.ON_UNBIND,
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
@@ -173,19 +161,14 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED))
+            ))
         .setMountSpecStepsUpdate3(
             arrayOf(
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
                 LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_PREPARE,
                 LifecycleStep.SHOULD_UPDATE,
                 LifecycleStep.ON_MEASURE,
                 LifecycleStep.ON_BOUNDS_DEFINED,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED,
                 LifecycleStep.ON_UNBIND,
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
@@ -204,7 +187,6 @@ class NestedTreeResolutionWithStateTest {
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
@@ -216,8 +198,6 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED)
 
     // Mid and bot steps will be the same for all updates
@@ -226,12 +206,11 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_TREE_PROP)
+        )
 
     // Root steps will be the same for all updates
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
@@ -292,9 +271,6 @@ class NestedTreeResolutionWithStateTest {
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
@@ -304,8 +280,6 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED)
     val mountSpecStepsPreUpdate =
         arrayOf<LifecycleStep?>(
@@ -322,16 +296,13 @@ class NestedTreeResolutionWithStateTest {
     val midStepsForUpdate1 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     val botStepsForUpdate1 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_TREE_PROP)
+            LifecycleStep.ON_CREATE_LAYOUT)
     val mountSpecStepsForUpdate1 =
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_TREE_PROP,
@@ -347,7 +318,6 @@ class NestedTreeResolutionWithStateTest {
     val midStepsForUpdate2And3 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     val botStepsForUpdate2And3 =
@@ -355,7 +325,7 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_TREE_PROP)
+        )
     val mountSpecStepsForUpdate2And3 =
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_TREE_PROP,
@@ -410,30 +380,20 @@ class NestedTreeResolutionWithStateTest {
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
     val botStepsForUpdate1 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     val botStepsForUpdate2 =
         arrayOf(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            LifecycleStep.ON_DETACHED,
-            LifecycleStep.ON_ATTACHED)
+        )
 
     // Testing OCL -> OCL -> OCLWSS
     TestHierarchyBuilder.create(this, true, true, false)
@@ -450,9 +410,8 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT,
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
-                LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_ATTACHED))
+                LifecycleStep.ON_ATTACHED,
+            ))
         .setBotStepsPreUpdate(botStepsPreUpdate)
         .setMountSpecStepsPreUpdate(
             arrayOf(
@@ -476,7 +435,7 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT,
-                LifecycleStep.ON_CREATE_TREE_PROP))
+            ))
         .setBotStepsUpdate1(botStepsForUpdate1)
         .setMountSpecStepsUpdate1(
             arrayOf(
@@ -495,19 +454,15 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED))
+            ))
         .setBotStepsUpdate2(botStepsForUpdate2)
         .setMountSpecStepsUpdate2(
             arrayOf(
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
                 LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_PREPARE,
                 LifecycleStep.ON_MEASURE,
                 LifecycleStep.ON_BOUNDS_DEFINED,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED,
+                LifecycleStep.SHOULD_UPDATE, // TODO(T160790123): WHY?
                 LifecycleStep.ON_UNBIND,
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
@@ -517,22 +472,16 @@ class NestedTreeResolutionWithStateTest {
         .setBotStepsUpdate3(
             arrayOf(
                 LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED))
+            ))
         .setMountSpecStepsUpdate3(
             arrayOf(
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
                 LifecycleStep.ON_CREATE_TREE_PROP,
-                LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_PREPARE,
                 LifecycleStep.SHOULD_UPDATE,
                 LifecycleStep.ON_MEASURE,
                 LifecycleStep.ON_BOUNDS_DEFINED,
-                LifecycleStep.ON_DETACHED,
-                LifecycleStep.ON_ATTACHED,
                 LifecycleStep.ON_UNBIND,
                 LifecycleStep.ON_UNMOUNT,
                 LifecycleStep.ON_MOUNT,
@@ -551,16 +500,12 @@ class NestedTreeResolutionWithStateTest {
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
     val midStepsPreUpdate =
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
@@ -571,8 +516,6 @@ class NestedTreeResolutionWithStateTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED)
     val mountSpecStepsPreUpdate =
         arrayOf<LifecycleStep?>(
@@ -591,15 +534,12 @@ class NestedTreeResolutionWithStateTest {
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
 
     // Mid steps will be the same for all updates
     val expectedStepsForMidAllUpdates =
         arrayOf(
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
@@ -609,8 +549,7 @@ class NestedTreeResolutionWithStateTest {
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_TREE_PROP)
+            LifecycleStep.ON_CREATE_LAYOUT)
 
     // MountSpec steps will be the same for all updates
     val expectedStepsForMountSpecAllUpdates =
@@ -657,16 +596,12 @@ class NestedTreeResolutionWithStateTest {
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
     val botStepsPreUpdate =
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
@@ -688,7 +623,6 @@ class NestedTreeResolutionWithStateTest {
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
 
@@ -697,14 +631,11 @@ class NestedTreeResolutionWithStateTest {
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-            LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_TREE_PROP)
+            LifecycleStep.ON_CREATE_LAYOUT)
 
     // Bot steps will be the same for all updates
     val expectedStepsForBotAllUpdates =
         arrayOf(
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
@@ -731,8 +662,6 @@ class NestedTreeResolutionWithStateTest {
                 LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_CALCULATE_CACHED_VALUE,
                 LifecycleStep.ON_CREATE_LAYOUT,
-                LifecycleStep.ON_CREATE_INITIAL_STATE,
-                LifecycleStep.ON_CREATE_TREE_PROP,
                 LifecycleStep.ON_ATTACHED))
         .setBotStepsPreUpdate(botStepsPreUpdate)
         .setMountSpecStepsPreUpdate(mountSpecStepsPreUpdate)
@@ -762,18 +691,12 @@ class NestedTreeResolutionWithStateTest {
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
     val botStepsPreUpdate =
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
@@ -793,14 +716,10 @@ class NestedTreeResolutionWithStateTest {
     val midStepsForUpdate1 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     val botStepsForUpdate1 =
         arrayOf(
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
@@ -819,13 +738,10 @@ class NestedTreeResolutionWithStateTest {
     val midStepsForUpdate2And3 =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     val botStepsForUpdate2And3 =
         arrayOf(
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
@@ -883,7 +799,6 @@ class NestedTreeResolutionWithStateTest {
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
@@ -891,18 +806,12 @@ class NestedTreeResolutionWithStateTest {
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_ATTACHED)
     val botStepsPreUpdate =
         arrayOf(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
@@ -924,7 +833,6 @@ class NestedTreeResolutionWithStateTest {
     val expectedStepsForRootAllUpdates =
         arrayOf<LifecycleStep?>(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
 
@@ -932,16 +840,12 @@ class NestedTreeResolutionWithStateTest {
     val expectedStepsForMidAllUpdates =
         arrayOf(
             LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
 
     // Bot steps will be the same for all updates
     val expectedStepsForBotAllUpdates =
         arrayOf(
-            LifecycleStep.ON_CREATE_TREE_PROP,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)

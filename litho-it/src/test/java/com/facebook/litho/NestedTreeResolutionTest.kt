@@ -572,8 +572,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -625,8 +623,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -676,9 +672,8 @@ class NestedTreeResolutionTest {
     assertThat(layoutWithSizeSpecSteps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep
-                .ON_CREATE_LAYOUT_WITH_SIZE_SPEC) // OCLWSS gets resolved in measure phase, since
+            // OCLWSS gets resolved in measure phase
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     // we are resolving OCLWSS in measure phase it
     // gets resolved only once
     assertThat(mountableLifecycleTracker.steps)
@@ -726,9 +721,8 @@ class NestedTreeResolutionTest {
     assertThat(layoutWithSizeSpecSteps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep
-                .ON_CREATE_LAYOUT_WITH_SIZE_SPEC) // OCLWSS gets resolved in measure phase,since
+            // OCLWSS gets resolved in measure phase
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -787,8 +781,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -860,8 +852,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -914,8 +904,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -962,9 +950,8 @@ class NestedTreeResolutionTest {
     assertThat(layoutWithSizeSpecSteps)
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep
-                .ON_CREATE_LAYOUT_WITH_SIZE_SPEC) // OCLWSS gets resolved in measure phase, since
+            // OCLWSS gets resolved in measure phase
+            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     // we are resolving OCLWSS in measure phase it
     // gets resolved only once
     assertThat(mountableLifecycleTracker.steps)
@@ -1018,8 +1005,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1084,8 +1069,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1149,8 +1132,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1209,9 +1190,7 @@ class NestedTreeResolutionTest {
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1265,9 +1244,7 @@ class NestedTreeResolutionTest {
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1325,8 +1302,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1388,8 +1363,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1451,8 +1424,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1514,8 +1485,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1574,9 +1543,7 @@ class NestedTreeResolutionTest {
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1630,9 +1597,7 @@ class NestedTreeResolutionTest {
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1686,9 +1651,7 @@ class NestedTreeResolutionTest {
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1742,9 +1705,7 @@ class NestedTreeResolutionTest {
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
@@ -1802,8 +1763,6 @@ class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_ATTACHED,
             LifecycleStep.ON_EVENT_VISIBLE,
             LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
@@ -1861,9 +1820,7 @@ class NestedTreeResolutionTest {
     val stepsInfo = LifecycleStep.getSteps(layoutWithSizeSpecStepsInfo)
     assertThat(stepsInfo)
         .containsExactly(
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_INITIAL_STATE,
-            LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
+            LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC)
     assertThat(mountableLifecycleTracker.steps)
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(

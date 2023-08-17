@@ -117,6 +117,7 @@ public class Resolver {
         MEASURE_SPEC_UNSPECIFIED,
         component,
         false,
+        null,
         null);
   }
 
@@ -132,7 +133,8 @@ public class Resolver {
         MEASURE_SPEC_UNSPECIFIED,
         component,
         false,
-        globalKeyToReuse);
+        globalKeyToReuse,
+        null);
   }
 
   static @Nullable LithoNode resolveImpl(
@@ -142,7 +144,8 @@ public class Resolver {
       final int parentHeightSpec,
       Component component,
       final boolean resolveNestedTree,
-      final @Nullable String globalKeyToReuse) {
+      final @Nullable String globalKeyToReuse,
+      final @Nullable TreeProps treePropsToReuse) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -193,16 +196,23 @@ public class Resolver {
         return cached;
       }
 
-      // 4. Update the component.
-      // 5. Get the scoped context of the updated component.
-      c = createScopedContext(resolveStateContext, parent, component, globalKeyToReuse);
-      globalKey = c.getGlobalKey();
-
-      scopedComponentInfo = c.getScopedComponentInfo();
-      // 6. Resolve the component into an InternalNode tree.
-
       final boolean shouldDeferNestedTreeResolution =
           (isNestedTree || hasCachedNode) && !resolveNestedTree;
+
+      // 5. Get or create the scoped context component.
+      if (hasCachedNode) {
+        final MeasuredResultCache cache = resolveStateContext.getCache();
+        c = Preconditions.checkNotNull(cache.getCachedNode(component)).getHeadComponentContext();
+      } else {
+        c =
+            createScopedContext(
+                resolveStateContext, parent, component, globalKeyToReuse, treePropsToReuse);
+      }
+
+      globalKey = c.getGlobalKey();
+      scopedComponentInfo = c.getScopedComponentInfo();
+
+      // 6. Resolve the component into an InternalNode tree.
 
       // If nested tree resolution is deferred, then create a nested tree holder.
       if (shouldDeferNestedTreeResolution) {
@@ -388,7 +398,8 @@ public class Resolver {
       final ResolveStateContext resolveStateContext,
       final ComponentContext parent,
       final Component component,
-      @Nullable final String globalKeyToReuse) {
+      @Nullable final String globalKeyToReuse,
+      @Nullable final TreeProps treePropsToReuse) {
     final String globalKey =
         globalKeyToReuse == null
             ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
@@ -409,9 +420,14 @@ public class Resolver {
       // Note: state must be set (via ScopedComponentInfo.setStateContainer) before invoking
       // getTreePropsForChildren as @OnCreateTreeProps can depend on @State
       final TreeProps ancestor = parent.getTreeProps();
-      final TreeProps descendants =
-          ((SpecGeneratedComponent) component).getTreePropsForChildren(c, ancestor);
       c.setParentTreeProps(ancestor);
+
+      final TreeProps descendants;
+      if (treePropsToReuse != null) {
+        descendants = treePropsToReuse;
+      } else {
+        descendants = ((SpecGeneratedComponent) component).getTreePropsForChildren(c, ancestor);
+      }
       c.setTreeProps(descendants);
     }
 

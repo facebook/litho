@@ -141,7 +141,7 @@ public class ComponentsConfiguration {
   public static boolean disableGetAnnotationUsage;
 
   /** When enabled components which render to null will use a NullNode for reconciliation */
-  public static boolean isNullNodeEnabled = false;
+  public static boolean isNullNodeEnabled = true;
 
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled;
