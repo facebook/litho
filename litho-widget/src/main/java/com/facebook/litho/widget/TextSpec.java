@@ -38,6 +38,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.icu.text.BreakIterator;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Layout.Alignment;
@@ -849,11 +850,25 @@ public class TextSpec {
           ellipsisOffset = ellipsisStart;
         }
       }
+
       if (ellipsisOffset < 0) {
         ellipsisOffset = 0;
       } else if (ellipsisOffset > text.length()) {
         ellipsisOffset = text.length();
+      } else if (Character.isSurrogate(text.charAt(ellipsisOffset))
+          && ellipsisOffset != 0
+          && ellipsisOffset != text.length()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          BreakIterator iterator = BreakIterator.getCharacterInstance();
+          iterator.setText(text);
+          ellipsisOffset = iterator.preceding(ellipsisOffset);
+        } else {
+          java.text.BreakIterator iterator = java.text.BreakIterator.getCharacterInstance();
+          iterator.setText(text.toString());
+          ellipsisOffset = iterator.preceding(ellipsisOffset);
+        }
       }
+
       return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
     } else {
       return text;
