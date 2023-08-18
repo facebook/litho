@@ -18,7 +18,6 @@ package com.facebook.rendercore.extensions;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
@@ -35,6 +34,7 @@ import com.facebook.rendercore.RenderTreeNode;
  * notified when events for such callbacks are triggered.
  *
  * @see GapWorkerCallbacks
+ * @see InformsMountCallback
  * @see OnItemCallbacks
  * @see VisibleBoundsCallbacks
  */
@@ -46,11 +46,6 @@ public abstract class MountExtension<Input, State> {
   }
 
   protected abstract State createState();
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-  public boolean canPreventMount() {
-    return false;
-  }
 
   /**
    * Called for setting up input on the extension before mounting.

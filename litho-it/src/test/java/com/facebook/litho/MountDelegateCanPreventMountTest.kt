@@ -20,6 +20,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.MountDelegateTarget
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.extensions.InformsMountCallback
 import com.facebook.rendercore.extensions.MountExtension
 import java.lang.IllegalStateException
 import org.assertj.core.api.Assertions.assertThat
@@ -56,7 +57,7 @@ class MountDelegateCanPreventMountTest {
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isTrue
 
     // When an extension can prevent mounting, calls to isLockedForMount default to false.
-    val mountDelegateExtensionPreventMount: MountExtension<*, *> = mock()
+    val mountDelegateExtensionPreventMount: InformsMountExtension = mock()
     whenever(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true)
     mountDelegate.registerMountExtension(mountDelegateExtensionPreventMount)
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isFalse
@@ -81,11 +82,13 @@ class MountDelegateCanPreventMountTest {
     whenever(lithoRenderUnit.id).thenReturn(1L)
     val mountDelegateTarget = mock<MountDelegateTarget>()
     val mountDelegate = MountDelegate(mountDelegateTarget, ComponentsSystrace.systrace)
-    val mountDelegateExtensionPreventMount: MountExtension<*, *> = mock()
+    val mountDelegateExtensionPreventMount: InformsMountExtension = mock()
     whenever(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true)
     mountDelegate.registerMountExtension(mountDelegateExtensionPreventMount)
     mountDelegate.acquireMountRef(layoutOutput1)
     mountDelegate.releaseMountRef(layoutOutput1)
     mountDelegate.releaseMountRef(layoutOutput1)
   }
+
+  private abstract class InformsMountExtension : MountExtension<Any, Any>(), InformsMountCallback
 }

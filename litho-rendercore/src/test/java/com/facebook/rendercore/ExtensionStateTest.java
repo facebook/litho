@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 
 import android.util.Pair;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.InformsMountCallback;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
@@ -59,7 +60,8 @@ public class ExtensionStateTest {
     assertThat(mountDelegate.getRefCount(0)).isEqualTo(1);
   }
 
-  private static class TestMountExtension extends MountExtension<Void, Void> {
+  private static class TestMountExtension extends MountExtension<Void, Void>
+      implements InformsMountCallback {
 
     @Override
     protected Void createState() {

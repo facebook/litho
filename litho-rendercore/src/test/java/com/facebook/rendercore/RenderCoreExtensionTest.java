@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.InformsMountCallback;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
@@ -229,7 +230,7 @@ public class RenderCoreExtensionTest {
   }
 
   public static class TrackingMountExtension extends MountExtension
-      implements VisibleBoundsCallbacks, OnItemCallbacks {
+      implements VisibleBoundsCallbacks, OnItemCallbacks, InformsMountCallback {
 
     int beforeMount;
     int afterMount;

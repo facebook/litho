@@ -30,6 +30,7 @@ import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.GapWorkerCallbacks;
+import com.facebook.rendercore.extensions.InformsMountCallback;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
@@ -45,7 +46,8 @@ public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState>
     implements VisibleBoundsCallbacks<IncrementalMountExtensionState>,
         GapWorkerCallbacks<IncrementalMountExtensionState>,
-        OnItemCallbacks<IncrementalMountExtensionState> {
+        OnItemCallbacks<IncrementalMountExtensionState>,
+        InformsMountCallback {
 
   private static final IncrementalMountExtension sInstance = new IncrementalMountExtension(false);
   private static final IncrementalMountExtension sGapWorkerInstance =

@@ -31,6 +31,11 @@ interface GapWorkerCallbacks<State> {
   fun premountNext(extensionState: ExtensionState<State>)
 }
 
+interface InformsMountCallback {
+
+  fun canPreventMount(): Boolean
+}
+
 interface OnItemCallbacks<State> {
 
   fun beforeMountItem(

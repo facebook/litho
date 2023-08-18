@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.InformsMountCallback;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -108,7 +109,7 @@ public class MountDelegateTest {
   }
 
   static class UnitIdBasedMountExtension extends MountExtension<Object, Map<Long, Boolean>>
-      implements OnItemCallbacks<Map<Long, Boolean>> {
+      implements OnItemCallbacks<Map<Long, Boolean>>, InformsMountCallback {
 
     private final Map<Long, Boolean> mMap;
 

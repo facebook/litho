@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.GapWorkerCallbacks;
+import com.facebook.rendercore.extensions.InformsMountCallback;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -73,7 +74,10 @@ public class MountDelegate {
             mUnmountDelegateExtensionState = extensionState;
           }
 
-          mReferenceCountingEnabled = mReferenceCountingEnabled || extension.canPreventMount();
+          mReferenceCountingEnabled =
+              mReferenceCountingEnabled
+                  || (extension instanceof InformsMountCallback
+                      && ((InformsMountCallback) extension).canPreventMount());
 
           mExtensionStates.add(extensionState);
         }
@@ -93,7 +97,10 @@ public class MountDelegate {
       mUnmountDelegateExtensionState = extensionState;
     }
 
-    mReferenceCountingEnabled = mReferenceCountingEnabled || extension.canPreventMount();
+    mReferenceCountingEnabled =
+        mReferenceCountingEnabled
+            || (extension instanceof InformsMountCallback
+                && ((InformsMountCallback) extension).canPreventMount());
 
     mExtensionStates.add(extensionState);
 
@@ -126,7 +133,8 @@ public class MountDelegate {
       throw new IllegalStateException("Could not find the extension " + toRemove);
     }
 
-    if (mountExtension.canPreventMount()) {
+    if (mountExtension instanceof InformsMountCallback
+        && ((InformsMountCallback) mountExtension).canPreventMount()) {
       updateRefCountEnabled();
     }
   }
@@ -247,7 +255,10 @@ public class MountDelegate {
   private void updateRefCountEnabled() {
     mReferenceCountingEnabled = false;
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      mReferenceCountingEnabled = mExtensionStates.get(i).getExtension().canPreventMount();
+      MountExtension extension = mExtensionStates.get(i).getExtension();
+      if (extension instanceof InformsMountCallback) {
+        mReferenceCountingEnabled = ((InformsMountCallback) extension).canPreventMount();
+      }
       if (mReferenceCountingEnabled) {
         return;
       }
