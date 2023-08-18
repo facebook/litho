@@ -53,6 +53,11 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
+  public boolean canPreallocate() {
+    return ComponentsConfiguration.isHostComponentPreallocationEnabled;
+  }
+
+  @Override
   protected Object onCreateMountContent(Context c) {
     return new ComponentHost(c);
   }

@@ -1335,7 +1335,8 @@ public class LayoutState
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final RenderTreeNode treeNode = mMountableOutputs.get(i);
         final Component component = getRenderUnit(treeNode).getComponent();
-        if (!isMountSpecThatCanPreallocate(component)
+
+        if (!isSpecGeneratedComponentThatCanPreallocate(component)
             && !isMountableThatCanPreallocate(treeNode)
             && !isPrimitiveThatCanPreallocate(treeNode)) {
           continue;
@@ -1384,7 +1385,7 @@ public class LayoutState
             .canPreallocate();
   }
 
-  private boolean isMountSpecThatCanPreallocate(Component component) {
+  private boolean isSpecGeneratedComponentThatCanPreallocate(Component component) {
     return component instanceof SpecGeneratedComponent
         && ((SpecGeneratedComponent) component).canPreallocate();
   }

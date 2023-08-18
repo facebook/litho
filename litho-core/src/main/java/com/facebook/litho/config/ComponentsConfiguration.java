@@ -199,6 +199,9 @@ public class ComponentsConfiguration {
 
   public static boolean unsafeHostComponentRecyclingIsEnabled = false;
 
+  /** Whether a {@link ComponentHost} can be pre-allocated */
+  public static boolean isHostComponentPreallocationEnabled = false;
+
   public static int hostComponentPoolSize = 30;
 
   /** When {@code true} ComponentTree records state change snapshots */
