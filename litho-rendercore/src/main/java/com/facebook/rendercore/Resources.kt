@@ -43,6 +43,25 @@ fun BaseResourcesScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): St
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
+/**
+ * @return a string for a resource ID and quantity, substituting the format arguments with
+ *   [formatArgs].
+ */
+fun BaseResourcesScope.quantityStringRes(@StringRes id: Int, quantity: Int): String =
+    requireNotNull(resourceResolver.resolveQuantityStringRes(id, quantity)) {
+      "String resource not found for ID #0x${Integer.toHexString(id)}"
+    }
+
+/** @return a string for a resource ID and quantity. */
+fun BaseResourcesScope.quantityStringRes(
+    @StringRes id: Int,
+    quantity: Int,
+    vararg formatArgs: Any
+): String =
+    requireNotNull(resourceResolver.resolveQuantityStringRes(id, quantity, formatArgs)) {
+      "String resource not found for ID #0x${Integer.toHexString(id)}"
+    }
+
 /** Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [Drawable] instance. */
 fun BaseResourcesScope.drawableRes(@DrawableRes id: Int): Drawable =
     requireNotNull(resourceResolver.resolveDrawableRes(id)) {

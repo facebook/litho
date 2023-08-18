@@ -93,6 +93,15 @@ public class ResourceResolver {
     return resId != 0 ? mResources.getString(resId, formatArgs) : null;
   }
 
+  public @Nullable String resolveQuantityStringRes(@StringRes int resId, int quantity) {
+    return resId != 0 ? mResources.getQuantityString(resId, quantity) : null;
+  }
+
+  public @Nullable String resolveQuantityStringRes(
+      @StringRes int resId, int quantity, Object... formatArgs) {
+    return resId != 0 ? mResources.getQuantityString(resId, quantity, formatArgs) : null;
+  }
+
   @Nullable
   public String[] resolveStringArrayRes(@ArrayRes int resId) {
     if (mResourceCache != null && resId != 0) {
