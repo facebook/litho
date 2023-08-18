@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
@@ -106,7 +107,8 @@ public class MountDelegateTest {
     assertThat(mountExtension.onUnbindItem).isEqualTo(2);
   }
 
-  static class UnitIdBasedMountExtension extends MountExtension<Object, Map<Long, Boolean>> {
+  static class UnitIdBasedMountExtension extends MountExtension<Object, Map<Long, Boolean>>
+      implements OnItemCallbacks<Map<Long, Boolean>> {
 
     private final Map<Long, Boolean> mMap;
 
@@ -180,5 +182,22 @@ public class MountDelegateTest {
         @Nullable Object layoutData) {
       onUnbindItem++;
     }
+
+    @Override
+    public boolean shouldUpdateItem(
+        ExtensionState<Map<Long, Boolean>> extensionState,
+        RenderUnit<?> previousRenderUnit,
+        @Nullable Object previousLayoutData,
+        RenderUnit<?> nextRenderUnit,
+        @Nullable Object nextLayoutData) {
+      return false;
+    }
+
+    @Override
+    public void onBoundsAppliedToItem(
+        ExtensionState<Map<Long, Boolean>> extensionState,
+        RenderUnit<?> renderUnit,
+        Object content,
+        @Nullable Object layoutData) {}
   }
 }

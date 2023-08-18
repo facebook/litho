@@ -23,6 +23,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.testing.TestMountExtension;
 import com.facebook.rendercore.testing.TestNode;
@@ -256,7 +257,8 @@ public class MountStateWithDelegateTest {
     return new MountState(new RootHostView(c));
   }
 
-  private class TestMountExtensionWithAcquire extends TestMountExtension {
+  private class TestMountExtensionWithAcquire extends TestMountExtension
+      implements OnItemCallbacks<Object> {
 
     private final List bindOrder;
     private final List unbindOrder;
@@ -335,5 +337,9 @@ public class MountStateWithDelegateTest {
         final RenderUnit<?> renderUnit,
         final Object content,
         final @Nullable Object layoutData) {}
+
+    @Override
+    public void beforeMountItem(
+        ExtensionState<Object> extensionState, RenderTreeNode renderTreeNode, int index) {}
   }
 }

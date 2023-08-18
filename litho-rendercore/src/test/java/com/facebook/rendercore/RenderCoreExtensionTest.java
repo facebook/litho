@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import com.facebook.rendercore.testing.LayoutResultWrappingNode;
@@ -228,7 +229,7 @@ public class RenderCoreExtensionTest {
   }
 
   public static class TrackingMountExtension extends MountExtension
-      implements VisibleBoundsCallbacks {
+      implements VisibleBoundsCallbacks, OnItemCallbacks {
 
     int beforeMount;
     int afterMount;
@@ -284,8 +285,6 @@ public class RenderCoreExtensionTest {
     @Override
     public void beforeMountItem(
         ExtensionState extensionState, RenderTreeNode renderTreeNode, int index) {
-      super.beforeMountItem(extensionState, renderTreeNode, index);
-
       // mount all
       if (!extensionState.ownsReference(renderTreeNode.getRenderUnit().getId())) {
         extensionState.acquireMountReference(renderTreeNode.getRenderUnit().getId(), false);
@@ -337,5 +336,22 @@ public class RenderCoreExtensionTest {
         @Nullable Object layoutData) {
       mountItem++;
     }
+
+    @Override
+    public boolean shouldUpdateItem(
+        ExtensionState extensionState,
+        RenderUnit previousRenderUnit,
+        @Nullable Object previousLayoutData,
+        RenderUnit nextRenderUnit,
+        @Nullable Object nextLayoutData) {
+      return false;
+    }
+
+    @Override
+    public void onBoundsAppliedToItem(
+        ExtensionState extensionState,
+        RenderUnit renderUnit,
+        Object content,
+        @Nullable Object layoutData) {}
   }
 }

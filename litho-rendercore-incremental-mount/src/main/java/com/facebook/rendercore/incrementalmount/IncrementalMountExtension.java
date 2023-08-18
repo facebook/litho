@@ -31,6 +31,7 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.GapWorkerCallbacks;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.extensions.VisibleBoundsCallbacks;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import java.util.Collection;
@@ -43,7 +44,8 @@ import java.util.Set;
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState>
     implements VisibleBoundsCallbacks<IncrementalMountExtensionState>,
-        GapWorkerCallbacks<IncrementalMountExtensionState> {
+        GapWorkerCallbacks<IncrementalMountExtensionState>,
+        OnItemCallbacks<IncrementalMountExtensionState> {
 
   private static final IncrementalMountExtension sInstance = new IncrementalMountExtension(false);
   private static final IncrementalMountExtension sGapWorkerInstance =
@@ -303,6 +305,16 @@ public class IncrementalMountExtension
   }
 
   @Override
+  public boolean shouldUpdateItem(
+      ExtensionState<IncrementalMountExtensionState> extensionState,
+      RenderUnit<?> previousRenderUnit,
+      @Nullable Object previousLayoutData,
+      RenderUnit<?> nextRenderUnit,
+      @Nullable Object nextLayoutData) {
+    return false;
+  }
+
+  @Override
   public void onUnmountItem(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final RenderUnit<?> renderUnit,
@@ -328,6 +340,13 @@ public class IncrementalMountExtension
     final long id = renderUnit.getId();
     state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.remove(id);
   }
+
+  @Override
+  public void onBoundsAppliedToItem(
+      ExtensionState<IncrementalMountExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
 
   @Override
   public void onUnmount(final ExtensionState<IncrementalMountExtensionState> extensionState) {

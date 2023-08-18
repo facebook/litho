@@ -38,6 +38,7 @@ import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.transitions.DisappearingHost;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
@@ -56,7 +57,8 @@ import java.util.Stack;
 public class TransitionsExtension
     extends MountExtension<
         TransitionsExtensionInput, TransitionsExtension.TransitionsExtensionState>
-    implements UnmountDelegateExtension<TransitionsExtension.TransitionsExtensionState> {
+    implements UnmountDelegateExtension<TransitionsExtension.TransitionsExtensionState>,
+        OnItemCallbacks<TransitionsExtension.TransitionsExtensionState> {
 
   private static final TransitionsExtension sDefaultInstance = new TransitionsExtension(null);
   private static TransitionsExtension sDebugInstance;
@@ -262,6 +264,50 @@ public class TransitionsExtension
       recursivelyNotifyVisibleBoundsChanged(view);
     }
   }
+
+  @Override
+  public void beforeMountItem(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      RenderTreeNode renderTreeNode,
+      int index) {}
+
+  @Override
+  public void onMountItem(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public boolean shouldUpdateItem(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      RenderUnit<?> previousRenderUnit,
+      @Nullable Object previousLayoutData,
+      RenderUnit<?> nextRenderUnit,
+      @Nullable Object nextLayoutData) {
+    return false;
+  }
+
+  @Override
+  public void onBindItem(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onUnbindItem(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onUnmountItem(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
 
   /**
    * Creates and updates transitions for a new TransitionsExtensionInput. The steps are as follows:

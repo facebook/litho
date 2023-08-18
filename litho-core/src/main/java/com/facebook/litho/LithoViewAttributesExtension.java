@@ -45,16 +45,19 @@ import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import java.util.HashMap;
 import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoViewAttributesExtension
-    extends MountExtension<ViewAttributesInput, LithoViewAttributesState> {
+    extends MountExtension<ViewAttributesInput, LithoViewAttributesState>
+    implements OnItemCallbacks<LithoViewAttributesState> {
 
   private static final LithoViewAttributesExtension sInstance = new LithoViewAttributesExtension();
 
@@ -158,6 +161,33 @@ public class LithoViewAttributesExtension
       unsetViewAttributes(content, viewAttributes, flags);
     }
   }
+
+  @Override
+  public void beforeMountItem(
+      ExtensionState<LithoViewAttributesState> extensionState,
+      RenderTreeNode renderTreeNode,
+      int index) {}
+
+  @Override
+  public void onBindItem(
+      ExtensionState<LithoViewAttributesState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onUnbindItem(
+      ExtensionState<LithoViewAttributesState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onBoundsAppliedToItem(
+      ExtensionState<LithoViewAttributesState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
 
   @Override
   public boolean shouldUpdateItem(

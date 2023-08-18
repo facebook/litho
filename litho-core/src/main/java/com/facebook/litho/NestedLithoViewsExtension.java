@@ -18,9 +18,11 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 import java.util.ArrayList;
 
 /**
@@ -30,7 +32,8 @@ import java.util.ArrayList;
  * implementation which returns false).
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class NestedLithoViewsExtension extends MountExtension<Void, Void> {
+public class NestedLithoViewsExtension extends MountExtension<Void, Void>
+    implements OnItemCallbacks<Void> {
 
   @Override
   protected Void createState() {
@@ -54,4 +57,46 @@ public class NestedLithoViewsExtension extends MountExtension<Void, Void> {
       }
     }
   }
+
+  @Override
+  public void beforeMountItem(
+      ExtensionState<Void> extensionState, RenderTreeNode renderTreeNode, int index) {}
+
+  @Override
+  public void onMountItem(
+      ExtensionState<Void> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public boolean shouldUpdateItem(
+      ExtensionState<Void> extensionState,
+      RenderUnit<?> previousRenderUnit,
+      @Nullable Object previousLayoutData,
+      RenderUnit<?> nextRenderUnit,
+      @Nullable Object nextLayoutData) {
+    return false;
+  }
+
+  @Override
+  public void onBindItem(
+      ExtensionState<Void> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onUnbindItem(
+      ExtensionState<Void> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onBoundsAppliedToItem(
+      ExtensionState<Void> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
 }

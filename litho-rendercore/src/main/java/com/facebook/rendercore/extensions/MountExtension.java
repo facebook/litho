@@ -24,7 +24,6 @@ import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.rendercore.RenderUnit;
 
 /**
  * Mount extension which can be registered by a MountState as an extension which can override
@@ -36,10 +35,11 @@ import com.facebook.rendercore.RenderUnit;
  * notified when events for such callbacks are triggered.
  *
  * @see GapWorkerCallbacks
+ * @see OnItemCallbacks
  * @see VisibleBoundsCallbacks
  */
 @OkToExtend
-public abstract class MountExtension<Input, State> implements OnItemCallbacks<State> {
+public abstract class MountExtension<Input, State> {
 
   public final ExtensionState<State> createExtensionState(final MountDelegate mountDelegate) {
     return new ExtensionState<>(this, mountDelegate, createState());
@@ -71,57 +71,6 @@ public abstract class MountExtension<Input, State> implements OnItemCallbacks<St
 
   /** Called after all the Host's children have been unbound. */
   public void onUnbind(ExtensionState<State> extensionState) {}
-
-  @Override
-  public void beforeMountItem(
-      final ExtensionState<State> extensionState,
-      final RenderTreeNode renderTreeNode,
-      final int index) {}
-
-  @Override
-  public void onMountItem(
-      final ExtensionState<State> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {}
-
-  @Override
-  public boolean shouldUpdateItem(
-      final ExtensionState<State> extensionState,
-      final RenderUnit<?> previousRenderUnit,
-      final @Nullable Object previousLayoutData,
-      final RenderUnit<?> nextRenderUnit,
-      final @Nullable Object nextLayoutData) {
-    return false;
-  }
-
-  @Override
-  public void onBindItem(
-      final ExtensionState<State> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {}
-
-  @Override
-  public void onUnbindItem(
-      final ExtensionState<State> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {}
-
-  @Override
-  public void onUnmountItem(
-      final ExtensionState<State> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {}
-
-  @Override
-  public void onBoundsAppliedToItem(
-      final ExtensionState<State> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {}
 
   public static MountDelegateTarget getMountTarget(final ExtensionState<?> extensionState) {
     return extensionState.getMountDelegate().getMountDelegateTarget();

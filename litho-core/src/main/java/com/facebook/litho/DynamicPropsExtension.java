@@ -19,13 +19,16 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.OnItemCallbacks;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class DynamicPropsExtension
-    extends MountExtension<Void, DynamicPropsExtension.DynamicPropsExtensionState> {
+    extends MountExtension<Void, DynamicPropsExtension.DynamicPropsExtensionState>
+    implements OnItemCallbacks<DynamicPropsExtension.DynamicPropsExtensionState> {
 
   private static final DynamicPropsExtension sInstance = new DynamicPropsExtension();
 
@@ -82,6 +85,33 @@ public class DynamicPropsExtension
       final @Nullable Object nextLayoutData) {
     return true;
   }
+
+  @Override
+  public void beforeMountItem(
+      ExtensionState<DynamicPropsExtensionState> extensionState,
+      RenderTreeNode renderTreeNode,
+      int index) {}
+
+  @Override
+  public void onMountItem(
+      ExtensionState<DynamicPropsExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onUnmountItem(
+      ExtensionState<DynamicPropsExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
+
+  @Override
+  public void onBoundsAppliedToItem(
+      ExtensionState<DynamicPropsExtensionState> extensionState,
+      RenderUnit<?> renderUnit,
+      Object content,
+      @Nullable Object layoutData) {}
 
   static class DynamicPropsExtensionState {
     private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
