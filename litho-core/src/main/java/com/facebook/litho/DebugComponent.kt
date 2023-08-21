@@ -400,7 +400,11 @@ private constructor(
     }
 
     private fun generateGlobalKey(context: ComponentContext, componentKey: String): String =
-        System.identityHashCode(context.lithoTree).toString() + componentKey
+        generateGlobalKey(context.lithoTree?.id, componentKey)
+
+    @JvmStatic
+    fun generateGlobalKey(treeId: Int?, globalKey: String): String =
+        "${treeId?: "notree"}:${globalKey}"
 
     @JvmStatic
     fun applyOverrides(context: ComponentContext, component: Component, componentKey: String) {
