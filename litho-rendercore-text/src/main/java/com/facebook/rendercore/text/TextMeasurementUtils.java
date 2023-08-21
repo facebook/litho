@@ -27,6 +27,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.MetricAffectingSpan;
@@ -88,12 +89,23 @@ public class TextMeasurementUtils {
     if (debugListener != null) {
       debugListener.onTextMeasured(renderUnit, text, widthSpec, heightSpec);
     }
+
     Pair<Rect, TextLayout> result = layout(androidContext, widthSpec, heightSpec, text, textStyle);
+    final boolean fitTextToConstraints =
+        textStyle.shouldTruncateTextUsingConstraints
+            && textStyle.maxLines == Integer.MAX_VALUE
+            && View.MeasureSpec.getMode(heightSpec) != View.MeasureSpec.UNSPECIFIED;
+    if (fitTextToConstraints) {
+      result =
+          maybeFitTextToConstraints(androidContext, heightSpec, widthSpec, textStyle, text, result);
+    }
+
     if (textStyle.roundedBackgroundProps != null && text instanceof Spannable) {
       result =
           calculateLayoutWithBackgroundSpan(
               androidContext, result, textStyle, (Spannable) text, widthSpec, heightSpec);
     }
+
     return new MountableLayoutResult(
         renderUnit,
         widthSpec,
@@ -101,6 +113,46 @@ public class TextMeasurementUtils {
         result.first.width(),
         result.first.height(),
         result.second);
+  }
+
+  private static Pair<Rect, TextLayout> maybeFitTextToConstraints(
+      Context context,
+      int heightSpec,
+      int widthSpec,
+      TextStyle textStyle,
+      CharSequence text,
+      Pair<Rect, TextLayout> initialResult) {
+
+    CharSequence processedText = initialResult.second.processedText;
+    int maxTextSize = -1;
+    if (processedText instanceof Spanned) {
+      final AbsoluteSizeSpan[] spans =
+          ((Spanned) processedText).getSpans(0, processedText.length(), AbsoluteSizeSpan.class);
+      for (AbsoluteSizeSpan span : spans) {
+        if (span.getSize() > maxTextSize) {
+          maxTextSize = span.getSize();
+        }
+      }
+    }
+
+    final TextPaint tp = new TextPaint();
+    final Layout layout = initialResult.second.layout;
+    tp.set(layout.getPaint());
+    if (maxTextSize != -1) {
+      tp.setTextSize(maxTextSize);
+    }
+
+    final int lineHeight =
+        (int)
+            ((tp.getFontMetricsInt(null) * layout.getSpacingMultiplier()) + layout.getSpacingAdd());
+    final int maxHeight = View.resolveSize(initialResult.first.height(), heightSpec);
+    final int linesWithinConstrainedBounds = maxHeight / lineHeight;
+    if (linesWithinConstrainedBounds == layout.getLineCount()) {
+      return initialResult;
+    }
+
+    textStyle.setMaxLines(linesWithinConstrainedBounds);
+    return layout(context, widthSpec, heightSpec, text, textStyle);
   }
 
   public static Pair<Rect, TextLayout> calculateLayoutWithBackgroundSpan(

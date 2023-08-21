@@ -67,6 +67,8 @@ public class TextStyle implements Cloneable {
   int highlightEndOffset = UNSET;
   int highlightCornerRadius = 0;
   boolean shouldLayoutEmptyText = false;
+
+  boolean shouldTruncateTextUsingConstraints = false;
   int manualBaselineSpacing = Integer.MIN_VALUE;
   int manualCapSpacing = Integer.MIN_VALUE;
   float extraSpacingLeft = 0;
@@ -80,6 +82,10 @@ public class TextStyle implements Cloneable {
 
   public void setShouldLayoutEmptyText(boolean shouldLayoutEmptyText) {
     this.shouldLayoutEmptyText = shouldLayoutEmptyText;
+  }
+
+  public void setShouldTruncateTextUsingConstraints(boolean shouldTruncateTextUsingConstraints) {
+    this.shouldTruncateTextUsingConstraints = shouldTruncateTextUsingConstraints;
   }
 
   public void setManualBaselineCapSpacing(int manualBaselineSpacing, int manualCapSpacing) {
