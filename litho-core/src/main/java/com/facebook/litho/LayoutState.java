@@ -1294,9 +1294,9 @@ public class LayoutState
   static String layoutSourceToString(@RenderSource int source) {
     switch (source) {
       case RenderSource.SET_ROOT_SYNC:
-        return "setRoot";
+        return "setRootSync";
       case RenderSource.SET_SIZE_SPEC_SYNC:
-        return "setSizeSpec";
+        return "setSizeSpecSync";
       case RenderSource.UPDATE_STATE_SYNC:
         return "updateStateSync";
       case RenderSource.SET_ROOT_ASYNC:
@@ -1306,7 +1306,7 @@ public class LayoutState
       case RenderSource.UPDATE_STATE_ASYNC:
         return "updateStateAsync";
       case RenderSource.MEASURE_SET_SIZE_SPEC:
-        return "measure_setSizeSpec";
+        return "measure_setSizeSpecSync";
       case RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC:
         return "measure_setSizeSpecAsync";
       case RenderSource.TEST:
