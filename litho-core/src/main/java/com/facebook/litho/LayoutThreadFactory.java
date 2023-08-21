@@ -66,7 +66,10 @@ class LayoutThreadFactory implements ThreadFactory {
     final Thread thread =
         new Thread(
             wrapperRunnable,
-            "ComponentLayoutThread" + mThreadPoolId + "-" + threadNumber.getAndIncrement());
+            ComponentTree.DEFAULT_LAYOUT_THREAD_NAME
+                + mThreadPoolId
+                + "-"
+                + threadNumber.getAndIncrement());
     thread.setPriority(Thread.MAX_PRIORITY);
 
     return thread;

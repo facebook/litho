@@ -123,7 +123,7 @@ public class ComponentTree
   private static final String TAG = ComponentTree.class.getSimpleName();
   public static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_RESOLVE_THREAD_NAME = "ComponentResolveThread";
-  private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
+  /* package-private */ static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String EMPTY_STRING = "";
   private static final String CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT =
       "ComponentTree:CTContextIsDifferentFromRootBuilderContext";

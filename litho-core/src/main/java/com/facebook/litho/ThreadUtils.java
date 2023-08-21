@@ -56,6 +56,10 @@ public class ThreadUtils {
     }
   }
 
+  public static boolean isLayoutThread() {
+    return Thread.currentThread().getName().startsWith(ComponentTree.DEFAULT_LAYOUT_THREAD_NAME);
+  }
+
   public static void assertMainThread() {
     if (ComponentsConfiguration.isEndToEndTestRun) {
       return;
