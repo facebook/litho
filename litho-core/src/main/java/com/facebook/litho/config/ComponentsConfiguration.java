@@ -260,6 +260,8 @@ public class ComponentsConfiguration {
 
   public static boolean hostComponentAlwaysShouldUpdate = true;
 
+  public static boolean disableFlexDirectionInResolve = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;

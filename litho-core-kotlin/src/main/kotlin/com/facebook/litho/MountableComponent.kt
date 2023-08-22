@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
@@ -82,8 +83,9 @@ abstract class MountableComponent() : Component() {
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
     val node = LithoNode()
-    // TODO(T159448330): run a QE to check if this step is needed here
-    node.flexDirection(YogaFlexDirection.COLUMN)
+    if (!ComponentsConfiguration.disableFlexDirectionInResolve) {
+      node.flexDirection(YogaFlexDirection.COLUMN)
+    }
     var commonProps: CommonProps? = null
     val isTracing = ComponentsSystrace.isTracing
 
