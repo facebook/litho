@@ -64,13 +64,15 @@ public class HostMountContentPool implements MountItemsPool.ItemPool {
   }
 
   @Override
-  public void maybePreallocateContent(Context c, ContentAllocator contentAllocator) {
+  public boolean maybePreallocateContent(Context c, ContentAllocator contentAllocator) {
     if (mPool == null) {
-      return;
+      return false;
     }
 
     if (contentAllocator.canPreallocate()) {
-      mPool.maybePreallocateContent(c, contentAllocator);
+      return mPool.maybePreallocateContent(c, contentAllocator);
+    } else {
+      return false;
     }
   }
 }

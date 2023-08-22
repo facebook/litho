@@ -30,6 +30,7 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 import android.graphics.Rect;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -1354,8 +1355,15 @@ public class LayoutState
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
 
-          MountItemsPool.maybePreallocateContent(
-              mContext.getAndroidContext(), treeNode.getRenderUnit().getContentAllocator());
+          boolean preallocated =
+              MountItemsPool.maybePreallocateContent(
+                  mContext.getAndroidContext(), treeNode.getRenderUnit().getContentAllocator());
+
+          Log.d(
+              "LayoutState",
+              "Preallocation of"
+                  + component.getSimpleName()
+                  + (preallocated ? " succeeded" : " failed"));
 
           if (isTracing) {
             ComponentsSystrace.endSection();

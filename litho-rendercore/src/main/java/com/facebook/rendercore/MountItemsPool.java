@@ -106,11 +106,13 @@ public class MountItemsPool {
     }
   }
 
-  public static void maybePreallocateContent(
+  public static boolean maybePreallocateContent(
       Context context, ContentAllocator poolableMountContent) {
     final ItemPool pool = getMountContentPool(context, poolableMountContent);
     if (pool != null) {
-      pool.maybePreallocateContent(context, poolableMountContent);
+      return pool.maybePreallocateContent(context, poolableMountContent);
+    } else {
+      return false;
     }
   }
 
@@ -352,7 +354,7 @@ public class MountItemsPool {
      * Called when an item is released and can return to the pool
      *
      * @param item the item to release to the pool
-     * @return {@code true} iff the {@param item} is released to the pool.
+     * @return {@code true} if the {@param item} is released to the pool.
      */
     boolean release(Object item);
 
@@ -361,8 +363,10 @@ public class MountItemsPool {
      *
      * @param c the android context
      * @param contentAllocator the content allocator used.
+     * @return {@code } true if the mount content created by {@param contentAllocator} is released
+     *     into the pool.
      */
-    void maybePreallocateContent(Context c, ContentAllocator contentAllocator);
+    boolean maybePreallocateContent(Context c, ContentAllocator contentAllocator);
   }
 
   public static class DefaultItemPool implements ItemPool {
@@ -410,10 +414,11 @@ public class MountItemsPool {
     }
 
     @Override
-    public void maybePreallocateContent(Context c, ContentAllocator contentAllocator) {
+    public boolean maybePreallocateContent(Context c, ContentAllocator contentAllocator) {
       if (mCurrentPoolSize.get() < mMaxPoolSize) {
-        release(contentAllocator.createContent(c));
+        return release(contentAllocator.createContent(c));
       }
+      return false;
     }
 
     private boolean addToPool(Object item) {

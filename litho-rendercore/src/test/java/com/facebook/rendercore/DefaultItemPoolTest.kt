@@ -68,6 +68,20 @@ class DefaultItemPoolTest {
     Assertions.assertThat(pooledContent).isEqualTo(view)
   }
 
+  @Test
+  fun `maybePreallocate - should only pre-allocate if has space`() {
+    val pool = MountItemsPool.DefaultItemPool(this::class.java, 1, false)
+    val contentAllocator = FakeContentAllocator()
+
+    val context = ApplicationProvider.getApplicationContext<Context>()
+
+    Assertions.assertThat(pool.maybePreallocateContent(context, contentAllocator)).isTrue
+    Assertions.assertThat(contentAllocator.numberAllocations).isEqualTo(1)
+
+    Assertions.assertThat(pool.maybePreallocateContent(context, contentAllocator)).isFalse
+    Assertions.assertThat(contentAllocator.numberAllocations).isEqualTo(1)
+  }
+
   private class FakeContentAllocator : ContentAllocator<TextView> {
 
     var numberAllocations: Int = 0
