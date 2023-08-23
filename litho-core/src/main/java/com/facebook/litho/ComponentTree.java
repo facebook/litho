@@ -455,6 +455,54 @@ public class ComponentTree
       logger = builder.context.getLogger();
     }
 
+    if (ComponentsConfiguration.isTimelineEnabled) {
+      mTimeMachine = new DebugComponentTreeTimeMachine(this);
+    } else {
+      mTimeMachine = null;
+    }
+
+    if (ComponentsConfiguration.enableStateUpdatesBatching) {
+      mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
+    } else {
+      mBatchedStateUpdatesStrategy = null;
+    }
+
+    if (ComponentsConfiguration.overrideLayoutDiffing != null) {
+      mIsLayoutDiffingEnabled = ComponentsConfiguration.overrideLayoutDiffing;
+    } else {
+      mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    }
+
+    addMeasureListener(builder.mMeasureListener);
+
+    useSeparateThreadHandlersForResolveAndLayout =
+        ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
+
+    mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
+
+    mIncrementalMountHelper =
+        ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
+            ? new IncrementalMountHelper(this)
+            : null;
+
+    // Instrument LithoHandlers.
+    mLayoutThreadHandler = builder.layoutThreadHandler;
+    mMainThreadHandler = instrumentHandler(mMainThreadHandler);
+    mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
+
+    mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
+    mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
+    if (mPreAllocateMountContentHandler != null) {
+      mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
+    }
+
+    if (useSeparateThreadHandlersForResolveAndLayout) {
+      mResolveThreadHandler =
+          builder.resolveThreadHandler != null
+              ? instrumentHandler(builder.resolveThreadHandler)
+              : instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
+    }
+
     final LithoConfiguration config =
         new LithoConfiguration(
             builder.config,
@@ -478,12 +526,6 @@ public class ComponentTree
       subscribeToLifecycleProvider(builder.mLifecycleProvider);
     }
 
-    if (ComponentsConfiguration.isTimelineEnabled) {
-      mTimeMachine = new DebugComponentTreeTimeMachine(this);
-    } else {
-      mTimeMachine = null;
-    }
-
     if (config.debugEventListener != null) {
       mDebugEventsSubscriber =
           new ComponentTreeDebugEventsSubscriber(
@@ -496,46 +538,6 @@ public class ComponentTree
       DebugEventBus.subscribe(mDebugEventsSubscriber);
     } else {
       mDebugEventsSubscriber = null;
-    }
-
-    if (ComponentsConfiguration.enableStateUpdatesBatching) {
-      mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
-    } else {
-      mBatchedStateUpdatesStrategy = null;
-    }
-
-    if (ComponentsConfiguration.overrideLayoutDiffing != null) {
-      mIsLayoutDiffingEnabled = ComponentsConfiguration.overrideLayoutDiffing;
-    } else {
-      mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
-    }
-    mLayoutThreadHandler = builder.layoutThreadHandler;
-    mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
-    mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
-    addMeasureListener(builder.mMeasureListener);
-
-    useSeparateThreadHandlersForResolveAndLayout =
-        ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
-
-    mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
-
-    mIncrementalMountHelper =
-        ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
-            ? new IncrementalMountHelper(this)
-            : null;
-
-    // Instrument LithoHandlers.
-    mMainThreadHandler = instrumentHandler(mMainThreadHandler);
-    mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
-    if (mPreAllocateMountContentHandler != null) {
-      mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
-    }
-
-    if (useSeparateThreadHandlersForResolveAndLayout) {
-      mResolveThreadHandler =
-          builder.resolveThreadHandler != null
-              ? instrumentHandler(builder.resolveThreadHandler)
-              : instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
     }
 
     mAccessibilityManager =
