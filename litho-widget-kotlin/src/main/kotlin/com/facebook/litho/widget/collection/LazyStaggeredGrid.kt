@@ -69,19 +69,22 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
+    preallocationPerMountContentEnabled: Boolean =
+        context.lithoConfiguration.preallocationPerMountContentEnabled,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
   return LazyCollection(
       layout =
           CollectionLayouts.StaggeredGrid(
-              orientation,
-              reverse,
-              rangeRatio,
-              useBackgroundChangeSets,
-              isReconciliationEnabled,
-              spans,
-              gapStrategy),
+              orientation = orientation,
+              reverse = reverse,
+              rangeRatio = rangeRatio,
+              useBackgroundChangeSets = useBackgroundChangeSets,
+              isReconciliationEnabled = isReconciliationEnabled,
+              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              spans = spans,
+              gapStrategy = gapStrategy),
       itemAnimator,
       itemDecoration,
       clipToPadding,

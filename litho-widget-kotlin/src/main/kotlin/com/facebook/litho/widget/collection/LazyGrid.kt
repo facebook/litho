@@ -67,19 +67,22 @@ inline fun ResourcesScope.LazyGrid(
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
+    preallocationPerMountContentEnabled: Boolean =
+        context.lithoConfiguration.preallocationPerMountContentEnabled,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
   return LazyCollection(
       layout =
           CollectionLayouts.Grid(
-              orientation,
-              snapMode,
-              reverse,
-              rangeRatio,
-              useBackgroundChangeSets,
-              isReconciliationEnabled,
-              columns),
+              orientation = orientation,
+              snapMode = snapMode,
+              reverse = reverse,
+              rangeRatio = rangeRatio,
+              useBackgroundChangeSets = useBackgroundChangeSets,
+              isReconciliationEnabled = isReconciliationEnabled,
+              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              columns = columns),
       itemAnimator,
       itemDecoration,
       clipToPadding,

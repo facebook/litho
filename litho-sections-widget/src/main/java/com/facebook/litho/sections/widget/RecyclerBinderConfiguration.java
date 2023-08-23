@@ -62,6 +62,8 @@ public class RecyclerBinderConfiguration {
   private final int mEstimatedViewportCount;
   @Nullable private final ErrorEventHandler mErrorEventHandler;
 
+  private final boolean mShouldPreallocatePerMountContent;
+
   public static Builder create() {
     return new Builder();
   }
@@ -92,7 +94,8 @@ public class RecyclerBinderConfiguration {
       @Nullable ComponentWarmer componentWarmer,
       int estimatedViewportCount,
       @Nullable LithoViewFactory lithoViewFactory,
-      @Nullable ErrorEventHandler errorEventHandler) {
+      @Nullable ErrorEventHandler errorEventHandler,
+      boolean shouldPreallocatePerMountContent) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mComponentsConfiguration = componentsConfiguration;
@@ -115,6 +118,11 @@ public class RecyclerBinderConfiguration {
     mEnableItemPrefetch = enableItemPrefetch;
     mItemViewCacheSize = itemViewCacheSize;
     mRequestMountForPrefetchedItems = requestMountForPrefetchedItems;
+    mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
+  }
+
+  public boolean shouldPreallocatePerMountContent() {
+    return mShouldPreallocatePerMountContent;
   }
 
   public float getRangeRatio() {
@@ -234,6 +242,7 @@ public class RecyclerBinderConfiguration {
     private int mEstimatedViewportCount = UNSET;
     private LithoViewFactory mLithoViewFactory;
     private ErrorEventHandler mErrorEventHandler;
+    private boolean mShouldPreallocatePerMountContent;
 
     Builder() {}
 
@@ -261,6 +270,7 @@ public class RecyclerBinderConfiguration {
       this.mEnableItemPrefetch = configuration.mEnableItemPrefetch;
       this.mItemViewCacheSize = configuration.mItemViewCacheSize;
       this.mRequestMountForPrefetchedItems = configuration.mRequestMountForPrefetchedItems;
+      mShouldPreallocatePerMountContent = configuration.mShouldPreallocatePerMountContent;
     }
 
     /**
@@ -420,6 +430,16 @@ public class RecyclerBinderConfiguration {
     }
 
     /**
+     * Whether this Recycler children should preallocate mount content after being generated. This
+     * will only work if the root {@link com.facebook.litho.ComponentTree} has set a preallocation
+     * handler, since it will try to use it to run the preallocation.
+     */
+    public Builder shouldPreallocatePerMountContent(boolean shouldPreallocatePerMountContent) {
+      mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
+      return this;
+    }
+
+    /**
      * This is a temporary hack that allows a surface to manually provide an estimated range. It
      * will go away so don't depend on it.
      */
@@ -456,7 +476,8 @@ public class RecyclerBinderConfiguration {
           mComponentWarmer,
           mEstimatedViewportCount,
           mLithoViewFactory,
-          mErrorEventHandler);
+          mErrorEventHandler,
+          mShouldPreallocatePerMountContent);
     }
   }
 }

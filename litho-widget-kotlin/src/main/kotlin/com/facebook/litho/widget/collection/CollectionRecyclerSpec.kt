@@ -141,10 +141,12 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) lazyCollectionController: LazyCollectionController?
   ) {
     val binderConfiguration = recyclerConfiguration.recyclerBinderConfiguration
+
     val recyclerBinder =
         RecyclerBinder.Builder()
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
             .startupLogger(startupLogger)
+            .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
             .apply {
               with(binderConfiguration) {
                 rangeRatio(rangeRatio)

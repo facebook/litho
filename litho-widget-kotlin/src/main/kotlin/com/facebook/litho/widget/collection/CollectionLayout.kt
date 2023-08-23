@@ -42,6 +42,7 @@ abstract class CollectionLayout(
     hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
+    preallocationPerMountContentEnabled: Boolean
 ) {
   internal abstract fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder
 
@@ -60,6 +61,7 @@ abstract class CollectionLayout(
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .isReconciliationEnabled(isReconciliationEnabled)
+                  .shouldPreallocatePerMountContent(preallocationPerMountContentEnabled)
                   .build())
           .build()
 
@@ -100,6 +102,9 @@ internal object CollectionLayouts {
    *   axis.
    * @param mainAxisWrapContent If set, the size of the [Collection] along the main axis will match
    *   the size of its children
+   * @param preallocationPerMountContentEnabled - if set, it will attempt to preallocate the mount
+   *   content after the hierarchy is resolved. It will only do it if the root ComponentTree has set
+   *   a preallocation handler.
    */
   fun Linear(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
@@ -110,18 +115,19 @@ internal object CollectionLayouts {
       isReconciliationEnabled: Boolean = false,
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
+      preallocationPerMountContentEnabled: Boolean,
   ): CollectionLayout =
       object :
           CollectionLayout(
-              orientation,
-              reverse,
-              rangeRatio,
-              useBackgroundChangeSets,
-              isReconciliationEnabled,
-              crossAxisWrapMode.hasDynamicItemHeight,
-              crossAxisWrapMode.canMeasureRecycler,
-              mainAxisWrapContent,
-          ) {
+              orientation = orientation,
+              reverse = reverse,
+              rangeRatio = rangeRatio,
+              useBackgroundChangeSets = useBackgroundChangeSets,
+              isReconciliationEnabled = isReconciliationEnabled,
+              hasDynamicItemHeight = crossAxisWrapMode.hasDynamicItemHeight,
+              canMeasureRecycler = crossAxisWrapMode.canMeasureRecycler,
+              mainAxisWrapContent = mainAxisWrapContent,
+              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             ListRecyclerConfiguration.create().snapMode(snapMode)
       }
@@ -133,6 +139,9 @@ internal object CollectionLayouts {
    * @param snapMode @see CollectionLayout
    * @param reverse @see CollectionLayout
    * @param columns Number of columns in the grid
+   * @param preallocationPerMountContentEnabled - if set, it will attempt to preallocate the mount
+   *   content after the hierarchy is resolved. It will only do it if the root ComponentTree has set
+   *   a preallocation handler.
    */
   fun Grid(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
@@ -142,10 +151,16 @@ internal object CollectionLayouts {
       useBackgroundChangeSets: Boolean = false,
       isReconciliationEnabled: Boolean = false,
       columns: Int = 2,
+      preallocationPerMountContentEnabled: Boolean,
   ): CollectionLayout =
       object :
           CollectionLayout(
-              orientation, reverse, rangeRatio, useBackgroundChangeSets, isReconciliationEnabled) {
+              orientation = orientation,
+              reverse = reverse,
+              rangeRatio = rangeRatio,
+              useBackgroundChangeSets = useBackgroundChangeSets,
+              isReconciliationEnabled = isReconciliationEnabled,
+              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             GridRecyclerConfiguration.create().snapMode(snapMode).numColumns(columns)
       }
@@ -158,6 +173,9 @@ internal object CollectionLayouts {
    * @param reverse @see CollectionLayout
    * @param spans Number of spans in the grid
    * @param gapStrategy @see [StaggeredGridLayoutManager#setGapStrategy]
+   * @param preallocationPerMountContentEnabled - if set, it will attempt to preallocate the mount
+   *   content after the hierarchy is resolved. It will only do it if the root ComponentTree has set
+   *   a preallocation handler.
    */
   fun StaggeredGrid(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
@@ -166,11 +184,18 @@ internal object CollectionLayouts {
       useBackgroundChangeSets: Boolean = false,
       isReconciliationEnabled: Boolean = false,
       spans: Int = 2,
-      gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE
+      gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
+      preallocationPerMountContentEnabled: Boolean,
   ): CollectionLayout =
       object :
           CollectionLayout(
-              orientation, reverse, rangeRatio, useBackgroundChangeSets, isReconciliationEnabled) {
+              orientation = orientation,
+              reverse = reverse,
+              rangeRatio = rangeRatio,
+              useBackgroundChangeSets = useBackgroundChangeSets,
+              isReconciliationEnabled = isReconciliationEnabled,
+              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+          ) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)
       }

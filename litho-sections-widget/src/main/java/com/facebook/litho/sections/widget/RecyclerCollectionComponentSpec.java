@@ -331,6 +331,7 @@ public class RecyclerCollectionComponentSpec {
             .lithoViewFactory(binderConfiguration.getLithoViewFactory())
             .errorEventHandler(binderConfiguration.getErrorEventHandler())
             .recyclerViewItemPrefetch(binderConfiguration.getEnableItemPrefetch())
+            .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
             .setItemViewCacheSize(binderConfiguration.getItemViewCacheSize())
             .requestMountForPrefetchedItems(binderConfiguration.getRequestMountForPrefetchedItems())
             .startupLogger(startupLogger);

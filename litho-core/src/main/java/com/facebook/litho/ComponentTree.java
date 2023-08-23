@@ -455,12 +455,6 @@ public class ComponentTree
       logger = builder.context.getLogger();
     }
 
-    if (ComponentsConfiguration.isTimelineEnabled) {
-      mTimeMachine = new DebugComponentTreeTimeMachine(this);
-    } else {
-      mTimeMachine = null;
-    }
-
     if (ComponentsConfiguration.enableStateUpdatesBatching) {
       mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
     } else {
@@ -511,6 +505,7 @@ public class ComponentTree
                 ? ComponentsConfiguration.overrideReconciliation
                 : builder.isReconciliationEnabled,
             builder.visibilityProcessingEnabled,
+            mShouldPreallocatePerMountSpec,
             mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
@@ -521,6 +516,12 @@ public class ComponentTree
             builder.componentTreeDebugEventListener);
 
     mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
+
+    if (ComponentsConfiguration.isTimelineEnabled) {
+      mTimeMachine = new DebugComponentTreeTimeMachine(this);
+    } else {
+      mTimeMachine = null;
+    }
 
     if (builder.mLifecycleProvider != null) {
       subscribeToLifecycleProvider(builder.mLifecycleProvider);
@@ -3089,11 +3090,14 @@ public class ComponentTree
     @Nullable final VisibilityBoundsTransformer visibilityBoundsTransformer;
     @Nullable final ComponentTreeDebugEventListener debugEventListener;
 
+    public final boolean preallocationPerMountContentEnabled;
+
     public LithoConfiguration(
         final ComponentsConfiguration config,
         boolean areTransitionsEnabled,
         boolean isReconciliationEnabled,
         boolean isVisibilityProcessingEnabled,
+        boolean preallocationPerMountContentEnabled,
         @Nullable RunnableHandler mountContentPreallocationHandler,
         boolean incrementalMountEnabled,
         @Nullable ErrorEventHandler errorEventHandler,
@@ -3106,6 +3110,7 @@ public class ComponentTree
       this.areTransitionsEnabled = areTransitionsEnabled;
       this.isReconciliationEnabled = isReconciliationEnabled;
       this.isVisibilityProcessingEnabled = isVisibilityProcessingEnabled;
+      this.preallocationPerMountContentEnabled = preallocationPerMountContentEnabled;
       this.mountContentPreallocationHandler = mountContentPreallocationHandler;
       this.incrementalMountEnabled = incrementalMountEnabled;
       this.errorEventHandler =

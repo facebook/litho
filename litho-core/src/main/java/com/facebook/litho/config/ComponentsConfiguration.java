@@ -191,12 +191,6 @@ public class ComponentsConfiguration {
   /** Initialize sticky header during layout when its component tree is null */
   public static boolean initStickyHeaderInLayoutWhenComponentTreeIsNull = false;
 
-  /**
-   * If true, uses the root ComponentTree's mount content preallocation handler to perform
-   * preallocation for nested trees.
-   */
-  public static boolean enableNestedTreePreallocation = false;
-
   public static boolean unsafeHostComponentRecyclingIsEnabled = false;
 
   /** Whether a {@link ComponentHost} can be pre-allocated */
@@ -330,6 +324,12 @@ public class ComponentsConfiguration {
 
   private final boolean mUseIncrementalMountGapWorker;
 
+  private final boolean mNestedPreallocationEnabled;
+
+  public boolean isNestedPreallocationEnabled() {
+    return mNestedPreallocationEnabled;
+  }
+
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
@@ -359,6 +359,7 @@ public class ComponentsConfiguration {
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
     mUseIncrementalMountGapWorker = builder.mUseIncrementalMountGapWorker;
+    mNestedPreallocationEnabled = builder.mNestedPreallocationEnabled;
   }
 
   public boolean shouldReuseOutputs() {
@@ -395,6 +396,7 @@ public class ComponentsConfiguration {
     boolean mShouldAddHostViewForRootComponent = false;
     boolean mShouldDisableBgFgOutputs = false;
     boolean mUseIncrementalMountGapWorker = IncrementalMountExtensionConfigs.useGapWorker;
+    boolean mNestedPreallocationEnabled = false;
 
     protected Builder() {}
 
@@ -435,6 +437,15 @@ public class ComponentsConfiguration {
 
     public Builder useIncrementalMountGapWorker(boolean enabled) {
       mUseIncrementalMountGapWorker = enabled;
+      return this;
+    }
+
+    /**
+     * If true, uses the root ComponentTree's mount content allows the usage of the preallocation
+     * handler to perform preallocation for nested trees.
+     */
+    public Builder nestedPreallocationEnabled(boolean enabled) {
+      mNestedPreallocationEnabled = enabled;
       return this;
     }
 

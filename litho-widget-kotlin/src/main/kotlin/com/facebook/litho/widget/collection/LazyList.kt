@@ -70,25 +70,27 @@ inline fun ResourcesScope.LazyList(
         } else {
           false
         },
+    preallocationPerMountContentEnabled: Boolean =
+        context.lithoConfiguration.preallocationPerMountContentEnabled,
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     init: LazyListScope.() -> Unit
 ): Component {
-
   val lazyListScope = LazyListScope(context).apply { init() }
   return LazyCollection(
       layout =
           CollectionLayouts.Linear(
-              orientation,
-              snapMode,
-              reverse,
-              rangeRatio,
-              useBackgroundChangeSets,
-              isReconciliationEnabled,
-              crossAxisWrapMode,
-              mainAxisWrapContent),
+              orientation = orientation,
+              snapMode = snapMode,
+              reverse = reverse,
+              rangeRatio = rangeRatio,
+              useBackgroundChangeSets = useBackgroundChangeSets,
+              isReconciliationEnabled = isReconciliationEnabled,
+              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              crossAxisWrapMode = crossAxisWrapMode,
+              mainAxisWrapContent = mainAxisWrapContent),
       itemAnimator,
       itemDecoration,
       clipToPadding,
