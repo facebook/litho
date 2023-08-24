@@ -26,7 +26,8 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -43,11 +44,10 @@ class UseProducerTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
-  private val testDispatcher = TestCoroutineDispatcher()
+  private val testDispatcher = StandardTestDispatcher()
 
   @Before
   fun setUp() {
-    testDispatcher.pauseDispatcher()
     Dispatchers.setMain(testDispatcher)
   }
 
@@ -67,9 +67,9 @@ class UseProducerTest {
     val lithoView = lithoViewRule.render { UseStateProducerComponent() }
     lithoViewRule.act(lithoView) {
       // Make sure flow starts collecting, so that emissions aren't dropped.
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
       stateFlow.value = true
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
     }
 
     assertThat(stateRef.get()).isTrue
@@ -91,9 +91,9 @@ class UseProducerTest {
 
     val lithoView = lithoViewRule.render { UseStateProducerComponent() }
     lithoViewRule.act(lithoView) {
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
       stateFlow.value = true
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
     }
 
     assertThat(stateRef.get()).isTrue
@@ -115,16 +115,16 @@ class UseProducerTest {
 
     val lithoView = lithoViewRule.render { UseStateProducerComponent() }
     lithoViewRule.act(lithoView) {
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
       sharedFlow.tryEmit(Unit)
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
     }
 
     assertThat(stateRef.get()).isEqualTo(1)
 
     lithoViewRule.act(lithoView) {
       sharedFlow.tryEmit(Unit)
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
     }
 
     assertThat(stateRef.get()).isEqualTo(2)
@@ -146,9 +146,9 @@ class UseProducerTest {
 
     val lithoView = lithoViewRule.render { UseStateProducerComponent() }
     lithoViewRule.act(lithoView) {
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
       sharedFlow.tryEmit(Unit)
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
     }
 
     assertThat(stateRef.get()).isEqualTo(1)
@@ -156,7 +156,7 @@ class UseProducerTest {
     lithoView.setRoot(UseStateProducerComponent())
     lithoViewRule.act(lithoView) {
       sharedFlow.tryEmit(Unit)
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
     }
 
     assertThat(stateRef.get()).isEqualTo(2)
@@ -181,18 +181,18 @@ class UseProducerTest {
     }
 
     val lithoView = lithoViewRule.render { UseStateCounterComponent(dep = 0) }
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(events).containsExactly("produce 0")
     events.clear()
 
     lithoView.setRoot(UseStateCounterComponent(dep = 0))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(events).isEmpty()
 
     lithoView.setRoot(UseStateCounterComponent(dep = 1))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(events).containsExactly("cancel 0", "produce 1")
   }
@@ -216,25 +216,25 @@ class UseProducerTest {
     }
 
     val lithoView = lithoViewRule.render { UseStateCounterComponent(dep1 = 1, dep2 = 1) }
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(events).containsExactly("produce 1:1")
     events.clear()
 
     lithoView.setRoot(UseStateCounterComponent(dep1 = 1, dep2 = 1))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(events).isEmpty()
     events.clear()
 
     lithoView.setRoot(UseStateCounterComponent(dep1 = 100, dep2 = 1))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(events).containsExactly("cancel 1:1", "produce 100:1")
     events.clear()
 
     lithoView.setRoot(UseStateCounterComponent(dep1 = 100, dep2 = 100))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(events).containsExactly("cancel 100:1", "produce 100:100")
     events.clear()

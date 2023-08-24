@@ -24,7 +24,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -40,12 +41,11 @@ class ComponentTreeScopeTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
-  private val testDispatcher = TestCoroutineDispatcher()
+  private val testDispatcher = StandardTestDispatcher()
   private val context = Robolectric.buildActivity(Activity::class.java).create().get()
 
   @Before
   fun setUp() {
-    testDispatcher.pauseDispatcher()
     Dispatchers.setMain(testDispatcher)
   }
 
@@ -57,7 +57,7 @@ class ComponentTreeScopeTest {
     val lithoTree = LithoTree.create(tree)
 
     lithoTree.lithoTreeScope.launch { events += "launch" }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(events).containsExactly("launch")
   }
@@ -76,12 +76,12 @@ class ComponentTreeScopeTest {
         events += "cancel"
       }
     }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(events).isEmpty()
 
     tree.release()
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(events).containsExactly("cancel")
   }

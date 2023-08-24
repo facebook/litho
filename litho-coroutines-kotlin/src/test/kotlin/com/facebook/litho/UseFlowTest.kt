@@ -25,7 +25,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -42,11 +43,10 @@ class UseFlowTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
-  private val testDispatcher = TestCoroutineDispatcher()
+  private val testDispatcher = StandardTestDispatcher()
 
   @Before
   fun setUp() {
-    testDispatcher.pauseDispatcher()
     Dispatchers.setMain(testDispatcher)
   }
 
@@ -67,7 +67,7 @@ class UseFlowTest {
 
     assertThat(stateRef.get()).isFalse
 
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(stateRef.get()).isFalse
 
@@ -92,13 +92,13 @@ class UseFlowTest {
     val lithoView = lithoViewRule.render { UseCollectAsStateComponent() }
     assertThat(stateRef.get()).isFalse
 
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(stateRef.get()).isFalse
 
     lithoViewRule.act(lithoView) {
       testFlow.value = true
-      testDispatcher.runCurrent()
+      testDispatcher.scheduler.runCurrent()
     }
 
     assertThat(stateRef.get()).isTrue
@@ -120,12 +120,12 @@ class UseFlowTest {
 
     assertThat(stateRef.get()).isEqualTo(0)
 
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(stateRef.get()).isEqualTo(1)
 
     lithoView.setRoot(UseCollectAsStateComponent(2))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(stateRef.get()).isEqualTo(2)
   }
@@ -157,18 +157,18 @@ class UseFlowTest {
 
     assertThat(flowEvents).isEmpty()
 
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
     lithoViewRule.idle()
 
     assertThat(flowEvents).containsExactly("launch 1")
 
     lithoView.setRoot(UseCollectAsStateComponent(1))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(flowEvents).containsExactly("launch 1")
 
     lithoView.setRoot(UseCollectAsStateComponent(2))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(flowEvents).containsExactly("launch 1", "cancel 1", "launch 2")
   }
@@ -200,7 +200,7 @@ class UseFlowTest {
 
     assertThat(flowEvents).isEmpty()
 
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(flowEvents).containsExactly("launch 1:1")
     flowEvents.clear()
@@ -211,13 +211,13 @@ class UseFlowTest {
     assertThat(flowEvents).isEmpty()
 
     lithoView.setRoot(UseCollectAsStateComponent(2, 1))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(flowEvents).containsExactly("cancel 1:1", "launch 2:1")
     flowEvents.clear()
 
     lithoView.setRoot(UseCollectAsStateComponent(2, 2))
-    lithoViewRule.act(lithoView) { testDispatcher.runCurrent() }
+    lithoViewRule.act(lithoView) { testDispatcher.scheduler.runCurrent() }
 
     assertThat(flowEvents).containsExactly("cancel 2:1", "launch 2:2")
     flowEvents.clear()

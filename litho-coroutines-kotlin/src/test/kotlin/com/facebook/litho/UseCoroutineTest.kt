@@ -21,7 +21,8 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -36,11 +37,10 @@ class UseCoroutineTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
-  private val testDispatcher = TestCoroutineDispatcher()
+  private val testDispatcher = StandardTestDispatcher()
 
   @Before
   fun setUp() {
-    testDispatcher.pauseDispatcher()
     Dispatchers.setMain(testDispatcher)
   }
 
@@ -63,9 +63,9 @@ class UseCoroutineTest {
     }
 
     val lithoView = lithoViewRule.render { UseCoroutineComponent() }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
     lithoView.detachFromWindow().release()
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("launch", "cancel")
   }
@@ -89,19 +89,19 @@ class UseCoroutineTest {
     }
 
     val lithoView = lithoViewRule.render { UseCoroutineComponent(seq = 0) }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("attach 0")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(seq = 1))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 0", "attach 1")
     useCoroutineCalls.clear()
 
     lithoView.release()
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 1")
   }
@@ -125,25 +125,25 @@ class UseCoroutineTest {
     }
 
     val lithoView = lithoViewRule.render { UseCoroutineComponent(dep = 0, seq = 0) }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("attach 0")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep = 0, seq = 1))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).isEmpty()
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep = 1, seq = 2))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 0", "attach 2")
     useCoroutineCalls.clear()
 
     lithoView.release()
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 2")
   }
@@ -167,31 +167,31 @@ class UseCoroutineTest {
     }
 
     val lithoView = lithoViewRule.render { UseCoroutineComponent(dep = null, seq = 0) }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("attach 0")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep = null, seq = 1))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).isEmpty()
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep = 1, seq = 2))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 0", "attach 2")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep = null, seq = 3))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 2", "attach 3")
     useCoroutineCalls.clear()
 
     lithoView.release()
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 3")
   }
@@ -219,37 +219,37 @@ class UseCoroutineTest {
     }
 
     val lithoView = lithoViewRule.render { UseCoroutineComponent(dep1 = 0, dep2 = 0, seq = 0) }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("attach 0:0:0")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 0, dep2 = 0, seq = 1))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).isEmpty()
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 0, dep2 = 1, seq = 2))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 0:0:0", "attach 0:1:2")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 1, dep2 = 1, seq = 3))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 0:1:2", "attach 1:1:3")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 2, dep2 = 2, seq = 4))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 1:1:3", "attach 2:2:4")
     useCoroutineCalls.clear()
 
     lithoView.release()
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("detach 2:2:4")
   }
@@ -291,33 +291,33 @@ class UseCoroutineTest {
 
     val lithoView =
         lithoViewRule.render { UseCoroutineComponent(dep1 = 0, dep2 = 0, dep3 = 0, seq = 0) }
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls)
         .containsExactly("dep1: attach 0", "dep2: attach 0", "dep3: attach 0")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 0, dep2 = 1, dep3 = 0, seq = 1))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).containsExactly("dep2: detach 0", "dep2: attach 1")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 1, dep2 = 1, dep3 = 1, seq = 2))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls)
         .containsExactly("dep1: detach 0", "dep1: attach 2", "dep3: detach 0", "dep3: attach 2")
     useCoroutineCalls.clear()
 
     lithoView.setRoot(UseCoroutineComponent(dep1 = 1, dep2 = 1, dep3 = 1, seq = 3))
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls).isEmpty()
     useCoroutineCalls.clear()
 
     lithoView.release()
-    testDispatcher.runCurrent()
+    testDispatcher.scheduler.runCurrent()
 
     assertThat(useCoroutineCalls)
         .containsExactly("dep1: detach 2", "dep2: detach 1", "dep3: detach 2")
