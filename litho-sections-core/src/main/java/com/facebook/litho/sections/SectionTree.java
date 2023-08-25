@@ -59,8 +59,11 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
+import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -398,25 +401,42 @@ public class SectionTree {
       isFirstSetRoot = mCurrentSection == null;
     }
 
-    if (mAsyncPropUpdates && !isFirstSetRoot) {
-      final ChangesetDebugInfo changesetDebugInfo =
-          mChangesetDebug == null
-              ? null
-              : new ChangesetDebugInfo(
-                  ApplyNewChangeSet.SET_ROOT_ASYNC,
-                  section.getSimpleName(),
-                  Thread.currentThread().getStackTrace());
-      mCalculateChangeSetRunnable.ensurePosted(
-          ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
-    } else {
-      final ChangesetDebugInfo changesetDebugInfo =
-          mChangesetDebug == null
-              ? null
-              : new ChangesetDebugInfo(
-                  ApplyNewChangeSet.SET_ROOT,
-                  section.getSimpleName(),
-                  Thread.currentThread().getStackTrace());
-      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, changesetDebugInfo);
+    final @Nullable Integer traceId =
+        DebugEventDispatcher.generateTraceIdentifier(DebugEvents.SET_ROOT);
+    if (traceId != null) {
+      final Map<String, Object> attributes = new LinkedHashMap<>();
+      attributes.put(DebugEventAttribute.Id, hashCode());
+      attributes.put(
+          DebugEventAttribute.Name, (section != null ? section.getSimpleName() : "null"));
+      attributes.put(DebugEventAttribute.Async, mAsyncPropUpdates && !isFirstSetRoot);
+      DebugEventDispatcher.beginTrace(traceId, DebugEvents.SET_ROOT, "-1", attributes);
+    }
+
+    try {
+      if (mAsyncPropUpdates && !isFirstSetRoot) {
+        final ChangesetDebugInfo changesetDebugInfo =
+            mChangesetDebug == null
+                ? null
+                : new ChangesetDebugInfo(
+                    ApplyNewChangeSet.SET_ROOT_ASYNC,
+                    section.getSimpleName(),
+                    Thread.currentThread().getStackTrace());
+        mCalculateChangeSetRunnable.ensurePosted(
+            ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
+      } else {
+        final ChangesetDebugInfo changesetDebugInfo =
+            mChangesetDebug == null
+                ? null
+                : new ChangesetDebugInfo(
+                    ApplyNewChangeSet.SET_ROOT,
+                    section.getSimpleName(),
+                    Thread.currentThread().getStackTrace());
+        applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, changesetDebugInfo);
+      }
+    } finally {
+      if (traceId != null) {
+        DebugEventDispatcher.endTrace(traceId);
+      }
     }
   }
 
@@ -1112,6 +1132,21 @@ public class SectionTree {
               + SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
     }
 
+    final @Nullable Integer traceId =
+        DebugEventDispatcher.generateTraceIdentifier(DebugEvents.CALCULATE_CHANGE_SET);
+    if (traceId != null) {
+      final Map<String, Object> attributes = new LinkedHashMap<>();
+      attributes.put(DebugEventAttribute.Id, hashCode());
+      attributes.put(
+          DebugEventAttribute.source,
+          SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
+      attributes.put(
+          DebugEventAttribute.Async,
+          source == ApplyNewChangeSet.SET_ROOT_ASYNC
+              || source == ApplyNewChangeSet.UPDATE_STATE_ASYNC);
+      DebugEventDispatcher.beginTrace(traceId, DebugEvents.CALCULATE_CHANGE_SET, "-1", attributes);
+    }
+
     if (SectionsDebug.ENABLED) {
       final String name;
       synchronized (this) {
@@ -1258,6 +1293,9 @@ public class SectionTree {
         if (attribution != null) {
           ComponentsSystrace.endSection();
         }
+      }
+      if (traceId != null) {
+        DebugEventDispatcher.endTrace(traceId);
       }
       LithoStats.incrementSectionCalculateNewChangesetCount();
       if (ThreadUtils.isMainThread()) {
@@ -1708,6 +1746,18 @@ public class SectionTree {
       ComponentsSystrace.beginSection("createChildren:" + nextRoot.getSimpleName());
     }
 
+    final @Nullable Integer traceId =
+        DebugEventDispatcher.generateTraceIdentifier(DebugEvents.CREATE_CHILDREN);
+
+    if (traceId != null) {
+      final Map<String, Object> attributes = new LinkedHashMap<>();
+      attributes.put(
+          DebugEventAttribute.Id,
+          context.getSectionTree() != null ? context.getSectionTree().hashCode() : -1);
+      attributes.put(DebugEventAttribute.Name, nextRoot.getSimpleName());
+      DebugEventDispatcher.beginTrace(traceId, DebugEvents.CREATE_CHILDREN, "-1", attributes);
+    }
+
     try {
       nextRoot.setScopedContext(SectionContext.withScope(context, nextRoot));
       if (currentRoot != null) {
@@ -1812,6 +1862,9 @@ public class SectionTree {
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
+      }
+      if (traceId != null) {
+        DebugEventDispatcher.endTrace(traceId);
       }
     }
   }

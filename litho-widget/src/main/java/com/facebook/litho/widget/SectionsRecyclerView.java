@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +29,12 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.debug.DebugEvent;
+import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -175,11 +181,21 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mSectionsRecyclerViewLogger != null) {
-      mSectionsRecyclerViewLogger.onLayoutStarted(mIsFirstLayout);
+
+    final @Nullable Integer traceId =
+        DebugEventDispatcher.generateTraceIdentifier(DebugEvent.ViewOnLayout);
+    if (traceId != null) {
+      final Map<String, Object> attributes = new LinkedHashMap<>();
+      attributes.put(DebugEventAttribute.Id, hashCode());
+      attributes.put(DebugEventAttribute.Name, "SectionsRecyclerView");
+      attributes.put(DebugEventAttribute.Bounds, new Rect(left, top, right, bottom));
+      DebugEventDispatcher.beginTrace(traceId, DebugEvent.ViewOnLayout, "-1", attributes);
     }
 
     try {
+      if (mSectionsRecyclerViewLogger != null) {
+        mSectionsRecyclerViewLogger.onLayoutStarted(mIsFirstLayout);
+      }
       super.onLayout(changed, left, top, right, bottom);
       layoutStickyHeader();
     } finally {
@@ -187,6 +203,9 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
         mSectionsRecyclerViewLogger.onLayoutEnded(mIsFirstLayout);
       }
       mIsFirstLayout = false;
+      if (traceId != null) {
+        DebugEventDispatcher.endTrace(traceId);
+      }
     }
   }
 

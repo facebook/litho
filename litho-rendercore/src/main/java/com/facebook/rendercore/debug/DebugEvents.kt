@@ -42,6 +42,7 @@ sealed class DebugEvent(
     const val RenderUnitUpdated = "RenderCore.RenderUnit.Updated"
     const val RenderUnitOnVisible = "RenderCore.RenderUnit.OnVisible"
     const val RenderUnitOnInvisible = "RenderCore.RenderUnit.OnInvisible"
+    const val ViewOnLayout = "RenderCore.View.OnLayout"
   }
 
   /** Returns the value of attribute with [name]. */
@@ -75,6 +76,7 @@ sealed class DebugEvent(
 
 /** Collection of attributes */
 object DebugEventAttribute {
+  const val Id = "id"
   const val timestamp = "timestamp"
   const val duration = "duration"
   const val version = "version"
@@ -83,6 +85,7 @@ object DebugEventAttribute {
   const val widthSpec = "widthSpec"
   const val heightSpec = "heightSpec"
   const val source = "source"
+  const val Async = "async"
   const val RenderUnitId = "renderUnitId"
   const val Description = "description"
   const val HashCode = "hashCode"

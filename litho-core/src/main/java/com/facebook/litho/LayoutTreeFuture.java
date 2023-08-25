@@ -17,12 +17,19 @@
 package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.RunsOnMainThread;
 
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.debug.DebugOverlay;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LayoutCache;
+import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final ResolveResult mResolveResult;
@@ -118,6 +125,18 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       final @Nullable PerfEvent perfEventLogger) {
 
     LithoStats.incrementLayoutCount();
+
+    final @Nullable Integer traceId =
+        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResolve);
+
+    if (traceId != null) {
+      final Map<String, Object> attributes = new LinkedHashMap<>();
+      attributes.put(RunsOnMainThread, ThreadUtils.isMainThread());
+      attributes.put(Root, resolveResult.component.getSimpleName());
+      attributes.put(DebugEventAttribute.version, version);
+      DebugEventDispatcher.beginTrace(
+          traceId, LithoDebugEvent.Layout, String.valueOf(traceId), attributes);
+    }
 
     final TreeState treeState = resolveResult.treeState;
 
@@ -231,6 +250,9 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       treeState.unregisterLayoutInitialState();
       if (isTracing) {
         ComponentsSystrace.endSection();
+      }
+      if (traceId != null) {
+        DebugEventDispatcher.endTrace(traceId);
       }
     }
   }

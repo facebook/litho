@@ -27,6 +27,7 @@ object LithoDebugEvent {
   const val ComponentPrepared = "Litho.Resolve.ComponentPrepared"
   const val ComponentResolved = "Litho.Resolve.ComponentResolved"
   const val ComponentTreeResolve = "Litho.ComponentTree.Resolve"
+  const val Layout = "Litho.ComponentTree.Layout"
   const val ComponentTreeResolveResumed = "Litho.ComponentTree.Resolve.Resumed"
   const val ComponentTreeMountContentPreallocated = "Litho.ComponentTree.MountContent.Preallocated"
 }
