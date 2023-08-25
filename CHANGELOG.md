@@ -13,6 +13,7 @@ _2023-08-25_
 * [NEW] Lots more code in Kotlin.
 * [NEW] Adds new [Primitive APIs](https://fblitho.com/docs/mainconcepts/primitivecomponents/overview/) (Kotlin APIs that replace MountSpecs) .
 * [NEW] Bumps compile, min, target SDK, and builds tools versions.
+* [NEW] Bumps Yoga to version 2.0.0.
 * [BREAKING] Removed `ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTree.canInterruptAndMoveLayoutsBetweenThreads`, `RecyclerBinder.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTreeHolder.canInterruptAndMoveLayoutsBetweenThreads`. ComponentTrees can no longer exempt themselves from interrupt and move layouts between threads operation.
 * [BREAKING] Removed `usePersistentEffect` and made deps parameter required in `useEffect`, `useCoroutine`, `useFlow`. The equivalent of `usePersistentEffect {}` is `useEffect(Unit) {}`, and the equivalent of `useEffect {}` without arguments is `useEffect(Any()) {}`.
 * [BREAKING] Removed deprecated APIs of GridRecyclerConfiguration.
