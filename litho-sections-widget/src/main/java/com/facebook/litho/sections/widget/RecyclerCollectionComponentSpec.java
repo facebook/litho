@@ -146,7 +146,8 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean clipChildren,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) int scrollBarStyle,
-      @Prop(optional = true) @Nullable ItemDecoration itemDecoration,
+      @Prop(optional = true, varArg = "itemDecoration") @Nullable
+          List<ItemDecoration> itemDecorations,
       @Prop(optional = true) @Nullable ItemAnimator itemAnimator,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
@@ -218,7 +219,7 @@ public class RecyclerCollectionComponentSpec {
             .recyclerEventsController(internalEventsController)
             .refreshHandler(!canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
             .pullToRefresh(canPTR)
-            .itemDecoration(itemDecoration)
+            .itemDecorations(itemDecorations)
             .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
             .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
             .fadingEdgeLengthDip(fadingEdgeLength)

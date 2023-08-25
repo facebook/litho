@@ -144,7 +144,8 @@ class RecyclerSpec {
       @Prop(optional = true) boolean clipChildren,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) int scrollBarStyle,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
+      @Nullable @Prop(optional = true, varArg = "itemDecoration")
+          List<RecyclerView.ItemDecoration> itemDecorations,
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
@@ -183,8 +184,10 @@ class RecyclerSpec {
     }
     sectionsRecycler.setColorSchemeColors(refreshProgressBarColor);
 
-    if (itemDecoration != null) {
-      recyclerView.addItemDecoration(itemDecoration);
+    if (itemDecorations != null) {
+      for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
+        recyclerView.addItemDecoration(itemDecoration);
+      }
     }
 
     sectionsRecycler.setItemAnimator(
@@ -312,7 +315,8 @@ class RecyclerSpec {
       ComponentContext context,
       SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
+      @Nullable @Prop(optional = true, varArg = "itemDecoration")
+          List<RecyclerView.ItemDecoration> itemDecorations,
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
       @Nullable @Prop(optional = true) SnapHelper snapHelper) {
@@ -331,8 +335,10 @@ class RecyclerSpec {
           DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR);
     }
 
-    if (itemDecoration != null) {
-      recyclerView.removeItemDecoration(itemDecoration);
+    if (itemDecorations != null) {
+      for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
+        recyclerView.removeItemDecoration(itemDecoration);
+      }
     }
 
     binder.unmount(recyclerView);
@@ -358,7 +364,8 @@ class RecyclerSpec {
       @Prop(optional = true, resType = ResType.COLOR) Diff<Integer> refreshProgressBarColor,
       @Prop(optional = true) Diff<Boolean> clipChildren,
       @Prop(optional = true) Diff<Integer> scrollBarStyle,
-      @Prop(optional = true) Diff<RecyclerView.ItemDecoration> itemDecoration,
+      @Prop(optional = true, varArg = "itemDecoration")
+          Diff<List<RecyclerView.ItemDecoration>> itemDecorations,
       @Prop(optional = true) Diff<Boolean> horizontalFadingEdgeEnabled,
       @Prop(optional = true) Diff<Boolean> verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) Diff<Integer> fadingEdgeLength,
@@ -438,8 +445,8 @@ class RecyclerSpec {
       return true;
     }
 
-    final RecyclerView.ItemDecoration previous = itemDecoration.getPrevious();
-    final RecyclerView.ItemDecoration next = itemDecoration.getNext();
+    final List<RecyclerView.ItemDecoration> previous = itemDecorations.getPrevious();
+    final List<RecyclerView.ItemDecoration> next = itemDecorations.getNext();
     final boolean itemDecorationIsEqual =
         (previous == null) ? (next == null) : previous.equals(next);
 
