@@ -21,6 +21,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.mountable.canvas.drawArc
 import com.facebook.mountable.utils.types.Point
 import com.facebook.mountable.utils.types.Size
 
@@ -102,14 +103,7 @@ data class CanvasShapeArc(
     private val clockwise: Boolean,
 ) : CanvasShapeModel {
   override fun draw(canvas: Canvas, paint: Paint) {
-    val startAngle = if (clockwise) startDegrees else -startDegrees
-    val endAngle = if (clockwise) endDegrees - startDegrees else startDegrees - endDegrees
-    canvas.drawArc(
-        RectF(center.x - radius, center.y - radius, center.x + radius, center.y + radius),
-        startAngle,
-        endAngle,
-        false,
-        paint)
+    canvas.drawArc(center, radius, startDegrees, endDegrees, clockwise, paint)
   }
 }
 

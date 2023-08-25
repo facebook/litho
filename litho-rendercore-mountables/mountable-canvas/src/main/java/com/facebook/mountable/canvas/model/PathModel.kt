@@ -21,6 +21,7 @@ import android.graphics.Path
 import android.graphics.RectF
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.CanvasState
+import com.facebook.mountable.canvas.addArc
 import com.facebook.mountable.utils.types.FillRule
 import com.facebook.mountable.utils.types.Point
 import com.facebook.mountable.utils.types.Size
@@ -145,12 +146,7 @@ data class CanvasPathArc(
     private val clockwise: Boolean,
 ) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
-    val startAngle = if (clockwise) startDegrees else -startDegrees
-    val endAngle = if (clockwise) endDegrees - startDegrees else startDegrees - endDegrees
-    androidPath.addArc(
-        RectF(center.x - radius, center.y - radius, center.x + radius, center.y + radius),
-        startAngle,
-        endAngle)
+    androidPath.addArc(center, radius, startDegrees, endDegrees, clockwise)
   }
 }
 
