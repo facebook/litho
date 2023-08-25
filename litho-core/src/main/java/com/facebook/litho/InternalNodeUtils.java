@@ -52,9 +52,12 @@ public class InternalNodeUtils {
   static @Nullable LithoRenderUnit createContentRenderUnit(LithoLayoutResult result) {
     final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
-    final CommonProps commonProps = node.getTailScopedComponentInfo().getCommonProps();
+
+    // We need to merge dynamic props from all scoped component infos in order to cover cases where
+    // a non-SpecGeneratedComponent such as Primitive is wrapped in a Wrapper. If we don't merge
+    // then DynamicCommonProps added through the Wrapper will be lost.
     final SparseArray<DynamicValue<?>> commonDynamicProps =
-        (commonProps != null) ? commonProps.getCommonDynamicProps() : null;
+        mergeCommonDynamicProps(node.getScopedComponentInfos());
 
     if (component.getMountType() == NONE) {
       return null;

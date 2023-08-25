@@ -21,16 +21,23 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.SizeSpec.makeSizeSpec
+import com.facebook.litho.animated.alpha
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.DynamicPropsResetValueTester
 import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec
 import com.facebook.rendercore.MountItem
+import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
+import com.facebook.rendercore.primitives.ViewAllocator
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -383,5 +390,59 @@ class DynamicPropsTest {
     assertThat(stateUpdateText1Host.alpha).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE)
     assertThat(stateUpdateText2HostComponent.hasCommonDynamicProps()).isFalse
     assertThat(stateUpdateText2Host.alpha).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE)
+  }
+
+  @Test
+  fun testDynamicPropsAddedToSpecGeneratedComponentUsingWrapper() {
+    val alphaDV = DynamicValue(0.5f)
+    val lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                Wrapper.create(context)
+                    .delegate(Row.create(context).widthPx(80).heightPx(80).build())
+                    .kotlinStyle(Style.alpha(alphaDV))
+                    .build())
+            .measure()
+            .layout()
+            .lithoView
+    assertThat(lithoView.childCount).isEqualTo(1)
+    val hostView = lithoView.getChildAt(0)
+    assertThat(hostView.alpha).isEqualTo(0.5f)
+    alphaDV.set(1f)
+    assertThat(hostView.alpha).isEqualTo(1f)
+  }
+
+  @Test
+  fun testDynamicPropsAddedToPrimitiveComponentUsingWrapper() {
+    val alphaDV = DynamicValue(0.5f)
+    val lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                Wrapper.create(context)
+                    .delegate(
+                        SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
+                    .kotlinStyle(Style.alpha(alphaDV))
+                    .build())
+            .measure()
+            .layout()
+            .lithoView
+    assertThat(lithoView.childCount).isEqualTo(1)
+    val hostView = lithoView.getChildAt(0)
+    assertThat(hostView.alpha).isEqualTo(0.5f)
+    alphaDV.set(1f)
+    assertThat(hostView.alpha).isEqualTo(1f)
+  }
+}
+
+private class SimpleTestPrimitiveComponent(
+    private val style: Style? = null,
+) : PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    return LithoPrimitive(
+        layoutBehavior = ExactSizeConstraintsLayoutBehavior,
+        mountBehavior = MountBehavior(ViewAllocator { context -> View(context) }) {},
+        style)
   }
 }
