@@ -23,7 +23,10 @@ import kotlin.jvm.JvmField
 @ThreadConfined(ThreadConfined.ANY)
 class Size() {
 
+  /** The width value in pixels. */
   @JvmField var width: Int = 0
+
+  /** The height value in pixels. */
   @JvmField var height: Int = 0
 
   constructor(width: Int, height: Int) : this() {
