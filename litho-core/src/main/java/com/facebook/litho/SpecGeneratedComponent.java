@@ -39,6 +39,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
@@ -776,7 +777,10 @@ public abstract class SpecGeneratedComponent extends Component
    */
   @Override
   public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new MountItemsPool.DefaultItemPool(getPoolableContentType(), poolSize(), true);
+    return new MountItemsPool.DefaultItemPool(
+        getPoolableContentType(),
+        poolSize(),
+        ComponentsConfiguration.getDefaultComponentsConfiguration().useSyncMountPools());
   }
 
   @ThreadSafe
