@@ -207,7 +207,7 @@ class RecyclerSpec {
       @Nullable @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
       @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
-      @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
+      @Prop(optional = true) @Nullable RecyclerView.OnItemTouchListener onItemTouchListener,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler,
       @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger) {
 
@@ -274,7 +274,7 @@ class RecyclerSpec {
       SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
+      @Prop(optional = true) @Nullable RecyclerView.OnItemTouchListener onItemTouchListener,
       @Prop(optional = true, varArg = "onScrollListener") @Nullable
           List<OnScrollListener> onScrollListeners) {
 

@@ -164,7 +164,7 @@ public class RecyclerCollectionComponentSpec {
           Integer refreshProgressBarBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
-      @Prop(optional = true) OnItemTouchListener itemTouchListener,
+      @Prop(optional = true) @Nullable OnItemTouchListener itemTouchListener,
       @Prop(optional = true) boolean setRootAsync,
       @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
