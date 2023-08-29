@@ -68,9 +68,8 @@ fun standardizeArc(startDegrees: Float, endDegrees: Float, clockwise: Boolean): 
     start = startDegrees.mod(360F)
     sweep = sweep.mod(360F)
     if (!clockwise) {
-      start = end
       if (sweep > 0) {
-        sweep = 360F - sweep
+        sweep -= 360F
       }
     }
   }
@@ -90,7 +89,7 @@ fun Path.addArc(
     clockwise: Boolean,
 ) {
   val (start, sweep) = standardizeArc(startDegrees, endDegrees, clockwise)
-  addArc(
+  arcTo(
       RectF(center.x - radius, center.y - radius, center.x + radius, center.y + radius),
       start,
       sweep)
