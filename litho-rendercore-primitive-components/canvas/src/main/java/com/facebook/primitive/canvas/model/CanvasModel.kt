@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas.model
+package com.facebook.primitive.canvas.model
 
 import android.annotation.SuppressLint
 import android.graphics.Canvas
@@ -25,8 +25,8 @@ import androidx.annotation.FloatRange
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withMatrix
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.mountable.canvas.CanvasState
-import com.facebook.mountable.canvas.withLayer
+import com.facebook.primitive.canvas.CanvasState
+import com.facebook.primitive.canvas.withLayer
 import com.facebook.primitive.utils.types.BlendingMode
 import com.facebook.primitive.utils.types.DEFAULT_BLENDING_MODE
 import com.facebook.primitive.utils.types.LineCap

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas.model
+package com.facebook.primitive.canvas.model
 
 import android.graphics.LinearGradient
 import android.graphics.RadialGradient

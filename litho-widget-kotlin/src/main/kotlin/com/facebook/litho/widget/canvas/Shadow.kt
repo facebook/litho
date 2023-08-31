@@ -17,7 +17,7 @@
 package com.facebook.litho.widget.canvas
 
 import androidx.annotation.ColorInt
-import com.facebook.mountable.canvas.model.CanvasShadowModel
+import com.facebook.primitive.canvas.model.CanvasShadowModel
 
 @JvmInline
 value class Shadow internal constructor(@PublishedApi internal val shadowModel: CanvasShadowModel)

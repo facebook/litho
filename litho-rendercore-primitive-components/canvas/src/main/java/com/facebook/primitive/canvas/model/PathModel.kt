@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas.model
+package com.facebook.primitive.canvas.model
 
 import android.annotation.SuppressLint
 import android.graphics.Path
 import android.graphics.RectF
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.mountable.canvas.CanvasState
-import com.facebook.mountable.canvas.addArc
+import com.facebook.primitive.canvas.CanvasState
+import com.facebook.primitive.canvas.addArc
 import com.facebook.primitive.utils.types.FillRule
 import com.facebook.primitive.utils.types.Point
 import com.facebook.primitive.utils.types.Size

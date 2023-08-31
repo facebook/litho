@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas
+package com.facebook.primitive.canvas
 
 import android.content.Context
 import android.view.View
-import com.facebook.mountable.canvas.model.CanvasModel
+import com.facebook.primitive.canvas.model.CanvasModel
 import com.facebook.primitive.utils.types.CanvasLayerType
 import com.facebook.primitive.utils.types.Size
 import com.facebook.rendercore.ContentAllocator

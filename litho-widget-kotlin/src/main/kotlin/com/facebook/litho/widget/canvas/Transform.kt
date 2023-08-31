@@ -16,14 +16,14 @@
 
 package com.facebook.litho.widget.canvas
 
-import com.facebook.mountable.canvas.model.CanvasInverseTransform
-import com.facebook.mountable.canvas.model.CanvasRotate
-import com.facebook.mountable.canvas.model.CanvasScale
-import com.facebook.mountable.canvas.model.CanvasSkew
-import com.facebook.mountable.canvas.model.CanvasTransform
-import com.facebook.mountable.canvas.model.CanvasTransformChildModel
-import com.facebook.mountable.canvas.model.CanvasTransformModel
-import com.facebook.mountable.canvas.model.CanvasTranslate
+import com.facebook.primitive.canvas.model.CanvasInverseTransform
+import com.facebook.primitive.canvas.model.CanvasRotate
+import com.facebook.primitive.canvas.model.CanvasScale
+import com.facebook.primitive.canvas.model.CanvasSkew
+import com.facebook.primitive.canvas.model.CanvasTransform
+import com.facebook.primitive.canvas.model.CanvasTransformChildModel
+import com.facebook.primitive.canvas.model.CanvasTransformModel
+import com.facebook.primitive.canvas.model.CanvasTranslate
 import com.facebook.primitive.utils.types.Point
 
 /** A transform which holds a 3x3 matrix for transforming coordinates. */

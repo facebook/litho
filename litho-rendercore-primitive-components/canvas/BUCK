@@ -7,7 +7,7 @@ load(
 )
 
 fb_android_library(
-    name = "mountable-canvas",
+    name = "canvas",
     srcs = glob(
         ["src/main/java/**/*.kt"],
     ),
@@ -22,6 +22,7 @@ fb_android_library(
     ],
     deps = [
         LITHO_RENDERCORE_TARGET,
+        "//fbandroid/libraries/rendercore/rendercore-primitive-components/utils:utils",
         "//fbandroid/third-party/android/androidx:collection",
         "//third-party/java/androidx/core/core-ktx:core-ktx",
     ],

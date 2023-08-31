@@ -21,8 +21,8 @@ import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.Style
 import com.facebook.litho.useCached
-import com.facebook.mountable.canvas.CanvasMountable
-import com.facebook.mountable.canvas.CanvasState
+import com.facebook.primitive.canvas.CanvasMountable
+import com.facebook.primitive.canvas.CanvasState
 import com.facebook.primitive.utils.types.CanvasLayerType
 import com.facebook.primitive.utils.types.DEFAULT_CANVAS_LAYER_TYPE
 import com.facebook.primitive.utils.types.Size

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas
+package com.facebook.primitive.canvas
 
 import android.annotation.SuppressLint
 import android.graphics.Canvas

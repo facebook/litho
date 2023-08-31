@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas.model
+package com.facebook.primitive.canvas.model
 
 import androidx.annotation.ColorInt
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate

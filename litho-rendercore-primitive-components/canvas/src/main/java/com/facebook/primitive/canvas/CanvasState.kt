@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas
+package com.facebook.primitive.canvas
 
 import android.annotation.SuppressLint
 import android.graphics.DashPathEffect
@@ -23,13 +23,13 @@ import android.graphics.Paint
 import android.graphics.Path
 import androidx.collection.LruCache
 import androidx.core.util.Pools
-import com.facebook.mountable.canvas.model.CanvasFill
-import com.facebook.mountable.canvas.model.CanvasGradientShading
-import com.facebook.mountable.canvas.model.CanvasLayer
-import com.facebook.mountable.canvas.model.CanvasPathModel
-import com.facebook.mountable.canvas.model.CanvasSolidColorShading
-import com.facebook.mountable.canvas.model.CanvasStroke
-import com.facebook.mountable.canvas.model.CanvasTransformModel
+import com.facebook.primitive.canvas.model.CanvasFill
+import com.facebook.primitive.canvas.model.CanvasGradientShading
+import com.facebook.primitive.canvas.model.CanvasLayer
+import com.facebook.primitive.canvas.model.CanvasPathModel
+import com.facebook.primitive.canvas.model.CanvasSolidColorShading
+import com.facebook.primitive.canvas.model.CanvasStroke
+import com.facebook.primitive.canvas.model.CanvasTransformModel
 
 /**
  * The state of the mountable canvas component.

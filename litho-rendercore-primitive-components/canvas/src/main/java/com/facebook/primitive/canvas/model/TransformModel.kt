@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas.model
+package com.facebook.primitive.canvas.model
 
 import android.annotation.SuppressLint
 import android.graphics.Matrix
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.mountable.canvas.values
+import com.facebook.primitive.canvas.values
 import com.facebook.primitive.utils.types.Point
 
 sealed interface CanvasTransformModel {

@@ -16,19 +16,19 @@
 
 package com.facebook.litho.widget.canvas
 
-import com.facebook.mountable.canvas.model.CanvasPath
-import com.facebook.mountable.canvas.model.CanvasPathAdd
-import com.facebook.mountable.canvas.model.CanvasPathArc
-import com.facebook.mountable.canvas.model.CanvasPathChildModel
-import com.facebook.mountable.canvas.model.CanvasPathCircle
-import com.facebook.mountable.canvas.model.CanvasPathClose
-import com.facebook.mountable.canvas.model.CanvasPathCubicTo
-import com.facebook.mountable.canvas.model.CanvasPathEllipse
-import com.facebook.mountable.canvas.model.CanvasPathLineTo
-import com.facebook.mountable.canvas.model.CanvasPathModel
-import com.facebook.mountable.canvas.model.CanvasPathMoveTo
-import com.facebook.mountable.canvas.model.CanvasPathQuadTo
-import com.facebook.mountable.canvas.model.CanvasPathRect
+import com.facebook.primitive.canvas.model.CanvasPath
+import com.facebook.primitive.canvas.model.CanvasPathAdd
+import com.facebook.primitive.canvas.model.CanvasPathArc
+import com.facebook.primitive.canvas.model.CanvasPathChildModel
+import com.facebook.primitive.canvas.model.CanvasPathCircle
+import com.facebook.primitive.canvas.model.CanvasPathClose
+import com.facebook.primitive.canvas.model.CanvasPathCubicTo
+import com.facebook.primitive.canvas.model.CanvasPathEllipse
+import com.facebook.primitive.canvas.model.CanvasPathLineTo
+import com.facebook.primitive.canvas.model.CanvasPathModel
+import com.facebook.primitive.canvas.model.CanvasPathMoveTo
+import com.facebook.primitive.canvas.model.CanvasPathQuadTo
+import com.facebook.primitive.canvas.model.CanvasPathRect
 import com.facebook.primitive.utils.types.DEFAULT_FILL_RULE
 import com.facebook.primitive.utils.types.FillRule
 import com.facebook.primitive.utils.types.Point

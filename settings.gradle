@@ -47,7 +47,7 @@ include ':litho-rendercore-transitions'
 include ':litho-rendercore-visibility'
 include ':litho-rendercore-primitives'
 include ':litho-primitive-utils'
-include ':litho-mountable-canvas'
+include ':litho-primitive-canvas'
 include ':litho-rendercore-yoga'
 include ':litho-sections-annotations'
 include ':litho-sections-core'
@@ -71,5 +71,5 @@ project(':yoga').projectDir = file('lib/yoga')
 project(':yogajni').projectDir = file('lib/yogajni')
 project(':test-processor').projectDir = file('litho-it/processor')
 project(':test-specs').projectDir = file('litho-it/specs')
-project(':litho-mountable-canvas').projectDir = file("litho-rendercore-mountables/mountable-canvas")
+project(':litho-primitive-canvas').projectDir = file("litho-rendercore-primitive-components/canvas")
 project(':litho-primitive-utils').projectDir = file("litho-rendercore-primitive-components/utils")

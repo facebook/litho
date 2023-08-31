@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.canvas
+package com.facebook.primitive.canvas
 
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
-import com.facebook.mountable.canvas.model.CanvasModel
+import com.facebook.primitive.canvas.model.CanvasModel
 
 /** A View that executes drawing commands represented as CanvasModel. */
 class CanvasView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
