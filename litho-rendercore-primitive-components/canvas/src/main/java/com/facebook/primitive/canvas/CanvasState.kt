@@ -32,7 +32,7 @@ import com.facebook.primitive.canvas.model.CanvasStroke
 import com.facebook.primitive.canvas.model.CanvasTransformModel
 
 /**
- * The state of the mountable canvas component.
+ * The state of the Prmitive canvas component.
  *
  * Android [Paint] is a "heavy" object that is expensive to create and destroy. This class is
  * responsible for caching fill, stroke and layer Paint objects and reusing them for all drawing

@@ -2,6 +2,7 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho:DEFS.bzl", "FBApp_UIFramewor
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET",
+    "LITHO_RENDERCORE_PRIMITIVES_TARGET",
     "LITHO_RENDERCORE_TARGET",
     "fb_android_library",
 )
@@ -22,7 +23,7 @@ fb_android_library(
     ],
     deps = [
         LITHO_RENDERCORE_TARGET,
-        "//fbandroid/libraries/rendercore/rendercore-primitive-components/utils:utils",
+        LITHO_RENDERCORE_PRIMITIVES_TARGET,
         "//fbandroid/third-party/android/androidx:collection",
         "//third-party/java/androidx/core/core-ktx:core-ktx",
     ],

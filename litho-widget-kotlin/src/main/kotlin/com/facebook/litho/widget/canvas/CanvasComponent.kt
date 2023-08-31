@@ -16,12 +16,12 @@
 
 package com.facebook.litho.widget.canvas
 
-import com.facebook.litho.MountableComponent
-import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableRenderResult
+import com.facebook.litho.LithoPrimitive
+import com.facebook.litho.PrimitiveComponent
+import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.useCached
-import com.facebook.primitive.canvas.CanvasMountable
+import com.facebook.primitive.canvas.CanvasPrimitive
 import com.facebook.primitive.canvas.CanvasState
 import com.facebook.primitive.utils.types.CanvasLayerType
 import com.facebook.primitive.utils.types.DEFAULT_CANVAS_LAYER_TYPE
@@ -43,17 +43,19 @@ class CanvasComponent(
     private val pathCacheSize: Int = CanvasState.DEFAULT_PATH_CACHE_SIZE,
     private val style: Style? = null,
     private val block: CanvasScope.() -> Unit
-) : MountableComponent() {
+) : PrimitiveComponent() {
 
-  override fun MountableComponentScope.render(): MountableRenderResult {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val canvasState = useCached { CanvasState(matrixPoolSize, pathCacheSize) }
 
-    return MountableRenderResult(
-        CanvasMountable(
-            layerType = layerType,
-            modelProvider = { canvasSize: Size ->
-              CanvasScope().createModel(canvasSize, canvasState, block)
-            }),
-        style)
+    return LithoPrimitive(
+        primitive =
+            CanvasPrimitive(
+                id = createPrimitiveId(),
+                layerType = layerType,
+                modelProvider = { canvasSize: Size ->
+                  CanvasScope().createModel(canvasSize, canvasState, block)
+                }),
+        style = style)
   }
 }
