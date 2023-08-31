@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.FastMath;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
@@ -374,9 +375,11 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   public @Nullable LithoRenderUnit getBorderRenderUnit() {
     if (mContext.shouldReuseOutputs()) {
       return mBorderRenderUnit;
-    } else {
+    } else if (shouldDrawBorders()) {
       return InternalNodeUtils.createBorderRenderUnit(
-          this, mNode, getWidth(), getHeight(), mDiffNode);
+          mNode, createBorderColorDrawable(this), getWidth(), getHeight(), mDiffNode);
+    } else {
+      return null;
     }
   }
 
@@ -739,10 +742,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
             InternalNodeUtils.createForegroundRenderUnit(
                 this, mNode, getWidth(), getHeight(), mDiffNode);
       }
-      if (hasSizeChanged || mBorderRenderUnit == null) {
+      if (shouldDrawBorders() && (hasSizeChanged || mBorderRenderUnit == null)) {
         mBorderRenderUnit =
             InternalNodeUtils.createBorderRenderUnit(
-                this, mNode, getWidth(), getHeight(), mDiffNode);
+                mNode, createBorderColorDrawable(this), getWidth(), getHeight(), mDiffNode);
       }
     }
   }
@@ -753,5 +756,27 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     } else {
       return false;
     }
+  }
+
+  private static BorderColorDrawable createBorderColorDrawable(LithoLayoutResult result) {
+    final LithoNode node = result.getNode();
+    final boolean isRtl = result.recursivelyResolveLayoutDirection() == YogaDirection.RTL;
+    final float[] borderRadius = node.getBorderRadius();
+    final int[] borderColors = node.getBorderColors();
+    final YogaEdge leftEdge = isRtl ? YogaEdge.RIGHT : YogaEdge.LEFT;
+    final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
+
+    return new BorderColorDrawable.Builder()
+        .pathEffect(node.getBorderPathEffect())
+        .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
+        .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
+        .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
+        .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
+        .borderLeftWidth(result.getLayoutBorder(leftEdge))
+        .borderTopWidth(result.getLayoutBorder(YogaEdge.TOP))
+        .borderRightWidth(result.getLayoutBorder(rightEdge))
+        .borderBottomWidth(result.getLayoutBorder(YogaEdge.BOTTOM))
+        .borderRadius(borderRadius)
+        .build();
   }
 }

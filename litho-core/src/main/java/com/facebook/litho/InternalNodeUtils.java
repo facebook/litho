@@ -40,8 +40,6 @@ import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Primitive;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaEdge;
 import java.util.List;
 import java.util.Map;
 
@@ -208,18 +206,13 @@ public class InternalNodeUtils {
   }
 
   /** Creates a {@link LithoRenderUnit} for the border output iff the result has borders. */
-  static @Nullable LithoRenderUnit createBorderRenderUnit(
-      final LithoLayoutResult result,
+  static LithoRenderUnit createBorderRenderUnit(
       final LithoNode node,
+      final BorderColorDrawable border,
       final int width,
       final int height,
       final @Nullable DiffNode diffNode) {
-    if (result.shouldDrawBorders()) {
-      final Drawable border = getBorderColorDrawable(result);
-      return createDrawableRenderUnit(node, border, width, height, OutputUnitType.BORDER, diffNode);
-    }
-
-    return null;
+    return createDrawableRenderUnit(node, border, width, height, OutputUnitType.BORDER, diffNode);
   }
 
   /**
@@ -450,31 +443,5 @@ public class InternalNodeUtils {
       default:
         return null;
     }
-  }
-
-  private static Drawable getBorderColorDrawable(LithoLayoutResult result) {
-    if (!result.shouldDrawBorders()) {
-      throw new RuntimeException("This result does not support drawing border color");
-    }
-
-    final LithoNode node = result.getNode();
-    final boolean isRtl = result.recursivelyResolveLayoutDirection() == YogaDirection.RTL;
-    final float[] borderRadius = node.getBorderRadius();
-    final int[] borderColors = node.getBorderColors();
-    final YogaEdge leftEdge = isRtl ? YogaEdge.RIGHT : YogaEdge.LEFT;
-    final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
-
-    return new BorderColorDrawable.Builder()
-        .pathEffect(node.getBorderPathEffect())
-        .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
-        .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
-        .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
-        .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
-        .borderLeftWidth(result.getLayoutBorder(leftEdge))
-        .borderTopWidth(result.getLayoutBorder(YogaEdge.TOP))
-        .borderRightWidth(result.getLayoutBorder(rightEdge))
-        .borderBottomWidth(result.getLayoutBorder(YogaEdge.BOTTOM))
-        .borderRadius(borderRadius)
-        .build();
   }
 }
