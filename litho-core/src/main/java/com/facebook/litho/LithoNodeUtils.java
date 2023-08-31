@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class InternalNodeUtils {
+public class LithoNodeUtils {
 
   /** Creates a {@link LithoRenderUnit} for the content output iff the result mounts content. */
   static @Nullable LithoRenderUnit createContentRenderUnit(

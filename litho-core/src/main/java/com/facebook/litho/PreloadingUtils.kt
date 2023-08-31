@@ -151,7 +151,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 ThreadPoolLayoutHandler::class.java,
                 LayoutThreadPoolExecutor::class.java,
                 LayoutThreadFactory::class.java,
-                InternalNodeUtils::class.java,
+                LithoNodeUtils::class.java,
                 SizeSpec::class.java,
                 TransitionId::class.java,
                 OutputUnitsAffinityGroup::class.java,

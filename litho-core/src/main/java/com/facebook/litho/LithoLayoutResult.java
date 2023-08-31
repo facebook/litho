@@ -342,7 +342,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mContentRenderUnit;
     } else {
-      return InternalNodeUtils.createContentRenderUnit(mNode, mCachedMeasuresValid, mDiffNode);
+      return LithoNodeUtils.createContentRenderUnit(mNode, mCachedMeasuresValid, mDiffNode);
     }
   }
 
@@ -350,7 +350,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mHostRenderUnit;
     } else {
-      return InternalNodeUtils.createHostRenderUnit(getNode());
+      return LithoNodeUtils.createHostRenderUnit(getNode());
     }
   }
 
@@ -358,8 +358,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mBackgroundRenderUnit;
     } else {
-      return InternalNodeUtils.createBackgroundRenderUnit(
-          mNode, getWidth(), getHeight(), mDiffNode);
+      return LithoNodeUtils.createBackgroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
     }
   }
 
@@ -367,8 +366,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mForegroundRenderUnit;
     } else {
-      return InternalNodeUtils.createForegroundRenderUnit(
-          mNode, getWidth(), getHeight(), mDiffNode);
+      return LithoNodeUtils.createForegroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
     }
   }
 
@@ -376,7 +374,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mBorderRenderUnit;
     } else if (shouldDrawBorders()) {
-      return InternalNodeUtils.createBorderRenderUnit(
+      return LithoNodeUtils.createBorderRenderUnit(
           mNode, createBorderColorDrawable(this), getWidth(), getHeight(), mDiffNode);
     } else {
       return null;
@@ -727,22 +725,22 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       if (mContentRenderUnit == null) {
         mContentRenderUnit =
-            InternalNodeUtils.createContentRenderUnit(mNode, mCachedMeasuresValid, mDiffNode);
+            LithoNodeUtils.createContentRenderUnit(mNode, mCachedMeasuresValid, mDiffNode);
       }
       if (mHostRenderUnit == null) {
-        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(getNode());
+        mHostRenderUnit = LithoNodeUtils.createHostRenderUnit(getNode());
       }
       if (hasSizeChanged || mBackgroundRenderUnit == null) {
         mBackgroundRenderUnit =
-            InternalNodeUtils.createBackgroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
+            LithoNodeUtils.createBackgroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
       }
       if (hasSizeChanged || mForegroundRenderUnit == null) {
         mForegroundRenderUnit =
-            InternalNodeUtils.createForegroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
+            LithoNodeUtils.createForegroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
       }
       if (shouldDrawBorders() && (hasSizeChanged || mBorderRenderUnit == null)) {
         mBorderRenderUnit =
-            InternalNodeUtils.createBorderRenderUnit(
+            LithoNodeUtils.createBorderRenderUnit(
                 mNode, createBorderColorDrawable(this), getWidth(), getHeight(), mDiffNode);
       }
     }

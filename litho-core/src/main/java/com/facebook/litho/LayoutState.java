@@ -303,7 +303,7 @@ public class LayoutState
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             MountSpecLithoRenderUnit.STATE_DIRTY,
-            InternalNodeUtils.getDebugKey(
+            LithoNodeUtils.getDebugKey(
                 layoutState.getComponentContext().mGlobalKey, OutputUnitType.HOST));
 
     final RenderTreeNode node =
@@ -628,7 +628,7 @@ public class LayoutState
 
     final @Nullable LithoRenderUnit hostRenderUnit;
     if (parent == null /* isRoot */) {
-      hostRenderUnit = InternalNodeUtils.createRootHostRenderUnit(result.getNode());
+      hostRenderUnit = LithoNodeUtils.createRootHostRenderUnit(result.getNode());
     } else {
       hostRenderUnit = result.getHostRenderUnit();
     }
