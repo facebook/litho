@@ -357,7 +357,6 @@ class Layout {
         LithoLayoutResult child = result.getChildAt(i);
         measurePendingSubtrees(context, child, child.getNode(), layoutState, layoutStateContext);
       }
-      return;
     }
 
     result.onBoundsDefined();
