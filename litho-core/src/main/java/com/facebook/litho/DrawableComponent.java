@@ -25,23 +25,22 @@ import com.facebook.litho.drawable.DrawableUtils;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
 
-  Drawable mDrawable;
-  int mDrawableWidth;
-  int mDrawableHeight;
+  final Drawable mDrawable;
+  final int mDrawableWidth;
+  final int mDrawableHeight;
 
-  private DrawableComponent(Drawable drawable) {
+  private DrawableComponent(Drawable drawable, int width, int height) {
     super("DrawableComponent");
     mDrawable = drawable;
+    mDrawableWidth = width;
+    mDrawableHeight = height;
   }
 
   @Override
   protected void onBoundsDefined(
       final ComponentContext c,
       final ComponentLayout layout,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    setDrawableWidth(layout.getWidth());
-    setDrawableHeight(layout.getHeight());
-  }
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   @Override
   protected Object onCreateMountContent(Context c) {
@@ -87,8 +86,8 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
     return MountType.DRAWABLE;
   }
 
-  public static DrawableComponent create(Drawable drawable) {
-    return new DrawableComponent<>(drawable);
+  public static DrawableComponent<?> create(Drawable drawable, int width, int height) {
+    return new DrawableComponent<>(drawable, width, height);
   }
 
   private Drawable getDrawable() {
@@ -110,16 +109,8 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
     return DrawableUtils.isEquivalentTo(mDrawable, drawableComponent.mDrawable);
   }
 
-  private void setDrawableWidth(int drawableWidth) {
-    mDrawableWidth = drawableWidth;
-  }
-
   private int getDrawableWidth() {
     return mDrawableWidth;
-  }
-
-  private void setDrawableHeight(int drawableHeight) {
-    mDrawableHeight = drawableHeight;
   }
 
   private int getDrawableHeight() {

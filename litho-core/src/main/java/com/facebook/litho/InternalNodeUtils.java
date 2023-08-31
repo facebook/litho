@@ -49,8 +49,10 @@ import java.util.Map;
 public class InternalNodeUtils {
 
   /** Creates a {@link LithoRenderUnit} for the content output iff the result mounts content. */
-  static @Nullable LithoRenderUnit createContentRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getNode();
+  static @Nullable LithoRenderUnit createContentRenderUnit(
+      final LithoNode node,
+      final boolean areCachedMeasuresValid,
+      final @Nullable DiffNode diffNode) {
     final Component component = node.getTailComponent();
 
     // We need to merge dynamic props from all scoped component infos in order to cover cases where
@@ -65,7 +67,6 @@ public class InternalNodeUtils {
 
     final String componentKey = node.getTailComponentKey();
     final ComponentContext context = node.getTailComponentContext();
-    final @Nullable DiffNode diffNode = result.getDiffNode();
     long previousId = -1;
 
     if (diffNode != null) {
@@ -86,7 +87,7 @@ public class InternalNodeUtils {
         node.getImportantForAccessibility(),
         previousId != id
             ? MountSpecLithoRenderUnit.STATE_UNKNOWN
-            : result.areCachedMeasuresValid()
+            : areCachedMeasuresValid
                 ? MountSpecLithoRenderUnit.STATE_UPDATED
                 : MountSpecLithoRenderUnit.STATE_DIRTY,
         node.isDuplicateParentStateEnabled(),
@@ -167,14 +168,19 @@ public class InternalNodeUtils {
   /**
    * Creates a {@link LithoRenderUnit} for the background output iff the result has a background.
    */
-  static @Nullable LithoRenderUnit createBackgroundRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getNode();
+  static @Nullable LithoRenderUnit createBackgroundRenderUnit(
+      final LithoLayoutResult result,
+      final LithoNode node,
+      final int width,
+      final int height,
+      final @Nullable DiffNode diffNode) {
     final Drawable background = node.getBackground();
 
     // Only create a background output when the component does not mount a View because
     // the background will get set in the output of the component.
     if (background != null && !node.willMountView()) {
-      return createDrawableRenderUnit(result, background, OutputUnitType.BACKGROUND);
+      return createDrawableRenderUnit(
+          node, background, width, height, OutputUnitType.BACKGROUND, diffNode);
     }
 
     return null;
@@ -183,24 +189,34 @@ public class InternalNodeUtils {
   /**
    * Creates a {@link LithoRenderUnit} for the foreground output iff the result has a foreground.
    */
-  static @Nullable LithoRenderUnit createForegroundRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getNode();
+  static @Nullable LithoRenderUnit createForegroundRenderUnit(
+      final LithoLayoutResult result,
+      final LithoNode node,
+      final int width,
+      final int height,
+      final @Nullable DiffNode diffNode) {
     final Drawable foreground = node.getForeground();
 
     /// Only create a foreground output when the component does not mount a View because
     // the foreground has already been set in the output of the component.
     if (foreground != null && (!node.willMountView() || SDK_INT < M)) {
-      return createDrawableRenderUnit(result, foreground, OutputUnitType.FOREGROUND);
+      return createDrawableRenderUnit(
+          node, foreground, width, height, OutputUnitType.FOREGROUND, diffNode);
     }
 
     return null;
   }
 
   /** Creates a {@link LithoRenderUnit} for the border output iff the result has borders. */
-  static @Nullable LithoRenderUnit createBorderRenderUnit(LithoLayoutResult result) {
+  static @Nullable LithoRenderUnit createBorderRenderUnit(
+      final LithoLayoutResult result,
+      final LithoNode node,
+      final int width,
+      final int height,
+      final @Nullable DiffNode diffNode) {
     if (result.shouldDrawBorders()) {
       final Drawable border = getBorderColorDrawable(result);
-      return createDrawableRenderUnit(result, border, OutputUnitType.BORDER);
+      return createDrawableRenderUnit(node, border, width, height, OutputUnitType.BORDER, diffNode);
     }
 
     return null;
@@ -213,15 +229,16 @@ public class InternalNodeUtils {
    * ComponentLayout, InterStagePropsContainer)} for the {@link DrawableComponent}.
    */
   static LithoRenderUnit createDrawableRenderUnit(
-      final LithoLayoutResult result,
+      final LithoNode node,
       final Drawable drawable,
-      final @OutputUnitType int outputType) {
+      final int width,
+      final int height,
+      final @OutputUnitType int outputType,
+      final @Nullable DiffNode diffNode) {
 
-    final Component component = DrawableComponent.create(drawable);
-    final LithoNode node = result.getNode();
+    final DrawableComponent<?> component = DrawableComponent.create(drawable, width, height);
     final ComponentContext context = node.getTailComponentContext();
     final String componentKey = node.getTailComponentKey();
-    final @Nullable DiffNode diffNode = result.getDiffNode();
 
     final @Nullable LithoRenderUnit recycle;
 
@@ -260,24 +277,6 @@ public class InternalNodeUtils {
 
     final long previousId = recycle != null ? recycle.getId() : -1;
     final long id = context.calculateLayoutOutputId(componentKey, outputType);
-
-    /* Call onBoundsDefined for the DrawableComponent */
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
-    }
-
-    try {
-      if (component instanceof SpecGeneratedComponent) {
-        ((SpecGeneratedComponent) component).onBoundsDefined(context, result, null);
-      }
-    } catch (Exception e) {
-      ComponentUtils.handleWithHierarchy(context, component, e);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
 
     return createRenderUnit(
         id,

@@ -341,7 +341,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mContentRenderUnit;
     } else {
-      return InternalNodeUtils.createContentRenderUnit(this);
+      return InternalNodeUtils.createContentRenderUnit(mNode, mCachedMeasuresValid, mDiffNode);
     }
   }
 
@@ -357,7 +357,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mBackgroundRenderUnit;
     } else {
-      return InternalNodeUtils.createBackgroundRenderUnit(this);
+      return InternalNodeUtils.createBackgroundRenderUnit(
+          this, mNode, getWidth(), getHeight(), mDiffNode);
     }
   }
 
@@ -365,7 +366,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mForegroundRenderUnit;
     } else {
-      return InternalNodeUtils.createForegroundRenderUnit(this);
+      return InternalNodeUtils.createForegroundRenderUnit(
+          this, mNode, getWidth(), getHeight(), mDiffNode);
     }
   }
 
@@ -373,7 +375,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mContext.shouldReuseOutputs()) {
       return mBorderRenderUnit;
     } else {
-      return InternalNodeUtils.createBorderRenderUnit(this);
+      return InternalNodeUtils.createBorderRenderUnit(
+          this, mNode, getWidth(), getHeight(), mDiffNode);
     }
   }
 
@@ -720,19 +723,26 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
     if (mContext.shouldReuseOutputs()) {
       if (mContentRenderUnit == null) {
-        mContentRenderUnit = InternalNodeUtils.createContentRenderUnit(this);
+        mContentRenderUnit =
+            InternalNodeUtils.createContentRenderUnit(mNode, mCachedMeasuresValid, mDiffNode);
       }
       if (mHostRenderUnit == null) {
         mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(getNode());
       }
       if (hasSizeChanged || mBackgroundRenderUnit == null) {
-        mBackgroundRenderUnit = InternalNodeUtils.createBackgroundRenderUnit(this);
+        mBackgroundRenderUnit =
+            InternalNodeUtils.createBackgroundRenderUnit(
+                this, mNode, getWidth(), getHeight(), mDiffNode);
       }
       if (hasSizeChanged || mForegroundRenderUnit == null) {
-        mForegroundRenderUnit = InternalNodeUtils.createForegroundRenderUnit(this);
+        mForegroundRenderUnit =
+            InternalNodeUtils.createForegroundRenderUnit(
+                this, mNode, getWidth(), getHeight(), mDiffNode);
       }
       if (hasSizeChanged || mBorderRenderUnit == null) {
-        mBorderRenderUnit = InternalNodeUtils.createBorderRenderUnit(this);
+        mBorderRenderUnit =
+            InternalNodeUtils.createBorderRenderUnit(
+                this, mNode, getWidth(), getHeight(), mDiffNode);
       }
     }
   }
