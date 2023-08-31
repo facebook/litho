@@ -25,7 +25,7 @@ import com.facebook.mountable.canvas.model.CanvasLinearGradient
 import com.facebook.mountable.canvas.model.CanvasRadialGradient
 import com.facebook.mountable.canvas.model.CanvasShadingModel
 import com.facebook.mountable.canvas.model.CanvasSolidColorShading
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.utils.types.Point
 
 @JvmInline
 value class Shading

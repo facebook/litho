@@ -23,9 +23,9 @@ import com.facebook.litho.Style
 import com.facebook.litho.useCached
 import com.facebook.mountable.canvas.CanvasMountable
 import com.facebook.mountable.canvas.CanvasState
-import com.facebook.mountable.utils.types.CanvasLayerType
-import com.facebook.mountable.utils.types.DEFAULT_CANVAS_LAYER_TYPE
-import com.facebook.mountable.utils.types.Size
+import com.facebook.primitive.utils.types.CanvasLayerType
+import com.facebook.primitive.utils.types.DEFAULT_CANVAS_LAYER_TYPE
+import com.facebook.primitive.utils.types.Size
 
 /**
  * The Canvas Component which provides a means for drawing 2D graphics.

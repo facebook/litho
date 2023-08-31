@@ -51,7 +51,7 @@ dependencies {
     implementation project(':litho-rendercore')
     implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.collection:collection:1.1.0'
-    api project(':litho-mountable-utils')
+    api project(':litho-primitive-utils')
 
 
     compileOnly deps.proguardAnnotations

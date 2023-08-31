@@ -21,7 +21,7 @@ import android.graphics.RadialGradient
 import android.graphics.Shader
 import androidx.annotation.ColorInt
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.utils.types.Point
 
 sealed interface CanvasShadingModel
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.utils.types
+package com.facebook.primitive.utils.types
 
 import android.annotation.SuppressLint
 import android.graphics.BlendMode

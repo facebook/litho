@@ -24,7 +24,7 @@ import com.facebook.mountable.canvas.model.CanvasTransform
 import com.facebook.mountable.canvas.model.CanvasTransformChildModel
 import com.facebook.mountable.canvas.model.CanvasTransformModel
 import com.facebook.mountable.canvas.model.CanvasTranslate
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.utils.types.Point
 
 /** A transform which holds a 3x3 matrix for transforming coordinates. */
 @JvmInline

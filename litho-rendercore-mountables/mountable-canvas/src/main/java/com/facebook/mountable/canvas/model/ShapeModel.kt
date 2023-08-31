@@ -22,8 +22,8 @@ import android.graphics.Paint
 import android.graphics.RectF
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.drawArc
-import com.facebook.mountable.utils.types.Point
-import com.facebook.mountable.utils.types.Size
+import com.facebook.primitive.utils.types.Point
+import com.facebook.primitive.utils.types.Size
 
 sealed interface CanvasShape
 

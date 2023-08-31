@@ -19,8 +19,8 @@ package com.facebook.mountable.canvas
 import android.content.Context
 import android.view.View
 import com.facebook.mountable.canvas.model.CanvasModel
-import com.facebook.mountable.utils.types.CanvasLayerType
-import com.facebook.mountable.utils.types.Size
+import com.facebook.primitive.utils.types.CanvasLayerType
+import com.facebook.primitive.utils.types.Size
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult

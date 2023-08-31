@@ -22,9 +22,9 @@ import android.graphics.RectF
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.CanvasState
 import com.facebook.mountable.canvas.addArc
-import com.facebook.mountable.utils.types.FillRule
-import com.facebook.mountable.utils.types.Point
-import com.facebook.mountable.utils.types.Size
+import com.facebook.primitive.utils.types.FillRule
+import com.facebook.primitive.utils.types.Point
+import com.facebook.primitive.utils.types.Size
 
 sealed interface CanvasPathModel : CanvasShape {
   fun toAndroidPath(state: CanvasState): Path

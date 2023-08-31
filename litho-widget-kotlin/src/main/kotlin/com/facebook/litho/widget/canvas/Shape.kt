@@ -22,8 +22,8 @@ import com.facebook.mountable.canvas.model.CanvasShapeCircle
 import com.facebook.mountable.canvas.model.CanvasShapeEllipse
 import com.facebook.mountable.canvas.model.CanvasShapeLine
 import com.facebook.mountable.canvas.model.CanvasShapeRect
-import com.facebook.mountable.utils.types.Point
-import com.facebook.mountable.utils.types.Size
+import com.facebook.primitive.utils.types.Point
+import com.facebook.primitive.utils.types.Size
 
 @JvmInline
 value class Shape private constructor(@PublishedApi internal val shapeModel: CanvasShape) {

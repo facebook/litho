@@ -31,7 +31,7 @@ import com.facebook.litho.widget.canvas.Path
 import com.facebook.litho.widget.canvas.Shading
 import com.facebook.litho.widget.canvas.Shape
 import com.facebook.litho.widget.canvas.Transform
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.utils.types.Point
 import com.facebook.rendercore.px
 
 // start_example

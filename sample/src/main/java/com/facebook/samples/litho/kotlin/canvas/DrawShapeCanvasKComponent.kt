@@ -28,7 +28,7 @@ import com.facebook.litho.widget.canvas.CanvasComponent
 import com.facebook.litho.widget.canvas.Gradient
 import com.facebook.litho.widget.canvas.Shading
 import com.facebook.litho.widget.canvas.Shape
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.utils.types.Point
 import com.facebook.rendercore.px
 
 // start_example

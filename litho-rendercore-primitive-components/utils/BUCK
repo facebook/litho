@@ -7,7 +7,7 @@ load(
 )
 
 fb_android_library(
-    name = "mountable-utils",
+    name = "utils",
     srcs = glob(
         ["src/main/java/**/*.kt"],
     ),

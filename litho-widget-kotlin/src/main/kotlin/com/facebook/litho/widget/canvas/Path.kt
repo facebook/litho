@@ -29,10 +29,10 @@ import com.facebook.mountable.canvas.model.CanvasPathModel
 import com.facebook.mountable.canvas.model.CanvasPathMoveTo
 import com.facebook.mountable.canvas.model.CanvasPathQuadTo
 import com.facebook.mountable.canvas.model.CanvasPathRect
-import com.facebook.mountable.utils.types.DEFAULT_FILL_RULE
-import com.facebook.mountable.utils.types.FillRule
-import com.facebook.mountable.utils.types.Point
-import com.facebook.mountable.utils.types.Size
+import com.facebook.primitive.utils.types.DEFAULT_FILL_RULE
+import com.facebook.primitive.utils.types.FillRule
+import com.facebook.primitive.utils.types.Point
+import com.facebook.primitive.utils.types.Size
 
 @JvmInline
 value class Path internal constructor(@PublishedApi internal val pathModel: CanvasPathModel)

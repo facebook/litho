@@ -198,7 +198,7 @@ LITHO_RENDERCORE_TRANSITIONS_TARGET = make_dep_path("litho-rendercore-transition
 
 LITHO_RENDERCORE_MOUNTABLE_CANVAS_TARGET = make_dep_path("litho-rendercore-mountables/mountable-canvas:mountable-canvas")
 
-LITHO_RENDERCORE_MOUNTABLE_UTILS_TARGET = make_dep_path("litho-rendercore-mountables/mountable-utils:mountable-utils")
+LITHO_RENDERCORE_PRIMITIVE_COMPONENTS_UTILS_TARGET = make_dep_path("litho-rendercore-primitive-components/utils:utils")
 
 LITHO_RENDERCORE_PRIMITIVES_TARGET = make_dep_path("litho-rendercore-primitives:rendercore-primitives")
 

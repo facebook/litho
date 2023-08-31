@@ -20,7 +20,7 @@ import android.annotation.SuppressLint
 import android.graphics.Matrix
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.values
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.utils.types.Point
 
 sealed interface CanvasTransformModel {
   fun applyTo(matrix: Matrix)

@@ -14,41 +14,38 @@
  * limitations under the License.
  */
 
-package com.facebook.mountable.utils.types
+package com.facebook.primitive.utils.types
 
 import android.annotation.SuppressLint
 
 @SuppressLint("HexColorValueUsage")
 @JvmInline
-value class Point internal constructor(@PublishedApi internal val packedValue: Long) {
-  val x: Float
+value class Size internal constructor(@PublishedApi internal val packedValue: Long) {
+  val width: Float
     get() {
       return Float.fromBits(packedValue.shr(32).toInt())
     }
 
-  val y: Float
+  val height: Float
     get() {
       return Float.fromBits(packedValue.and(0xFFFFFFFF).toInt())
     }
 
-  operator fun minus(other: Point): Point = Point(x - other.x, y - other.y)
+  operator fun times(operand: Float): Size = Size(width * operand, height * operand)
 
-  operator fun plus(other: Point): Point = Point(x + other.x, y + other.y)
-
-  operator fun times(operand: Float): Point = Point(x * operand, y * operand)
-
-  operator fun div(operand: Float): Point = Point(x / operand, y / operand)
-
-  companion object {
-    val Zero: Point = Point(0.0f, 0.0f)
-  }
+  operator fun div(operand: Float): Size = Size(width / operand, height / operand)
 }
 
 @SuppressLint("HexColorValueUsage")
-fun Point(x: Float, y: Float): Point {
+fun Size(width: Float, height: Float): Size {
   // pack two Float values into one Long value
-  val v1 = x.toBits().toLong()
-  val v2 = y.toBits().toLong()
+  val v1 = width.toBits().toLong()
+  val v2 = height.toBits().toLong()
   val packed = v1.shl(32) or (v2 and 0xFFFFFFFF)
-  return Point(packed)
+  return Size(packed)
 }
+
+val Size.center: Point
+  get() {
+    return Point(width / 2f, height / 2f)
+  }

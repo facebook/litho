@@ -27,11 +27,11 @@ import androidx.core.graphics.withMatrix
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.CanvasState
 import com.facebook.mountable.canvas.withLayer
-import com.facebook.mountable.utils.types.BlendingMode
-import com.facebook.mountable.utils.types.DEFAULT_BLENDING_MODE
-import com.facebook.mountable.utils.types.LineCap
-import com.facebook.mountable.utils.types.LineJoin
-import com.facebook.mountable.utils.types.Size
+import com.facebook.primitive.utils.types.BlendingMode
+import com.facebook.primitive.utils.types.DEFAULT_BLENDING_MODE
+import com.facebook.primitive.utils.types.LineCap
+import com.facebook.primitive.utils.types.LineJoin
+import com.facebook.primitive.utils.types.Size
 
 sealed interface CanvasNodeModel {
   fun draw(canvas: Canvas, state: CanvasState)

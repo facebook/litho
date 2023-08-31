@@ -26,6 +26,6 @@ fb_android_library(
         "//third-party/java/androidx/core/core-ktx:core-ktx",
     ],
     exported_deps = [
-        "//fbandroid/libraries/rendercore/rendercore-mountables/mountable-utils:mountable-utils",
+        "//fbandroid/libraries/rendercore/rendercore-primitive-components/utils:utils",
     ],
 )

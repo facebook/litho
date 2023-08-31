@@ -22,7 +22,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.utils.types.Point
 
 /** Wrap the specified [block] in calls to [Canvas.saveLayer] and [Canvas.restoreToCount]. */
 @Suppress("DEPRECATION")
