@@ -540,18 +540,9 @@ public class LayoutState
 
     final DebugHierarchy.Node hierarchy = getDebugHierarchy(parentHierarchy, node);
 
-    // Early return if collecting results of a node holding a nested tree.
     if (result instanceof NestedTreeHolderResult) {
-      // If the nested tree is defined, it has been resolved during a measure call during
-      // layout calculation.
-      if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + component.getSimpleName())
-            .arg("widthSpec", "EXACTLY " + result.getWidth())
-            .arg("heightSpec", "EXACTLY " + result.getHeight())
-            .arg("rootComponentId", node.getTailComponent().getId())
-            .flush();
-      }
 
+      final LithoLayoutResult nestedTree;
       final int size = node.getComponentCount();
       final ComponentContext immediateParentContext;
       if (size == 1) {
@@ -560,16 +551,30 @@ public class LayoutState
         immediateParentContext = node.getComponentContextAt(1);
       }
 
-      LithoLayoutResult nestedTree =
-          Layout.measure(
-              layoutStateContext,
-              Preconditions.checkNotNull(immediateParentContext),
-              (NestedTreeHolderResult) result,
-              SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
-              SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY));
+      if (parentContext.shouldCacheLayouts()) {
+        nestedTree = ((NestedTreeHolderResult) result).getNestedResult();
+      } else {
+        // If the nested tree is defined, it has been resolved during a measure call during
+        // layout calculation.
+        if (isTracing) {
+          ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + component.getSimpleName())
+              .arg("widthSpec", "EXACTLY " + result.getWidth())
+              .arg("heightSpec", "EXACTLY " + result.getHeight())
+              .arg("rootComponentId", node.getTailComponent().getId())
+              .flush();
+        }
 
-      if (isTracing) {
-        ComponentsSystrace.endSection();
+        nestedTree =
+            Layout.measure(
+                layoutStateContext,
+                Preconditions.checkNotNull(immediateParentContext),
+                (NestedTreeHolderResult) result,
+                SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
+                SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY));
+
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
       }
 
       if (nestedTree == null) {
