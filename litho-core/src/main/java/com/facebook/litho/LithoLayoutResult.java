@@ -359,7 +359,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       return mBackgroundRenderUnit;
     } else {
       return InternalNodeUtils.createBackgroundRenderUnit(
-          this, mNode, getWidth(), getHeight(), mDiffNode);
+          mNode, getWidth(), getHeight(), mDiffNode);
     }
   }
 
@@ -368,7 +368,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       return mForegroundRenderUnit;
     } else {
       return InternalNodeUtils.createForegroundRenderUnit(
-          this, mNode, getWidth(), getHeight(), mDiffNode);
+          mNode, getWidth(), getHeight(), mDiffNode);
     }
   }
 
@@ -734,13 +734,11 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       }
       if (hasSizeChanged || mBackgroundRenderUnit == null) {
         mBackgroundRenderUnit =
-            InternalNodeUtils.createBackgroundRenderUnit(
-                this, mNode, getWidth(), getHeight(), mDiffNode);
+            InternalNodeUtils.createBackgroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
       }
       if (hasSizeChanged || mForegroundRenderUnit == null) {
         mForegroundRenderUnit =
-            InternalNodeUtils.createForegroundRenderUnit(
-                this, mNode, getWidth(), getHeight(), mDiffNode);
+            InternalNodeUtils.createForegroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
       }
       if (shouldDrawBorders() && (hasSizeChanged || mBorderRenderUnit == null)) {
         mBorderRenderUnit =

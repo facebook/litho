@@ -167,11 +167,7 @@ public class InternalNodeUtils {
    * Creates a {@link LithoRenderUnit} for the background output iff the result has a background.
    */
   static @Nullable LithoRenderUnit createBackgroundRenderUnit(
-      final LithoLayoutResult result,
-      final LithoNode node,
-      final int width,
-      final int height,
-      final @Nullable DiffNode diffNode) {
+      final LithoNode node, final int width, final int height, final @Nullable DiffNode diffNode) {
     final Drawable background = node.getBackground();
 
     // Only create a background output when the component does not mount a View because
@@ -188,11 +184,7 @@ public class InternalNodeUtils {
    * Creates a {@link LithoRenderUnit} for the foreground output iff the result has a foreground.
    */
   static @Nullable LithoRenderUnit createForegroundRenderUnit(
-      final LithoLayoutResult result,
-      final LithoNode node,
-      final int width,
-      final int height,
-      final @Nullable DiffNode diffNode) {
+      final LithoNode node, final int width, final int height, final @Nullable DiffNode diffNode) {
     final Drawable foreground = node.getForeground();
 
     /// Only create a foreground output when the component does not mount a View because
