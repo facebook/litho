@@ -62,6 +62,7 @@ import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceResolver;
 import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.utils.CommonUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -403,7 +404,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   public interface RenderData {}
 
   public String getSimpleName() {
-    return getClass().getSimpleName();
+    return CommonUtils.getSectionNameForTracing(getClass());
   }
 
   /**

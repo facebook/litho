@@ -172,9 +172,9 @@ class LithoViewTestHelperTest {
             """
               litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,82, key=null}
                 litho.Column\{\w+ V.E..... .. 0,0-1080,82, key=null}
-                  litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                  litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                     litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
-                  litho.TextHolderComponent\{\w+ V.E..... .. 0,41-1080,82, key=null}
+                  litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,41-1080,82, key=null}
                     litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                     """
                 .trimIndent())
@@ -206,11 +206,11 @@ class LithoViewTestHelperTest {
         .containsPattern(
             """
               litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,82, key=null}
-                litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,82, key=null}
+                litho.<cls>com.facebook.litho.DelegatingComponent</cls>\{\w+ V.E..... .. 0,0-1080,82, key=null}
                   litho.Column\{\w+ V.E..... .. 0,0-1080,82, key=null}
-                    litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                    litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                       litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
-                    litho.TextHolderComponent\{\w+ V.E..... .. 0,41-1080,82, key=null}
+                    litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,41-1080,82, key=null}
                       litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                       """
                 .trimIndent())
@@ -234,8 +234,8 @@ class LithoViewTestHelperTest {
         .containsPattern(
             """
               litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                  litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                litho.<cls>com.facebook.litho.ParentComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                  litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                     litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                     """
                 .trimIndent())
@@ -263,8 +263,8 @@ class LithoViewTestHelperTest {
             """
               litho.Column\{\w+ V.E..... .. 0,0-1080,41, key=null}
                 litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                  litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                    litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                  litho.<cls>com.facebook.litho.ParentComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                    litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                       litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                       """
                 .trimIndent())
@@ -291,10 +291,10 @@ class LithoViewTestHelperTest {
     assertThat(string)
         .containsPattern(
             """
-              litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+              litho.<cls>com.facebook.litho.DelegatingComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                 litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                  litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                    litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                  litho.<cls>com.facebook.litho.ParentComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                    litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                       litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                       """
                 .trimIndent())
@@ -325,10 +325,10 @@ class LithoViewTestHelperTest {
         .containsPattern(
             """
               litho.Column\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                litho.<cls>com.facebook.litho.DelegatingComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                   litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                    litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                      litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                    litho.<cls>com.facebook.litho.ParentComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                      litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                         litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                         """
                 .trimIndent())
@@ -352,7 +352,7 @@ class LithoViewTestHelperTest {
     assertThat(string)
         .containsPattern(
             """
-              litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+              litho.<cls>com.facebook.litho.MeasuringComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                 litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                 """
                 .trimIndent())
@@ -378,8 +378,8 @@ class LithoViewTestHelperTest {
     assertThat(string)
         .containsPattern(
             """
-              litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+              litho.<cls>com.facebook.litho.MeasuringComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                litho.<cls>com.facebook.litho.DelegatingComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                   litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                """
                 .trimIndent())
@@ -402,9 +402,9 @@ class LithoViewTestHelperTest {
     assertThat(string)
         .containsPattern(
             """
-              litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                  litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+              litho.<cls>com.facebook.litho.DelegatingComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                litho.<cls>com.facebook.litho.MeasuringComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                  litho.<cls>com.facebook.litho.TextHolderComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                     litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                     """
                 .trimIndent())
@@ -439,36 +439,36 @@ class LithoViewTestHelperTest {
         .containsPattern(
             """
               litho.Column\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                  litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
-                    litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                litho.<cls>com.facebook.litho.DelegatingComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                  litho.<cls>com.facebook.litho.MeasuringComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
+                    litho.<cls>com.facebook.litho.DelegatingComponent</cls>\{\w+ V.E..... .. 0,0-1080,41, key=null}
                       litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
                """
                 .trimIndent())
   }
+}
 
-  class DelegatingComponent(val component: Component) : KComponent() {
-    override fun ComponentScope.render(): Component {
-      return component
-    }
+private class DelegatingComponent(val component: Component) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return component
   }
+}
 
-  class ParentComponent : KComponent() {
-    override fun ComponentScope.render(): Component {
-      return TextHolderComponent()
-    }
+private class ParentComponent : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return TextHolderComponent()
   }
+}
 
-  class TextHolderComponent : KComponent() {
-    override fun ComponentScope.render(): Component {
-      return Text(text = "hello", style = Style.testKey("test-key"))
-    }
+private class TextHolderComponent : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return Text(text = "hello", style = Style.testKey("test-key"))
   }
+}
 
-  class MeasuringComponent(val component: Component) : KComponent() {
-    override fun ComponentScope.render(): Component {
-      component.measure(context, unspecified(), unspecified(), Size())
-      return component
-    }
+private class MeasuringComponent(val component: Component) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    component.measure(context, unspecified(), unspecified(), Size())
+    return component
   }
 }

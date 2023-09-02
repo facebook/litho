@@ -112,7 +112,7 @@ public class WrapperRenderUnitTest {
                     createDelegateBinder(new TestRenderUnit(), mountBinder)))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(
-            "Binder <cls>com.facebook.rendercore.TestBinder$TestBinder1</cls> already exists in the wrapped <cls>com.facebook.rendercore.TestRenderUnit</cls>");
+            "Binder <cls>com.facebook.rendercore.TestBinder$TestBinder1</cls> already exists in the wrapped TestRenderUnit");
   }
 
   @Test
@@ -129,7 +129,7 @@ public class WrapperRenderUnitTest {
                     createDelegateBinder(new TestRenderUnit(), attachBinder)))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(
-            "Binder <cls>com.facebook.rendercore.TestBinder$TestBinder1</cls> already exists in the wrapped <cls>com.facebook.rendercore.TestRenderUnit</cls>");
+            "Binder <cls>com.facebook.rendercore.TestBinder$TestBinder1</cls> already exists in the wrapped TestRenderUnit");
   }
 
   @Test
