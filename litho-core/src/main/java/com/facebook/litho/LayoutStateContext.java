@@ -22,7 +22,6 @@ import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutCache;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,10 +52,6 @@ public class LayoutStateContext implements CalculationStateContext {
 
   private final MeasuredResultCache mCache;
 
-  private final String mThreadCreatedOn;
-  private final List<String> mThreadReleasedOn = new LinkedList<>();
-  private final List<String> mThreadResumedOn = new LinkedList<>();
-
   LayoutStateContext(
       final int componentTreeId,
       final MeasuredResultCache cache,
@@ -78,7 +73,6 @@ public class LayoutStateContext implements CalculationStateContext {
     mCurrentDiffTree = currentDiffTree;
     mLayoutStateFuture = layoutStateFuture;
     mIsAccessibilityEnabled = isAccessibilityEnabled;
-    mThreadCreatedOn = Thread.currentThread().getName();
   }
 
   void releaseReference() {
@@ -87,7 +81,6 @@ public class LayoutStateContext implements CalculationStateContext {
     mCurrentDiffTree = null;
     mRootComponentContext = null;
     mPerfEvent = null;
-    mThreadReleasedOn.add(Thread.currentThread().getName());
     mIsReleased = true;
   }
 
@@ -167,10 +160,6 @@ public class LayoutStateContext implements CalculationStateContext {
     mPerfEvent = perfEvent;
   }
 
-  public void markLayoutResumed() {
-    mThreadResumedOn.add(Thread.currentThread().getName());
-  }
-
   public LayoutCache getLayoutCache() {
     return mLayoutCache;
   }
@@ -191,29 +180,5 @@ public class LayoutStateContext implements CalculationStateContext {
   @Override
   public boolean isAccessibilityEnabled() {
     return mIsAccessibilityEnabled;
-  }
-
-  public String getLifecycleDebugString() {
-    StringBuilder builder = new StringBuilder();
-
-    builder
-        .append("LayoutStateContext was created on: ")
-        .append(mThreadCreatedOn)
-        .append("\n")
-        .append("LayoutStateContext was released on: [");
-
-    for (String thread : mThreadReleasedOn) {
-      builder.append(thread).append(" ,");
-    }
-
-    builder.append("]").append("LayoutStateContext was resumed on: [");
-
-    for (String thread : mThreadResumedOn) {
-      builder.append(thread).append(" ,");
-    }
-
-    builder.append("]");
-
-    return builder.toString();
   }
 }
