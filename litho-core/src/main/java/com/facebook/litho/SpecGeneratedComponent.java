@@ -224,7 +224,7 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Override
   protected RenderResult render(
-      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+      ResolveContext resolveContext, ComponentContext c, int widthSpec, int heightSpec) {
     if (Component.isLayoutSpecWithSizeSpec(this)) {
       return new RenderResult(onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec));
     } else {
@@ -234,14 +234,13 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Nullable
   @Override
-  protected final PrepareResult prepare(
-      ResolveStateContext resolveStateContext, ComponentContext c) {
+  protected final PrepareResult prepare(ResolveContext resolveContext, ComponentContext c) {
     onPrepare(c);
     return null;
   }
 
   /**
-   * Indicate that this component implements its own {@link #resolve(LayoutStateContext,
+   * Indicate that this component implements its own {@link #resolve(LithoLayoutContext,
    * ComponentContext)} logic instead of going through {@link #render(ComponentContext)}.
    */
   boolean canResolve() {
@@ -250,7 +249,7 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Override
   protected ComponentResolveResult resolve(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
       final int parentHeightSpec,
@@ -279,7 +278,7 @@ public abstract class SpecGeneratedComponent extends Component
         beginTrace(
             componentPrepareTraceIdentifier,
             ComponentPrepared,
-            String.valueOf(resolveStateContext.getTreeId()),
+            String.valueOf(resolveContext.getTreeId()),
             attributes);
       }
 
@@ -288,7 +287,7 @@ public abstract class SpecGeneratedComponent extends Component
       }
 
       try {
-        prepare(resolveStateContext, scopedComponentInfo.getContext());
+        prepare(resolveContext, scopedComponentInfo.getContext());
       } finally {
         if (prepareEvent != null && componentsLogger != null) {
           componentsLogger.logPerfEvent(prepareEvent);
@@ -309,11 +308,11 @@ public abstract class SpecGeneratedComponent extends Component
     else if (Component.isLayoutSpec(this)) {
 
       final RenderResult renderResult =
-          render(resolveStateContext, c, parentWidthSpec, parentHeightSpec);
+          render(resolveContext, c, parentWidthSpec, parentHeightSpec);
       final Component root = renderResult.component;
 
       if (root != null) {
-        node = Resolver.resolve(resolveStateContext, c, root);
+        node = Resolver.resolve(resolveContext, c, root);
       } else {
         node = new NullNode();
       }

@@ -91,7 +91,7 @@ public class ComponentContext implements Cloneable {
 
   private boolean isNestedTreeContext;
 
-  private final ThreadLocal<CalculationStateContext> mCalculationStateContextThreadLocal;
+  private final ThreadLocal<CalculationContext> mCalculationStateContextThreadLocal;
 
   public ComponentContext(Context context) {
     this(context, null, null);
@@ -245,13 +245,13 @@ public class ComponentContext implements Cloneable {
 
   /** Returns the current calculate state context */
   @Nullable
-  CalculationStateContext getCalculationStateContext() {
+  CalculationContext getCalculationStateContext() {
     return mCalculationStateContextThreadLocal.get();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setLayoutStateContext(LayoutStateContext layoutStateContext) {
-    mCalculationStateContextThreadLocal.set(layoutStateContext);
+  public void setLithoLayoutContext(LithoLayoutContext lithoLayoutContext) {
+    mCalculationStateContextThreadLocal.set(lithoLayoutContext);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -261,8 +261,8 @@ public class ComponentContext implements Cloneable {
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setLayoutStateContextForTesting() {
-    setLayoutStateContext(
-        new LayoutStateContext(
+    setLithoLayoutContext(
+        new LithoLayoutContext(
             -1,
             new MeasuredResultCache(),
             this,
@@ -281,9 +281,9 @@ public class ComponentContext implements Cloneable {
    * calculation (i.e., including willRender, Layout API, caching, etc).
    */
   @VisibleForTesting
-  public ResolveStateContext setRenderStateContextForTests() {
-    final ResolveStateContext resolveStateContext =
-        new ResolveStateContext(
+  public ResolveContext setRenderStateContextForTests() {
+    final ResolveContext resolveContext =
+        new ResolveContext(
             -1,
             new MeasuredResultCache(),
             new TreeState(),
@@ -294,13 +294,13 @@ public class ComponentContext implements Cloneable {
             null,
             null,
             getLogger());
-    setRenderStateContext(resolveStateContext);
+    setRenderStateContext(resolveContext);
 
-    return resolveStateContext;
+    return resolveContext;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setRenderStateContext(ResolveStateContext renderStateContext) {
+  public void setRenderStateContext(ResolveContext renderStateContext) {
     mCalculationStateContextThreadLocal.set(renderStateContext);
   }
 
@@ -308,7 +308,7 @@ public class ComponentContext implements Cloneable {
    * Sets the calculation state context (either a RenderStateContext or LayoutStateContext) on a
    * thread local, making it unique per ComponentTree, per Thread.
    */
-  void setCalculationStateContext(@Nullable CalculationStateContext context) {
+  void setCalculationStateContext(@Nullable CalculationContext context) {
     mCalculationStateContextThreadLocal.set(context);
   }
 
@@ -648,10 +648,9 @@ public class ComponentContext implements Cloneable {
   }
 
   public int getLayoutVersion() {
-    final CalculationStateContext calculationStateContext =
-        mCalculationStateContextThreadLocal.get();
-    if (calculationStateContext != null) {
-      return calculationStateContext.getLayoutVersion();
+    final CalculationContext calculationContext = mCalculationStateContextThreadLocal.get();
+    if (calculationContext != null) {
+      return calculationContext.getLayoutVersion();
     }
 
     throw new IllegalStateException(
@@ -740,20 +739,20 @@ public class ComponentContext implements Cloneable {
   }
 
   @Nullable
-  public LayoutStateContext getLayoutStateContext() {
-    final CalculationStateContext stateContext = mCalculationStateContextThreadLocal.get();
-    if (stateContext instanceof LayoutStateContext) {
-      return (LayoutStateContext) stateContext;
+  public LithoLayoutContext getLayoutStateContext() {
+    final CalculationContext stateContext = mCalculationStateContextThreadLocal.get();
+    if (stateContext instanceof LithoLayoutContext) {
+      return (LithoLayoutContext) stateContext;
     }
 
     return null;
   }
 
   @Nullable
-  public ResolveStateContext getRenderStateContext() {
-    final CalculationStateContext stateContext = mCalculationStateContextThreadLocal.get();
-    if (stateContext instanceof ResolveStateContext) {
-      return (ResolveStateContext) stateContext;
+  public ResolveContext getRenderStateContext() {
+    final CalculationContext stateContext = mCalculationStateContextThreadLocal.get();
+    if (stateContext instanceof ResolveContext) {
+      return (ResolveContext) stateContext;
     }
 
     return null;

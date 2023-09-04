@@ -368,7 +368,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   protected void applyDiffNode(
-      final LayoutStateContext current,
+      final LithoLayoutContext current,
       final LithoLayoutResult result,
       final @Nullable LithoLayoutResult parent) {
     final @Nullable DiffNode diff;
@@ -441,12 +441,12 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
-  final void applyParentDependentCommonProps(final CalculationStateContext context) {
+  final void applyParentDependentCommonProps(final CalculationContext context) {
     applyParentDependentCommonProps(context, IMPORTANT_FOR_ACCESSIBILITY_AUTO, ENABLED_UNSET, true);
   }
 
   final void applyParentDependentCommonProps(
-      final CalculationStateContext context,
+      final CalculationContext context,
       final int parentImportantForAccessibility,
       final int parentEnabledState,
       final boolean parentDuplicatesParentState) {
@@ -547,7 +547,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       layoutResult = currentNode.createLayoutResult(yogaNode, writer);
     }
     yogaNode.setData(new Pair(context, layoutResult));
-    applyDiffNode(context.getRenderContext().layoutStateContext, currentNode, yogaNode, parentNode);
+    applyDiffNode(context.getRenderContext().lithoLayoutContext, currentNode, yogaNode, parentNode);
     saveLithoLayoutResultIntoCache(context, currentNode, layoutResult);
 
     for (int i = 0; i < currentNode.getChildCount(); i++) {
@@ -608,7 +608,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * anything then it should not participate in grow/shrink behaviours.
    */
   private static void applyDiffNode(
-      LayoutStateContext context,
+      LithoLayoutContext context,
       LithoNode currentNode,
       YogaNode currentYogaNode,
       @Nullable YogaNode parentYogaNode) {
@@ -635,14 +635,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   public @Nullable LithoLayoutResult calculateLayout(
       final LayoutContext<LithoRenderContext> c, final int widthSpec, final int heightSpec) {
 
-    if (c.getRenderContext().layoutStateContext.isReleased()) {
+    if (c.getRenderContext().lithoLayoutContext.isReleased()) {
       throw new IllegalStateException(
           "Cannot calculate a layout with a released LayoutStateContext.");
     }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
 
-    applyOverridesRecursive(c.getRenderContext().layoutStateContext, this);
+    applyOverridesRecursive(this);
 
     if (isTracing) {
       ComponentsSystrace.beginSection("freeze:" + getHeadComponent().getSimpleName());
@@ -704,10 +704,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return layoutResult;
   }
 
-  public void child(
-      ResolveStateContext resolveStateContext, ComponentContext c, @Nullable Component child) {
+  public void child(ResolveContext resolveContext, ComponentContext c, @Nullable Component child) {
     if (child != null) {
-      child(Resolver.resolve(resolveStateContext, c, child));
+      child(Resolver.resolve(resolveContext, c, child));
     }
   }
 
@@ -1467,11 +1466,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mDebugComponents = null;
   }
 
-  private static void applyOverridesRecursive(LayoutStateContext c, LithoNode node) {
+  private static void applyOverridesRecursive(LithoNode node) {
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(node.getTailComponentContext(), node);
       for (int i = 0, count = node.getChildCount(); i < count; i++) {
-        applyOverridesRecursive(c, node.getChildAt(i));
+        applyOverridesRecursive(node.getChildAt(i));
       }
     }
   }
@@ -1571,7 +1570,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     final int importantForAccessibility = node.getImportantForAccessibility();
 
     final ComponentContext c = node.getHeadComponentContext();
-    final @Nullable CalculationStateContext context = c.getCalculationStateContext();
+    final @Nullable CalculationContext context = c.getCalculationStateContext();
 
     // A component has accessibility content if:
     //   1. Accessibility is currently enabled.

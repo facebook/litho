@@ -20,14 +20,14 @@ package com.facebook.litho
 class EmptyComponent : Component() {
 
   override fun render(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult = RenderResult(null)
 
   override fun resolve(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
       parentHeightSpec: Int,

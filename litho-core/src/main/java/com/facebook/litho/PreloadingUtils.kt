@@ -141,7 +141,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 StateHandler::class.java,
                 IncrementalMountHelper::class.java,
                 DefaultComponentsSystrace::class.java,
-                LayoutStateContext::class.java,
+                LithoLayoutContext::class.java,
                 AccessibilityUtils::class.java,
                 Layout::class.java,
                 TreeProps::class.java,

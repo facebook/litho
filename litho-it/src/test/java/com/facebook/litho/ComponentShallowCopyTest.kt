@@ -41,8 +41,8 @@ class ComponentShallowCopyTest {
     context =
         ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
     val c = ComponentContext(context)
-    val resolveStateContext = c.setRenderStateContextForTests()
-    val resultCache = resolveStateContext.cache
+    val resolveContext = c.setRenderStateContextForTests()
+    val resultCache = resolveContext.cache
     val component = SimpleMountSpecTester.create(context).build()
     component.measure(c, 100, 100, Size())
     assertThat(resultCache.getCachedResult(component)).isNotNull

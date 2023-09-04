@@ -202,11 +202,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   /**
    * Invokes the Component-specific render implementation, returning a RenderResult. The
    * RenderResult will have the Component this Component rendered to (which will then need to be
-   * render()'ed or {@link #resolve(LayoutStateContext, ComponentContext)}'ed), as well as other
+   * render()'ed or {@link #resolve(LithoLayoutContext, ComponentContext)}'ed), as well as other
    * metadata from that render call such as transitions that should be applied.
    */
   protected RenderResult render(
-      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+      ResolveContext resolveContext, ComponentContext c, int widthSpec, int heightSpec) {
     throw new RuntimeException(
         "Render should not be called on a component which hasn't implemented render! "
             + getSimpleName());
@@ -223,8 +223,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
   }
 
-  protected @Nullable PrepareResult prepare(
-      ResolveStateContext resolveStateContext, ComponentContext c) {
+  protected @Nullable PrepareResult prepare(ResolveContext resolveContext, ComponentContext c) {
     // default implementation runs onPrepare(), MountableComponents will override to return a
     // Mountable
     return null;
@@ -232,8 +231,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected @Nullable LithoNode resolve(
-      final ResolveStateContext resolveStateContext, final ComponentContext c) {
-    return Resolver.resolve(resolveStateContext, c, this);
+      final ResolveContext resolveContext, final ComponentContext c) {
+    return Resolver.resolve(resolveContext, c, this);
   }
 
   /**
@@ -242,7 +241,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    * component.
    */
   protected ComponentResolveResult resolve(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
       final int parentHeightSpec,
@@ -361,9 +360,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     final EventHandler eventHandler =
         new EventHandler<>(
             id, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
-    final CalculationStateContext calculationStateContext = c.getCalculationStateContext();
-    if (calculationStateContext != null) {
-      calculationStateContext.recordEventHandler(c.getGlobalKey(), eventHandler);
+    final CalculationContext calculationContext = c.getCalculationStateContext();
+    if (calculationContext != null) {
+      calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
     }
     return eventHandler;
   }
@@ -474,9 +473,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final Size outputSize,
       final boolean shouldCacheResult) {
 
-    final CalculationStateContext calculationStateContext = c.getCalculationStateContext();
+    final CalculationContext calculationContext = c.getCalculationStateContext();
 
-    if (calculationStateContext == null) {
+    if (calculationContext == null) {
       if (shouldCacheResult) {
         throw new IllegalStateException(
             getSimpleName()
@@ -490,15 +489,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       }
     }
 
-    final int layoutVersion = calculationStateContext.getLayoutVersion();
-    final int rootComponentId = calculationStateContext.getRootComponentId();
+    final int layoutVersion = calculationContext.getLayoutVersion();
+    final int rootComponentId = calculationContext.getRootComponentId();
     final MeasuredResultCache resultCache =
-        shouldCacheResult ? calculationStateContext.getCache() : new MeasuredResultCache();
-    final TreeState treeState = calculationStateContext.getTreeState();
-    final ResolveStateContext mainRsc =
-        calculationStateContext instanceof ResolveStateContext
-            ? (ResolveStateContext) calculationStateContext
-            : null;
+        shouldCacheResult ? calculationContext.getCache() : new MeasuredResultCache();
+    final TreeState treeState = calculationContext.getTreeState();
+    final ResolveContext mainRsc =
+        calculationContext instanceof ResolveContext ? (ResolveContext) calculationContext : null;
 
     LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
 
@@ -509,7 +506,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
             lastMeasuredLayout.getHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       resultCache.clearCache(this);
 
-      final CalculationStateContext prevContext = calculationStateContext;
+      final CalculationContext prevContext = calculationContext;
 
       try {
         final LithoNode node;
@@ -517,14 +514,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         if (lastMeasuredLayout != null && lastMeasuredLayout.mNode != null) {
           node = lastMeasuredLayout.mNode;
         } else {
-          final ResolveStateContext nestedRsc =
-              new ResolveStateContext(
-                  calculationStateContext.getTreeId(),
+          final ResolveContext nestedRsc =
+              new ResolveContext(
+                  calculationContext.getTreeId(),
                   resultCache,
                   treeState,
                   layoutVersion,
                   rootComponentId,
-                  calculationStateContext.isAccessibilityEnabled(),
+                  calculationContext.isAccessibilityEnabled(),
                   null,
                   null,
                   null,
@@ -540,15 +537,15 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
           return;
         }
 
-        final LayoutStateContext nestedLsc =
-            new LayoutStateContext(
-                calculationStateContext.getTreeId(),
+        final LithoLayoutContext nestedLsc =
+            new LithoLayoutContext(
+                calculationContext.getTreeId(),
                 resultCache,
                 c,
                 treeState,
                 layoutVersion,
                 rootComponentId,
-                calculationStateContext.isAccessibilityEnabled(),
+                calculationContext.isAccessibilityEnabled(),
                 new LayoutCache(),
                 null,
                 null);
@@ -596,7 +593,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   @Deprecated
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    final CalculationStateContext prevContext = c.getCalculationStateContext();
+    final CalculationContext prevContext = c.getCalculationStateContext();
 
     if (prevContext != null && !prevContext.isFutureReleased()) {
       measure(c, widthSpec, heightSpec, outputSize);
@@ -617,8 +614,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         componentTreeId = lithoTree.getId();
       }
 
-      final ResolveStateContext tempRsc =
-          new ResolveStateContext(
+      final ResolveContext tempRsc =
+          new ResolveContext(
               componentTreeId,
               new MeasuredResultCache(),
               new TreeState(),
@@ -647,25 +644,25 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
   @Nullable
   final LithoNode consumeLayoutCreatedInWillRender(
-      final @Nullable ResolveStateContext resolveStateContext, @Nullable ComponentContext context) {
+      final @Nullable ResolveContext resolveContext, @Nullable ComponentContext context) {
     LithoNode layout;
 
-    if (context == null || resolveStateContext == null) {
+    if (context == null || resolveContext == null) {
       return null;
     }
 
-    return resolveStateContext.consumeLayoutCreatedInWillRender(mId);
+    return resolveContext.consumeLayoutCreatedInWillRender(mId);
   }
 
   @VisibleForTesting
   @Nullable
-  final LithoNode getLayoutCreatedInWillRender(final ResolveStateContext resolveStateContext) {
-    return resolveStateContext.getLayoutCreatedInWillRender(mId);
+  final LithoNode getLayoutCreatedInWillRender(final ResolveContext resolveContext) {
+    return resolveContext.getLayoutCreatedInWillRender(mId);
   }
 
   private void setLayoutCreatedInWillRender(
-      final ResolveStateContext resolveStateContext, final @Nullable LithoNode newValue) {
-    resolveStateContext.setLayoutCreatedInWillRender(mId, newValue);
+      final ResolveContext resolveContext, final @Nullable LithoNode newValue) {
+    resolveContext.setLayoutCreatedInWillRender(mId, newValue);
   }
 
   /**
@@ -752,8 +749,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return getSimpleName();
   }
 
-  private boolean hasCachedNode(final ResolveStateContext resolveStateContext) {
-    final MeasuredResultCache resultCache = resolveStateContext.getCache();
+  private boolean hasCachedNode(final ResolveContext resolveContext) {
+    final MeasuredResultCache resultCache = resolveContext.getCache();
     return resultCache.hasCachedNode(this);
   }
 
@@ -770,24 +767,21 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return false;
     }
 
-    final ResolveStateContext resolveStateContext =
-        Preconditions.checkNotNull(c.getRenderStateContext());
+    final ResolveContext resolveContext = Preconditions.checkNotNull(c.getRenderStateContext());
 
     final LithoNode componentLayoutCreatedInWillRender =
-        component.getLayoutCreatedInWillRender(resolveStateContext);
+        component.getLayoutCreatedInWillRender(resolveContext);
     if (componentLayoutCreatedInWillRender != null) {
-      return willRender(resolveStateContext, c, component, componentLayoutCreatedInWillRender);
+      return willRender(resolveContext, c, component, componentLayoutCreatedInWillRender);
     }
 
-    final LithoNode newLayoutCreatedInWillRender =
-        Resolver.resolve(resolveStateContext, c, component);
-    boolean willRender =
-        willRender(resolveStateContext, c, component, newLayoutCreatedInWillRender);
+    final LithoNode newLayoutCreatedInWillRender = Resolver.resolve(resolveContext, c, component);
+    boolean willRender = willRender(resolveContext, c, component, newLayoutCreatedInWillRender);
 
     // will render will return false for a null node but the
     // node still needs to be cached for reconciliation.
     if (willRender || newLayoutCreatedInWillRender instanceof NullNode) {
-      component.setLayoutCreatedInWillRender(resolveStateContext, newLayoutCreatedInWillRender);
+      component.setLayoutCreatedInWillRender(resolveContext, newLayoutCreatedInWillRender);
     }
     return willRender;
   }
@@ -822,7 +816,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return isLayoutSpecWithSizeSpec(component);
   }
 
-  static boolean hasCachedNode(final ResolveStateContext context, final Component component) {
+  static boolean hasCachedNode(final ResolveContext context, final Component component) {
     return component.hasCachedNode(context);
   }
 
@@ -849,7 +843,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   private static boolean willRender(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       ComponentContext context,
       Component component,
       @Nullable LithoNode node) {
@@ -862,7 +856,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
       component.consumeLayoutCreatedInWillRender(
-          resolveStateContext, context); // Clear the layout created in will render
+          resolveContext, context); // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
@@ -1230,8 +1224,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #flexBasisPx
      * @param percent a value between 0 and 100.
+     * @see #flexBasisPx
      */
     public T flexBasisPercent(float percent) {
       mComponent.getOrCreateCommonProps().flexBasisPercent(percent);
@@ -1391,8 +1385,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * parent has unspecified height (e.g. it is a RecyclerView), then setting this will have no
      * effect.
      *
-     * @see #heightPx
      * @param percent a value between 0 and 100.
+     * @see #heightPx
      */
     public T heightPercent(float percent) {
       mComponent.getOrCreateCommonProps().heightPercent(percent);
@@ -1492,8 +1486,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #marginPx
      * @param percent a value between 0 and 100.
+     * @see #marginPx
      */
     public T marginPercent(@Nullable YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
@@ -1532,8 +1526,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T maxHeightPercent(float percent) {
       mComponent.getOrCreateCommonProps().maxHeightPercent(percent);
@@ -1567,8 +1561,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T maxWidthPercent(float percent) {
       mComponent.getOrCreateCommonProps().maxWidthPercent(percent);
@@ -1602,8 +1596,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T minHeightPercent(float percent) {
       mComponent.getOrCreateCommonProps().minHeightPercent(percent);
@@ -1637,8 +1631,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T minWidthPercent(float percent) {
       mComponent.getOrCreateCommonProps().minWidthPercent(percent);
@@ -1720,8 +1714,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #paddingPx
      * @param percent a value between 0 and 100.
+     * @see #paddingPx
      */
     public T paddingPercent(@Nullable YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
@@ -1768,8 +1762,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
-     * @see #positionPx
      * @param percent a value between 0 and 100.
+     * @see #positionPx
      */
     public T positionPercent(@Nullable YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().positionPercent(edge, percent);
@@ -2112,8 +2106,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * Sets the width of the Component to be a percentage of its parent's width. Note that if the
      * parent has unspecified width (e.g. it is an HScroll), then setting this will have no effect.
      *
-     * @see #widthPx
      * @param percent a value between 0 and 100.
+     * @see #widthPx
      */
     public T widthPercent(float percent) {
       mComponent.getOrCreateCommonProps().widthPercent(percent);

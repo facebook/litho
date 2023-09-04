@@ -39,7 +39,7 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.ResolveStateContext;
+import com.facebook.litho.ResolveContext;
 import com.facebook.litho.TestComponent;
 import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreeProps;
@@ -404,7 +404,7 @@ public final class ComponentTestHelper {
 
   @Deprecated
   private static LithoNode resolveImmediateSubtree(
-      ResolveStateContext resolveStateContext,
+      ResolveContext resolveContext,
       ComponentContext c,
       Component component,
       int widthSpec,
@@ -412,7 +412,7 @@ public final class ComponentTestHelper {
 
     LithoNode node =
         TestLayoutState.createAndMeasureTreeForComponent(
-            resolveStateContext, c, component, widthSpec, heightSpec);
+            resolveContext, c, component, widthSpec, heightSpec);
 
     return node;
   }
@@ -451,7 +451,7 @@ public final class ComponentTestHelper {
         new ComponentContext(
             ComponentContextUtils.withComponentTree(new ComponentContext(context), tree));
 
-    final ResolveStateContext rsc = c.setRenderStateContextForTests();
+    final ResolveContext rsc = c.setRenderStateContextForTests();
 
     LithoNode root = resolveImmediateSubtree(rsc, c, component, widthSpec, heightSpec);
 

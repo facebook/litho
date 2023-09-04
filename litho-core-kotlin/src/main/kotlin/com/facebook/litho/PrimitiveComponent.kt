@@ -38,11 +38,8 @@ import com.facebook.yoga.YogaFlexDirection
  */
 abstract class PrimitiveComponent : Component() {
 
-  final override fun prepare(
-      resolveStateContext: ResolveStateContext,
-      c: ComponentContext
-  ): PrepareResult {
-    val primitiveComponentScope = PrimitiveComponentScope(c, resolveStateContext)
+  final override fun prepare(resolveContext: ResolveContext, c: ComponentContext): PrepareResult {
+    val primitiveComponentScope = PrimitiveComponentScope(c, resolveContext)
     val lithoPrimitive = primitiveComponentScope.render()
 
     primitiveComponentScope.cleanUp()
@@ -67,7 +64,7 @@ abstract class PrimitiveComponent : Component() {
   }
 
   final override fun resolve(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
       parentHeightSpec: Int,
@@ -93,7 +90,7 @@ abstract class PrimitiveComponent : Component() {
       beginTrace(
           componentPrepareTraceIdentifier,
           com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared,
-          resolveStateContext.treeId.toString(),
+          resolveContext.treeId.toString(),
           attributes)
     }
 
@@ -103,7 +100,7 @@ abstract class PrimitiveComponent : Component() {
 
     val prepareResult: PrepareResult? =
         try {
-          prepare(resolveStateContext, scopedComponentInfo.context)
+          prepare(resolveContext, scopedComponentInfo.context)
         } finally {
           if (prepareEvent != null && componentsLogger != null) {
             componentsLogger.logPerfEvent(prepareEvent)
@@ -175,10 +172,8 @@ abstract class PrimitiveComponent : Component() {
   final override fun onCreateMountContent(context: Context): Any =
       super.onCreateMountContent(context)
 
-  final override fun resolve(
-      resolveStateContext: ResolveStateContext,
-      c: ComponentContext
-  ): LithoNode? = super.resolve(resolveStateContext, c)
+  final override fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? =
+      super.resolve(resolveContext, c)
 
   final override fun shouldUpdate(
       previous: Component,
@@ -188,12 +183,12 @@ abstract class PrimitiveComponent : Component() {
   ): Boolean = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 
   final override fun render(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult {
-    return super.render(resolveStateContext, c, widthSpec, heightSpec)
+    return super.render(resolveContext, c, widthSpec, heightSpec)
   }
 
   final override fun isEqualivalentTreeProps(

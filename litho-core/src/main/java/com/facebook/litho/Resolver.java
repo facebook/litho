@@ -46,19 +46,17 @@ public class Resolver {
   private static final int MEASURE_SPEC_UNSPECIFIED = MeasureSpecUtils.unspecified();
 
   static @Nullable LithoNode resolveTree(
-      final ResolveStateContext resolveStateContext,
-      final ComponentContext c,
-      final Component component) {
+      final ResolveContext resolveContext, final ComponentContext c, final Component component) {
 
-    final @Nullable LithoNode current = resolveStateContext.getCurrentRoot();
-    final @Nullable PerfEvent layoutStatePerfEvent = resolveStateContext.getPerfEventLogger();
+    final @Nullable LithoNode current = resolveContext.getCurrentRoot();
+    final @Nullable PerfEvent layoutStatePerfEvent = resolveContext.getPerfEventLogger();
 
     final boolean isReconcilable =
         isReconcilable(
-            c, component, Preconditions.checkNotNull(resolveStateContext.getTreeState()), current);
+            c, component, Preconditions.checkNotNull(resolveContext.getTreeState()), current);
 
     try {
-      resolveStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
+      resolveContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
     } catch (Exception ex) {
       ComponentUtils.handleWithHierarchy(c, component, ex);
       return null;
@@ -71,14 +69,14 @@ public class Resolver {
 
     final @Nullable LithoNode node;
     if (!isReconcilable) {
-      node = resolve(resolveStateContext, c, component);
+      node = resolve(resolveContext, c, component);
 
-      if (node != null && !resolveStateContext.isLayoutInterrupted()) {
-        node.applyParentDependentCommonProps(resolveStateContext);
+      if (node != null && !resolveContext.isLayoutInterrupted()) {
+        node.applyParentDependentCommonProps(resolveContext);
       }
 
       // This needs to finish layout on the UI thread.
-      if (node != null && resolveStateContext.isLayoutInterrupted()) {
+      if (node != null && resolveContext.isLayoutInterrupted()) {
         if (layoutStatePerfEvent != null) {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
@@ -86,7 +84,7 @@ public class Resolver {
         return node;
       } else {
         // Layout is complete, disable interruption from this point on.
-        resolveStateContext.markLayoutUninterruptible();
+        resolveContext.markLayoutUninterruptible();
       }
     } else {
       final String globalKeyToReuse = Preconditions.checkNotNull(current).getHeadComponentKey();
@@ -95,7 +93,7 @@ public class Resolver {
         throw new IllegalStateException("Cannot reuse a null global key");
       }
 
-      node = reconcile(resolveStateContext, c, current, component, globalKeyToReuse);
+      node = reconcile(resolveContext, c, current, component, globalKeyToReuse);
     }
 
     if (layoutStatePerfEvent != null) {
@@ -107,11 +105,11 @@ public class Resolver {
   }
 
   public @Nullable static LithoNode resolve(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext parent,
       final Component component) {
     return resolveImpl(
-        resolveStateContext,
+        resolveContext,
         parent,
         MEASURE_SPEC_UNSPECIFIED,
         MEASURE_SPEC_UNSPECIFIED,
@@ -122,12 +120,12 @@ public class Resolver {
   }
 
   static @Nullable LithoNode resolveWithGlobalKey(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext parent,
       final Component component,
       final @Nullable String globalKeyToReuse) {
     return resolveImpl(
-        resolveStateContext,
+        resolveContext,
         parent,
         MEASURE_SPEC_UNSPECIFIED,
         MEASURE_SPEC_UNSPECIFIED,
@@ -138,7 +136,7 @@ public class Resolver {
   }
 
   static @Nullable LithoNode resolveImpl(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext parent,
       final int parentWidthSpec,
       final int parentHeightSpec,
@@ -163,11 +161,11 @@ public class Resolver {
       beginTrace(
           componentResolvedIdentifier,
           LithoDebugEvent.ComponentResolved,
-          String.valueOf(resolveStateContext.getTreeId()),
+          String.valueOf(resolveContext.getTreeId()),
           attributes);
     }
 
-    ComponentsLogger componentsLogger = resolveStateContext.getComponentsLogger();
+    ComponentsLogger componentsLogger = resolveContext.getComponentsLogger();
     PerfEvent resolveLayoutCreationEvent =
         createPerformanceEvent(
             component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_RESOLVE);
@@ -176,14 +174,13 @@ public class Resolver {
     final ComponentContext c;
     final String globalKey;
     final boolean isNestedTree = Component.isNestedTree(component);
-    final boolean hasCachedNode = Component.hasCachedNode(resolveStateContext, component);
+    final boolean hasCachedNode = Component.hasCachedNode(resolveContext, component);
     final ScopedComponentInfo scopedComponentInfo;
     @Nullable CommonProps commonProps = null;
 
     try {
       // 1. Consume the layout created in `willrender`.
-      final LithoNode cached =
-          component.consumeLayoutCreatedInWillRender(resolveStateContext, parent);
+      final LithoNode cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
@@ -201,12 +198,12 @@ public class Resolver {
 
       // 5. Get or create the scoped context component.
       if (hasCachedNode) {
-        final MeasuredResultCache cache = resolveStateContext.getCache();
+        final MeasuredResultCache cache = resolveContext.getCache();
         c = Preconditions.checkNotNull(cache.getCachedNode(component)).getHeadComponentContext();
       } else {
         c =
             createScopedContext(
-                resolveStateContext, parent, component, globalKeyToReuse, treePropsToReuse);
+                resolveContext, parent, component, globalKeyToReuse, treePropsToReuse);
       }
 
       globalKey = c.getGlobalKey();
@@ -218,12 +215,12 @@ public class Resolver {
       if (shouldDeferNestedTreeResolution) {
         node =
             new NestedTreeHolder(
-                c.getTreeProps(), resolveStateContext.getCache().getCachedNode(component), parent);
+                c.getTreeProps(), resolveContext.getCache().getCachedNode(component), parent);
       } else {
         // Resolve the component into an InternalNode.
         ComponentResolveResult resolveResult =
             component.resolve(
-                resolveStateContext,
+                resolveContext,
                 scopedComponentInfo,
                 parentWidthSpec,
                 parentHeightSpec,
@@ -373,29 +370,28 @@ public class Resolver {
     return event;
   }
 
-  static LithoNode resumeResolvingTree(
-      final ResolveStateContext resolveStateContext, final LithoNode root) {
+  static LithoNode resumeResolvingTree(final ResolveContext resolveContext, final LithoNode root) {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
       final ComponentContext context = root.getTailComponentContext();
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(resolveStateContext, context, unresolved.get(i));
+        root.child(resolveContext, context, unresolved.get(i));
       }
       unresolved.clear();
     }
 
     for (int i = 0, size = root.getChildCount(); i < size; i++) {
-      resumeResolvingTree(resolveStateContext, root.getChildAt(i));
+      resumeResolvingTree(resolveContext, root.getChildAt(i));
     }
 
-    root.applyParentDependentCommonProps(resolveStateContext);
+    root.applyParentDependentCommonProps(resolveContext);
 
     return root;
   }
 
   static ComponentContext createScopedContext(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext parent,
       final Component component,
       @Nullable final String globalKeyToReuse,
@@ -412,7 +408,7 @@ public class Resolver {
       if (specComponent.hasState()) {
         c.getScopedComponentInfo()
             .setStateContainer(
-                resolveStateContext
+                resolveContext
                     .getTreeState()
                     .createOrGetStateContainerForComponent(c, specComponent, globalKey));
       }
@@ -506,12 +502,12 @@ public class Resolver {
   }
 
   private static @Nullable LithoNode reconcile(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext c,
       final LithoNode node,
       final Component next,
       final @Nullable String nextKey) {
-    final TreeState treeState = resolveStateContext.getTreeState();
+    final TreeState treeState = resolveContext.getTreeState();
     final Set<String> keys;
     if (treeState == null) {
       keys = Collections.emptySet();
@@ -519,14 +515,14 @@ public class Resolver {
       keys = treeState.getKeysForPendingStateUpdates();
     }
 
-    return reconcile(resolveStateContext, c, node, next, nextKey, keys, null);
+    return reconcile(resolveContext, c, node, next, nextKey, keys, null);
   }
 
   /**
    * Internal method to <b>try</b> and reconcile the {@param current} LithoNode with a new {@link
    * ComponentContext} and an updated head {@link Component}.
    *
-   * @param resolveStateContext The RenderStateContext.
+   * @param resolveContext The RenderStateContext.
    * @param parentContext The ComponentContext.
    * @param current The current LithoNode which should be updated.
    * @param next The updated component to be used to reconcile this LithoNode.
@@ -534,7 +530,7 @@ public class Resolver {
    * @return A new updated LithoNode.
    */
   private static @Nullable LithoNode reconcile(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext parentContext,
       final LithoNode current,
       final Component next,
@@ -545,22 +541,22 @@ public class Resolver {
     final LithoNode layout;
     switch (mode) {
       case ReconciliationMode.REUSE:
-        commitToLayoutStateRecursively(resolveStateContext, current);
+        commitToLayoutStateRecursively(resolveContext, current);
         layout = current;
         break;
       case ReconciliationMode.RECONCILE:
-        layout = reconcile(resolveStateContext, current, next, keys);
+        layout = reconcile(resolveContext, current, next, keys);
         break;
       case ReconciliationMode.RECREATE:
         layout =
             Resolver.resolveWithGlobalKey(
-                resolveStateContext, parentContext, next, Preconditions.checkNotNull(nextKey));
+                resolveContext, parentContext, next, Preconditions.checkNotNull(nextKey));
         if (layout != null) {
           if (parent == null) {
-            layout.applyParentDependentCommonProps(resolveStateContext);
+            layout.applyParentDependentCommonProps(resolveContext);
           } else {
             layout.applyParentDependentCommonProps(
-                resolveStateContext,
+                resolveContext,
                 parent.getImportantForAccessibility(),
                 parent.getNodeInfo() != null
                     ? parent.getNodeInfo().getEnabledState()
@@ -586,7 +582,7 @@ public class Resolver {
    * @return A new updated LithoNode.
    */
   private static LithoNode reconcile(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final LithoNode current,
       final Component next,
       final Set<String> keys) {
@@ -602,7 +598,7 @@ public class Resolver {
     layout = current.clone();
     layout.setChildren(new ArrayList<>(current.getChildCount()));
     layout.resetDebugInfo();
-    commitToLayoutState(resolveStateContext, current);
+    commitToLayoutState(resolveContext, current);
 
     ComponentContext parentContext = layout.getTailComponentContext();
 
@@ -618,7 +614,7 @@ public class Resolver {
 
       // 3.2 Reconcile child layout.
       final LithoNode copy =
-          reconcile(resolveStateContext, parentContext, child, component, key, keys, current);
+          reconcile(resolveContext, parentContext, child, component, key, keys, current);
 
       // 3.3 Add the child to the cloned yoga node
       layout.child(copy);
@@ -631,7 +627,7 @@ public class Resolver {
     return layout;
   }
 
-  public static void commitToLayoutStateRecursively(ResolveStateContext c, LithoNode node) {
+  public static void commitToLayoutStateRecursively(ResolveContext c, LithoNode node) {
     final int count = node.getChildCount();
     commitToLayoutState(c, node);
     for (int i = 0; i < count; i++) {
@@ -639,7 +635,7 @@ public class Resolver {
     }
   }
 
-  public static void commitToLayoutState(ResolveStateContext c, LithoNode node) {
+  public static void commitToLayoutState(ResolveContext c, LithoNode node) {
     final List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
 
     for (ScopedComponentInfo info : scopedComponentInfos) {

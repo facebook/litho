@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.util.Pair
 
-interface CalculationStateContext {
+interface CalculationContext {
 
   val treeId: Int
   val cache: MeasuredResultCache

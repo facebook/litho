@@ -84,8 +84,8 @@ class LayoutStateFutureReleaseTest {
   fun testStopResolvingRowChildrenIfLsfReleased() {
     val layoutStateFutureMock: TreeFuture<*> = mock { on { isReleased } doReturn false }
     val c = ComponentContext(context)
-    val resolveStateContext = c.setRenderStateContextForTests()
-    resolveStateContext.setLayoutStateFutureForTest(layoutStateFutureMock)
+    val resolveContext = c.setRenderStateContextForTests()
+    resolveContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
     val child1 =
         TestChildComponent(
@@ -98,7 +98,7 @@ class LayoutStateFutureReleaseTest {
             })
     val child2 = TestChildComponent()
     val row = Row.create(context).child(child1).child(child2).build()
-    val result = row.resolve(resolveStateContext, c)
+    val result = row.resolve(resolveContext, c)
     Assert.assertTrue(child1.hasRunLayout)
     Assert.assertFalse(child2.hasRunLayout)
     Assert.assertNull(result)
@@ -108,8 +108,8 @@ class LayoutStateFutureReleaseTest {
   fun testStopResolvingColumnChildrenIfLsfReleased() {
     val layoutStateFutureMock: TreeFuture<*> = mock()
     val c = ComponentContext(context)
-    val resolveStateContext = c.setRenderStateContextForTests()
-    resolveStateContext.setLayoutStateFutureForTest(layoutStateFutureMock)
+    val resolveContext = c.setRenderStateContextForTests()
+    resolveContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
     val child1 =
         TestChildComponent(
@@ -122,7 +122,7 @@ class LayoutStateFutureReleaseTest {
             })
     val child2 = TestChildComponent()
     val column = Column.create(context).child(child1).child(child2).build()
-    val result = column.resolve(resolveStateContext, c)
+    val result = column.resolve(resolveContext, c)
     Assert.assertTrue(child1.hasRunLayout)
     Assert.assertFalse(child2.hasRunLayout)
     Assert.assertNull(result)
@@ -206,7 +206,7 @@ class LayoutStateFutureReleaseTest {
     var hasRunLayout = false
 
     override fun render(
-        resolveStateContext: ResolveStateContext,
+        resolveContext: ResolveContext,
         c: ComponentContext,
         widthSpec: Int,
         heightSpec: Int

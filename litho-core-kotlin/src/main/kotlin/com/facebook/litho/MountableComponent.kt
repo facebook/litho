@@ -35,11 +35,8 @@ import com.facebook.yoga.YogaFlexDirection
     replaceWith = ReplaceWith("PrimitiveComponent()", "com.facebook.litho.PrimitiveComponent"))
 abstract class MountableComponent() : Component() {
 
-  final override fun prepare(
-      resolveStateContext: ResolveStateContext,
-      c: ComponentContext
-  ): PrepareResult {
-    val mountableComponentScope = MountableComponentScope(c, resolveStateContext)
+  final override fun prepare(resolveContext: ResolveContext, c: ComponentContext): PrepareResult {
+    val mountableComponentScope = MountableComponentScope(c, resolveContext)
     val mountableRenderResult = mountableComponentScope.render()
 
     mountableComponentScope.cleanUp()
@@ -76,7 +73,7 @@ abstract class MountableComponent() : Component() {
   }
 
   final override fun resolve(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
       parentHeightSpec: Int,
@@ -103,7 +100,7 @@ abstract class MountableComponent() : Component() {
       DebugEventDispatcher.beginTrace(
           componentPrepareTraceIdentifier,
           com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared,
-          resolveStateContext.treeId.toString(),
+          resolveContext.treeId.toString(),
           attributes)
     }
 
@@ -113,7 +110,7 @@ abstract class MountableComponent() : Component() {
 
     val prepareResult: PrepareResult? =
         try {
-          prepare(resolveStateContext, scopedComponentInfo.context)
+          prepare(resolveContext, scopedComponentInfo.context)
         } finally {
           if (prepareEvent != null && componentsLogger != null) {
             componentsLogger.logPerfEvent(prepareEvent)
@@ -186,10 +183,8 @@ abstract class MountableComponent() : Component() {
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
-  final override fun resolve(
-      resolveStateContext: ResolveStateContext,
-      c: ComponentContext
-  ): LithoNode? = super.resolve(resolveStateContext, c)
+  final override fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? =
+      super.resolve(resolveContext, c)
 
   final override fun shouldUpdate(
       previous: Component,
@@ -199,12 +194,12 @@ abstract class MountableComponent() : Component() {
   ) = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 
   final override fun render(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult {
-    return super.render(resolveStateContext, c, widthSpec, heightSpec)
+    return super.render(resolveContext, c, widthSpec, heightSpec)
   }
 
   final override fun isEqualivalentTreeProps(

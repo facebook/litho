@@ -17,36 +17,29 @@
 package com.facebook.litho
 
 import android.util.Pair
-import com.facebook.rendercore.LayoutCache
+import androidx.annotation.VisibleForTesting
 
-/**
- * Wraps objects which should only be available for the duration of a LayoutState, to access them in
- * other classes such as ComponentContext during layout state calculation. When the layout
- * calculation finishes, the LayoutState reference is nullified. Using a wrapper instead of passing
- * the instances directly helps with clearing out the reference from all objects that hold on to it,
- * without having to keep track of all these objects to clear out the references.
- */
-class LayoutStateContext
+class ResolveContext
 constructor(
     override val treeId: Int,
     override val cache: MeasuredResultCache,
-    rootContext: ComponentContext?,
     treeState: TreeState?,
     override val layoutVersion: Int,
     override val rootComponentId: Int,
     override val isAccessibilityEnabled: Boolean,
-    val layoutCache: LayoutCache,
-    currentDiffTree: DiffNode?,
-    layoutStateFuture: TreeFuture<*>?
-) : CalculationStateContext {
+    treeFuture: TreeFuture<*>?,
+    val currentRoot: LithoNode?,
+    val perfEventLogger: PerfEvent?,
+    val componentsLogger: ComponentsLogger?
+) : CalculationContext {
 
   private var _treeState: TreeState? = treeState
-  private var _future: TreeFuture<*>? = layoutStateFuture
-  private var _rootContext: ComponentContext? = rootContext
-  private var _currentDiffTree: DiffNode? = currentDiffTree
+  private var _future: TreeFuture<*>? = treeFuture
 
+  private var _isInterruptible: Boolean = true
+
+  private var _cachedNodes: MutableMap<Int, LithoNode?>? = null
   private var _eventHandlers: MutableList<Pair<String, EventHandler<*>>>? = null
-  private var _currentNestedTreeDiffNode: DiffNode? = null
 
   override val treeFuture: TreeFuture<*>?
     get() {
@@ -76,39 +69,40 @@ constructor(
     }
   }
 
-  val rootComponentContext: ComponentContext?
-    get() {
-      return _rootContext
-    }
-
-  val currentDiffTree: DiffNode?
-    get() {
-      return _currentDiffTree
-    }
-
-  var isReleased: Boolean = false
-    private set
-
-  var perfEvent: PerfEvent? = null
-
-  fun setNestedTreeDiffNode(diff: DiffNode?) {
-    _currentNestedTreeDiffNode = diff
+  fun markLayoutUninterruptible() {
+    _isInterruptible = false
   }
 
-  fun hasNestedTreeDiffNodeSet(): Boolean {
-    return _currentNestedTreeDiffNode != null
+  val isLayoutInterrupted: Boolean
+    get() {
+      val isInterruptible = _isInterruptible
+      return if (!isInterruptible || ThreadUtils.isMainThread()) {
+        false
+      } else {
+        val future = _future
+        return future != null && future.isInterruptRequested
+      }
+    }
+
+  fun consumeLayoutCreatedInWillRender(id: Int): LithoNode? = _cachedNodes?.remove(id)
+
+  fun getLayoutCreatedInWillRender(id: Int): LithoNode? = _cachedNodes?.get(id)
+
+  fun setLayoutCreatedInWillRender(id: Int, node: LithoNode?) {
+    (_cachedNodes ?: HashMap()).apply {
+      _cachedNodes = this
+      put(id, node)
+    }
   }
 
-  fun consumeNestedTreeDiffNode(): DiffNode? {
-    return _currentNestedTreeDiffNode.apply { _currentNestedTreeDiffNode = null }
+  @VisibleForTesting
+  fun setLayoutStateFutureForTest(future: TreeFuture<*>) {
+    _future = future
   }
 
   fun release() {
-    _treeState = null
+    _cachedNodes = null
     _future = null
-    _currentDiffTree = null
-    _rootContext = null
-    perfEvent = null
-    isReleased = true
+    _treeState = null
   }
 }

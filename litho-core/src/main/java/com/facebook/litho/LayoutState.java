@@ -75,7 +75,7 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(ComponentContext, LithoLayoutResult, LithoNode, LayoutState, LayoutStateContext,
+ * #collectResults(ComponentContext, LithoLayoutResult, LithoNode, LayoutState, LithoLayoutContext,
  * RenderTreeNode, DiffNode, DebugHierarchy.Node)} which prepares the before-mentioned outputs based
  * on the provided {@link LithoNode} for later use in {@link MountState}.
  *
@@ -526,11 +526,11 @@ public class LayoutState
       final LithoLayoutResult result,
       final LithoNode node,
       final LayoutState layoutState,
-      final LayoutStateContext layoutStateContext,
+      final LithoLayoutContext lithoLayoutContext,
       @Nullable RenderTreeNode parent,
       final @Nullable DiffNode parentDiffNode,
       final @Nullable DebugHierarchy.Node parentHierarchy) {
-    if (layoutStateContext.isFutureReleased() || result.measureHadExceptions()) {
+    if (lithoLayoutContext.isFutureReleased() || result.measureHadExceptions()) {
       // Exit early if the layout future as been released or if this result had exceptions.
       return;
     }
@@ -566,7 +566,7 @@ public class LayoutState
 
         nestedTree =
             Layout.measure(
-                layoutStateContext,
+                lithoLayoutContext,
                 Preconditions.checkNotNull(immediateParentContext),
                 (NestedTreeHolderResult) result,
                 SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
@@ -601,7 +601,7 @@ public class LayoutState
           nestedTree,
           nestedTree.getNode(),
           layoutState,
-          layoutStateContext,
+          lithoLayoutContext,
           parent,
           parentDiffNode,
           hierarchy);
@@ -791,7 +791,7 @@ public class LayoutState
           child,
           child.getNode(),
           layoutState,
-          layoutStateContext,
+          lithoLayoutContext,
           parent,
           diffNode,
           hierarchy);
@@ -1143,8 +1143,8 @@ public class LayoutState
   }
 
   static void setSizeAfterMeasureAndCollectResults(
-      ComponentContext c, LayoutStateContext layoutStateContext, LayoutState layoutState) {
-    if (layoutStateContext.isFutureReleased()) {
+      ComponentContext c, LithoLayoutContext lithoLayoutContext, LayoutState layoutState) {
+    if (lithoLayoutContext.isFutureReleased()) {
       return;
     }
 
@@ -1212,7 +1212,7 @@ public class LayoutState
         root,
         Preconditions.checkNotNull(node),
         layoutState,
-        layoutStateContext,
+        lithoLayoutContext,
         parent,
         null,
         hierarchy);

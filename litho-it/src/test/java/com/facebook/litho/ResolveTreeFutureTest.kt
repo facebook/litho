@@ -190,7 +190,7 @@ class ResolveTreeFutureTest {
       private val renderCountHolder: IntArray
   ) : SpecGeneratedComponent("BlockedRenderComponent") {
     override fun render(
-        resolveStateContext: ResolveStateContext,
+        resolveContext: ResolveContext,
         c: ComponentContext,
         widthSpec: Int,
         heightSpec: Int

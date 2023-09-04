@@ -33,25 +33,23 @@ class LithoNodeTouchExpansionTest {
 
   private lateinit var node: LithoNode
   lateinit var context: ComponentContext
-  private lateinit var layoutStateContext: LayoutStateContext
+  private lateinit var lithoLayoutContext: LithoLayoutContext
 
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = context.setRenderStateContextForTests()
-    node =
-        requireNotNull(
-            Resolver.resolve(resolveStateContext, context, Column.create(context).build()))
+    val resolveContext = context.setRenderStateContextForTests()
+    node = requireNotNull(Resolver.resolve(resolveContext, context, Column.create(context).build()))
     node.mutableNodeInfo().touchHandler = EventHandler(null, 1)
-    layoutStateContext =
-        LayoutStateContext(
-            resolveStateContext.treeId,
-            resolveStateContext.cache,
+    lithoLayoutContext =
+        LithoLayoutContext(
+            resolveContext.treeId,
+            resolveContext.cache,
             context,
-            resolveStateContext.treeState,
-            resolveStateContext.layoutVersion,
-            resolveStateContext.rootComponentId,
-            resolveStateContext.isAccessibilityEnabled,
+            resolveContext.treeState,
+            resolveContext.layoutVersion,
+            resolveContext.rootComponentId,
+            resolveContext.isAccessibilityEnabled,
             LayoutCache(),
             null,
             null)
@@ -70,7 +68,7 @@ class LithoNodeTouchExpansionTest {
   private fun calculateLayout(): LithoLayoutResult? {
     val context =
         LayoutContext(
-            context.androidContext, LithoRenderContext(layoutStateContext), 0, LayoutCache(), null)
+            context.androidContext, LithoRenderContext(lithoLayoutContext), 0, LayoutCache(), null)
     return node.calculateLayout(context, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
   }
 

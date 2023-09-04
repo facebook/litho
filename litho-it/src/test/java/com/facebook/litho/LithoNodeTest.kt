@@ -314,8 +314,8 @@ class LithoNodeTest {
     val c =
         ComponentContextUtils.withComponentTree(
             baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
-    val resultCache = resolveStateContext.cache
+    val resolveContext = c.setRenderStateContextForTests()
+    val resultCache = resolveContext.cache
     val unspecifiedSizeSpec = unspecified(0)
     val exactSizeSpec = exactly(50)
     val textComponent = Text.create(c).textSizePx(16).text("test").build()
@@ -336,8 +336,8 @@ class LithoNodeTest {
     val c =
         ComponentContextUtils.withComponentTree(
             baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
-    val resultCache = resolveStateContext.cache
+    val resolveContext = c.setRenderStateContextForTests()
+    val resultCache = resolveContext.cache
     val unspecifiedSizeSpec = unspecified(0)
     val exactSizeSpec = exactly(50)
     val textComponent = Text.create(c).textSizePx(16).text("test").build()

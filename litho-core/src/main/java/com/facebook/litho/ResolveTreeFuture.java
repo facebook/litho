@@ -241,8 +241,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
       state.registerResolveState();
 
-      final ResolveStateContext rsc =
-          new ResolveStateContext(
+      final ResolveContext rsc =
+          new ResolveContext(
               componentTreeId,
               new MeasuredResultCache(),
               state,
@@ -256,7 +256,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
               perfEventLogger,
               context.getLogger());
 
-      final @Nullable CalculationStateContext previousStateContext =
+      final @Nullable CalculationContext previousStateContext =
           context.getCalculationStateContext();
 
       final @Nullable LithoNode node;
@@ -334,7 +334,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
       partialResult.treeState.registerResolveState();
 
-      final @Nullable CalculationStateContext previousStateContext =
+      final @Nullable CalculationContext previousStateContext =
           context.getCalculationStateContext();
 
       final @Nullable LithoNode node;

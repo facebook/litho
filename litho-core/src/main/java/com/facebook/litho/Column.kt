@@ -50,10 +50,7 @@ private constructor(
 
   override fun canResolve(): Boolean = true
 
-  public override fun resolve(
-      resolveStateContext: ResolveStateContext,
-      c: ComponentContext
-  ): LithoNode? {
+  public override fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? {
     val node = LithoNode()
     node.flexDirection(if (reverse) YogaFlexDirection.COLUMN_REVERSE else YogaFlexDirection.COLUMN)
     alignItems?.let { node.alignItems(it) }
@@ -62,13 +59,13 @@ private constructor(
     wrap?.let { node.wrap(it) }
     children?.let { children ->
       for (child in children) {
-        if (resolveStateContext.isFutureReleased) {
+        if (resolveContext.isFutureReleased) {
           return null
         }
-        if (resolveStateContext.isLayoutInterrupted) {
+        if (resolveContext.isLayoutInterrupted) {
           node.appendUnresolvedComponent(child)
         } else {
-          node.child(resolveStateContext, c, child)
+          node.child(resolveContext, c, child)
         }
       }
     }
@@ -76,13 +73,13 @@ private constructor(
   }
 
   public override fun resolve(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
       parentHeightSpec: Int,
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
-    val lithoNode = resolve(resolveStateContext, scopedComponentInfo.context)
+    val lithoNode = resolve(resolveContext, scopedComponentInfo.context)
     return ComponentResolveResult(lithoNode, commonProps)
   }
 

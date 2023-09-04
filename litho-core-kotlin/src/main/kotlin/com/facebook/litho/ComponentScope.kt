@@ -24,7 +24,7 @@ import android.view.View
  */
 open class ComponentScope(
     override val context: ComponentContext,
-    internal var resolveStateContext: ResolveStateContext? = null
+    internal var resolveContext: ResolveContext? = null
 ) : ResourcesScope {
   // TODO: Extract into more generic container to track hooks when needed
   internal var useStateIndex = 0
@@ -51,6 +51,6 @@ open class ComponentScope(
   }
 
   internal fun cleanUp() {
-    resolveStateContext = null
+    resolveContext = null
   }
 }

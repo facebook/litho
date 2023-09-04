@@ -20,8 +20,8 @@ import com.facebook.rendercore.Mountable
 
 /** The implicit receiver for [MountableComponent.render] call. */
 class MountableComponentScope
-internal constructor(context: ComponentContext, resolveStateContext: ResolveStateContext) :
-    ComponentScope(context, resolveStateContext) {
+internal constructor(context: ComponentContext, resolveContext: ResolveContext) :
+    ComponentScope(context, resolveContext) {
   internal val binders: ArrayList<DynamicPropsHolder<Any?, Mountable<*>>> by lazy { ArrayList(2) }
   var shouldExcludeFromIncrementalMount: Boolean = false
 

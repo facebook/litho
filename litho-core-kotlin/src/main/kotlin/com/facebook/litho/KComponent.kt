@@ -32,12 +32,12 @@ abstract class KComponent : Component() {
   }
 
   final override fun render(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult {
-    val componentScope = ComponentScope(c, resolveStateContext)
+    val componentScope = ComponentScope(c, resolveContext)
     val componentResult = componentScope.render()
     componentScope.cleanUp()
     return RenderResult(
@@ -45,20 +45,19 @@ abstract class KComponent : Component() {
   }
 
   final override fun resolve(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
       parentHeightSpec: Int,
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
     val c: ComponentContext = scopedComponentInfo.context
-    val renderResult: RenderResult =
-        render(resolveStateContext, c, parentWidthSpec, parentHeightSpec)
+    val renderResult: RenderResult = render(resolveContext, c, parentWidthSpec, parentHeightSpec)
     val root = renderResult.component
 
     val node: LithoNode? =
         if (root != null) {
-          Resolver.resolve(resolveStateContext, c, root)
+          Resolver.resolve(resolveContext, c, root)
         } else {
           NullNode()
         }
@@ -116,10 +115,8 @@ abstract class KComponent : Component() {
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
-  final override fun resolve(
-      resolveStateContext: ResolveStateContext,
-      c: ComponentContext
-  ): LithoNode? = super.resolve(resolveStateContext, c)
+  final override fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? =
+      super.resolve(resolveContext, c)
 
   final override fun shouldUpdate(
       previous: Component,

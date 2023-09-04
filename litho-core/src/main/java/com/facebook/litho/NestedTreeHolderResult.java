@@ -56,7 +56,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
       LayoutContext<LithoRenderContext> context, int widthSpec, int heightSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final Component component = mNode.getTailComponent();
-    if (context.getRenderContext().layoutStateContext.isReleased()) {
+    if (context.getRenderContext().lithoLayoutContext.isReleased()) {
       throw new IllegalStateException(
           component.getSimpleName()
               + ": To measure a component outside of a layout calculation use"
@@ -70,7 +70,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
       if (parentFromNode != null) {
         parentContext = parentFromNode;
       } else {
-        parentContext = context.getRenderContext().layoutStateContext.getRootComponentContext();
+        parentContext = context.getRenderContext().lithoLayoutContext.getRootComponentContext();
       }
     } else {
       parentContext = mNode.getComponentContextAt(1);
@@ -87,7 +87,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
     try {
       final @Nullable LithoLayoutResult nestedTree =
           Layout.measure(
-              context.getRenderContext().layoutStateContext,
+              context.getRenderContext().lithoLayoutContext,
               parentContext,
               this,
               widthSpec,

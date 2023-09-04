@@ -891,13 +891,13 @@ class LayoutStateCalculateTest {
     val c =
         ComponentContextUtils.withComponentTree(
             baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, EXACTLY)
     val heightSpec = makeSizeSpec(100, EXACTLY)
     innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
@@ -929,13 +929,13 @@ class LayoutStateCalculateTest {
     val c =
         ComponentContextUtils.withComponentTree(
             baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, AT_MOST)
     val heightSpec = makeSizeSpec(100, AT_MOST)
     innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
@@ -967,13 +967,13 @@ class LayoutStateCalculateTest {
     val c =
         ComponentContextUtils.withComponentTree(
             baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(0, UNSPECIFIED)
     val heightSpec = makeSizeSpec(0, UNSPECIFIED)
     innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
@@ -1003,13 +1003,13 @@ class LayoutStateCalculateTest {
     val c =
         ComponentContextUtils.withComponentTree(
             baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val size = Size()
     val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, AT_MOST)
     val heightSpec = makeSizeSpec(100, AT_MOST)
     innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
@@ -2178,7 +2178,7 @@ class LayoutStateCalculateTest {
   @Test
   fun testWillRenderLayoutsOnce() {
     val c = legacyLithoViewRule.context
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val steps: MutableList<StepInfo> = ArrayList()
     val component =
         Column.create(c)
@@ -2188,57 +2188,57 @@ class LayoutStateCalculateTest {
     Component.willRender(c, component)
     assertThat(LifecycleStep.getSteps(steps)).containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT)
     steps.clear()
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
     assertThat(LifecycleStep.getSteps(steps)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
   }
 
   @Test
   fun testResolveLayoutUsesWillRenderResult() {
     var c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build()
     c = ComponentContext.withComponentScope(c, component, "global_key")
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
   }
 
   @Test
   fun testNewLayoutBuilderUsesWillRenderResult() {
     var c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build()
     c = ComponentContext.withComponentScope(c, component, "global_key")
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
   }
 
   @Test
   fun testCreateLayoutUsesWillRenderResult() {
     var c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build()
     c = ComponentContext.withComponentScope(c, component, "global_key")
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
   }
 
   @Test
@@ -2259,19 +2259,19 @@ class LayoutStateCalculateTest {
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY))
     verify(componentSpy, times(1))
-        .render((anyOrNull<ResolveStateContext>()), (anyOrNull<ComponentContext>()), eq(0), eq(0))
+        .render((anyOrNull()), (anyOrNull<ComponentContext>()), eq(0), eq(0))
   }
 
   @Test
   fun testWillRenderTwiceDoesNotReCreateLayout() {
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component = TestLayoutComponent.create(c, 0, 0, true, true, false).build()
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
     assertThat(Component.willRender(c, component)).isTrue
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isEqualTo(cachedLayout)
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isEqualTo(cachedLayout)
   }
 
   @Test

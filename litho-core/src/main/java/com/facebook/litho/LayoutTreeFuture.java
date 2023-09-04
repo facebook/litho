@@ -161,8 +161,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
           currentLayoutState != null
               ? new LayoutCache(currentLayoutState.mLayoutCacheData)
               : new LayoutCache();
-      final LayoutStateContext lsc =
-          new LayoutStateContext(
+      final LithoLayoutContext lsc =
+          new LithoLayoutContext(
               treeId,
               new MeasuredResultCache(renderPhaseCache),
               c,
@@ -194,10 +194,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
         lsc.setPerfEvent(perfEventLogger);
       }
 
-      final CalculationStateContext prevContext = c.getCalculationStateContext();
+      final CalculationContext prevContext = c.getCalculationStateContext();
 
       try {
-        c.setLayoutStateContext(lsc);
+        c.setLithoLayoutContext(lsc);
 
         @Nullable
         LithoLayoutResult root =

@@ -30,7 +30,7 @@ class ResolveResult(
     @JvmField val version: Int,
     @JvmField val createdEventHandlers: List<Pair<String, EventHandler<*>>>?,
     @JvmField val attachables: List<Attachable>?,
-    @JvmField val contextForResuming: ResolveStateContext?
+    @JvmField val contextForResuming: ResolveContext?
 ) : PotentiallyPartialResult {
 
   private val cache: AtomicReference<MeasuredResultCache> = AtomicReference(cache)

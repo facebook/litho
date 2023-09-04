@@ -18,4 +18,4 @@ package com.facebook.litho
 
 import kotlin.jvm.JvmField
 
-class LithoRenderContext(@JvmField val layoutStateContext: LayoutStateContext)
+class LithoRenderContext(@JvmField val lithoLayoutContext: LithoLayoutContext)
