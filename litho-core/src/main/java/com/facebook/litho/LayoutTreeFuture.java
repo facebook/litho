@@ -229,11 +229,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
         }
 
         layoutState.setCreatedEventHandlers(
-            CommonUtils.mergeLists(
-                resolveResult.createdEventHandlers, lsc.getCreatedEventHandlers()));
+            CommonUtils.mergeLists(resolveResult.createdEventHandlers, lsc.getEventHandlers()));
       } finally {
         c.setCalculationStateContext(prevContext);
-        lsc.releaseReference();
+        lsc.release();
       }
 
       LithoStats.incrementComponentCalculateLayoutCount();

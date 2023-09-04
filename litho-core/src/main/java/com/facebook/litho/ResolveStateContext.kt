@@ -27,28 +27,28 @@ internal constructor(
     override val layoutVersion: Int,
     override val rootComponentId: Int,
     override val isAccessibilityEnabled: Boolean,
-    layoutStateFuture: TreeFuture<*>?,
+    treeFuture: TreeFuture<*>?,
     val currentRoot: LithoNode?,
     val perfEventLogger: PerfEvent?,
     val componentsLogger: ComponentsLogger?
 ) : CalculationStateContext {
 
   private var _treeState: TreeState? = treeState
-  private var _layoutStateFuture: TreeFuture<*>? = layoutStateFuture
+  private var _future: TreeFuture<*>? = treeFuture
 
   private var _isInterruptible: Boolean = true
 
   private var _cachedNodes: MutableMap<Int, LithoNode?>? = null
   private var _eventHandlers: MutableList<Pair<String, EventHandler<*>>>? = null
 
-  override val layoutStateFuture: TreeFuture<*>?
+  override val treeFuture: TreeFuture<*>?
     get() {
-      return _layoutStateFuture
+      return _future
     }
 
   override val isFutureReleased: Boolean
     get() {
-      val future = _layoutStateFuture
+      val future = _future
       return future != null && future.isReleased
     }
 
@@ -57,7 +57,7 @@ internal constructor(
       return checkNotNull(_treeState)
     }
 
-  override val createdEventHandlers: List<Pair<String, EventHandler<*>>>?
+  override val eventHandlers: List<Pair<String, EventHandler<*>>>?
     get() {
       return _eventHandlers
     }
@@ -79,7 +79,7 @@ internal constructor(
       return if (!isInterruptible || ThreadUtils.isMainThread()) {
         false
       } else {
-        val future = _layoutStateFuture
+        val future = _future
         return future != null && future.isInterruptRequested
       }
     }
@@ -97,12 +97,12 @@ internal constructor(
 
   @VisibleForTesting
   fun setLayoutStateFutureForTest(future: TreeFuture<*>) {
-    _layoutStateFuture = future
+    _future = future
   }
 
   fun release() {
     _cachedNodes = null
-    _layoutStateFuture = null
+    _future = null
     _treeState = null
   }
 }

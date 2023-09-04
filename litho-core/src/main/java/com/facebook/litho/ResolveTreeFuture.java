@@ -287,7 +287,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           state,
           rsc.isLayoutInterrupted(),
           version,
-          rsc.getCreatedEventHandlers(),
+          rsc.getEventHandlers(),
           attachables,
           rsc.isLayoutInterrupted() ? rsc : null);
 
@@ -349,7 +349,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
       partialResult.contextForResuming.getCache().freezeCache();
       final List<Pair<String, EventHandler<?>>> createdEventHandlers =
-          partialResult.contextForResuming.getCreatedEventHandlers();
+          partialResult.contextForResuming.getEventHandlers();
 
       partialResult.treeState.unregisterResolveInitialState();
 

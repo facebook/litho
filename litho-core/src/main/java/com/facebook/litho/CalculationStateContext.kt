@@ -26,8 +26,8 @@ interface CalculationStateContext {
   val layoutVersion: Int
   val rootComponentId: Int
   val isFutureReleased: Boolean
-  val layoutStateFuture: TreeFuture<*>?
-  val createdEventHandlers: List<Pair<String, EventHandler<*>>>?
+  val treeFuture: TreeFuture<*>?
+  val eventHandlers: List<Pair<String, EventHandler<*>>>?
   val isAccessibilityEnabled: Boolean
 
   /**

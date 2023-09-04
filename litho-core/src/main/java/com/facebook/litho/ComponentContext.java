@@ -386,7 +386,7 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting
   public TreeFuture getLayoutStateFuture() {
     return mCalculationStateContextThreadLocal.get() != null
-        ? mCalculationStateContextThreadLocal.get().getLayoutStateFuture()
+        ? mCalculationStateContextThreadLocal.get().getTreeFuture()
         : null;
   }
 

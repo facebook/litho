@@ -41,21 +41,21 @@ constructor(
 ) : CalculationStateContext {
 
   private var _treeState: TreeState? = treeState
-  private var _layoutStateFuture: TreeFuture<*>? = layoutStateFuture
+  private var _future: TreeFuture<*>? = layoutStateFuture
   private var _rootContext: ComponentContext? = rootContext
   private var _currentDiffTree: DiffNode? = currentDiffTree
 
   private var _eventHandlers: MutableList<Pair<String, EventHandler<*>>>? = null
   private var _currentNestedTreeDiffNode: DiffNode? = null
 
-  override val layoutStateFuture: TreeFuture<*>?
+  override val treeFuture: TreeFuture<*>?
     get() {
-      return _layoutStateFuture
+      return _future
     }
 
   override val isFutureReleased: Boolean
     get() {
-      val future = _layoutStateFuture
+      val future = _future
       return future != null && future.isReleased
     }
 
@@ -64,7 +64,7 @@ constructor(
       return checkNotNull(_treeState)
     }
 
-  override val createdEventHandlers: List<Pair<String, EventHandler<*>>>?
+  override val eventHandlers: List<Pair<String, EventHandler<*>>>?
     get() {
       return _eventHandlers
     }
@@ -103,9 +103,9 @@ constructor(
     return _currentNestedTreeDiffNode.apply { _currentNestedTreeDiffNode = null }
   }
 
-  fun releaseReference() {
+  fun release() {
     _treeState = null
-    _layoutStateFuture = null
+    _future = null
     _currentDiffTree = null
     _rootContext = null
     perfEvent = null
