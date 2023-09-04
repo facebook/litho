@@ -85,7 +85,7 @@ class LayoutStateFutureReleaseTest {
     val layoutStateFutureMock: TreeFuture<*> = mock { on { isReleased } doReturn false }
     val c = ComponentContext(context)
     val resolveStateContext = c.setRenderStateContextForTests()
-    resolveStateContext.setLayoutStateFuture(layoutStateFutureMock)
+    resolveStateContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
     val child1 =
         TestChildComponent(
@@ -109,7 +109,7 @@ class LayoutStateFutureReleaseTest {
     val layoutStateFutureMock: TreeFuture<*> = mock()
     val c = ComponentContext(context)
     val resolveStateContext = c.setRenderStateContextForTests()
-    resolveStateContext.setLayoutStateFuture(layoutStateFutureMock)
+    resolveStateContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
     val child1 =
         TestChildComponent(
