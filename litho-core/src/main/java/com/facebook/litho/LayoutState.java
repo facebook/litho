@@ -161,13 +161,13 @@ public class LayoutState
   private final boolean mIsAccessibilityEnabled;
 
   private final TreeState mTreeState;
-  private @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
+  @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable TransitionId mCurrentTransitionId;
   private @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
   private final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
       new LinkedHashMap<>();
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
-  private @Nullable List<Transition> mTransitions;
+  @Nullable List<Transition> mTransitions;
   private @Nullable RenderTree mCachedRenderTree = null;
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
@@ -189,6 +189,8 @@ public class LayoutState
       Component rootComponent,
       TreeState treeState,
       @Nullable List<Attachable> attachables,
+      @Nullable List<Transition> transitions,
+      @Nullable List<ScopedComponentInfo> componentsThatNeedPreviousRenderData,
       @Nullable LayoutState current,
       @Nullable LithoNode root,
       int widthSpec,
@@ -207,6 +209,11 @@ public class LayoutState
 
     mTreeState = treeState;
     mAttachables = attachables != null ? new ArrayList<>(attachables) : null;
+    mTransitions = transitions != null ? new ArrayList<>(transitions) : null;
+    mScopedComponentInfosNeedingPreviousRenderData =
+        componentsThatNeedPreviousRenderData != null
+            ? new ArrayList<>(componentsThatNeedPreviousRenderData)
+            : null;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
@@ -749,7 +756,7 @@ public class LayoutState
     }
 
     // 4. Extract the Transitions.
-    if (context.areTransitionsEnabled()) {
+    if (!context.shouldReuseOutputs() && context.areTransitionsEnabled()) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {

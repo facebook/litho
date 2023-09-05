@@ -345,6 +345,18 @@ class Layout {
           layoutState.mAttachables = new ArrayList<>(outputs.attachables.size());
         }
         layoutState.mAttachables.addAll(outputs.attachables);
+
+        if (layoutState.mTransitions == null) {
+          layoutState.mTransitions = new ArrayList<>(outputs.transitions.size());
+        }
+        layoutState.mTransitions.addAll(outputs.transitions);
+
+        if (layoutState.mScopedComponentInfosNeedingPreviousRenderData == null) {
+          layoutState.mScopedComponentInfosNeedingPreviousRenderData =
+              new ArrayList<>(outputs.componentsThatNeedPreviousRenderData.size());
+        }
+        layoutState.mScopedComponentInfosNeedingPreviousRenderData.addAll(
+            outputs.componentsThatNeedPreviousRenderData);
       }
 
       measurePendingSubtrees(

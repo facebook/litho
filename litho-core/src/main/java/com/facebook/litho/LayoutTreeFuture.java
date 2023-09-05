@@ -182,6 +182,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               resolveResult.component,
               treeState,
               resolveResult.outputs != null ? resolveResult.outputs.attachables : null,
+              resolveResult.outputs != null ? resolveResult.outputs.transitions : null,
+              resolveResult.outputs != null
+                  ? resolveResult.outputs.componentsThatNeedPreviousRenderData
+                  : null,
               currentLayoutState,
               node,
               widthSpec,

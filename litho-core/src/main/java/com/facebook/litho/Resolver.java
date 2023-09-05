@@ -524,7 +524,8 @@ public class Resolver {
       collectedAttachables.addAll(attachables);
     }
 
-    if (node.getTailComponentContext().areTransitionsEnabled()) {
+    final ComponentContext c = node.getTailComponentContext();
+    if (c.shouldReuseOutputs() && c.areTransitionsEnabled()) {
       // collect transitions
       final @Nullable List<Transition> transitions = node.getTransitions();
       if (transitions != null) {
