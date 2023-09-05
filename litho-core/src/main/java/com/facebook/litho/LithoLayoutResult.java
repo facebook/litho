@@ -612,6 +612,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           delegate = null;
           width = size.width;
           height = size.height;
+          // always reset lastMeasuredSize to make sure we do not skip invoking `onBoundDefined`
+          mLastMeasuredSize = Long.MIN_VALUE;
         }
 
         // If layout data has changed then content render unit should be recreated
@@ -645,53 +647,56 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     final ComponentContext context = getNode().getTailComponentContext();
     final Component component = getNode().getTailComponent();
 
-    boolean hasSizeChanged =
+    final boolean hasSizeChanged =
         YogaMeasureOutput.getWidth(mLastMeasuredSize) != getWidth()
             || YogaMeasureOutput.getHeight(mLastMeasuredSize) != getHeight();
 
-    if (isMountSpec(component)
-        && (component instanceof SpecGeneratedComponent)
-        && (!mIsCachedLayout || hasSizeChanged)) {
+    if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
 
-      // Invoke onBoundsDefined for all MountSpecs
-      final SpecGeneratedComponent specGenComponent = (SpecGeneratedComponent) component;
+      final boolean isNonCachedLayoutOrSizeChanged = !mIsCachedLayout || hasSizeChanged;
+      if (isNonCachedLayoutOrSizeChanged) {
+        // We should only invoke `onBoundsDefined` if layout is non cached or size has changed.
+        // Note: MountSpec is always treated as size changed once `onMeasure` is invoked no matter
+        // if the size changed or not.
+        final SpecGeneratedComponent specGenComponent = (SpecGeneratedComponent) component;
 
-      final boolean isTracing = ComponentsSystrace.isTracing();
-      if (isTracing) {
-        ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
-      }
-
-      final @Nullable InterStagePropsContainer layoutData;
-
-      // If the Layout Result was cached, but the size has changed, then interstage props container
-      // (layout data) could be mutated when @OnBoundsDefined is invoked. To avoid that create new
-      // interstage props container (layout data), and copy over the current values.
-      if (mIsCachedLayout) {
-        layoutData = specGenComponent.createInterStagePropsContainer();
-        if (layoutData != null && mLayoutData != null) {
-          specGenComponent.copyInterStageImpl(layoutData, (InterStagePropsContainer) mLayoutData);
-        }
-      } else {
-        layoutData = (InterStagePropsContainer) mLayoutData;
-      }
-
-      try {
-        specGenComponent.onBoundsDefined(context, this, layoutData);
-      } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(context, component, e);
-        setMeasureHadExceptions(true);
-      } finally {
+        final boolean isTracing = ComponentsSystrace.isTracing();
         if (isTracing) {
-          ComponentsSystrace.endSection();
+          ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
         }
-      }
 
-      // If layout data has changed then content render unit should be recreated
-      if (!EquivalenceUtils.hasEquivalentFields(mLayoutData, layoutData)) {
-        mContentRenderUnit = null;
-      }
+        final @Nullable InterStagePropsContainer layoutData;
 
-      mLayoutData = layoutData;
+        // If the Layout Result was cached, but the size has changed, then interstage props
+        // container (layout data) could be mutated when @OnBoundsDefined is invoked. To avoid that
+        // create new interstage props container (layout data), and copy over the current values.
+        if (mIsCachedLayout) {
+          layoutData = specGenComponent.createInterStagePropsContainer();
+          if (layoutData != null && mLayoutData != null) {
+            specGenComponent.copyInterStageImpl(layoutData, (InterStagePropsContainer) mLayoutData);
+          }
+        } else {
+          layoutData = (InterStagePropsContainer) mLayoutData;
+        }
+
+        try {
+          specGenComponent.onBoundsDefined(context, this, layoutData);
+        } catch (Exception e) {
+          ComponentUtils.handleWithHierarchy(context, component, e);
+          setMeasureHadExceptions(true);
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+        }
+
+        // If layout data has changed then content render unit should be recreated
+        if (!EquivalenceUtils.hasEquivalentFields(mLayoutData, layoutData)) {
+          mContentRenderUnit = null;
+        }
+
+        mLayoutData = layoutData;
+      }
 
       if (!wasMeasured()) {
         mWasMeasured = true;
