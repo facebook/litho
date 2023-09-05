@@ -33,11 +33,6 @@ public final class Wrapper extends SpecGeneratedComponent {
     super("Wrapper");
   }
 
-  @Override
-  protected boolean canResolve() {
-    return true;
-  }
-
   public static Builder create(ComponentContext context) {
     return create(context, 0, 0);
   }

@@ -239,14 +239,6 @@ public abstract class SpecGeneratedComponent extends Component
     return null;
   }
 
-  /**
-   * Indicate that this component implements its own {@link #resolve(LithoLayoutContext,
-   * ComponentContext)} logic instead of going through {@link #render(ComponentContext)}.
-   */
-  boolean canResolve() {
-    return false;
-  }
-
   @Override
   protected ComponentResolveResult resolve(
       final ResolveContext resolveContext,
