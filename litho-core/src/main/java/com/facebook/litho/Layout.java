@@ -340,7 +340,7 @@ class Layout {
         return;
       }
 
-      final @Nullable List<Attachable> attachables = Resolver.collectAttachables(nestedTree.mNode);
+      final @Nullable List<Attachable> attachables = Resolver.collectOutputs(nestedTree.mNode);
       if (attachables != null) {
         if (layoutState.mAttachables == null) {
           layoutState.mAttachables = new ArrayList<>(attachables.size());

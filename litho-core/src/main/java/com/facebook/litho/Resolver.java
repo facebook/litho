@@ -477,22 +477,22 @@ public class Resolver {
     return ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent);
   }
 
-  public static @Nullable List<Attachable> collectAttachables(@Nullable final LithoNode node) {
+  public static @Nullable List<Attachable> collectOutputs(@Nullable final LithoNode node) {
     if (node == null) {
       return null;
     }
 
     final List<Attachable> collected = new ArrayList<>();
-    collectAttachables(node, collected);
+    collectOutputs(node, collected);
     return collected.isEmpty() ? null : collected;
   }
 
-  private static void collectAttachables(final LithoNode node, final List<Attachable> collected) {
+  private static void collectOutputs(final LithoNode node, final List<Attachable> collected) {
 
     // TODO(T143986616): optimise traversal for reused nodes
 
     for (int i = 0; i < node.getChildCount(); i++) {
-      collectAttachables(node.getChildAt(i), collected);
+      collectOutputs(node.getChildAt(i), collected);
     }
 
     final @Nullable List<Attachable> list = node.getAttachables();
