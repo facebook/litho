@@ -29,11 +29,13 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -482,22 +484,61 @@ public class Resolver {
       return null;
     }
 
-    final List<Attachable> collected = new ArrayList<>();
-    collectOutputs(node, collected);
-    return collected.isEmpty() ? null : new Outputs(collected);
+    final List<Attachable> collectedAttachables = new ArrayList<>();
+    final List<Transition> collectedTransitions = new ArrayList<>();
+    final List<ScopedComponentInfo> collectedComponentsThatNeedPreviousRenderData =
+        new ArrayList<>();
+    collectOutputs(
+        node,
+        collectedAttachables,
+        collectedTransitions,
+        collectedComponentsThatNeedPreviousRenderData);
+    return collectedAttachables.isEmpty()
+            && collectedTransitions.isEmpty()
+            && collectedComponentsThatNeedPreviousRenderData.isEmpty()
+        ? null
+        : new Outputs(
+            collectedAttachables,
+            collectedTransitions,
+            collectedComponentsThatNeedPreviousRenderData);
   }
 
-  private static void collectOutputs(final LithoNode node, final List<Attachable> collected) {
+  private static void collectOutputs(
+      final LithoNode node,
+      final List<Attachable> collectedAttachables,
+      final List<Transition> collectedTransitions,
+      final List<ScopedComponentInfo> collectedComponentsThatNeedPreviousRenderData) {
 
     // TODO(T143986616): optimise traversal for reused nodes
 
     for (int i = 0; i < node.getChildCount(); i++) {
-      collectOutputs(node.getChildAt(i), collected);
+      collectOutputs(
+          node.getChildAt(i),
+          collectedAttachables,
+          collectedTransitions,
+          collectedComponentsThatNeedPreviousRenderData);
     }
 
-    final @Nullable List<Attachable> list = node.getAttachables();
-    if (list != null) {
-      collected.addAll(list);
+    final @Nullable List<Attachable> attachables = node.getAttachables();
+    if (attachables != null) {
+      collectedAttachables.addAll(attachables);
+    }
+
+    if (node.getTailComponentContext().areTransitionsEnabled()) {
+      // collect transitions
+      final @Nullable List<Transition> transitions = node.getTransitions();
+      if (transitions != null) {
+        for (Transition transition : transitions) {
+          TransitionUtils.addTransitions(transition, collectedTransitions);
+        }
+      }
+
+      // collect components that need previous render data
+      final @Nullable Map<String, ScopedComponentInfo> components =
+          node.getScopedComponentInfosNeedingPreviousRenderData();
+      if (components != null) {
+        collectedComponentsThatNeedPreviousRenderData.addAll(components.values());
+      }
     }
   }
 
@@ -686,9 +727,17 @@ public class Resolver {
 
   public static class Outputs {
     final List<Attachable> attachables;
+    final List<Transition> transitions;
 
-    Outputs(List<Attachable> attachables) {
+    final List<ScopedComponentInfo> componentsThatNeedPreviousRenderData;
+
+    Outputs(
+        List<Attachable> attachables,
+        List<Transition> transitions,
+        List<ScopedComponentInfo> componentsThatNeedPreviousRenderData) {
       this.attachables = attachables;
+      this.transitions = transitions;
+      this.componentsThatNeedPreviousRenderData = componentsThatNeedPreviousRenderData;
     }
   }
 }
