@@ -632,16 +632,18 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return new MeasureResult(width, height, layoutData);
   }
 
-  public void onBoundsDefined() {
-    final ComponentContext context = getNode().getTailComponentContext();
-    final Component component = getNode().getTailComponent();
-
-    if (!context.shouldCacheLayouts()) {
+  // We need to update the last measured size of component if it wasn't set.
+  void setLastMeasuredSizeIfNecessary() {
+    if (!getNode().getTailComponentContext().shouldCacheLayouts()) {
       if (mLastMeasuredSize == Long.MIN_VALUE) {
         mLastMeasuredSize = YogaMeasureOutput.make(getWidth(), getHeight());
       }
-      return;
     }
+  }
+
+  public void onBoundsDefined() {
+    final ComponentContext context = getNode().getTailComponentContext();
+    final Component component = getNode().getTailComponent();
 
     boolean hasSizeChanged =
         YogaMeasureOutput.getWidth(mLastMeasuredSize) != getWidth()

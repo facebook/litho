@@ -693,9 +693,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     yogaRoot.calculateLayout(width, height);
 
     layoutResult.setSizeSpec(widthSpec, heightSpec);
-    if (!getTailComponentContext().shouldCacheLayouts()) {
-      layoutResult.onBoundsDefined();
-    }
+
+    layoutResult.setLastMeasuredSizeIfNecessary();
 
     if (isTracing) {
       ComponentsSystrace.endSection();
