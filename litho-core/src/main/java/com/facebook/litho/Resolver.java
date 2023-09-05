@@ -477,14 +477,14 @@ public class Resolver {
     return ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent);
   }
 
-  public static @Nullable List<Attachable> collectOutputs(@Nullable final LithoNode node) {
+  public static @Nullable Outputs collectOutputs(@Nullable final LithoNode node) {
     if (node == null) {
       return null;
     }
 
     final List<Attachable> collected = new ArrayList<>();
     collectOutputs(node, collected);
-    return collected.isEmpty() ? null : collected;
+    return collected.isEmpty() ? null : new Outputs(collected);
   }
 
   private static void collectOutputs(final LithoNode node, final List<Attachable> collected) {
@@ -682,5 +682,13 @@ public class Resolver {
     int RECONCILE = 1;
     int RECREATE = 2;
     int REUSE = 3;
+  }
+
+  public static class Outputs {
+    final List<Attachable> attachables;
+
+    Outputs(List<Attachable> attachables) {
+      this.attachables = attachables;
+    }
   }
 }

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.util.Pair
+import com.facebook.litho.Resolver.Outputs
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.jvm.JvmField
 
@@ -29,7 +30,7 @@ class ResolveResult(
     override val isPartialResult: Boolean,
     @JvmField val version: Int,
     @JvmField val eventHandlers: List<Pair<String, EventHandler<*>>>?,
-    @JvmField val attachables: List<Attachable>?,
+    @JvmField val outputs: Outputs?,
     @JvmField val contextForResuming: ResolveContext?
 ) : PotentiallyPartialResult {
 

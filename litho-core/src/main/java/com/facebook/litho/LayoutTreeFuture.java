@@ -181,7 +181,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               c,
               resolveResult.component,
               treeState,
-              resolveResult.attachables,
+              resolveResult.outputs != null ? resolveResult.outputs.attachables : null,
               currentLayoutState,
               node,
               widthSpec,

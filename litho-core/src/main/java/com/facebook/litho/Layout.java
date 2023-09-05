@@ -34,7 +34,6 @@ import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
-import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class Layout {
@@ -340,12 +339,12 @@ class Layout {
         return;
       }
 
-      final @Nullable List<Attachable> attachables = Resolver.collectOutputs(nestedTree.mNode);
-      if (attachables != null) {
+      final @Nullable Resolver.Outputs outputs = Resolver.collectOutputs(nestedTree.mNode);
+      if (outputs != null) {
         if (layoutState.mAttachables == null) {
-          layoutState.mAttachables = new ArrayList<>(attachables.size());
+          layoutState.mAttachables = new ArrayList<>(outputs.attachables.size());
         }
-        layoutState.mAttachables.addAll(attachables);
+        layoutState.mAttachables.addAll(outputs.attachables);
       }
 
       measurePendingSubtrees(

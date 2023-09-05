@@ -267,11 +267,11 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         context.setCalculationStateContext(previousStateContext);
       }
 
-      final @Nullable List<Attachable> attachables;
+      final @Nullable Resolver.Outputs outputs;
       if (rsc.isLayoutInterrupted()) {
-        attachables = null;
+        outputs = null;
       } else {
-        attachables = Resolver.collectOutputs(node);
+        outputs = Resolver.collectOutputs(node);
         rsc.getCache().freezeCache();
       }
 
@@ -288,7 +288,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           rsc.isLayoutInterrupted(),
           version,
           rsc.getEventHandlers(),
-          attachables,
+          outputs,
           rsc.isLayoutInterrupted() ? rsc : null);
 
     } finally {
@@ -345,7 +345,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         context.setCalculationStateContext(previousStateContext);
       }
 
-      final @Nullable List<Attachable> attachables = Resolver.collectOutputs(node);
+      final @Nullable Resolver.Outputs outputs = Resolver.collectOutputs(node);
 
       partialResult.contextForResuming.getCache().freezeCache();
       final List<Pair<String, EventHandler<?>>> createdEventHandlers =
@@ -362,7 +362,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           false,
           resolveVersion,
           createdEventHandlers,
-          attachables,
+          outputs,
           null);
     } finally {
       if (isTracing) {
