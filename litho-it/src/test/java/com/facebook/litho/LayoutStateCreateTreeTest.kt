@@ -491,7 +491,6 @@ class LayoutStateCreateTreeTest {
   }
 
   private class TestDrawableComponentWithMockInternalNode : TestComponent() {
-    protected fun canResolve(): Boolean = true
 
     override fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode {
       val result = mock<LithoLayoutResult>()
