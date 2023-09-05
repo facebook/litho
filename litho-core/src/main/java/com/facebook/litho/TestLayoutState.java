@@ -103,7 +103,7 @@ public class TestLayoutState {
     }
 
     if (component instanceof SpecGeneratedComponent
-        && ((SpecGeneratedComponent) component).canResolve()) {
+        && canResolve((SpecGeneratedComponent) component)) {
       if (component instanceof Wrapper) {
         return createImmediateLayout(resolveContext, c, widthSpec, heightSpec, component);
       }
@@ -220,7 +220,7 @@ public class TestLayoutState {
         return newImmediateLayoutBuilder(resolveContext, c, widthSpec, heightSpec, delegate);
       }
     } else if (component instanceof SpecGeneratedComponent
-        && ((SpecGeneratedComponent) component).canResolve()) {
+        && canResolve((SpecGeneratedComponent) component)) {
       c.setTreeProps(c.getTreePropsCopy());
       if (component instanceof Column || component instanceof Row) {
         node = resolve(resolveContext, c, widthSpec, heightSpec, component);
@@ -286,7 +286,7 @@ public class TestLayoutState {
         node = newImmediateLayoutBuilder(resolveContext, c, widthSpec, heightSpec, delegate);
       }
     } else if (component instanceof SpecGeneratedComponent
-        && ((SpecGeneratedComponent) component).canResolve()) {
+        && canResolve((SpecGeneratedComponent) component)) {
       node = create(resolveContext, c, widthSpec, heightSpec, component);
     } else {
 
@@ -358,7 +358,7 @@ public class TestLayoutState {
 
       // If the component can resolve itself resolve it.
       else if (component instanceof SpecGeneratedComponent
-          && ((SpecGeneratedComponent) component).canResolve()) {
+          && canResolve((SpecGeneratedComponent) component)) {
 
         // Resolve the component into an InternalNode.
         if (component instanceof Column || component instanceof Row) {
@@ -532,5 +532,11 @@ public class TestLayoutState {
     } else {
       return object.getClass();
     }
+  }
+
+  static boolean canResolve(SpecGeneratedComponent component) {
+    // for legacy reasons this method enumerates components which returned true from canResolve()
+    // until TestLayoutState is further refactored
+    return component instanceof Row || component instanceof Column || component instanceof Wrapper;
   }
 }

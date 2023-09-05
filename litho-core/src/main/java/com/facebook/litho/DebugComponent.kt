@@ -287,7 +287,8 @@ private constructor(
   }
 
   fun canResolve(): Boolean {
-    return component is SpecGeneratedComponent && (component as SpecGeneratedComponent).canResolve()
+    return component is SpecGeneratedComponent &&
+        TestLayoutState.canResolve(component as SpecGeneratedComponent)
   }
 
   val mountedContent: Any?
