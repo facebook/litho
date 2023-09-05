@@ -229,7 +229,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
         }
 
         layoutState.setCreatedEventHandlers(
-            CommonUtils.mergeLists(resolveResult.createdEventHandlers, lsc.getEventHandlers()));
+            CommonUtils.mergeLists(resolveResult.eventHandlers, lsc.getEventHandlers()));
       } finally {
         c.setCalculationStateContext(prevContext);
         lsc.release();

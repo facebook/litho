@@ -28,7 +28,7 @@ class ResolveResult(
     @JvmField val treeState: TreeState,
     override val isPartialResult: Boolean,
     @JvmField val version: Int,
-    @JvmField val createdEventHandlers: List<Pair<String, EventHandler<*>>>?,
+    @JvmField val eventHandlers: List<Pair<String, EventHandler<*>>>?,
     @JvmField val attachables: List<Attachable>?,
     @JvmField val contextForResuming: ResolveContext?
 ) : PotentiallyPartialResult {
