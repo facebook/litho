@@ -515,7 +515,7 @@ public class TransitionsExtension
     List<Transition> transitions = input.getMountTimeTransitions();
     if (transitions != null) {
       for (Transition transition : transitions) {
-        TransitionUtils.addTransitions(transition, outList, input.getRootName());
+        TransitionUtils.addTransitions(transition, outList);
       }
     }
   }

@@ -757,8 +757,7 @@ public class LayoutState
           if (layoutState.mTransitions == null) {
             layoutState.mTransitions = new ArrayList<>();
           }
-          TransitionUtils.addTransitions(
-              transition, layoutState.mTransitions, layoutState.mRootComponentName);
+          TransitionUtils.addTransitions(transition, layoutState.mTransitions);
         }
       }
 
