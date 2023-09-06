@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.Hook
+import com.facebook.rendercore.primitives.utils.areObjectsEquivalent
 
 /**
  * Create a CachedValue variable within a Component. The [calculator] will provide the calculated
@@ -47,7 +48,7 @@ internal class CachedInputs(val hookKey: String, val inputs: Array<out Any?>) {
 
     other as CachedInputs
 
-    return hookKey == other.hookKey && inputs.contentEquals(other.inputs)
+    return hookKey == other.hookKey && areObjectsEquivalent(inputs, other.inputs)
   }
 
   override fun hashCode(): Int {

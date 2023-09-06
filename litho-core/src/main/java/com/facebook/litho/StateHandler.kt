@@ -16,10 +16,12 @@
 
 package com.facebook.litho
 
+import android.util.LruCache
 import androidx.annotation.VisibleForTesting
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.litho.SpecGeneratedComponent.TransitionContainer
 import com.facebook.litho.StateContainer.StateUpdate
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.transitions.TransitionUtils
 import java.lang.Exception
@@ -61,6 +63,7 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
 
   /** Map of all cached values that are stored for the current ComponentTree. */
   @GuardedBy("this") private var cachedValues: MutableMap<Any, Any?>? = null
+  @GuardedBy("this") private var cachedValuesLru: MutableMap<String, LruCache<Any, Any>>? = null
 
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
   // of the component the update applies to
@@ -319,16 +322,37 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
 
   @Synchronized
   fun getCachedValue(globalKey: String, index: Int, cachedValueInputs: Any): Any? {
-    return cachedValues?.get(cachedValueInputs)
+    return if (ComponentsConfiguration.shouldUseLruCacheForUseCached()) {
+      val hookKey = "$globalKey:$index"
+      cachedValuesLru?.get(hookKey)?.get(cachedValueInputs)
+    } else {
+      cachedValues?.get(cachedValueInputs)
+    }
   }
 
   @Synchronized
   fun putCachedValue(globalKey: String, index: Int, cachedValueInputs: Any, cachedValue: Any?) {
-    if (cachedValues == null) {
-      cachedValues = HashMap()
+    if (cachedValue == null) {
+      return
     }
 
-    cachedValues?.set(cachedValueInputs, cachedValue)
+    if (ComponentsConfiguration.shouldUseLruCacheForUseCached()) {
+      val hookKey = "$globalKey:$index"
+      if (cachedValuesLru == null) {
+        cachedValuesLru = LinkedHashMap()
+      }
+      if (cachedValuesLru?.containsKey(hookKey) != true) {
+        cachedValuesLru?.put(hookKey, LruCache(ComponentsConfiguration.useCachedLruCacheSize))
+      }
+
+      cachedValuesLru?.get(hookKey)?.put(cachedValueInputs, cachedValue)
+    } else {
+      if (cachedValues == null) {
+        cachedValues = HashMap()
+      }
+
+      cachedValues?.set(cachedValueInputs, cachedValue)
+    }
   }
 
   /**
@@ -396,7 +420,7 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
   }
 
   //
-  // Hooks - Experimental - see KState.kt
+  // Hooks - see KState.kt
   //
 
   /**

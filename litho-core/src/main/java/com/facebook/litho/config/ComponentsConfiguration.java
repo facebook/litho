@@ -251,6 +251,12 @@ public class ComponentsConfiguration {
 
   public static boolean disableFlexDirectionInResolve = false;
 
+  public static int useCachedLruCacheSize = 0;
+
+  public static boolean shouldUseLruCacheForUseCached() {
+    return useCachedLruCacheSize > 0;
+  }
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;
