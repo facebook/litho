@@ -681,20 +681,23 @@ public class ComponentContext implements Cloneable {
   }
 
   @Nullable
-  public Object getCachedValue(Object cachedValueInputs) {
+  public Object getCachedValue(String globalKey, int index, Object cachedValueInputs) {
     if (mLithoTree == null) {
       return null;
     }
-    return mLithoTree.getStateUpdater().getCachedValue(cachedValueInputs, isNestedTreeContext());
+    return mLithoTree
+        .getStateUpdater()
+        .getCachedValue(globalKey, index, cachedValueInputs, isNestedTreeContext());
   }
 
-  public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+  public void putCachedValue(
+      String globalKey, int index, Object cachedValueInputs, Object cachedValue) {
     if (mLithoTree == null) {
       return;
     }
     mLithoTree
         .getStateUpdater()
-        .putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
+        .putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isNestedTreeContext());
   }
 
   StateUpdater getStateUpdater() {

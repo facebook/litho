@@ -1276,10 +1276,10 @@ class ComponentTreeTest {
   @Test
   fun testCachedValues() {
     val componentTree = ComponentTree.create(context, component).build()
-    assertThat(componentTree.getCachedValue("key1", false)).isNull()
-    componentTree.putCachedValue("key1", "value1", false)
-    assertThat(componentTree.getCachedValue("key1", false)).isEqualTo("value1")
-    assertThat(componentTree.getCachedValue("key2", false)).isNull()
+    assertThat(componentTree.getCachedValue("globalKey", 0, "key1", false)).isNull()
+    componentTree.putCachedValue("globalKey", 0, "key1", "value1", false)
+    assertThat(componentTree.getCachedValue("globalKey", 0, "key1", false)).isEqualTo("value1")
+    assertThat(componentTree.getCachedValue("globalKey", 0, "key2", false)).isNull()
   }
 
   @Test

@@ -2785,11 +2785,11 @@ public class ComponentTree
 
   @Override
   public synchronized @Nullable Object getCachedValue(
-      Object cachedValueInputs, boolean isNestedTree) {
+      String globalKey, int index, Object cachedValueInputs, boolean isNestedTree) {
     if (mReleased || mTreeState == null) {
       return null;
     }
-    return mTreeState.getCachedValue(cachedValueInputs, isNestedTree);
+    return mTreeState.getCachedValue(globalKey, index, cachedValueInputs, isNestedTree);
   }
 
   @VisibleForTesting
@@ -2800,11 +2800,15 @@ public class ComponentTree
 
   @Override
   public synchronized void putCachedValue(
-      Object cachedValueInputs, Object cachedValue, boolean isNestedTree) {
+      String globalKey,
+      int index,
+      Object cachedValueInputs,
+      Object cachedValue,
+      boolean isNestedTree) {
     if (mReleased || mTreeState == null) {
       return;
     }
-    mTreeState.putCachedValue(cachedValueInputs, cachedValue, isNestedTree);
+    mTreeState.putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isNestedTree);
   }
 
   @Override

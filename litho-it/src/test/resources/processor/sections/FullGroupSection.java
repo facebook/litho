@@ -423,10 +423,10 @@ final class FullGroupSection<T> extends Section {
   private int getCached(SectionContext c) {
     String globalKey = c.getGlobalKey();
     final CachedInputs inputs = new CachedInputs(globalKey, prop1);
-    Integer cached = (Integer) c.getCachedValue(inputs);
+    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
     if (cached == null) {
       cached = FullGroupSectionSpec.onCalculateCached(prop1);
-      c.putCachedValue(inputs, cached);
+      c.putCachedValue(globalKey, 0, inputs, cached);
     }
     return cached;
   }

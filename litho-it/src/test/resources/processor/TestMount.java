@@ -690,10 +690,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     String globalKey = c.getGlobalKey();
     final CachedInputs inputs =
         new CachedInputs(globalKey, prop3, prop5, getStateContainerImpl(c).state1);
-    Integer cached = (Integer) c.getCachedValue(inputs);
+    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
     if (cached == null) {
       cached = TestMountSpec.onCalculateCached(prop3, prop5, getStateContainerImpl(c).state1);
-      c.putCachedValue(inputs, cached);
+      c.putCachedValue(globalKey, 0, inputs, cached);
     }
     return cached;
   }

@@ -57,10 +57,12 @@ public class CachedValueGenerator {
     }
 
     final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
-    for (SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod :
-        onCalculateCachedValueMethods) {
+    for (int i = 0; i < onCalculateCachedValueMethods.size(); i++) {
+      final SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod =
+          onCalculateCachedValueMethods.get(i);
       builder.addTypeSpecDataHolder(
-          generateCachedValueMethodsAndClasses(specModel, onCalculateCachedValueMethod, runMode));
+          generateCachedValueMethodsAndClasses(
+              specModel, onCalculateCachedValueMethod, runMode, i));
     }
 
     return builder.build();
@@ -69,14 +71,16 @@ public class CachedValueGenerator {
   private static TypeSpecDataHolder generateCachedValueMethodsAndClasses(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
-      EnumSet<RunMode> runMode) {
+      EnumSet<RunMode> runMode,
+      int methodIndex) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     String cachedValueName = getAnnotatedName(onCalculateCachedValueMethod);
     List<CachedValueInput> inputParams = getCachedValueInputs(onCalculateCachedValueMethod);
 
     typeSpecDataHolder.addMethod(
-        createGetterMethod(specModel, onCalculateCachedValueMethod, inputParams, cachedValueName));
+        createGetterMethod(
+            specModel, onCalculateCachedValueMethod, inputParams, cachedValueName, methodIndex));
     typeSpecDataHolder.addType(createInputsClass(inputParams, cachedValueName, runMode));
 
     return typeSpecDataHolder.build();
@@ -114,7 +118,8 @@ public class CachedValueGenerator {
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
       List<CachedValueInput> inputParams,
-      String cachedValueName) {
+      String cachedValueName,
+      int methodIndex) {
     final TypeName cachedValueType = onCalculateCachedValueMethod.returnType;
     MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(getCachedValueGetterName(cachedValueName))
@@ -147,10 +152,11 @@ public class CachedValueGenerator {
     methodSpec
         .addCode(codeBlock.build())
         .addStatement(
-            "$T $L = ($T) c.getCachedValue(inputs)",
+            "$T $L = ($T) c.getCachedValue(globalKey, $L, inputs)",
             cachedValueType.box(),
             cachedValueName,
-            cachedValueType.box())
+            cachedValueType.box(),
+            methodIndex)
         .beginControlFlow("if ($L == null)", cachedValueName);
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
@@ -184,7 +190,7 @@ public class CachedValueGenerator {
 
     methodSpec
         .addCode(delegation.unindent().build())
-        .addStatement("c.putCachedValue(inputs, $L)", cachedValueName)
+        .addStatement("c.putCachedValue(globalKey, $L, inputs, $L)", methodIndex, cachedValueName)
         .endControlFlow()
         .addStatement("return $L", cachedValueName);
 

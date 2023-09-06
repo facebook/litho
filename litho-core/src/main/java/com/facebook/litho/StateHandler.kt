@@ -318,12 +318,12 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
     get() = _appliedStateUpdates
 
   @Synchronized
-  fun getCachedValue(cachedValueInputs: Any): Any? {
+  fun getCachedValue(globalKey: String, index: Int, cachedValueInputs: Any): Any? {
     return cachedValues?.get(cachedValueInputs)
   }
 
   @Synchronized
-  fun putCachedValue(cachedValueInputs: Any, cachedValue: Any?) {
+  fun putCachedValue(globalKey: String, index: Int, cachedValueInputs: Any, cachedValue: Any?) {
     if (cachedValues == null) {
       cachedValues = HashMap()
     }

@@ -270,15 +270,21 @@ public class TreeState {
     return updateStateTransitions;
   }
 
-  void putCachedValue(Object cachedValueInputs, Object cachedValue, boolean isNestedTree) {
+  void putCachedValue(
+      String globalKey,
+      int index,
+      Object cachedValueInputs,
+      Object cachedValue,
+      boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
-    stateHandler.putCachedValue(cachedValueInputs, cachedValue);
+    stateHandler.putCachedValue(globalKey, index, cachedValueInputs, cachedValue);
   }
 
   @Nullable
-  Object getCachedValue(Object cachedValueInputs, boolean isNestedTree) {
+  Object getCachedValue(
+      String globalKey, int index, Object cachedValueInputs, boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
-    return stateHandler.getCachedValue(cachedValueInputs);
+    return stateHandler.getCachedValue(globalKey, index, cachedValueInputs);
   }
 
   <T> KStateContainer createOrGetInitialHookState(

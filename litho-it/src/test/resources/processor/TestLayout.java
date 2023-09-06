@@ -504,10 +504,10 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     String globalKey = c.getGlobalKey();
     final CachedInputs inputs =
         new CachedInputs(globalKey, prop3, prop5, getStateContainerImpl(c).state1);
-    Integer cached = (Integer) c.getCachedValue(inputs);
+    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
     if (cached == null) {
       cached = TestLayoutSpec.onCalculateCached(prop3, prop5, getStateContainerImpl(c).state1);
-      c.putCachedValue(inputs, cached);
+      c.putCachedValue(globalKey, 0, inputs, cached);
     }
     return cached;
   }

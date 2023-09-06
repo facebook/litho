@@ -90,10 +90,21 @@ interface StateUpdater {
   ): StateContainer?
 
   /** Returns a Cached value that is accessible across all re-render operations. */
-  fun getCachedValue(cachedValueInputs: Any, isNestedTreeContext: Boolean): Any?
+  fun getCachedValue(
+      globalKey: String,
+      index: Int,
+      cachedValueInputs: Any,
+      isNestedTreeContext: Boolean
+  ): Any?
 
   /** Stores a Cached value that will be accessible across all re-render operations. */
-  fun putCachedValue(cachedValueInputs: Any, cachedValue: Any?, isNestedTreeContext: Boolean)
+  fun putCachedValue(
+      globalKey: String,
+      index: Int,
+      cachedValueInputs: Any,
+      cachedValue: Any?,
+      isNestedTreeContext: Boolean
+  )
 
   /**
    * Removes a state update that was previously enqueued if the state update has not been processed
