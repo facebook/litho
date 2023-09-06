@@ -36,6 +36,19 @@ typealias ClassValuePair<T> = Pair<Class<T>, T>
 @Suppress("FunctionNaming")
 inline fun TreePropProvider(
     vararg props: ClassValuePair<*>,
+    component: () -> Component
+): TreePropProviderImpl {
+  val resolvedComponent = component()
+  return TreePropProviderImpl(props, child = resolvedComponent)
+}
+
+/**
+ * Same as [TreePropProvider], but accepts a lambda that may return a nullable component, in which
+ * case it'll return null itself.
+ */
+@Suppress("FunctionNaming")
+inline fun NullableTreePropProvider(
+    vararg props: ClassValuePair<*>,
     component: () -> Component?
 ): TreePropProviderImpl? {
   val resolvedComponent = component() ?: return null
