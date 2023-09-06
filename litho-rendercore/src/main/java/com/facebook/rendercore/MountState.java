@@ -1156,10 +1156,6 @@ public class MountState implements MountDelegateTarget {
     }
 
     if (currentRenderUnit != renderUnit) {
-      if (isTracing) {
-        mTracer.beginSection("UpdateItem: " + renderUnit.getDescription());
-      }
-
       Integer traceIdentifier = generateTraceIdentifier(DebugEvent.RenderUnitUpdated);
       if (traceIdentifier != null) {
         HashMap<String, Object> attributes = new HashMap<>();
@@ -1176,6 +1172,10 @@ public class MountState implements MountDelegateTarget {
             attributes);
       }
 
+      if (isTracing) {
+        mTracer.beginSection("UpdateItem: " + renderUnit.getDescription());
+      }
+
       renderUnit.updateBinders(
           mContext,
           content,
@@ -1187,6 +1187,10 @@ public class MountState implements MountDelegateTarget {
           currentMountItem.isBound(),
           mTracer);
 
+      if (isTracing) {
+        mTracer.endSection();
+      }
+
       if (traceIdentifier != null) {
         endTrace(traceIdentifier);
       }
@@ -1197,7 +1201,13 @@ public class MountState implements MountDelegateTarget {
     // Update the bounds of the mounted content. This needs to be done regardless of whether
     // the RenderUnit has been updated or not since the mounted item might might have the same
     // size and content but a different position.
+    if (isTracing) {
+      mTracer.beginSection("UpdateBounds: " + renderUnit.getDescription());
+    }
     updateBoundsForMountedRenderTreeNode(renderTreeNode, currentMountItem, mountDelegate);
+    if (isTracing) {
+      mTracer.endSection();
+    }
 
     if (mountDelegate != null) {
       mountDelegate.endNotifyVisibleBoundsChangedSection();
@@ -1206,10 +1216,6 @@ public class MountState implements MountDelegateTarget {
     currentRenderUnit.onEndUpdateRenderUnit();
 
     if (isTracing) {
-      if (currentRenderUnit != renderUnit) {
-        mTracer.endSection(); // UPDATE
-      }
-
       mTracer.endSection();
     }
   }
