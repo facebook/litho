@@ -406,6 +406,12 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     result.setDiffNode(diff);
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("shouldRemeasure:" + getHeadComponent().getSimpleName());
+    }
+
     if (mMountable != null
         && diff.getMountable() != null
         && EquivalenceUtils.hasEquivalentFields(mMountable, diff.getMountable())) {
@@ -438,6 +444,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       }
 
       result.setCachedMeasuresValid(true);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -507,17 +517,28 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       LithoNode currentNode,
       @Nullable YogaNode parentNode) {
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
     LithoLayoutResult layoutResult = null;
     YogaNode yogaNode = null;
     if (currentNode.getTailComponentContext().shouldCacheLayouts()) {
       final LayoutCache layoutCache = context.getLayoutCache();
       LayoutResult cachedLayoutResult = layoutCache.get(currentNode);
       if (cachedLayoutResult != null) {
+
+        if (isTracing) {
+          ComponentsSystrace.beginSection(
+              "buildYogaTreeFromCache:" + currentNode.getHeadComponent().getSimpleName());
+        }
+
         // The situation that we can fully reuse the yoga tree
         final LithoLayoutResult lithoLayoutResult =
-            buildYogaTreeFromCache(context, (LithoLayoutResult) cachedLayoutResult);
+            buildYogaTreeFromCache(context, (LithoLayoutResult) cachedLayoutResult, isTracing);
 
         resetSizeIfNecessary(parentNode, lithoLayoutResult);
+
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
 
         return lithoLayoutResult;
       }
@@ -541,12 +562,21 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       if (writer == null) {
         return null;
       }
+      if (isTracing) {
+        ComponentsSystrace.beginSection(
+            "createYogaNode:" + currentNode.getHeadComponent().getSimpleName());
+      }
       // Transfer the layout props to YogaNode
       currentNode.writeToYogaNode(writer);
       yogaNode = writer.getNode();
       layoutResult = currentNode.createLayoutResult(yogaNode, writer);
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
-    yogaNode.setData(new Pair(context, layoutResult));
+
+    yogaNode.setData(new Pair<>(context, layoutResult));
     applyDiffNode(context.getRenderContext().lithoLayoutContext, currentNode, yogaNode, parentNode);
     saveLithoLayoutResultIntoCache(context, currentNode, layoutResult);
 
@@ -580,24 +610,43 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   private static LithoLayoutResult buildYogaTreeFromCache(
-      LayoutContext<LithoRenderContext> context, LithoLayoutResult cachedLayoutResult) {
+      final LayoutContext<LithoRenderContext> context,
+      final LithoLayoutResult cachedLayoutResult,
+      final boolean isTracing) {
+    if (isTracing) {
+      ComponentsSystrace.beginSection(
+          "cloneYogaNodeTree:" + cachedLayoutResult.getNode().getHeadComponent().getSimpleName());
+    }
     YogaNode clonedNode = cachedLayoutResult.getYogaNode().cloneWithChildren();
-    return cloneLayoutResultsRecursively(context, cachedLayoutResult, clonedNode);
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+    return cloneLayoutResultsRecursively(context, cachedLayoutResult, clonedNode, isTracing);
   }
 
   private static LithoLayoutResult cloneLayoutResultsRecursively(
-      LayoutContext<LithoRenderContext> context,
-      LithoLayoutResult cachedLayoutResult,
-      YogaNode clonedYogaNode) {
+      final LayoutContext<LithoRenderContext> context,
+      final LithoLayoutResult cachedLayoutResult,
+      final YogaNode clonedYogaNode,
+      final boolean isTracing) {
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("copyLayoutResult");
+    }
+
     LithoNode node = cachedLayoutResult.mNode;
     LithoLayoutResult result = cachedLayoutResult.copyLayoutResult(node, clonedYogaNode);
     clonedYogaNode.setData(new Pair(context, result));
     saveLithoLayoutResultIntoCache(context, node, result);
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
     for (int i = 0, count = cachedLayoutResult.getChildCount(); i < count; i++) {
       LithoLayoutResult child =
           cloneLayoutResultsRecursively(
-              context, cachedLayoutResult.getChildAt(i), clonedYogaNode.getChildAt(i));
+              context, cachedLayoutResult.getChildAt(i), clonedYogaNode.getChildAt(i), isTracing);
       result.addChild(child);
     }
     return result;
