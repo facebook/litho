@@ -228,12 +228,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return null;
   }
 
-  /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected @Nullable LithoNode resolve(
-      final ResolveContext resolveContext, final ComponentContext c) {
-    return Resolver.resolve(resolveContext, c, this);
-  }
-
   /**
    * Invokes the Component-specific resolve implementation, returning a ComponentResolveResult. The
    * ComponentResolveResult will have the {@link LithoNode} and {@link CommonProps} for the resolved

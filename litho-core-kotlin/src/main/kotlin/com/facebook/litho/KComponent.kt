@@ -115,9 +115,6 @@ abstract class KComponent : Component() {
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
-  final override fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? =
-      super.resolve(resolveContext, c)
-
   final override fun shouldUpdate(
       previous: Component,
       prevStateContainer: StateContainer?,

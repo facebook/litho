@@ -48,7 +48,7 @@ private constructor(
       children: MutableList<Component>? = null
   ) : this(null, alignContent, alignItems, justifyContent, wrap, reverse, children)
 
-  public override fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? {
+  private fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? {
     val node = LithoNode()
     node.flexDirection(if (reverse) YogaFlexDirection.ROW_REVERSE else YogaFlexDirection.ROW)
     alignItems?.let { node.alignItems(it) }

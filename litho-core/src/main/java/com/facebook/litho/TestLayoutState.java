@@ -225,7 +225,10 @@ public class TestLayoutState {
       if (component instanceof Column || component instanceof Row) {
         node = resolve(resolveContext, c, widthSpec, heightSpec, component);
       } else {
-        node = component.resolve(resolveContext, c);
+        node =
+            ((SpecGeneratedComponent) component)
+                .resolve(resolveContext, new ScopedComponentInfo(component, c, null), 0, 0, null)
+                .lithoNode;
       }
     } else if (isMountSpec(component)) {
       node = createInternalNode();
@@ -364,7 +367,10 @@ public class TestLayoutState {
         if (component instanceof Column || component instanceof Row) {
           node = resolve(resolveContext, c, widthSpec, heightSpec, component);
         } else {
-          node = component.resolve(resolveContext, c);
+          node =
+              ((SpecGeneratedComponent) component)
+                  .resolve(resolveContext, new ScopedComponentInfo(component, c, null), 0, 0, null)
+                  .lithoNode;
         }
       }
 
@@ -384,12 +390,7 @@ public class TestLayoutState {
         final Component root = renderResult.component;
 
         if (root != null) {
-          // TODO: (T57741374) this step is required because of a bug in redex.
-          if (root == component) {
-            node = root.resolve(resolveContext, c);
-          } else {
-            node = create(resolveContext, c, widthSpec, heightSpec, root);
-          }
+          node = create(resolveContext, c, widthSpec, heightSpec, root);
         } else {
           node = null;
         }

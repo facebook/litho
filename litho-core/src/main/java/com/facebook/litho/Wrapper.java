@@ -46,8 +46,7 @@ public final class Wrapper extends SpecGeneratedComponent {
     return this;
   }
 
-  @Override
-  protected @Nullable LithoNode resolve(ResolveContext resolveContext, ComponentContext c) {
+  private @Nullable LithoNode resolve(ResolveContext resolveContext, ComponentContext c) {
     if (delegate == null) {
       return null;
     }
