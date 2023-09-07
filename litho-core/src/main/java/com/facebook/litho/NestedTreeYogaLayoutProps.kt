@@ -41,10 +41,8 @@ class NestedTreeYogaLayoutProps(node: YogaNode) : YogaLayoutProps(node) {
   }
 
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
-    if (this.borderWidth == null) {
-      this.borderWidth = IntArray(Border.EDGE_COUNT)
-    }
-    Border.setEdgeValue(this.borderWidth, edge, borderWidth.toInt())
+    val borders = this.borderWidth ?: IntArray(Border.EDGE_COUNT).also { this.borderWidth = it }
+    Border.setEdgeValue(borders, edge, borderWidth.toInt())
   }
 
   private fun setPadding(edge: YogaEdge, width: Float) {

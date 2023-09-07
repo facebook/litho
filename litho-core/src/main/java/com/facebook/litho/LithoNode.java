@@ -356,7 +356,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public void border(Border border) {
-    border(border.mEdgeWidths, border.mEdgeColors, border.mRadius, border.mPathEffect);
+    border(border.edgeWidths, border.edgeColors, border.radius, border.pathEffect);
   }
 
   public void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect) {

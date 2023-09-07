@@ -176,9 +176,7 @@ class BorderEffect {
   @PublishedApi
   internal inline fun apply(builder: Border.Builder) {
     // apply dashed border effect.
-    if (this.intervals != null) {
-      builder.dashEffect(intervals, phase ?: 0f)
-    }
+    intervals?.let { builder.dashEffect(it, phase ?: 0f) }
 
     // apply path border effect.
     if (this.pathShape != null) {
