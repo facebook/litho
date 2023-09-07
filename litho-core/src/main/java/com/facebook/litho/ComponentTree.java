@@ -413,15 +413,12 @@ public class ComponentTree
 
   public static Builder create(
       ComponentContext context,
-      @Nullable Component root,
+      Component root,
       @Nullable LithoLifecycleProvider lifecycleProvider) {
     // TODO T88511125: Enforce non-null lithoLifecycleOwner here.
-    final Builder builder = new ComponentTree.Builder(context);
-    if (root != null) {
-      builder.withRoot(root);
-    }
-    builder.withLithoLifecycleProvider(lifecycleProvider);
-    return builder;
+    return new ComponentTree.Builder(context)
+        .withRoot(root)
+        .withLithoLifecycleProvider(lifecycleProvider);
   }
 
   protected ComponentTree(Builder builder) {
@@ -1881,7 +1878,7 @@ public class ComponentTree
    * @return builder for a nested ComponentTree.
    */
   public static ComponentTree.Builder createNestedComponentTree(
-      final ComponentContext parentContext, @Nullable Component component) {
+      final ComponentContext parentContext, Component component) {
 
     final SimpleNestedTreeLifecycleProvider lifecycleProvider =
         parentContext.getLifecycleProvider() == null
