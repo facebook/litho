@@ -531,7 +531,6 @@ public class LayoutState
   private static void collectResults(
       final ComponentContext parentContext,
       final LithoLayoutResult result,
-      final LithoNode node,
       final LayoutState layoutState,
       final LithoLayoutContext lithoLayoutContext,
       @Nullable RenderTreeNode parent,
@@ -542,6 +541,7 @@ public class LayoutState
       return;
     }
 
+    final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
 
@@ -605,7 +605,6 @@ public class LayoutState
       collectResults(
           immediateParentContext,
           nestedTree,
-          nestedTree.getNode(),
           layoutState,
           lithoLayoutContext,
           parent,
@@ -791,15 +790,7 @@ public class LayoutState
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = result.getChildCount(); i < size; i++) {
       final LithoLayoutResult child = result.getChildAt(i);
-      collectResults(
-          context,
-          child,
-          child.getNode(),
-          layoutState,
-          lithoLayoutContext,
-          parent,
-          diffNode,
-          hierarchy);
+      collectResults(context, child, layoutState, lithoLayoutContext, parent, diffNode, hierarchy);
     }
 
     layoutState.mCurrentX -= result.getX();
@@ -883,16 +874,15 @@ public class LayoutState
       }
 
       for (WorkingRangeContainer.Registration registration : registrations) {
+        InterStagePropsContainer interStagePropsContainer = null;
         if (component instanceof SpecGeneratedComponent) {
-          layoutState.mWorkingRangeContainer.registerWorkingRange(
-              registration.name,
-              registration.workingRange,
-              registration.scopedComponentInfo,
-              (InterStagePropsContainer) result.getLayoutData());
-        } else {
-          layoutState.mWorkingRangeContainer.registerWorkingRange(
-              registration.name, registration.workingRange, registration.scopedComponentInfo, null);
+          interStagePropsContainer = (InterStagePropsContainer) result.getLayoutData();
         }
+        layoutState.mWorkingRangeContainer.registerWorkingRange(
+            registration.name,
+            registration.workingRange,
+            registration.scopedComponentInfo,
+            interStagePropsContainer);
       }
     }
 
@@ -1212,15 +1202,7 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(
-        c,
-        root,
-        Preconditions.checkNotNull(node),
-        layoutState,
-        lithoLayoutContext,
-        parent,
-        null,
-        hierarchy);
+    collectResults(c, root, layoutState, lithoLayoutContext, parent, null, hierarchy);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
