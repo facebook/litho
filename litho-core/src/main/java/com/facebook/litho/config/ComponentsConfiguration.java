@@ -249,8 +249,6 @@ public class ComponentsConfiguration {
   public static boolean enableMountableInIG4A = false;
   public static boolean hostComponentAlwaysShouldUpdate = true;
 
-  public static boolean disableFlexDirectionInResolve = false;
-
   public static int useCachedLruCacheSize = 0;
 
   public static boolean shouldUseLruCacheForUseCached() {

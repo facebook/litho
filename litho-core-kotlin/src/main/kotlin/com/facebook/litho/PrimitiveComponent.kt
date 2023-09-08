@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.litho.ComponentsSystrace.beginSection
 import com.facebook.litho.ComponentsSystrace.endSection
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace
@@ -30,7 +29,6 @@ import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
-import com.facebook.yoga.YogaFlexDirection
 
 /**
  * Base class for Kotlin primitive components. This class encapsulates some of the Mount Spec APIs.
@@ -71,9 +69,6 @@ abstract class PrimitiveComponent : Component() {
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
     val node = LithoNode()
-    if (!ComponentsConfiguration.disableFlexDirectionInResolve) {
-      node.flexDirection(YogaFlexDirection.COLUMN)
-    }
     var commonProps: CommonProps? = null
     val isTracing = ComponentsSystrace.isTracing
 
