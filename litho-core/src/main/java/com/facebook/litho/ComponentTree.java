@@ -999,27 +999,6 @@ public class ComponentTree
     try {
       final boolean needsSyncLayout;
       synchronized (this) {
-        if (DEBUG_LOGS) {
-          debugLog(
-              "StartMeasure",
-              "WidthSpec: "
-                  + View.MeasureSpec.toString(widthSpec)
-                  + ", HeightSpec: "
-                  + View.MeasureSpec.toString(heightSpec)
-                  + ", isCompatibleWithCommittedLayout: "
-                  + isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)
-                  + ", isCompatibleWithMainThreadLayout: "
-                  + isCompatibleComponentAndSpec(
-                      mMainThreadLayoutState,
-                      mRoot != null ? mRoot.getId() : INVALID_ID,
-                      widthSpec,
-                      heightSpec)
-                  + ", hasSameSpecs: "
-                  + (mMainThreadLayoutState != null
-                      && mMainThreadLayoutState.getWidthSpec() == widthSpec
-                      && mMainThreadLayoutState.getHeightSpec() == heightSpec));
-        }
-
         if (mCommittedLayoutState != null
             && mCommittedLayoutState != mMainThreadLayoutState
             && isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)) {
@@ -1082,39 +1061,6 @@ public class ComponentTree
                 }
                 return Unit.INSTANCE;
               });
-
-          // TODO: Remove this after plugging the logs subscriber by default.
-          if (DEBUG_LOGS) {
-            if (mMainThreadLayoutState != null) {
-
-              int id = mRoot != null ? mRoot.getId() : INVALID_ID;
-              boolean doesSpecMatch = state.isCompatibleSpec(widthSpec, heightSpec);
-              final boolean doesIdMatch = state.getRootComponent().getId() == id;
-
-              String idMatchError = "";
-              if (!doesIdMatch && id != INVALID_ID) {
-                idMatchError = "\nid-matched: " + doesIdMatch;
-              }
-
-              String measurementError = "";
-              if (!doesSpecMatch) {
-                String measuredSize = "w: " + state.getWidth() + " h: " + state.getHeight();
-                String measuredSpec = specsToString(state.getWidthSpec(), state.getHeightSpec());
-                String requiredSpec = specsToString(widthSpec, heightSpec);
-                measurementError =
-                    "\nrequired-spec: "
-                        + requiredSpec
-                        + "\nmeasured-spec: "
-                        + measuredSpec
-                        + "\nmeasured-size: "
-                        + measuredSize;
-              }
-
-              debugLog("measure:", "needsSyncLayout: " + measurementError + idMatchError);
-            } else {
-              debugLog("measure:", "needsSyncLayout: no MainThreadLayout available");
-            }
-          }
         }
       }
 
