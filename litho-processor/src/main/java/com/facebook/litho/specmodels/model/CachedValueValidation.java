@@ -80,6 +80,7 @@ public class CachedValueValidation {
         onCalculateCachedValueMethods) {
       for (MethodParamModel param : onCalculateCachedValueMethod.methodParams) {
         if (!(MethodParamModelUtils.isComponentContextParam(param))
+            && !(MethodParamModelUtils.isSectionContextParam(param))
             && !(param instanceof TreePropModel)
             && !(param instanceof PropModel)
             && !(param instanceof StateParamModel)
