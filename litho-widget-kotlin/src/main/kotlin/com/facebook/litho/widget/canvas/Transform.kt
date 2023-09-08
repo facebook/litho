@@ -63,29 +63,9 @@ fun Transform(
 class TransformScope {
   val children: MutableList<CanvasTransformChildModel> = mutableListOf()
 
-  /**
-   * Inverts the specified transform.
-   *
-   * @param a The horizontal scaling. A value of 1 results in no scaling
-   * @param b The vertical skewing
-   * @param c The horizontal skewing
-   * @param d The vertical scaling. A value of 1 results in no scaling
-   * @param tx The horizontal translation (moving)
-   * @param ty The vertical translation (moving)
-   * @param block The lambda callback to issue transform commands
-   */
-  inline fun inverse(
-      a: Float = 1f,
-      b: Float = 0f,
-      c: Float = 0f,
-      d: Float = 1f,
-      tx: Float = 0f,
-      ty: Float = 0f,
-      block: TransformScope.() -> Unit
-  ) {
-    val scope = TransformScope()
-    block(scope)
-    children.add(CanvasInverseTransform(CanvasTransform(a, b, c, d, tx, ty, scope.children)))
+  /** Inverts the transform being built in the current scope. */
+  inline fun inverse() {
+    children.add(CanvasInverseTransform)
   }
 
   /**

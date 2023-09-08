@@ -21,6 +21,8 @@ import android.graphics.Matrix
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.primitive.canvas.values
 import com.facebook.primitive.utils.types.Point
+import com.facebook.rendercore.ErrorReporter
+import com.facebook.rendercore.LogLevel
 
 sealed interface CanvasTransformModel {
   fun applyTo(matrix: Matrix)
@@ -54,18 +56,25 @@ data class CanvasTransform(
     private val children: List<CanvasTransformChildModel>
 ) : CanvasTransformModel {
   override fun applyTo(matrix: Matrix) {
-    val matrixValues = matrix.values
+    matrix.postConcat(toMatrix())
+  }
+
+  private fun toMatrix(): Matrix {
+    val localMatrix = Matrix()
+    val matrixValues = localMatrix.values
     matrixValues[Matrix.MSCALE_X] = a
     matrixValues[Matrix.MSKEW_X] = c
     matrixValues[Matrix.MTRANS_X] = tx
     matrixValues[Matrix.MSKEW_Y] = b
     matrixValues[Matrix.MSCALE_Y] = d
     matrixValues[Matrix.MTRANS_Y] = ty
-    matrix.values = matrixValues
+    localMatrix.values = matrixValues
 
     for (i in children.indices) {
-      children[i].applyTo(matrix)
+      children[i].applyTo(localMatrix)
     }
+
+    return localMatrix
   }
 
   companion object {
@@ -74,20 +83,16 @@ data class CanvasTransform(
   }
 }
 
-/**
- * A definition for a child transform which inverts the specified transform.
- *
- * @property transform The transform that should be inverted
- * @throws IllegalArgumentException If the specified transform can't be inverted
- */
+/** A definition for a child transform which inverts the transform it is contained in. * */
 @SuppressLint("NotInvokedPrivateMethod")
 @DataClassGenerate
-data class CanvasInverseTransform(private val transform: CanvasTransformModel) :
-    CanvasTransformChildModel {
+object CanvasInverseTransform : CanvasTransformChildModel {
   override fun applyTo(matrix: Matrix) {
-    transform.applyTo(matrix)
     if (!matrix.invert(matrix)) {
-      throw IllegalArgumentException("Can't invert matrix: ${matrix.toShortString()} ")
+      ErrorReporter.report(
+          LogLevel.ERROR,
+          CanvasInverseTransform::class.qualifiedName,
+          "The matrix supplied cannot be inverted")
     }
   }
 }
