@@ -446,15 +446,7 @@ public class LithoView extends BaseMountingView {
       if (mInvalidStateLogParams != null) {
         mPreviousComponentSimpleName = mComponentTree.getSimpleName();
       }
-      if (componentTree != null
-          && componentTree.getLithoView() != null
-          && mInvalidStateLogParams != null
-          && mInvalidStateLogParams.containsKey(SET_ALREADY_ATTACHED_COMPONENT_TREE)) {
-        logSetAlreadyAttachedComponentTree(
-            mComponentTree,
-            componentTree,
-            mInvalidStateLogParams.get(SET_ALREADY_ATTACHED_COMPONENT_TREE));
-      }
+
       if (isAttached()) {
         mComponentTree.detach();
       }
@@ -805,25 +797,6 @@ public class LithoView extends BaseMountingView {
     messageBuilder.append(", view=");
     messageBuilder.append(LithoViewTestHelper.toDebugString(this));
     logError(messageBuilder.toString(), ZERO_HEIGHT_LOG, logParams);
-  }
-
-  private void logSetAlreadyAttachedComponentTree(
-      ComponentTree currentComponentTree,
-      ComponentTree newComponentTree,
-      ComponentLogParams logParams) {
-    final StringBuilder messageBuilder = new StringBuilder();
-    messageBuilder.append(logParams.logProductId);
-    messageBuilder.append("-");
-    messageBuilder.append(SET_ALREADY_ATTACHED_COMPONENT_TREE);
-    messageBuilder.append(", currentView=");
-    messageBuilder.append(LithoViewTestHelper.toDebugString(currentComponentTree.getLithoView()));
-    messageBuilder.append(", newComponent.LV=");
-    messageBuilder.append(LithoViewTestHelper.toDebugString(newComponentTree.getLithoView()));
-    messageBuilder.append(", currentComponent=");
-    messageBuilder.append(currentComponentTree.getSimpleName());
-    messageBuilder.append(", newComponent=");
-    messageBuilder.append(newComponentTree.getSimpleName());
-    logError(messageBuilder.toString(), SET_ALREADY_ATTACHED_COMPONENT_TREE, logParams);
   }
 
   private static void logError(String message, String categoryKey, ComponentLogParams logParams) {
