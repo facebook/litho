@@ -65,11 +65,9 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
-import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Primitive;
-import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -196,21 +194,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   protected long mPrivateFlags;
 
-  private @Nullable Mountable<?> mMountable;
-
   private @Nullable Primitive mPrimitive;
 
   protected LithoNode() {
     mDebugComponents = new HashSet<>();
     mId = sIdGenerator.getAndIncrement();
-  }
-
-  public @Nullable Mountable<?> getMountable() {
-    return mMountable;
-  }
-
-  public void setMountable(Mountable<?> mountable) {
-    mMountable = mountable;
   }
 
   public @Nullable Primitive getPrimitive() {
@@ -309,17 +297,16 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   /**
    * The goal of this method is to add the optional mount binders to the associated to this {@link
-   * LithoNode}. If we are dealing with either a Primitive or a Mountable, we will get the
-   * corresponding {@link RenderUnit} and associate the binders map as optional mount binders. For
-   * this reason, this method should be called as soon as their {@link RenderUnit} is created. In
-   * Litho, this happens in the Resolve phase, specifically when the mount content preparation is
-   * invoked.
+   * LithoNode}. If we are dealing with a Primitive, we will get the corresponding {@link
+   * RenderUnit} and associate the binders map as optional mount binders. For this reason, this
+   * method should be called as soon as their {@link RenderUnit} is created. In Litho, this happens
+   * in the Resolve phase, specifically when the mount content preparation is invoked.
    *
    * <p>For {@link MountSpecLithoRenderUnit} (e.g., the node is associated with a MountSpec, or the
-   * Primitive/Mountable mounts a Drawable and, therefore will need to be wrapped in a {@link
-   * ComponentHost} to work with the view binders), the addition of the optional mount binders is
-   * delayed until the moment of its creation. For that, we store these binders in the {@link
-   * LithoNode} and use them later.
+   * Primitive mounts a Drawable and, therefore will need to be wrapped in a {@link ComponentHost}
+   * to work with the view binders), the addition of the optional mount binders is delayed until the
+   * moment of its creation. For that, we store these binders in the {@link LithoNode} and use them
+   * later.
    */
   public void addCustomBinders(
       @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> bindersMap) {
@@ -330,12 +317,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mPrivateFlags |= PFLAG_BINDER_IS_SET;
 
     if (!LithoNode.willMountDrawable(this)) {
-      if (mMountable != null) {
-        for (RenderUnit.Binder<Object, Object, Object> binder : bindersMap.values()) {
-          mMountable.addOptionalMountBinders(
-              RenderUnit.DelegateBinder.createDelegateBinder(mMountable, binder));
-        }
-      } else if (mPrimitive != null) {
+      if (mPrimitive != null) {
         RenderUnit<?> primitiveRenderUnit = mPrimitive.getRenderUnit();
         for (RenderUnit.Binder<Object, Object, Object> binder : bindersMap.values()) {
           primitiveRenderUnit.addOptionalMountBinders(
@@ -412,20 +394,12 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       ComponentsSystrace.beginSection("shouldRemeasure:" + getHeadComponent().getSimpleName());
     }
 
-    if (mMountable != null
-        && diff.getMountable() != null
-        && EquivalenceUtils.hasEquivalentFields(mMountable, diff.getMountable())) {
-
-      result.setLayoutData(diff.getLayoutData());
-      result.setCachedMeasuresValid(true);
-
-    } else if (mPrimitive != null
+    if (mPrimitive != null
         && diff.getPrimitive() != null
         && mPrimitive.getLayoutBehavior().isEquivalentTo(diff.getPrimitive().getLayoutBehavior())) {
 
       result.setLayoutData(diff.getLayoutData());
       result.setCachedMeasuresValid(true);
-
     } else if (!Layout.shouldComponentUpdate(this, diff)) {
       final ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
       final ScopedComponentInfo diffNodeScopedComponentInfo =
@@ -1532,9 +1506,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * @return {@code true} iff the result will mount a view.
    */
   public static boolean willMountView(final LithoNode node) {
-    if (node.getMountable() != null) {
-      return node.getMountable().getRenderType() == RenderUnit.RenderType.VIEW;
-    } else if (node.getPrimitive() != null) {
+    if (node.getPrimitive() != null) {
       return node.getPrimitive().getRenderUnit().getRenderType() == RenderUnit.RenderType.VIEW;
     } else {
       final Component component = node.getTailComponent();
@@ -1543,9 +1515,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public static boolean willMountDrawable(final LithoNode node) {
-    if (node.getMountable() != null) {
-      return node.getMountable().getRenderType() == RenderUnit.RenderType.DRAWABLE;
-    } else if (node.getPrimitive() != null) {
+    if (node.getPrimitive() != null) {
       return node.getPrimitive().getRenderUnit().getRenderType() == RenderUnit.RenderType.DRAWABLE;
     } else {
       final Component component = node.getTailComponent();

@@ -20,7 +20,6 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.MountType.NONE;
-import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
@@ -37,7 +36,6 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
-import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Primitive;
 import java.util.List;
@@ -92,7 +90,7 @@ public class LithoNodeUtils {
         false,
         node.needsHostView(),
         node.willMountView(),
-        (node.needsHostView() || node.getMountable() != null || node.getPrimitive() != null)
+        (node.needsHostView() || node.getPrimitive() != null)
             ? null
             : node.getCustomBindersForMountSpec(),
         getLithoNodeDebugKey(node, OutputUnitType.CONTENT));
@@ -337,19 +335,6 @@ public class LithoNodeUtils {
     }
     if (nodeInfo != null && nodeInfo.hasTouchEventHandlers()) {
       flags |= LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS;
-    }
-
-    Mountable<?> mountable = node.getMountable();
-    if (mountable != null && isMountable(component)) {
-      return MountableLithoRenderUnit.create(
-          component,
-          commonDynamicProps,
-          context,
-          layoutOutputNodeInfo,
-          flags,
-          importantForAccessibility,
-          mountable,
-          debugKey);
     }
 
     Primitive primitive = node.getPrimitive();

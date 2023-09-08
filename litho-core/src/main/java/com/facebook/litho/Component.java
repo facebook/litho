@@ -223,8 +223,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   protected @Nullable PrepareResult prepare(ResolveContext resolveContext, ComponentContext c) {
-    // default implementation runs onPrepare(), MountableComponents will override to return a
-    // Mountable
+    // default implementation runs onPrepare(), PrimitiveComponents will override to return a
+    // Primitive
     return null;
   }
 
@@ -383,7 +383,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     NONE,
     DRAWABLE,
     VIEW,
-    MOUNTABLE, /* For internal use only. Used only by Kotlin MountableComponent */
     PRIMITIVE /* For internal use only. Used only by Kotlin PrimitiveComponent */
   }
 
@@ -795,10 +794,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
   static boolean isMountSpec(@Nullable Component component) {
     return (component != null && component.getMountType() != MountType.NONE);
-  }
-
-  static boolean isMountable(@Nullable Component component) {
-    return (component != null && component.getMountType() == MountType.MOUNTABLE);
   }
 
   static boolean isPrimitive(@Nullable Component component) {

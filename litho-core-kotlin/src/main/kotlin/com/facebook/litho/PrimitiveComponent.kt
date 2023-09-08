@@ -86,7 +86,7 @@ abstract class PrimitiveComponent : Component() {
     if (componentPrepareTraceIdentifier != null) {
       val attributes = HashMap<String, Any?>()
       attributes[LithoDebugEventAttributes.RunsOnMainThread] = ThreadUtils.isMainThread()
-      attributes[LithoDebugEventAttributes.Component] = getSimpleName()
+      attributes[LithoDebugEventAttributes.Component] = simpleName
       beginTrace(
           componentPrepareTraceIdentifier,
           com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared,
@@ -95,7 +95,7 @@ abstract class PrimitiveComponent : Component() {
     }
 
     if (isTracing) {
-      beginSection("prepare:" + getSimpleName())
+      beginSection("prepare:$simpleName")
     }
 
     val prepareResult: PrepareResult? =
@@ -109,9 +109,7 @@ abstract class PrimitiveComponent : Component() {
         }
 
     if (prepareResult != null) {
-      if (prepareResult.primitive != null) {
-        node.primitive = prepareResult.primitive
-      }
+      node.primitive = prepareResult.primitive
 
       Resolver.applyTransitionsAndUseEffectEntriesToNode(
           prepareResult.transitions, prepareResult.useEffectEntries, node)
@@ -158,7 +156,7 @@ abstract class PrimitiveComponent : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  final override fun isEquivalentTo(other: Component?, shouldCompareCommonProps: Boolean) =
+  final override fun isEquivalentTo(other: Component?, shouldCompareCommonProps: Boolean): Boolean =
       super.isEquivalentTo(other, shouldCompareCommonProps)
 
   final override fun getSimpleName(): String = super.getSimpleName()

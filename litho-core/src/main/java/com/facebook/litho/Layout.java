@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
-import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
 
 import android.annotation.TargetApi;
@@ -286,7 +285,7 @@ class Layout {
    * In order to reuse render unit, we have to make sure layout data which render unit relies on is
    * determined before collecting layout results. So we're doing three things here:<br>
    * 1. Resolve NestedTree.<br>
-   * 2. Measure Mountable and Primitive that were skipped due to fixed size.<br>
+   * 2. Measure Primitive that were skipped due to fixed size.<br>
    * 3. Invoke OnBoundsDefined for all MountSpecs.<br>
    */
   static void measurePendingSubtrees(
@@ -392,8 +391,8 @@ class Layout {
     final Component component = layoutNode.getTailComponent();
     final ComponentContext scopedContext = layoutNode.getTailComponentContext();
 
-    // return true for mountables and primitives to exit early
-    if (isMountable(component) || isPrimitive(component)) {
+    // return true for primitives to exit early
+    if (isPrimitive(component)) {
       return true;
     }
 

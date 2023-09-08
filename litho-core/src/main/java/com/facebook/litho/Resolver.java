@@ -333,7 +333,7 @@ public class Resolver {
     // 13. Add working ranges to the InternalNode.
     scopedComponentInfo.addWorkingRangeToNode(node);
 
-    /* 14. Add custom binders - the custom binders should be added to the RenderUnit as soon as they are created. For Primitives and Mountables, this happens during "prepare". However,
+    /* 14. Add custom binders - the custom binders should be added to the RenderUnit as soon as they are created. For Primitives, this happens during "prepare". However,
     for MountSpecs the common props are only initialized later, and some needed LithoNode for tail components is also filled later, and this is why we are moving the addition a bit below. */
     if (commonProps != null) {
       node.addCustomBinders(commonProps.getViewBinders());

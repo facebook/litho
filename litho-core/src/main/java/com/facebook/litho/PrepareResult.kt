@@ -16,21 +16,17 @@
 
 package com.facebook.litho
 
-import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.primitives.Primitive
 import kotlin.jvm.JvmField
 
 /**
- * The result of a [MountableComponent#prepare] or a [PrimitiveComponent#prepare] call. This will be
- * the Mountable/Primitive this component rendered to, potentially as well as other
- * non-Mountable/Primitive metadata that resulted from that call, such as transitions that should be
- * applied, as well as CommonProps for the component.
+ * The result of a [PrimitiveComponent#prepare] call. This will be the Primitive this component
+ * rendered to, potentially as well as other non-Primitive metadata that resulted from that call,
+ * such as transitions that should be applied, as well as CommonProps for the component.
  */
 class PrepareResult {
 
-  @JvmField val primitive: Primitive?
-
-  @JvmField val mountable: Mountable<*>?
+  @JvmField val primitive: Primitive
 
   @JvmField val transitions: List<Transition>?
 
@@ -39,26 +35,12 @@ class PrepareResult {
   @JvmField val commonProps: CommonProps?
 
   constructor(
-      mountable: Mountable<*>?,
-      transitions: List<Transition>?,
-      useEffectEntries: List<Attachable>?,
-      commonProps: CommonProps?
-  ) {
-    primitive = null
-    this.mountable = mountable
-    this.transitions = transitions
-    this.useEffectEntries = useEffectEntries
-    this.commonProps = commonProps
-  }
-
-  constructor(
-      primitive: Primitive?,
+      primitive: Primitive,
       transitions: List<Transition>?,
       useEffectEntries: List<Attachable>?,
       commonProps: CommonProps?
   ) {
     this.primitive = primitive
-    mountable = null
     this.transitions = transitions
     this.useEffectEntries = useEffectEntries
     this.commonProps = commonProps

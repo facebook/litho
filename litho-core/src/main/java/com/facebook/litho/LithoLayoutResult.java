@@ -32,7 +32,6 @@ import com.facebook.rendercore.FastMath;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MeasureResult;
-import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -96,12 +95,12 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     /*
 
      Ideally the layout data should be created when measure is called on the mount spec or
-     mountable component, but because of the current implementation of mount specs, and the way
+     primitive component, but because of the current implementation of mount specs, and the way
      Yoga works it a possibility that measure may not be called, and a MountSpec [may] require
      inter stage props, then it is necessary to have a non-null InterStagePropsContainer even if
      the values are uninitialised. Otherwise it will lead to NPEs.
 
-     This should get cleaned up once the implementation is general enough for MountableComponents.
+     This should get cleaned up once the implementation is general enough for PrimitiveComponents.
 
     */
     final Component component = node.getTailComponent();
@@ -571,27 +570,15 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
       }
       try {
-        final @Nullable Mountable<?> mountable = node.getMountable();
         final @Nullable Primitive primitive = node.getPrimitive();
-        // measure Mountable
-        if (mountable != null) {
-          context.setPreviousLayoutDataForCurrentNode(mLayoutData);
-          context.setLayoutContextExtraData(new LithoLayoutContextExtraData(mYogaNode));
-          delegate = mountable.calculateLayout(context, widthSpec, heightSpec);
-          width = delegate.getWidth();
-          height = delegate.getHeight();
-          layoutData = delegate.getLayoutData();
-
-        }
         // measure Primitive
-        else if (primitive != null) {
+        if (primitive != null) {
           context.setPreviousLayoutDataForCurrentNode(mLayoutData);
           context.setLayoutContextExtraData(new LithoLayoutContextExtraData(mYogaNode));
           delegate = primitive.calculateLayout((LayoutContext) context, widthSpec, heightSpec);
           width = delegate.getWidth();
           height = delegate.getHeight();
           layoutData = delegate.getLayoutData();
-
         }
         // measure Mount Spec
         else {
@@ -704,11 +691,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         mHeightSpec = MeasureSpecUtils.exactly(getHeight());
       }
 
-    } else if ((Component.isMountable(component) || Component.isPrimitive(component))
+    } else if (Component.isPrimitive(component)
         && (mDelegate == null || (mIsCachedLayout && hasSizeChanged))) {
 
-      // Check if we need to run measure for Mountable or Primitive that was skipped due to with
-      // fixed size
+      // Check if we need to run measure for Primitive that was skipped due to with fixed size
       final int width =
           getWidth()
               - getPaddingRight()

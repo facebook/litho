@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isMountSpec;
-import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
@@ -254,8 +253,7 @@ public class LayoutState
     final @Nullable MeasureResult measure;
     final boolean hasExactSize = !result.wasMeasured();
     if (!node.getTailComponentContext().shouldCacheLayouts()) {
-      if ((isMountable(node.getTailComponent()) || isPrimitive(node.getTailComponent()))
-          && hasExactSize) {
+      if (isPrimitive(node.getTailComponent()) && hasExactSize) {
         final int width =
             result.getWidth()
                 - result.getPaddingRight()
@@ -370,7 +368,7 @@ public class LayoutState
     int b = t + result.getHeight();
 
     if (useNodePadding) {
-      if (isMountable(unit.getComponent()) || isPrimitive(unit.getComponent())) {
+      if (isPrimitive(unit.getComponent())) {
         if (!isMountableView(unit)) {
           if (!hasExactSize) {
             l += result.getPaddingLeft() + result.getLayoutBorder(YogaEdge.LEFT);
@@ -749,7 +747,6 @@ public class LayoutState
       diffNode.setLastMeasuredWidth(result.getContentWidth());
       diffNode.setLastMeasuredHeight(result.getContentHeight());
       diffNode.setLayoutData(result.getLayoutData());
-      diffNode.setMountable(result.getNode().getMountable());
       diffNode.setPrimitive(result.getNode().getPrimitive());
       diffNode.setDelegate(result.getDelegate());
     }
@@ -1330,7 +1327,6 @@ public class LayoutState
         final Component component = getRenderUnit(treeNode).getComponent();
 
         if (!isSpecGeneratedComponentThatCanPreallocate(component)
-            && !isMountableThatCanPreallocate(treeNode)
             && !isPrimitiveThatCanPreallocate(treeNode)) {
           continue;
         }
@@ -1373,14 +1369,6 @@ public class LayoutState
     return treeNode.getRenderUnit() instanceof PrimitiveLithoRenderUnit
         && ((PrimitiveLithoRenderUnit) treeNode.getRenderUnit())
             .getPrimitiveRenderUnit()
-            .getContentAllocator()
-            .canPreallocate();
-  }
-
-  private boolean isMountableThatCanPreallocate(RenderTreeNode treeNode) {
-    return treeNode.getRenderUnit() instanceof MountableLithoRenderUnit
-        && ((MountableLithoRenderUnit) treeNode.getRenderUnit())
-            .getMountable()
             .getContentAllocator()
             .canPreallocate();
   }
@@ -1647,7 +1635,7 @@ public class LayoutState
 
     final int position = layoutState.mMountableOutputs.size();
     final Rect absoluteBounds = node.getAbsoluteBounds(new Rect());
-    final boolean shouldExcludeMountableFromIncrementalMount =
+    final boolean shouldExcludePrimitiveFromIncrementalMount =
         unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder.class) != null;
 
     final boolean shouldExcludeSpecGeneratedComponentFromIncrementalMount =
@@ -1660,13 +1648,13 @@ public class LayoutState
             position,
             absoluteBounds,
             shouldExcludeSpecGeneratedComponentFromIncrementalMount
-                || shouldExcludeMountableFromIncrementalMount,
+                || shouldExcludePrimitiveFromIncrementalMount,
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
 
     if (shouldExcludeSpecGeneratedComponentFromIncrementalMount
-        || shouldExcludeMountableFromIncrementalMount) {
+        || shouldExcludePrimitiveFromIncrementalMount) {
       layoutState.mHasComponentsExcludedFromIncrementalMount = true;
     }
 
