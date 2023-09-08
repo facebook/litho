@@ -54,7 +54,7 @@ data class CanvasTransform(
     private val tx: Float,
     private val ty: Float,
     private val children: List<CanvasTransformChildModel>
-) : CanvasTransformModel {
+) : CanvasTransformModel, CanvasTransformChildModel {
   override fun applyTo(matrix: Matrix) {
     matrix.postConcat(toMatrix())
   }
