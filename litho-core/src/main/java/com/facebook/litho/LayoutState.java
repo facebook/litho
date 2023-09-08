@@ -650,7 +650,12 @@ public class LayoutState
     final OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputAffinityGroup =
         layoutState.mCurrentLayoutOutputAffinityGroup;
 
-    layoutState.mCurrentTransitionId = LithoNodeUtils.createTransitionId(node);
+    if (parentContext.shouldReuseOutputs()) {
+      layoutState.mCurrentTransitionId = node.getTransitionId();
+    } else {
+      layoutState.mCurrentTransitionId = LithoNodeUtils.createTransitionId(node);
+    }
+
     layoutState.mCurrentLayoutOutputAffinityGroup =
         layoutState.mCurrentTransitionId != null
             ? new OutputUnitsAffinityGroup<AnimatableItem>()

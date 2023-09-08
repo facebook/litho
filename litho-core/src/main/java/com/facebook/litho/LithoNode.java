@@ -148,6 +148,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected @Nullable String mTransitionOwnerKey;
   protected @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private @Nullable ArrayList<Transition> mTransitions;
+
+  private TransitionId mTransitionId;
   private @Nullable Map<String, ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable ArrayList<Attachable> mAttachables;
@@ -468,6 +470,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
             || (parentDuplicatesParentState && isDuplicateParentStateEnabled());
 
     duplicateParentState(shouldDuplicateParentState);
+
+    mTransitionId = Preconditions.checkNotNull(LithoNodeUtils.createTransitionId(this));
 
     for (int i = 0; i < getChildCount(); i++) {
       getChildAt(i)
@@ -993,6 +997,13 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   public String getTransitionGlobalKey() {
     return getTailComponentKey();
+  }
+
+  public TransitionId getTransitionId() {
+    if (mTransitionId == null) {
+      LithoNodeUtils.createTransitionId(this);
+    }
+    return mTransitionId;
   }
 
   public @Nullable EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
