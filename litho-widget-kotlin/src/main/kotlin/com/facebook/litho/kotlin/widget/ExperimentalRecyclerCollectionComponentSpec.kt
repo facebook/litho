@@ -298,7 +298,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .layoutHandlerFactory(binderConfiguration.layoutHandlerFactory)
             .wrapContent(binderConfiguration.isWrapContent)
             .enableStableIds(binderConfiguration.enableStableIds)
-            .invalidStateLogParamsList(binderConfiguration.invalidStateLogParamsList)
             .threadPoolConfig(binderConfiguration.threadPoolConfiguration)
             .hscrollAsyncMode(binderConfiguration.hScrollAsyncMode)
             .isCircular(binderConfiguration.isCircular)

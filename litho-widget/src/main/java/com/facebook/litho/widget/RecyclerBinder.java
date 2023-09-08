@@ -50,7 +50,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.CollectionsUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentUtils;
@@ -140,7 +139,6 @@ public class RecyclerBinder
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
-  private final @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
@@ -462,7 +460,6 @@ public class RecyclerBinder
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private boolean enableStableIds;
-    private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private @Nullable LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean canMeasure;
@@ -667,15 +664,6 @@ public class RecyclerBinder
      */
     public Builder enableStableIds(boolean enableStableIds) {
       this.enableStableIds = enableStableIds;
-      return this;
-    }
-
-    /**
-     * Provide a list of {@link ComponentLogParams} that will be used to log invalid states in the
-     * LithoView, such as height being 0 while non-0 value was expected.
-     */
-    public Builder invalidStateLogParamsList(@Nullable List<ComponentLogParams> logParamsList) {
-      this.invalidStateLogParamsList = logParamsList;
       return this;
     }
 
@@ -1034,8 +1022,6 @@ public class RecyclerBinder
     mViewportManager =
         new ViewportManager(
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
-
-    mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
 
     if (builder.estimatedViewportCount != UNSET) {
       mEstimatedViewportCount = builder.estimatedViewportCount;
@@ -3917,7 +3903,6 @@ public class RecyclerBinder
       final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
       if (renderInfo.rendersComponent()) {
         final LithoView lithoView = holder.getLithoView();
-        lithoView.setInvalidStateLogParamsList(mInvalidStateLogParamsList);
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
         if (!componentTreeHolder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
@@ -4060,7 +4045,6 @@ public class RecyclerBinder
         mRecyclerBinderAdapterDelegate.onViewRecycled(holder);
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
-        lithoView.setInvalidStateLogParamsList(null);
         lithoView.resetMountStartupLoggingInfo();
       } else if (holder instanceof BaseViewHolder) {
         BaseViewHolder baseViewHolder = (BaseViewHolder) holder;

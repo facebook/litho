@@ -43,10 +43,6 @@ import java.util.Map;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
 public class LithoView extends BaseMountingView {
-
-  public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
-  public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
-      "LithoView:SetAlreadyAttachedComponentTree";
   private static final String LITHO_LIFECYCLE_FOUND = "lithoView:LithoLifecycleProviderFound";
 
   private @Nullable ComponentTree mComponentTree;
@@ -73,9 +69,6 @@ public class LithoView extends BaseMountingView {
   // TODO T14859077 Replace with proper solution
   private @Nullable ComponentTree mTemporaryDetachedComponentTree;
   private boolean mDoMeasureInLayout;
-  private @Nullable Map<String, ComponentLogParams> mInvalidStateLogParams;
-  private @Nullable String mPreviousComponentSimpleName;
-  private @Nullable String mNullComponentCause;
   private @Nullable MountStartupLoggingInfo mMountStartupLoggingInfo;
   public final int mViewAttributeFlags;
 
@@ -300,9 +293,6 @@ public class LithoView extends BaseMountingView {
       mDoMeasureInLayout = false;
     }
 
-    if (height == 0) {
-      maybeLogInvalidZeroHeight();
-    }
     final TreeMountInfo mountInfo = getMountInfo();
     final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
 
@@ -443,10 +433,6 @@ public class LithoView extends BaseMountingView {
         onBeforeSettingNewTree();
       }
 
-      if (mInvalidStateLogParams != null) {
-        mPreviousComponentSimpleName = mComponentTree.getSimpleName();
-      }
-
       if (isAttached()) {
         mComponentTree.detach();
       }
@@ -473,7 +459,6 @@ public class LithoView extends BaseMountingView {
         requestLayout();
       }
     }
-    mNullComponentCause = mComponentTree == null ? "set_CT" : null;
   }
 
   /** Change the root component synchronously. */
@@ -705,7 +690,6 @@ public class LithoView extends BaseMountingView {
       mComponentTree.release();
       clearDebugOverlay(this);
       mComponentTree = null;
-      mNullComponentCause = "release_CT";
     }
   }
 
@@ -746,65 +730,6 @@ public class LithoView extends BaseMountingView {
 
   public void resetMountStartupLoggingInfo() {
     mMountStartupLoggingInfo = null;
-  }
-
-  /** Register for particular invalid state logs. */
-  public void setInvalidStateLogParamsList(@Nullable List<ComponentLogParams> logParamsList) {
-    if (logParamsList == null) {
-      mInvalidStateLogParams = null;
-    } else {
-      mInvalidStateLogParams = new HashMap<>();
-      for (int i = 0, size = logParamsList.size(); i < size; i++) {
-        final ComponentLogParams logParams = logParamsList.get(i);
-        mInvalidStateLogParams.put(logParams.logType, logParams);
-      }
-    }
-  }
-
-  private void maybeLogInvalidZeroHeight() {
-    if (mComponentTree != null
-        && mComponentTree.getMainThreadLayoutState() != null
-        && mComponentTree.getMainThreadLayoutState().mRoot == null) {
-      // Valid case for 0-height, onCreateLayout of root component returned null.
-      return;
-    }
-
-    final ComponentLogParams logParams =
-        mInvalidStateLogParams == null ? null : mInvalidStateLogParams.get(ZERO_HEIGHT_LOG);
-    if (logParams == null) {
-      // surface didn't subscribe for this type of logging.
-      return;
-    }
-
-    final LayoutParams layoutParams = getLayoutParams();
-    final boolean isViewBeingRemovedInPreLayoutOfPredictiveAnim =
-        layoutParams instanceof LayoutManagerOverrideParams
-            && ((LayoutManagerOverrideParams) layoutParams).hasValidAdapterPosition();
-
-    if (isViewBeingRemovedInPreLayoutOfPredictiveAnim) {
-      return;
-    }
-
-    final StringBuilder messageBuilder = new StringBuilder();
-    messageBuilder.append(logParams.logProductId);
-    messageBuilder.append("-");
-    messageBuilder.append(ZERO_HEIGHT_LOG);
-    messageBuilder.append(", current=");
-    messageBuilder.append(
-        (mComponentTree == null ? "null_" + mNullComponentCause : mComponentTree.getSimpleName()));
-    messageBuilder.append(", previous=");
-    messageBuilder.append(mPreviousComponentSimpleName);
-    messageBuilder.append(", view=");
-    messageBuilder.append(LithoViewTestHelper.toDebugString(this));
-    logError(messageBuilder.toString(), ZERO_HEIGHT_LOG, logParams);
-  }
-
-  private static void logError(String message, String categoryKey, ComponentLogParams logParams) {
-    final ComponentsReporter.LogLevel logLevel =
-        logParams.failHarder
-            ? ComponentsReporter.LogLevel.FATAL
-            : ComponentsReporter.LogLevel.ERROR;
-    ComponentsReporter.emitMessage(logLevel, categoryKey, message, logParams.samplingFrequency);
   }
 
   @DoNotStrip

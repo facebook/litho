@@ -153,7 +153,6 @@ object CollectionRecyclerSpec {
                 layoutHandlerFactory(layoutHandlerFactory)
                 wrapContent(isWrapContent)
                 enableStableIds(enableStableIds)
-                invalidStateLogParamsList(invalidStateLogParamsList)
                 threadPoolConfig(threadPoolConfiguration)
                 hscrollAsyncMode(hScrollAsyncMode)
                 isCircular(isCircular)

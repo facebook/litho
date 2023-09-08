@@ -318,7 +318,6 @@ public class RecyclerCollectionComponentSpec {
             .layoutHandlerFactory(binderConfiguration.getLayoutHandlerFactory())
             .wrapContent(binderConfiguration.isWrapContent())
             .enableStableIds(binderConfiguration.getEnableStableIds())
-            .invalidStateLogParamsList(binderConfiguration.getInvalidStateLogParamsList())
             .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
             .isCircular(binderConfiguration.isCircular())

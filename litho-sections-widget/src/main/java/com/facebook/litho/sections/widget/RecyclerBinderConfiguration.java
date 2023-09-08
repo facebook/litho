@@ -17,7 +17,6 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
@@ -28,7 +27,6 @@ import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.rendercore.RunnableHandler;
-import java.util.List;
 
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
@@ -54,7 +52,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mRequestMountForPrefetchedItems;
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
-  @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
@@ -78,7 +75,6 @@ public class RecyclerBinderConfiguration {
       @Nullable ComponentsConfiguration componentsConfiguration,
       boolean circular,
       boolean wrapContent,
-      @Nullable List<ComponentLogParams> invalidStateLogParamsList,
       @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
@@ -101,7 +97,6 @@ public class RecyclerBinderConfiguration {
     mComponentsConfiguration = componentsConfiguration;
     mIsCircular = circular;
     mIsWrapContent = wrapContent;
-    mInvalidStateLogParamsList = invalidStateLogParamsList;
     mThreadPoolConfiguration = threadPoolConfiguration;
     mHasDynamicItemHeight = dynamicItemHeight;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
@@ -174,10 +169,6 @@ public class RecyclerBinderConfiguration {
     return mRequestMountForPrefetchedItems;
   }
 
-  public @Nullable List<ComponentLogParams> getInvalidStateLogParamsList() {
-    return mInvalidStateLogParamsList;
-  }
-
   public @Nullable RunnableHandler getChangeSetThreadHandler() {
     return mChangeSetThreadHandler;
   }
@@ -221,7 +212,6 @@ public class RecyclerBinderConfiguration {
     public static final int UNSET = -1;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
-    @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
     private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
     private @Nullable ComponentsConfiguration mComponentsConfiguration;
     private float mRangeRatio = DEFAULT_RANGE;
@@ -248,7 +238,6 @@ public class RecyclerBinderConfiguration {
 
     private Builder(RecyclerBinderConfiguration configuration) {
       this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
-      this.mInvalidStateLogParamsList = configuration.mInvalidStateLogParamsList;
       this.mThreadPoolConfiguration = configuration.mThreadPoolConfiguration;
       this.mComponentsConfiguration = configuration.mComponentsConfiguration;
       this.mRangeRatio = configuration.mRangeRatio;
@@ -279,12 +268,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder idleExecutor(@Nullable LayoutHandlerFactory idleExecutor) {
       mLayoutHandlerFactory = idleExecutor;
-      return this;
-    }
-
-    public Builder invalidStateLogParamsList(
-        @Nullable List<ComponentLogParams> invalidStateLogParamsList) {
-      mInvalidStateLogParamsList = invalidStateLogParamsList;
       return this;
     }
 
@@ -460,7 +443,6 @@ public class RecyclerBinderConfiguration {
           mComponentsConfiguration,
           mCircular,
           mWrapContent,
-          mInvalidStateLogParamsList,
           mThreadPoolConfiguration,
           mDynamicItemHeight,
           mUseBackgroundChangeSets,
