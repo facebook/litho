@@ -38,6 +38,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Primitive;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import java.util.List;
 import java.util.Map;
 
@@ -420,5 +421,16 @@ public class LithoNodeUtils {
       default:
         return null;
     }
+  }
+
+  static @Nullable TransitionId createTransitionId(@Nullable LithoNode node) {
+    if (node == null) {
+      return null;
+    }
+    return TransitionUtils.createTransitionId(
+        node.getTransitionKey(),
+        node.getTransitionKeyType(),
+        node.getTransitionOwnerKey(),
+        node.getTransitionGlobalKey());
   }
 }

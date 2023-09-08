@@ -219,7 +219,7 @@ public class LayoutState
     mRootComponentName = rootComponent.getSimpleName();
     mShouldGenerateDiffTree = isLayoutDiffingEnabled;
     mRoot = root;
-    mRootTransitionId = getTransitionIdForNode(root);
+    mRootTransitionId = LithoNodeUtils.createTransitionId(root);
     mIsAccessibilityEnabled = isAccessibilityEnabled;
   }
 
@@ -650,7 +650,7 @@ public class LayoutState
     final OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputAffinityGroup =
         layoutState.mCurrentLayoutOutputAffinityGroup;
 
-    layoutState.mCurrentTransitionId = getTransitionIdForNode(node);
+    layoutState.mCurrentTransitionId = LithoNodeUtils.createTransitionId(node);
     layoutState.mCurrentLayoutOutputAffinityGroup =
         layoutState.mCurrentTransitionId != null
             ? new OutputUnitsAffinityGroup<AnimatableItem>()
@@ -1865,17 +1865,6 @@ public class LayoutState
     }
 
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(stateHandler);
-  }
-
-  private static @Nullable TransitionId getTransitionIdForNode(@Nullable LithoNode result) {
-    if (result == null) {
-      return null;
-    }
-    return TransitionUtils.createTransitionId(
-        result.getTransitionKey(),
-        result.getTransitionKeyType(),
-        result.getTransitionOwnerKey(),
-        result.getTransitionGlobalKey());
   }
 
   @Override
