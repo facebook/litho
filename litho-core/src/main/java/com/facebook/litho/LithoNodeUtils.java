@@ -30,10 +30,13 @@ import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.RenderUnit;
@@ -432,5 +435,73 @@ public class LithoNodeUtils {
         node.getTransitionKeyType(),
         node.getTransitionOwnerKey(),
         node.getTransitionGlobalKey());
+  }
+
+  static @Nullable ViewAttributes createViewAttributes(
+      final LithoRenderUnit unit,
+      final Component component,
+      final @Nullable LithoLayoutResult result,
+      final @OutputUnitType int type,
+      final @ImportantForAccessibility int importantForAccessibility,
+      final boolean disableBgFgOutputs) {
+
+    final @Nullable NodeInfo nodeInfo = unit.getNodeInfo();
+    boolean willMountView;
+
+    if (type == OutputUnitType.HOST) {
+      willMountView = true;
+    } else if (type == OutputUnitType.CONTENT) {
+      willMountView = result != null && result.getNode().willMountView();
+    } else {
+      willMountView = false;
+    }
+
+    if (nodeInfo == null && !willMountView) {
+      return null;
+    }
+
+    final ViewAttributes attrs = new ViewAttributes();
+    attrs.setHostSpec(Component.isHostSpec(component));
+    attrs.setComponentName(component.getSimpleName());
+    attrs.setImportantForAccessibility(importantForAccessibility);
+    attrs.setDisableDrawableOutputs(disableBgFgOutputs);
+
+    if (nodeInfo != null) {
+      nodeInfo.copyInto(attrs);
+    }
+
+    if (result != null) {
+      LithoNode lithoNode = result.getNode();
+      // The following only applies if bg/fg outputs are NOT disabled:
+      // backgrounds and foregrounds should not be set for HostComponents
+      // because those will either be set on the content output or explicit outputs
+      // will be created for backgrounds and foreground.
+      if (disableBgFgOutputs || !attrs.isHostSpec()) {
+        attrs.setBackground(result.getBackground());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          attrs.setForeground(lithoNode.getForeground());
+        }
+      }
+      if (result.isPaddingSet()) {
+        attrs.setPadding(
+            new Rect(
+                result.getPaddingLeft(),
+                result.getPaddingTop(),
+                result.getPaddingRight(),
+                result.getPaddingBottom()));
+      }
+      attrs.setLayoutDirection(result.getResolvedLayoutDirection());
+      attrs.setLayerType(lithoNode.getLayerType());
+      attrs.setLayoutPaint(lithoNode.getLayerPaint());
+      if (attrs.isHostSpec()) {
+        if (lithoNode.hasStateListAnimatorResSet()) {
+          attrs.setStateListAnimatorRes(lithoNode.getStateListAnimatorRes());
+        } else {
+          attrs.setStateListAnimator(lithoNode.getStateListAnimator());
+        }
+      }
+    }
+
+    return attrs;
   }
 }

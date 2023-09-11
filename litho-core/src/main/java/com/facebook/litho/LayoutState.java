@@ -27,7 +27,6 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.graphics.Rect;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -74,7 +73,7 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(ComponentContext, LithoLayoutResult, LithoNode, LayoutState, LithoLayoutContext,
+ * #collectResults(ComponentContext, LithoLayoutResult, LayoutState, LithoLayoutContext,
  * RenderTreeNode, DiffNode, DebugHierarchy.Node)} which prepares the before-mentioned outputs based
  * on the provided {@link LithoNode} for later use in {@link MountState}.
  *
@@ -1675,61 +1674,17 @@ public class LayoutState
 
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id);
     }
-    boolean willMountView;
-    if (type == OutputUnitType.HOST) {
-      willMountView = true;
-    } else if (type == OutputUnitType.CONTENT) {
-      willMountView = result != null && result.getNode().willMountView();
-    } else {
-      willMountView = false;
-    }
 
-    if (unit.getNodeInfo() != null || willMountView) {
-      final ViewAttributes attrs = new ViewAttributes();
-      final boolean disableBgFgOutputs =
-          layoutState.mContext.mLithoConfiguration.mComponentsConfiguration
-              .isShouldDisableBgFgOutputs();
-      attrs.setHostSpec(Component.isHostSpec(component));
-      attrs.setComponentName(component.getSimpleName());
-      attrs.setImportantForAccessibility(unit.getImportantForAccessibility());
-      attrs.setDisableDrawableOutputs(disableBgFgOutputs);
+    final @Nullable ViewAttributes attrs =
+        LithoNodeUtils.createViewAttributes(
+            unit,
+            component,
+            result,
+            type,
+            unit.getImportantForAccessibility(),
+            layoutState.mContext.getComponentsConfiguration().isShouldDisableBgFgOutputs());
 
-      if (unit.getNodeInfo() != null) {
-        unit.getNodeInfo().copyInto(attrs);
-      }
-      if (result != null) {
-        LithoNode lithoNode = result.getNode();
-        // The following only applies if bg/fg outputs are NOT disabled:
-        // backgrounds and foregrounds should not be set for HostComponents
-        // because those will either be set on the content output or explicit outputs
-        // will be created for backgrounds and foreground.
-        if (disableBgFgOutputs || !attrs.isHostSpec()) {
-          attrs.setBackground(result.getBackground());
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            attrs.setForeground(lithoNode.getForeground());
-          }
-        }
-        if (result.isPaddingSet()) {
-          attrs.setPadding(
-              new Rect(
-                  result.getPaddingLeft(),
-                  result.getPaddingTop(),
-                  result.getPaddingRight(),
-                  result.getPaddingBottom()));
-        }
-        attrs.setLayoutDirection(result.getResolvedLayoutDirection());
-        attrs.setLayerType(lithoNode.getLayerType());
-        attrs.setLayoutPaint(lithoNode.getLayerPaint());
-        if (attrs.isHostSpec()) {
-          if (lithoNode.hasStateListAnimatorResSet()) {
-            attrs.setStateListAnimatorRes(lithoNode.getStateListAnimatorRes());
-          } else {
-            attrs.setStateListAnimator(lithoNode.getStateListAnimator());
-          }
-        }
-      }
-      layoutState.mRenderUnitsWithViewAttributes.put(id, attrs);
-    }
+    layoutState.mRenderUnitsWithViewAttributes.put(id, attrs);
 
     final AnimatableItem animatableItem =
         createAnimatableItem(unit, absoluteBounds, type, transitionId);
