@@ -14,30 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import static com.facebook.litho.EventDispatcherUtils.dispatchOnFocusChanged;
-
-import android.view.View;
-import androidx.annotation.Nullable;
+import android.view.View
 
 /** Focus change listener that triggers its underlying event handler. */
-class ComponentFocusChangeListener implements View.OnFocusChangeListener {
+class ComponentFocusChangeListener : View.OnFocusChangeListener {
 
-  private EventHandler<FocusChangedEvent> mEventHandler;
+  var eventHandler: EventHandler<FocusChangedEvent>? = null
 
-  @Override
-  public void onFocusChange(View view, boolean b) {
-    if (mEventHandler != null) {
-      dispatchOnFocusChanged(mEventHandler, view, b);
-    }
-  }
-
-  EventHandler<FocusChangedEvent> getEventHandler() {
-    return mEventHandler;
-  }
-
-  void setEventHandler(@Nullable EventHandler<FocusChangedEvent> eventHandler) {
-    mEventHandler = eventHandler;
+  override fun onFocusChange(view: View, b: Boolean) {
+    eventHandler?.let { handler -> EventDispatcherUtils.dispatchOnFocusChanged(handler, view, b) }
   }
 }
