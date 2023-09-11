@@ -83,6 +83,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private @Nullable ClickableSpanListener mSpanListener;
   private @Nullable TouchableSpanListener mTouchableSpanListener;
   private @Nullable String mContextLogTag;
+  private boolean mRtl;
 
   /**
    * This should be lazy loaded so that it is only created whenever it is needed. In most cases we
@@ -357,7 +358,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         -1,
         -1,
         0f,
-        null);
+        null,
+        false);
   }
 
   public void mount(
@@ -376,7 +378,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int highlightStartOffset,
       int highlightEndOffset,
       float clickableSpanExpandedOffset,
-      String contextLogTag) {
+      String contextLogTag,
+      boolean rtl) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
     mClipToBounds = clipToBounds;
@@ -391,6 +394,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
     mClickableSpanExpandedOffset = clickableSpanExpandedOffset;
+    mRtl = rtl;
     if (userColor != 0) {
       mColorStateList = null;
       mUserColor = userColor;
@@ -459,6 +463,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mTextOffsetOnTouchListener = null;
     mColorStateList = null;
     mUserColor = 0;
+    mRtl = false;
     if (mImageSpans != null) {
       for (int i = 0, size = mImageSpans.length; i < size; i++) {
         Drawable drawable = mImageSpans[i].getDrawable();
@@ -548,9 +553,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
        * direction, and {@link Layout#getLineMax} gives the extent *plus* the leading margin, so we
        * can figure out the rest from there.
        */
-      final boolean rtl = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-      left = rtl ? mLayout.getWidth() - mLayout.getLineMax(line) : mLayout.getParagraphLeft(line);
-      right = rtl ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
+      left = mRtl ? mLayout.getWidth() - mLayout.getLineMax(line) : mLayout.getParagraphLeft(line);
+      right = mRtl ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
     }
 
     if (x < left || x > right) {

@@ -16,6 +16,8 @@
 
 package com.facebook.litho.widget;
 
+import static android.content.res.Configuration.SCREENLAYOUT_LAYOUTDIR_MASK;
+import static android.content.res.Configuration.SCREENLAYOUT_LAYOUTDIR_RTL;
 import static androidx.customview.widget.ExploreByTouchHelper.INVALID_ID;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -956,7 +958,8 @@ public class TextSpec {
         highlightStartOffset,
         highlightEndOffset,
         clickableSpanExpandedOffset,
-        c.getLogTag());
+        c.getLogTag(),
+        isRtl(c.getAndroidContext()));
 
     if (processedText instanceof MountableCharSequence) {
       ((MountableCharSequence) processedText).onMount(textDrawable);
@@ -1236,5 +1239,10 @@ public class TextSpec {
         break;
     }
     return alignment;
+  }
+
+  private static boolean isRtl(Context context) {
+    return (context.getResources().getConfiguration().screenLayout & SCREENLAYOUT_LAYOUTDIR_MASK)
+        == SCREENLAYOUT_LAYOUTDIR_RTL;
   }
 }
