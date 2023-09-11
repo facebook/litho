@@ -17,12 +17,18 @@
 package com.facebook.rendercore
 
 import android.content.res.Configuration
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
 
 abstract class ResourceCache protected constructor(private val configuration: Configuration) {
 
   abstract operator fun <T> get(key: Int): T?
 
   abstract operator fun set(key: Int, value: Any)
+
+  abstract fun getDrawable(key: Int, resources: Resources): Drawable?
+
+  abstract fun setDrawable(key: Int, value: Drawable)
 
   companion object {
     private var latest: ResourceCache? = null

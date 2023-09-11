@@ -250,7 +250,22 @@ public class ResourceResolver {
     if (resId == 0) {
       return null;
     }
-    return ContextCompat.getDrawable(mAndroidContext, resId);
+
+    if (RenderCoreConfig.isDrawableCacheEnabled && mResourceCache != null) {
+      final Drawable cachedDrawable = mResourceCache.getDrawable(resId, mResources);
+      if (cachedDrawable != null) {
+        return cachedDrawable;
+      }
+
+      final Drawable result = ContextCompat.getDrawable(mAndroidContext, resId);
+      if (result != null) {
+        mResourceCache.setDrawable(resId, result);
+      }
+
+      return result;
+    } else {
+      return ContextCompat.getDrawable(mAndroidContext, resId);
+    }
   }
 
   @Nullable
