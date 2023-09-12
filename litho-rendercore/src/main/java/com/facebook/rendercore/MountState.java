@@ -190,68 +190,6 @@ public class MountState implements MountDelegateTarget {
         final MountItem currentMountItem =
             mIdToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
         boolean isMounted = currentMountItem != null;
-
-        // There is a bug (T99579422) happening where we try to incorrectly update an already
-        // mounted render unit.
-
-        // TODO: T101249557
-        if (isMounted) {
-          final RenderUnit currentRenderUnit = currentMountItem.getRenderUnit();
-          boolean needsRecovery = false;
-          // The old render unit we try to update is the root host which should not be updated
-          // That's why we start from index 1.
-          if (currentRenderUnit.getId() != renderTreeNode.getRenderUnit().getId()) {
-            needsRecovery = true;
-            ErrorReporter.getInstance()
-                .report(
-                    LogLevel.ERROR,
-                    TAG,
-                    "The current render unit id does not match the new one. "
-                        + " index: "
-                        + i
-                        + " mountableOutputCounts: "
-                        + renderTree.getMountableOutputCount()
-                        + " currentRenderUnitId: "
-                        + currentRenderUnit.getId()
-                        + " newRenderUnitId: "
-                        + renderTreeNode.getRenderUnit().getId(),
-                    null,
-                    0,
-                    null);
-          }
-
-          // The new render unit is not the same type as the old one.
-          if (!currentRenderUnit
-              .getRenderContentType()
-              .equals(renderTreeNode.getRenderUnit().getRenderContentType())) {
-            needsRecovery = true;
-            ErrorReporter.getInstance()
-                .report(
-                    LogLevel.ERROR,
-                    TAG,
-                    "Trying to update a MountItem with different ContentType. "
-                        + "index: "
-                        + i
-                        + " currentRenderUnitId: "
-                        + currentRenderUnit.getId()
-                        + " newRenderUnitId: "
-                        + renderTreeNode.getRenderUnit().getId()
-                        + " currentRenderUnitContentType: "
-                        + currentRenderUnit.getRenderContentType()
-                        + " newRenderUnitContentType: "
-                        + renderTreeNode.getRenderUnit().getRenderContentType(),
-                    null,
-                    0,
-                    null);
-          }
-          if (needsRecovery) {
-            recreateMountedItemMap(previousRenderTree);
-            // reset the loop to start over.
-            i = 1;
-            continue;
-          }
-        }
-
         if (!mEnsureParentMounted) {
           mountLoopLogBuilder.append(
               String.format(
@@ -313,37 +251,6 @@ public class MountState implements MountDelegateTarget {
       }
       mIsMounting = false;
     }
-  }
-
-  /**
-   * This method will unmount everything and recreate the mIdToMountedItemMap.
-   *
-   * @param previousRenderTree
-   */
-  private void recreateMountedItemMap(RenderTree previousRenderTree) {
-    // We keep a pointer to the rootHost.
-    MountItem rootHost = null;
-    final long[] keysToUnmount = new long[mIdToMountedItemMap.size()];
-    // We unmount all everything but the root host.
-    for (int j = 0, mountedItems = mIdToMountedItemMap.size(); j < mountedItems; j++) {
-      keysToUnmount[j] = mIdToMountedItemMap.keyAt(j);
-    }
-    for (long keyAt : keysToUnmount) {
-      final MountItem mountItem = mIdToMountedItemMap.get(keyAt);
-      if (mountItem != null) {
-        if (mountItem.getRenderUnit().getId() == ROOT_HOST_ID) {
-          rootHost = mountItem;
-          mIdToMountedItemMap.remove(keyAt);
-        } else if (mountItem.getRenderUnit().getId() != keyAt) {
-          // This checks if the item was in the wrong position in the map. If it was we need to
-          // unmount that item.
-          unmountItemRecursively(keyAt);
-        } else {
-          unmountItemRecursively(mountItem.getRenderTreeNode().getRenderUnit().getId());
-        }
-      }
-    }
-    mIdToMountedItemMap.put(ROOT_HOST_ID, rootHost);
   }
 
   @Override
