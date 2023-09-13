@@ -44,7 +44,7 @@ internal enum class FlexboxDimenField : StyleItemField {
   POSITION_VERTICAL,
 }
 
-/** Enums for [FlexboxFloatStyleItem]. */
+/** Enums for [FloatStyleItem]. */
 @PublishedApi
 internal enum class FlexboxFloatField : StyleItemField {
   FLEX,
@@ -91,7 +91,7 @@ internal data class FlexboxDimenStyleItem(
   }
 }
 
-/** Common style item for all float styles. See note on [FlexboxDimenField] about this pattern. */
+/** Common style item for all float styles. See note on [FlexboxFloatField] about this pattern. */
 @PublishedApi
 internal class FloatStyleItem(override val field: FlexboxFloatField, override val value: Float) :
     StyleItem<Float> {
@@ -106,7 +106,7 @@ internal class FloatStyleItem(override val field: FlexboxFloatField, override va
   }
 }
 
-/** Common style item for all object styles. See note on [FlexboxDimenField] about this pattern. */
+/** Common style item for all object styles. See note on [FlexboxObjectField] about this pattern. */
 @PublishedApi
 internal class FlexboxObjectStyleItem(
     override val field: FlexboxObjectField,
