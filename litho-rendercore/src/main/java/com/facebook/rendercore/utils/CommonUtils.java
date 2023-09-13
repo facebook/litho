@@ -27,7 +27,8 @@ public class CommonUtils {
    */
   public static String getSectionNameForTracing(Class<?> kclass) {
     final String name = kclass.getName();
-    return name.length() > 80 ? kclass.getSimpleName() : "<cls>" + name + "</cls>";
+    final String simpleName = kclass.getSimpleName();
+    return simpleName.length() < 5 ? "<cls>" + name + "</cls>" : kclass.getSimpleName();
   }
 
   /** Utility to re-throw exceptions. */

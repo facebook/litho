@@ -29,6 +29,7 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RenderUnit.DelegateBinder;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.primitives.PrimitiveRenderUnit;
+import com.facebook.rendercore.utils.CommonUtils;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
@@ -192,8 +193,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
 
   @Override
   public String getDescription() {
-    // TODO: have a similar API for Primitive.
-    return getComponent().getSimpleName();
+    return CommonUtils.getSectionNameForTracing(getClass());
   }
 
   @Override

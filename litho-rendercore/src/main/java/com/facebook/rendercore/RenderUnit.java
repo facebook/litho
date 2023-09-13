@@ -140,11 +140,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   protected void onEndUpdateRenderUnit() {}
 
   public String getDescription() {
-    // This API is primarily used for tracing, and the section names have a char limit of 127.
-    // If the class name exceeds that it will be replace by the simple name.
-    // In a release build the class name will be minified, so it is unlikely to hit the limit.
-    final String name = getClass().getName();
-    return name.length() > 80 ? getClass().getSimpleName() : "<cls>" + name + "</cls>";
+    return CommonUtils.getSectionNameForTracing(getClass());
   }
 
   /** Returns extra data associated with this RenderUnit for given key. */
