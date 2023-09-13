@@ -146,10 +146,6 @@ public class LayoutState
   private int mCurrentX;
   private int mCurrentY;
 
-  // Holds the current host marker in the layout tree.
-  private long mCurrentHostMarker = -1L;
-  private int mCurrentHostOutputPosition = -1;
-
   private final boolean mShouldGenerateDiffTree;
   private int mComponentTreeId = -1;
   private final int mId;
@@ -470,7 +466,6 @@ public class LayoutState
     final TestOutput output = new TestOutput();
     output.setTestKey(Preconditions.checkNotNull(node.getTestKey()));
     output.setBounds(l, t, r, b);
-    output.setHostMarker(layoutState.mCurrentHostMarker);
     if (renderUnit != null) {
       output.setLayoutOutputId(renderUnit.getId());
     }
@@ -642,9 +637,6 @@ public class LayoutState
 
     final boolean needsHostView = hostRenderUnit != null;
 
-    final long currentHostMarker = layoutState.mCurrentHostMarker;
-    final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
-
     final TransitionId currentTransitionId = layoutState.mCurrentTransitionId;
     final OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputAffinityGroup =
         layoutState.mCurrentLayoutOutputAffinityGroup;
@@ -668,9 +660,6 @@ public class LayoutState
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
       parent = layoutState.mMountableOutputs.get(hostLayoutPosition);
-
-      layoutState.mCurrentHostMarker = parent.getRenderUnit().getId();
-      layoutState.mCurrentHostOutputPosition = hostLayoutPosition;
     }
 
     // 2. Add background if defined.
@@ -925,13 +914,6 @@ public class LayoutState
       }
     }
 
-    // All children for the given host have been added, restore the previous
-    // host, level, and duplicate parent state value in the recursive queue.
-    if (layoutState.mCurrentHostMarker != currentHostMarker) {
-      layoutState.mCurrentHostMarker = currentHostMarker;
-      layoutState.mCurrentHostOutputPosition = currentHostOutputPosition;
-    }
-
     addCurrentAffinityGroupToTransitionMapping(layoutState);
     layoutState.mCurrentTransitionId = currentTransitionId;
     layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup;
@@ -1183,9 +1165,6 @@ public class LayoutState
         break;
     }
 
-    // Reset markers before collecting layout outputs.
-    layoutState.mCurrentHostMarker = -1;
-
     if (root == null) {
       return;
     }
@@ -1196,8 +1175,6 @@ public class LayoutState
       hierarchy = node != null ? getDebugHierarchy(null, node) : null;
       addRootHostRenderTreeNode(layoutState, root, hierarchy);
       parent = layoutState.mMountableOutputs.get(0);
-      layoutState.mCurrentHostMarker = parent.getRenderUnit().getId();
-      layoutState.mCurrentHostOutputPosition = 0;
     }
 
     if (isTracing) {
