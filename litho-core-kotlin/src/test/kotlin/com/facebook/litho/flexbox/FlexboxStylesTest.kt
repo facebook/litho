@@ -421,6 +421,38 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun `position when left and right set with percent is respected`() {
+    val left = 10f
+    val top = 20f
+    val right = 30f
+    val bottom = 40f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .positionPercent(left = left, top = top, right = right, bottom = bottom)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    left.toInt(),
+                    top.toInt(),
+                    (100 - left - right).toInt(),
+                    (100 - top - bottom).toInt())
+              }
+            })
+  }
+
+  @Test
   fun position_whenStartEndSet_isRespected() {
     val start = 10
     val top = 20
@@ -448,6 +480,38 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun `position when start and end set with percent is respected`() {
+    val start = 10f
+    val top = 20f
+    val end = 30f
+    val bottom = 40f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .positionPercent(start = start, top = top, end = end, bottom = bottom)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    start.toInt(),
+                    top.toInt(),
+                    (100 - start - end).toInt(),
+                    (100 - top - bottom).toInt())
+              }
+            })
+  }
+
+  @Test
   fun position_whenAllSet_isRespected() {
     val all = 10
 
@@ -467,6 +531,31 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(all, all, 100 - 2 * all, 100 - 2 * all) }
+            })
+  }
+
+  @Test
+  fun `position when all set with percent is respected`() {
+    val all = 10f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .positionPercent(all = all)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(all.toInt(), all.toInt(), (100 - 2 * all).toInt(), (100 - 2 * all).toInt())
+              }
             })
   }
 
@@ -497,6 +586,36 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun `position when horizontal set with percent is respected`() {
+    val horizontal = 10f
+    val all = 50f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .positionPercent(all = all, horizontal = horizontal)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    horizontal.toInt(),
+                    (100 - all).toInt(),
+                    (100 - 2 * horizontal).toInt(),
+                    (100 - 2 * all).toInt())
+              }
+            })
+  }
+
+  @Test
   fun position_whenVerticalSet_isRespected() {
     val vertical = 10
     val all = 50
@@ -517,6 +636,36 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(all, vertical, 100 - 2 * all, 100 - 2 * vertical) }
+            })
+  }
+
+  @Test
+  fun `position when vertical set with percent is respected`() {
+    val vertical = 10f
+    val all = 50f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .positionPercent(all = all, vertical = vertical)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    all.toInt(),
+                    vertical.toInt(),
+                    (100 - 2 * all).toInt(),
+                    (100 - 2 * vertical).toInt())
+              }
             })
   }
 

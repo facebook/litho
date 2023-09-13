@@ -52,6 +52,15 @@ internal enum class FlexboxFloatField : StyleItemField {
   FLEX_SHRINK,
   FLEX_BASIS_PERCENT,
   ASPECT_RATIO,
+  POSITION_ALL_PERCENT,
+  POSITION_START_PERCENT,
+  POSITION_TOP_PERCENT,
+  POSITION_END_PERCENT,
+  POSITION_BOTTOM_PERCENT,
+  POSITION_LEFT_PERCENT,
+  POSITION_RIGHT_PERCENT,
+  POSITION_HORIZONTAL_PERCENT,
+  POSITION_VERTICAL_PERCENT,
 }
 
 /** Enums for [FlexboxObjectStyleItem]. */
@@ -102,6 +111,18 @@ internal class FloatStyleItem(override val field: FlexboxFloatField, override va
       FlexboxFloatField.FLEX_SHRINK -> commonProps.flexShrink(value)
       FlexboxFloatField.FLEX_BASIS_PERCENT -> commonProps.flexBasisPercent(value)
       FlexboxFloatField.ASPECT_RATIO -> commonProps.aspectRatio(value)
+      FlexboxFloatField.POSITION_ALL_PERCENT -> commonProps.positionPercent(YogaEdge.ALL, value)
+      FlexboxFloatField.POSITION_START_PERCENT -> commonProps.positionPercent(YogaEdge.START, value)
+      FlexboxFloatField.POSITION_TOP_PERCENT -> commonProps.positionPercent(YogaEdge.TOP, value)
+      FlexboxFloatField.POSITION_END_PERCENT -> commonProps.positionPercent(YogaEdge.END, value)
+      FlexboxFloatField.POSITION_BOTTOM_PERCENT ->
+          commonProps.positionPercent(YogaEdge.BOTTOM, value)
+      FlexboxFloatField.POSITION_LEFT_PERCENT -> commonProps.positionPercent(YogaEdge.LEFT, value)
+      FlexboxFloatField.POSITION_RIGHT_PERCENT -> commonProps.positionPercent(YogaEdge.RIGHT, value)
+      FlexboxFloatField.POSITION_HORIZONTAL_PERCENT ->
+          commonProps.positionPercent(YogaEdge.HORIZONTAL, value)
+      FlexboxFloatField.POSITION_VERTICAL_PERCENT ->
+          commonProps.positionPercent(YogaEdge.VERTICAL, value)
     }
   }
 }
@@ -218,6 +239,32 @@ inline fun Style.position(
         right?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_RIGHT, it) } +
         vertical?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_VERTICAL, it) } +
         horizontal?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_HORIZONTAL, it) }
+
+/**
+ * Used in conjunction with [positionType] to define how a component should be positioned in its
+ * parent, with a float value between 0 and 100.
+ */
+inline fun Style.positionPercent(
+    all: Float? = null,
+    start: Float? = null,
+    top: Float? = null,
+    end: Float? = null,
+    bottom: Float? = null,
+    left: Float? = null,
+    right: Float? = null,
+    vertical: Float? = null,
+    horizontal: Float? = null
+): Style =
+    this +
+        all?.let { FloatStyleItem(FlexboxFloatField.POSITION_ALL_PERCENT, it) } +
+        start?.let { FloatStyleItem(FlexboxFloatField.POSITION_START_PERCENT, it) } +
+        top?.let { FloatStyleItem(FlexboxFloatField.POSITION_TOP_PERCENT, it) } +
+        end?.let { FloatStyleItem(FlexboxFloatField.POSITION_END_PERCENT, it) } +
+        bottom?.let { FloatStyleItem(FlexboxFloatField.POSITION_BOTTOM_PERCENT, it) } +
+        left?.let { FloatStyleItem(FlexboxFloatField.POSITION_LEFT_PERCENT, it) } +
+        right?.let { FloatStyleItem(FlexboxFloatField.POSITION_RIGHT_PERCENT, it) } +
+        vertical?.let { FloatStyleItem(FlexboxFloatField.POSITION_VERTICAL_PERCENT, it) } +
+        horizontal?.let { FloatStyleItem(FlexboxFloatField.POSITION_HORIZONTAL_PERCENT, it) }
 
 /** See docs in [position]. */
 inline fun Style.positionType(positionType: YogaPositionType): Style =
