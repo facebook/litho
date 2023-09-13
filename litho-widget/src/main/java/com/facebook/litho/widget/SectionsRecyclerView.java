@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import kotlin.Unit;
 
 /**
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
@@ -181,6 +182,15 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+
+    DebugEventDispatcher.dispatch(
+        DebugEvent.ViewOnLayout + ":start",
+        () -> "-1",
+        attrs -> {
+          attrs.put(DebugEventAttribute.Id, hashCode());
+          attrs.put(DebugEventAttribute.Name, "SectionsRecyclerView");
+          return Unit.INSTANCE;
+        });
 
     final @Nullable Integer traceId =
         DebugEventDispatcher.generateTraceIdentifier(DebugEvent.ViewOnLayout);
