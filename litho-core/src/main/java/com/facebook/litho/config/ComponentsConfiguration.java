@@ -244,9 +244,6 @@ public class ComponentsConfiguration {
   public static boolean enableSeparateAnimatorBinder = false;
 
   public static boolean enableMountableRecyclerInGroups = false;
-
-  public static boolean enableMountableInIGDS = false;
-  public static boolean enableMountableInIG4A = false;
   public static boolean hostComponentAlwaysShouldUpdate = true;
 
   public static int useCachedLruCacheSize = 0;
