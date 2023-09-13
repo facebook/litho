@@ -55,6 +55,8 @@ object ComponentWrapperTesterSpec {
           .invisibleHandler(ComponentWrapperTester.onInvisible(c))
           .unfocusedHandler(ComponentWrapperTester.onUnfocusedVisibleEvent(c))
           .fullImpressionHandler(ComponentWrapperTester.onFullImpressionVisibleEvent(c))
+          .widthPx(10)
+          .heightPx(10)
           .build()
 
   @JvmStatic
