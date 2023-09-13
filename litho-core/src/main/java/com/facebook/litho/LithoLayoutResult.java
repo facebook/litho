@@ -635,8 +635,9 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     final Component component = getNode().getTailComponent();
 
     final boolean hasSizeChanged =
-        YogaMeasureOutput.getWidth(mLastMeasuredSize) != getWidth()
-            || YogaMeasureOutput.getHeight(mLastMeasuredSize) != getHeight();
+        (mLastMeasuredSize == Long.MIN_VALUE)
+            || (YogaMeasureOutput.getWidth(mLastMeasuredSize) != getWidth()
+                || YogaMeasureOutput.getHeight(mLastMeasuredSize) != getHeight());
 
     if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
 
