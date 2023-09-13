@@ -510,9 +510,6 @@ public class Resolver {
       final List<ScopedComponentInfo> collectedComponentsThatNeedPreviousRenderData) {
 
     // TODO(T143986616): optimise traversal for reused nodes
-    if (node instanceof NestedTreeHolder) {
-      return;
-    }
     for (int i = 0; i < node.getChildCount(); i++) {
       collectOutputs(
           node.getChildAt(i),
@@ -521,13 +518,16 @@ public class Resolver {
           collectedComponentsThatNeedPreviousRenderData);
     }
 
+    // We'll deduplicate attachable in [AttachDetachHandler]
     final @Nullable List<Attachable> attachables = node.getAttachables();
     if (attachables != null) {
       collectedAttachables.addAll(attachables);
     }
 
     final ComponentContext c = node.getTailComponentContext();
-    if (c.shouldReuseOutputs() && c.areTransitionsEnabled()) {
+    if (c.shouldReuseOutputs()
+        && c.areTransitionsEnabled()
+        && !(node instanceof NestedTreeHolder)) {
       // collect transitions
       final @Nullable List<Transition> transitions = node.getTransitions();
       if (transitions != null) {
