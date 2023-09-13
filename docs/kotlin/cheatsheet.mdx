@@ -41,7 +41,7 @@ The following cheatsheet provides a set of links for the migration of individual
 | `@OnLoadStyle`                             | [`PrimitiveComponentScope.render()`](../mainconcepts/primitivecomponents/primitive-component.mdx) |
 | Accessibility                              | [Accessibility](../accessibility/accessibility.mdx) (see: [`AccessibilityStyles`](https://fburl.com/code/3ikzp6c7))|
 | `hasChildLithoViews`                       | [`doesMountRenderTreeHosts`](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/HorizontalScroll.kt#L111)|
-| `isPureRender`                             | No equivalent. Ignore when converting. |
+| `isPureRender`                             | Not needed in Kotlin APIs, `isPureRender=true` is the only mode. |
 | `RecyclerCollectionComponent`              | [`LazyList` / `LazyGrid`](lazycollections/lazycollections-sections-migration.mdx/#replace-the-recyclercollectioncomponent) |
 | `@GroupSectionSpec`                        | [`LazyList` / `LazyGrid`](lazycollections/lazycollections-sections-migration.mdx/#migrate-the-groupsectionspec) |
 | `SingleComponentSection`                   | [`LazyListScope.child()`](lazycollections/lazycollections-sections-migration.mdx/#replace-the-singlecomponentsections) |
