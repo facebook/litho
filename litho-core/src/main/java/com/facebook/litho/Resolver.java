@@ -510,7 +510,9 @@ public class Resolver {
       final List<ScopedComponentInfo> collectedComponentsThatNeedPreviousRenderData) {
 
     // TODO(T143986616): optimise traversal for reused nodes
-
+    if (node instanceof NestedTreeHolder) {
+      return;
+    }
     for (int i = 0; i < node.getChildCount(); i++) {
       collectOutputs(
           node.getChildAt(i),
