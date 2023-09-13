@@ -36,31 +36,6 @@ import com.facebook.rendercore.primitives.utils.hasEquivalentFields
  */
 abstract class PrimitiveComponent : Component() {
 
-  final override fun prepare(resolveContext: ResolveContext, c: ComponentContext): PrepareResult {
-    val primitiveComponentScope = PrimitiveComponentScope(c, resolveContext)
-    val lithoPrimitive = primitiveComponentScope.render()
-
-    primitiveComponentScope.cleanUp()
-
-    var commonProps: CommonProps? = null
-    if (lithoPrimitive.style != null) {
-      commonProps = CommonProps()
-      lithoPrimitive.style.applyCommonProps(c, commonProps)
-    }
-
-    if (primitiveComponentScope.shouldExcludeFromIncrementalMount) {
-      lithoPrimitive.primitive.renderUnit.addAttachBinder(
-          RenderUnit.DelegateBinder.createDelegateBinder(
-              lithoPrimitive.primitive.renderUnit, ExcludeFromIncrementalMountBinder.INSTANCE))
-    }
-
-    return PrepareResult(
-        lithoPrimitive.primitive,
-        primitiveComponentScope.transitions,
-        primitiveComponentScope.useEffectEntries,
-        commonProps)
-  }
-
   final override fun resolve(
       resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
@@ -93,24 +68,35 @@ abstract class PrimitiveComponent : Component() {
       beginSection("prepare:$simpleName")
     }
 
-    val prepareResult: PrepareResult? =
-        try {
-          prepare(resolveContext, scopedComponentInfo.context)
-        } finally {
-          if (prepareEvent != null && componentsLogger != null) {
-            componentsLogger.logPerfEvent(prepareEvent)
-          }
-          componentPrepareTraceIdentifier?.let { endTrace(it) }
-        }
+    try {
+      val c = scopedComponentInfo.context
+      val primitiveComponentScope = PrimitiveComponentScope(c, resolveContext)
+      val lithoPrimitive = primitiveComponentScope.render()
 
-    if (prepareResult != null) {
-      node.primitive = prepareResult.primitive
+      primitiveComponentScope.cleanUp()
+
+      if (lithoPrimitive.style != null) {
+        commonProps = CommonProps()
+        lithoPrimitive.style.applyCommonProps(c, commonProps)
+      }
+
+      if (primitiveComponentScope.shouldExcludeFromIncrementalMount) {
+        lithoPrimitive.primitive.renderUnit.addAttachBinder(
+            RenderUnit.DelegateBinder.createDelegateBinder(
+                lithoPrimitive.primitive.renderUnit, ExcludeFromIncrementalMountBinder.INSTANCE))
+      }
+
+      node.primitive = lithoPrimitive.primitive
 
       Resolver.applyTransitionsAndUseEffectEntriesToNode(
-          prepareResult.transitions, prepareResult.useEffectEntries, node)
-
-      commonProps = prepareResult.commonProps
+          primitiveComponentScope.transitions, primitiveComponentScope.useEffectEntries, node)
+    } finally {
+      if (prepareEvent != null && componentsLogger != null) {
+        componentsLogger.logPerfEvent(prepareEvent)
+      }
+      componentPrepareTraceIdentifier?.let { endTrace(it) }
     }
+
     if (isTracing) {
       // end of prepare
       endSection()
