@@ -1661,7 +1661,13 @@ public class LayoutState
             unit.getImportantForAccessibility(),
             layoutState.mContext.getComponentsConfiguration().isShouldDisableBgFgOutputs());
 
-    layoutState.mRenderUnitsWithViewAttributes.put(id, attrs);
+    if (layoutState.mContext.getComponentsConfiguration().shouldReuseOutputs()) {
+      if (attrs != null) {
+        layoutState.mRenderUnitsWithViewAttributes.put(id, attrs);
+      }
+    } else {
+      layoutState.mRenderUnitsWithViewAttributes.put(id, attrs);
+    }
 
     final AnimatableItem animatableItem =
         createAnimatableItem(unit, absoluteBounds, type, transitionId);
