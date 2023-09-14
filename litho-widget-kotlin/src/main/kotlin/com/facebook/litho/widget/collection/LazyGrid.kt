@@ -25,12 +25,14 @@ import com.facebook.litho.Style
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 
 /** A scrollable collection of components arranged in a grid */
 @Suppress("FunctionName")
 inline fun ResourcesScope.LazyGrid(
     @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
     @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+    snapToStartOffset: Dimen = 0.dp,
     reverse: Boolean = false,
     columns: Int = 2,
     itemAnimator: RecyclerView.ItemAnimator? = null,
@@ -77,6 +79,7 @@ inline fun ResourcesScope.LazyGrid(
           CollectionLayouts.Grid(
               orientation = orientation,
               snapMode = snapMode,
+              snapToStartOffset = snapToStartOffset.toPixels(resourceResolver),
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,

@@ -26,12 +26,14 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 
 /** A scrollable collection of components arranged linearly */
 @Suppress("FunctionName")
 inline fun ResourcesScope.LazyList(
     @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
     @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+    snapToStartOffset: Dimen = 0.dp,
     reverse: Boolean = false,
     crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
     mainAxisWrapContent: Boolean = false,
@@ -84,6 +86,7 @@ inline fun ResourcesScope.LazyList(
           CollectionLayouts.Linear(
               orientation = orientation,
               snapMode = snapMode,
+              snapToStartOffset = snapToStartOffset.toPixels(resourceResolver),
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,

@@ -41,9 +41,16 @@ public class StartSnapHelper extends SnapHelper {
   @Nullable private LayoutManager mHorizontalHelperLayoutManager;
   @Nullable private RecyclerView mRecyclerView;
   private final int mFlingOffset;
+  private final int mOffset;
 
   public StartSnapHelper(int flingOffset) {
     mFlingOffset = flingOffset;
+    mOffset = 0;
+  }
+
+  public StartSnapHelper(int flingOffset, int offset) {
+    mFlingOffset = flingOffset;
+    mOffset = offset;
   }
 
   @Nullable
@@ -178,7 +185,7 @@ public class StartSnapHelper extends SnapHelper {
       OrientationHelper helper) {
     final int childStart = helper.getDecoratedStart(targetView);
     final int containerStart = helper.getStartAfterPadding();
-    return childStart - containerStart;
+    return childStart - containerStart - mOffset;
   }
 
   /**

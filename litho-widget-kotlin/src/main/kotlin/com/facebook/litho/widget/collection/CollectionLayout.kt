@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget.collection
 
+import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
@@ -109,6 +110,7 @@ internal object CollectionLayouts {
   fun Linear(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+      @Px snapToStartOffset: Int = 0,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
@@ -129,7 +131,9 @@ internal object CollectionLayouts {
               mainAxisWrapContent = mainAxisWrapContent,
               preallocationPerMountContentEnabled = preallocationPerMountContentEnabled) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            ListRecyclerConfiguration.create().snapMode(snapMode)
+            ListRecyclerConfiguration.create()
+                .snapMode(snapMode)
+                .snapToStartOffset(snapToStartOffset)
       }
 
   /**
@@ -146,6 +150,7 @@ internal object CollectionLayouts {
   fun Grid(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+      @Px snapToStartOffset: Int = 0,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
@@ -162,7 +167,10 @@ internal object CollectionLayouts {
               isReconciliationEnabled = isReconciliationEnabled,
               preallocationPerMountContentEnabled = preallocationPerMountContentEnabled) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            GridRecyclerConfiguration.create().snapMode(snapMode).numColumns(columns)
+            GridRecyclerConfiguration.create()
+                .snapMode(snapMode)
+                .snapToStartOffset(snapToStartOffset)
+                .numColumns(columns)
       }
 
   /**
