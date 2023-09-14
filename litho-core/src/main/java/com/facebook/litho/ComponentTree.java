@@ -34,18 +34,20 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Breadcrumb;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.CurrentHeightSpec;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.CurrentRootId;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.CurrentSizeConstraint;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.CurrentWidthSpec;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.HasMainThreadLayoutState;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.IdMatch;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateHeightSpec;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStatePrettySizeSpecs;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateRootId;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateWidthSpec;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasureHeightSpec;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasurePrettySizeSpecs;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasureWidthSpec;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.RootId;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeConstraint;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeSpecsMatch;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Async;
+import static com.facebook.rendercore.debug.DebugEventAttribute.HeightSpec;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
+import static com.facebook.rendercore.debug.DebugEventAttribute.WidthSpec;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
@@ -1042,21 +1044,21 @@ public class ComponentTree
 
                   if (!doesSpecMatch) {
                     attributes.put(SizeSpecsMatch, false);
-                    attributes.put(MainThreadLayoutStateWidthSpec, state.getWidthSpec());
-                    attributes.put(MainThreadLayoutStateHeightSpec, state.getHeightSpec());
+                    attributes.put(CurrentWidthSpec, state.getWidthSpec());
+                    attributes.put(CurrentHeightSpec, state.getHeightSpec());
                     attributes.put(
-                        MainThreadLayoutStatePrettySizeSpecs,
+                        CurrentSizeConstraint,
                         specsToString(state.getWidthSpec(), state.getHeightSpec()));
 
-                    attributes.put(MeasureWidthSpec, widthSpec);
-                    attributes.put(MeasureHeightSpec, heightSpec);
-                    attributes.put(MeasurePrettySizeSpecs, specsToString(widthSpec, heightSpec));
+                    attributes.put(WidthSpec, widthSpec);
+                    attributes.put(HeightSpec, heightSpec);
+                    attributes.put(SizeConstraint, specsToString(widthSpec, heightSpec));
                   }
 
                   if (!doesIdsMatch) {
                     attributes.put(IdMatch, false);
                     attributes.put(RootId, id);
-                    attributes.put(MainThreadLayoutStateRootId, mainThreadLayoutStateRootId);
+                    attributes.put(CurrentRootId, mainThreadLayoutStateRootId);
                   }
                 }
                 return Unit.INSTANCE;
@@ -1459,8 +1461,7 @@ public class ComponentTree
           attributes.put(
               LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
           attributes.put(LithoDebugEventAttributes.Attribution, attribution);
-          attributes.put(
-              LithoDebugEventAttributes.StateUpdateType, isSynchronous ? "sync" : "async");
+          attributes.put(Async, !isSynchronous);
           return Unit.INSTANCE;
         });
   }
@@ -2031,14 +2032,14 @@ public class ComponentTree
         LogLevel.VERBOSE,
         attrs -> {
           final String attribution = AttributionUtils.getAttribution(extraAttribution);
-          attrs.put(LithoDebugEventAttributes.RenderSource, getSource(source));
+          attrs.put(Source, getSource(source));
           attrs.put(LithoDebugEventAttributes.RenderExecutionMode, getExecutionMode(source));
           attrs.put(LithoDebugEventAttributes.Attribution, attribution);
           attrs.put(LithoDebugEventAttributes.Root, root != null ? root.getSimpleName() : "null");
           attrs.put(LithoDebugEventAttributes.Forced, wasForced);
           if (widthSpec != SIZE_UNINITIALIZED || heightSpec != SIZE_UNINITIALIZED) {
-            attrs.put(DebugEventAttribute.widthSpec, getMeasureSpecDescription(widthSpec));
-            attrs.put(DebugEventAttribute.heightSpec, getMeasureSpecDescription(heightSpec));
+            attrs.put(WidthSpec, getMeasureSpecDescription(widthSpec));
+            attrs.put(HeightSpec, getMeasureSpecDescription(heightSpec));
           }
           return Unit.INSTANCE;
         });

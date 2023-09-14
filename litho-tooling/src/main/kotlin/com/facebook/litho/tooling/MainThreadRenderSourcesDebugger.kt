@@ -20,12 +20,12 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes.Breadcrumb
+import com.facebook.litho.debug.LithoDebugEventAttributes.CurrentRootId
+import com.facebook.litho.debug.LithoDebugEventAttributes.CurrentSizeConstraint
 import com.facebook.litho.debug.LithoDebugEventAttributes.HasMainThreadLayoutState
-import com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStatePrettySizeSpecs
-import com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateRootId
-import com.facebook.litho.debug.LithoDebugEventAttributes.MeasurePrettySizeSpecs
 import com.facebook.litho.debug.LithoDebugEventAttributes.Root
 import com.facebook.litho.debug.LithoDebugEventAttributes.RootId
+import com.facebook.litho.debug.LithoDebugEventAttributes.SizeConstraint
 import com.facebook.rendercore.debug.DebugEvent
 import com.facebook.rendercore.debug.DebugEventSubscriber
 
@@ -55,9 +55,9 @@ class MainThreadRenderSourcesDebugger(
         breadcrumb,
         MainThreadRenderSource.MainThreadLayoutStateMismatch(
             root = event.attribute(Root),
-            mainThreadLayoutStateSizeSpecs = event.attribute(MainThreadLayoutStatePrettySizeSpecs),
-            mainThreadLayoutRootId = event.attribute(MainThreadLayoutStateRootId),
-            measureSizeSpecs = event.attribute(MeasurePrettySizeSpecs),
+            mainThreadLayoutStateSizeSpecs = event.attribute(CurrentSizeConstraint),
+            mainThreadLayoutRootId = event.attribute(CurrentRootId),
+            measureSizeSpecs = event.attribute(SizeConstraint),
             rootId = event.attribute(RootId),
             breadcrumb = breadcrumb))
   }
