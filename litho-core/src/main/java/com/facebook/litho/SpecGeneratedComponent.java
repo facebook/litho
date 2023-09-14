@@ -257,7 +257,6 @@ public abstract class SpecGeneratedComponent extends Component
       Integer componentPrepareTraceIdentifier = generateTraceIdentifier(ComponentPrepared);
       if (componentPrepareTraceIdentifier != null) {
         HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put(LithoDebugEventAttributes.RunsOnMainThread, ThreadUtils.isMainThread());
         attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
 
         beginTrace(

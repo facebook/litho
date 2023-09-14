@@ -1138,7 +1138,7 @@ public class SectionTree {
       final Map<String, Object> attributes = new LinkedHashMap<>();
       attributes.put(DebugEventAttribute.Id, hashCode());
       attributes.put(
-          DebugEventAttribute.source,
+          DebugEventAttribute.Source,
           SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
       attributes.put(
           DebugEventAttribute.Async,

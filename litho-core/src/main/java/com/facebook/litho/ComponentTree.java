@@ -2510,8 +2510,8 @@ public class ComponentTree
             LithoDebugEvent.LayoutCommitted,
             () -> String.valueOf(mId),
             attributes -> {
-              attributes.put(DebugEventAttribute.version, layoutVersion);
-              attributes.put(DebugEventAttribute.source, layoutSourceToString(source));
+              attributes.put(DebugEventAttribute.Version, layoutVersion);
+              attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
               attributes.put(DebugEventAttribute.width, layoutState.getWidth());
               attributes.put(DebugEventAttribute.height, layoutState.getHeight());
               return Unit.INSTANCE;

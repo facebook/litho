@@ -55,7 +55,6 @@ abstract class PrimitiveComponent : Component() {
         generateTraceIdentifier(com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared)
     if (componentPrepareTraceIdentifier != null) {
       val attributes = HashMap<String, Any?>()
-      attributes[LithoDebugEventAttributes.RunsOnMainThread] = ThreadUtils.isMainThread()
       attributes[LithoDebugEventAttributes.Component] = simpleName
       beginTrace(
           componentPrepareTraceIdentifier,

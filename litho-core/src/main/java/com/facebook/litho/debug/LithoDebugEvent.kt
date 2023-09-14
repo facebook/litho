@@ -51,8 +51,5 @@ object LithoDebugEventAttributes {
   const val RenderSource = "source"
   const val RenderExecutionMode = "execution-mode"
   const val Forced = "forced"
-  const val RunsOnMainThread = "runs_on_main_thread"
   const val Component = "component"
-  const val ResolveVersion = "resolve_version"
-  const val ResolveSource = "resolve_source"
 }

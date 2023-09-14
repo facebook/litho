@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.RunsOnMainThread;
 
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
@@ -131,9 +130,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
     if (traceId != null) {
       final Map<String, Object> attributes = new LinkedHashMap<>();
-      attributes.put(RunsOnMainThread, ThreadUtils.isMainThread());
       attributes.put(Root, resolveResult.component.getSimpleName());
-      attributes.put(DebugEventAttribute.version, version);
+      attributes.put(DebugEventAttribute.Version, version);
       DebugEventDispatcher.beginTrace(
           traceId, LithoDebugEvent.Layout, String.valueOf(traceId), attributes);
     }

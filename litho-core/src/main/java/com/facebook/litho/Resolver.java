@@ -157,7 +157,6 @@ public class Resolver {
         generateTraceIdentifier(LithoDebugEvent.ComponentResolved);
     if (componentResolvedIdentifier != null) {
       HashMap<String, Object> attributes = new HashMap<>();
-      attributes.put(LithoDebugEventAttributes.RunsOnMainThread, ThreadUtils.isMainThread());
       attributes.put(LithoDebugEventAttributes.Component, component.getSimpleName());
 
       beginTrace(

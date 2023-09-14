@@ -20,10 +20,9 @@ import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Attribution;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.ResolveSource;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.ResolveVersion;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.RunsOnMainThread;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Version;
 
 import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
@@ -177,10 +176,9 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
   private HashMap<String, Object> createDebugAttributes() {
     HashMap<String, Object> attributes = new HashMap<>();
-    attributes.put(RunsOnMainThread, ThreadUtils.isMainThread());
     attributes.put(Root, mComponent.getSimpleName());
-    attributes.put(ResolveVersion, mResolveVersion);
-    attributes.put(ResolveSource, layoutSourceToString(mSource));
+    attributes.put(Version, mResolveVersion);
+    attributes.put(Source, layoutSourceToString(mSource));
     attributes.put(Attribution, mExtraAttribution);
     return attributes;
   }
