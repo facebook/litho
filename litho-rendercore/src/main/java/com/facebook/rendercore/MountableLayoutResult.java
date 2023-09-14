@@ -23,31 +23,21 @@ public class MountableLayoutResult implements LayoutResult {
   private final @Nullable RenderUnit<?> mRenderUnit;
   private final int mMeasuredWidth;
   private final int mMeasuredHeight;
-  private final int mWidthSpec;
-  private final int mHeightSpec;
   private final @Nullable Object mLayoutData;
 
   public MountableLayoutResult(
-      @Nullable RenderUnit<?> renderUnit,
-      int widthSpec,
-      int heightSpec,
-      int measuredWidth,
-      int measuredHeight) {
-    this(renderUnit, widthSpec, heightSpec, measuredWidth, measuredHeight, null);
+      @Nullable RenderUnit<?> renderUnit, int measuredWidth, int measuredHeight) {
+    this(renderUnit, measuredWidth, measuredHeight, null);
   }
 
   public MountableLayoutResult(
       @Nullable RenderUnit<?> renderUnit,
-      int widthSpec,
-      int heightSpec,
       int measuredWidth,
       int measuredHeight,
       @Nullable Object layoutData) {
     mRenderUnit = renderUnit;
     mMeasuredWidth = measuredWidth;
     mMeasuredHeight = measuredHeight;
-    mWidthSpec = widthSpec;
-    mHeightSpec = heightSpec;
     mLayoutData = layoutData;
   }
 
@@ -111,15 +101,5 @@ public class MountableLayoutResult implements LayoutResult {
   @Override
   public int getPaddingLeft() {
     return 0;
-  }
-
-  @Override
-  public int getWidthSpec() {
-    return mWidthSpec;
-  }
-
-  @Override
-  public int getHeightSpec() {
-    return mHeightSpec;
   }
 }

@@ -161,12 +161,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return FastMath.round(mYogaNode.getLayoutPadding(LEFT));
   }
 
-  @Override
   public int getWidthSpec() {
     return mWidthSpec;
   }
 
-  @Override
   public int getHeightSpec() {
     return mHeightSpec;
   }

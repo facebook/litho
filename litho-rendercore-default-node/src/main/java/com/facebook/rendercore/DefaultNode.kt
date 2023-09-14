@@ -51,8 +51,6 @@ open class DefaultNode @JvmOverloads constructor(val layoutParams: YogaProps? = 
     return if (renderUnit != null) {
       MountableLayoutResult(
           renderUnit,
-          widthSpec,
-          heightSpec,
           if (View.MeasureSpec.getMode(widthSpec) == View.MeasureSpec.EXACTLY)
               View.MeasureSpec.getSize(widthSpec)
           else 0,
@@ -92,10 +90,6 @@ open class DefaultNode @JvmOverloads constructor(val layoutParams: YogaProps? = 
           override fun getPaddingBottom(): Int = 0
 
           override fun getPaddingLeft(): Int = 0
-
-          override fun getWidthSpec(): Int = 0
-
-          override fun getHeightSpec(): Int = 0
         }
   }
 }

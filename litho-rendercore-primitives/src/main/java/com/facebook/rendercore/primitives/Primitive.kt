@@ -52,7 +52,7 @@ class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: M
     return with(layoutBehavior) {
       layoutScope
           .layout(SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
-          .toNodeLayoutResult(widthSpec, heightSpec, renderUnit)
+          .toNodeLayoutResult(renderUnit)
     }
   }
 }

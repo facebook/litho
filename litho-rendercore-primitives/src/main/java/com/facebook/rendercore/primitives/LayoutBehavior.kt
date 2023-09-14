@@ -174,11 +174,7 @@ class PrimitiveLayoutResult(
     }
   }
 
-  internal fun toNodeLayoutResult(
-      widthSpec: Int,
-      heightSpec: Int,
-      renderUnit: RenderUnit<*>?
-  ): LayoutResult {
+  internal fun toNodeLayoutResult(renderUnit: RenderUnit<*>?): LayoutResult {
     return object : LayoutResult {
       override fun getRenderUnit(): RenderUnit<*>? = renderUnit
 
@@ -209,10 +205,6 @@ class PrimitiveLayoutResult(
       override fun getPaddingBottom(): Int = this@PrimitiveLayoutResult.paddingBottom
 
       override fun getPaddingLeft(): Int = this@PrimitiveLayoutResult.paddingLeft
-
-      override fun getWidthSpec(): Int = widthSpec
-
-      override fun getHeightSpec(): Int = heightSpec
     }
   }
 }

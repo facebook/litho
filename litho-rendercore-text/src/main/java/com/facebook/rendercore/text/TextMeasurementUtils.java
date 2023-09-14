@@ -107,12 +107,7 @@ public class TextMeasurementUtils {
     }
 
     return new MountableLayoutResult(
-        renderUnit,
-        widthSpec,
-        heightSpec,
-        result.first.width(),
-        result.first.height(),
-        result.second);
+        renderUnit, result.first.width(), result.first.height(), result.second);
   }
 
   private static Pair<Rect, TextLayout> maybeFitTextToConstraints(

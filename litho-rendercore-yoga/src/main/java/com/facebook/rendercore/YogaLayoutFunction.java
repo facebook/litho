@@ -92,7 +92,6 @@ public class YogaLayoutFunction {
             yogaLayoutDataProvider,
             widthSpec,
             heightSpec);
-    layoutResult.setMeasureSpecs(widthSpec, heightSpec);
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("YogaLayoutFunction");
@@ -333,8 +332,6 @@ public class YogaLayoutFunction {
     @Nullable private final RenderUnit mRenderUnit;
     private final YogaNode mYogaNode;
     private final List<LayoutResult> mChildren;
-    private int mWidthSpec;
-    private int mHeightSpec;
     private boolean mIsRoot;
     @Nullable private LayoutResult mDelegate;
     @Nullable private final MeasureImpl mMeasure;
@@ -471,28 +468,6 @@ public class YogaLayoutFunction {
 
     public void addChild(LayoutResult layoutResult) {
       mChildren.add(layoutResult);
-    }
-
-    public void setMeasureSpecs(int widthSpec, int heightSpec) {
-      mIsRoot = true;
-      mWidthSpec = widthSpec;
-      mHeightSpec = heightSpec;
-    }
-
-    @Override
-    public int getWidthSpec() {
-      return mIsRoot
-          ? mWidthSpec
-          : View.MeasureSpec.makeMeasureSpec(
-              (int) mYogaNode.getLayoutWidth(), View.MeasureSpec.EXACTLY);
-    }
-
-    @Override
-    public int getHeightSpec() {
-      return mIsRoot
-          ? mHeightSpec
-          : View.MeasureSpec.makeMeasureSpec(
-              (int) mYogaNode.getLayoutHeight(), View.MeasureSpec.EXACTLY);
     }
 
     public void measureIfNeeded() {
