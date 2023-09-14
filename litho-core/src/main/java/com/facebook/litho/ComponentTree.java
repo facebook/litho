@@ -2513,8 +2513,8 @@ public class ComponentTree
             attributes -> {
               attributes.put(DebugEventAttribute.Version, layoutVersion);
               attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
-              attributes.put(DebugEventAttribute.width, layoutState.getWidth());
-              attributes.put(DebugEventAttribute.height, layoutState.getHeight());
+              attributes.put(DebugEventAttribute.Width, layoutState.getWidth());
+              attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
               return Unit.INSTANCE;
             });
       }

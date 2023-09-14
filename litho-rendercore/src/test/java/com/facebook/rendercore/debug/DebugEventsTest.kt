@@ -62,7 +62,7 @@ class DebugEventsTest {
     assertThat(event).isNotNull
     assertThat(event?.type).isEqualTo(TestEvent)
     assertThat(event?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(event?.attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(event?.attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(event?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
   }
 
@@ -85,13 +85,13 @@ class DebugEventsTest {
     assertThat(eventToSub1).isNotNull
     assertThat(eventToSub1?.type).isEqualTo(TestEvent)
     assertThat(eventToSub1?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(eventToSub1?.attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(eventToSub1?.attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(eventToSub1?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
 
     assertThat(eventToSub2).isNotNull
     assertThat(eventToSub2?.type).isEqualTo(TestEvent)
     assertThat(eventToSub2?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(eventToSub2?.attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(eventToSub2?.attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(eventToSub2?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
 
     assertThat(eventToSub1).isSameAs(eventToSub2)
@@ -186,13 +186,13 @@ class DebugEventsTest {
     assertThat(events.size).isEqualTo(2)
     assertThat(events[0].type).isEqualTo(TestEvent)
     assertThat(events[0].renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(events[0].attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(events[0].attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(events[0].attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
 
     assertThat(events).isNotEmpty
     assertThat(events[1].type).isEqualTo(TestEvent)
     assertThat(events[1].renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(events[1].attribute<Long>(DebugEventAttribute.timestamp)).isGreaterThan(timestamp)
+    assertThat(events[1].attribute<Long>(DebugEventAttribute.Timestamp)).isGreaterThan(timestamp)
     assertThat(events[1].attribute<String>(TestAttr)).isEqualTo("{$TestAttrValue}_1")
   }
 
@@ -250,8 +250,8 @@ class DebugEventsTest {
     assertThat(event).isNotNull
     assertThat(event?.type).isEqualTo(TestEvent)
     assertThat(event?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(event?.attribute<Long>(DebugEventAttribute.timestamp)).isGreaterThan(timestamp)
-    assertThat(event?.attribute<Duration>(DebugEventAttribute.duration)?.value).isGreaterThan(0)
+    assertThat(event?.attribute<Long>(DebugEventAttribute.Timestamp)).isGreaterThan(timestamp)
+    assertThat(event?.attribute<Duration>(DebugEventAttribute.Duration)?.value).isGreaterThan(0)
     assertThat(event?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
     assertThat(event?.attribute<String>(traceTestAttr)).isEqualTo(traceTestAttrValue)
   }

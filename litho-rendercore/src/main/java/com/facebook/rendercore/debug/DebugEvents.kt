@@ -77,11 +77,11 @@ sealed class DebugEvent(
 /** Collection of attributes */
 object DebugEventAttribute {
   const val Id = "id"
-  const val timestamp = "timestamp"
-  const val duration = "duration"
+  const val Timestamp = "timestamp"
+  const val Duration = "duration"
   const val Version = "version"
-  const val width = "width"
-  const val height = "height"
+  const val Width = "width"
+  const val Height = "height"
   const val WidthSpec = "widthSpec"
   const val HeightSpec = "heightSpec"
   const val Source = "source"
@@ -111,7 +111,7 @@ class DebugMarkerEvent(
         logLevel = logLevel,
         attributes =
             buildMap {
-              put(DebugEventAttribute.timestamp, timestamp)
+              put(DebugEventAttribute.Timestamp, timestamp)
               putAll(attributes)
             })
 
@@ -132,8 +132,8 @@ class DebugProcessEvent(
         logLevel = logLevel,
         attributes =
             buildMap {
-              put(DebugEventAttribute.timestamp, timestamp)
-              put(DebugEventAttribute.duration, duration)
+              put(DebugEventAttribute.Timestamp, timestamp)
+              put(DebugEventAttribute.Duration, duration)
               putAll(attributes)
             })
 
