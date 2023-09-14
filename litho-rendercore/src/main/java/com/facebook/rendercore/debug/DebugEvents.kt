@@ -168,7 +168,7 @@ object DebugEventDispatcher {
       logLevel: LogLevel = LogLevel.DEBUG,
       attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
   ) {
-    if (logLevel < this.minLogLevel) {
+    if (logLevel < minLogLevel || subscribers.isEmpty()) {
       return
     }
 
@@ -231,7 +231,8 @@ object DebugEventDispatcher {
    */
   @JvmStatic
   fun generateTraceIdentifier(type: String): Int? =
-      if (subscribers.any { type in it.events || DebugEvent.All in it.events }) {
+      if (subscribers.isNotEmpty() &&
+          subscribers.any { type in it.events || DebugEvent.All in it.events }) {
         lastTraceIdentifier.getAndIncrement()
       } else {
         null
@@ -276,6 +277,10 @@ object DebugEventDispatcher {
     val last = traceIdsToEvents.remove(traceIdentifier) ?: return
     val type = last.type
 
+    if (subscribers.isEmpty()) {
+      return
+    }
+
     // find the subscribers listening for this event
     val subscribersToNotify =
         subscribers.filter { subscriber ->
@@ -304,6 +309,11 @@ object DebugEventDispatcher {
       attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
       block: (TraceScope?) -> T,
   ): T {
+
+    if (subscribers.isEmpty()) {
+      return block(null)
+    }
+
     // find the subscribers listening for this event
     val subscribersToNotify =
         subscribers.filter { subscriber ->
