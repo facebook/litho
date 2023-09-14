@@ -232,13 +232,6 @@ public abstract class SpecGeneratedComponent extends Component
     }
   }
 
-  @Nullable
-  @Override
-  protected final PrepareResult prepare(ResolveContext resolveContext, ComponentContext c) {
-    onPrepare(c);
-    return null;
-  }
-
   @Override
   protected ComponentResolveResult resolve(
       final ResolveContext resolveContext,
@@ -275,11 +268,11 @@ public abstract class SpecGeneratedComponent extends Component
       }
 
       if (isTracing) {
-        ComponentsSystrace.beginSection("prepare:" + getSimpleName());
+        ComponentsSystrace.beginSection("onPrepare:" + getSimpleName());
       }
 
       try {
-        prepare(resolveContext, scopedComponentInfo.getContext());
+        onPrepare(scopedComponentInfo.getContext());
       } finally {
         if (prepareEvent != null && componentsLogger != null) {
           componentsLogger.logPerfEvent(prepareEvent);

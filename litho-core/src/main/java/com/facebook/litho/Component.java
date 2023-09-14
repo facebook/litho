@@ -223,12 +223,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
   }
 
-  protected @Nullable PrepareResult prepare(ResolveContext resolveContext, ComponentContext c) {
-    // default implementation runs onPrepare(), PrimitiveComponents will override to return a
-    // Primitive
-    return null;
-  }
-
   /**
    * Invokes the Component-specific resolve implementation, returning a ComponentResolveResult. The
    * ComponentResolveResult will have the {@link LithoNode} and {@link CommonProps} for the resolved
@@ -241,7 +235,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final int parentHeightSpec,
       final @Nullable ComponentsLogger componentsLogger) {
     throw new RuntimeException(
-        "resolveWithResult should not be called on a component which hasn't implemented it! "
+        "resolve should not be called on a component which hasn't implemented it! "
             + getSimpleName());
   }
 

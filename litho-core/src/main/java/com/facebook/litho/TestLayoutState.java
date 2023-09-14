@@ -264,7 +264,9 @@ public class TestLayoutState {
     ScopedComponentInfo scopedComponentInfo = c.getScopedComponentInfo();
     scopedComponentInfo.setCommonProps(commonProps);
     node.appendComponent(scopedComponentInfo);
-    component.prepare(resolveContext, c);
+    if (component instanceof SpecGeneratedComponent) {
+      ((SpecGeneratedComponent) component).onPrepare(c);
+    }
 
     return node;
   }
@@ -472,7 +474,7 @@ public class TestLayoutState {
     // 13. Call onPrepare for MountSpecs.
     if (isMountSpec(component)) {
       try {
-        component.prepare(resolveContext, c);
+        ((SpecGeneratedComponent) component).onPrepare(c);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(parent, component, e);
       }
