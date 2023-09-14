@@ -469,7 +469,7 @@ public class ComponentContext implements Cloneable {
         .updateHookStateAsync(
             globalKey,
             updateBlock,
-            scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
+            scope != null ? scope.getSimpleName() : "hook",
             isCreateLayoutInProgress(),
             isNestedTreeContext());
   }

@@ -19,6 +19,27 @@ package com.facebook.litho.debug
 import com.facebook.rendercore.debug.DebugEvent
 
 object LithoDebugEvent {
+
+  @JvmField var enableStackTraces: Boolean = true
+
+  @JvmStatic
+  fun generateStateTrace(): String {
+    return if (enableStackTraces) {
+      buildString {
+        Throwable().stackTrace.forEachIndexed { index, item ->
+          if (index > 4) { // skip first 4 elements since they are internal
+            if (index > 5) { // add the joiner after the first element
+              append('\n')
+            }
+            append(if (index > 5) "|${" ".repeat(12)}$item" else item.toString())
+          }
+        }
+      }
+    } else {
+      "<disabled>"
+    }
+  }
+
   val RenderCore: DebugEvent.Companion = DebugEvent
   const val RenderRequest = "Litho.RenderRequest"
   const val LayoutCommitted = "Litho.LayoutCommitted"
@@ -48,4 +69,5 @@ object LithoDebugEventAttributes {
   const val RenderExecutionMode = "execution-mode"
   const val Forced = "forced"
   const val Component = "component"
+  const val Stack = "stack"
 }

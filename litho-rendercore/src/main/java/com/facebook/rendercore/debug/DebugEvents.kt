@@ -238,6 +238,22 @@ object DebugEventDispatcher {
         null
       }
 
+  @JvmStatic
+  fun beginTrace(
+      traceIdentifier: Int,
+      type: String,
+      renderStateId: String,
+      attributes: (MutableMap<String, Any?>) -> Unit = {},
+  ) {
+    val attrs = LinkedHashMap<String, Any?>()
+    attributes.invoke(attrs)
+    beginTrace(
+        traceIdentifier = traceIdentifier,
+        type = type,
+        renderStateId = renderStateId,
+        attributes = attrs)
+  }
+
   /**
    * Starts recording a trace block for the given [type].
    *

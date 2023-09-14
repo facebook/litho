@@ -1462,6 +1462,7 @@ public class ComponentTree
               LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
           attributes.put(LithoDebugEventAttributes.Attribution, attribution);
           attributes.put(Async, !isSynchronous);
+          attributes.put(LithoDebugEventAttributes.Stack, LithoDebugEvent.generateStateTrace());
           return Unit.INSTANCE;
         });
   }
@@ -2041,6 +2042,7 @@ public class ComponentTree
             attrs.put(WidthSpec, getMeasureSpecDescription(widthSpec));
             attrs.put(HeightSpec, getMeasureSpecDescription(heightSpec));
           }
+          attrs.put(LithoDebugEventAttributes.Stack, LithoDebugEvent.generateStateTrace());
           return Unit.INSTANCE;
         });
   }
