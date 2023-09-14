@@ -63,6 +63,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.LayoutCache;
+import com.facebook.rendercore.LayoutCache.CacheItem;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Node;
@@ -500,9 +501,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     YogaNode yogaNode = null;
     if (currentNode.getTailComponentContext().shouldCacheLayouts()) {
       final LayoutCache layoutCache = context.getLayoutCache();
-      LayoutResult cachedLayoutResult = layoutCache.get(currentNode);
-      if (cachedLayoutResult != null) {
+      CacheItem cacheItem = layoutCache.get(currentNode);
+      if (cacheItem != null) {
 
+        LayoutResult cachedLayoutResult = cacheItem.getLayoutResult();
         if (isTracing) {
           ComponentsSystrace.beginSection(
               "buildYogaTreeFromCache:" + currentNode.getHeadComponent().getSimpleName());
@@ -521,8 +523,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
         return lithoLayoutResult;
       }
 
-      cachedLayoutResult = layoutCache.get(currentNode.mId);
-      if (cachedLayoutResult != null) {
+      cacheItem = layoutCache.get(currentNode.mId);
+      if (cacheItem != null) {
+        LayoutResult cachedLayoutResult = cacheItem.getLayoutResult();
         // The situation that we can partially reuse the yoga tree
         YogaNode clonedNode =
             ((LithoLayoutResult) cachedLayoutResult).getYogaNode().cloneWithoutChildren();
@@ -655,8 +658,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       return;
     }
     final LayoutCache layoutCache = context.getLayoutCache();
-    layoutCache.put(node, result);
-    layoutCache.put(node.mId, result);
+    // TODO(T163437982): Refactor this to build the cache after layout calculation
+    final CacheItem cacheItem = new CacheItem(result, -1, -1);
+    layoutCache.put(node, cacheItem);
+    layoutCache.put(node.mId, cacheItem);
   }
 
   public @Nullable LithoLayoutResult calculateLayout(

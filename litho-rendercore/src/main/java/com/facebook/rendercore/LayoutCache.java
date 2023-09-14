@@ -29,11 +29,36 @@ import java.util.Map;
  * pass as ReadCache.
  */
 public final class LayoutCache {
+
+  public static final class CacheItem {
+    private final LayoutResult mLayoutResult;
+    private final int mWidthSpec;
+    private final int mHeightSpec;
+
+    public CacheItem(LayoutResult layoutResult, int widthSpec, int heightSpec) {
+      mLayoutResult = layoutResult;
+      mWidthSpec = widthSpec;
+      mHeightSpec = heightSpec;
+    }
+
+    public LayoutResult getLayoutResult() {
+      return mLayoutResult;
+    }
+
+    public int getWidthSpec() {
+      return mWidthSpec;
+    }
+
+    public int getHeightSpec() {
+      return mHeightSpec;
+    }
+  }
+
   public static final class CachedData {
-    private final Map<Node<?>, LayoutResult> mCacheByNode = new HashMap<>();
+    private final Map<Node<?>, CacheItem> mCacheByNode = new HashMap<>();
     private final LongSparseArray<Object> mCacheById = new LongSparseArray<>();
 
-    public Map<Node<?>, LayoutResult> getCacheByNode() {
+    public Map<Node<?>, CacheItem> getCacheByNode() {
       return Collections.unmodifiableMap(mCacheByNode);
     }
   }
@@ -50,12 +75,12 @@ public final class LayoutCache {
   }
 
   @Nullable
-  public LayoutResult get(Node<?> node) {
+  public CacheItem get(Node<?> node) {
     return mReadCache == null ? null : mReadCache.mCacheByNode.get(node);
   }
 
-  public void put(Node<?> node, LayoutResult layout) {
-    mWriteCache.mCacheByNode.put(node, layout);
+  public void put(Node<?> node, CacheItem cacheItem) {
+    mWriteCache.mCacheByNode.put(node, cacheItem);
   }
 
   @Nullable
