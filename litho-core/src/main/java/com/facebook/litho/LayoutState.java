@@ -238,7 +238,8 @@ public class LayoutState
       LithoLayoutResult result,
       LithoNode node,
       LayoutState layoutState,
-      @Nullable RenderTreeNode parent) {
+      @Nullable RenderTreeNode parent,
+      @Nullable DebugHierarchy.Node debugHierarchyNode) {
 
     if (isLayoutSpec(node.getTailComponent()) || result.measureHadExceptions()) {
       // back out when dealing with Layout Specs or if there was an error during measure
@@ -283,7 +284,11 @@ public class LayoutState
 
     final @Nullable Object layoutData = result.getLayoutData();
 
-    return createRenderTreeNode(unit, layoutState, result, true, layoutData, parent, hasExactSize);
+    final @Nullable DebugHierarchy.Node debugNode =
+        debugHierarchyNode != null ? debugHierarchyNode.mutateType(OutputUnitType.CONTENT) : null;
+
+    return createRenderTreeNode(
+        unit, layoutState, result, true, layoutData, parent, debugNode, hasExactSize);
   }
 
   private static void addRootHostRenderTreeNode(
@@ -306,17 +311,22 @@ public class LayoutState
             LithoNodeUtils.getDebugKey(
                 layoutState.getComponentContext().mGlobalKey, OutputUnitType.HOST));
 
+    final @Nullable DebugHierarchy.Node debugNode =
+        hierarchy != null ? hierarchy.mutateType(OutputUnitType.HOST) : null;
+
     final RenderTreeNode node =
         RenderTreeNodeUtils.create(
             unit,
             new Rect(0, 0, width, height),
             new LithoLayoutData(
-                width, height, layoutState.mId, layoutState.mPreviousLayoutStateId, null, null),
+                width,
+                height,
+                layoutState.mId,
+                layoutState.mPreviousLayoutStateId,
+                null,
+                null,
+                debugNode),
             null);
-
-    if (hierarchy != null) {
-      unit.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
-    }
 
     addRenderTreeNode(layoutState, node, result, unit, OutputUnitType.HOST, null, null);
   }
@@ -328,14 +338,10 @@ public class LayoutState
       @Nullable RenderTreeNode parent,
       @Nullable DebugHierarchy.Node hierarchy) {
 
-    final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(unit, layoutState, result, false, null, parent, false);
+    final @Nullable DebugHierarchy.Node debugNode =
+        hierarchy != null ? hierarchy.mutateType(OutputUnitType.HOST) : null;
 
-    if (hierarchy != null) {
-      unit.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
-    }
-
-    return renderTreeNode;
+    return createRenderTreeNode(unit, layoutState, result, false, null, parent, debugNode, false);
   }
 
   private static RenderTreeNode createRenderTreeNode(
@@ -345,6 +351,7 @@ public class LayoutState
       final boolean useNodePadding,
       final @Nullable Object layoutData,
       final @Nullable RenderTreeNode parent,
+      final @Nullable DebugHierarchy.Node debugHierarchyNode,
       final boolean hasExactSize) {
 
     final int hostTranslationX;
@@ -398,7 +405,8 @@ public class LayoutState
             layoutState.mId,
             layoutState.mPreviousLayoutStateId,
             result.getExpandedTouchBounds(),
-            layoutData),
+            layoutData,
+            debugHierarchyNode),
         parent);
   }
 
@@ -684,7 +692,7 @@ public class LayoutState
 
     // Generate the RenderTreeNode for the given node.
     final @Nullable RenderTreeNode contentRenderTreeNode =
-        createContentRenderTreeNode(result, node, layoutState, parent);
+        createContentRenderTreeNode(result, node, layoutState, parent, parentHierarchy);
 
     // 3. Now add the MountSpec (either View or Drawable) to the outputs.
     if (contentRenderTreeNode != null) {
@@ -726,10 +734,6 @@ public class LayoutState
 
       if (diffNode != null) {
         diffNode.setContentOutput(contentRenderUnit);
-      }
-
-      if (hierarchy != null) {
-        contentRenderUnit.setHierarchy(hierarchy.mutateType(OutputUnitType.CONTENT));
       }
     }
 
@@ -970,8 +974,11 @@ public class LayoutState
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
 
+    final @Nullable DebugHierarchy.Node debugNode =
+        hierarchy != null ? hierarchy.mutateType(type) : null;
+
     final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(unit, layoutState, result, false, null, parent, false);
+        createRenderTreeNode(unit, layoutState, result, false, null, parent, debugNode, false);
 
     final LithoRenderUnit drawableRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
 
@@ -983,10 +990,6 @@ public class LayoutState
         type,
         !matchHostBoundsTransitions ? layoutState.mCurrentTransitionId : null,
         parent);
-
-    if (hierarchy != null) {
-      drawableRenderUnit.setHierarchy(hierarchy.mutateType(type));
-    }
 
     return renderTreeNode;
   }

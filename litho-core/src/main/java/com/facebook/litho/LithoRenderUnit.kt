@@ -40,9 +40,6 @@ protected constructor(
 
   override fun getDebugKey(): String = debugKey ?: componentContext?.globalKey ?: _id.toString()
 
-  // TODO: remove
-  var hierarchy: DebugHierarchy.Node? = null
-
   // the A11Y prop for descendants has been corrected
   val importantForAccessibility: Int =
       if (importantForAccessibility ==

@@ -98,7 +98,8 @@ public class DebugHierarchy {
   }
 
   public static @Nullable Node getMountItemHierarchy(ComponentHost host, int mountItemIndex) {
-    return LithoRenderUnit.getRenderUnit(host.getMountItemAt(mountItemIndex)).getHierarchy();
+    return LithoLayoutData.verifyAndGetLithoLayoutData(host.getMountItemAt(mountItemIndex))
+        .getDebugHierarchy();
   }
 
   public static @Nullable String getOutputUnitTypeName(@OutputUnitType int type) {

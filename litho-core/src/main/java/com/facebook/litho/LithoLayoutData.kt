@@ -33,7 +33,8 @@ class LithoLayoutData(
     @field:JvmField val currentLayoutStateId: Int,
     @field:JvmField val previousLayoutStateId: Int,
     @field:JvmField val expandedTouchBounds: Rect?,
-    @field:JvmField val layoutData: Any?
+    @field:JvmField val layoutData: Any?,
+    val debugHierarchy: DebugHierarchy.Node?,
 ) {
   companion object {
     /**
