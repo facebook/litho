@@ -92,7 +92,7 @@ object DebugEventAttribute {
   const val Bounds = "bounds"
   const val RootHostHashCode = "rootHostHashCode"
   const val Name = "name"
-  const val GlobalKey = "globalKey"
+  const val Key = "key"
 }
 
 /** Base class for marker events */
