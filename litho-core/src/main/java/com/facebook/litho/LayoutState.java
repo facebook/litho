@@ -88,6 +88,18 @@ public class LayoutState
         PotentiallyPartialResult,
         ViewAttributesInput {
 
+  private static final LithoRenderUnit sRootHost =
+      MountSpecLithoRenderUnit.create(
+          ROOT_HOST_ID,
+          HostComponent.create(),
+          null,
+          null,
+          null,
+          0,
+          IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+          MountSpecLithoRenderUnit.STATE_DIRTY,
+          LithoNodeUtils.getDebugKey("root-host", OutputUnitType.HOST));
+
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   @Nullable private Transition.RootBoundsTransition mRootWidthAnimation;
   @Nullable private Transition.RootBoundsTransition mRootHeightAnimation;
@@ -298,25 +310,12 @@ public class LayoutState
     final int width = result != null ? result.getWidth() : 0;
     final int height = result != null ? result.getHeight() : 0;
 
-    final LithoRenderUnit unit =
-        MountSpecLithoRenderUnit.create(
-            ROOT_HOST_ID,
-            HostComponent.create(),
-            null,
-            null,
-            null,
-            0,
-            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            MountSpecLithoRenderUnit.STATE_DIRTY,
-            LithoNodeUtils.getDebugKey(
-                layoutState.getComponentContext().mGlobalKey, OutputUnitType.HOST));
-
     final @Nullable DebugHierarchy.Node debugNode =
         hierarchy != null ? hierarchy.mutateType(OutputUnitType.HOST) : null;
 
     final RenderTreeNode node =
         RenderTreeNodeUtils.create(
-            unit,
+            sRootHost,
             new Rect(0, 0, width, height),
             new LithoLayoutData(
                 width,
@@ -328,7 +327,7 @@ public class LayoutState
                 debugNode),
             null);
 
-    addRenderTreeNode(layoutState, node, result, unit, OutputUnitType.HOST, null, null);
+    addRenderTreeNode(layoutState, node, result, sRootHost, OutputUnitType.HOST, null, null);
   }
 
   private static RenderTreeNode createHostRenderTreeNode(
