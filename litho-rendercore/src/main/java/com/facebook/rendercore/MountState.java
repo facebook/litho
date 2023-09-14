@@ -42,7 +42,6 @@ import com.facebook.rendercore.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class MountState implements MountDelegateTarget {
 
@@ -100,7 +99,7 @@ public class MountState implements MountDelegateTarget {
 
     final int position = mRenderTree.getRenderTreeNodeIndex(id);
     final RenderTreeNode node = mRenderTree.getRenderTreeNodeAtIndex(position);
-    mountRenderUnit(node, null);
+    mountRenderUnit(node);
   }
 
   @Override
@@ -169,18 +168,6 @@ public class MountState implements MountDelegateTarget {
         mTracer.endSection();
       }
 
-      // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is
-      //  found. We only want to collect logs when we're not ensuring the parent is mounted.
-      //  When false, we will throw an exception that contains these logs. The StringBuilder
-      //  is not needed when mEnsureParentMount is true.
-      @Nullable final StringBuilder mountLoopLogBuilder;
-      if (!mEnsureParentMounted) {
-        mountLoopLogBuilder = new StringBuilder();
-        mountLoopLogBuilder.append("Start of mount loop log:\n");
-      } else {
-        mountLoopLogBuilder = null;
-      }
-
       // Starting from 1 as the RenderTreeNode in position 0 always represents the root which
       // is handled in prepareMount()
       for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
@@ -190,22 +177,13 @@ public class MountState implements MountDelegateTarget {
         final MountItem currentMountItem =
             mIdToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
         boolean isMounted = currentMountItem != null;
-        if (!mEnsureParentMounted) {
-          mountLoopLogBuilder.append(
-              String.format(
-                  Locale.US,
-                  "Processing index %d: isMountable = %b, isMounted = %b\n",
-                  i,
-                  isMountable,
-                  isMounted));
-        }
 
         if (!isMountable) {
           if (isMounted) {
             unmountItemRecursively(currentMountItem.getRenderTreeNode().getRenderUnit().getId());
           }
         } else if (!isMounted) {
-          mountRenderUnit(renderTreeNode, mountLoopLogBuilder);
+          mountRenderUnit(renderTreeNode);
         } else {
           updateMountItemIfNeeded(renderTreeNode, currentMountItem);
         }
@@ -646,8 +624,7 @@ public class MountState implements MountDelegateTarget {
     return mIdToMountedItemMap.get(id) != null;
   }
 
-  private void mountRenderUnit(
-      RenderTreeNode renderTreeNode, @Nullable StringBuilder processLogBuilder) {
+  private void mountRenderUnit(RenderTreeNode renderTreeNode) {
 
     if (renderTreeNode.getRenderUnit().getId() == ROOT_HOST_ID) {
       mountRootItem(renderTreeNode);
@@ -687,8 +664,7 @@ public class MountState implements MountDelegateTarget {
     if (isTracing) {
       mTracer.beginSection("MountItem:mount-parent " + parentRenderUnit.getDescription());
     }
-    maybeEnsureParentIsMounted(
-        renderTreeNode, renderUnit, hostTreeNode, parentRenderUnit, processLogBuilder);
+    maybeEnsureParentIsMounted(hostTreeNode, parentRenderUnit);
     if (isTracing) {
       mTracer.endSection();
     }
@@ -1151,35 +1127,9 @@ public class MountState implements MountDelegateTarget {
     }
   }
 
-  private void maybeEnsureParentIsMounted(
-      final RenderTreeNode renderTreeNode,
-      final RenderUnit<?> renderUnit,
-      final RenderTreeNode hostTreeNode,
-      final RenderUnit<?> parentRenderUnit,
-      final @Nullable StringBuilder processLogBuilder) {
-    if (!isMounted(parentRenderUnit.getId())) {
-      if (mEnsureParentMounted) {
-        mountRenderUnit(hostTreeNode, processLogBuilder);
-      } else {
-        final String additionalProcessLog =
-            processLogBuilder != null ? processLogBuilder.toString() : "NA";
-        throw new HostNotMountedException(
-            renderUnit,
-            parentRenderUnit,
-            "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
-                + "Parent RenderUnit: "
-                + hostTreeNode.generateDebugString(mRenderTree)
-                + "'.\n"
-                + "Child RenderUnit: "
-                + renderTreeNode.generateDebugString(mRenderTree)
-                + "'.\n"
-                + "Entire tree:\n"
-                + mRenderTree.generateDebugString()
-                + ".\n"
-                + "Additional Process Log:\n"
-                + additionalProcessLog
-                + ".\n");
-      }
+  private void maybeEnsureParentIsMounted(final RenderTreeNode node, final RenderUnit<?> parent) {
+    if (mEnsureParentMounted && !isMounted(parent.getId())) {
+      mountRenderUnit(node);
     }
   }
 
