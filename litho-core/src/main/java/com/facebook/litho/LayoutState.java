@@ -691,7 +691,7 @@ public class LayoutState
 
     // Generate the RenderTreeNode for the given node.
     final @Nullable RenderTreeNode contentRenderTreeNode =
-        createContentRenderTreeNode(result, node, layoutState, parent, parentHierarchy);
+        createContentRenderTreeNode(result, node, layoutState, parent, hierarchy);
 
     // 3. Now add the MountSpec (either View or Drawable) to the outputs.
     if (contentRenderTreeNode != null) {
