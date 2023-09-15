@@ -33,6 +33,7 @@ import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
+import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class Layout {
@@ -370,6 +371,33 @@ class Layout {
     }
 
     result.onBoundsDefined();
+
+    registerWorkingRange(layoutState, result);
+  }
+
+  /** Register working range for each node */
+  /*package*/ static void registerWorkingRange(LayoutState layoutState, LithoLayoutResult result) {
+    List<WorkingRangeContainer.Registration> registrations =
+        result.getNode().getWorkingRangeRegistrations();
+    if (CollectionsUtils.isNullOrEmpty(registrations)) {
+      return;
+    }
+    if (layoutState.mWorkingRangeContainer == null) {
+      layoutState.mWorkingRangeContainer = new WorkingRangeContainer();
+    }
+
+    final Component component = result.getNode().getTailComponent();
+    for (WorkingRangeContainer.Registration registration : registrations) {
+      InterStagePropsContainer interStagePropsContainer = null;
+      if (component instanceof SpecGeneratedComponent) {
+        interStagePropsContainer = (InterStagePropsContainer) result.getLayoutData();
+      }
+      layoutState.mWorkingRangeContainer.registerWorkingRange(
+          registration.name,
+          registration.workingRange,
+          registration.scopedComponentInfo,
+          interStagePropsContainer);
+    }
   }
 
   /**

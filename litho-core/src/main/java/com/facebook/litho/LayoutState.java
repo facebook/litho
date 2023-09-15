@@ -860,23 +860,8 @@ public class LayoutState
     }
 
     // 9. Extract the Working Range registrations.
-    List<WorkingRangeContainer.Registration> registrations = node.getWorkingRangeRegistrations();
-    if (CollectionsUtils.isNotNullOrEmpty(registrations)) {
-      if (layoutState.mWorkingRangeContainer == null) {
-        layoutState.mWorkingRangeContainer = new WorkingRangeContainer();
-      }
-
-      for (WorkingRangeContainer.Registration registration : registrations) {
-        InterStagePropsContainer interStagePropsContainer = null;
-        if (component instanceof SpecGeneratedComponent) {
-          interStagePropsContainer = (InterStagePropsContainer) result.getLayoutData();
-        }
-        layoutState.mWorkingRangeContainer.registerWorkingRange(
-            registration.name,
-            registration.workingRange,
-            registration.scopedComponentInfo,
-            interStagePropsContainer);
-      }
+    if (!node.getTailComponentContext().shouldReuseOutputs()) {
+      Layout.registerWorkingRange(layoutState, result);
     }
 
     final Rect rect;
