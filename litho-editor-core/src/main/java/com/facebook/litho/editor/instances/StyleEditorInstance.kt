@@ -39,7 +39,8 @@ class StyleEditorInstance : Editor {
       val editorValue =
           when (val value = styleItem.value) {
             null -> EditorValue.string("null")
-            else -> EditorRegistry.readValueThatIsNotAField(value.javaClass, value)
+            else ->
+                EditorRegistry.readValueThatIsNotAField(value.javaClass, value)
                     ?: EditorValue.string(value.javaClass.toString())
           }
       resolvedList[styleItem.field.toString()] = editorValue

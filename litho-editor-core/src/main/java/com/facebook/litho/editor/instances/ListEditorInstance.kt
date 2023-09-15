@@ -32,7 +32,8 @@ class ListEditorInstance : Editor {
         list.map {
           when (it) {
             null -> EditorValue.string("null")
-            else -> EditorRegistry.readValueThatIsNotAField(it.javaClass, it)
+            else ->
+                EditorRegistry.readValueThatIsNotAField(it.javaClass, it)
                     ?: EditorValue.string(it.javaClass.toString())
           }
         }

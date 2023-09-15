@@ -39,7 +39,8 @@ class MapEditorInstance : Editor {
       val editorValue: EditorValue =
           when (value) {
             null -> EditorValue.string("null")
-            else -> EditorRegistry.readValueThatIsNotAField(value.javaClass, value)
+            else ->
+                EditorRegistry.readValueThatIsNotAField(value.javaClass, value)
                     ?: EditorValue.string(value.javaClass.toString())
           }
       keyToEditorValue[key.toString()] = editorValue

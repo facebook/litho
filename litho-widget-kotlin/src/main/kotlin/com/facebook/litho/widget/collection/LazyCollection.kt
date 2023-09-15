@@ -218,7 +218,8 @@ class LazyCollection(
               val item = renderEvent.model
               val component =
                   item.component
-                      ?: item.componentFunction?.invoke() ?: return@eventHandlerWithReturn null
+                      ?: item.componentFunction?.invoke()
+                      ?: return@eventHandlerWithReturn null
               ComponentRenderInfo.create()
                   .apply {
                     if (item.isSticky) {

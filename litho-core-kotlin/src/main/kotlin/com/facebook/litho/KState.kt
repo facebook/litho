@@ -158,14 +158,12 @@ internal constructor(
 
   private fun canSkip(newValue: T): Boolean {
     return context.stateUpdater?.canSkipStateUpdate(
-        context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext)
-        ?: false
+        context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext) ?: false
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
     return context.stateUpdater?.canSkipStateUpdate(
-        newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext)
-        ?: false
+        newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext) ?: false
   }
 
   /**
