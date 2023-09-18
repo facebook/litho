@@ -193,7 +193,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
 
   @Override
   public String getDescription() {
-    return CommonUtils.getSectionNameForTracing(getClass());
+    return CommonUtils.getSectionNameForTracing(mPrimitiveRenderUnit.getClass());
   }
 
   @Override
