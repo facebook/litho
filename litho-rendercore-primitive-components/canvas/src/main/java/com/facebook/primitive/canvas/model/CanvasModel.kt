@@ -32,6 +32,8 @@ import com.facebook.primitive.utils.types.DEFAULT_BLENDING_MODE
 import com.facebook.primitive.utils.types.LineCap
 import com.facebook.primitive.utils.types.LineJoin
 import com.facebook.primitive.utils.types.Size
+import com.facebook.rendercore.ErrorReporter
+import com.facebook.rendercore.LogLevel
 
 sealed interface CanvasNodeModel {
   fun draw(canvas: Canvas, state: CanvasState)
@@ -226,7 +228,22 @@ data class CanvasFill(
         canvas.drawPath(androidPath, fillPaint)
       }
       is CanvasShapeModel -> {
-        shape.draw(canvas, fillPaint)
+        if (shape is CanvasShapeLine) {
+          // A line shape should not be rendered "filled" for consistency with iOS and HTML5, which
+          // only allow lines to be stroked. This also makes conceptual sense since a line isn't a
+          // "fill-able" shape.This also makes Android internally consistent with the following
+          // equivalent case:
+          //
+          // A CanvasFill element that contains a CanvasPath with a single LineTo element.
+          //
+          // A CanvasFill with a CanvasLineShape should behave similarly.
+          ErrorReporter.report(
+              LogLevel.ERROR,
+              CanvasFill::class.simpleName,
+              "A Line shape cannot be 'filled'. Ignoring.")
+        } else {
+          shape.draw(canvas, fillPaint)
+        }
       }
     }
   }
