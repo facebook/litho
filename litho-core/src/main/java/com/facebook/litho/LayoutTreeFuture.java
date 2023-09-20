@@ -217,7 +217,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
           perfEventLogger.markerPoint("start_collect_results");
         }
 
-        LayoutState.setSizeAfterMeasureAndCollectResults(c, lsc, layoutState);
+        LithoReducer.setSizeAfterMeasureAndCollectResults(c, lsc, layoutState);
 
         if (perfEventLogger != null) {
           perfEventLogger.markerPoint("end_collect_results");
