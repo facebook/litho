@@ -98,6 +98,8 @@ internal object CollectionLayouts {
    *
    * @param orientation @see CollectionLayout
    * @param snapMode @see CollectionLayout
+   * @param snapToStartOffset Attempt to offset the child by this number of pixels from the start of
+   *   the Collection when snapMode = SNAP_TO_START.
    * @param reverse @see CollectionLayout
    * @param crossAxisWrapMode Specify how the [Collection] will wrap its contents across the main
    *   axis.
