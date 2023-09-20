@@ -416,7 +416,7 @@ public class LithoView extends BaseMountingView {
 
     mTemporaryDetachedComponentTree = null;
     if (mComponentTree == componentTree) {
-      if (isAttached()) {
+      if (ComponentsConfiguration.bindOnSameComponentTree && isAttached()) {
         rebind();
       }
       return;

@@ -256,6 +256,8 @@ public class ComponentsConfiguration {
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;
 
+  public static boolean bindOnSameComponentTree = true;
+
   public static void setReduceMemorySpikeUserSession() {
     sReduceMemorySpikeUserSession = true;
   }
