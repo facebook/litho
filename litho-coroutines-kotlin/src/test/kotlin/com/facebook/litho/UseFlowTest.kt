@@ -18,15 +18,17 @@ package com.facebook.litho
 
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.testing.unspecified
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -51,33 +53,7 @@ class UseFlowTest {
   }
 
   @Test
-  fun `collect from a flow`() {
-    val stateRef = AtomicReference<Boolean>()
-    val testFlow = flow { emit(true) }
-
-    class UseCollectAsStateComponent : KComponent() {
-      override fun ComponentScope.render(): Component {
-        val value = useFlow(initialValue = { false }, testFlow)
-        stateRef.set(value)
-        return Row()
-      }
-    }
-
-    lithoViewRule.render { UseCollectAsStateComponent() }
-
-    assertThat(stateRef.get()).isFalse
-
-    testDispatcher.scheduler.runCurrent()
-
-    assertThat(stateRef.get()).isFalse
-
-    lithoViewRule.idle()
-
-    assertThat(stateRef.get()).isTrue
-  }
-
-  @Test
-  fun `collect with a FlowState`() {
+  fun `collect with a StateFlow`() {
     val stateRef = AtomicReference<Boolean>()
     val testFlow = MutableStateFlow(false)
 
@@ -110,7 +86,7 @@ class UseFlowTest {
 
     class UseCollectAsStateComponent(val dep: Int) : KComponent() {
       override fun ComponentScope.render(): Component {
-        val value = useFlow(initialValue = { 0 }, Any()) { flow { emit(dep) } }
+        val value = useFlow(initialValue = { 0 }, Any()) { MutableStateFlow(dep) }
         stateRef.set(value)
         return Row()
       }
@@ -132,23 +108,18 @@ class UseFlowTest {
 
   @Test
   fun `collect flow block only rerun on dependency change`() {
-    val stateRef = AtomicInteger()
     val flowEvents = mutableListOf<String>()
 
     class UseCollectAsStateComponent(private val dep: Int) : KComponent() {
       override fun ComponentScope.render(): Component {
-        val value =
-            useFlow(initialValue = { 0 }, dep) {
-              flow {
-                flowEvents.add("launch $dep")
-                try {
-                  awaitCancellation()
-                } finally {
-                  flowEvents.add("cancel $dep")
-                }
-              }
-            }
-        stateRef.set(value)
+        useFlow(initialValue = { 0 }, dep) {
+          flowEvents.add("launch $dep")
+          try {
+            awaitCancellation()
+          } finally {
+            flowEvents.add("cancel $dep")
+          }
+        }
         return Row()
       }
     }
@@ -175,23 +146,18 @@ class UseFlowTest {
 
   @Test
   fun `collect flow block only rerun on one of many dependencies change`() {
-    val stateRef = AtomicInteger()
     val flowEvents = mutableListOf<String>()
 
     class UseCollectAsStateComponent(private val dep1: Int, private val dep2: Int) : KComponent() {
       override fun ComponentScope.render(): Component {
-        val value =
-            useFlow(initialValue = { 0 }, dep1, dep2) {
-              flow {
-                flowEvents.add("launch $dep1:$dep2")
-                try {
-                  awaitCancellation()
-                } finally {
-                  flowEvents.add("cancel $dep1:$dep2")
-                }
-              }
-            }
-        stateRef.set(value)
+        useFlow(initialValue = { 0 }, dep1, dep2) {
+          flowEvents.add("launch $dep1:$dep2")
+          try {
+            awaitCancellation()
+          } finally {
+            flowEvents.add("cancel $dep1:$dep2")
+          }
+        }
         return Row()
       }
     }
@@ -221,5 +187,45 @@ class UseFlowTest {
 
     assertThat(flowEvents).containsExactly("cancel 2:1", "launch 2:2")
     flowEvents.clear()
+  }
+
+  @Test
+  fun `collect with a StateFlow observes last value even if it has been emitted before subscription`() {
+    val stateRef = AtomicReference<Boolean>()
+    val testFlow = MutableStateFlow(false)
+
+    val flowUpdatedLatch = CountDownLatch(1)
+
+    class UseCollectAsStateComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val value = useFlow(testFlow)
+        if (!flowUpdatedLatch.await(300, TimeUnit.MILLISECONDS)) {
+          throw TimeoutException()
+        }
+        stateRef.set(value)
+        return Row()
+      }
+    }
+
+    val componentTree = ComponentTree.create(lithoViewRule.context).build()
+
+    val lithoView =
+        lithoViewRule
+            .createTestLithoView(componentTree = componentTree)
+            .attachToWindow()
+            .measure()
+            .layout()
+
+    componentTree.setRootAndSizeSpecAsync(
+        UseCollectAsStateComponent(), unspecified(), unspecified())
+
+    assertThat(testFlow.subscriptionCount.value).isEqualTo(0)
+
+    testFlow.value = true
+    flowUpdatedLatch.countDown()
+
+    lithoViewRule.idle()
+
+    assertThat(stateRef.get()).isTrue
   }
 }
