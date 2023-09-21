@@ -248,6 +248,8 @@ public class ComponentsConfiguration {
 
   public static int useCachedLruCacheSize = 0;
 
+  public static boolean shouldOverrideHasTransientState = false;
+
   public static boolean shouldUseLruCacheForUseCached() {
     return useCachedLruCacheSize > 0;
   }

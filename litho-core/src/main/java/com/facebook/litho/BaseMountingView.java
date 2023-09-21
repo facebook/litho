@@ -66,6 +66,7 @@ public abstract class BaseMountingView extends ComponentHost
   private @Nullable Deque<ReentrantMount> mReentrantMounts;
   private final Rect mPreviousMountVisibleRectBounds = new Rect();
   private int mTransientStateCount;
+  private Boolean mHasTransientState = false;
   private boolean mHasVisibilityHint;
   private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
@@ -270,6 +271,15 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   @Override
+  public boolean hasTransientState() {
+    if (ComponentsConfiguration.shouldOverrideHasTransientState) {
+      return mHasTransientState;
+    } else {
+      return super.hasTransientState();
+    }
+  }
+
+  @Override
   public void setHasTransientState(boolean hasTransientState) {
     super.setHasTransientState(hasTransientState);
 
@@ -277,9 +287,15 @@ public abstract class BaseMountingView extends ComponentHost
       if (mTransientStateCount == 0 && hasTree()) {
         notifyVisibleBoundsChanged(new Rect(0, 0, getWidth(), getHeight()), false);
       }
+      if (mTransientStateCount == 0) {
+        mHasTransientState = true;
+      }
       mTransientStateCount++;
     } else {
       mTransientStateCount--;
+      if (mTransientStateCount == 0) {
+        mHasTransientState = false;
+      }
       if (mTransientStateCount == 0 && hasTree()) {
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
