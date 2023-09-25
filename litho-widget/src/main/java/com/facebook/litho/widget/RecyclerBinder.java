@@ -1388,12 +1388,19 @@ public class RecyclerBinder
     holder.setNewLayoutReadyListener(mAsyncLayoutReadyListener);
     // Otherwise, we'll kick off the layout at the end of measure
     if (isMeasured()) {
-      computeLayoutAsync(holder);
+      // Kicking off layout computation for all insert operations can be wasteful because some of
+      // them may not in the working range. We can optimize this by respecting the working range and
+      // postponing the layout computation to [maybeUpdateRangeOrRemeasureForMutation], which will
+      // be invoked when we apply batch later on.
+      if (ComponentsConfiguration.enableComputeLayoutAsyncAfterInsertion
+          || mCommitPolicy == CommitPolicy.LAYOUT_BEFORE_INSERT) {
+        computeLayoutAsync(holder);
+      }
     }
   }
 
   /**
-   * Moves an item from fromPosition to toPostion. If there are other pending operations on this
+   * Moves an item from fromPosition to toPosition. If there are other pending operations on this
    * binder this will only be executed when all the operations have been completed (to ensure index
    * consistency).
    */

@@ -219,6 +219,8 @@ public class ComponentsConfiguration {
   /** Skip checking for root component and tree-props while layout */
   public static boolean isSkipRootCheckingEnabled = false;
 
+  public static boolean enableComputeLayoutAsyncAfterInsertion = true;
+
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;
 
   public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;
