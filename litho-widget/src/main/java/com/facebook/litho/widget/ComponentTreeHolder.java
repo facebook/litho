@@ -130,7 +130,6 @@ public class ComponentTreeHolder {
     private boolean incrementalMount = true;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private int recyclingMode;
     private boolean visibilityProcessingEnabled = true;
     private @Nullable LithoLifecycleProvider parentLifecycle;
     private @Nullable ErrorEventHandler errorEventHandler;
@@ -186,11 +185,6 @@ public class ComponentTreeHolder {
 
     public Builder isReconciliationEnabled(boolean isEnabled) {
       isReconciliationEnabled = isEnabled;
-      return this;
-    }
-
-    public Builder recyclingMode(int recyclingMode) {
-      this.recyclingMode = recyclingMode;
       return this;
     }
 
