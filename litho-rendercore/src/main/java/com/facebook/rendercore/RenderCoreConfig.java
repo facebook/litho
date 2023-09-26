@@ -38,4 +38,6 @@ public class RenderCoreConfig {
   public static boolean shouldClearRenderTreeOnUnmountAll = false;
 
   public static boolean isDrawableCacheEnabled = false;
+
+  public static boolean isExperimentalSizeConstraintsEnabled = false;
 }

@@ -164,14 +164,6 @@ class PrimitiveLayoutResult(
     if (height < 0) {
       throw IllegalArgumentException("height must be >= 0, but was: $height")
     }
-    if (width >= SizeConstraints.MaxValue) {
-      throw IllegalArgumentException(
-          "width must be < ${SizeConstraints.MaxValue}, but was: $width. Components this big may affect performance and lead to out of memory errors.")
-    }
-    if (height >= SizeConstraints.MaxValue) {
-      throw IllegalArgumentException(
-          "height must be < ${SizeConstraints.MaxValue}, but was: $height. Components this big may affect performance and lead to out of memory errors.")
-    }
   }
 
   internal fun toNodeLayoutResult(renderUnit: RenderUnit<*>?): LayoutResult {
