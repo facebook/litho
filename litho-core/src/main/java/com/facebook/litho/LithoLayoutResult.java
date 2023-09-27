@@ -597,7 +597,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           delegate = null;
           width = size.width;
           height = size.height;
-          // always reset lastMeasuredSize to make sure we do not skip invoking `onBoundDefined`
+          // always reset lastMeasuredSize to make sure we do not skip invoking `onBoundsDefined`
           mLastMeasuredSize = Long.MIN_VALUE;
         }
 
@@ -632,10 +632,24 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     final ComponentContext context = getNode().getTailComponentContext();
     final Component component = getNode().getTailComponent();
 
+    // We need to subtract the padding and border from measured size to make sure we're recording
+    // the correct size.
+    final int measuredContentWidth =
+        getWidth()
+            - getPaddingRight()
+            - getPaddingLeft()
+            - getLayoutBorder(YogaEdge.RIGHT)
+            - getLayoutBorder(YogaEdge.LEFT);
+    final int measuredContentHeight =
+        getHeight()
+            - getPaddingTop()
+            - getPaddingBottom()
+            - getLayoutBorder(YogaEdge.TOP)
+            - getLayoutBorder(YogaEdge.BOTTOM);
     final boolean hasSizeChanged =
         (mLastMeasuredSize == Long.MIN_VALUE)
-            || (YogaMeasureOutput.getWidth(mLastMeasuredSize) != getWidth()
-                || YogaMeasureOutput.getHeight(mLastMeasuredSize) != getHeight());
+            || (getContentWidth() != measuredContentWidth
+                || getContentHeight() != measuredContentHeight);
 
     if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
 
@@ -694,24 +708,15 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         && (mDelegate == null || (mIsCachedLayout && hasSizeChanged))) {
 
       // Check if we need to run measure for Primitive that was skipped due to with fixed size
-      final int width =
-          getWidth()
-              - getPaddingRight()
-              - getPaddingLeft()
-              - getLayoutBorder(YogaEdge.RIGHT)
-              - getLayoutBorder(YogaEdge.LEFT);
-      final int height =
-          getHeight()
-              - getPaddingTop()
-              - getPaddingBottom()
-              - getLayoutBorder(YogaEdge.TOP)
-              - getLayoutBorder(YogaEdge.BOTTOM);
       final LayoutContext layoutContext =
           LithoLayoutResult.getLayoutContextFromYogaNode(getYogaNode());
-      measure(layoutContext, MeasureSpecUtils.exactly(width), MeasureSpecUtils.exactly(height));
+      measure(
+          layoutContext,
+          MeasureSpecUtils.exactly(measuredContentWidth),
+          MeasureSpecUtils.exactly(measuredContentHeight));
     }
 
-    mLastMeasuredSize = YogaMeasureOutput.make(getWidth(), getHeight());
+    mLastMeasuredSize = YogaMeasureOutput.make(measuredContentWidth, measuredContentHeight);
 
     // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
     if (mContext.shouldReuseOutputs()) {

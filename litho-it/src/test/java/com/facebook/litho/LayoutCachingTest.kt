@@ -32,6 +32,7 @@ import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
+import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions
 import org.junit.Rule
 import org.junit.Test
@@ -96,6 +97,8 @@ class LayoutCachingTest {
                 MountSpecLifecycleTester.create(c)
                     .intrinsicSize(Size(100, 100))
                     .lifecycleTracker(lifecycleTracker)
+                    .paddingPx(YogaEdge.ALL, 5)
+                    .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build())
                     .build())
             .build()
 
@@ -310,6 +313,109 @@ class LayoutCachingTest {
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps).isEmpty()
+  }
+
+  @Test
+  fun `verify the behavior of onBoundsDefined with padding and border`() {
+    if (!ComponentsConfiguration.enableLayoutCaching) {
+      return
+    }
+
+    val c = legacyLithoViewRule.context
+    val lifecycleTracker = LifecycleTracker()
+    val caller = SimpleStateUpdateEmulatorSpec.Caller()
+    val component =
+        Column.create(c)
+            .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
+            .child(
+                MountSpecPureRenderLifecycleTester.create(c)
+                    .lifecycleTracker(lifecycleTracker)
+                    .shouldUpdate(false)
+                    .paddingPx(YogaEdge.ALL, 5)
+                    .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build())
+                    .widthPercent(90f)) // equivalent to exactly(972)
+            .build()
+
+    // initial mount
+    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .contains(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED)
+    Assertions.assertThat(lifecycleTracker.width).isEqualTo(972)
+    Assertions.assertThat(lifecycleTracker.height).isEqualTo(20)
+
+    // set root with the same component to verify that:
+    // We're reusing the correct size that saved from diff node
+    lifecycleTracker.reset()
+    legacyLithoViewRule
+        .setRootAndSizeSpecSync(
+            Column.create(c)
+                .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
+                .child(
+                    MountSpecPureRenderLifecycleTester.create(c)
+                        .lifecycleTracker(lifecycleTracker)
+                        .shouldUpdate(false)
+                        .paddingPx(YogaEdge.ALL, 5)
+                        .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build()))
+                .build(),
+            exactly(972),
+            unspecified(0))
+        .measure()
+        .layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .doesNotContain(LifecycleStep.ON_MEASURE) // Hit layout diffing
+        .contains(LifecycleStep.ON_BOUNDS_DEFINED, LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker.width).isEqualTo(972)
+    Assertions.assertThat(lifecycleTracker.height).isEqualTo(20)
+
+    // Trigger state update to go with layout caching and verify that:
+    // 1. we should subtract padding and border from measured size when `onMeasure` being called
+    // 2. we're reusing layout cache and render units
+    lifecycleTracker.reset()
+    caller.increment()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE, // Hit cached component without size changing
+            LifecycleStep.ON_BOUNDS_DEFINED, // Hit cached component without size changing
+            LifecycleStep.ON_BIND, // We're re-using render units
+        )
+
+    // Set root with fixed size to verify that:
+    // 1. we're skipping Yoga measurement due to the fixed size
+    // 2. we should subtract padding and border from measured size when `onMeasure` not being called
+    // 3. we're creating new render units
+    lifecycleTracker.reset()
+    legacyLithoViewRule
+        .setRoot(
+            Column.create(c)
+                .child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
+                .child(
+                    MountSpecPureRenderLifecycleTester.create(c)
+                        .lifecycleTracker(lifecycleTracker)
+                        .shouldUpdate(false)
+                        .paddingPx(YogaEdge.ALL, 5)
+                        .border(Border.create(c).widthPx(YogaEdge.ALL, 5).build())
+                        .widthPx(972)
+                        .heightPx(20))
+                .build())
+        .measure()
+        .layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .doesNotContain(LifecycleStep.ON_MEASURE) // Yoga doesn't measure component with fixed size
+        .contains(LifecycleStep.ON_BOUNDS_DEFINED, LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker.width).isEqualTo(972)
+    Assertions.assertThat(lifecycleTracker.height).isEqualTo(20)
+
+    // Trigger state update to go with layout caching and verify that:
+    // We're able to reuse layout cache due to the state update without size changing, which is
+    // comparing with the size that we saved during the previous setRoot.
+    lifecycleTracker.reset()
+    caller.increment()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE, // Yoga doesn't measure component with fixed size
+            LifecycleStep.ON_BOUNDS_DEFINED, // Hit cached component without size changing
+            LifecycleStep.ON_BIND, // We're re-using render units
+        )
   }
 
   /**
