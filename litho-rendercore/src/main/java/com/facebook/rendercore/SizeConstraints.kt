@@ -385,9 +385,7 @@ private object ExperimentalSizeConstraintsHelper {
     return Mode.forConstraints(sizeConstraints.low).decodeMaxHeight(sizeConstraints)
   }
 
-  /**
-   * Actual encoding and decoding logic for each supported mode.
-   */
+  /** Actual encoding and decoding logic for each supported mode. */
   sealed class Mode(val supportedRange: IntRange, val id: Int) {
 
     abstract fun encode(minValue: Int, maxValue: Int): Long
