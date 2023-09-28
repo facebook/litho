@@ -19,6 +19,7 @@ package com.facebook.litho.widget.collection
 import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
@@ -40,6 +41,8 @@ abstract class CollectionLayout(
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
+    isIncrementalMountEnabled: Boolean =
+        !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
     hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
@@ -62,6 +65,7 @@ abstract class CollectionLayout(
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .isReconciliationEnabled(isReconciliationEnabled)
+                  .isIncrementalMountEnabled(isIncrementalMountEnabled)
                   .shouldPreallocatePerMountContent(preallocationPerMountContentEnabled)
                   .build())
           .build()
@@ -193,6 +197,7 @@ internal object CollectionLayouts {
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
       isReconciliationEnabled: Boolean = false,
+      isIncrementalMountEnabled: Boolean = true,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
       preallocationPerMountContentEnabled: Boolean,
@@ -204,6 +209,7 @@ internal object CollectionLayouts {
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
+              isIncrementalMountEnabled = isIncrementalMountEnabled,
               preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
           ) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =

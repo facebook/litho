@@ -159,6 +159,7 @@ object CollectionRecyclerSpec {
                 hasDynamicItemHeight(hasDynamicItemHeight())
                 componentsConfiguration(componentsConfiguration)
                 isReconciliationEnabled(isReconciliationEnabled)
+                incrementalMount(isIncrementalMountEnabled)
                 isLayoutDiffingEnabled(isLayoutDiffingEnabled)
                 componentWarmer(componentWarmer)
                 lithoViewFactory(lithoViewFactory)

@@ -54,6 +54,7 @@ public class RecyclerBinderConfiguration {
       ComponentsConfiguration.threadPoolConfiguration;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsReconciliationEnabled;
+  private final boolean mIsIncrementalMountEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
   private final int mEstimatedViewportCount;
@@ -85,6 +86,7 @@ public class RecyclerBinderConfiguration {
       boolean requestMountForPrefetchedItems,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isReconciliationEnabled,
+      boolean isIncrementalMountEnabled,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
       @Nullable ComponentWarmer componentWarmer,
@@ -104,6 +106,7 @@ public class RecyclerBinderConfiguration {
     mEnableStableIds = enableStableIds;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mIsReconciliationEnabled = isReconciliationEnabled;
+    mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mComponentWarmer = componentWarmer;
@@ -177,6 +180,10 @@ public class RecyclerBinderConfiguration {
     return mIsReconciliationEnabled;
   }
 
+  public boolean isIncrementalMountEnabled() {
+    return mIsIncrementalMountEnabled;
+  }
+
   public boolean isLayoutDiffingEnabled() {
     return mIsLayoutDiffingEnabled;
   }
@@ -226,6 +233,8 @@ public class RecyclerBinderConfiguration {
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean mIsIncrementalMountEnabled =
+        !ComponentsConfiguration.isIncrementalMountGloballyDisabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
     private @Nullable ComponentWarmer mComponentWarmer;
@@ -249,6 +258,7 @@ public class RecyclerBinderConfiguration {
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
+      mIsIncrementalMountEnabled = configuration.mIsIncrementalMountEnabled;
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
@@ -386,6 +396,15 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder isIncrementalMountEnabled(boolean isEnabled) {
+      if (ComponentsConfiguration.isIncrementalMountGloballyDisabled) {
+        mIsIncrementalMountEnabled = false;
+      } else {
+        mIsIncrementalMountEnabled = isEnabled;
+      }
+      return this;
+    }
+
     public Builder isLayoutDiffingEnabled(boolean isEnabled) {
       mIsLayoutDiffingEnabled = isEnabled;
       return this;
@@ -453,6 +472,7 @@ public class RecyclerBinderConfiguration {
           mRequestMountForPrefetchedItems,
           mChangeSetThreadHandler,
           mIsReconciliationEnabled,
+          mIsIncrementalMountEnabled,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,
           mComponentWarmer,

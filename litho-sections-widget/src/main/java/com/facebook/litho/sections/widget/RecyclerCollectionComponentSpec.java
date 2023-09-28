@@ -322,7 +322,7 @@ public class RecyclerCollectionComponentSpec {
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
-            .incrementalMount(incrementalMount)
+            .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
