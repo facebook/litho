@@ -14,6 +14,7 @@ import com.facebook.litho.widget.RenderInfo;
 
 import java.util.List;
 
+// TODO: consider using modern Kotlin APIs such as LazyList/Grid/StaggeredGrid: https://fburl.com/lazy_collections
 @GroupSectionSpec
 class ${NAME}SectionSpec {
 
