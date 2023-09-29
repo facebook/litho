@@ -34,6 +34,10 @@ public interface RenderInfo {
 
   boolean isFullSpan();
 
+  float getParentWidthPercent();
+
+  float getParentHeightPercent();
+
   @Nullable
   Object getCustomAttribute(String key);
 

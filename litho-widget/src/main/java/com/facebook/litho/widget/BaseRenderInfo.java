@@ -39,12 +39,20 @@ import javax.annotation.Nullable;
  *
  * <p>IsFullSpan will be defaulted to false. It is the information that determines if the component
  * should occupy all of the SpanCount in a StaggeredGrid layout.
+ *
+ * <p>ParentWidthPercent determines how much space of the parent container in width the component
+ * would take to fill.
+ *
+ * <p>ParentHeightPercent determines how much space of the parent container in height the component
+ * would take to fill.
  */
 public abstract class BaseRenderInfo implements RenderInfo {
 
   private static final String IS_STICKY = "is_sticky";
   private static final String SPAN_SIZE = "span_size";
   private static final String IS_FULL_SPAN = "is_full_span";
+  private static final String PARENT_WIDTH_PERCENT = "parent_width_percent";
+  private static final String PARENT_HEIGHT_PERCENT = "parent_height_percent";
 
   private @Nullable Map<String, Object> mCustomAttributes;
   private @Nullable Map<String, Object> mDebugInfo;
@@ -92,6 +100,22 @@ public abstract class BaseRenderInfo implements RenderInfo {
       mCustomAttributes = Collections.synchronizedMap(new HashMap<String, Object>());
     }
     mCustomAttributes.put(key, value);
+  }
+
+  @Override
+  public float getParentWidthPercent() {
+    if (mCustomAttributes == null || !mCustomAttributes.containsKey(PARENT_WIDTH_PERCENT)) {
+      return -1f;
+    }
+    return (float) mCustomAttributes.get(PARENT_WIDTH_PERCENT);
+  }
+
+  @Override
+  public float getParentHeightPercent() {
+    if (mCustomAttributes == null || !mCustomAttributes.containsKey(PARENT_HEIGHT_PERCENT)) {
+      return -1f;
+    }
+    return (float) mCustomAttributes.get(PARENT_HEIGHT_PERCENT);
   }
 
   /**
@@ -252,6 +276,14 @@ public abstract class BaseRenderInfo implements RenderInfo {
 
     public T isFullSpan(boolean isFullSpan) {
       return customAttribute(IS_FULL_SPAN, isFullSpan);
+    }
+
+    public T parentWidthPercent(float widthPercent) {
+      return customAttribute(PARENT_WIDTH_PERCENT, widthPercent);
+    }
+
+    public T parentHeightPercent(float heightPercent) {
+      return customAttribute(PARENT_HEIGHT_PERCENT, heightPercent);
     }
 
     public T customAttribute(String key, Object value) {

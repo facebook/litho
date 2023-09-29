@@ -94,6 +94,16 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
   }
 
   @Override
+  public float getParentWidthPercent() {
+    return mRenderInfo.getParentWidthPercent();
+  }
+
+  @Override
+  public float getParentHeightPercent() {
+    return mRenderInfo.getParentHeightPercent();
+  }
+
+  @Override
   @Nullable
   public Object getCustomAttribute(String key) {
     return mRenderInfo.getCustomAttribute(key);

@@ -230,6 +230,12 @@ class LazyCollection(
                     }
                     item.spanSize?.let { spanSize(it) }
                     customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
+                    if (item.parentWidthPercent in 0.0f..100.0f) {
+                      parentWidthPercent(item.parentWidthPercent)
+                    }
+                    if (item.parentHeightPercent in 0.0f..100.0f) {
+                      parentHeightPercent(item.parentHeightPercent)
+                    }
                   }
                   .component(
                       if (ComponentsConfiguration.isDebugModeEnabled && overlayRenderCount)

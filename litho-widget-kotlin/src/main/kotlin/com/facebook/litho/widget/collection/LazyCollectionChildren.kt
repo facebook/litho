@@ -70,6 +70,8 @@ class LazyCollectionChildren {
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
       onNearViewport: OnNearCallback? = null,
+      parentWidthPercent: Float = -1f,
+      parentHeightPercent: Float = -1f,
   ) {
     val resolvedId = getResolvedId(id, component)
     component ?: return
@@ -81,6 +83,8 @@ class LazyCollectionChildren {
             isSticky,
             isFullSpan,
             spanSize,
+            parentWidthPercent,
+            parentHeightPercent,
             null,
             onNearViewport,
         )
@@ -95,6 +99,8 @@ class LazyCollectionChildren {
       spanSize: Int? = null,
       onNearViewport: OnNearCallback? = null,
       deps: Array<Any?>,
+      parentWidthPercent: Float = -1f,
+      parentHeightPercent: Float = -1f,
       componentFunction: () -> Component?,
   ) {
     val child =
@@ -105,6 +111,8 @@ class LazyCollectionChildren {
             isSticky,
             isFullSpan,
             spanSize,
+            parentWidthPercent,
+            parentHeightPercent,
             deps,
             onNearViewport,
         )

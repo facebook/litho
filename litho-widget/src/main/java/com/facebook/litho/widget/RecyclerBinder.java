@@ -80,6 +80,7 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
 import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer;
+import com.facebook.rendercore.FastMath;
 import com.facebook.rendercore.RunnableHandler;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -931,6 +932,10 @@ public class RecyclerBinder
     event.renderState = renderState;
     event.timestampMillis = timestampMillis;
     renderCompleteEventHandler.dispatchEvent(event);
+  }
+
+  private static boolean isMatchingParentSize(final float percent) {
+    return percent >= 0 && percent <= 100;
   }
 
   private RecyclerBinder(Builder builder) {
@@ -3636,6 +3641,14 @@ public class RecyclerBinder
   @GuardedBy("this")
   private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
     if (isMeasured()) {
+
+      if (isMatchingParentSize(treeHolder.getRenderInfo().getParentWidthPercent())) {
+        return SizeSpec.makeSizeSpec(
+            FastMath.round(
+                mMeasuredSize.width * treeHolder.getRenderInfo().getParentWidthPercent() / 100),
+            SizeSpec.EXACTLY);
+      }
+
       return mLayoutInfo.getChildWidthSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY), treeHolder.getRenderInfo());
     }
@@ -3646,10 +3659,27 @@ public class RecyclerBinder
   @GuardedBy("this")
   private int getActualChildrenHeightSpec(final ComponentTreeHolder treeHolder) {
     if (mHasDynamicItemHeight) {
+
+      if (isMeasured()
+          && isMatchingParentSize(treeHolder.getRenderInfo().getParentHeightPercent())) {
+        return SizeSpec.makeSizeSpec(
+            FastMath.round(
+                mMeasuredSize.height * treeHolder.getRenderInfo().getParentHeightPercent() / 100),
+            SizeSpec.EXACTLY);
+      }
+
       return SizeSpec.UNSPECIFIED;
     }
 
     if (isMeasured()) {
+
+      if (isMatchingParentSize(treeHolder.getRenderInfo().getParentHeightPercent())) {
+        return SizeSpec.makeSizeSpec(
+            FastMath.round(
+                mMeasuredSize.height * treeHolder.getRenderInfo().getParentHeightPercent() / 100),
+            SizeSpec.EXACTLY);
+      }
+
       return mLayoutInfo.getChildHeightSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.height, SizeSpec.EXACTLY),
           treeHolder.getRenderInfo());

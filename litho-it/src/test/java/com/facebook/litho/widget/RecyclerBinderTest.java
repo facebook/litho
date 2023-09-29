@@ -5723,6 +5723,71 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getInternalAdapter().getItemId(0)).isEqualTo(RecyclerView.NO_ID);
   }
 
+  @Test
+  public void testParentWidthHeightPercent() {
+    final ComponentContext parentContext =
+        new ComponentContext(mComponentContext.getAndroidContext());
+    final ComponentTree parent =
+        ComponentTree.create(mComponentContext, SimpleMountSpecTester.create(parentContext).build())
+            .build();
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .componentTreeHolderFactory(mComponentTreeHolderFactory)
+            .build(parent.getContext());
+
+    Component component =
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
+    recyclerBinder.insertItemAt(
+        0,
+        ComponentRenderInfo.create()
+            .component(component)
+            .parentWidthPercent(50f)
+            .parentHeightPercent(30f)
+            .build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    TestComponentTreeHolder componentTreeHolder = mHoldersForComponents.get(component);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(500);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(300);
+
+    // to verify we would compute the new size based on the parent width and height
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1080, EXACTLY), makeSizeSpec(1900, EXACTLY), null);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(540);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(570);
+
+    // to verify we would ignore invalid inputs, which should be a value between [0-100]
+    recyclerBinder.updateItemAt(
+        0,
+        ComponentRenderInfo.create()
+            .component(component)
+            .parentWidthPercent(-1f) // -1 is not valid
+            .parentHeightPercent(10f)
+            .build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1080, EXACTLY), makeSizeSpec(1900, EXACTLY), null);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(1080);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(190);
+
+    recyclerBinder.updateItemAt(
+        0,
+        ComponentRenderInfo.create()
+            .component(component)
+            .parentWidthPercent(110f) // 110 is not valid
+            .parentHeightPercent(50f)
+            .build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1080, EXACTLY), makeSizeSpec(1900, EXACTLY), null);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(1080);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(950);
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
