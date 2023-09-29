@@ -7,6 +7,7 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_GUAVA_TARGET",
     "LITHO_JAVAPOET_TARGET",
@@ -78,6 +79,7 @@ fb_java_library(
         "PUBLIC",
     ],
     deps = [
+        LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_GUAVA_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
@@ -99,6 +101,7 @@ fb_java_library(
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
+        LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_GUAVA_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare4idea"),
