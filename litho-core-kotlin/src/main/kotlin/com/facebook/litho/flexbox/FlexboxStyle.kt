@@ -220,25 +220,25 @@ inline fun Style.aspectRatio(aspectRatio: Float): Style =
  */
 inline fun Style.position(
     all: Dimen? = null,
+    horizontal: Dimen? = null,
+    vertical: Dimen? = null,
     start: Dimen? = null,
     top: Dimen? = null,
     end: Dimen? = null,
     bottom: Dimen? = null,
     left: Dimen? = null,
     right: Dimen? = null,
-    vertical: Dimen? = null,
-    horizontal: Dimen? = null
 ): Style =
     this +
         all?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_ALL, it) } +
+        horizontal?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_HORIZONTAL, it) } +
+        vertical?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_VERTICAL, it) } +
         start?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_START, it) } +
         top?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_TOP, it) } +
         end?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_END, it) } +
         bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_BOTTOM, it) } +
         left?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_LEFT, it) } +
-        right?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_RIGHT, it) } +
-        vertical?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_VERTICAL, it) } +
-        horizontal?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_HORIZONTAL, it) }
+        right?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_RIGHT, it) }
 
 /**
  * Used in conjunction with [positionType] to define how a component should be positioned in its
@@ -246,25 +246,25 @@ inline fun Style.position(
  */
 inline fun Style.positionPercent(
     all: Float? = null,
+    horizontal: Float? = null,
+    vertical: Float? = null,
     start: Float? = null,
     top: Float? = null,
     end: Float? = null,
     bottom: Float? = null,
     left: Float? = null,
     right: Float? = null,
-    vertical: Float? = null,
-    horizontal: Float? = null
 ): Style =
     this +
         all?.let { FloatStyleItem(FlexboxFloatField.POSITION_ALL_PERCENT, it) } +
+        horizontal?.let { FloatStyleItem(FlexboxFloatField.POSITION_HORIZONTAL_PERCENT, it) } +
+        vertical?.let { FloatStyleItem(FlexboxFloatField.POSITION_VERTICAL_PERCENT, it) } +
         start?.let { FloatStyleItem(FlexboxFloatField.POSITION_START_PERCENT, it) } +
         top?.let { FloatStyleItem(FlexboxFloatField.POSITION_TOP_PERCENT, it) } +
         end?.let { FloatStyleItem(FlexboxFloatField.POSITION_END_PERCENT, it) } +
         bottom?.let { FloatStyleItem(FlexboxFloatField.POSITION_BOTTOM_PERCENT, it) } +
         left?.let { FloatStyleItem(FlexboxFloatField.POSITION_LEFT_PERCENT, it) } +
-        right?.let { FloatStyleItem(FlexboxFloatField.POSITION_RIGHT_PERCENT, it) } +
-        vertical?.let { FloatStyleItem(FlexboxFloatField.POSITION_VERTICAL_PERCENT, it) } +
-        horizontal?.let { FloatStyleItem(FlexboxFloatField.POSITION_HORIZONTAL_PERCENT, it) }
+        right?.let { FloatStyleItem(FlexboxFloatField.POSITION_RIGHT_PERCENT, it) }
 
 /** See docs in [position]. */
 inline fun Style.positionType(positionType: YogaPositionType): Style =

@@ -29,16 +29,19 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.margin
+import com.facebook.litho.core.marginPercent
 import com.facebook.litho.core.maxHeight
 import com.facebook.litho.core.maxWidth
 import com.facebook.litho.core.minHeight
 import com.facebook.litho.core.minWidth
 import com.facebook.litho.core.padding
+import com.facebook.litho.core.paddingPercent
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
+import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -253,6 +256,27 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun `padding, when start & end padding set with percent, is respected`() {
+    val start = 10.0f
+    val end = 20.0f
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot {
+          Row(
+              alignItems = YogaAlign.STRETCH,
+              style = Style.width(100.px).height(100.px).paddingPercent(start = start, end = end)) {
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(start.toInt(), 0, (100 - start - end).toInt(), 100) }
+            })
+  }
+
+  @Test
   fun padding_whenHorizontalVerticalPaddingSet_isRespected() {
     val horizontal = 10
     val vertical = 20
@@ -279,6 +303,35 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun `padding, when horizontal & vertical padding set with percent, is respected`() {
+    val horizontal = 10.0f
+    val vertical = 20.0f
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot {
+          Row(
+              style =
+                  Style.width(100.px)
+                      .height(100.px)
+                      .paddingPercent(horizontal = horizontal, vertical = vertical)) {
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    horizontal.toInt(),
+                    vertical.toInt(),
+                    (100 - 2 * horizontal).toInt(),
+                    (100 - 2 * vertical).toInt())
+              }
+            })
+  }
+
+  @Test
   fun padding_whenAllPaddingSet_isRespected() {
     val padding = 32
 
@@ -297,6 +350,53 @@ class FlexboxStylesTest {
               child<ComponentHost> {
                 bounds(padding, padding, 100 - 2 * padding, 100 - 2 * padding)
               }
+            })
+  }
+
+  @Test
+  fun `padding, when all padding set with percent, is respected`() {
+    val padding = 32.0f
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot {
+          Row(
+              alignItems = YogaAlign.STRETCH,
+              style = Style.width(100.px).height(100.px).paddingPercent(all = padding)) {
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    padding.toInt(),
+                    padding.toInt(),
+                    (100 - 2 * padding).toInt(),
+                    (100 - 2 * padding).toInt())
+              }
+            })
+  }
+
+  @Test
+  fun `padding, when set with percent value that out of 0-100, is ignored`() {
+    val start = -10f
+    val top = 110f
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot {
+          Row(
+              alignItems = YogaAlign.STRETCH,
+              style = Style.width(100.px).height(100.px).paddingPercent(start = start, top = top)) {
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(0, 0, 100, 100) }
             })
   }
 
@@ -328,6 +428,38 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun `margin, when granular margin set with percent, is respected`() {
+    val left = 10.0f
+    val top = 20.0f
+    val right = 30.0f
+    val bottom = 40.0f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.marginPercent(left = left, top = top, right = right, bottom = bottom)
+                            .flex(grow = 1f)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    left.toInt(),
+                    top.toInt(),
+                    (100 - left - right).toInt(),
+                    (100 - top - bottom).toInt())
+              }
+            })
+  }
+
+  @Test
   fun margin_whenMarginStartEndSet_isRespected() {
     val start = 10
     val end = 20
@@ -346,6 +478,28 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(start, 0, 100 - start - end, 100) }
+            })
+  }
+
+  @Test
+  fun `margin, when margin start & end set with percent, is respected`() {
+    val start = 10.0f
+    val end = 20.0f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.marginPercent(start = start, end = end).flex(grow = 1f).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(start.toInt(), 0, (100 - start - end).toInt(), 100) }
             })
   }
 
@@ -376,6 +530,36 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun `margin, when horizontal & vertical margin set with percent, is respected`() {
+    val horizontal = 10.0f
+    val vertical = 20.0f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.marginPercent(horizontal = horizontal, vertical = vertical)
+                            .flex(grow = 1f)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    horizontal.toInt(),
+                    vertical.toInt(),
+                    (100 - 2 * horizontal).toInt(),
+                    (100 - 2 * vertical).toInt())
+              }
+            })
+  }
+
+  @Test
   fun margin_whenAllMarginSet_isRespected() {
     val margin = 32
 
@@ -390,6 +574,52 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(margin, margin, 100 - 2 * margin, 100 - 2 * margin) }
+            })
+  }
+
+  @Test
+  fun `margin, when all margin set with percent, is respected`() {
+    val margin = 32.0f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.marginPercent(margin).flex(grow = 1f).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(
+                    margin.toInt(),
+                    margin.toInt(),
+                    (100 - 2 * margin).toInt(),
+                    (100 - 2 * margin).toInt())
+              }
+            })
+  }
+
+  @Test
+  fun `margin, when set with percent value that out of 0-100, is ignored`() {
+    val start = -10f
+    val top = 110f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.marginPercent(start = start, top = top).flex(grow = 1f).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(0, 0, 100, 100) }
             })
   }
 
@@ -421,7 +651,7 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun `position when left and right set with percent is respected`() {
+  fun `position, when left & right set with percent, is respected`() {
     val left = 10f
     val top = 20f
     val right = 30f
@@ -480,7 +710,7 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun `position when start and end set with percent is respected`() {
+  fun `position, when start & end set with percent, is respected`() {
     val start = 10f
     val top = 20f
     val end = 30f
@@ -535,7 +765,7 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun `position when all set with percent is respected`() {
+  fun `position, when all set with percent, is respected`() {
     val all = 10f
 
     lithoViewRule
@@ -586,7 +816,7 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun `position when horizontal set with percent is respected`() {
+  fun `position, when horizontal set with percent, is respected`() {
     val horizontal = 10f
     val all = 50f
 
@@ -640,7 +870,7 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun `position when vertical set with percent is respected`() {
+  fun `position, when vertical set with percent, is respected`() {
     val vertical = 10f
     val all = 50f
 

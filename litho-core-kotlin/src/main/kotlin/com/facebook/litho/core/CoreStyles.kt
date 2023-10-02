@@ -63,6 +63,24 @@ internal enum class CoreFloatField : StyleItemField {
   MAX_WIDTH_PERCENT,
   MIN_HEIGHT_PERCENT,
   MAX_HEIGHT_PERCENT,
+  MARGIN_ALL_PERCENT,
+  MARGIN_START_PERCENT,
+  MARGIN_TOP_PERCENT,
+  MARGIN_END_PERCENT,
+  MARGIN_BOTTOM_PERCENT,
+  MARGIN_LEFT_PERCENT,
+  MARGIN_RIGHT_PERCENT,
+  MARGIN_HORIZONTAL_PERCENT,
+  MARGIN_VERTICAL_PERCENT,
+  PADDING_ALL_PERCENT,
+  PADDING_START_PERCENT,
+  PADDING_TOP_PERCENT,
+  PADDING_END_PERCENT,
+  PADDING_BOTTOM_PERCENT,
+  PADDING_LEFT_PERCENT,
+  PADDING_RIGHT_PERCENT,
+  PADDING_HORIZONTAL_PERCENT,
+  PADDING_VERTICAL_PERCENT,
 }
 
 /** Common style item for all core dimen styles. See note on [CoreDimenField] about this pattern. */
@@ -117,6 +135,27 @@ internal class CoreFloatStyleItem(override val field: CoreFloatField, override v
       CoreFloatField.MAX_WIDTH_PERCENT -> commonProps.maxWidthPercent(value)
       CoreFloatField.MIN_HEIGHT_PERCENT -> commonProps.minHeightPercent(value)
       CoreFloatField.MAX_HEIGHT_PERCENT -> commonProps.maxHeightPercent(value)
+      CoreFloatField.MARGIN_ALL_PERCENT -> commonProps.marginPercent(YogaEdge.ALL, value)
+      CoreFloatField.MARGIN_START_PERCENT -> commonProps.marginPercent(YogaEdge.START, value)
+      CoreFloatField.MARGIN_TOP_PERCENT -> commonProps.marginPercent(YogaEdge.TOP, value)
+      CoreFloatField.MARGIN_END_PERCENT -> commonProps.marginPercent(YogaEdge.END, value)
+      CoreFloatField.MARGIN_BOTTOM_PERCENT -> commonProps.marginPercent(YogaEdge.BOTTOM, value)
+      CoreFloatField.MARGIN_LEFT_PERCENT -> commonProps.marginPercent(YogaEdge.LEFT, value)
+      CoreFloatField.MARGIN_RIGHT_PERCENT -> commonProps.marginPercent(YogaEdge.RIGHT, value)
+      CoreFloatField.MARGIN_HORIZONTAL_PERCENT ->
+          commonProps.marginPercent(YogaEdge.HORIZONTAL, value)
+      CoreFloatField.MARGIN_VERTICAL_PERCENT -> commonProps.marginPercent(YogaEdge.VERTICAL, value)
+      CoreFloatField.PADDING_ALL_PERCENT -> commonProps.paddingPercent(YogaEdge.ALL, value)
+      CoreFloatField.PADDING_START_PERCENT -> commonProps.paddingPercent(YogaEdge.START, value)
+      CoreFloatField.PADDING_TOP_PERCENT -> commonProps.paddingPercent(YogaEdge.TOP, value)
+      CoreFloatField.PADDING_END_PERCENT -> commonProps.paddingPercent(YogaEdge.END, value)
+      CoreFloatField.PADDING_BOTTOM_PERCENT -> commonProps.paddingPercent(YogaEdge.BOTTOM, value)
+      CoreFloatField.PADDING_LEFT_PERCENT -> commonProps.paddingPercent(YogaEdge.LEFT, value)
+      CoreFloatField.PADDING_RIGHT_PERCENT -> commonProps.paddingPercent(YogaEdge.RIGHT, value)
+      CoreFloatField.PADDING_HORIZONTAL_PERCENT ->
+          commonProps.paddingPercent(YogaEdge.HORIZONTAL, value)
+      CoreFloatField.PADDING_VERTICAL_PERCENT ->
+          commonProps.paddingPercent(YogaEdge.VERTICAL, value)
     }
   }
 }
@@ -191,6 +230,34 @@ inline fun Style.padding(
         left?.let { CoreDimenStyleItem(CoreDimenField.PADDING_LEFT, it) } +
         right?.let { CoreDimenStyleItem(CoreDimenField.PADDING_RIGHT, it) }
 
+/**
+ * Defines padding on the component on a per-edge basis, with a percent value of container's size.
+ * See
+ * [https://yogalayout.com/docs/margins-paddings-borders](https://yogalayout.com/docs/margins-paddings-borders)
+ * for more information.
+ */
+inline fun Style.paddingPercent(
+    all: Float? = null,
+    horizontal: Float? = null,
+    vertical: Float? = null,
+    start: Float? = null,
+    top: Float? = null,
+    end: Float? = null,
+    bottom: Float? = null,
+    left: Float? = null,
+    right: Float? = null,
+): Style =
+    this +
+        all?.let { CoreFloatStyleItem(CoreFloatField.PADDING_ALL_PERCENT, it) } +
+        horizontal?.let { CoreFloatStyleItem(CoreFloatField.PADDING_HORIZONTAL_PERCENT, it) } +
+        vertical?.let { CoreFloatStyleItem(CoreFloatField.PADDING_VERTICAL_PERCENT, it) } +
+        start?.let { CoreFloatStyleItem(CoreFloatField.PADDING_START_PERCENT, it) } +
+        top?.let { CoreFloatStyleItem(CoreFloatField.PADDING_TOP_PERCENT, it) } +
+        end?.let { CoreFloatStyleItem(CoreFloatField.PADDING_END_PERCENT, it) } +
+        bottom?.let { CoreFloatStyleItem(CoreFloatField.PADDING_BOTTOM_PERCENT, it) } +
+        left?.let { CoreFloatStyleItem(CoreFloatField.PADDING_LEFT_PERCENT, it) } +
+        right?.let { CoreFloatStyleItem(CoreFloatField.PADDING_RIGHT_PERCENT, it) }
+
 /** Defines margin around the component on a per-edge basis. */
 inline fun Style.margin(
     all: Dimen? = null,
@@ -213,3 +280,31 @@ inline fun Style.margin(
         bottom?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_BOTTOM, it) } +
         left?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_LEFT, it) } +
         right?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_RIGHT, it) }
+
+/**
+ * Defines margin around the component on a per-edge basis, with a percent value of container's
+ * size. See
+ * [https://yogalayout.com/docs/margins-paddings-borders](https://yogalayout.com/docs/margins-paddings-borders)
+ * for more information.
+ */
+inline fun Style.marginPercent(
+    all: Float? = null,
+    horizontal: Float? = null,
+    vertical: Float? = null,
+    start: Float? = null,
+    top: Float? = null,
+    end: Float? = null,
+    bottom: Float? = null,
+    left: Float? = null,
+    right: Float? = null,
+): Style =
+    this +
+        all?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_ALL_PERCENT, it) } +
+        horizontal?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_HORIZONTAL_PERCENT, it) } +
+        vertical?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_VERTICAL_PERCENT, it) } +
+        start?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_START_PERCENT, it) } +
+        top?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_TOP_PERCENT, it) } +
+        end?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_END_PERCENT, it) } +
+        bottom?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_BOTTOM_PERCENT, it) } +
+        left?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_LEFT_PERCENT, it) } +
+        right?.let { CoreFloatStyleItem(CoreFloatField.MARGIN_RIGHT_PERCENT, it) }
