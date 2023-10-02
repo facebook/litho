@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.helper.ComponentTestHelper
@@ -129,9 +128,7 @@ class LithoStatsTest {
           // We have to do this inside another thread otherwise the execution of
           // mChangeSetThreadShadowLooper will happen on Main Thread
           runOneTask()
-          if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
-            runOneTask()
-          }
+          runOneTask()
           latch.countDown()
         }
         .start()

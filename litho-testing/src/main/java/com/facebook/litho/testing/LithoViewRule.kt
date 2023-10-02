@@ -73,7 +73,6 @@ constructor(
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {
-        ensureThreadLooperType()
 
         try {
           if (themeResId != null) {
@@ -92,16 +91,6 @@ constructor(
           context.clearCalculationStateContext()
         }
       }
-    }
-  }
-
-  private fun ensureThreadLooperType() {
-    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ThreadLooperController) {
-      threadLooperController = ResolveAndLayoutThreadLooperController()
-    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ResolveAndLayoutThreadLooperController) {
-      threadLooperController = ThreadLooperController()
     }
   }
 

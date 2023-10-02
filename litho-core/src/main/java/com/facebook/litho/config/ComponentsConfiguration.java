@@ -198,17 +198,6 @@ public class ComponentsConfiguration {
 
   public static @Nullable String timelineDocsLink = null;
 
-  /**
-   * When enabled split resolve and layout futures will each use dedicated thread handlers so that
-   * they don't queue against each other.
-   */
-  public static boolean useSeparateThreadHandlersForResolveAndLayout = false;
-
-  /** Return true when resolve and layout futures are split, and each uses its own thread handler */
-  public static boolean isSplitResolveAndLayoutWithSplitHandlers() {
-    return useSeparateThreadHandlersForResolveAndLayout;
-  }
-
   public static boolean enableIsBoringLayoutCheckTimeout = false;
 
   /** Skip checking for root component and tree-props while layout */

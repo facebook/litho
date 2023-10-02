@@ -300,7 +300,6 @@ public class RecyclerBinder
   private StickyHeaderController mStickyHeaderController;
   private final @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
   private final @Nullable RunnableHandler mLayoutThreadPoolHandler;
-  private final @Nullable RunnableHandler mResolveThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private @Nullable EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
@@ -395,7 +394,6 @@ public class RecyclerBinder
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
-        @Nullable RunnableHandler resolveHandler,
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         @Nullable ComponentsConfiguration componentsConfiguration,
@@ -414,7 +412,6 @@ public class RecyclerBinder
         @Override
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
-            @Nullable RunnableHandler resolveHandler,
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             @Nullable ComponentsConfiguration componentsConfiguration,
@@ -428,7 +425,6 @@ public class RecyclerBinder
             @Nullable ErrorEventHandler errorEventHandler) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
-              .resolveHandler(resolveHandler)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .componentsConfiguration(componentsConfiguration)
@@ -966,7 +962,7 @@ public class RecyclerBinder
 
     if (mLayoutHandlerFactory == null) {
 
-      /**
+      /*
        * If a config is manually set, use it. If a global configuration is enabled, check if the
        * configuration enables using a single thread pool for all RecyclerBinders or creates one per
        * RecyclerBinder.
@@ -974,26 +970,16 @@ public class RecyclerBinder
       if (builder.threadPoolConfig != null) {
         mThreadPoolConfig = builder.threadPoolConfig;
         mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
-        mResolveThreadPoolHandler =
-            ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout
-                ? ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig)
-                : null;
       } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
         mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
         mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
-        mResolveThreadPoolHandler =
-            ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout
-                ? ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig)
-                : null;
       } else {
         mThreadPoolConfig = null;
         mLayoutThreadPoolHandler = null;
-        mResolveThreadPoolHandler = null;
       }
     } else {
       mThreadPoolConfig = null;
       mLayoutThreadPoolHandler = null;
-      mResolveThreadPoolHandler = null;
     }
 
     mRenderInfoViewCreatorController =
@@ -4207,23 +4193,15 @@ public class RecyclerBinder
     }
 
     final RunnableHandler layoutHandler;
-    final RunnableHandler resolveHandler;
     if (mLayoutHandlerFactory != null) {
       layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
-      resolveHandler =
-          ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout
-              ? mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo)
-              : null;
     } else if (mLayoutThreadPoolHandler != null) {
       layoutHandler = mLayoutThreadPoolHandler;
-      resolveHandler = mResolveThreadPoolHandler;
     } else {
       layoutHandler = null;
-      resolveHandler = null;
     }
     return mComponentTreeHolderFactory.create(
         renderInfo,
-        resolveHandler,
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
         mComponentsConfiguration,
@@ -4290,7 +4268,6 @@ public class RecyclerBinder
     if (mLayoutHandlerFactory != null
         && mLayoutHandlerFactory.shouldUpdateLayoutHandler(previousRenderInfo, renderInfo)) {
       holder.updateLayoutHandler(mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo));
-      holder.updateResolveHandler(mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo));
     }
   }
 

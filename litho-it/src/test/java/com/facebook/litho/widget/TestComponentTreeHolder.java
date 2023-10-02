@@ -37,7 +37,6 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   int mChildWidth;
   int mChildHeight;
   boolean mCheckWorkingRangeCalled;
-  RunnableHandler mResolveHandler;
   RunnableHandler mLayoutHandler;
   private int mLastRequestedWidthSpec;
   private int mLastRequestedHeightSpec;
@@ -113,12 +112,6 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   public synchronized void updateLayoutHandler(@Nullable RunnableHandler layoutHandler) {
     super.updateLayoutHandler(layoutHandler);
     mLayoutHandler = layoutHandler;
-  }
-
-  @Override
-  public synchronized void updateResolveHandler(@Nullable RunnableHandler resolveHandler) {
-    super.updateResolveHandler(resolveHandler);
-    mResolveHandler = resolveHandler;
   }
 
   @Override

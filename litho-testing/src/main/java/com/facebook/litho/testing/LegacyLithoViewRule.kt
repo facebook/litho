@@ -123,8 +123,6 @@ constructor(
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {
-        ensureThreadLooperType()
-
         try {
           if (themeResId != null) {
             val activity = Robolectric.buildActivity(Activity::class.java).create().get()
@@ -146,16 +144,6 @@ constructor(
           heightSpec = DEFAULT_HEIGHT_SPEC
         }
       }
-    }
-  }
-
-  private fun ensureThreadLooperType() {
-    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ThreadLooperController) {
-      threadLooperController = ResolveAndLayoutThreadLooperController()
-    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ResolveAndLayoutThreadLooperController) {
-      threadLooperController = ThreadLooperController()
     }
   }
 

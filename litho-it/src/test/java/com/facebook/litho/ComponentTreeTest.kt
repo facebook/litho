@@ -191,9 +191,7 @@ class ComponentTreeTest {
 
     // Now the background thread run the queued task.
     runOneTask()
-    if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
-      runOneTask()
-    }
+    runOneTask()
     postSizeSpecChecks(componentTree)
   }
 
@@ -205,9 +203,7 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(scopedContext, root).build()
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     runOneTask()
-    if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
-      runOneTask()
-    }
+    runOneTask()
     val layoutState = componentTree.mainThreadLayoutState
     val c = componentTree.context
     assertThat(c).isNotEqualTo(scopedContext)

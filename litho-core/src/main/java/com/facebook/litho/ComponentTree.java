@@ -308,12 +308,10 @@ public class ComponentTree
 
   private final Object mCurrentDoLayoutRunnableLock = new Object();
 
-  private final Object mCurrentDoResolveRunnableLock = new Object();
-
   @GuardedBy("mCurrentDoLayoutRunnableLock")
   private @Nullable DoLayoutRunnable mCurrentDoLayoutRunnable;
 
-  @GuardedBy("mCurrentDoResolveRunnableLock")
+  @GuardedBy("mCurrentDoLayoutRunnableLock")
   private @Nullable DoResolveRunnable mCurrentDoResolveRunnable;
 
   private final Object mLayoutStateFutureLock = new Object();
@@ -376,8 +374,6 @@ public class ComponentTree
   @GuardedBy("this")
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
-
-  private final boolean useSeparateThreadHandlersForResolveAndLayout;
 
   /**
    * This is a breadcrumb that can be associated with the logs produced by {@link
@@ -471,9 +467,6 @@ public class ComponentTree
 
     addMeasureListener(builder.mMeasureListener);
 
-    useSeparateThreadHandlersForResolveAndLayout =
-        ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
-
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
 
     mIncrementalMountHelper =
@@ -490,13 +483,6 @@ public class ComponentTree
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     if (mPreAllocateMountContentHandler != null) {
       mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
-    }
-
-    if (useSeparateThreadHandlersForResolveAndLayout) {
-      mResolveThreadHandler =
-          builder.resolveThreadHandler != null
-              ? instrumentHandler(builder.resolveThreadHandler)
-              : instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
     }
 
     final LithoConfiguration config =
@@ -545,18 +531,6 @@ public class ComponentTree
 
     mAccessibilityManager =
         (AccessibilityManager) mContext.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-  }
-
-  private Object getResolveThreadHandlerLock() {
-    return useSeparateThreadHandlersForResolveAndLayout
-        ? mCurrentDoResolveRunnableLock
-        : mCurrentDoLayoutRunnableLock;
-  }
-
-  private RunnableHandler getResolveThreadHandler() {
-    return useSeparateThreadHandlersForResolveAndLayout
-        ? mResolveThreadHandler
-        : mLayoutThreadHandler;
   }
 
   private static boolean incrementalMountGloballyDisabled() {
@@ -687,40 +661,13 @@ public class ComponentTree
    */
   @ThreadConfined(ThreadConfined.UI)
   public void updateLayoutThreadHandler(@Nullable RunnableHandler layoutThreadHandler) {
-    if (!useSeparateThreadHandlersForResolveAndLayout) {
-      synchronized (mUpdateStateSyncRunnableLock) {
-        if (mUpdateStateSyncRunnable != null) {
-          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
-        }
+    synchronized (mUpdateStateSyncRunnableLock) {
+      if (mUpdateStateSyncRunnable != null) {
+        mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
       }
     }
 
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(layoutThreadHandler);
-  }
-
-  @ThreadConfined(ThreadConfined.UI)
-  public void updateResolveThreadHandler(@Nullable RunnableHandler resolveThreadHandler) {
-    if (!useSeparateThreadHandlersForResolveAndLayout) {
-      return;
-    }
-
-    synchronized (getResolveThreadHandlerLock()) {
-      if (mCurrentDoResolveRunnable != null) {
-        mResolveThreadHandler.remove(mCurrentDoResolveRunnable);
-      }
-    }
-
-    synchronized (mUpdateStateSyncRunnableLock) {
-      if (mUpdateStateSyncRunnable != null) {
-        mResolveThreadHandler.remove(mUpdateStateSyncRunnable);
-      }
-    }
-
-    if (resolveThreadHandler == null) {
-      resolveThreadHandler = new DefaultHandler(getDefaultResolveThreadLooper());
-    }
-
-    mResolveThreadHandler = instrumentHandler(resolveThreadHandler);
   }
 
   @VisibleForTesting
@@ -1415,7 +1362,7 @@ public class ComponentTree
               + "using the default background layout thread instead");
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
-          getResolveThreadHandler().remove(mUpdateStateSyncRunnable);
+          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
         }
         mUpdateStateSyncRunnable =
             new UpdateStateSyncRunnable(attribution, isCreateLayoutInProgress);
@@ -1424,7 +1371,7 @@ public class ComponentTree
         if (mLayoutThreadHandler.isTracing()) {
           tag = "updateStateSyncNoLooper " + attribution;
         }
-        getResolveThreadHandler().post(mUpdateStateSyncRunnable, tag);
+        mLayoutThreadHandler.post(mUpdateStateSyncRunnable, tag);
       }
       return;
     }
@@ -2101,9 +2048,9 @@ public class ComponentTree
     }
 
     if (isAsync) {
-      synchronized (getResolveThreadHandlerLock()) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
         if (mCurrentDoResolveRunnable != null) {
-          getResolveThreadHandler().remove(mCurrentDoResolveRunnable);
+          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
         }
         mCurrentDoResolveRunnable =
             new DoResolveRunnable(
@@ -2116,13 +2063,13 @@ public class ComponentTree
                 isCreateLayoutInProgress);
 
         String tag = EMPTY_STRING;
-        if (getResolveThreadHandler().isTracing()) {
+        if (mLayoutThreadHandler.isTracing()) {
           tag = "doResolve ";
           if (mRoot != null) {
             tag = tag + mRoot.getSimpleName();
           }
         }
-        getResolveThreadHandler().post(mCurrentDoResolveRunnable, tag);
+        mLayoutThreadHandler.post(mCurrentDoResolveRunnable, tag);
       }
     } else {
       doResolve(
@@ -2147,9 +2094,9 @@ public class ComponentTree
       final int widthSpec,
       final int heightSpec) {
 
-    synchronized (getResolveThreadHandlerLock()) {
+    synchronized (mCurrentDoLayoutRunnableLock) {
       if (mCurrentDoResolveRunnable != null) {
-        getResolveThreadHandler().remove(mCurrentDoResolveRunnable);
+        mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
         mCurrentDoResolveRunnable = null;
       }
     }
@@ -2270,7 +2217,7 @@ public class ComponentTree
         extraAttribution,
         isCreateLayoutInProgress,
         // Don't post when using the same thread handler, as it could cause heavy delays
-        !useSeparateThreadHandlersForResolveAndLayout,
+        true,
         widthSpec,
         heightSpec);
   }
@@ -2649,9 +2596,9 @@ public class ComponentTree
 
       mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 
-      synchronized (getResolveThreadHandlerLock()) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
         if (mCurrentDoResolveRunnable != null) {
-          getResolveThreadHandler().remove(mCurrentDoResolveRunnable);
+          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
           mCurrentDoResolveRunnable = null;
         }
       }
@@ -2665,7 +2612,7 @@ public class ComponentTree
 
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
-          getResolveThreadHandler().remove(mUpdateStateSyncRunnable);
+          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
           mUpdateStateSyncRunnable = null;
         }
       }
@@ -3088,7 +3035,6 @@ public class ComponentTree
     private @Nullable ComponentsConfiguration config;
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
-    private @Nullable RunnableHandler resolveThreadHandler;
     private RunnableHandler layoutThreadHandler;
     private @Nullable RunnableHandler preAllocateMountContentHandler;
     private @Nullable TreeState treeState;
@@ -3183,14 +3129,6 @@ public class ComponentTree
       return this;
     }
 
-    public Builder resolveThreadLooper(Looper looper) {
-      if (looper != null) {
-        resolveThreadHandler = new DefaultHandler(looper);
-      }
-
-      return this;
-    }
-
     /** Specify the handler for to preAllocateMountContent */
     public Builder preAllocateMountContentHandler(@Nullable RunnableHandler handler) {
       preAllocateMountContentHandler = handler;
@@ -3220,11 +3158,6 @@ public class ComponentTree
      */
     public Builder layoutThreadHandler(RunnableHandler handler) {
       layoutThreadHandler = handler;
-      return this;
-    }
-
-    public Builder resolveThreadHandler(RunnableHandler handler) {
-      resolveThreadHandler = handler;
       return this;
     }
 
