@@ -684,12 +684,21 @@ public class ComponentTree
   }
 
   private void backgroundLayoutStateUpdated() {
+    boolean isTracing = ComponentsSystrace.isTracing();
+
     assertMainThread();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("backgroundLayoutStateUpdated");
+    }
 
     final boolean layoutStateUpdated;
     synchronized (this) {
       if (mRoot == null) {
         // We have been released. Abort.
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
         return;
       }
       if (mCommittedLayoutState == null) {
@@ -708,6 +717,11 @@ public class ComponentTree
       if (DEBUG_LOGS) {
         debugLog("backgroundLayoutStateUpdated", "Abort: LayoutState was not updated");
       }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+
       return;
     }
 
@@ -724,6 +738,10 @@ public class ComponentTree
                 + mIsMeasuring
                 + ")");
       }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
       return;
     }
 
@@ -733,6 +751,10 @@ public class ComponentTree
     if (viewWidth == 0 && viewHeight == 0) {
       if (DEBUG_LOGS) {
         debugLog("backgroundLayoutStateUpdated", "Abort: Host view was not measured yet");
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
       // The host view has not been measured yet.
       return;
@@ -760,6 +782,10 @@ public class ComponentTree
               + needsAndroidLayout
               + ", layoutRequested: "
               + mLithoView.isLayoutRequested());
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 

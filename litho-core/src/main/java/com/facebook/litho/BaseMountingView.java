@@ -767,12 +767,22 @@ public abstract class BaseMountingView extends ComponentHost
 
   boolean mountComponentIfNeeded() {
     if (isMountStateDirty() || mountStateNeedsRemount()) {
+      boolean isTracing = ComponentsSystrace.isTracing();
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("BaseMountingView::mountComponentIfNeeded");
+      }
+
       if (isIncrementalMountEnabled()) {
         performIncrementalMountForVisibleBoundsChange();
       } else {
         final Rect visibleRect = new Rect();
         getLocalVisibleRect(visibleRect);
         mountComponent(visibleRect, true);
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
 
       return true;
