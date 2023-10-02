@@ -19,6 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.annotations.Prop
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaFlexDirection
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
 
@@ -30,13 +31,14 @@ private constructor(
     @field:Prop(optional = true) private var alignItems: YogaAlign?,
     @field:Prop(optional = true) private var justifyContent: YogaJustify?,
     @field:Prop(optional = true) private var wrap: YogaWrap?,
+    @field:Prop(optional = true) private var columnGap: Int?,
     @field:Prop(optional = true) private var reverse: Boolean,
     @field:Prop(optional = true) private var children: MutableList<Component>?,
 ) : SpecGeneratedComponent(customSimpleName ?: "Column") {
 
   constructor(
       customSimpleName: String?
-  ) : this(customSimpleName, null, null, null, null, false, null)
+  ) : this(customSimpleName, null, null, null, null, null, false, null)
 
   @JvmOverloads
   constructor(
@@ -46,7 +48,7 @@ private constructor(
       wrap: YogaWrap?,
       reverse: Boolean,
       children: MutableList<Component>? = null
-  ) : this(null, alignContent, alignItems, justifyContent, wrap, reverse, children)
+  ) : this(null, alignContent, alignItems, justifyContent, wrap, null, reverse, children)
 
   override fun canResolve(): Boolean = true
 
@@ -60,6 +62,7 @@ private constructor(
     alignContent?.let { node.alignContent(it) }
     justifyContent?.let { node.justifyContent(it) }
     wrap?.let { node.wrap(it) }
+    columnGap?.let { node.setGap(YogaGutter.COLUMN, it) }
     children?.let { children ->
       for (child in children) {
         if (resolveStateContext.isFutureReleased) {
@@ -166,6 +169,8 @@ private constructor(
     override fun wrap(wrap: YogaWrap?): Builder = apply { column.wrap = wrap }
 
     override fun reverse(reverse: Boolean): Builder = apply { column.reverse = reverse }
+
+    fun columnGap(columnGap: Int): Builder = apply { column.columnGap = columnGap }
 
     override fun getThis(): Builder = this
 
