@@ -289,6 +289,9 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   }
 
   public void setSizeSpec(int widthSpec, int heightSpec) {
+    if (mWidthSpec != widthSpec || mHeightSpec != heightSpec) {
+      mLastMeasuredSize = Long.MIN_VALUE;
+    }
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
   }
@@ -524,9 +527,17 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     // Record the last measured width, and height spec
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
-    if (!mNode.getTailComponentContext().shouldCacheLayouts()) {
-      mLastMeasuredSize = YogaMeasureOutput.make(size.width, size.height);
+
+    // If the size of a cached layout has changed then clear size dependant render units
+    if (mIsCachedLayout
+        && (YogaMeasureOutput.getWidth(mLastMeasuredSize) != size.width
+            || YogaMeasureOutput.getHeight(mLastMeasuredSize) != size.height)) {
+      mBackgroundRenderUnit = null;
+      mForegroundRenderUnit = null;
+      mBorderRenderUnit = null;
     }
+
+    mLastMeasuredSize = YogaMeasureOutput.make(size.width, size.height);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -597,8 +608,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           delegate = null;
           width = size.width;
           height = size.height;
-          // always reset lastMeasuredSize to make sure we do not skip invoking `onBoundsDefined`
-          mLastMeasuredSize = Long.MIN_VALUE;
         }
 
         // If layout data has changed then content render unit should be recreated
@@ -632,29 +641,38 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     final ComponentContext context = getNode().getTailComponentContext();
     final Component component = getNode().getTailComponent();
 
-    // We need to subtract the padding and border from measured size to make sure we're recording
-    // the correct size.
-    final int measuredContentWidth =
-        getWidth()
-            - getPaddingRight()
-            - getPaddingLeft()
-            - getLayoutBorder(YogaEdge.RIGHT)
-            - getLayoutBorder(YogaEdge.LEFT);
-    final int measuredContentHeight =
-        getHeight()
-            - getPaddingTop()
-            - getPaddingBottom()
-            - getLayoutBorder(YogaEdge.TOP)
-            - getLayoutBorder(YogaEdge.BOTTOM);
-    final boolean hasSizeChanged =
-        (mLastMeasuredSize == Long.MIN_VALUE)
-            || (getContentWidth() != measuredContentWidth
-                || getContentHeight() != measuredContentHeight);
-
     if (isMountSpec(component) && (component instanceof SpecGeneratedComponent)) {
 
-      final boolean isNonCachedLayoutOrSizeChanged = !mIsCachedLayout || hasSizeChanged;
-      if (isNonCachedLayoutOrSizeChanged) {
+      final float newContentWidth;
+      if (mWasMeasured
+          || (mIsCachedLayout && MeasureSpecUtils.getMode(mWidthSpec) == SizeSpec.EXACTLY)) {
+        newContentWidth = getContentWidth();
+      } else {
+        newContentWidth =
+            getWidth()
+                - getPaddingRight()
+                - getPaddingLeft()
+                - getLayoutBorder(YogaEdge.RIGHT)
+                - getLayoutBorder(YogaEdge.LEFT);
+      }
+
+      final float newContentHeight;
+      if (mWasMeasured
+          || (mIsCachedLayout && MeasureSpecUtils.getMode(mHeightSpec) == SizeSpec.EXACTLY)) {
+        newContentHeight = getContentHeight();
+      } else {
+        newContentHeight =
+            getHeight()
+                - getPaddingTop()
+                - getPaddingBottom()
+                - getLayoutBorder(YogaEdge.TOP)
+                - getLayoutBorder(YogaEdge.BOTTOM);
+      }
+      if (mLastMeasuredSize == Long.MIN_VALUE
+          || !mIsCachedLayout
+          || mWasMeasured
+          || newContentWidth != getContentWidth()
+          || newContentHeight != getContentHeight()) {
         // We should only invoke `onBoundsDefined` if layout is non cached or size has changed.
         // Note: MountSpec is always treated as size changed once `onMeasure` is invoked no matter
         // if the size changed or not.
@@ -698,25 +716,42 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         mLayoutData = layoutData;
       }
 
-      if (!wasMeasured()) {
+      if (!mWasMeasured) {
         mWasMeasured = true;
         mWidthSpec = MeasureSpecUtils.exactly(getWidth());
         mHeightSpec = MeasureSpecUtils.exactly(getHeight());
+        mLastMeasuredSize = YogaMeasureOutput.make(getWidth(), getHeight());
       }
 
-    } else if (Component.isPrimitive(component)
-        && (mDelegate == null || (mIsCachedLayout && hasSizeChanged))) {
+    } else if (Component.isPrimitive(component)) {
 
-      // Check if we need to run measure for Primitive that was skipped due to with fixed size
-      final LayoutContext layoutContext =
-          LithoLayoutResult.getLayoutContextFromYogaNode(getYogaNode());
-      measure(
-          layoutContext,
-          MeasureSpecUtils.exactly(measuredContentWidth),
-          MeasureSpecUtils.exactly(measuredContentHeight));
+      final int measuredContentWidth =
+          getWidth()
+              - getPaddingRight()
+              - getPaddingLeft()
+              - getLayoutBorder(YogaEdge.RIGHT)
+              - getLayoutBorder(YogaEdge.LEFT);
+      final int measuredContentHeight =
+          getHeight()
+              - getPaddingTop()
+              - getPaddingBottom()
+              - getLayoutBorder(YogaEdge.TOP)
+              - getLayoutBorder(YogaEdge.BOTTOM);
+
+      if (mDelegate == null
+          || (mIsCachedLayout
+              && (measuredContentWidth != getContentWidth()
+                  || measuredContentHeight != getContentHeight()))) {
+
+        // Check if we need to run measure for Primitive that was skipped due to with fixed size
+        final LayoutContext layoutContext =
+            LithoLayoutResult.getLayoutContextFromYogaNode(getYogaNode());
+        measure(
+            layoutContext,
+            MeasureSpecUtils.exactly(measuredContentWidth),
+            MeasureSpecUtils.exactly(measuredContentHeight));
+      }
     }
-
-    mLastMeasuredSize = YogaMeasureOutput.make(measuredContentWidth, measuredContentHeight);
 
     // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
     if (mContext.shouldReuseOutputs()) {
@@ -727,15 +762,15 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       if (mHostRenderUnit == null) {
         mHostRenderUnit = LithoNodeUtils.createHostRenderUnit(getNode());
       }
-      if (hasSizeChanged || mBackgroundRenderUnit == null) {
+      if (mBackgroundRenderUnit == null) {
         mBackgroundRenderUnit =
             LithoNodeUtils.createBackgroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
       }
-      if (hasSizeChanged || mForegroundRenderUnit == null) {
+      if (mForegroundRenderUnit == null) {
         mForegroundRenderUnit =
             LithoNodeUtils.createForegroundRenderUnit(mNode, getWidth(), getHeight(), mDiffNode);
       }
-      if (shouldDrawBorders() && (hasSizeChanged || mBorderRenderUnit == null)) {
+      if (shouldDrawBorders() && mBorderRenderUnit == null) {
         mBorderRenderUnit =
             LithoNodeUtils.createBorderRenderUnit(
                 mNode, createBorderColorDrawable(this), getWidth(), getHeight(), mDiffNode);
