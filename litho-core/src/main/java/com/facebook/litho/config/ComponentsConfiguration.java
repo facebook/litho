@@ -69,7 +69,7 @@ public class ComponentsConfiguration {
   public static final int DEFAULT_CHANGE_SET_THREAD_PRIORITY = 0;
 
   /**
-   * Option to enabled debug mode. This will save extra data asscociated with each node and allow
+   * Option to enabled debug mode. This will save extra data associated with each node and allow
    * more info about the hierarchy to be retrieved. Used to enable stetho integration. It is highly
    * discouraged to enable this in production builds. Due to how the Litho releases are distributed
    * in open source IS_INTERNAL_BUILD will always be false. It is therefore required to override
@@ -99,8 +99,6 @@ public class ComponentsConfiguration {
    * transitions to test animation related behavior.
    */
   public static boolean forceEnableTransitionsForInstrumentationTests = false;
-
-  public static boolean enableErrorBoundaryComponent = false;
 
   /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
@@ -139,9 +137,6 @@ public class ComponentsConfiguration {
    * if this is the root cause.
    */
   public static boolean disableGetAnnotationUsage;
-
-  /** When enabled components which render to null will use a NullNode for reconciliation */
-  public static boolean isNullNodeEnabled = true;
 
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled;
@@ -404,7 +399,6 @@ public class ComponentsConfiguration {
     boolean mShouldCacheLayouts = ComponentsConfiguration.enableLayoutCaching;
     boolean mShouldCacheNestedLayouts = ComponentsConfiguration.enableLayoutCaching;
     boolean mShouldReuseOutputs = false;
-    boolean mIsLayoutCancellationEnabled = false;
     boolean mShouldAddHostViewForRootComponent = false;
     boolean mShouldDisableBgFgOutputs = false;
     boolean mUseIncrementalMountGapWorker = IncrementalMountExtensionConfigs.useGapWorker;
@@ -415,12 +409,12 @@ public class ComponentsConfiguration {
     protected Builder() {}
 
     public Builder useCancelableLayoutFutures(boolean enable) {
-      this.mUseCancelableLayoutFutures = enable;
+      mUseCancelableLayoutFutures = enable;
       return this;
     }
 
     public Builder useInterruptibleResolution(boolean enable) {
-      this.mUseInterruptibleResolution = enable;
+      mUseInterruptibleResolution = enable;
       return this;
     }
 
