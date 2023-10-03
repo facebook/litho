@@ -96,7 +96,6 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
     shadowOf(Looper.getMainLooper()).idle()
   }
 
-
   companion object {
     private val DEFAULT_WIDTH_SPEC: Int =
         View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
