@@ -372,7 +372,9 @@ class Layout {
 
     result.onBoundsDefined();
 
-    registerWorkingRange(layoutState, result);
+    if (node.getTailComponentContext().shouldReuseOutputs()) {
+      registerWorkingRange(layoutState, result);
+    }
   }
 
   /** Register working range for each node */
