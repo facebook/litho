@@ -234,6 +234,8 @@ public class ComponentsConfiguration {
 
   public static int useCachedLruCacheSize = 0;
 
+  public static boolean enablePrimitiveDynamicPropsExtensionFix = false;
+
   public static boolean shouldOverrideHasTransientState = false;
 
   public static boolean shouldUseLruCacheForUseCached() {

@@ -72,7 +72,8 @@ public class LayoutState
         TransitionsExtensionInput,
         EndToEndTestingExtensionInput,
         PotentiallyPartialResult,
-        ViewAttributesInput {
+        ViewAttributesInput,
+        DynamicPropsExtensionInput {
 
   @Nullable private Transition.RootBoundsTransition mRootWidthAnimation;
   @Nullable private Transition.RootBoundsTransition mRootHeightAnimation;
@@ -110,6 +111,7 @@ public class LayoutState
   final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
   final Map<Long, ViewAttributes> mRenderUnitsWithViewAttributes = new HashMap<>(8);
   final Map<Long, IncrementalMountOutput> mIncrementalMountOutputs = new LinkedHashMap<>(8);
+  final Map<Long, DynamicValueOutput> mDynamicValueOutputs = new LinkedHashMap<>(8);
   final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   final LongSparseArray<AnimatableItem> mAnimatableItems = new LongSparseArray<>(8);
@@ -786,5 +788,10 @@ public class LayoutState
   @Nullable
   public VisibilityBoundsTransformer getVisibilityBoundsTransformer() {
     return getComponentContext().getVisibilityBoundsTransformer();
+  }
+
+  @Override
+  public Map<Long, DynamicValueOutput> getDynamicValueOutputs() {
+    return mDynamicValueOutputs;
   }
 }

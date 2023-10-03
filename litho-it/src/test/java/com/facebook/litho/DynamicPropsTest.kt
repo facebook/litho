@@ -434,6 +434,120 @@ class DynamicPropsTest {
     alphaDV.set(1f)
     assertThat(hostView.alpha).isEqualTo(1f)
   }
+
+  @Test
+  fun testPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
+    val alphaDV1 = DynamicValue(1f)
+    var lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                SimpleTestPrimitiveComponent(
+                    style = Style.width(80.px).height(80.px).alpha(alphaDV1)))
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+
+    // simulate update
+    val alphaDV2 = DynamicValue(1f)
+    lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                SimpleTestPrimitiveComponent(
+                    style = Style.width(80.px).height(80.px).alpha(alphaDV2)))
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from the old DV and subscribe to the new DV
+    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
+      // works correctly when fix is applied
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+      assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+    } else {
+      // doesn't work without the fix
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+      assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+    }
+
+    lithoView.unmountAllItems()
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from all DVs
+    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
+      // works correctly when fix is applied
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    } else {
+      // doesn't work without the fix
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+    }
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+  }
+
+  @Test
+  fun testWrappedPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
+    val alphaDV1 = DynamicValue(1f)
+    var lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                Wrapper.create(context)
+                    .delegate(
+                        SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
+                    .kotlinStyle(Style.alpha(alphaDV1))
+                    .build())
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+
+    // simulate update
+    val alphaDV2 = DynamicValue(1f)
+    lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                Wrapper.create(context)
+                    .delegate(
+                        SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
+                    .kotlinStyle(Style.alpha(alphaDV2))
+                    .build())
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from the old DV and subscribe to the new DV
+    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
+      // works correctly when fix is applied
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+      assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+    } else {
+      // doesn't work without the fix
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+      assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+    }
+
+    lithoView.unmountAllItems()
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from all DVs
+    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
+      // works correctly when fix is applied
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    } else {
+      // doesn't work without the fix
+      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+    }
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+  }
 }
 
 private class SimpleTestPrimitiveComponent(

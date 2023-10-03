@@ -1086,6 +1086,18 @@ public class LithoReducer {
       layoutState.mRenderUnitsWithViewAttributes.put(id, attrs);
     }
 
+    if (node.getRenderUnit() instanceof LithoRenderUnit) {
+      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) node.getRenderUnit();
+      if (lithoRenderUnit.commonDynamicProps != null) {
+        layoutState.mDynamicValueOutputs.put(
+            lithoRenderUnit.getId(),
+            new DynamicValueOutput(
+                lithoRenderUnit.getComponent(),
+                lithoRenderUnit.componentContext,
+                lithoRenderUnit.commonDynamicProps));
+      }
+    }
+
     final AnimatableItem animatableItem =
         createAnimatableItem(unit, absoluteBounds, type, transitionId);
 
