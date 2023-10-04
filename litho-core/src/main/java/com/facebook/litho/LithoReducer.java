@@ -528,11 +528,6 @@ public class LithoReducer {
           parentDiffNode,
           hierarchy);
 
-      if (parentContext.shouldCacheLayouts()
-          && !parentContext.getComponentsConfiguration().shouldCacheNestedLayouts()) {
-        ((NestedTreeHolderResult) result).setNestedResult(null);
-      }
-
       layoutState.mCurrentX -= result.getX();
       layoutState.mCurrentY -= result.getY();
 

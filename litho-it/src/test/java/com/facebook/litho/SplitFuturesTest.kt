@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.graphics.Color
 import com.facebook.litho.TreeFuture.FutureExecutionListener
 import com.facebook.litho.TreeFuture.FutureExecutionType
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.ThreadTestingUtils
@@ -106,7 +105,7 @@ class SplitFuturesTest {
 
     // Set new size specs. Only measure steps should occur
     legacyLithoViewRule.setSizeSpecs(widthSpec2, heightSpec2).measure().layout()
-    if (ComponentsConfiguration.enableLayoutCaching) {
+    if (legacyLithoViewRule.context.shouldCacheLayouts()) {
       // SHOULD_UPDATE happens after ON_MEASURE with layout caching
       assertThat(tracker.steps)
           .describedAs("Changing width and height triggers only re-measure steps")

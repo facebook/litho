@@ -776,13 +776,8 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldCacheLayouts() {
-    if (isNestedTreeContext()) {
-      return isReconciliationEnabled()
-          && mLithoConfiguration.mComponentsConfiguration.shouldCacheNestedLayouts();
-    } else {
-      return isReconciliationEnabled()
-          && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
-    }
+    return isReconciliationEnabled()
+        && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
   }
 
   boolean shouldReuseOutputs() {

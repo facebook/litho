@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DynamicComponentGroupSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
@@ -46,11 +45,11 @@ class LayoutCachingTest {
   @JvmField @Rule var legacyLithoViewRule = LegacyLithoViewRule()
 
   fun `unchanged node with inter stage prop should not be remeasured when state updates`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
       return
     }
 
-    val c = legacyLithoViewRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -83,11 +82,11 @@ class LayoutCachingTest {
 
   @Test
   fun `unchanged node without inter stage prop should not get rebinding when state updates`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
       return
     }
 
-    val c = legacyLithoViewRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -126,11 +125,11 @@ class LayoutCachingTest {
 
   @Test
   fun `unchanged subtree should not get rebinding when state updates`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
       return
     }
 
-    val c = legacyLithoViewRule.context
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val caller: SimpleStateUpdateEmulatorSpec.Caller = SimpleStateUpdateEmulatorSpec.Caller()
@@ -186,11 +185,11 @@ class LayoutCachingTest {
 
   @Test
   fun `changing size spec should trigger re-measurement`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
       return
     }
 
-    val c = legacyLithoViewRule.context
     val lifecycleTracker = LifecycleTracker()
     val component =
         MountSpecPureRenderLifecycleTester.create(c)
@@ -238,11 +237,11 @@ class LayoutCachingTest {
 
   @Test
   fun `inter stage data should be copied for cached nodes`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
       return
     }
 
-    val c = legacyLithoViewRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -276,11 +275,11 @@ class LayoutCachingTest {
 
   @Test
   fun `unchanged node should not get rebinding when the size of root node changes`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
       return
     }
 
-    val c = legacyLithoViewRule.context
     val lifecycleTracker = LifecycleTracker()
     val component =
         Column.create(c)
@@ -317,11 +316,11 @@ class LayoutCachingTest {
 
   @Test
   fun `verify the behavior of onBoundsDefined with padding and border`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
       return
     }
 
-    val c = legacyLithoViewRule.context
     val lifecycleTracker = LifecycleTracker()
     val caller = SimpleStateUpdateEmulatorSpec.Caller()
     val component =
@@ -425,11 +424,11 @@ class LayoutCachingTest {
    */
   @Test
   fun `RecyclerCollectionComponent with wrapContent should be re-measured with the latest size specs when it changes`() {
-    if (!ComponentsConfiguration.enableLayoutCaching) {
+    val context = legacyLithoViewRule.context
+    if (!context.shouldCacheLayouts()) {
       return
     }
 
-    val context = legacyLithoViewRule.context
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val lifecycleTracker3 = LifecycleTracker()

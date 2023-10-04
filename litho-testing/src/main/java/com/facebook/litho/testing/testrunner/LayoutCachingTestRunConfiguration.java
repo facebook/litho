@@ -21,20 +21,17 @@ import org.junit.runners.model.FrameworkMethod;
 
 public class LayoutCachingTestRunConfiguration implements LithoTestRunConfiguration {
 
-  private final boolean layoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
   private final ComponentsConfiguration.Builder mDefaultComponentsConfiguration =
       ComponentsConfiguration.getDefaultComponentsConfigurationBuilder();
 
   @Override
   public void beforeTest(FrameworkMethod method) {
-    ComponentsConfiguration.enableLayoutCaching = true;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().shouldReuseOutputs(true));
+        ComponentsConfiguration.create().shouldCacheLayouts(true).shouldReuseOutputs(true));
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
-    ComponentsConfiguration.enableLayoutCaching = layoutCachingEnabled;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
         mDefaultComponentsConfiguration);
   }
