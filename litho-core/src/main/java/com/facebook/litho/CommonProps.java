@@ -26,6 +26,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
@@ -38,7 +39,11 @@ import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaPositionType;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -356,6 +361,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   @Override
   public void setBorderWidth(YogaEdge edge, float borderWidth) {
     getOrCreateLayoutProps().setBorderWidth(edge, borderWidth);
+  }
+
+  @Override
+  public void gap(@NotNull YogaGutter gap, float length) {
+    getOrCreateLayoutProps().gap(gap, length);
   }
 
   public void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
@@ -1078,8 +1088,8 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
 
     /** Used by {@link DebugLayoutNodeEditor} */
     private @Nullable Edges mBorderEdges;
-
-    @Override
+    private @Nullable YogaGutter mGapGutter;
+    private @Nullable Float mGapLength;
     public void widthPx(@Px int width) {
       mPrivateFlags |= PFLAG_WIDTH_IS_SET;
       mWidthPx = width;
@@ -1305,6 +1315,12 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       mBorderEdges.set(edge, borderWidth);
     }
 
+    @Override
+    public void gap(@NotNull YogaGutter gutter, float length) {
+      mGapGutter = gutter;
+      mGapLength = length;
+    }
+
     void copyInto(LayoutProps target) {
       if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
         target.widthPx(mWidthPx);
@@ -1445,6 +1461,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
           }
         }
       }
+
+      if (mGapGutter != null && mGapLength != null) {
+        target.gap(mGapGutter, mGapLength);
+      }
     }
 
     @Override
@@ -1491,7 +1511,9 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
           && mWidthAuto == other.mWidthAuto
           && mFlexBasisAuto == other.mFlexBasisAuto
           && EquivalenceUtils.isEquivalentTo(mBorderEdges, other.mBorderEdges)
-          && EquivalenceUtils.equals(mMarginAutos, other.mMarginAutos);
+          && EquivalenceUtils.equals(mMarginAutos, other.mMarginAutos)
+          && EquivalenceUtils.equals(mGapGutter, other.mGapGutter)
+          && EquivalenceUtils.equals(mGapLength, other.mGapLength);
     }
   }
 }

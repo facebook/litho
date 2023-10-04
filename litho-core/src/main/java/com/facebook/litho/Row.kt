@@ -31,14 +31,13 @@ private constructor(
     @field:Prop(optional = true) private var alignItems: YogaAlign?,
     @field:Prop(optional = true) private var justifyContent: YogaJustify?,
     @field:Prop(optional = true) private var wrap: YogaWrap?,
-    @field:Prop(optional = true) private var rowGap: Int?,
     @field:Prop(optional = true) private var reverse: Boolean,
     @field:Prop(optional = true) private var children: MutableList<Component>?,
 ) : SpecGeneratedComponent(customSimpleName ?: "Row") {
 
   constructor(
       customSimpleName: String?
-  ) : this(customSimpleName, null, null, null, null, null, false, null)
+  ) : this(customSimpleName, null, null, null, null, false, null)
 
   @JvmOverloads
   constructor(
@@ -46,10 +45,9 @@ private constructor(
       alignItems: YogaAlign?,
       justifyContent: YogaJustify?,
       wrap: YogaWrap?,
-      rowGap: Int?,
       reverse: Boolean,
       children: MutableList<Component>? = null
-  ) : this(null, alignContent, alignItems, justifyContent, wrap, rowGap, reverse, children)
+  ) : this(null, alignContent, alignItems, justifyContent, wrap, reverse, children)
 
   override fun canResolve(): Boolean = true
 
@@ -63,7 +61,6 @@ private constructor(
     alignContent?.let { node.alignContent(it) }
     justifyContent?.let { node.justifyContent(it) }
     wrap?.let { node.wrap(it) }
-    rowGap?.let { node.setGap(YogaGutter.ROW, it) }
     children?.let { children ->
       for (child in children) {
         if (resolveStateContext.isFutureReleased) {
@@ -164,13 +161,12 @@ private constructor(
     override fun justifyContent(justifyContent: YogaJustify?): Builder = apply {
       row.justifyContent = justifyContent
     }
+    override fun gap(gutter: YogaGutter, length: Float): Builder = apply {
+      row.commonProps?.gap(gutter, length)
+    }
 
     override fun wrap(wrap: YogaWrap?): Builder = apply { row.wrap = wrap }
-
     override fun reverse(reverse: Boolean): Builder = apply { row.reverse = reverse }
-
-    fun rowGap(rowGap: Int): Builder = apply { row.rowGap = rowGap }
-
     override fun getThis(): Builder = this
 
     override fun build(): Row = row

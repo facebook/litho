@@ -33,6 +33,7 @@ import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaPositionType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -188,6 +189,7 @@ class CommonPropsTest {
     commonProps.sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
     val stateListAnimator: StateListAnimator = mock()
     commonProps.stateListAnimator(stateListAnimator)
+    commonProps.gap(YogaGutter.ALL, 10f)
     commonProps.copyInto(componentContext, node)
     val output: LayoutProps = Mockito.spy<LayoutProps>(LayoutProps::class.java)
     commonProps.copyLayoutProps(output)
@@ -238,6 +240,7 @@ class CommonPropsTest {
     verify(output).maxHeightPx(34)
     verify(output).maxHeightPercent(35f)
     verify(output).aspectRatio(20f)
+    verify(output).gap(YogaGutter.ALL, 10f)
     verify(node).touchExpansionPx(YogaEdge.RIGHT, 22)
     verify(node).touchExpansionPx(YogaEdge.LEFT, 23)
     verify(node).touchExpansionPx(YogaEdge.ALL, 21)

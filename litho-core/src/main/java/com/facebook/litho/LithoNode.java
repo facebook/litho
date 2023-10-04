@@ -1158,10 +1158,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mYogaWrap = wrap;
   }
 
-  public void setGap(YogaGutter gap, Integer size) {
-    mGap = gap;
-    mGapLength = size;
-  }
   public void wrapInView() {
     mForceViewWrapping = true;
   }
