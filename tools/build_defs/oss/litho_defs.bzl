@@ -217,6 +217,8 @@ LITHO_JUNIT_TARGET = make_dep_path("lib/junit:junit")
 LITHO_HAMCREST_TARGET = make_dep_path("lib/hamcrest:hamcrest")
 
 # Annotation processors
+LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/annotationprocessors/common:common")
+
 LITHO_PROCESSOR_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor")
 
 LITHO_PROCESSOR_LIB_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib")

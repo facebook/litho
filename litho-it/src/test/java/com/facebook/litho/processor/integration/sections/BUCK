@@ -5,6 +5,7 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_COMPILE_TESTING_TARGET",
     "LITHO_GUAVA_TARGET",
@@ -29,6 +30,7 @@ fb_java_test(
     source = "1.8",
     target = "1.8",
     deps = [
+        LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_COMPILE_TESTING_TARGET,
         LITHO_GUAVA_TARGET,

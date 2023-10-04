@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET",
     "LITHO_PROCESSOR_LIB_TARGET",
     "fb_java_library",
     "make_dep_path",
@@ -18,6 +19,7 @@ fb_java_library(
         make_dep_path("litho-it/..."),
     ],
     deps = [
+        LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET,
         LITHO_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
