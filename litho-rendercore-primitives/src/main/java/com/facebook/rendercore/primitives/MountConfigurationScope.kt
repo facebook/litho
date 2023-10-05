@@ -64,7 +64,8 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
 
-              val lastBinderIndex: Int = _fixedBinders.size
+              val renderUnitDescription: String =
+                  "binder:${binderDescription ?: _fixedBinders.size}"
 
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
@@ -106,7 +107,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun getDescription(): String {
-                return binderDescription ?: "#$lastBinderIndex"
+                return renderUnitDescription
               }
             }))
   }
@@ -137,7 +138,8 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
 
-              val lastBinderIndex: Int = _fixedBinders.size
+              val renderUnitDescription: String =
+                  "binder:${binderDescription ?: _fixedBinders.size}"
 
               override fun shouldUpdate(
                   currentModel: Array<out Any?>?,
@@ -188,7 +190,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun getDescription(): String {
-                return binderDescription ?: "#$lastBinderIndex"
+                return renderUnitDescription
               }
             }))
   }
@@ -205,7 +207,8 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             this,
             object : RenderUnit.Binder<T, ContentType, Any?> {
 
-              val lastBinderIndex: Int = _fixedBinders.size
+              val renderUnitDescription: String =
+                  "binder:${binderDescription ?: _fixedBinders.size}"
 
               override fun shouldUpdate(
                   currentModel: T,
@@ -237,7 +240,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun getDescription(): String {
-                return binderDescription ?: "#$lastBinderIndex"
+                return renderUnitDescription
               }
             }))
   }
@@ -254,7 +257,8 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             this,
             object : RenderUnit.Binder<T, ContentType, Any?> {
 
-              val lastBinderIndex: Int = _fixedBinders.size
+              val renderUnitDescription: String =
+                  "binder:${binderDescription ?: _fixedBinders.size}"
 
               override fun shouldUpdate(
                   currentModel: T,
@@ -286,7 +290,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun getDescription(): String {
-                return binderDescription ?: "#$lastBinderIndex"
+                return renderUnitDescription
               }
             }))
   }

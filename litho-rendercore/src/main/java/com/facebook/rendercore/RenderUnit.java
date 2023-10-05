@@ -269,17 +269,22 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       Systracer tracer) {
     final boolean isTracing = tracer.isTracing();
     final int fixedMountBindersSize = mFixedMountBinders.size();
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":mount-fixed"));
+    }
     for (int i = 0; i < fixedMountBindersSize; i++) {
       final DelegateBinder binder = mFixedMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection(
-            sectionName(getDescription() + ":mount-fixed:" + binder.getDescription()));
+        tracer.beginSection(sectionName(binder.getDescription()));
       }
       @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
       bindData.setFixedBindersBindData(binderBindData, i, fixedMountBindersSize);
       if (isTracing) {
         tracer.endSection();
       }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
   }
 
@@ -297,10 +302,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     final boolean isTracing = tracer.isTracing();
     final int optionalMountBindersSize = mOptionalMountBinders.size();
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":mount-optional"));
+    }
     for (int i = 0; i < optionalMountBindersSize; i++) {
       final DelegateBinder binder = mOptionalMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection(sectionName(getDescription() + ":mount:" + binder.getDescription()));
+        tracer.beginSection(sectionName(binder.getDescription()));
       }
       @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
       bindData.setOptionalMountBindersBindData(
@@ -308,6 +316,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       if (isTracing) {
         tracer.endSection();
       }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
   }
 
@@ -319,16 +330,21 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       BindData bindData,
       Systracer tracer) {
     final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":unmount-fixed"));
+    }
     for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = mFixedMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection(
-            sectionName(getDescription() + ":unmount-fixed:" + binder.getDescription()));
+        tracer.beginSection(sectionName(binder.getDescription()));
       }
       binder.unbind(context, content, layoutData, bindData.removeFixedBinderBindData(i));
       if (isTracing) {
         tracer.endSection();
       }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
   }
 
@@ -341,11 +357,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       Systracer tracer) {
     if (mOptionalMountBinders != null) {
       final boolean isTracing = tracer.isTracing();
+      if (isTracing) {
+        tracer.beginSection(sectionName(getDescription() + ":unmount-optional"));
+      }
       for (int i = mOptionalMountBinders.size() - 1; i >= 0; i--) {
         final DelegateBinder binder = mOptionalMountBinders.get(i);
         if (isTracing) {
-          tracer.beginSection(
-              sectionName(getDescription() + ":unmount:" + binder.getDescription()));
+          tracer.beginSection(sectionName(binder.getDescription()));
         }
         binder.unbind(
             context,
@@ -355,6 +373,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
         if (isTracing) {
           tracer.endSection();
         }
+      }
+      if (isTracing) {
+        tracer.endSection();
       }
     }
 
@@ -374,10 +395,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     final boolean isTracing = tracer.isTracing();
     final int attachBindersSize = mAttachBinders.size();
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":attach"));
+    }
     for (int i = 0; i < attachBindersSize; i++) {
       final DelegateBinder binder = mAttachBinders.get(i);
       if (isTracing) {
-        tracer.beginSection(sectionName(getDescription() + ":attach:" + binder.getDescription()));
+        tracer.beginSection(sectionName(binder.getDescription()));
       }
       @Nullable final Object binderBindData = binder.bind(context, content, layoutData);
       bindData.setAttachBindersBindData(
@@ -385,6 +409,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       if (isTracing) {
         tracer.endSection();
       }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
   }
 
@@ -400,10 +427,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     final boolean isTracing = tracer.isTracing();
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":detach"));
+    }
     for (int i = mAttachBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = mAttachBinders.get(i);
       if (isTracing) {
-        tracer.beginSection(sectionName(getDescription() + ":detach:" + binder.getDescription()));
+        tracer.beginSection(sectionName(binder.getDescription()));
       }
       binder.unbind(
           context,
@@ -413,6 +443,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       if (isTracing) {
         tracer.endSection();
       }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
   }
 
@@ -430,6 +463,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       BindData bindData,
       boolean isAttached,
       Systracer tracer) {
+
+    final boolean isTracing = tracer.isTracing();
 
     final List<DelegateBinder> attachBindersForBind = new ArrayList<>(sizeOrZero(mAttachBinders));
     final List<DelegateBinder> attachBindersForUnbind =
@@ -487,13 +522,25 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
             content,
             tracer);
       }
+      if (isTracing) {
+        tracer.beginSection(sectionName(getDescription() + ":detach"));
+      }
       for (int i = attachBindersForUnbind.size() - 1; i >= 0; i--) {
         final DelegateBinder binder = attachBindersForUnbind.get(i);
+        if (isTracing) {
+          tracer.beginSection(sectionName(binder.getDescription()));
+        }
         binder.unbind(
             context,
             content,
             currentLayoutData,
             bindData.removeAttachBindersBindData(binder.binder.getClass()));
+        if (isTracing) {
+          tracer.endSection();
+        }
+      }
+      if (isTracing) {
+        tracer.endSection();
       }
     }
 
@@ -508,41 +555,89 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
           content,
           tracer);
     }
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":unmount-optional"));
+    }
     for (int i = optionalMountBindersForUnbind.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = optionalMountBindersForUnbind.get(i);
+      if (isTracing) {
+        tracer.beginSection(sectionName(binder.getDescription()));
+      }
       binder.unbind(
           context,
           content,
           currentLayoutData,
           bindData.removeOptionalMountBindersBindData(binder.binder.getClass()));
+      if (isTracing) {
+        tracer.endSection();
+      }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
     if (fixedMountBindersToUpdate != 0) {
+      if (isTracing) {
+        tracer.beginSection(sectionName(getDescription() + ":unmount-fixed"));
+      }
       for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
         if ((fixedMountBindersToUpdate & ((long) 0x1 << i)) != 0) {
           final DelegateBinder binder = currentRenderUnit.mFixedMountBinders.get(i);
+          if (isTracing) {
+            tracer.beginSection(sectionName(binder.getDescription()));
+          }
           binder.unbind(context, content, currentLayoutData, bindData.removeFixedBinderBindData(i));
+          if (isTracing) {
+            tracer.endSection();
+          }
         }
+      }
+      if (isTracing) {
+        tracer.endSection();
       }
     }
 
     // 5. Rebind all fixed and optional mount binders which did update.
     if (fixedMountBindersToUpdate != 0) {
       final int fixedMountBindersSize = mFixedMountBinders.size();
+      if (isTracing) {
+        tracer.beginSection(sectionName(getDescription() + ":mount-fixed"));
+      }
       for (int i = 0; i < fixedMountBindersSize; i++) {
         if ((fixedMountBindersToUpdate & (0x1L << i)) != 0) {
           final DelegateBinder binder = mFixedMountBinders.get(i);
+          if (isTracing) {
+            tracer.beginSection(sectionName(binder.getDescription()));
+          }
           @Nullable final Object binderBindData = binder.bind(context, content, newLayoutData);
           bindData.setFixedBindersBindData(binderBindData, i, fixedMountBindersSize);
+          if (isTracing) {
+            tracer.endSection();
+          }
         }
+      }
+      if (isTracing) {
+        tracer.endSection();
       }
     }
     final int optionalMountBindersSize =
         mOptionalMountBinders != null ? mOptionalMountBinders.size() : 0;
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":mount-optional"));
+    }
     for (int i = 0; i < optionalMountBindersForBind.size(); i++) {
       final DelegateBinder binder = optionalMountBindersForBind.get(i);
+      if (isTracing) {
+        tracer.beginSection(sectionName(binder.getDescription()));
+      }
       @Nullable final Object binderBindData = binder.bind(context, content, newLayoutData);
       bindData.setOptionalMountBindersBindData(
           binderBindData, binder.binder.getClass(), optionalMountBindersSize);
+      if (isTracing) {
+        tracer.endSection();
+      }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
       MountDelegate.onMountItemWhichRequiresUpdate(
@@ -557,11 +652,23 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     // 6. Rebind all attach binders which did update.
     final int attachBindersSize = mAttachBinders != null ? mAttachBinders.size() : 0;
+    if (isTracing) {
+      tracer.beginSection(sectionName(getDescription() + ":attach"));
+    }
     for (int i = 0; i < attachBindersForBind.size(); i++) {
       final DelegateBinder binder = attachBindersForBind.get(i);
+      if (isTracing) {
+        tracer.beginSection(sectionName(binder.getDescription()));
+      }
       @Nullable final Object binderBindData = binder.bind(context, content, newLayoutData);
       bindData.setAttachBindersBindData(
           binderBindData, binder.binder.getClass(), attachBindersSize);
+      if (isTracing) {
+        tracer.endSection();
+      }
+    }
+    if (isTracing) {
+      tracer.endSection();
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
       MountDelegate.onBindItemWhichRequiresUpdate(
