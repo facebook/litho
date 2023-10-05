@@ -615,7 +615,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       ComponentsSystrace.beginSection("copyLayoutResult");
     }
 
-    LithoNode node = cachedLayoutResult.mNode;
+    LithoNode node = cachedLayoutResult.getNode();
     LithoLayoutResult result = cachedLayoutResult.copyLayoutResult(node, clonedYogaNode);
     clonedYogaNode.setData(new Pair(context, result));
     saveLithoLayoutResultIntoCache(context, node, result);

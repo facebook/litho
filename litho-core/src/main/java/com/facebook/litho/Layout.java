@@ -339,7 +339,7 @@ class Layout {
         return;
       }
 
-      final @Nullable Resolver.Outputs outputs = Resolver.collectOutputs(nestedTree.mNode);
+      final @Nullable Resolver.Outputs outputs = Resolver.collectOutputs(nestedTree.getNode());
       if (outputs != null) {
         if (layoutState.mAttachables == null) {
           layoutState.mAttachables = new ArrayList<>(outputs.attachables.size());

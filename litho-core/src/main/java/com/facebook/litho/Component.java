@@ -498,8 +498,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       try {
         final LithoNode node;
 
-        if (lastMeasuredLayout != null && lastMeasuredLayout.mNode != null) {
-          node = lastMeasuredLayout.mNode;
+        if (lastMeasuredLayout != null && lastMeasuredLayout.getNode() != null) {
+          node = lastMeasuredLayout.getNode();
         } else {
           final ResolveContext nestedRsc =
               new ResolveContext(
@@ -550,7 +550,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       }
 
       // Add the cached result.
-      resultCache.addCachedResult(this, lastMeasuredLayout.mNode, lastMeasuredLayout);
+      resultCache.addCachedResult(this, lastMeasuredLayout.getNode(), lastMeasuredLayout);
     }
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();

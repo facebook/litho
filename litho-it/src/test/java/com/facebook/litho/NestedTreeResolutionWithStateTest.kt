@@ -1076,7 +1076,7 @@ class NestedTreeResolutionWithStateTest {
       assertThat(legacyLithoViewRule.currentRootNode).isNotNull
       return requireNotNull(
           getCorrectLayoutResult(legacyLithoViewRule.currentRootNode)
-              ?.mNode
+              ?.node
               ?.getComponentContextAt(1))
     }
 
@@ -1090,9 +1090,9 @@ class NestedTreeResolutionWithStateTest {
             val nestedResult = getCorrectLayoutResult(rootLayoutResult)
             val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
             assertThat(nestedMidResult).isNotNull
-            nestedMidResult?.mNode?.getComponentContextAt(1)
+            nestedMidResult?.node?.getComponentContextAt(1)
           } else {
-            rootLayoutResult?.mNode?.getChildAt(1)?.getComponentContextAt(0)
+            rootLayoutResult?.node?.getChildAt(1)?.getComponentContextAt(0)
           })
     }
 
@@ -1107,15 +1107,15 @@ class NestedTreeResolutionWithStateTest {
             val nestedMidResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
             assertThat(nestedMidResult).isNotNull
             val nestedBotResult = getCorrectLayoutResult(nestedMidResult?.getChildAt(1))
-            getCorrectLayoutResult(nestedBotResult)?.mNode?.getComponentContextAt(1)
+            getCorrectLayoutResult(nestedBotResult)?.node?.getComponentContextAt(1)
           } else {
             val midResult = rootLayoutResult?.getChildAt(1)
             if (midResult is NestedTreeHolderResult) {
               val nestedResult = getCorrectLayoutResult(midResult)
               val nestedBotResult = getCorrectLayoutResult(nestedResult?.getChildAt(1))
-              getCorrectLayoutResult(nestedBotResult)?.mNode?.getComponentContextAt(1)
+              getCorrectLayoutResult(nestedBotResult)?.node?.getComponentContextAt(1)
             } else {
-              rootLayoutResult?.mNode?.getChildAt(1)?.getChildAt(1)?.getComponentContextAt(0)
+              rootLayoutResult?.node?.getChildAt(1)?.getChildAt(1)?.getComponentContextAt(0)
             }
           })
     }

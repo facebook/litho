@@ -55,7 +55,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
   protected MeasureResult measureInternal(
       LayoutContext<LithoRenderContext> context, int widthSpec, int heightSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
-    final Component component = mNode.getTailComponent();
+    final Component component = getNode().getTailComponent();
     if (context.getRenderContext().lithoLayoutContext.isReleased()) {
       throw new IllegalStateException(
           component.getSimpleName()
@@ -63,7 +63,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
               + " Component#measureMightNotCacheInternalNode.");
     }
 
-    final int count = mNode.getComponentCount();
+    final int count = getNode().getComponentCount();
     final ComponentContext parentContext;
     if (count == 1) {
       final ComponentContext parentFromNode = getNode().mParentContext;
@@ -73,7 +73,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
         parentContext = context.getRenderContext().lithoLayoutContext.getRootComponentContext();
       }
     } else {
-      parentContext = mNode.getComponentContextAt(1);
+      parentContext = getNode().getComponentContextAt(1);
     }
 
     if (parentContext == null) {
@@ -107,7 +107,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
   }
 
   @Override
-  void releaseLayoutPhaseData() {
+  public void releaseLayoutPhaseData() {
     super.releaseLayoutPhaseData();
     if (mNestedTree != null) {
       mNestedTree.releaseLayoutPhaseData();

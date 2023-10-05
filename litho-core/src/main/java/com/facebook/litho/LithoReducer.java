@@ -180,18 +180,19 @@ public class LithoReducer {
     final boolean hasExactSize = !result.wasMeasured();
     if (!node.getTailComponentContext().shouldCacheLayouts()) {
       if (isPrimitive(node.getTailComponent()) && hasExactSize) {
+
         final int width =
             result.getWidth()
                 - result.getPaddingRight()
                 - result.getPaddingLeft()
-                - result.getLayoutBorder(YogaEdge.RIGHT)
-                - result.getLayoutBorder(YogaEdge.LEFT);
+                - LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.RIGHT)
+                - LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.LEFT);
         final int height =
             result.getHeight()
                 - result.getPaddingTop()
                 - result.getPaddingBottom()
-                - result.getLayoutBorder(YogaEdge.TOP)
-                - result.getLayoutBorder(YogaEdge.BOTTOM);
+                - LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.TOP)
+                - LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.BOTTOM);
 
         final LayoutContext layoutContext =
             LithoLayoutResult.getLayoutContextFromYogaNode(result.getYogaNode());
@@ -290,10 +291,18 @@ public class LithoReducer {
       if (isPrimitive(unit.getComponent())) {
         if (!isMountableView(unit)) {
           if (!hasExactSize) {
-            l += result.getPaddingLeft() + result.getLayoutBorder(YogaEdge.LEFT);
-            t += result.getPaddingTop() + result.getLayoutBorder(YogaEdge.TOP);
-            r -= (result.getPaddingRight() + result.getLayoutBorder(YogaEdge.RIGHT));
-            b -= (result.getPaddingBottom() + result.getLayoutBorder(YogaEdge.BOTTOM));
+            l +=
+                result.getPaddingLeft()
+                    + LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.LEFT);
+            t +=
+                result.getPaddingTop()
+                    + LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.TOP);
+            r -=
+                (result.getPaddingRight()
+                    + LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.RIGHT));
+            b -=
+                (result.getPaddingBottom()
+                    + LithoLayoutResult.Companion.getLayoutBorder(result, YogaEdge.BOTTOM));
           } else {
             // for exact size the border doesn't need to be adjusted since it's inside the bounds of
             // the content
@@ -506,7 +515,7 @@ public class LithoReducer {
       }
 
       if (!parentContext.shouldCacheLayouts()) {
-        final @Nullable Resolver.Outputs outputs = Resolver.collectOutputs(nestedTree.mNode);
+        final @Nullable Resolver.Outputs outputs = Resolver.collectOutputs(nestedTree.getNode());
         if (outputs != null) {
           if (layoutState.mAttachables == null) {
             layoutState.mAttachables = new ArrayList<>(outputs.attachables.size());

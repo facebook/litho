@@ -148,8 +148,8 @@ class TreeDiffingTest {
             .build()
     legacyLithoViewRule.setRoot(component1).layout().measure()
     val result = legacyLithoViewRule.currentRootNode
-    assertThat(result?.getChildAt(0)?.areCachedMeasuresValid()).isTrue
-    assertThat(result?.getChildAt(1)?.areCachedMeasuresValid()).isTrue
+    assertThat(result?.getChildAt(0)?.cachedMeasuresValid).isTrue
+    assertThat(result?.getChildAt(1)?.cachedMeasuresValid).isTrue
   }
 
   @Test
@@ -168,8 +168,8 @@ class TreeDiffingTest {
             .build()
     legacyLithoViewRule.setRoot(component1).layout().measure()
     val result = legacyLithoViewRule.currentRootNode
-    assertThat(result?.getChildAt(0)?.areCachedMeasuresValid()).isTrue
-    assertThat(result?.getChildAt(1)?.areCachedMeasuresValid()).isFalse
+    assertThat(result?.getChildAt(0)?.cachedMeasuresValid).isTrue
+    assertThat(result?.getChildAt(1)?.cachedMeasuresValid).isFalse
   }
 
   @Test
@@ -262,7 +262,7 @@ class TreeDiffingTest {
   }
 
   private fun assertCachedMeasurementsNotDefined(node: LithoLayoutResult) {
-    assertThat(node.areCachedMeasuresValid()).isFalse
+    assertThat(node.cachedMeasuresValid).isFalse
   }
 
   private fun checkAllComponentsHaveMeasureCache(node: LithoLayoutResult) {
@@ -708,7 +708,7 @@ class TreeDiffingTest {
       val diffWidth: Float = node.diffNode?.lastMeasuredWidth ?: -1f
       assertThat(diffHeight != -1f).isTrue
       assertThat(diffWidth != -1f).isTrue
-      assertThat(node.areCachedMeasuresValid()).isTrue
+      assertThat(node.cachedMeasuresValid).isTrue
     }
 
     private fun createNode(component: Component): RenderTreeNode {

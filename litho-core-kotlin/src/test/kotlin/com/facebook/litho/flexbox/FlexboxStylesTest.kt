@@ -910,7 +910,7 @@ class FlexboxStylesTest {
         .layout()
         .attachToWindow()
 
-    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.getLayoutDirection())
+    assertThat(lithoViewRule.currentRootNode?.yogaNode?.layoutDirection)
         .isEqualTo(YogaDirection.RTL)
   }
 

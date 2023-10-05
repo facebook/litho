@@ -133,7 +133,7 @@ private constructor(
         isNotTailComponent -> getImmediateDescendantAsChild()
         result is NestedTreeHolderResult -> {
           val nestedResult = result.nestedResult ?: return emptyList()
-          if (nestedResult.mNode.componentCount == 1) {
+          if (nestedResult.node.componentCount == 1) {
             when (nestedResult.childCount) {
               0 -> return emptyList()
               else -> getChildren(nestedResult, xFromRoot, yFromRoot)
