@@ -134,8 +134,8 @@ private constructor(
         result is NestedTreeHolderResult -> {
           val nestedResult = result.nestedResult ?: return emptyList()
           if (nestedResult.node.componentCount == 1) {
-            when (nestedResult.childCount) {
-              0 -> return emptyList()
+            return when (nestedResult.childCount) {
+              0 -> emptyList()
               else -> getChildren(nestedResult, xFromRoot, yFromRoot)
             }
           }
