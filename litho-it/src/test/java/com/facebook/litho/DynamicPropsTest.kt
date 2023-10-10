@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.View
@@ -30,6 +31,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.DynamicPropsResetValueTester
@@ -546,6 +548,55 @@ class DynamicPropsTest {
       // doesn't work without the fix
       assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
     }
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+  }
+
+  @Test
+  fun testDynamicValueIsCorrectlyUnsubscribedForIncrementalMount() {
+    val alphaDV1 = DynamicValue(1f)
+    val alphaDV2 = DynamicValue(1f)
+    val component =
+        object : KComponent() {
+          override fun ComponentScope.render(): Component? {
+            return Column {
+              child(
+                  SimpleTestPrimitiveComponent(
+                      style = Style.width(10.px).height(10.px).alpha(alphaDV1)))
+              child(Row(style = Style.width(10.px).height(10.px).alpha(alphaDV2)) {})
+            }
+          }
+        }
+    legacyLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(exactly(1_000), exactly(1_000))
+        .measure()
+        .layout()
+    val lithoView = legacyLithoViewRule.lithoView
+
+    // mount rect that is above both components so none of them is visible
+    lithoView.mountComponent(Rect(0, -50, 10, -20), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+
+    // mount that covers only the first of two components
+    lithoView.mountComponent(Rect(0, 0, 10, 5), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+
+    // mount rect that covers both components
+    lithoView.mountComponent(Rect(0, 5, 10, 15), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+
+    // mount rect that covers only the second of two components
+    lithoView.mountComponent(Rect(0, 15, 10, 20), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+
+    // mount rect that is below both components so none of them is visible
+    lithoView.mountComponent(Rect(0, 40, 10, 50), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
     assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
   }
 }

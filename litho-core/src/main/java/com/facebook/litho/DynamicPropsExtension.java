@@ -52,7 +52,10 @@ public class DynamicPropsExtension
       ExtensionState<DynamicPropsExtensionState> extensionState,
       @Nullable DynamicPropsExtensionInput dynamicPropsExtensionInput,
       Rect localVisibleRect) {
-    extensionState.getState().mInput =
+    final DynamicPropsExtensionState state = extensionState.getState();
+
+    state.mPreviousInput = state.mCurrentInput;
+    state.mCurrentInput =
         dynamicPropsExtensionInput != null
             ? dynamicPropsExtensionInput.getDynamicValueOutputs()
             : null;
@@ -62,15 +65,14 @@ public class DynamicPropsExtension
   public void onUnmount(ExtensionState<DynamicPropsExtensionState> extensionState) {
     extensionState.releaseAllAcquiredReferences();
     final DynamicPropsExtensionState state = extensionState.getState();
-    state.mInput = null;
+    state.mCurrentInput = null;
     state.mPreviousInput = null;
   }
 
   @Override
   public void afterMount(ExtensionState<DynamicPropsExtensionState> extensionState) {
     final DynamicPropsExtensionState state = extensionState.getState();
-    state.mPreviousInput = state.mInput;
-    state.mInput = null;
+    state.mPreviousInput = null;
   }
 
   @Override
@@ -82,8 +84,9 @@ public class DynamicPropsExtension
     final DynamicPropsExtensionState state = extensionState.getState();
 
     if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
+      @Nullable
       final DynamicValueOutput dynamicValueOutput =
-          state.mInput != null ? state.mInput.get(renderUnit.getId()) : null;
+          state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
 
       if (dynamicValueOutput != null) {
         state.mDynamicPropsManager.onBindComponentToContent(
@@ -114,8 +117,11 @@ public class DynamicPropsExtension
     final DynamicPropsExtensionState state = extensionState.getState();
 
     if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
+      @Nullable
       final DynamicValueOutput dynamicValueOutput =
-          state.mPreviousInput != null ? state.mPreviousInput.get(renderUnit.getId()) : null;
+          state.mPreviousInput != null
+              ? state.mPreviousInput.get(renderUnit.getId())
+              : state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
 
       if (dynamicValueOutput != null) {
         state.mDynamicPropsManager.onUnbindComponent(
@@ -171,7 +177,7 @@ public class DynamicPropsExtension
   static class DynamicPropsExtensionState {
     private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
 
-    @Nullable private Map<Long, DynamicValueOutput> mInput;
+    @Nullable private Map<Long, DynamicValueOutput> mCurrentInput;
 
     @Nullable private Map<Long, DynamicValueOutput> mPreviousInput;
 
