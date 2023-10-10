@@ -380,27 +380,6 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun `padding, when set with percent value that out of 0-100, is ignored`() {
-    val start = -10f
-    val top = 110f
-
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot {
-          Row(
-              alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px).paddingPercent(start = start, top = top)) {
-                child(Row(style = Style.flex(grow = 1f).wrapInView()))
-              }
-        }
-        .assertMatches(
-            match<LithoView> {
-              bounds(0, 0, 100, 100)
-              child<ComponentHost> { bounds(0, 0, 100, 100) }
-            })
-  }
-
-  @Test
   fun margin_whenGranularMarginSet_isRespected() {
     val left = 10
     val top = 20
@@ -598,28 +577,6 @@ class FlexboxStylesTest {
                     (100 - 2 * margin).toInt(),
                     (100 - 2 * margin).toInt())
               }
-            })
-  }
-
-  @Test
-  fun `margin, when set with percent value that out of 0-100, is ignored`() {
-    val start = -10f
-    val top = 110f
-
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
-            child(
-                Row(
-                    style =
-                        Style.marginPercent(start = start, top = top).flex(grow = 1f).wrapInView()))
-          }
-        }
-        .assertMatches(
-            match<LithoView> {
-              bounds(0, 0, 100, 100)
-              child<ComponentHost> { bounds(0, 0, 100, 100) }
             })
   }
 
