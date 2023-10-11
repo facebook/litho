@@ -503,7 +503,9 @@ public class ComponentTree
             builder.visibilityBoundsTransformer,
             builder.componentTreeDebugEventListener);
 
-    mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
+    mContext =
+        ComponentContextUtils.withLithoTree(
+            builder.context, config, LithoTree.Companion.create(this), builder.mLifecycleProvider);
 
     if (ComponentsConfiguration.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
@@ -511,8 +513,8 @@ public class ComponentTree
       mTimeMachine = null;
     }
 
-    if (builder.mLifecycleProvider != null) {
-      subscribeToLifecycleProvider(builder.mLifecycleProvider);
+    if (mContext.getLifecycleProvider() != null) {
+      subscribeToLifecycleProvider(mContext.getLifecycleProvider());
     }
 
     if (config.debugEventListener != null) {
@@ -2911,6 +2913,7 @@ public class ComponentTree
   }
 
   private class DoLayoutRunnable extends ThreadTracingRunnable {
+
     private final ResolveResult mResolveResult;
     private final @RenderSource int mSource;
     private final int mWidthSpec;
@@ -2947,6 +2950,7 @@ public class ComponentTree
   }
 
   private class DoResolveRunnable extends ThreadTracingRunnable {
+
     private final @RenderSource int mSource;
     private final Component mRoot;
     private final TreeProps mTreeProps;
@@ -3003,6 +3007,7 @@ public class ComponentTree
   }
 
   public static final class LithoConfiguration {
+
     public ComponentsConfiguration mComponentsConfiguration;
     final boolean areTransitionsEnabled;
     public final boolean isReconciliationEnabled;
@@ -3354,6 +3359,7 @@ public class ComponentTree
     PostStateUpdateToChoreographerCallback() {
       initializeMainChoreographer();
     }
+
     /**
      * This method will guarantee that we will create a {@link Choreographer} instance linked to the
      * Main Thread {@link Looper}.

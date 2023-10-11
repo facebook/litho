@@ -47,6 +47,7 @@ public class ComponentContextUtils {
     return withComponentTree(c, lithoConfiguration, componentTree);
   }
 
+  @Deprecated
   static ComponentContext withComponentTree(
       ComponentContext c,
       ComponentTree.LithoConfiguration lithoConfiguration,
