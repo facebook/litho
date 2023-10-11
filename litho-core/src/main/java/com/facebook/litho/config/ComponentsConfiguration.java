@@ -230,15 +230,9 @@ public class ComponentsConfiguration {
   public static boolean enableMountableRecyclerInGroups = false;
   public static boolean hostComponentAlwaysShouldUpdate = true;
 
-  public static int useCachedLruCacheSize = 0;
-
   public static boolean enablePrimitiveDynamicPropsExtensionFix = false;
 
   public static boolean shouldOverrideHasTransientState = false;
-
-  public static boolean shouldUseLruCacheForUseCached() {
-    return useCachedLruCacheSize > 0;
-  }
 
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;

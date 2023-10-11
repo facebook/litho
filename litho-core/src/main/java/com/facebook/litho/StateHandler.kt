@@ -16,12 +16,11 @@
 
 package com.facebook.litho
 
-import android.util.LruCache
 import androidx.annotation.VisibleForTesting
 import com.facebook.infer.annotation.ThreadSafe
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.SpecGeneratedComponent.TransitionContainer
 import com.facebook.litho.StateContainer.StateUpdate
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.transitions.TransitionUtils
 import java.lang.Exception
@@ -62,8 +61,7 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
   @GuardedBy("this") private val neededStateContainers = HashSet<String>()
 
   /** Map of all cached values that are stored for the current ComponentTree. */
-  @GuardedBy("this") private var cachedValues: MutableMap<Any, Any?>? = null
-  @GuardedBy("this") private var cachedValuesLru: MutableMap<String, LruCache<Any, Any>>? = null
+  @GuardedBy("this") private var cachedValues: MutableMap<CachedValueKey, Any>? = null
 
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
   // of the component the update applies to
@@ -322,12 +320,8 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
 
   @Synchronized
   fun getCachedValue(globalKey: String, index: Int, cachedValueInputs: Any): Any? {
-    return if (ComponentsConfiguration.shouldUseLruCacheForUseCached()) {
-      val hookKey = "$globalKey:$index"
-      cachedValuesLru?.get(hookKey)?.get(cachedValueInputs)
-    } else {
-      cachedValues?.get(cachedValueInputs)
-    }
+    val cachedValueKey = CachedValueKey(globalKey, index, cachedValueInputs)
+    return cachedValues?.get(cachedValueKey)
   }
 
   @Synchronized
@@ -336,23 +330,11 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
       return
     }
 
-    if (ComponentsConfiguration.shouldUseLruCacheForUseCached()) {
-      val hookKey = "$globalKey:$index"
-      if (cachedValuesLru == null) {
-        cachedValuesLru = LinkedHashMap()
-      }
-      if (cachedValuesLru?.containsKey(hookKey) != true) {
-        cachedValuesLru?.put(hookKey, LruCache(ComponentsConfiguration.useCachedLruCacheSize))
-      }
-
-      cachedValuesLru?.get(hookKey)?.put(cachedValueInputs, cachedValue)
-    } else {
-      if (cachedValues == null) {
-        cachedValues = HashMap()
-      }
-
-      cachedValues?.set(cachedValueInputs, cachedValue)
+    val cachedValueKey = CachedValueKey(globalKey, index, cachedValueInputs)
+    if (cachedValues == null) {
+      cachedValues = LinkedHashMap()
     }
+    cachedValues?.put(cachedValueKey, cachedValue)
   }
 
   /**
@@ -610,3 +592,10 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
     }
   }
 }
+
+@DataClassGenerate
+private data class CachedValueKey(
+    val globalKey: String,
+    val index: Int,
+    val cachedValueInputs: Any
+)
