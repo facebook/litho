@@ -27,8 +27,8 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.Systracer;
+import java.util.ArrayDeque;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * The base class for all RenderCore Extensions.
@@ -164,7 +164,7 @@ public class RenderCoreExtension<Input, State> {
     systracer.beginSection("recursivelyNotifyVisibleBoundsChanged");
 
     if (content != null) {
-      final Stack<Object> contentStack = new Stack<>();
+      final ArrayDeque<Object> contentStack = new ArrayDeque<>();
       contentStack.add(content);
 
       while (!contentStack.isEmpty()) {

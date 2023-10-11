@@ -45,13 +45,13 @@ import com.facebook.rendercore.transitions.TransitionRenderUnit;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.utils.BoundsUtils;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /** Extension for performing transitions. */
 public class TransitionsExtension
@@ -1033,7 +1033,7 @@ public class TransitionsExtension
   private static void recursivelyNotifyVisibleBoundsChanged(View view) {
     assertMainThread();
 
-    final Stack<View> viewStack = new Stack<>();
+    final ArrayDeque<View> viewStack = new ArrayDeque<>();
     viewStack.push(view);
 
     while (!viewStack.isEmpty()) {
