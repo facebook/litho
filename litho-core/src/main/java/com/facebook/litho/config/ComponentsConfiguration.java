@@ -307,14 +307,8 @@ public class ComponentsConfiguration {
 
   private final boolean mNestedPreallocationEnabled;
 
-  private final boolean mUseSyncMountPools;
-
   public boolean isNestedPreallocationEnabled() {
     return mNestedPreallocationEnabled;
-  }
-
-  public boolean useSyncMountPools() {
-    return mUseSyncMountPools;
   }
 
   public boolean getUseCancelableLayoutFutures() {
@@ -346,7 +340,6 @@ public class ComponentsConfiguration {
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
     mUseIncrementalMountGapWorker = builder.mUseIncrementalMountGapWorker;
     mNestedPreallocationEnabled = builder.mNestedPreallocationEnabled;
-    mUseSyncMountPools = builder.mUseSyncItemPools;
   }
 
   public boolean shouldReuseOutputs() {
@@ -378,8 +371,6 @@ public class ComponentsConfiguration {
     boolean mShouldDisableBgFgOutputs = false;
     boolean mUseIncrementalMountGapWorker = IncrementalMountExtensionConfigs.useGapWorker;
     boolean mNestedPreallocationEnabled = false;
-
-    boolean mUseSyncItemPools = true;
 
     protected Builder() {}
 
@@ -415,11 +406,6 @@ public class ComponentsConfiguration {
 
     public Builder useIncrementalMountGapWorker(boolean enabled) {
       mUseIncrementalMountGapWorker = enabled;
-      return this;
-    }
-
-    public Builder useSyncItemPools(boolean enabled) {
-      mUseSyncItemPools = enabled;
       return this;
     }
 

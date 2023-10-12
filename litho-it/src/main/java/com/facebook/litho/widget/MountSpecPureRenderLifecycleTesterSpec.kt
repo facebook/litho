@@ -120,7 +120,7 @@ object MountSpecPureRenderLifecycleTesterSpec {
 
   @JvmStatic
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(): MountItemsPool.ItemPool = TrackingMountContentPool(1, true)
+  fun onCreateMountContentPool(): MountItemsPool.ItemPool = TrackingMountContentPool(1)
 
   @JvmStatic
   @UiThread

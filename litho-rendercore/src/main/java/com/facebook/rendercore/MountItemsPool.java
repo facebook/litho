@@ -378,6 +378,15 @@ public class MountItemsPool {
     private final int mMaxPoolSize;
     private final Object mLock = new Object();
 
+    public DefaultItemPool(Class<?> poolableContentType, int maxPoolSize) {
+      this(poolableContentType, maxPoolSize, false);
+    }
+
+    /**
+     * We are in the process of migrating to unsynchronized item pools. Please refer to the
+     * constructor that doesn't specify the {@param isSync} nature.
+     */
+    @Deprecated
     public DefaultItemPool(Class<?> poolableContentType, int maxPoolSize, boolean isSync) {
       mPool =
           isSync ? new Pools.SynchronizedPool<>(maxPoolSize) : new Pools.SimplePool<>(maxPoolSize);

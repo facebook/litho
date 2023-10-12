@@ -79,6 +79,6 @@ public interface ContentAllocator<Content> {
 
   /** Creates the content pool the framework should use for this Mountable. */
   default MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new MountItemsPool.DefaultItemPool(this.getClass(), poolSize(), false);
+    return new MountItemsPool.DefaultItemPool(this.getClass(), poolSize());
   }
 }

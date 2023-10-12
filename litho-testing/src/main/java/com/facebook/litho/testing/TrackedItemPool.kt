@@ -20,7 +20,7 @@ import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountItemsPool
 
 class TrackedItemPool(lifecycle: Any, size: Int) :
-    MountItemsPool.DefaultItemPool(lifecycle::class.java, size, false) {
+    MountItemsPool.DefaultItemPool(lifecycle::class.java, size) {
 
   var currentSize: Int = 0
     private set
