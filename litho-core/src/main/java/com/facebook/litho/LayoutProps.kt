@@ -94,5 +94,5 @@ interface LayoutProps {
   /** Used by [DebugLayoutNodeEditor] */
   fun setBorderWidth(edge: YogaEdge, borderWidth: Float)
 
-  fun gap(gutter: YogaGutter, length: Float)
+  fun gap(gutter: YogaGutter, length: Int)
 }

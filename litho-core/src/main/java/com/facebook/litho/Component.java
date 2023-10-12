@@ -2248,7 +2248,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * The Gap property is set on containers and spaces children evenly by a given length along a given axis
      */
-    public abstract T gap(YogaGutter gutter, float length);
+    public abstract T gapDip(YogaGutter gutter, float dip);
+    public abstract T gapPx(YogaGutter gutter, int px);
   }
 
   @Nullable

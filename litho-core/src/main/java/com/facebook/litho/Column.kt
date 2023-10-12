@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import androidx.annotation.Dimension
 import com.facebook.litho.annotations.Prop
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaFlexDirection
@@ -163,8 +164,12 @@ private constructor(
     override fun justifyContent(justifyContent: YogaJustify?): Builder = apply {
       column.justifyContent = justifyContent
     }
-    override fun gap(gutter: YogaGutter, length: Float): Builder = apply {
-      column.commonProps?.gap(gutter, length)
+    override fun gapDip(gutter: YogaGutter, @Dimension(unit = Dimension.DP) gap: Float): Builder = apply {
+      column.orCreateCommonProps.gap(gutter, mResourceResolver.dipsToPixels(gap))
+    }
+
+    override fun gapPx(gutter: YogaGutter, px: Int): Builder = apply {
+      column.orCreateCommonProps.gap(gutter, px)
     }
 
     override fun wrap(wrap: YogaWrap?): Builder = apply { column.wrap = wrap }

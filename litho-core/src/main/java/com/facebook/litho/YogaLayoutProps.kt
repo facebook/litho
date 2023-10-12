@@ -186,8 +186,8 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     node.setBorder(edge, borderWidth)
   }
 
-  override fun gap(gutter: YogaGutter, length: Float) {
-    node.setGap(gutter, length)
+  override fun gap(gutter: YogaGutter, length: Int) {
+    node.setGap(gutter, length.toFloat())
   }
 
   fun flexDirection(direction: YogaFlexDirection) {

@@ -364,7 +364,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   @Override
-  public void gap(@NotNull YogaGutter gap, float length) {
+  public void gap(@NotNull YogaGutter gap, int length) {
     getOrCreateLayoutProps().gap(gap, length);
   }
 
@@ -1089,7 +1089,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     /** Used by {@link DebugLayoutNodeEditor} */
     private @Nullable Edges mBorderEdges;
     private @Nullable YogaGutter mGapGutter;
-    private @Nullable Float mGapLength;
+    private @Nullable Integer mGapLength;
     public void widthPx(@Px int width) {
       mPrivateFlags |= PFLAG_WIDTH_IS_SET;
       mWidthPx = width;
@@ -1316,7 +1316,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public void gap(@NotNull YogaGutter gutter, float length) {
+    public void gap(@NotNull YogaGutter gutter, int length) {
       mGapGutter = gutter;
       mGapLength = length;
     }
