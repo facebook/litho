@@ -295,9 +295,7 @@ public class ComponentsConfiguration {
 
   private final boolean mUseInterruptibleResolution;
 
-  private boolean mShouldCacheLayouts;
-
-  private final boolean mShouldReuseOutputs;
+  private final boolean mShouldCacheLayouts;
 
   private final boolean mShouldAddHostViewForRootComponent;
 
@@ -335,15 +333,10 @@ public class ComponentsConfiguration {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mUseInterruptibleResolution = builder.mUseInterruptibleResolution;
     mShouldCacheLayouts = builder.mShouldCacheLayouts;
-    mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
     mUseIncrementalMountGapWorker = builder.mUseIncrementalMountGapWorker;
     mNestedPreallocationEnabled = builder.mNestedPreallocationEnabled;
-  }
-
-  public boolean shouldReuseOutputs() {
-    return mShouldReuseOutputs;
   }
 
   public static ComponentsConfiguration.Builder create() {
@@ -366,7 +359,6 @@ public class ComponentsConfiguration {
     boolean mUseCancelableLayoutFutures = true;
     boolean mUseInterruptibleResolution = true;
     boolean mShouldCacheLayouts = false;
-    boolean mShouldReuseOutputs = false;
     boolean mShouldAddHostViewForRootComponent = false;
     boolean mShouldDisableBgFgOutputs = false;
     boolean mUseIncrementalMountGapWorker = IncrementalMountExtensionConfigs.useGapWorker;
@@ -396,11 +388,6 @@ public class ComponentsConfiguration {
 
     public Builder shouldCacheLayouts(boolean enabled) {
       mShouldCacheLayouts = enabled;
-      return this;
-    }
-
-    public Builder shouldReuseOutputs(boolean enabled) {
-      mShouldReuseOutputs = enabled;
       return this;
     }
 

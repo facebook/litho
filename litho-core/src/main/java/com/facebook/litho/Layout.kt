@@ -174,9 +174,7 @@ internal object Layout {
 
     result.onBoundsDefined()
 
-    if (node.tailComponentContext.shouldReuseOutputs()) {
-      registerWorkingRange(layoutState, result)
-    }
+    registerWorkingRange(layoutState, result)
   }
 
   /** Register working range for each node */
@@ -355,10 +353,8 @@ internal object Layout {
               treePropsToReuse)
 
       if (newNode == null) {
-        if (parentContext.shouldCacheLayouts()) {
-          // mark as error to prevent from resolving it again.
-          holderResult.measureHadExceptions = true
-        }
+        // mark as error to prevent from resolving it again.
+        holderResult.measureHadExceptions = true
         return null
       }
 
