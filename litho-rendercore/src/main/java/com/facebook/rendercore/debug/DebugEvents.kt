@@ -28,7 +28,7 @@ sealed class DebugEvent(
     val renderStateId: String,
     val threadName: String = Thread.currentThread().name,
     val logLevel: LogLevel = LogLevel.DEBUG,
-    private val attributes: Map<String, Any?> = emptyMap()
+    val attributes: Map<String, Any?> = emptyMap()
 ) {
 
   companion object {

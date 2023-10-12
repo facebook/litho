@@ -375,6 +375,51 @@ class DebugEventsTest {
     assertThat(event.attribute<Int>(TestAttr)).isEqualTo(1)
   }
 
+  @Test
+  fun `filtered debug event subscriber should only handle filtered events`() {
+    val events = mutableListOf<DebugEvent>()
+    var subscriber: DebugEventSubscriber
+
+    subscriber = FilteredDebugEventSubscriber(DebugEvent.ViewOnLayout) { events.add(it) }
+
+    DebugEventBus.subscribe(subscriber)
+
+    DebugEventDispatcher.dispatch(type = DebugEvent.MountItemMount, renderStateId = { "-1" })
+
+    assertThat(events).hasSize(0)
+
+    DebugEventDispatcher.dispatch(type = DebugEvent.ViewOnLayout, renderStateId = { "-1" })
+
+    assertThat(events).hasSize(1)
+
+    DebugEventBus.unsubscribe(subscriber)
+    events.clear()
+
+    subscriber =
+        FilteredDebugEventSubscriber(
+            DebugEvent.ViewOnLayout,
+            DebugEvent.ViewOnLayout + ":start",
+            matcher = StringAttributeMatcher(DebugEventAttribute.Name to "ViewGroup"),
+        ) {
+          events.add(it)
+        }
+
+    DebugEventBus.subscribe(subscriber)
+
+    DebugEventDispatcher.dispatch(type = DebugEvent.ViewOnLayout, renderStateId = { "-1" }) {
+      it[DebugEventAttribute.Name] = "Drawable"
+    }
+
+    assertThat(events).hasSize(0)
+
+    DebugEventDispatcher.dispatch(
+        type = DebugEvent.ViewOnLayout + ":start", renderStateId = { "-1" }) {
+          it[DebugEventAttribute.Name] = "ViewGroup"
+        }
+
+    assertThat(events).hasSize(1)
+  }
+
   class TestEventSubscriber(val listener: (DebugEvent) -> Unit) : DebugEventSubscriber(TestEvent) {
     override fun onEvent(event: DebugEvent) {
       listener(event)
