@@ -206,7 +206,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
             Layout.measureTree(
                 lsc, c.getAndroidContext(), node, widthSpec, heightSpec, perfEventLogger);
 
-        if (root != null) {
+        if (root != null && c.shouldCacheLayouts()) {
           Layout.measurePendingSubtrees(c, root, root.getNode(), layoutState, lsc);
         }
 
@@ -223,7 +223,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
           perfEventLogger.markerPoint("end_collect_results");
         }
 
-        if (root != null) {
+        if (c.shouldCacheLayouts() && root != null) {
           // release diff node and layout state context since they are no longer required
           // this is not required in the control behaviour because the layout results is
           // cleared from the LayoutState before after collect-results.

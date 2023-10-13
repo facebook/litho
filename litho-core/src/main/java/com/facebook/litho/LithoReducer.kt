@@ -21,11 +21,15 @@ import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension
+import com.facebook.rendercore.transitions.TransitionUtils
+import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.rendercore.visibility.VisibilityOutput
 import com.facebook.yoga.YogaEdge
 import kotlin.math.max
@@ -154,18 +158,17 @@ object LithoReducer {
 
     val node: RenderTreeNode =
         create(
-            unit = rootHost,
-            bounds = Rect(0, 0, width, height),
-            layoutData =
-                LithoLayoutData(
-                    width = width,
-                    height = height,
-                    currentLayoutStateId = layoutState.mId,
-                    previousLayoutStateId = layoutState.mPreviousLayoutStateId,
-                    expandedTouchBounds = null,
-                    layoutData = null,
-                    debugHierarchy = debugNode),
-            parent = null)
+            rootHost,
+            Rect(0, 0, width, height),
+            LithoLayoutData(
+                width = width,
+                height = height,
+                currentLayoutStateId = layoutState.mId,
+                previousLayoutStateId = layoutState.mPreviousLayoutStateId,
+                expandedTouchBounds = null,
+                layoutData = null,
+                debugHierarchy = debugNode),
+            null)
     addRenderTreeNode(
         layoutState = layoutState,
         node = node,
@@ -207,6 +210,40 @@ object LithoReducer {
     if (Component.isLayoutSpec(node.tailComponent) || result.measureHadExceptions) {
       // back out when dealing with Layout Specs or if there was an error during measure
       return null
+    }
+
+    val measure: MeasureResult?
+    val hasExactSize: Boolean = !result.wasMeasured
+    if (!node.tailComponentContext.shouldCacheLayouts()) {
+      if (Component.isPrimitive(node.tailComponent) && hasExactSize) {
+
+        val width: Int =
+            (result.width -
+                result.paddingRight -
+                result.paddingLeft -
+                result.getLayoutBorder(YogaEdge.RIGHT) -
+                result.getLayoutBorder(YogaEdge.LEFT))
+        val height: Int =
+            (result.height -
+                result.paddingTop -
+                result.paddingBottom -
+                result.getLayoutBorder(YogaEdge.TOP) -
+                result.getLayoutBorder(YogaEdge.BOTTOM))
+
+        @Suppress("UNCHECKED_CAST")
+        val layoutContext: LayoutContext<LithoRenderContext> =
+            LithoLayoutResult.getLayoutContextFromYogaNode(result.yogaNode)
+                as LayoutContext<LithoRenderContext>
+        measure =
+            result.measure(
+                layoutContext, MeasureSpecUtils.exactly(width), MeasureSpecUtils.exactly(height))
+      } else {
+        measure = null
+      }
+
+      if (measure != null && measure.mHadExceptions) {
+        return null
+      }
     }
 
     val unit: LithoRenderUnit = result.contentRenderUnit ?: return null
@@ -293,18 +330,17 @@ object LithoReducer {
     val bounds = Rect(l, t, r, b)
 
     return create(
-        unit = unit,
-        bounds = bounds,
-        layoutData =
-            LithoLayoutData(
-                width = bounds.width(),
-                height = bounds.height(),
-                currentLayoutStateId = layoutState.mId,
-                previousLayoutStateId = layoutState.mPreviousLayoutStateId,
-                expandedTouchBounds = result.expandedTouchBounds,
-                layoutData = layoutData,
-                debugHierarchy = debugHierarchyNode),
-        parent = parent)
+        unit,
+        bounds,
+        LithoLayoutData(
+            width = bounds.width(),
+            height = bounds.height(),
+            currentLayoutStateId = layoutState.mId,
+            previousLayoutStateId = layoutState.mPreviousLayoutStateId,
+            expandedTouchBounds = result.expandedTouchBounds,
+            layoutData = layoutData,
+            debugHierarchy = debugHierarchyNode),
+        parent)
   }
 
   /**
@@ -417,7 +453,9 @@ object LithoReducer {
     }
 
     val node: LithoNode = result.node
+    val component: Component = node.tailComponent
     val hierarchy: DebugHierarchy.Node? = node.getDebugHierarchy(parentHierarchy)
+    val isTracing: Boolean = ComponentsSystrace.isTracing
 
     if (result is NestedTreeHolderResult) {
       val size: Int = node.componentCount
@@ -428,7 +466,47 @@ object LithoReducer {
             node.getComponentContextAt(1)
           }
 
-      val nestedTree: LithoLayoutResult = result.nestedResult ?: return
+      val nestedTree: LithoLayoutResult?
+      if (parentContext.shouldCacheLayouts()) {
+        nestedTree = result.nestedResult
+      } else {
+        // If the nested tree is defined, it has been resolved during a measure call during
+        // layout calculation.
+        if (isTracing) {
+          ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + component.simpleName)
+              .arg("widthSpec", "EXACTLY " + result.width)
+              .arg("heightSpec", "EXACTLY " + result.height)
+              .arg("rootComponentId", node.tailComponent.id)
+              .flush()
+        }
+
+        nestedTree =
+            Layout.measure(
+                lithoLayoutContext,
+                immediateParentContext,
+                result,
+                SizeSpec.makeSizeSpec(result.width, SizeSpec.EXACTLY),
+                SizeSpec.makeSizeSpec(result.height, SizeSpec.EXACTLY))
+
+        if (isTracing) {
+          ComponentsSystrace.endSection()
+        }
+      }
+
+      if (nestedTree == null) {
+        return
+      }
+
+      if (!parentContext.shouldCacheLayouts()) {
+        Resolver.collectOutputs(nestedTree.node)?.let { outputs ->
+          val attachable: MutableList<Attachable> =
+              layoutState.mAttachables
+                  ?: ArrayList<Attachable>(outputs.attachables.size).also {
+                    layoutState.mAttachables = it
+                  }
+          attachable.addAll(outputs.attachables)
+        }
+      }
 
       // Account for position of the holder node.
       layoutState.mCurrentX += result.x
@@ -473,7 +551,11 @@ object LithoReducer {
     val currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? =
         layoutState.mCurrentLayoutOutputAffinityGroup
 
-    layoutState.mCurrentTransitionId = node.transitionId
+    if (parentContext.shouldReuseOutputs()) {
+      layoutState.mCurrentTransitionId = node.transitionId
+    } else {
+      layoutState.mCurrentTransitionId = LithoNodeUtils.createTransitionId(node)
+    }
 
     layoutState.mCurrentLayoutOutputAffinityGroup =
         if (layoutState.mCurrentTransitionId != null) OutputUnitsAffinityGroup() else null
@@ -519,6 +601,30 @@ object LithoReducer {
     contentRenderTreeNode?.let { treeNode ->
       val contentRenderUnit: LithoRenderUnit = treeNode.renderUnit as LithoRenderUnit
 
+      if (!context.shouldCacheLayouts()) {
+        val layoutData: LithoLayoutData =
+            checkNotNull(contentRenderTreeNode.layoutData) as LithoLayoutData
+
+        // Notify component about its final size.
+        if (isTracing) {
+          ComponentsSystrace.beginSection("onBoundsDefined:" + component.simpleName)
+        }
+
+        try {
+          if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
+            component.onBoundsDefined(
+                context, result, layoutData.layoutData as? InterStagePropsContainer)
+          }
+        } catch (e: Exception) {
+          ComponentUtils.handleWithHierarchy(context, component, e)
+          return
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection()
+          }
+        }
+      }
+
       addRenderTreeNode(
           layoutState = layoutState,
           node = treeNode,
@@ -540,6 +646,31 @@ object LithoReducer {
       diffNode.layoutData = result.layoutData
       diffNode.primitive = result.node.primitive
       diffNode.delegate = result.delegate
+    }
+
+    // 4. Extract the Transitions.
+    if (!context.shouldReuseOutputs() && context.areTransitionsEnabled()) {
+      node.transitions?.let { transitions ->
+        for (i in 0 until transitions.size) {
+          val transition: Transition = transitions[i]
+          if (layoutState.mTransitions == null) {
+            layoutState.mTransitions = arrayListOf()
+          }
+          TransitionUtils.addTransitions(transition, layoutState.mTransitions)
+        }
+      }
+
+      node.scopedComponentInfosNeedingPreviousRenderData?.let { previousRenderData ->
+        var renderData: MutableList<ScopedComponentInfo>? =
+            layoutState.mScopedComponentInfosNeedingPreviousRenderData
+        if (renderData == null) {
+          renderData = arrayListOf()
+          layoutState.mScopedComponentInfosNeedingPreviousRenderData = renderData
+        }
+        for ((_, value) in previousRenderData) {
+          renderData.add(value)
+        }
+      }
     }
 
     layoutState.mCurrentX += result.x
@@ -617,6 +748,11 @@ object LithoReducer {
               layoutState = layoutState,
               renderUnit = contentRenderTreeNode?.renderUnit as? LithoRenderUnit)
       layoutState.mTestOutputs.add(testOutput)
+    }
+
+    // 9. Extract the Working Range registrations.
+    if (!node.tailComponentContext.shouldReuseOutputs()) {
+      Layout.registerWorkingRange(layoutState, result)
     }
 
     val rect: Rect
@@ -884,7 +1020,11 @@ object LithoReducer {
             unit.importantForAccessibility,
             layoutState.mContext.componentsConfiguration.isShouldDisableBgFgOutputs)
 
-    if (attrs != null) {
+    if (layoutState.mContext.componentsConfiguration.shouldReuseOutputs()) {
+      if (attrs != null) {
+        layoutState.mRenderUnitsWithViewAttributes[id] = attrs
+      }
+    } else {
       layoutState.mRenderUnitsWithViewAttributes[id] = attrs
     }
 

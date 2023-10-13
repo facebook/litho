@@ -780,6 +780,11 @@ public class ComponentContext implements Cloneable {
         && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
   }
 
+  boolean shouldReuseOutputs() {
+    return shouldCacheLayouts()
+        && mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
+  }
+
   boolean isNestedTreeContext() {
     return isNestedTreeContext;
   }

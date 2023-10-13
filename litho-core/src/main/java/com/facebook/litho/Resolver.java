@@ -524,7 +524,9 @@ public class Resolver {
     }
 
     final ComponentContext c = node.getTailComponentContext();
-    if (c.areTransitionsEnabled() && !(node instanceof NestedTreeHolder)) {
+    if (c.shouldReuseOutputs()
+        && c.areTransitionsEnabled()
+        && !(node instanceof NestedTreeHolder)) {
       // collect transitions
       final @Nullable List<Transition> transitions = node.getTransitions();
       if (transitions != null) {

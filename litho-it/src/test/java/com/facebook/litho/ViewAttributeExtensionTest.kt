@@ -109,8 +109,12 @@ class ViewAttributeExtensionTest {
 
     val viewAttributes = lithoViewRule.committedLayoutState!!.viewAttributes
 
-    assertThat(viewAttributes.size).isEqualTo(2)
-    assertThat(viewAttributes.values).doesNotContainNull()
+    if (lithoViewRule.context.componentsConfiguration.shouldReuseOutputs()) {
+      assertThat(viewAttributes.size).isEqualTo(2)
+      assertThat(viewAttributes.values).doesNotContainNull()
+    } else {
+      assertThat(viewAttributes.size).describedAs(viewAttributes.values.toString()).isEqualTo(3)
+    }
   }
 
   @Test

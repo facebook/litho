@@ -152,19 +152,47 @@ open class LithoLayoutResult(
     }
 
   var contentRenderUnit: LithoRenderUnit? = null
-    private set
+    get() {
+      if (!context.shouldReuseOutputs()) {
+        return LithoNodeUtils.createContentRenderUnit(node, cachedMeasuresValid, diffNode)
+      }
+      return field
+    }
 
   var hostRenderUnit: LithoRenderUnit? = null
-    private set
+    get() {
+      if (!context.shouldReuseOutputs()) {
+        return LithoNodeUtils.createHostRenderUnit(node)
+      }
+      return field
+    }
 
   var backgroundRenderUnit: LithoRenderUnit? = null
-    private set
+    get() {
+      if (!context.shouldReuseOutputs()) {
+        return LithoNodeUtils.createBackgroundRenderUnit(node, width, height, diffNode)
+      }
+      return field
+    }
 
   var foregroundRenderUnit: LithoRenderUnit? = null
-    private set
+    get() {
+      if (!context.shouldReuseOutputs()) {
+        return LithoNodeUtils.createForegroundRenderUnit(node, width, height, diffNode)
+      }
+      return field
+    }
 
   var borderRenderUnit: LithoRenderUnit? = null
-    private set
+    get() {
+      if (context.shouldReuseOutputs()) {
+        return field
+      } else if (shouldDrawBorders()) {
+        return LithoNodeUtils.createBorderRenderUnit(
+            node, createBorderColorDrawable(this), width, height, diffNode)
+      }
+      return null
+    }
 
   @Px override fun getX(): Int = yogaNode.layoutX.toInt()
 
@@ -213,8 +241,11 @@ open class LithoLayoutResult(
   open fun releaseLayoutPhaseData() {
     diffNode = null
     yogaNode.data = null
-    for (i in 0 until childCount) {
+    var i = 0
+    val count = childCount
+    while (i < count) {
       getChildAt(i).releaseLayoutPhaseData()
+      i++
     }
   }
 
@@ -363,16 +394,27 @@ open class LithoLayoutResult(
     copiedResult.layoutData = layoutData
     copiedResult.widthFromStyle = widthFromStyle
     copiedResult.heightFromStyle = heightFromStyle
-    copiedResult.contentRenderUnit = contentRenderUnit
-    copiedResult.hostRenderUnit = hostRenderUnit
-    copiedResult.backgroundRenderUnit = backgroundRenderUnit
-    copiedResult.foregroundRenderUnit = foregroundRenderUnit
-    copiedResult.borderRenderUnit = borderRenderUnit
+    if (context.shouldReuseOutputs()) {
+      copiedResult.contentRenderUnit = contentRenderUnit
+      copiedResult.hostRenderUnit = hostRenderUnit
+      copiedResult.backgroundRenderUnit = backgroundRenderUnit
+      copiedResult.foregroundRenderUnit = foregroundRenderUnit
+      copiedResult.borderRenderUnit = borderRenderUnit
+    }
     return copiedResult
   }
 
   fun addChild(child: LithoLayoutResult) {
     children.add(child)
+  }
+
+  // We need to update the last measured size of component if it wasn't set.
+  fun setLastMeasuredSizeIfNecessary() {
+    if (!node.tailComponentContext.shouldCacheLayouts()) {
+      if (lastMeasuredSize == Long.MIN_VALUE) {
+        lastMeasuredSize = YogaMeasureOutput.make(width, height)
+      }
+    }
   }
 
   fun onBoundsDefined() {
@@ -483,25 +525,27 @@ open class LithoLayoutResult(
     }
 
     // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
-    if (contentRenderUnit == null) {
-      contentRenderUnit =
-          LithoNodeUtils.createContentRenderUnit(node, cachedMeasuresValid, diffNode)
-    }
-    if (hostRenderUnit == null) {
-      hostRenderUnit = LithoNodeUtils.createHostRenderUnit(node)
-    }
-    if (backgroundRenderUnit == null) {
-      backgroundRenderUnit =
-          LithoNodeUtils.createBackgroundRenderUnit(node, width, height, diffNode)
-    }
-    if (foregroundRenderUnit == null) {
-      foregroundRenderUnit =
-          LithoNodeUtils.createForegroundRenderUnit(node, width, height, diffNode)
-    }
-    if (shouldDrawBorders() && (borderRenderUnit == null)) {
-      borderRenderUnit =
-          LithoNodeUtils.createBorderRenderUnit(
-              node, createBorderColorDrawable(this), width, height, diffNode)
+    if (context.shouldReuseOutputs()) {
+      if (contentRenderUnit == null) {
+        contentRenderUnit =
+            LithoNodeUtils.createContentRenderUnit(node, cachedMeasuresValid, diffNode)
+      }
+      if (hostRenderUnit == null) {
+        hostRenderUnit = LithoNodeUtils.createHostRenderUnit(node)
+      }
+      if (backgroundRenderUnit == null) {
+        backgroundRenderUnit =
+            LithoNodeUtils.createBackgroundRenderUnit(node, width, height, diffNode)
+      }
+      if (foregroundRenderUnit == null) {
+        foregroundRenderUnit =
+            LithoNodeUtils.createForegroundRenderUnit(node, width, height, diffNode)
+      }
+      if (shouldDrawBorders() && (borderRenderUnit == null)) {
+        borderRenderUnit =
+            LithoNodeUtils.createBorderRenderUnit(
+                node, createBorderColorDrawable(this), width, height, diffNode)
+      }
     }
   }
 
