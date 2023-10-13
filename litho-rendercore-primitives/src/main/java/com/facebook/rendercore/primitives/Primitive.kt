@@ -37,7 +37,7 @@ import com.facebook.rendercore.SizeConstraints
  */
 class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: MountBehavior<*>) :
     Node<Any?> {
-  /** Lazily creates and returns a [RenderUnit] configured with [mountBehavior]. */
+  /** Returns a [RenderUnit] configured with [mountBehavior]. */
   val renderUnit: PrimitiveRenderUnit<*>
     get() {
       return mountBehavior.renderUnit

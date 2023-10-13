@@ -46,11 +46,13 @@ class MountBehavior<ContentType : Any>(
       mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
   ) : this(id, null, contentAllocator, mountConfigurationCall)
 
-  internal val renderUnit: PrimitiveRenderUnit<ContentType> by
-      lazy(LazyThreadSafetyMode.NONE) {
-        val mountConfigurationScope = MountConfigurationScope<ContentType>()
-        mountConfigurationScope.mountConfigurationCall()
+  internal val renderUnit: PrimitiveRenderUnit<ContentType>
 
+  init {
+    val mountConfigurationScope = MountConfigurationScope<ContentType>()
+    mountConfigurationScope.mountConfigurationCall()
+
+    renderUnit =
         object :
             PrimitiveRenderUnit<ContentType>(
                 contentAllocator.renderType,
@@ -69,7 +71,7 @@ class MountBehavior<ContentType : Any>(
                 ?: super.getDescription()
           }
         }
-      }
+  }
 }
 
 abstract class PrimitiveRenderUnit<ContentType>(

@@ -1165,10 +1165,15 @@ class TestViewPrimitiveComponent(
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
 
-    shouldExcludeFromIncrementalMount =
-        this@TestViewPrimitiveComponent.shouldExcludeFromIncrementalMount == true
-
-    return LithoPrimitive(ViewPrimitive(identity, view, steps, dynamicTag), style)
+    return LithoPrimitive(
+        ViewPrimitive(
+            id = identity,
+            view = view,
+            steps = steps,
+            dynamicTag = dynamicTag,
+            excludeFromIncrementalMount =
+                this@TestViewPrimitiveComponent.shouldExcludeFromIncrementalMount),
+        style)
   }
 }
 
@@ -1180,6 +1185,7 @@ private fun PrimitiveComponentScope.ViewPrimitive(
     dynamicTag: DynamicValue<Any?>? = null,
     updateState: ((String) -> Unit)? = null,
     str: String? = null,
+    excludeFromIncrementalMount: Boolean? = null,
 ): Primitive {
 
   class ViewPrimitiveLayoutBehavior(private val id: Int = 0) : LayoutBehavior {
@@ -1200,6 +1206,8 @@ private fun PrimitiveComponentScope.ViewPrimitive(
                 steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
                 view
               }) {
+                shouldExcludeFromIncrementalMount = excludeFromIncrementalMount == true
+
                 // using tag for convenience of tests
                 bindDynamic(dynamicTag, View::setTag, "default_value")
 
