@@ -37,7 +37,5 @@ public class RenderCoreConfig {
   /** Enabling this will clear the render tree from the MountState when unmount all is invoked. */
   public static boolean shouldClearRenderTreeOnUnmountAll = false;
 
-  public static boolean isDrawableCacheEnabled = false;
-
   public static boolean isExperimentalSizeConstraintsEnabled = false;
 }

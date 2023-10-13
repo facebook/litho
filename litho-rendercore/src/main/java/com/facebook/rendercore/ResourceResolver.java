@@ -251,7 +251,7 @@ public class ResourceResolver {
       return null;
     }
 
-    if (RenderCoreConfig.isDrawableCacheEnabled && mResourceCache != null) {
+    if (mResourceCache != null) {
       final Drawable cachedDrawable = mResourceCache.getDrawable(resId, mResources);
       if (cachedDrawable != null) {
         return cachedDrawable;
