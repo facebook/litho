@@ -726,8 +726,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     layoutResult.setSizeSpec(widthSpec, heightSpec);
 
-    layoutResult.setLastMeasuredSizeIfNecessary();
-
     if (isTracing) {
       ComponentsSystrace.endSection();
     }

@@ -27,7 +27,7 @@ public class LayoutCachingTestRunConfiguration implements LithoTestRunConfigurat
   @Override
   public void beforeTest(FrameworkMethod method) {
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().shouldCacheLayouts(true).shouldReuseOutputs(true));
+        ComponentsConfiguration.create());
   }
 
   @Override

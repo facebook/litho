@@ -1129,10 +1129,6 @@ public class ComponentTree
     return mContext.mLithoConfiguration.isVisibilityProcessingEnabled;
   }
 
-  public boolean shouldReuseOutputs() {
-    return mContext.mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
-  }
-
   public boolean isReconciliationEnabled() {
     return mContext.mLithoConfiguration.isReconciliationEnabled;
   }

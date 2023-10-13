@@ -30,7 +30,7 @@ public class DynamicValuesTestRunConfiguration implements LithoTestRunConfigurat
   public void beforeTest(FrameworkMethod method) {
     ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix = true;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().shouldReuseOutputs(true));
+        ComponentsConfiguration.create());
   }
 
   @Override
