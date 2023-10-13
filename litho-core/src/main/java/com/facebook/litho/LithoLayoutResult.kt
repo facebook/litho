@@ -378,6 +378,7 @@ open class LithoLayoutResult(
   fun onBoundsDefined() {
     val context = node.tailComponentContext
     val component = node.tailComponent
+    var hasLayoutSizeChanged = false
 
     if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
 
@@ -446,6 +447,8 @@ open class LithoLayoutResult(
           contentRenderUnit = null
         }
         this.layoutData = layoutData
+
+        hasLayoutSizeChanged = true
       }
       if (!wasMeasured) {
         wasMeasured = true
@@ -468,9 +471,11 @@ open class LithoLayoutResult(
               getLayoutBorder(YogaEdge.TOP) -
               getLayoutBorder(YogaEdge.BOTTOM))
 
-      if (delegate == null ||
+      hasLayoutSizeChanged =
           (isCachedLayout &&
-              (measuredContentWidth != contentWidth || measuredContentHeight != contentHeight))) {
+              (measuredContentWidth != contentWidth || measuredContentHeight != contentHeight))
+
+      if (delegate == null || hasLayoutSizeChanged) {
 
         // Check if we need to run measure for Primitive that was skipped due to with fixed size
         val layoutContext = getLayoutContextFromYogaNode(yogaNode)
@@ -479,6 +484,13 @@ open class LithoLayoutResult(
             layoutContext as LayoutContext<LithoRenderContext>,
             MeasureSpecUtils.exactly(measuredContentWidth),
             MeasureSpecUtils.exactly(measuredContentHeight))
+      }
+    } else {
+      hasLayoutSizeChanged =
+          (lastMeasuredSize == Long.MIN_VALUE) ||
+              (isCachedLayout && (contentWidth != width || contentHeight != height))
+      if (hasLayoutSizeChanged) {
+        lastMeasuredSize = YogaMeasureOutput.make(width, height)
       }
     }
 
@@ -490,15 +502,15 @@ open class LithoLayoutResult(
     if (hostRenderUnit == null) {
       hostRenderUnit = LithoNodeUtils.createHostRenderUnit(node)
     }
-    if (backgroundRenderUnit == null) {
+    if (backgroundRenderUnit == null || hasLayoutSizeChanged) {
       backgroundRenderUnit =
           LithoNodeUtils.createBackgroundRenderUnit(node, width, height, diffNode)
     }
-    if (foregroundRenderUnit == null) {
+    if (foregroundRenderUnit == null || hasLayoutSizeChanged) {
       foregroundRenderUnit =
           LithoNodeUtils.createForegroundRenderUnit(node, width, height, diffNode)
     }
-    if (shouldDrawBorders() && (borderRenderUnit == null)) {
+    if (shouldDrawBorders() && (borderRenderUnit == null || hasLayoutSizeChanged)) {
       borderRenderUnit =
           LithoNodeUtils.createBorderRenderUnit(
               node, createBorderColorDrawable(this), width, height, diffNode)

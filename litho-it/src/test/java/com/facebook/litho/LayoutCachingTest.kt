@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Color
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DynamicComponentGroupSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
@@ -44,6 +45,37 @@ class LayoutCachingTest {
 
   @JvmField @Rule var legacyLithoViewRule = LegacyLithoViewRule()
 
+  @Test
+  fun `verify the background of container is properly reused or created with layout caching`() {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
+      return
+    }
+
+    val caller = SimpleStateUpdateEmulatorSpec.Caller()
+
+    val component =
+        Column.create(c)
+            .backgroundColor(Color.LTGRAY)
+            .child(SimpleStateUpdateEmulator.create(c).prefix("\n\n\n").caller(caller).build())
+            .build()
+
+    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
+
+    val background1 = legacyLithoViewRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+
+    // the height should be changed so we're not supposed to reuse the background outputs
+    caller.increment()
+    val background2 = legacyLithoViewRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    Assertions.assertThat(background1 != background2).isTrue
+
+    // the height should not be changed so we could reuse the background outputs
+    caller.increment()
+    val background3 = legacyLithoViewRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    Assertions.assertThat(background2 === background3).isTrue
+  }
+
+  @Test
   fun `unchanged node with inter stage prop should not be remeasured when state updates`() {
     val c = legacyLithoViewRule.context
     if (!c.shouldCacheLayouts()) {
