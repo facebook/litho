@@ -26,6 +26,7 @@ import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.BorderColorDrawable
+import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.Primitive
@@ -405,7 +406,7 @@ object LithoNodeUtils {
   fun createViewAttributes(
       unit: LithoRenderUnit,
       component: Component,
-      result: LithoLayoutResult? = null,
+      result: LayoutResult? = null,
       @OutputUnitType type: Int,
       @ImportantForAccessibility importantForAccessibility: Int,
       disableBgFgOutputs: Boolean
@@ -415,7 +416,13 @@ object LithoNodeUtils {
     val willMountView: Boolean =
         when (type) {
           OutputUnitType.HOST -> true
-          OutputUnitType.CONTENT -> result?.node?.willMountView() ?: false
+          OutputUnitType.CONTENT -> {
+            if (result is LithoLayoutResult) {
+              result.node.willMountView()
+            } else {
+              false
+            }
+          }
           else -> false
         }
 
@@ -430,7 +437,7 @@ object LithoNodeUtils {
     attrs.disableDrawableOutputs = disableBgFgOutputs
     nodeInfo?.copyInto(attrs)
 
-    if (result != null) {
+    if (result is LithoLayoutResult) {
       val lithoNode: LithoNode = result.node
       // The following only applies if bg/fg outputs are NOT disabled:
       // backgrounds and foregrounds should not be set for HostComponents

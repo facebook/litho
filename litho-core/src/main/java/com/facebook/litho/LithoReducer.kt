@@ -21,6 +21,7 @@ import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
@@ -65,8 +66,7 @@ object LithoReducer {
     val isTracing: Boolean = ComponentsSystrace.isTracing
     val widthSpec: Int = layoutState.mWidthSpec
     val heightSpec: Int = layoutState.mHeightSpec
-    val root: LithoLayoutResult? = layoutState.mLayoutResult
-    val node: LithoNode? = root?.node
+    val root: LayoutResult? = layoutState.mLayoutResult
     val rootWidth: Int = root?.width ?: 0
     val rootHeight: Int = root?.height ?: 0
 
@@ -92,7 +92,7 @@ object LithoReducer {
     var parent: RenderTreeNode? = null
     var hierarchy: DebugHierarchy.Node? = null
     if (c.mLithoConfiguration.mComponentsConfiguration.isShouldAddHostViewForRootComponent) {
-      hierarchy = node?.getDebugHierarchy()
+      hierarchy = if (root is LithoLayoutResult) root.node.getDebugHierarchy() else null
       addRootHostRenderTreeNode(layoutState, root, hierarchy)
       parent = layoutState.mMountableOutputs[0]
     }
@@ -105,6 +105,8 @@ object LithoReducer {
         result = root,
         layoutState = layoutState,
         lithoLayoutContext = lithoLayoutContext,
+        x = if (root is LithoLayoutResult) root.x else 0,
+        y = if (root is LithoLayoutResult) root.y else 0,
         parent = parent,
         parentHierarchy = hierarchy)
     if (isTracing) {
@@ -145,7 +147,7 @@ object LithoReducer {
   @JvmStatic
   fun addRootHostRenderTreeNode(
       layoutState: LayoutState,
-      result: LithoLayoutResult? = null,
+      result: LayoutResult? = null,
       hierarchy: DebugHierarchy.Node? = null,
   ) {
     val width: Int = result?.width ?: 0
@@ -197,14 +199,16 @@ object LithoReducer {
    * that will potentially mount content into the component host.
    */
   private fun createContentRenderTreeNode(
-      result: LithoLayoutResult,
+      result: LayoutResult,
       node: LithoNode,
       layoutState: LayoutState,
       parent: RenderTreeNode? = null,
       debugHierarchyNode: DebugHierarchy.Node? = null,
   ): RenderTreeNode? {
 
-    if (Component.isLayoutSpec(node.tailComponent) || result.measureHadExceptions) {
+    if (Component.isLayoutSpec(node.tailComponent) ||
+        (result !is LithoLayoutResult) ||
+        result.measureHadExceptions) {
       // back out when dealing with Layout Specs or if there was an error during measure
       return null
     }
@@ -226,14 +230,14 @@ object LithoReducer {
   private fun createHostRenderTreeNode(
       unit: LithoRenderUnit,
       layoutState: LayoutState,
-      result: LithoLayoutResult,
+      result: LayoutResult,
       parent: RenderTreeNode? = null,
       hierarchy: DebugHierarchy.Node? = null,
   ): RenderTreeNode =
       createRenderTreeNode(
           unit = unit,
           layoutState = layoutState,
-          result = result,
+          result = result as LithoLayoutResult,
           useNodePadding = false,
           hasExactSize = false,
           parent = parent,
@@ -312,14 +316,16 @@ object LithoReducer {
    * stored in the [LithoNode].
    */
   private fun createVisibilityOutput(
-      result: LithoLayoutResult,
+      result: LayoutResult,
       node: LithoNode,
       layoutState: LayoutState,
+      x: Int = 0,
+      y: Int = 0,
       renderTreeNode: RenderTreeNode?
   ): VisibilityOutput {
 
-    val l: Int = layoutState.mCurrentX + result.x
-    val t: Int = layoutState.mCurrentY + result.y
+    val l: Int = layoutState.mCurrentX + x
+    val t: Int = layoutState.mCurrentY + y
     val r: Int = l + result.width
     val b: Int = t + result.height
 
@@ -351,14 +357,16 @@ object LithoReducer {
   }
 
   private fun createTestOutput(
-      result: LithoLayoutResult,
+      result: LayoutResult,
       node: LithoNode,
       layoutState: LayoutState,
+      x: Int = 0,
+      y: Int = 0,
       renderUnit: LithoRenderUnit? = null
   ): TestOutput {
 
-    val l: Int = layoutState.mCurrentX + result.x
-    val t: Int = layoutState.mCurrentY + result.y
+    val l: Int = layoutState.mCurrentX + x
+    val t: Int = layoutState.mCurrentY + y
     val r: Int = l + result.width
     val b: Int = t + result.height
 
@@ -404,14 +412,18 @@ object LithoReducer {
    */
   private fun collectResults(
       parentContext: ComponentContext,
-      result: LithoLayoutResult,
+      result: LayoutResult,
       layoutState: LayoutState,
       lithoLayoutContext: LithoLayoutContext,
+      x: Int = 0,
+      y: Int = 0,
       parent: RenderTreeNode? = null,
       parentDiffNode: DiffNode? = null,
       parentHierarchy: DebugHierarchy.Node? = null
   ) {
-    if (lithoLayoutContext.isFutureReleased || result.measureHadExceptions) {
+    if (lithoLayoutContext.isFutureReleased ||
+        result !is LithoLayoutResult ||
+        result.measureHadExceptions) {
       // Exit early if the layout future as been released or if this result had exceptions.
       return
     }
@@ -439,6 +451,8 @@ object LithoReducer {
           result = nestedTree,
           layoutState = layoutState,
           lithoLayoutContext = lithoLayoutContext,
+          x = nestedTree.x,
+          y = nestedTree.y,
           parent = parent,
           parentDiffNode = parentDiffNode,
           parentHierarchy = hierarchy)
@@ -513,7 +527,12 @@ object LithoReducer {
 
     // Generate the RenderTreeNode for the given node.
     val contentRenderTreeNode: RenderTreeNode? =
-        createContentRenderTreeNode(result, node, layoutState, parentRenderTreeNode, hierarchy)
+        createContentRenderTreeNode(
+            result = result,
+            node = node,
+            layoutState = layoutState,
+            parent = parentRenderTreeNode,
+            debugHierarchyNode = hierarchy)
 
     // 3. Now add the MountSpec (either View or Drawable) to the outputs.
     contentRenderTreeNode?.let { treeNode ->
@@ -542,8 +561,8 @@ object LithoReducer {
       diffNode.delegate = result.delegate
     }
 
-    layoutState.mCurrentX += result.x
-    layoutState.mCurrentY += result.y
+    layoutState.mCurrentX += x
+    layoutState.mCurrentY += y
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (i in 0 until result.childCount) {
@@ -553,13 +572,15 @@ object LithoReducer {
           result = child,
           layoutState = layoutState,
           lithoLayoutContext = lithoLayoutContext,
+          x = child.x,
+          y = child.y,
           parent = parentRenderTreeNode,
           parentDiffNode = diffNode,
           parentHierarchy = hierarchy)
     }
 
-    layoutState.mCurrentX -= result.x
-    layoutState.mCurrentY -= result.y
+    layoutState.mCurrentX -= x
+    layoutState.mCurrentY -= y
 
     // 5. Add border color if defined.
     result.borderRenderUnit?.let { borderRenderUnit ->
@@ -599,6 +620,8 @@ object LithoReducer {
           createVisibilityOutput(
               result = result,
               node = node,
+              x = x,
+              y = y,
               layoutState = layoutState,
               renderTreeNode =
                   contentRenderTreeNode ?: if (needsHostView) parentRenderTreeNode else null)
@@ -624,8 +647,8 @@ object LithoReducer {
       rect = contentRenderTreeNode.getAbsoluteBounds(Rect())
     } else {
       rect = Rect()
-      rect.left = layoutState.mCurrentX + result.x
-      rect.top = layoutState.mCurrentY + result.y
+      rect.left = layoutState.mCurrentX + x
+      rect.top = layoutState.mCurrentY + y
       rect.right = rect.left + result.width
       rect.bottom = rect.top + result.height
     }
@@ -663,7 +686,7 @@ object LithoReducer {
   private fun addDrawableRenderTreeNode(
       unit: LithoRenderUnit,
       parent: RenderTreeNode? = null,
-      result: LithoLayoutResult,
+      result: LayoutResult,
       layoutState: LayoutState,
       hierarchy: DebugHierarchy.Node? = null,
       @OutputUnitType type: Int,
@@ -675,7 +698,7 @@ object LithoReducer {
         createRenderTreeNode(
             unit = unit,
             layoutState = layoutState,
-            result = result,
+            result = result as LithoLayoutResult,
             useNodePadding = false,
             hasExactSize = false,
             parent = parent,
@@ -765,7 +788,12 @@ object LithoReducer {
       "We shouldn't insert a host as a parent of a View"
     }
     val hostRenderTreeNode: RenderTreeNode =
-        createHostRenderTreeNode(hostRenderUnit, layoutState, result, parent, hierarchy)
+        createHostRenderTreeNode(
+            unit = hostRenderUnit,
+            layoutState = layoutState,
+            result = result,
+            parent = parent,
+            hierarchy = hierarchy)
 
     diffNode?.hostOutput = hostRenderUnit
 
@@ -825,7 +853,7 @@ object LithoReducer {
   private fun addRenderTreeNode(
       layoutState: LayoutState,
       node: RenderTreeNode,
-      result: LithoLayoutResult? = null,
+      result: LayoutResult? = null,
       unit: LithoRenderUnit,
       @OutputUnitType type: Int,
       transitionId: TransitionId? = null,
