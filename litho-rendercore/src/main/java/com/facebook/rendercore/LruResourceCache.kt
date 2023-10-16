@@ -29,7 +29,8 @@ open class LruResourceCache(configuration: Configuration) : ResourceCache(config
         override fun sizeOf(key: Int, value: Any): Int = if (value is String) value.length else 1
       }
 
-  private val drawableConstantStateCache = LruCache<Int, Drawable.ConstantState>(100)
+  private val drawableConstantStateCache =
+      LruCache<Int, Drawable.ConstantState>(RenderCoreConfig.drawableCacheSize)
 
   override fun <T> get(key: Int): T? = cache[key] as T?
 
