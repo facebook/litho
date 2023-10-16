@@ -217,7 +217,10 @@ class ComponentTreeTest {
     val c = componentTree.context
     assertThat(c).isNotEqualTo(scopedContext)
     assertNull(c.componentScope)
-    assertThat(layoutState?.rootLayoutResult?.context).isNotEqualTo(scopedContext)
+    layoutState?.rootLayoutResult?.let { layoutResult ->
+      assertThat(layoutResult is LithoLayoutResult).isTrue
+      assertThat((layoutResult as LithoLayoutResult).context).isNotEqualTo(scopedContext)
+    }
   }
 
   private class MeasureListener : ComponentTree.MeasureListener {

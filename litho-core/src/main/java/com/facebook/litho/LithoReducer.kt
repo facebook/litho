@@ -125,7 +125,7 @@ object LithoReducer {
     }
 
     val nodeForSaving: LithoNode? = layoutState.mRoot
-    val layoutResultForSaving: LithoLayoutResult? = layoutState.mLayoutResult
+    val layoutResultForSaving: LayoutResult? = layoutState.mLayoutResult
 
     // clean it up for sanity
     layoutState.mRoot = null

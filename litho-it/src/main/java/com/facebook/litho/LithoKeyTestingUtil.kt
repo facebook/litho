@@ -28,9 +28,12 @@ object LithoKeyTestingUtil {
   @SuppressLint("RestrictedApi")
   fun getScopedComponentInfos(lithoView: LithoView): Map<String, List<ScopedComponentInfo>> {
     val scopedComponentInfos: MutableMap<String, MutableList<ScopedComponentInfo>> = LinkedHashMap()
-    lithoView.componentTree?.committedLayoutState?.rootLayoutResult?.node?.let { node ->
-      addScopedComponentInfoForNode(node, scopedComponentInfos)
+    check(lithoView.componentTree?.committedLayoutState?.rootLayoutResult is LithoLayoutResult) {
+      "Expected rootLayoutResult to be a LithoLayoutResult"
     }
+    (lithoView.componentTree?.committedLayoutState?.rootLayoutResult as LithoLayoutResult?)
+        ?.node
+        ?.let { node -> addScopedComponentInfoForNode(node, scopedComponentInfos) }
     return scopedComponentInfos
   }
 

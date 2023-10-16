@@ -346,6 +346,7 @@ private constructor(
     fun getRootInstance(componentTree: ComponentTree?): DebugComponent? {
       val layoutState = componentTree?.mainThreadLayoutState
       val root = layoutState?.rootLayoutResult ?: return null
+      check(root is LithoLayoutResult) { "Expected root to be a LithoLayoutResult" }
       val node = root.node
       val outerWrapperComponentIndex = (node.componentCount - 1).coerceAtLeast(0)
       return getInstance(root, outerWrapperComponentIndex, 0, 0, componentTree)?.apply {

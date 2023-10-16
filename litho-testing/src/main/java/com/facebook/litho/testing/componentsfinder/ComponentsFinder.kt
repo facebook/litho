@@ -138,11 +138,11 @@ fun findAllComponentsInLithoView(
 }
 
 private fun getLayoutRoot(lithoView: LithoView): LithoLayoutResult? {
-  val commitedLayoutState =
+  val committedLayoutState =
       lithoView.componentTree?.committedLayoutState
           ?: throw IllegalStateException(
               "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
-  return commitedLayoutState.rootLayoutResult
+  return committedLayoutState.rootLayoutResult as? LithoLayoutResult
 }
 
 /**

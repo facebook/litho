@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.LayoutResult;
 import java.util.Deque;
 
 /**
@@ -253,9 +254,14 @@ public class LithoViewTestHelper {
     final ComponentTree componentTree = view.getComponentTree();
     final LayoutState mainThreadLayoutState =
         componentTree != null ? componentTree.getMainThreadLayoutState() : null;
-    return mainThreadLayoutState != null
-        ? new InternalNodeRef(mainThreadLayoutState.getRootLayoutResult())
-        : null;
+    if (mainThreadLayoutState != null) {
+      LayoutResult layoutResult = mainThreadLayoutState.getRootLayoutResult();
+      if (!(layoutResult instanceof LithoLayoutResult)) {
+        throw new IllegalStateException("Expected LithoLayoutResult but got " + layoutResult);
+      }
+      return new InternalNodeRef((LithoLayoutResult) layoutResult);
+    }
+    return null;
   }
 
   /**

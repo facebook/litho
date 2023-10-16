@@ -34,6 +34,7 @@ import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
@@ -120,7 +121,7 @@ public class LayoutState
   final @Nullable List<TestOutput> mTestOutputs;
 
   @Nullable LithoNode mRoot;
-  @Nullable LithoLayoutResult mLayoutResult;
+  @Nullable LayoutResult mLayoutResult;
   @Nullable TransitionId mRootTransitionId;
   @Nullable String mRootComponentName;
   @Nullable LayoutCache.CachedData mLayoutCacheData;
@@ -554,7 +555,7 @@ public class LayoutState
     return mRoot;
   }
 
-  public @Nullable LithoLayoutResult getRootLayoutResult() {
+  public @Nullable LayoutResult getRootLayoutResult() {
     return mLayoutResult;
   }
 

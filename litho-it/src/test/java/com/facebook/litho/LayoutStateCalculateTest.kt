@@ -1962,7 +1962,9 @@ class LayoutStateCalculateTest {
 
     val result = legacyLithoViewRule.committedLayoutState!!.mLayoutResult!!.getChildAt(0)!!
 
-    assertThat(result.node.tailComponent).isInstanceOf(MountSpecLifecycleTester::class.java)
+    assertThat(result is LithoLayoutResult).isTrue
+    assertThat((result as LithoLayoutResult).node.tailComponent)
+        .isInstanceOf(MountSpecLifecycleTester::class.java)
     assertThat(result.width).isEqualTo(width)
     assertThat(result.height).isEqualTo(height)
   }
