@@ -36,18 +36,16 @@ interface DiffNode : java.lang.Cloneable {
   var layoutData: Any?
   /**
    * The last value the measure function associated with this node [Component] returned for the
-   * width. This is used together with [LithoNode.getLastWidthSpec] to implement measure caching.
-   * Also sets the last value the measure function associated with this node [Component] returned
-   * for the width.
+   * width. This is used together with [lastWidthSpec] to implement measure caching. Also sets the
+   * last value the measure function associated with this node [Component] returned for the width.
    */
-  var lastMeasuredWidth: Float
+  var lastMeasuredWidth: Int
   /**
    * The last value the measure function associated with this node [Component] returned for the
-   * height. This is used together with [LithoNode.getLastHeightSpec] to implement measure caching.
-   * Also sets the last value the measure function associated with this node [Component] returned
-   * for the height.
+   * height. This is used together with [lastHeightSpec] to implement measure caching. Also sets the
+   * last value the measure function associated with this node [Component] returned for the height.
    */
-  var lastMeasuredHeight: Float
+  var lastMeasuredHeight: Int
   var lastWidthSpec: Int
   var lastHeightSpec: Int
   val children: List<DiffNode>

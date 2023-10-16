@@ -237,8 +237,8 @@ open class LithoLayoutResult(
     if (diffNode?.lastWidthSpec == widthSpec &&
         diffNode.lastHeightSpec == heightSpec &&
         !shouldAlwaysRemeasure(component)) {
-      width = diffNode.lastMeasuredWidth.toInt()
-      height = diffNode.lastMeasuredHeight.toInt()
+      width = diffNode.lastMeasuredWidth
+      height = diffNode.lastMeasuredHeight
       layoutData = diffNode.layoutData
       delegate = diffNode.delegate
 

@@ -38,13 +38,12 @@ object MeasureComparisonUtils {
       oldHeightSpec: Int,
       newWidthSpec: Int,
       newHeightSpec: Int,
-      oldMeasuredWidth: Float,
-      oldMeasuredHeight: Float
+      oldMeasuredWidth: Int,
+      oldMeasuredHeight: Int
   ): Boolean {
-    val widthIsCompatible =
-        isMeasureSpecCompatible(oldWidthSpec, newWidthSpec, oldMeasuredWidth.toInt())
+    val widthIsCompatible = isMeasureSpecCompatible(oldWidthSpec, newWidthSpec, oldMeasuredWidth)
     val heightIsCompatible =
-        isMeasureSpecCompatible(oldHeightSpec, newHeightSpec, oldMeasuredHeight.toInt())
+        isMeasureSpecCompatible(oldHeightSpec, newHeightSpec, oldMeasuredHeight)
     return widthIsCompatible && heightIsCompatible
   }
 

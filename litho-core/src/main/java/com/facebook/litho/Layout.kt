@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.view.View
-import com.facebook.litho.MeasureComparisonUtils.hasCompatibleSizeSpec
 import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
 import com.facebook.rendercore.LayoutContext
@@ -131,25 +130,24 @@ internal object Layout {
       }
 
       Resolver.collectOutputs(nestedTree.node)?.let { outputs ->
-        val attachable: MutableList<Attachable> =
-            layoutState.mAttachables
-                ?: ArrayList<Attachable>(outputs.attachables.size).also {
-                  layoutState.mAttachables = it
-                }
-        attachable.addAll(outputs.attachables)
+        layoutState.mAttachables
+            .getOrCreate {
+              ArrayList<Attachable>(outputs.attachables.size).also { layoutState.mAttachables = it }
+            }
+            .addAll(outputs.attachables)
 
-        val transitions: MutableList<Transition> =
-            layoutState.mTransitions
-                ?: ArrayList<Transition>(outputs.transitions.size).also {
-                  layoutState.mTransitions = it
-                }
-        transitions.addAll(outputs.transitions)
+        layoutState.mTransitions
+            .getOrCreate {
+              ArrayList<Transition>(outputs.transitions.size).also { layoutState.mTransitions = it }
+            }
+            .addAll(outputs.transitions)
 
-        val previousRenderData: MutableList<ScopedComponentInfo> =
-            layoutState.mScopedComponentInfosNeedingPreviousRenderData
-                ?: ArrayList<ScopedComponentInfo>(outputs.componentsThatNeedPreviousRenderData.size)
-                    .also { layoutState.mScopedComponentInfosNeedingPreviousRenderData = it }
-        previousRenderData.addAll(outputs.componentsThatNeedPreviousRenderData)
+        layoutState.mScopedComponentInfosNeedingPreviousRenderData
+            .getOrCreate {
+              ArrayList<ScopedComponentInfo>(outputs.componentsThatNeedPreviousRenderData.size)
+                  .also { layoutState.mScopedComponentInfosNeedingPreviousRenderData = it }
+            }
+            .addAll(outputs.componentsThatNeedPreviousRenderData)
       }
 
       measurePendingSubtrees(
@@ -187,8 +185,9 @@ internal object Layout {
     }
 
     val workingRange: WorkingRangeContainer =
-        layoutState.mWorkingRangeContainer
-            ?: WorkingRangeContainer().also { layoutState.mWorkingRangeContainer = it }
+        layoutState.mWorkingRangeContainer.getOrCreate {
+          WorkingRangeContainer().also { layoutState.mWorkingRangeContainer = it }
+        }
     val component: Component = result.node.tailComponent
     for (registration in registrations) {
       val interStagePropsContainer: InterStagePropsContainer? =
@@ -271,13 +270,13 @@ internal object Layout {
     // 1. Check if current layout result is compatible with size spec and can be reused or not
     val currentLayout: LithoLayoutResult? = holderResult.nestedResult
     if (currentLayout != null &&
-        hasCompatibleSizeSpec(
+        MeasureComparisonUtils.hasCompatibleSizeSpec(
             currentLayout.widthSpec,
             currentLayout.heightSpec,
             widthSpec,
             heightSpec,
-            currentLayout.width.toFloat(),
-            currentLayout.height.toFloat())) {
+            currentLayout.width,
+            currentLayout.height)) {
       return currentLayout
     }
 
@@ -415,13 +414,13 @@ internal object Layout {
     // Transfer the cached layout to the node it if it's compatible.
     if (hasValidDirection) {
       val hasCompatibleSizeSpec: Boolean =
-          hasCompatibleSizeSpec(
+          MeasureComparisonUtils.hasCompatibleSizeSpec(
               oldWidthSpec = cachedLayout.widthSpec,
               oldHeightSpec = cachedLayout.heightSpec,
               newWidthSpec = widthSpec,
               newHeightSpec = heightSpec,
-              oldMeasuredWidth = cachedLayout.width.toFloat(),
-              oldMeasuredHeight = cachedLayout.height.toFloat())
+              oldMeasuredWidth = cachedLayout.width,
+              oldMeasuredHeight = cachedLayout.height)
       if (hasCompatibleSizeSpec) {
         return cachedLayout
       } else if (!Component.isLayoutSpecWithSizeSpec(component)) {

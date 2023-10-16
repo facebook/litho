@@ -115,8 +115,8 @@ class TreeDiffingTest {
     val component1: Component = Text.create(c).text("hello-world").build()
     legacyLithoViewRule.setRoot(component1).layout().measure()
     val result = legacyLithoViewRule.currentRootNode
-    assertThat(result?.width).isEqualTo(diffNode?.lastMeasuredWidth?.toInt())
-    assertThat(result?.height).isEqualTo(diffNode?.lastMeasuredHeight?.toInt())
+    assertThat(result?.width).isEqualTo(diffNode?.lastMeasuredWidth)
+    assertThat(result?.height).isEqualTo(diffNode?.lastMeasuredHeight)
   }
 
   @Test
@@ -704,10 +704,10 @@ class TreeDiffingTest {
     }
 
     private fun assertCachedMeasurementsDefined(node: LithoLayoutResult) {
-      val diffHeight: Float = node.diffNode?.lastMeasuredHeight ?: -1f
-      val diffWidth: Float = node.diffNode?.lastMeasuredWidth ?: -1f
-      assertThat(diffHeight != -1f).isTrue
-      assertThat(diffWidth != -1f).isTrue
+      val diffHeight: Int = node.diffNode?.lastMeasuredHeight ?: -1
+      val diffWidth: Int = node.diffNode?.lastMeasuredWidth ?: -1
+      assertThat(diffHeight != -1).isTrue
+      assertThat(diffWidth != -1).isTrue
       assertThat(node.cachedMeasuresValid).isTrue
     }
 

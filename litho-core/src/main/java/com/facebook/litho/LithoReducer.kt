@@ -166,8 +166,7 @@ object LithoReducer {
                     previousLayoutStateId = layoutState.mPreviousLayoutStateId,
                     expandedTouchBounds = null,
                     layoutData = null,
-                    debugHierarchy = debugNode),
-            parent = null)
+                    debugHierarchy = debugNode))
     addRenderTreeNode(
         layoutState = layoutState,
         node = node,
@@ -554,8 +553,8 @@ object LithoReducer {
     if (diffNode != null) {
       diffNode.lastWidthSpec = result.widthSpec
       diffNode.lastHeightSpec = result.heightSpec
-      diffNode.lastMeasuredWidth = result.contentWidth.toFloat()
-      diffNode.lastMeasuredHeight = result.contentHeight.toFloat()
+      diffNode.lastMeasuredWidth = result.contentWidth
+      diffNode.lastMeasuredHeight = result.contentHeight
       diffNode.layoutData = result.layoutData
       diffNode.primitive = result.node.primitive
       diffNode.delegate = result.delegate
