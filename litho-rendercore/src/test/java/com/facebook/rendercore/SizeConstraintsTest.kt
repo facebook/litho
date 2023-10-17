@@ -21,7 +21,6 @@ import com.facebook.rendercore.utils.MeasureSpecUtils
 import java.lang.IllegalArgumentException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Assume
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -54,10 +53,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - exact size constraints with maximum supported values - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     val c =
         SizeConstraints(
             minWidth = maxValue30Bits,
@@ -82,10 +77,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - exact size constraints with width larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = maxValue30Bits + 1,
@@ -99,10 +90,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - exact size constraints with height larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = maxValue30Bits,
@@ -135,10 +122,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - bounded size constraints with zero min values and maximum supported max values - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     val c =
         SizeConstraints(
             minWidth = 0, maxWidth = maxValue30Bits, minHeight = 0, maxHeight = maxValue30Bits)
@@ -160,10 +143,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - bounded size constraints with zero min values and maxWidth larger than max supported value - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = 0,
@@ -177,10 +156,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - bounded size constraints with zero min values and maxHeight larger than max supported value - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = 0,
@@ -298,10 +273,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - range size constraints with maximum supported values - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     val c =
         SizeConstraints(
             minWidth = maxValue13Bits,
@@ -326,10 +297,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - range size constraints with minWidth larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = maxValue13Bits + 1,
@@ -343,10 +310,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - range size constraints with maxWidth larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = maxValue13Bits,
@@ -360,10 +323,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - range size constraints with minHeight larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = maxValue13Bits,
@@ -377,10 +336,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - range size constraints with maxHeight larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(
               minWidth = maxValue13Bits,
@@ -430,38 +385,20 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - size constraints with maxWidth larger than MaxValue - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      assertThatThrownBy {
-            SizeConstraints(
-                minWidth = 0, maxWidth = maxValue30Bits + 1, minHeight = 0, maxHeight = 0)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be <= $maxValue30Bits")
-    } else {
-      assertThatThrownBy {
-            SizeConstraints(minWidth = 0, maxWidth = 70000, minHeight = 0, maxHeight = 0)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be <= 65534")
-    }
+    assertThatThrownBy {
+          SizeConstraints(minWidth = 0, maxWidth = maxValue30Bits + 1, minHeight = 0, maxHeight = 0)
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxWidth must be <= $maxValue30Bits")
   }
 
   @Test
   fun `create - size constraints with maxHeight larger than MaxValue - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      assertThatThrownBy {
-            SizeConstraints(
-                minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = maxValue30Bits + 1)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be <= $maxValue30Bits")
-    } else {
-      assertThatThrownBy {
-            SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 70000)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be <= 65534")
-    }
+    assertThatThrownBy {
+          SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = maxValue30Bits + 1)
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxHeight must be <= $maxValue30Bits")
   }
 
   @Test
@@ -487,10 +424,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - exact size constraints with maximum supported values - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
@@ -516,10 +449,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - exact size constraints with width larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -534,10 +463,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - exact size constraints with height larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -573,10 +498,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - bounded size constraints with zero min values and maximum supported max values - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
@@ -599,10 +520,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - bounded size constraints with zero min values and maxWidth larger than max supported value - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -617,10 +534,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - bounded size constraints with zero min values and maxHeight larger than max supported value - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -746,10 +659,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - range size constraints with maximum supported values - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     val c =
         SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
             .copy(
@@ -775,10 +684,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - range size constraints with minWidth larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -793,10 +698,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - range size constraints with maxWidth larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -811,10 +712,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - range size constraints with minHeight larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -829,10 +726,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - range size constraints with maxHeight larger than max supported value - should throw`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-
     assertThatThrownBy {
           SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
               .copy(
@@ -887,40 +780,22 @@ class SizeConstraintsTest {
 
   @Test
   fun `copy - size constraints with maxWidth larger than MaxValue - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      assertThatThrownBy {
-            SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
-                .copy(minWidth = 0, maxWidth = maxValue30Bits + 1, minHeight = 0, maxHeight = 0)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be <= $maxValue30Bits")
-    } else {
-      assertThatThrownBy {
-            SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
-                .copy(minWidth = 0, maxWidth = 70000, minHeight = 0, maxHeight = 0)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be <= 65534")
-    }
+    assertThatThrownBy {
+          SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
+              .copy(minWidth = 0, maxWidth = maxValue30Bits + 1, minHeight = 0, maxHeight = 0)
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxWidth must be <= $maxValue30Bits")
   }
 
   @Test
   fun `copy - size constraints with maxHeight larger than MaxValue - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      assertThatThrownBy {
-            SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
-                .copy(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = maxValue30Bits + 1)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be <= $maxValue30Bits")
-    } else {
-      assertThatThrownBy {
-            SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
-                .copy(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 70000)
-          }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be <= 65534")
-    }
+    assertThatThrownBy {
+          SizeConstraints(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = 0)
+              .copy(minWidth = 0, maxWidth = 0, minHeight = 0, maxHeight = maxValue30Bits + 1)
+        }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxHeight must be <= $maxValue30Bits")
   }
 
   @Test
@@ -936,9 +811,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - size constraints with exact width and exact height measure specs with max supported values - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
     val c =
         SizeConstraints.fromMeasureSpecs(
             MeasureSpecUtils.exactly(maxValue30Bits), MeasureSpecUtils.exactly(maxValue30Bits))
@@ -963,9 +835,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - size constraints with at most max supported value width and unspecified height measure specs - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
     val c =
         SizeConstraints.fromMeasureSpecs(
             MeasureSpecUtils.atMost(maxValue30Bits), MeasureSpecUtils.unspecified())
@@ -990,9 +859,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - size constraints with unspecified width and at most max supported value height measure specs - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
     val c =
         SizeConstraints.fromMeasureSpecs(
             MeasureSpecUtils.unspecified(), MeasureSpecUtils.atMost(maxValue30Bits))
@@ -1005,9 +871,6 @@ class SizeConstraintsTest {
 
   @Test
   fun `create - size constraints with at most max supported value width and at most max supported value height measure specs - is successful`() {
-    Assume.assumeTrue(
-        "This test is only valid for new SizeConstraints implementation.",
-        RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
     val c =
         SizeConstraints.fromMeasureSpecs(
             MeasureSpecUtils.atMost(maxValue30Bits), MeasureSpecUtils.atMost(maxValue30Bits))
@@ -1085,101 +948,53 @@ class SizeConstraintsTest {
 
   @Test
   fun `subtract - one from infinite maxWidth - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth - 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be <= $maxValue30Bits")
-    } else {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth - 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be <= 65534")
-    }
+    val constraints =
+        SizeConstraints(
+            minWidth = 0,
+            maxWidth = SizeConstraints.Infinity,
+            minHeight = 0,
+            maxHeight = SizeConstraints.Infinity)
+    assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth - 1) }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxWidth must be <= $maxValue30Bits")
   }
 
   @Test
   fun `add - one to infinite maxWidth - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth + 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be >= minWidth")
-    } else {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth + 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxWidth must be <= 65534")
-    }
+    val constraints =
+        SizeConstraints(
+            minWidth = 0,
+            maxWidth = SizeConstraints.Infinity,
+            minHeight = 0,
+            maxHeight = SizeConstraints.Infinity)
+    assertThatThrownBy { constraints.copy(maxWidth = constraints.maxWidth + 1) }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxWidth must be >= minWidth")
   }
 
   @Test
   fun `subtract - one from infinite maxHeight - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight - 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be <= $maxValue30Bits")
-    } else {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight - 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be <= 65534")
-    }
+    val constraints =
+        SizeConstraints(
+            minWidth = 0,
+            maxWidth = SizeConstraints.Infinity,
+            minHeight = 0,
+            maxHeight = SizeConstraints.Infinity)
+    assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight - 1) }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxHeight must be <= $maxValue30Bits")
   }
 
   @Test
   fun `add - one to infinite maxHeight - should throw`() {
-    if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight + 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be >= minHeight")
-    } else {
-      val constraints =
-          SizeConstraints(
-              minWidth = 0,
-              maxWidth = SizeConstraints.Infinity,
-              minHeight = 0,
-              maxHeight = SizeConstraints.Infinity)
-      assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight + 1) }
-          .isInstanceOf(IllegalArgumentException::class.java)
-          .hasMessageContaining("maxHeight must be <= 65534")
-    }
+    val constraints =
+        SizeConstraints(
+            minWidth = 0,
+            maxWidth = SizeConstraints.Infinity,
+            minHeight = 0,
+            maxHeight = SizeConstraints.Infinity)
+    assertThatThrownBy { constraints.copy(maxHeight = constraints.maxHeight + 1) }
+        .isInstanceOf(IllegalArgumentException::class.java)
+        .hasMessageContaining("maxHeight must be >= minHeight")
   }
 }

@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore.utils
 
+import com.facebook.rendercore.MaxPossibleHeightValue
+import com.facebook.rendercore.MaxPossibleWidthValue
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.getOrElse
@@ -26,6 +28,8 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class SizeUtilsTest {
+
+  private val maxValue30Bits: Int = 0x3FFFFFFF - 1
 
   @Test
   fun `exact size - with exact width and exact height - returns exact size`() {
@@ -263,31 +267,33 @@ class SizeUtilsTest {
   }
 
   @Test
-  fun `aspect ratio - with width bounded to MaxValue - 1 and unbounded height - returns size with values clamped to MaxValue - 1`() {
-    assertThat(
-            Size.withAspectRatio(
-                SizeConstraints(
-                    minWidth = 0,
-                    maxWidth = SizeConstraints.MaxValue - 1,
-                    minHeight = 0,
-                    maxHeight = SizeConstraints.Infinity),
-                aspectRatio = 0.2f))
+  fun `aspect ratio - with bounded width and unbounded height - returns size with height value clamped to MaxPossibleHeightValue`() {
+    val sizeConstraints =
+        SizeConstraints(
+            minWidth = 0,
+            maxWidth = maxValue30Bits,
+            minHeight = 0,
+            maxHeight = SizeConstraints.Infinity)
+    assertThat(Size.withAspectRatio(sizeConstraints, aspectRatio = 0.66f))
         .isEqualTo(
-            Size(width = SizeConstraints.MaxValue - 1, height = SizeConstraints.MaxValue - 1))
+            Size(
+                width = sizeConstraints.MaxPossibleWidthValue,
+                height = sizeConstraints.MaxPossibleHeightValue))
   }
 
   @Test
-  fun `aspect ratio - with unbounded width and height bounded to MaxValue - 1 - returns size with values clamped to MaxValue - 1`() {
-    assertThat(
-            Size.withAspectRatio(
-                SizeConstraints(
-                    minWidth = 0,
-                    maxWidth = SizeConstraints.Infinity,
-                    minHeight = 0,
-                    maxHeight = SizeConstraints.MaxValue - 1),
-                aspectRatio = 2.0f))
+  fun `aspect ratio - with unbounded width and bounded height - returns size with width value clamped to MaxPossibleWidthValue`() {
+    val sizeConstraints =
+        SizeConstraints(
+            minWidth = 0,
+            maxWidth = SizeConstraints.Infinity,
+            minHeight = 0,
+            maxHeight = maxValue30Bits)
+    assertThat(Size.withAspectRatio(sizeConstraints, aspectRatio = 1.5f))
         .isEqualTo(
-            Size(width = SizeConstraints.MaxValue - 1, height = SizeConstraints.MaxValue - 1))
+            Size(
+                width = sizeConstraints.MaxPossibleWidthValue,
+                height = sizeConstraints.MaxPossibleHeightValue))
   }
 
   @Test

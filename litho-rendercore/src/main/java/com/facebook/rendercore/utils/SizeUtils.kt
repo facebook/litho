@@ -18,6 +18,8 @@
 
 package com.facebook.rendercore.utils
 
+import com.facebook.rendercore.MaxPossibleHeightValue
+import com.facebook.rendercore.MaxPossibleWidthValue
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import kotlin.math.ceil
@@ -195,14 +197,16 @@ fun Size.Companion.withAspectRatio(sizeConstraints: SizeConstraints, aspectRatio
         SizeConstraints.Infinity
       } else {
         outputWidth.coerceIn(
-            sizeConstraints.minWidth, min(sizeConstraints.maxWidth, SizeConstraints.MaxValue - 1))
+            sizeConstraints.minWidth,
+            min(sizeConstraints.maxWidth, sizeConstraints.MaxPossibleWidthValue))
       }
   outputHeight =
       if (outputHeight == SizeConstraints.Infinity) {
         SizeConstraints.Infinity
       } else {
         outputHeight.coerceIn(
-            sizeConstraints.minHeight, min(sizeConstraints.maxHeight, SizeConstraints.MaxValue - 1))
+            sizeConstraints.minHeight,
+            min(sizeConstraints.maxHeight, sizeConstraints.MaxPossibleHeightValue))
       }
 
   return Size(outputWidth, outputHeight)

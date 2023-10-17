@@ -29,56 +29,25 @@ import android.view.View.MeasureSpec
  *
  * In order to avoid runtime overhead, [SizeConstraints] is a Kotlin value class that wraps a Long
  * value. That wrapped Long value encodes [minWidth], [minHeight], [maxWidth], and [maxHeight]
- * values. Each of them is represented on 16 bits, which means that the range of possible values is
- * 0 - 65536. There is also a special value for Infinity. When the decoded value is >= 0xFFFF, then
- * [Infinity] is returned. Creating [SizeConstraints] with values that don't fit this range will
- * throw an exception.
+ * values. For mode details about the encoding see [SizeConstraintsHelper.Mode].
  */
 @JvmInline
 value class SizeConstraints internal constructor(@PublishedApi internal val encodedValue: Long) {
   /** Minimum width in pixels. It'll be always <= maxWidth. */
   val minWidth: Int
-    get() {
-      return if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-        ExperimentalSizeConstraintsHelper.getMinWidth(encodedValue)
-      } else {
-        val value = encodedValue.shr(48).and(BitMask).toInt()
-        if (value < MaxValue) value else Infinity
-      }
-    }
+    get() = SizeConstraintsHelper.getMinWidth(encodedValue)
 
   /** Maximum width in pixels. It'll be always >= minWidth and <= Infinity. */
   val maxWidth: Int
-    get() {
-      return if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-        ExperimentalSizeConstraintsHelper.getMaxWidth(encodedValue)
-      } else {
-        val value = encodedValue.shr(32).and(BitMask).toInt()
-        if (value < MaxValue) value else Infinity
-      }
-    }
+    get() = SizeConstraintsHelper.getMaxWidth(encodedValue)
 
   /** Minimum height in pixels. It'll be always <= maxHeight. */
   val minHeight: Int
-    get() {
-      return if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-        ExperimentalSizeConstraintsHelper.getMinHeight(encodedValue)
-      } else {
-        val value = encodedValue.shr(16).and(BitMask).toInt()
-        if (value < MaxValue) value else Infinity
-      }
-    }
+    get() = SizeConstraintsHelper.getMinHeight(encodedValue)
 
   /** Maximum height in pixels. It'll be always >= minWidth and <= Infinity. */
   val maxHeight: Int
-    get() {
-      return if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-        ExperimentalSizeConstraintsHelper.getMaxHeight(encodedValue)
-      } else {
-        val value = encodedValue.and(BitMask).toInt()
-        if (value < MaxValue) value else Infinity
-      }
-    }
+    get() = SizeConstraintsHelper.getMaxHeight(encodedValue)
 
   /** Returns true if maxWidth is != Infinity, false otherwise. */
   val hasBoundedWidth: Boolean
@@ -123,46 +92,32 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
   }
 
   companion object {
-
-    /** A mask used for bit operations. */
-    internal const val BitMask: Long = 0xFFFF
-
-    /** A maximum value that can be stored in SizeConstraints. */
-    const val MaxValue: Int = 0xFFFF
-
     /**
      * A value representing Infinity. It should be used to represent unbounded sizes. When
      * [maxWidth] is set to Infinity, then [hasBoundedWidth] returns false. Similarly when
      * [maxHeight] is set to Infinity, then [hasBoundedHeight] returns false.
      */
-    // 0x20000000 is the largest power of two smaller than Int.MAX_VALUE / 2
-    val Infinity: Int =
-        if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled)
-            ExperimentalSizeConstraintsHelper.Infinity
-        else 0x20000000 - 1
+    const val Infinity: Int = Int.MAX_VALUE
 
     /** Creates [SizeConstraints] from the provided width and height [View.MeasureSpec]s. */
     fun fromMeasureSpecs(widthSpec: Int, heightSpec: Int): SizeConstraints {
       val maxSupportedWidth =
-          if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-            ExperimentalSizeConstraintsHelper.Mode.forMeasureSpec(widthSpec).supportedRange.last
-          } else {
-            MaxValue - 1
-          }
-      val widthMode = View.MeasureSpec.getMode(widthSpec)
+          SizeConstraintsHelper.Mode.forMeasureSpec(widthSpec).supportedRange.last
+
+      val widthMode = MeasureSpec.getMode(widthSpec)
       val widthSize = MeasureSpec.getSize(widthSpec).coerceIn(0, maxSupportedWidth)
       val minWidth: Int
       val maxWidth: Int
       when (widthMode) {
-        View.MeasureSpec.EXACTLY -> {
+        MeasureSpec.EXACTLY -> {
           minWidth = widthSize
           maxWidth = widthSize
         }
-        View.MeasureSpec.UNSPECIFIED -> {
+        MeasureSpec.UNSPECIFIED -> {
           minWidth = 0
           maxWidth = Infinity
         }
-        View.MeasureSpec.AT_MOST -> {
+        MeasureSpec.AT_MOST -> {
           minWidth = 0
           maxWidth = widthSize
         }
@@ -170,53 +125,30 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
       }
 
       val maxSupportedHeight =
-          if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-            ExperimentalSizeConstraintsHelper.Mode.forMeasureSpec(heightSpec).supportedRange.last
-          } else {
-            MaxValue - 1
-          }
-      val heightMode = View.MeasureSpec.getMode(heightSpec)
+          SizeConstraintsHelper.Mode.forMeasureSpec(heightSpec).supportedRange.last
+
+      val heightMode = MeasureSpec.getMode(heightSpec)
       val heightSize = MeasureSpec.getSize(heightSpec).coerceIn(0, maxSupportedHeight)
       val minHeight: Int
       val maxHeight: Int
       when (heightMode) {
-        View.MeasureSpec.EXACTLY -> {
+        MeasureSpec.EXACTLY -> {
           minHeight = heightSize
           maxHeight = heightSize
         }
-        View.MeasureSpec.UNSPECIFIED -> {
+        MeasureSpec.UNSPECIFIED -> {
           minHeight = 0
           maxHeight = Infinity
         }
-        View.MeasureSpec.AT_MOST -> {
+        MeasureSpec.AT_MOST -> {
           minHeight = 0
           maxHeight = heightSize
         }
         else -> throw IllegalStateException("Unknown height spec mode.")
       }
 
-      return if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-        SizeConstraints(
-            ExperimentalSizeConstraintsHelper.sizeConstraints(
-                minWidth, maxWidth, minHeight, maxHeight))
-      } else {
-        validateSizes(
-            minWidth,
-            maxWidth,
-            minHeight,
-            maxHeight,
-            Infinity,
-            MaxValue - 1,
-            MaxValue - 1,
-            MaxValue - 1,
-            MaxValue - 1,
-            "minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight, widthSpec=[${View.MeasureSpec.toString(widthSpec)}], heightSpec=[${View.MeasureSpec.toString(heightSpec)}]")
-        SizeConstraints(minWidth, maxWidth, minHeight, maxHeight)
-      }
-    }
-
-    internal fun valueOrInfinity(value: Int): Long {
-      return (if (value == Infinity) MaxValue else value).toLong()
+      return SizeConstraints(
+          SizeConstraintsHelper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
     }
   }
 }
@@ -228,29 +160,8 @@ fun SizeConstraints(
     minHeight: Int,
     maxHeight: Int,
 ): SizeConstraints {
-  return if (RenderCoreConfig.isExperimentalSizeConstraintsEnabled) {
-    SizeConstraints(
-        ExperimentalSizeConstraintsHelper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
-  } else {
-    validateSizes(
-        minWidth,
-        maxWidth,
-        minHeight,
-        maxHeight,
-        SizeConstraints.Infinity,
-        SizeConstraints.MaxValue - 1,
-        SizeConstraints.MaxValue - 1,
-        SizeConstraints.MaxValue - 1,
-        SizeConstraints.MaxValue - 1,
-        "minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
-
-    val v1 = SizeConstraints.valueOrInfinity(minWidth)
-    val v2 = SizeConstraints.valueOrInfinity(maxWidth)
-    val v3 = SizeConstraints.valueOrInfinity(minHeight)
-    val v4 = SizeConstraints.valueOrInfinity(maxHeight)
-    SizeConstraints(
-        encodedValue = v1.shl(48) or v2.shl(32) or v3.shl(16) or (v4 and SizeConstraints.BitMask))
-  }
+  return SizeConstraints(
+      SizeConstraintsHelper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
 }
 
 /**
@@ -262,12 +173,12 @@ fun SizeConstraints(
  */
 fun SizeConstraints.toWidthSpec(): Int {
   if (minWidth == maxWidth) {
-    return View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.EXACTLY)
+    return MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.EXACTLY)
   }
   if (maxWidth != SizeConstraints.Infinity) {
-    return View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST)
+    return MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST)
   }
-  return View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+  return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
 }
 
 /**
@@ -279,13 +190,21 @@ fun SizeConstraints.toWidthSpec(): Int {
  */
 fun SizeConstraints.toHeightSpec(): Int {
   if (minHeight == maxHeight) {
-    return View.MeasureSpec.makeMeasureSpec(maxHeight, View.MeasureSpec.EXACTLY)
+    return MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY)
   }
   if (maxHeight != SizeConstraints.Infinity) {
-    return View.MeasureSpec.makeMeasureSpec(maxHeight, View.MeasureSpec.AT_MOST)
+    return MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST)
   }
-  return View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+  return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
 }
+
+/** A maximum width value that can be stored in this [SizeConstraints] instance. */
+val SizeConstraints.MaxPossibleWidthValue: Int
+  get() = SizeConstraintsHelper.Mode.forRange(minWidth, maxWidth).supportedRange.last
+
+/** A maximum height value that can be stored in this [SizeConstraints] instance. */
+val SizeConstraints.MaxPossibleHeightValue: Int
+  get() = SizeConstraintsHelper.Mode.forRange(minHeight, maxHeight).supportedRange.last
 
 /** Returns true if the size fits within the given constraints, otherwise returns false. */
 fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
@@ -293,56 +212,9 @@ fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
       (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
 }
 
-private fun validateSizes(
-    minWidth: Int,
-    maxWidth: Int,
-    minHeight: Int,
-    maxHeight: Int,
-    infinity: Int,
-    maxSupportedMinWidth: Int,
-    maxSupportedMaxWidth: Int,
-    maxSupportedMinHeight: Int,
-    maxSupportedMaxHeight: Int,
-    additionalErrorMessage: String
-) {
-  if (minWidth < 0) {
-    throw IllegalArgumentException(
-        "minWidth must be >= 0, but was: $minWidth $additionalErrorMessage")
-  }
-  if (minHeight < 0) {
-    throw IllegalArgumentException(
-        "minHeight must be >= 0, but was: $minHeight $additionalErrorMessage")
-  }
-  if (minWidth > maxSupportedMinWidth && minWidth != infinity) {
-    throw IllegalArgumentException(
-        "minWidth must be <= ${maxSupportedMinWidth}, but was: $minWidth. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
-  }
-  if (maxWidth > maxSupportedMaxWidth && maxWidth != infinity) {
-    throw IllegalArgumentException(
-        "maxWidth must be <= ${maxSupportedMaxWidth}, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
-  }
-  if (minHeight > maxSupportedMinHeight && minHeight != infinity) {
-    throw IllegalArgumentException(
-        "minHeight must be <= ${maxSupportedMinHeight}, but was: $minHeight. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
-  }
-  if (maxHeight > maxSupportedMaxHeight && maxHeight != infinity) {
-    throw IllegalArgumentException(
-        "maxHeight must be <= ${maxSupportedMaxHeight}, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
-  }
-  if (minWidth > maxWidth) {
-    throw IllegalArgumentException(
-        "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth $additionalErrorMessage")
-  }
-  if (minHeight > maxHeight) {
-    throw IllegalArgumentException(
-        "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight $additionalErrorMessage")
-  }
-}
+private object SizeConstraintsHelper {
 
-private object ExperimentalSizeConstraintsHelper {
-
-  const val Infinity: Int = Int.MAX_VALUE
-
+  @JvmStatic
   fun sizeConstraints(
       minWidth: Int,
       maxWidth: Int,
@@ -356,7 +228,6 @@ private object ExperimentalSizeConstraintsHelper {
         maxWidth,
         minHeight,
         maxHeight,
-        Infinity,
         widthMode.supportedRange.first,
         widthMode.supportedRange.last,
         heightMode.supportedRange.first,
@@ -369,23 +240,103 @@ private object ExperimentalSizeConstraintsHelper {
     return encodedWidth.shl(32) or encodedHeight
   }
 
+  @JvmStatic
   fun getMinWidth(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.high).decodeMinWidth(sizeConstraints)
   }
 
+  @JvmStatic
   fun getMaxWidth(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.high).decodeMaxWidth(sizeConstraints)
   }
 
+  @JvmStatic
   fun getMinHeight(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.low).decodeMinHeight(sizeConstraints)
   }
 
+  @JvmStatic
   fun getMaxHeight(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.low).decodeMaxHeight(sizeConstraints)
   }
 
-  /** Actual encoding and decoding logic for each supported mode. */
+  @JvmStatic
+  private fun validateSizes(
+      minWidth: Int,
+      maxWidth: Int,
+      minHeight: Int,
+      maxHeight: Int,
+      maxSupportedMinWidth: Int,
+      maxSupportedMaxWidth: Int,
+      maxSupportedMinHeight: Int,
+      maxSupportedMaxHeight: Int,
+      additionalErrorMessage: String
+  ) {
+    if (minWidth < 0) {
+      throw IllegalArgumentException(
+          "minWidth must be >= 0, but was: $minWidth $additionalErrorMessage")
+    }
+    if (minHeight < 0) {
+      throw IllegalArgumentException(
+          "minHeight must be >= 0, but was: $minHeight $additionalErrorMessage")
+    }
+    if (minWidth > maxSupportedMinWidth && minWidth != SizeConstraints.Infinity) {
+      throw IllegalArgumentException(
+          "minWidth must be <= ${maxSupportedMinWidth}, but was: $minWidth. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+    }
+    if (maxWidth > maxSupportedMaxWidth && maxWidth != SizeConstraints.Infinity) {
+      throw IllegalArgumentException(
+          "maxWidth must be <= ${maxSupportedMaxWidth}, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+    }
+    if (minHeight > maxSupportedMinHeight && minHeight != SizeConstraints.Infinity) {
+      throw IllegalArgumentException(
+          "minHeight must be <= ${maxSupportedMinHeight}, but was: $minHeight. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+    }
+    if (maxHeight > maxSupportedMaxHeight && maxHeight != SizeConstraints.Infinity) {
+      throw IllegalArgumentException(
+          "maxHeight must be <= ${maxSupportedMaxHeight}, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+    }
+    if (minWidth > maxWidth) {
+      throw IllegalArgumentException(
+          "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth $additionalErrorMessage")
+    }
+    if (minHeight > maxHeight) {
+      throw IllegalArgumentException(
+          "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight $additionalErrorMessage")
+    }
+  }
+
+  /**
+   * Actual encoding and decoding logic for each supported mode.
+   *
+   * SizeConstraints encodes minWidth, maxWidth, minHeight and maxHeight into a single 64bit long
+   * value. The 64 bits are divided into two halves:
+   * ```
+   * <------------------------64 bit value------------------------>
+   * <------32 bit width info------><-----32 bit height info------>
+   * ```
+   *
+   * The first 2 bits in each 32 bit half represent MODE:
+   * - 00 - EXACT - min and max values are the same
+   * - 01 - UPPER_BOUNDED - min value is 0, max value is >=0 or Infinity
+   * - 10 and 11 - RANGE - min and max values are > 0
+   *
+   * ```
+   * <-------------32 bit value------------->
+   * <-2 bit mode-><------30 bit size ------>
+   * ```
+   *
+   * In EXACT and UPPER_BOUNDED modes, the actual size value is stored on 30 bits which means that
+   * the maximum supported size value in EXACT and UPPER_BOUNDED modes is 0x3FFFFFFF - 1 (all 30
+   * bits set to 1 minus 1).
+   *
+   * In RANGE mode, the min value is stored on highest 13 bits and max value is stored on lowest 18
+   * bits which means that the maximum supported min size value is 0x1FFF - 1 (all 13 bits set to 1
+   * minus 1) and maximum supported max size value is 0x3FFFF - 1 (all 18 bits set to 1 minus 1).
+   *
+   * There is also one special value - [SizeConstraints.Infinity] which is set to [Int.MAX_VALUE].
+   * Infinity is encoded as 0.
+   */
   sealed class Mode(val supportedRange: IntRange, val id: Int) {
 
     abstract fun encode(minValue: Int, maxValue: Int): Long
@@ -446,8 +397,8 @@ private object ExperimentalSizeConstraintsHelper {
           valueOrInfinity(encodedHalf.clearModeBits and Mask18Bits)
 
       override fun encode(minValue: Int, maxValue: Int): Long {
-        val minValueToEncode: Int = if (minValue == Infinity) 0 else minValue + 1
-        val maxValueToEncode: Int = if (maxValue == Infinity) 0 else maxValue + 1
+        val minValueToEncode: Int = if (minValue == SizeConstraints.Infinity) 0 else minValue + 1
+        val maxValueToEncode: Int = if (maxValue == SizeConstraints.Infinity) 0 else maxValue + 1
 
         val encodedValue: Int =
             (id shl 30) or
@@ -458,11 +409,11 @@ private object ExperimentalSizeConstraintsHelper {
     }
 
     internal fun valueOrInfinity(value: Int): Int {
-      return if (value == 0) Infinity else value - 1
+      return if (value == 0) SizeConstraints.Infinity else value - 1
     }
 
     internal fun encode30BitValue(value: Int): Long {
-      val valueToEncode: Int = if (value == Infinity) 0 else value + 1
+      val valueToEncode: Int = if (value == SizeConstraints.Infinity) 0 else value + 1
       val encodedValue: Int = (id shl 30) or (valueToEncode and Mask30Bits)
       return encodedValue.toLong().clearHighBits
     }
@@ -509,10 +460,10 @@ private object ExperimentalSizeConstraintsHelper {
 
       @JvmStatic
       fun forMeasureSpec(measureSpec: Int): Mode {
-        return when (View.MeasureSpec.getMode(measureSpec)) {
-          View.MeasureSpec.EXACTLY -> Exact
-          View.MeasureSpec.AT_MOST,
-          View.MeasureSpec.UNSPECIFIED -> UpperBounded
+        return when (MeasureSpec.getMode(measureSpec)) {
+          MeasureSpec.EXACTLY -> Exact
+          MeasureSpec.AT_MOST,
+          MeasureSpec.UNSPECIFIED -> UpperBounded
           else -> throw IllegalStateException("Unknown width spec mode.")
         }
       }
