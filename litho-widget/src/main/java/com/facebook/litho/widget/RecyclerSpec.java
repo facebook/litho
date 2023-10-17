@@ -237,7 +237,9 @@ class RecyclerSpec {
 
     if (onScrollListeners != null) {
       for (OnScrollListener onScrollListener : onScrollListeners) {
-        recyclerView.addOnScrollListener(onScrollListener);
+        if (onScrollListener != null) {
+          recyclerView.addOnScrollListener(onScrollListener);
+        }
       }
     }
 
@@ -297,7 +299,9 @@ class RecyclerSpec {
 
     if (onScrollListeners != null) {
       for (OnScrollListener onScrollListener : onScrollListeners) {
-        recyclerView.removeOnScrollListener(onScrollListener);
+        if (onScrollListener != null) {
+          recyclerView.removeOnScrollListener(onScrollListener);
+        }
       }
     }
 
