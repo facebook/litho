@@ -503,9 +503,7 @@ public class ComponentTree
             builder.visibilityBoundsTransformer,
             builder.componentTreeDebugEventListener);
 
-    mContext =
-        ComponentContextUtils.withLithoTree(
-            builder.context, config, LithoTree.Companion.create(this), builder.mLifecycleProvider);
+    mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
 
     if (ComponentsConfiguration.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
@@ -513,8 +511,8 @@ public class ComponentTree
       mTimeMachine = null;
     }
 
-    if (mContext.getLifecycleProvider() != null) {
-      subscribeToLifecycleProvider(mContext.getLifecycleProvider());
+    if (builder.mLifecycleProvider != null) {
+      subscribeToLifecycleProvider(builder.mLifecycleProvider);
     }
 
     if (config.debugEventListener != null) {

@@ -164,15 +164,6 @@ class ComponentTreeTest {
   }
 
   @Test
-  fun testCreate_withLifecycleProvider() {
-    val lithoLifecycleProviderDelegate = LithoLifecycleProviderDelegate()
-    val componentTree =
-        ComponentTree.create(context, component, lithoLifecycleProviderDelegate).build()
-    assertNotNull(componentTree.lifecycleProvider)
-    assertNotNull(ComponentTree.getLifecycleProvider(componentTree.context))
-  }
-
-  @Test
   fun testCreate_ContextIsNotScoped() {
     val scopedContext =
         ComponentContext.withComponentScope(context, Row.create(context).build(), "global_key")
