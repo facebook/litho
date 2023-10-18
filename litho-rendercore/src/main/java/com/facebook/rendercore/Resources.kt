@@ -23,6 +23,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntegerRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 
 /** Return a string for a resource ID. */
@@ -47,14 +48,14 @@ fun BaseResourcesScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): St
  * @return a string for a resource ID and quantity, substituting the format arguments with
  *   [formatArgs].
  */
-fun BaseResourcesScope.quantityStringRes(@StringRes id: Int, quantity: Int): String =
+fun BaseResourcesScope.quantityStringRes(@PluralsRes id: Int, quantity: Int): String =
     requireNotNull(resourceResolver.resolveQuantityStringRes(id, quantity)) {
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
 /** @return a string for a resource ID and quantity. */
 fun BaseResourcesScope.quantityStringRes(
-    @StringRes id: Int,
+    @PluralsRes id: Int,
     quantity: Int,
     vararg formatArgs: Any
 ): String =

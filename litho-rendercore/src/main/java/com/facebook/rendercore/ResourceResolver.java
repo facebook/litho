@@ -29,6 +29,7 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntegerRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import com.facebook.infer.annotation.Nullsafe;
@@ -93,12 +94,12 @@ public class ResourceResolver {
     return resId != 0 ? mResources.getString(resId, formatArgs) : null;
   }
 
-  public @Nullable String resolveQuantityStringRes(@StringRes int resId, int quantity) {
+  public @Nullable String resolveQuantityStringRes(@PluralsRes int resId, int quantity) {
     return resId != 0 ? mResources.getQuantityString(resId, quantity) : null;
   }
 
   public @Nullable String resolveQuantityStringRes(
-      @StringRes int resId, int quantity, Object... formatArgs) {
+      @PluralsRes int resId, int quantity, Object... formatArgs) {
     return resId != 0 ? mResources.getQuantityString(resId, quantity, formatArgs) : null;
   }
 
