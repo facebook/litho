@@ -142,6 +142,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>>
       mCustomBindersForMountSpec;
 
+  protected @Nullable Map<Class<?>, RenderUnit.DelegateBinder<Object, Object, Object>>
+      mCustomDelegateBindersForMountSpec;
+
   protected @Nullable PathEffect mBorderPathEffect;
   protected @Nullable StateListAnimator mStateListAnimator;
   private @Nullable Edges mTouchExpansion;
@@ -277,8 +280,21 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return mCustomBindersForMountSpec;
   }
 
+  /**
+   * Returns a nullable map of {@link RenderUnit.DelegateBinder<Object, Object, Object>} that is
+   * aimed to be used to set the optional mount binders right after creating a {@link
+   * MountSpecLithoRenderUnit}.
+   */
+  @Nullable
+  public Map<Class<?>, RenderUnit.DelegateBinder<Object, Object, Object>>
+      getCustomDelegateBindersForMountSpec() {
+    return mCustomDelegateBindersForMountSpec;
+  }
+
   private boolean hasCustomBindersForMountSpec() {
-    return mCustomBindersForMountSpec != null && !mCustomBindersForMountSpec.isEmpty();
+    return (mCustomBindersForMountSpec != null && !mCustomBindersForMountSpec.isEmpty())
+        || (mCustomDelegateBindersForMountSpec != null
+            && !mCustomDelegateBindersForMountSpec.isEmpty());
   }
 
   public void background(@Nullable Drawable background) {
@@ -312,8 +328,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * later.
    */
   public void addCustomBinders(
-      @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> bindersMap) {
-    if (bindersMap == null || bindersMap.isEmpty()) {
+      @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> bindersMap,
+      @Nullable
+          Map<Class<?>, RenderUnit.DelegateBinder<Object, Object, Object>> delegateBindersMap) {
+    if ((bindersMap == null || bindersMap.isEmpty())
+        && (delegateBindersMap == null || delegateBindersMap.isEmpty())) {
       return;
     }
 
@@ -322,18 +341,35 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     if (!LithoNode.willMountDrawable(this)) {
       if (mPrimitive != null) {
         RenderUnit<?> primitiveRenderUnit = mPrimitive.getRenderUnit();
-        for (RenderUnit.Binder<Object, Object, Object> binder : bindersMap.values()) {
-          primitiveRenderUnit.addOptionalMountBinders(
-              RenderUnit.DelegateBinder.createDelegateBinder(primitiveRenderUnit, binder));
+        if (bindersMap != null) {
+          for (RenderUnit.Binder<Object, Object, Object> binder : bindersMap.values()) {
+            primitiveRenderUnit.addOptionalMountBinders(
+                RenderUnit.DelegateBinder.createDelegateBinder(primitiveRenderUnit, binder));
+          }
+        }
+
+        if (delegateBindersMap != null) {
+          for (RenderUnit.DelegateBinder<Object, Object, Object> binder :
+              delegateBindersMap.values()) {
+            primitiveRenderUnit.addOptionalMountBinder(binder);
+          }
         }
       }
     }
 
-    if (mCustomBindersForMountSpec == null) {
-      mCustomBindersForMountSpec = new LinkedHashMap<>();
+    if (bindersMap != null) {
+      if (mCustomBindersForMountSpec == null) {
+        mCustomBindersForMountSpec = new LinkedHashMap<>();
+      }
+      mCustomBindersForMountSpec.putAll(bindersMap);
     }
 
-    mCustomBindersForMountSpec.putAll(bindersMap);
+    if (delegateBindersMap != null) {
+      if (mCustomDelegateBindersForMountSpec == null) {
+        mCustomDelegateBindersForMountSpec = new LinkedHashMap<>();
+      }
+      mCustomDelegateBindersForMountSpec.putAll(delegateBindersMap);
+    }
   }
 
   public void setPaddingFromBackground(@Nullable Rect padding) {

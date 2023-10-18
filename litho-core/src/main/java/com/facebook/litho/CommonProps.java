@@ -646,9 +646,18 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     getOrCreateOtherProps().mountViewBinder(binder);
   }
 
+  public void delegateMountViewBinder(RenderUnit.DelegateBinder<Object, Object, Object> binder) {
+    getOrCreateOtherProps().delegateMountViewBinder(binder);
+  }
+
   @Nullable
   public Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> getViewBinders() {
     return getOrCreateOtherProps().mTypeToViewBinder;
+  }
+
+  @Nullable
+  public Map<Class<?>, RenderUnit.DelegateBinder<Object, Object, Object>> getDelegateViewBinders() {
+    return getOrCreateOtherProps().mTypeToDelegateViewBinder;
   }
 
   @Nullable
@@ -779,6 +788,8 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     @Nullable private EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
 
     private @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> mTypeToViewBinder;
+    private @Nullable Map<Class<?>, RenderUnit.DelegateBinder<Object, Object, Object>>
+        mTypeToDelegateViewBinder;
 
     private int mImportantForAccessibility;
     private boolean mDuplicateParentState;
@@ -800,6 +811,14 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       }
 
       mTypeToViewBinder.put(binder.getClass(), binder);
+    }
+
+    private void delegateMountViewBinder(RenderUnit.DelegateBinder<Object, Object, Object> binder) {
+      if (mTypeToDelegateViewBinder == null) {
+        mTypeToDelegateViewBinder = new LinkedHashMap<>();
+      }
+
+      mTypeToDelegateViewBinder.put(binder.getDelegatedBinderClass(), binder);
     }
 
     private void importantForAccessibility(int importantForAccessibility) {

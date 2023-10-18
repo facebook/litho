@@ -843,6 +843,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return new DelegateBinder<>(model, binder);
     }
 
+    /** Returns the class for the binder to which it delegates. */
+    public Class<?> getDelegatedBinderClass() {
+      return binder.getClass();
+    }
+
     boolean shouldUpdate(
         final DelegateBinder<MODEL, CONTENT, BIND_DATA> previous,
         final @Nullable Object currentLayoutData,
