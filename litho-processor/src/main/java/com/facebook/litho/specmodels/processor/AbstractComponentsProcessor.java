@@ -58,13 +58,13 @@ public abstract class AbstractComponentsProcessor extends ProcessorBase {
 
   protected AbstractComponentsProcessor(
       List<SpecModelFactory> specModelFactories,
-      DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
+      @Nullable DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
     this(specModelFactories, dependencyInjectionHelperFactory, true);
   }
 
   protected AbstractComponentsProcessor(
       List<SpecModelFactory> specModelFactories,
-      DependencyInjectionHelperFactory dependencyInjectionHelperFactory,
+      @Nullable DependencyInjectionHelperFactory dependencyInjectionHelperFactory,
       boolean shouldSavePropNames) {
     mSpecModelFactories = specModelFactories;
     mDependencyInjectionHelperFactory = dependencyInjectionHelperFactory;
