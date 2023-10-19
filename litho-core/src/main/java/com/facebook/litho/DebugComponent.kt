@@ -117,6 +117,12 @@ private constructor(
   private val isNotTailComponent: Boolean
     get() = componentIndex != 0
 
+  val widthSpec: String
+    get() = SizeSpec.toSimpleString(result.widthSpec)
+
+  val heightSpec: String
+    get() = SizeSpec.toSimpleString(result.heightSpec)
+
   fun setOverrider(overrider: Overrider) {
     overriders[globalKey] = overrider
   }
