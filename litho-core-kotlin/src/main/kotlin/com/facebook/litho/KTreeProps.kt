@@ -75,9 +75,15 @@ private fun <T> ComponentScope.createTreeProp(clazz: Class<out T>, value: T) {
 }
 
 /**
- * Returns the instance registered for this type in this hierarchy. Tree props are registered for a
- * sub-hierarchy via [TreePropProvider] or [com.facebook.litho.annotations.OnCreateTreeProp] in the
- * specs API.
+ * Returns the instance registered for the type [T] in this hierarchy, and `null` if no value was
+ * registered. Tree props are registered for a sub-hierarchy via [TreePropProvider] or
+ * [com.facebook.litho.annotations.OnCreateTreeProp] in the Spec API.
  */
-@Suppress("UNCHECKED_CAST")
 inline fun <reified T : Any> ComponentScope.getTreeProp(): T? = context.getTreeProp(T::class.java)
+
+/**
+ * Returns the instance registered for the type [T] in this hierarchy, throws if no value was
+ * registered. Tree props are registered for a sub-hierarchy via [TreePropProvider] or
+ * [com.facebook.litho.annotations.OnCreateTreeProp] in the Spec API.
+ */
+inline fun <reified T : Any> ComponentScope.requireTreeProp(): T = checkNotNull(getTreeProp())
