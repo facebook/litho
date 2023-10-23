@@ -47,7 +47,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 16)
+@Config(sdk = 19)
 public class IncrementalMountExtensionTest {
 
   public final @Rule RenderCoreTestRule mRenderCoreTestRule = new RenderCoreTestRule();
