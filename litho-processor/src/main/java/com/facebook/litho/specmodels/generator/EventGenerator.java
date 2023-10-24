@@ -170,17 +170,12 @@ public class EventGenerator {
           .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
     }
 
-    eventDispatcherMethod.addStatement(
-        "$T _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher()",
-        ClassNames.EVENT_DISPATCHER);
-
     if (eventDeclaration.returnType.equals(TypeName.VOID)) {
-      eventDispatcherMethod.addStatement("_dispatcher.dispatchOnEvent(_eventHandler, _eventState)");
+      eventDispatcherMethod.addStatement("_eventHandler.dispatchEvent(_eventState)");
     } else {
       eventDispatcherMethod
           .addStatement(
-              "return ($T) _dispatcher.dispatchOnEvent(_eventHandler, _eventState)",
-              eventDeclaration.returnType)
+              "return ($T) _eventHandler.dispatchEvent(_eventState)", eventDeclaration.returnType)
           .returns(eventDeclaration.returnType);
     }
 

@@ -30,7 +30,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
-import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
@@ -477,9 +476,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
-    EventDispatcher _dispatcher =
-        _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();
-    _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
+    _eventHandler.dispatchEvent(_eventState);
   }
 
   private void testLayoutEvent(

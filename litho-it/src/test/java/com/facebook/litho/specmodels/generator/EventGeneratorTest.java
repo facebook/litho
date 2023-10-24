@@ -274,8 +274,7 @@ public class EventGeneratorTest {
                 + "  final java.lang.Object _eventState = new java.lang.Object();\n"
                 + "  _eventState.field1 = field1;\n"
                 + "  _eventState.field2 = field2;\n"
-                + "  com.facebook.litho.EventDispatcher _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();\n"
-                + "  return (java.lang.Object) _dispatcher.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "  return (java.lang.Object) _eventHandler.dispatchEvent(_eventState);\n"
                 + "}\n");
   }
 
@@ -303,8 +302,7 @@ public class EventGeneratorTest {
                 + "    java.util.List field1) {\n"
                 + "  final java.lang.Object _eventState = new java.lang.Object();\n"
                 + "  _eventState.field1 = field1;\n"
-                + "  com.facebook.litho.EventDispatcher _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();\n"
-                + "  return (java.lang.Object) _dispatcher.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "  return (java.lang.Object) _eventHandler.dispatchEvent(_eventState);\n"
                 + "}\n");
   }
 
@@ -328,8 +326,7 @@ public class EventGeneratorTest {
                 + "  final com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent _eventState = new com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent();\n"
                 + "  _eventState.nonnullObject = nonnullObject;\n"
                 + "  _eventState.nullableObject = nullableObject;\n"
-                + "  com.facebook.litho.EventDispatcher _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();\n"
-                + "  _dispatcher.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "  _eventHandler.dispatchEvent(_eventState);\n"
                 + "}\n");
   }
 
