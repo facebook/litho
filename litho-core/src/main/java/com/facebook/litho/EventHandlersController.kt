@@ -87,6 +87,7 @@ class EventHandlersController {
     // EventDispatchInfo
     dispatchInfoWrapper.dispatchInfo.hasEventDispatcher = dispatcher
     dispatchInfoWrapper.dispatchInfo.componentContext = c
+    dispatchInfoWrapper.dispatchInfo.isBound = true
   }
 
   /**

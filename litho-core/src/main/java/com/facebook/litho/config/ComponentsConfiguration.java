@@ -277,6 +277,10 @@ public class ComponentsConfiguration {
   /** Debug option to highlight mount bounds of mounted components. */
   public static boolean debugHighlightMountBounds = false;
 
+  public static boolean isEventHandlerRebindLoggingEnabled = false;
+
+  public static int eventHandlerRebindLoggingSamplingRate = 0;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();

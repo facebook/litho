@@ -19,10 +19,14 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.utils.CommonUtils;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
+
+  public static final String UnboundEventHandler = "UnboundEventHandler:";
 
   public final int id;
   public final EventHandlerRebindMode mode;
@@ -72,6 +76,20 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   }
 
   public void dispatchEvent(E event) {
+
+    // Log unbound event handler dispatches
+    if (ComponentsConfiguration.isEventHandlerRebindLoggingEnabled) {
+      final EventDispatchInfo info = dispatchInfo;
+      final boolean isUnbound = (info == null) || !info.isBound;
+      if (isUnbound) {
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR, // does not crash
+            UnboundEventHandler + CommonUtils.getSectionNameForTracing(event.getClass()),
+            "Unbound event handler dispatched from : " + this,
+            ComponentsConfiguration.eventHandlerRebindLoggingSamplingRate);
+      }
+    }
+
     boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("onEvent:" + this);
@@ -144,6 +162,6 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
     final HasEventDispatcher hasEventDispatcher = dispatchInfo.hasEventDispatcher;
     return hasEventDispatcher != null && hasEventDispatcher != this
         ? hasEventDispatcher.toString()
-        : super.toString();
+        : CommonUtils.getSectionNameForTracing(getClass());
   }
 }

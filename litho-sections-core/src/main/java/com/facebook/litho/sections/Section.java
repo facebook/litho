@@ -439,6 +439,11 @@ public abstract class Section extends SectionLifecycle
     return childrenMap;
   }
 
+  @Override
+  public String toString() {
+    return getSimpleName();
+  }
+
   @VisibleForTesting
   public String getLogTag() {
     return getSimpleName();
