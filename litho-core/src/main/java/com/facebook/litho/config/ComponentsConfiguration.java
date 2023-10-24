@@ -308,6 +308,8 @@ public class ComponentsConfiguration {
 
   private final boolean mNestedPreallocationEnabled;
 
+  private boolean mUseNonRebindingEventHandlers = false;
+
   public boolean isNestedPreallocationEnabled() {
     return mNestedPreallocationEnabled;
   }
@@ -332,6 +334,10 @@ public class ComponentsConfiguration {
     return mUseIncrementalMountGapWorker;
   }
 
+  public boolean useNonRebindingEventHandlers() {
+    return mUseNonRebindingEventHandlers;
+  }
+
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mUseInterruptibleResolution = builder.mUseInterruptibleResolution;
@@ -340,6 +346,7 @@ public class ComponentsConfiguration {
     mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
     mUseIncrementalMountGapWorker = builder.mUseIncrementalMountGapWorker;
     mNestedPreallocationEnabled = builder.mNestedPreallocationEnabled;
+    mUseNonRebindingEventHandlers = builder.mUseNonRebindingEventHandlers;
   }
 
   public static ComponentsConfiguration.Builder create() {
@@ -366,6 +373,8 @@ public class ComponentsConfiguration {
     boolean mShouldDisableBgFgOutputs = false;
     boolean mUseIncrementalMountGapWorker = IncrementalMountExtensionConfigs.useGapWorker;
     boolean mNestedPreallocationEnabled = false;
+
+    boolean mUseNonRebindingEventHandlers = false;
 
     protected Builder() {}
 
@@ -405,6 +414,11 @@ public class ComponentsConfiguration {
      */
     public Builder nestedPreallocationEnabled(boolean enabled) {
       mNestedPreallocationEnabled = enabled;
+      return this;
+    }
+
+    public Builder useNonRebindingEventHandlers(boolean enabled) {
+      mUseNonRebindingEventHandlers = enabled;
       return this;
     }
 

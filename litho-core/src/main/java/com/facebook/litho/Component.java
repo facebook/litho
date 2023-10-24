@@ -352,7 +352,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
             id, mode, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
     final CalculationContext calculationContext = c.getCalculationStateContext();
     if (calculationContext != null) {
-      calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
+      if (c.shouldUseNonRebindingEventHandlers()) {
+        if (mode == EventHandlerRebindMode.REBIND) {
+          calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
+        }
+      } else {
+        calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
+      }
     }
     return eventHandler;
   }

@@ -237,7 +237,13 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
         new EventHandler<>(id, mode, new EventDispatchInfo(section, c), params);
     final ChangeSetCalculationState calculationState = c.getChangeSetCalculationState();
     if (calculationState != null && calculationState.isActive()) {
-      calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
+      if (c.shouldUseNonRebindingEventHandlers()) {
+        if (mode == EventHandlerRebindMode.REBIND) {
+          calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
+        }
+      } else {
+        calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
+      }
     }
     return eventHandler;
   }

@@ -786,6 +786,10 @@ public class ComponentContext implements Cloneable {
         && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
   }
 
+  public final boolean shouldUseNonRebindingEventHandlers() {
+    return mLithoConfiguration.mComponentsConfiguration.useNonRebindingEventHandlers();
+  }
+
   boolean isNestedTreeContext() {
     return isNestedTreeContext;
   }

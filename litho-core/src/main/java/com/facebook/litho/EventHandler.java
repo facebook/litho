@@ -102,6 +102,18 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
       return false;
     }
 
+    if (mode != other.mode) {
+      return false;
+    }
+
+    final boolean useNonRebindingEventHandlers =
+        dispatchInfo != null
+            && dispatchInfo.componentContext != null
+            && dispatchInfo.componentContext.shouldUseNonRebindingEventHandlers();
+    if (useNonRebindingEventHandlers && dispatchInfo != other.dispatchInfo) {
+      return false;
+    }
+
     if (params == other.params) {
       return true;
     }
