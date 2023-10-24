@@ -17,9 +17,16 @@
 package com.facebook.litho
 
 import androidx.annotation.VisibleForTesting
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import kotlin.jvm.JvmField
 
-class NoOpEventHandler<E> private constructor() : EventHandler<E>(NoOpHasEventDispatcher(), ID) {
+class NoOpEventHandler<E> :
+    EventHandler<E>(
+        ID,
+        EventHandlerRebindMode.NONE,
+        EventDispatchInfo(NoOpHasEventDispatcher(), null),
+        null,
+    ) {
 
   private class NoOpHasEventDispatcher : HasEventDispatcher {
     override fun getEventDispatcher(): EventDispatcher = EventDispatcher { _, _ ->
