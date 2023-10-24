@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.EventHandler;
 import java.lang.ref.WeakReference;
 
@@ -35,13 +36,15 @@ public class SectionTreeLoadingEventHandler extends EventHandler<LoadingEvent> {
   }
 
   @Override
-  public void dispatchEvent(LoadingEvent event) {
+  public @Nullable Object dispatchEvent(LoadingEvent event) {
     final SectionTree sectionTree = mSectionTree.get();
     if (sectionTree == null) {
       // This SectionTree has been released. Ignore the LoadingEvent
-      return;
+      return null;
     }
 
     sectionTree.dispatchLoadingEvent(event);
+
+    return null;
   }
 }

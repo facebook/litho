@@ -75,7 +75,7 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
     return null;
   }
 
-  public void dispatchEvent(E event) {
+  public @Nullable Object dispatchEvent(E event) {
 
     // Log unbound event handler dispatches
     if (ComponentsConfiguration.isEventHandlerRebindLoggingEnabled) {
@@ -94,12 +94,15 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
     if (isTracing) {
       ComponentsSystrace.beginSection("onEvent:" + this);
     }
-    Preconditions.checkNotNull(dispatchInfo.hasEventDispatcher)
-        .getEventDispatcher()
-        .dispatchOnEvent(this, event);
+    final @Nullable Object result =
+        Preconditions.checkNotNull(dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher()
+            .dispatchOnEvent(this, event);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+
+    return result;
   }
 
   @Override

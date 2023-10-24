@@ -36,10 +36,12 @@ public class DelegatingEventHandler<E> extends EventHandler<E> {
   }
 
   @Override
-  public void dispatchEvent(E event) {
+  public @Nullable Object dispatchEvent(E event) {
     for (int i = 0, length = mEventHandlers.size(); i < length; i++) {
       mEventHandlers.get(i).dispatchEvent(event);
     }
+
+    return null;
   }
 
   @Override

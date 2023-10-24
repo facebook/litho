@@ -55,12 +55,14 @@ class KEventHandler<E : Any, R>(
     dispatchInfo.tag = tag
   }
 
-  override fun dispatchEvent(event: E) {
+  override fun dispatchEvent(event: E): Any? {
     applyOnValidTag { RenderCoreSystrace.beginSection("onEvent: $tag") }
 
-    onEvent(event)
+    val result = onEvent(event)
 
     applyOnValidTag { RenderCoreSystrace.endSection() }
+
+    return result
   }
 
   private fun applyOnValidTag(block: () -> Unit) {

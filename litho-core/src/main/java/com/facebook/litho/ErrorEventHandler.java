@@ -52,8 +52,8 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   }
 
   @Override
-  public void dispatchEvent(ErrorEvent event) {
-    dispatchOnEvent(this, event);
+  public @Nullable Object dispatchEvent(ErrorEvent event) {
+    return dispatchOnEvent(this, event);
   }
 
   @Override
