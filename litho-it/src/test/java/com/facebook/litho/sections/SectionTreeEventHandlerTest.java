@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import android.util.Pair;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -62,12 +63,24 @@ public class SectionTreeEventHandlerTest {
     SectionContext scopedContext = SectionContext.withScope(mContext, mSection);
 
     EventHandler eventHandler1 =
-        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext, 1, null);
+        Section.newEventHandler(
+            mSection.getClass(),
+            "TestSection",
+            scopedContext,
+            1,
+            null,
+            EventHandlerRebindMode.REBIND);
 
     assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
 
     EventHandler eventHandler2 =
-        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext, 1, null);
+        Section.newEventHandler(
+            mSection.getClass(),
+            "TestSection",
+            scopedContext,
+            1,
+            null,
+            EventHandlerRebindMode.REBIND);
 
     assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
     assertThat(eventHandler1.dispatchInfo).isNotSameAs(eventHandler2.dispatchInfo);
@@ -111,9 +124,21 @@ public class SectionTreeEventHandlerTest {
     EventHandlersController eventHandlersController = mSectionTree.getEventHandlersController();
 
     EventHandler eventHandler1 =
-        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext, 1, null);
+        Section.newEventHandler(
+            mSection.getClass(),
+            "TestSection",
+            scopedContext,
+            1,
+            null,
+            EventHandlerRebindMode.REBIND);
     EventHandler eventHandler2 =
-        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext2, 1, null);
+        Section.newEventHandler(
+            mSection.getClass(),
+            "TestSection",
+            scopedContext2,
+            1,
+            null,
+            EventHandlerRebindMode.REBIND);
 
     final ArrayList<Pair<String, EventHandler<?>>> eventHandlers = new ArrayList<>();
     eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler1));

@@ -56,6 +56,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
@@ -327,7 +328,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final String className,
       final ComponentContext c,
       final int id,
-      final Object[] params) {
+      final Object[] params,
+      final EventHandlerRebindMode mode) {
     if (c == null
         || c.getComponentScope() == null
         || !(c.getComponentScope() instanceof HasEventDispatcher)) {
@@ -347,7 +349,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
     final EventHandler eventHandler =
         new EventHandler<>(
-            id, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
+            id, mode, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
     final CalculationContext calculationContext = c.getCalculationStateContext();
     if (calculationContext != null) {
       calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);

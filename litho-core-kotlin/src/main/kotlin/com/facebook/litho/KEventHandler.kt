@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.rendercore.RenderCoreSystrace
 
 @Suppress("NOTHING_TO_INLINE")
@@ -40,7 +41,14 @@ inline fun <reified E : Any> eventHandler(
 class KEventHandler<E : Any, R>(
     private val onEvent: (event: E) -> R,
     private val tag: String? = null,
-) : EventHandler<E>(-1, EventDispatchInfo(null, null), null), HasEventDispatcher, EventDispatcher {
+) :
+    EventHandler<E>(
+        -1,
+        EventHandlerRebindMode.NONE, // TODO: Check if this is correct
+        EventDispatchInfo(null, null),
+        null),
+    HasEventDispatcher,
+    EventDispatcher {
 
   init {
     dispatchInfo.hasEventDispatcher = this

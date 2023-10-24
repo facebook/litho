@@ -16,5 +16,13 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.annotations.EventHandlerRebindMode;
+
 /** Phantom type for an event method model. */
-public interface EventMethod {}
+public class EventMethod {
+  public final EventHandlerRebindMode mode;
+
+  public EventMethod(EventHandlerRebindMode mode) {
+    this.mode = mode;
+  }
+}

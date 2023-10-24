@@ -27,7 +27,7 @@ import javax.lang.model.element.Modifier;
 
 /** Model that is an abstract representation of a method. */
 @Immutable
-public final class SpecMethodModel<Phantom, A> {
+public final class SpecMethodModel<SpecMethod, A> {
   public final ImmutableList<Annotation> annotations;
   public final ImmutableList<Modifier> modifiers;
   public final CharSequence name;
@@ -36,6 +36,7 @@ public final class SpecMethodModel<Phantom, A> {
   public final ImmutableList<TypeVariableName> typeVariables;
   public final ImmutableList<MethodParamModel> methodParams;
   public final Object representedObject;
+  @Nullable public final SpecMethod specMethod;
   @Nullable public final A typeModel;
 
   public SpecMethodModel(
@@ -46,6 +47,7 @@ public final class SpecMethodModel<Phantom, A> {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<MethodParamModel> methodParams,
       Object representedObject,
+      @Nullable SpecMethod specMethod,
       @Nullable A typeModel) {
     this.annotations = annotations;
     this.modifiers = modifiers;
@@ -56,6 +58,7 @@ public final class SpecMethodModel<Phantom, A> {
     this.methodParams = methodParams;
     this.representedObject = representedObject;
     this.typeModel = typeModel;
+    this.specMethod = specMethod;
   }
 
   public static <Phantom, A> Builder<Phantom, A> builder() {
@@ -92,7 +95,7 @@ public final class SpecMethodModel<Phantom, A> {
         typeModel);
   }
 
-  public static class Builder<Phantom, A> {
+  public static class Builder<SpecMethod, A> {
     private ImmutableList<Annotation> mAnnotations = ImmutableList.of();
     private ImmutableList<Modifier> mModifiers = ImmutableList.of();
     private CharSequence mName;
@@ -100,52 +103,58 @@ public final class SpecMethodModel<Phantom, A> {
     private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
     private ImmutableList<MethodParamModel> mMethodParams = ImmutableList.of();
     private Object mRepresentedObject;
+    private @Nullable SpecMethod mSpecMethod;
     private A mTypeModel;
 
     private Builder() {}
 
-    public Builder<Phantom, A> annotations(ImmutableList<Annotation> annotations) {
+    public Builder<SpecMethod, A> annotations(ImmutableList<Annotation> annotations) {
       mAnnotations = annotations;
       return this;
     }
 
-    public Builder<Phantom, A> modifiers(ImmutableList<Modifier> modifiers) {
+    public Builder<SpecMethod, A> modifiers(ImmutableList<Modifier> modifiers) {
       mModifiers = modifiers;
       return this;
     }
 
-    public Builder<Phantom, A> name(CharSequence name) {
+    public Builder<SpecMethod, A> name(CharSequence name) {
       mName = name;
       return this;
     }
 
-    public Builder<Phantom, A> returnTypeSpec(TypeSpec returnTypeSpec) {
+    public Builder<SpecMethod, A> returnTypeSpec(TypeSpec returnTypeSpec) {
       mReturnTypeSpec = returnTypeSpec;
       return this;
     }
 
-    public Builder<Phantom, A> typeVariables(ImmutableList<TypeVariableName> typeVariables) {
+    public Builder<SpecMethod, A> typeVariables(ImmutableList<TypeVariableName> typeVariables) {
       mTypeVariables = typeVariables;
       return this;
     }
 
-    public Builder<Phantom, A> methodParams(ImmutableList<MethodParamModel> methodParams) {
+    public Builder<SpecMethod, A> methodParams(ImmutableList<MethodParamModel> methodParams) {
       mMethodParams = methodParams;
       return this;
     }
 
-    public Builder<Phantom, A> representedObject(Object representedObject) {
+    public Builder<SpecMethod, A> representedObject(Object representedObject) {
       mRepresentedObject = representedObject;
       return this;
     }
 
-    public Builder<Phantom, A> typeModel(A typeModel) {
+    public Builder<SpecMethod, A> typeModel(A typeModel) {
       mTypeModel = typeModel;
       return this;
     }
 
-    public SpecMethodModel<Phantom, A> build() {
-      return new SpecMethodModel<>(
+    public Builder<SpecMethod, A> specMethod(SpecMethod specMethod) {
+      mSpecMethod = specMethod;
+      return this;
+    }
+
+    public SpecMethodModel<SpecMethod, A> build() {
+      return new SpecMethodModel<SpecMethod, A>(
           mAnnotations,
           mModifiers,
           mName,
@@ -153,6 +162,7 @@ public final class SpecMethodModel<Phantom, A> {
           mTypeVariables,
           mMethodParams,
           mRepresentedObject,
+          mSpecMethod,
           mTypeModel);
     }
   }

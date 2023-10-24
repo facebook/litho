@@ -31,6 +31,7 @@ import com.facebook.litho.Handle;
 import com.facebook.litho.NoOpEventHandler;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -214,7 +215,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       final String className,
       final SectionContext c,
       final int id,
-      final Object[] params) {
+      final Object[] params,
+      final EventHandlerRebindMode mode) {
     Section section;
     if (c == null || (section = c.getSectionScope()) == null) {
       ComponentsReporter.emitMessage(
@@ -232,7 +234,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
               className, section.getSimpleName()));
     }
     final EventHandler eventHandler =
-        new EventHandler<>(id, new EventDispatchInfo(section, c), params);
+        new EventHandler<>(id, mode, new EventDispatchInfo(section, c), params);
     final ChangeSetCalculationState calculationState = c.getChangeSetCalculationState();
     if (calculationState != null && calculationState.isActive()) {
       calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);

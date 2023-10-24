@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnEvent;
@@ -194,14 +195,14 @@ public class EventGeneratorTest {
                 + "        arg2,\n"
                 + "        arg3,\n"
                 + "        arg6,\n"
-                + "      });\n"
+                + "      }, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, null);\n"
+                + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -380,6 +381,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -409,7 +411,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T extends FirstType, T0 extends SecondType> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -460,6 +462,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -486,7 +489,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T extends FirstType> com.facebook.litho.EventHandler<EventClass<T>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -526,6 +529,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -555,7 +559,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T, T0> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -629,6 +633,7 @@ public class EventGeneratorTest {
             types,
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -663,7 +668,8 @@ public class EventGeneratorTest {
                 + "    com.facebook.litho.ComponentContext c, P param1) {\n"
                 + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
                 + "        param1,\n"
-                + "      });\n"
+                + "      }, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND"
+                + ");\n"
                 + "}\n");
   }
 
@@ -706,6 +712,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -732,7 +739,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T extends java.lang.Integer> com.facebook.litho.EventHandler<EventClass<T>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 }

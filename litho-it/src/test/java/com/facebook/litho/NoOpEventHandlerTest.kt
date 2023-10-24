@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.NoOpEventHandler.Companion.getNoOpEventHandler
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.lang.RuntimeException
 import org.assertj.core.api.Assertions.assertThat
@@ -59,7 +60,12 @@ class NoOpEventHandlerTest {
     val component: Component? = null
     assertThat(
             Component.newEventHandler<Any>(
-                    component!!.javaClass, "Component", componentContext, 1, arrayOfNulls(1))
+                    component!!.javaClass,
+                    "Component",
+                    componentContext,
+                    1,
+                    arrayOfNulls(1),
+                    EventHandlerRebindMode.NONE)
                 .isEquivalentTo(getNoOpEventHandler<Any>()))
         .isTrue
   }

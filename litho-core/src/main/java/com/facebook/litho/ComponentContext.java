@@ -33,6 +33,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.ComponentTree.LithoConfiguration;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
@@ -663,10 +664,12 @@ public class ComponentContext implements Cloneable {
     return mResourceResolver.getResourceCache();
   }
 
+  /** TODO: Add rebind mode to this API. */
   EventHandler newEventHandler(int id) {
     return newEventHandler(id, null);
   }
 
+  /** TODO: Add rebind mode to this API. */
   public <E> EventHandler<E> newEventHandler(int id, @Nullable Object[] params) {
     if (mComponentScope == null || !(mComponentScope instanceof HasEventDispatcher)) {
       ComponentsReporter.emitMessage(
@@ -677,7 +680,10 @@ public class ComponentContext implements Cloneable {
     }
 
     return new EventHandler<>(
-        id, new EventDispatchInfo((HasEventDispatcher) mComponentScope, this), params);
+        id,
+        EventHandlerRebindMode.REBIND,
+        new EventDispatchInfo((HasEventDispatcher) mComponentScope, this),
+        params);
   }
 
   @Nullable

@@ -18,12 +18,14 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.primitives.Equivalence;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 
   public final int id;
+  public final EventHandlerRebindMode mode;
   public EventDispatchInfo dispatchInfo;
   public final @Nullable Object[] params;
 
@@ -32,10 +34,10 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   }
 
   public EventHandler(
-      @Nullable HasEventDispatcher hasEventDispatcher, int id, @Nullable Object[] params) {
-    this.id = id;
-    this.dispatchInfo = new EventDispatchInfo(hasEventDispatcher, null);
-    this.params = params;
+      final @Nullable HasEventDispatcher hasEventDispatcher,
+      final int id,
+      final @Nullable Object[] params) {
+    this(id, new EventDispatchInfo(hasEventDispatcher, null), params);
   }
 
   /**
@@ -44,13 +46,21 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
    * tests.
    */
   public EventHandler(int id, EventDispatchInfo dispatchInfo) {
-    this.id = id;
-    this.dispatchInfo = dispatchInfo;
-    this.params = null;
+    this(id, dispatchInfo, null);
   }
 
   public EventHandler(int id, EventDispatchInfo dispatchInfo, @Nullable Object[] params) {
+    this(id, EventHandlerRebindMode.REBIND, dispatchInfo, params);
+    // TODO: MUST be cleaned up before landing stack
+  }
+
+  public EventHandler(
+      final int id,
+      final EventHandlerRebindMode mode,
+      final EventDispatchInfo dispatchInfo,
+      final @Nullable Object[] params) {
     this.id = id;
+    this.mode = mode;
     this.dispatchInfo = dispatchInfo;
     this.params = params;
   }

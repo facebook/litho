@@ -285,11 +285,18 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
         1328162206,
         new Object[] {
           param1,
-        });
+        },
+        com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);
   }
 
   public static EventHandler<ErrorEvent> __internalOnErrorHandler(ComponentContext c) {
-    return newEventHandler(TestLayout.class, "TestLayout", c, -1048037474, null);
+    return newEventHandler(
+        TestLayout.class,
+        "TestLayout",
+        c,
+        -1048037474,
+        null,
+        com.facebook.litho.annotations.EventHandlerRebindMode.NONE);
   }
 
   @Override

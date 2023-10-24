@@ -418,11 +418,14 @@ public class EventGenerator {
     }
 
     builder.addStatement(
-        "return newEventHandler($L.class, \"$L\", c, $L, $L)",
+        "return newEventHandler($L.class, \"$L\", c, $L, $L, $L)",
         componentName,
         componentName,
         eventMethodModel.name.toString().hashCode(),
-        paramsBlock.build());
+        paramsBlock.build(),
+        eventMethodModel.specMethod.mode.getClass().getName()
+            + "."
+            + eventMethodModel.specMethod.mode);
 
     return builder.build();
   }

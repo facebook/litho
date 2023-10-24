@@ -21,6 +21,8 @@ import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMe
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
 
 import com.facebook.litho.annotations.CachedValue;
+import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnEvent;
@@ -41,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -101,6 +104,21 @@ public class EventMethodExtractor {
                 elements, executableElement, OnEvent.class, "value", DeclaredType.class);
         final Element eventClass = eventClassDeclaredType.asElement();
 
+        EventHandlerRebindMode eventRebindMode;
+
+        if (runMode.contains(RunMode.ABI)) {
+          eventRebindMode = EventHandlerRebindMode.REBIND;
+        } else {
+          final @Nullable Object modeSymbol =
+              ProcessorUtils.getAnnotationParameter(
+                  elements, eventClass, Event.class, "mode", Object.class);
+          if (modeSymbol != null) {
+            eventRebindMode = EventHandlerRebindMode.valueOf(modeSymbol.toString());
+          } else {
+            eventRebindMode = EventHandlerRebindMode.REBIND;
+          }
+        }
+
         // In full mode, we get the return type from the Event class so that we can verify that it
         // matches the return type of the method. In ABI mode, we can't access the Event class so
         // we just use the method return type and leave validation for the full build.
@@ -129,6 +147,7 @@ public class EventMethodExtractor {
                 .typeVariables(ImmutableList.copyOf(getTypeVariables(executableElement)))
                 .methodParams(ImmutableList.copyOf(methodParams))
                 .representedObject(executableElement)
+                .specMethod(new EventMethod(eventRebindMode))
                 .typeModel(new EventDeclarationModel(name, returnType, fields, eventClass))
                 .build();
         delegateMethods.add(eventMethod);

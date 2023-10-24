@@ -504,7 +504,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         1328162206,
         new Object[] {
           param1,
-        });
+        },
+        com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);
   }
 
   @Override

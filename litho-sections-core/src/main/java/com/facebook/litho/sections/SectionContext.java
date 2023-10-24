@@ -29,6 +29,7 @@ import com.facebook.litho.EventTrigger;
 import com.facebook.litho.Handle;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.widget.SectionsDebug;
 import java.lang.ref.WeakReference;
 
@@ -154,6 +155,7 @@ public class SectionContext extends ComponentContext {
     sectionTree.updateStateAsync(section.getGlobalKey(), stateUpdate, attribution);
   }
 
+  /** TODO: Add rebind mode to this API. */
   @Override
   public <E> EventHandler<E> newEventHandler(int id, Object[] params) {
     final Section section = mScope.get();
@@ -161,7 +163,8 @@ public class SectionContext extends ComponentContext {
       throw new IllegalStateException("Called newEventHandler on a released Section");
     }
 
-    return new EventHandler<>(id, new EventDispatchInfo(section, this), params);
+    return new EventHandler<>(
+        id, EventHandlerRebindMode.REBIND, new EventDispatchInfo(section, this), params);
   }
 
   /** @return New instance of {@link EventTrigger} that is created by the current mScope. */

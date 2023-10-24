@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Comparable;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.primitives.Equivalence;
@@ -615,6 +616,7 @@ public class ComponentUtils {
         && ((SpecGeneratedComponent) component).hasOwnErrorHandler()) {
       return new EventHandler<>(
           Component.ERROR_EVENT_HANDLER_ID,
+          EventHandlerRebindMode.NONE,
           new EventDispatchInfo((SpecGeneratedComponent) component, scopedContext),
           null);
     } else {
