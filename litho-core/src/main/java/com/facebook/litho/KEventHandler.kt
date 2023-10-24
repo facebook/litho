@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:JvmName("EventHandlerHelper")
+
 package com.facebook.litho
 
 import com.facebook.litho.annotations.EventHandlerRebindMode
@@ -22,7 +24,7 @@ import com.facebook.rendercore.RenderCoreSystrace
 @Suppress("NOTHING_TO_INLINE")
 inline fun <reified E : Any, R> eventHandlerWithReturn(
     noinline onEvent: (E) -> R
-): EventHandler<E> = KEventHandler(onEvent)
+): EventHandler<E> = KEventHandler(onEvent = onEvent)
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun <reified E : Any> eventHandler(
@@ -33,20 +35,32 @@ inline fun <reified E : Any> eventHandler(
 inline fun <reified E : Any> eventHandler(
     noinline onEvent: (E) -> Unit,
     tag: String?
-): EventHandler<E> = KEventHandler(onEvent, tag)
+): EventHandler<E> = KEventHandler(onEvent = onEvent, tag = tag)
+
+fun <E : Any, R> create(onEvent: (E) -> R): EventHandler<E> {
+  return KEventHandler(onEvent = onEvent)
+}
+
+fun <E : Any, R> create(id: Int, params: Array<Any?>?, onEvent: (E) -> R): EventHandler<E> {
+  return KEventHandler(id = id, params = params, onEvent = onEvent)
+}
+
 /**
  * [EventHandler] for codegen-free Components which squashes [EventHandler], [HasEventDispatcher]
  * and [EventDispatcher] together in one object allocation.
  */
-class KEventHandler<E : Any, R>(
+@PublishedApi
+internal class KEventHandler<E : Any, R>(
+    id: Int = -1,
+    params: Array<Any?>? = null,
     private val onEvent: (event: E) -> R,
     private val tag: String? = null,
 ) :
     EventHandler<E>(
-        -1,
+        id,
         EventHandlerRebindMode.NONE, // TODO: Check if this is correct
         EventDispatchInfo(null, null),
-        null),
+        params),
     HasEventDispatcher,
     EventDispatcher {
 
