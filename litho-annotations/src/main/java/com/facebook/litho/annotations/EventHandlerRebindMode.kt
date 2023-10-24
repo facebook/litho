@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'kotlin'
-// Dokka requires the kotlin plugin to be applied, however
-// since this module has no Kotlin, we make it conditional
-if (isDokkaBuild) {
-  apply plugin: 'org.jetbrains.dokka'
+package com.facebook.litho.annotations
+
+enum class EventHandlerRebindMode {
+  /** The Event Handler will not be rebound with new dispatch info. */
+  NONE,
+
+  /** The Event Handler will be rebound with new dispatch info. This is the default. */
+  REBIND,
 }
-
-targetCompatibility = rootProject.targetCompatibilityVersion
-sourceCompatibility = rootProject.sourceCompatibilityVersion
-
-dependencies {
-    // Android Support Library
-    compileOnly deps.supportAnnotations
-}
-
-apply plugin: "com.vanniktech.maven.publish"
