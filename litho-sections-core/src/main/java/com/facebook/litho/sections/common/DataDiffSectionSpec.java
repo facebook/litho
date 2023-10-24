@@ -444,10 +444,7 @@ public class DataDiffSectionSpec<T> {
           isSameItemEventState.previousItem = previous;
           isSameItemEventState.nextItem = next;
           try {
-            Object result =
-                hasEventDispatcher
-                    .getEventDispatcher()
-                    .dispatchOnEvent(mIsSameItemEventHandler, isSameItemEventState);
+            Object result = mIsSameItemEventHandler.dispatchEvent(isSameItemEventState);
             if (result == null) {
               return false;
             } else {
