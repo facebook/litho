@@ -74,6 +74,7 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
@@ -187,6 +188,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   private @Nullable boolean[] mNestedIsPaddingPercent;
 
   protected @Nullable YogaMeasureFunction mYogaMeasureFunction;
+
+  protected @Nullable YogaGutter mGap;
+  protected @Nullable Integer mGapLength;
 
   private @Nullable CommonProps.DefaultLayoutProps mDebugLayoutProps;
 
@@ -1441,6 +1445,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
     if (mYogaMeasureFunction != null) {
       node.setMeasureFunction(mYogaMeasureFunction);
+    }
+
+    if (mGap != null && mGapLength != null) {
+      node.setGap(mGap, mGapLength);
     }
 
     // Apply the layout props from the components to the YogaNode

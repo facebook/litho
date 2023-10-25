@@ -67,6 +67,7 @@ import com.facebook.rendercore.utils.CommonUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaPositionType;
@@ -2228,6 +2229,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * <p>Default: {@link YogaWrap#NO_WRAP}
      */
     public abstract T wrap(@Nullable YogaWrap wrap);
+
+    /**
+     * The Gap property is set on containers and spaces children evenly by a given length along a
+     * given axis
+     */
+    public abstract T gapDip(YogaGutter gutter, float dip);
+
+    public abstract T gapPx(YogaGutter gutter, int px);
   }
 
   @Nullable

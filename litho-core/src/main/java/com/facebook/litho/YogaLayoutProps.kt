@@ -21,6 +21,7 @@ import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaNode
 import com.facebook.yoga.YogaPositionType
@@ -183,6 +184,10 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
 
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
     node.setBorder(edge, borderWidth)
+  }
+
+  override fun gap(gutter: YogaGutter, length: Int) {
+    node.setGap(gutter, length.toFloat())
   }
 
   fun flexDirection(direction: YogaFlexDirection) {

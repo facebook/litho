@@ -20,6 +20,7 @@ import androidx.annotation.Px
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaPositionType
 
 interface LayoutProps {
@@ -92,4 +93,6 @@ interface LayoutProps {
 
   /** Used by [DebugLayoutNodeEditor] */
   fun setBorderWidth(edge: YogaEdge, borderWidth: Float)
+
+  fun gap(gutter: YogaGutter, length: Int)
 }

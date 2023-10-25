@@ -38,11 +38,13 @@ import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaPositionType;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 /** Internal class that holds props that are common to all {@link Component}s. */
 @ThreadConfined(ThreadConfined.ANY)
@@ -356,6 +358,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   @Override
   public void setBorderWidth(YogaEdge edge, float borderWidth) {
     getOrCreateLayoutProps().setBorderWidth(edge, borderWidth);
+  }
+
+  @Override
+  public void gap(@NotNull YogaGutter gap, int length) {
+    getOrCreateLayoutProps().gap(gap, length);
   }
 
   public void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
@@ -1098,7 +1105,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     /** Used by {@link DebugLayoutNodeEditor} */
     private @Nullable Edges mBorderEdges;
 
-    @Override
+    private @Nullable YogaGutter mGapGutter;
+
+    private int mGapLength = 0;
+
     public void widthPx(@Px int width) {
       mPrivateFlags |= PFLAG_WIDTH_IS_SET;
       mWidthPx = width;
@@ -1324,6 +1334,12 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       mBorderEdges.set(edge, borderWidth);
     }
 
+    @Override
+    public void gap(YogaGutter gutter, int length) {
+      mGapGutter = gutter;
+      mGapLength = length;
+    }
+
     void copyInto(LayoutProps target) {
       if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
         target.widthPx(mWidthPx);
@@ -1464,6 +1480,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
           }
         }
       }
+
+      if (mGapGutter != null) {
+        target.gap(mGapGutter, mGapLength);
+      }
     }
 
     @Override
@@ -1510,7 +1530,9 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
           && mWidthAuto == other.mWidthAuto
           && mFlexBasisAuto == other.mFlexBasisAuto
           && EquivalenceUtils.isEquivalentTo(mBorderEdges, other.mBorderEdges)
-          && EquivalenceUtils.equals(mMarginAutos, other.mMarginAutos);
+          && EquivalenceUtils.equals(mMarginAutos, other.mMarginAutos)
+          && EquivalenceUtils.equals(mGapGutter, other.mGapGutter)
+          && EquivalenceUtils.equals(mGapLength, other.mGapLength);
     }
   }
 }
