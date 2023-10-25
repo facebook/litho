@@ -41,6 +41,10 @@ public class ResolveResult<T extends Node<?>, State> {
     this(resolvedNode, resolvedState, null);
   }
 
+  public ResolveResult(final T resolvedNode) {
+    this(resolvedNode, null);
+  }
+
   @Override
   public boolean equals(@Nullable Object obj) {
     if (!(obj instanceof ResolveResult)) {

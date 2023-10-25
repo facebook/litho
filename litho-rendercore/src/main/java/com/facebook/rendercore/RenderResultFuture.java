@@ -45,7 +45,7 @@ public class RenderResultFuture<State, RenderContext>
 
   public RenderResultFuture(
       final Context context,
-      final RenderState.ResolveFunc<State, RenderContext> resolveFunc,
+      final ResolveResult<Node<RenderContext>, State> resolveResult,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State, RenderContext> previousResult,
@@ -60,7 +60,7 @@ public class RenderResultFuture<State, RenderContext>
         () ->
             RenderResult.render(
                 context,
-                resolveFunc,
+                resolveResult,
                 renderContext,
                 extensions,
                 previousResult,

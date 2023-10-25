@@ -23,7 +23,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
-import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.TestNode;
 import com.facebook.rendercore.testing.TestRenderUnit;
 import org.junit.Test;
@@ -49,7 +48,7 @@ public class RenderTreeHostViewTests {
     RenderTree renderTree =
         RenderResult.render(
                 c,
-                new RenderCoreTestRule.IdentityResolveFunc(node),
+                new ResolveResult(node),
                 null,
                 null,
                 null,
@@ -104,7 +103,7 @@ public class RenderTreeHostViewTests {
     RenderTree renderTree =
         RenderResult.render(
                 c,
-                new RenderCoreTestRule.IdentityResolveFunc(node),
+                new ResolveResult(node),
                 null,
                 null,
                 null,
@@ -144,7 +143,7 @@ public class RenderTreeHostViewTests {
                     renderTreeHostView.setRenderTree(
                         RenderResult.render(
                                 c,
-                                new RenderCoreTestRule.IdentityResolveFunc(nestedMountTestNode),
+                                new ResolveResult(nestedMountTestNode),
                                 null,
                                 null,
                                 null,
@@ -157,7 +156,7 @@ public class RenderTreeHostViewTests {
     RenderTree renderTree =
         RenderResult.render(
                 c,
-                new RenderCoreTestRule.IdentityResolveFunc(node),
+                new ResolveResult(nestedMountTestNode),
                 null,
                 null,
                 null,

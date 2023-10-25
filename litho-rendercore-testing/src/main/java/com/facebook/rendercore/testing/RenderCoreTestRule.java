@@ -222,7 +222,7 @@ public class RenderCoreTestRule implements TestRule {
     final RenderResult renderResult =
         RenderResult.render(
             rootHost.getContext(),
-            new IdentityResolveFunc(getRootNode()),
+            new ResolveResult<>(getRootNode()),
             null,
             null,
             null,

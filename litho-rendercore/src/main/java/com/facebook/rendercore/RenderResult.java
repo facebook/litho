@@ -19,15 +19,13 @@ package com.facebook.rendercore;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.rendercore.RenderState.ResolveFunc;
-import com.facebook.rendercore.StateUpdateReceiver.StateUpdate;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
-import java.util.Collections;
 
 /**
- * Result from resolving a {@link ResolveFunc}. A {@link RenderResult} from a previous computation
- * will make the next computation of a new {@link ResolveFunc} more efficient with internal caching.
+ * Result from laying out and reducing a {@link ResolveResult}. A {@link RenderResult} from a
+ * previous computation will make the next computation of a new {@link RenderResult} more efficient
+ * with internal caching.
  */
 public class RenderResult<State, RenderContext> {
   private final RenderTree mRenderTree;
@@ -37,7 +35,7 @@ public class RenderResult<State, RenderContext> {
 
   public static <State, RenderContext> RenderResult<State, RenderContext> render(
       final Context context,
-      final ResolveFunc<State, RenderContext> resolveFunc,
+      final ResolveResult<Node<RenderContext>, State> result,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State, RenderContext> previousResult,
@@ -45,21 +43,6 @@ public class RenderResult<State, RenderContext> {
       final int widthSpec,
       final int heightSpec) {
     RenderCoreSystrace.beginSection("RC Create Tree");
-    final ResolveResult<Node<RenderContext>, State> result;
-
-    result =
-        resolveFunc.resolve(
-            new ResolveContext<>(
-                renderContext,
-                new StateUpdateReceiver() {
-                  @Override
-                  public void enqueueStateUpdate(StateUpdate stateUpdate) {
-                    // Does nothing. This will go away once we refactor RenderResult.resolve
-                  }
-                }),
-            null,
-            null,
-            Collections.emptyList());
     final RenderResult<State, RenderContext> renderResult;
 
     if (shouldReuseResult(result.resolvedNode, widthSpec, heightSpec, previousResult)) {
@@ -183,15 +166,5 @@ public class RenderResult<State, RenderContext> {
   @VisibleForTesting
   public static LayoutCache buildCache(@Nullable LayoutCache.CachedData previousCache) {
     return previousCache != null ? new LayoutCache(previousCache) : new LayoutCache(null);
-  }
-
-  public static <T, R> ResolveFunc<T, R> wrapInResolveFunc(Node<R> node) {
-    return wrapInResolveFunc(node, null);
-  }
-
-  public static <T, R> ResolveFunc<T, R> wrapInResolveFunc(
-      final Node<R> node, final @Nullable T state) {
-    return (resolveContext, committedTree, committedState, stateUpdatesToApply) ->
-        new ResolveResult<>(node, state);
   }
 }
