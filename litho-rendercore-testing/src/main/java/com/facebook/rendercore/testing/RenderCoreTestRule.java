@@ -21,7 +21,6 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
@@ -34,6 +33,7 @@ import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderTreeHostView;
 import com.facebook.rendercore.ResolveContext;
+import com.facebook.rendercore.ResolveResult;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.RootHostView;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -263,12 +263,12 @@ public class RenderCoreTestRule implements TestRule {
     }
 
     @Override
-    public Pair<Node, Object> resolve(
+    public ResolveResult resolve(
         ResolveContext resolveContext,
         Node committedTree,
         Object committedState,
         List stateUpdatesToApply) {
-      return new Pair<>(root, null);
+      return new ResolveResult(root, null);
     }
   }
 }

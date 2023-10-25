@@ -17,7 +17,6 @@
 package com.facebook.rendercore.testing;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.LayoutResult;
@@ -27,6 +26,7 @@ import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.ResolveContext;
+import com.facebook.rendercore.ResolveResult;
 import com.facebook.rendercore.RootHost;
 import java.util.List;
 
@@ -184,12 +184,12 @@ public class RendercoreTestDriver {
     private static RenderState.ResolveFunc createLazyTree(final Node rootNode) {
       return new RenderState.ResolveFunc() {
         @Override
-        public Pair<Node, Object> resolve(
+        public ResolveResult resolve(
             ResolveContext resolveContext,
             @Nullable Node committedTree,
             @Nullable Object committedState,
             List stateUpdatesToApply) {
-          return new Pair<>(rootNode, null);
+          return new ResolveResult<>(rootNode, null);
         }
       };
     }

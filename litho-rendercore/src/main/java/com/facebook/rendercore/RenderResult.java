@@ -17,7 +17,6 @@
 package com.facebook.rendercore;
 
 import android.content.Context;
-import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.RenderState.ResolveFunc;
@@ -25,7 +24,6 @@ import com.facebook.rendercore.StateUpdateReceiver.StateUpdate;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Result from resolving a {@link ResolveFunc}. A {@link RenderResult} from a previous computation
@@ -47,7 +45,7 @@ public class RenderResult<State, RenderContext> {
       final int widthSpec,
       final int heightSpec) {
     RenderCoreSystrace.beginSection("RC Create Tree");
-    final Pair<Node<RenderContext>, State> result;
+    final ResolveResult<Node<RenderContext>, State> result;
 
     result =
         resolveFunc.resolve(
@@ -64,17 +62,18 @@ public class RenderResult<State, RenderContext> {
             Collections.emptyList());
     final RenderResult<State, RenderContext> renderResult;
 
-    if (shouldReuseResult(result.first, widthSpec, heightSpec, previousResult)) {
+    if (shouldReuseResult(result.resolvedNode, widthSpec, heightSpec, previousResult)) {
       renderResult =
           new RenderResult<>(
               previousResult.getRenderTree(),
-              result.first,
+              result.resolvedNode,
               previousResult.getLayoutCacheData(),
-              result.second);
+              result.resolvedState);
     } else {
       final LayoutContext layoutContext =
           createLayoutContext(previousResult, renderContext, context, layoutVersion, extensions);
-      renderResult = layout(layoutContext, result.first, result.second, widthSpec, heightSpec);
+      renderResult =
+          layout(layoutContext, result.resolvedNode, result.resolvedState, widthSpec, heightSpec);
     }
 
     RenderCoreSystrace.endSection();
@@ -192,15 +191,7 @@ public class RenderResult<State, RenderContext> {
 
   public static <T, R> ResolveFunc<T, R> wrapInResolveFunc(
       final Node<R> node, final @Nullable T state) {
-    return new ResolveFunc<T, R>() {
-      @Override
-      public Pair<Node<R>, T> resolve(
-          ResolveContext<R> resolveContext,
-          @Nullable Node<R> committedTree,
-          @Nullable T committedState,
-          List<? extends StateUpdate> stateUpdatesToApply) {
-        return new Pair<>(node, state);
-      }
-    };
+    return (resolveContext, committedTree, committedState, stateUpdatesToApply) ->
+        new ResolveResult<>(node, state);
   }
 }

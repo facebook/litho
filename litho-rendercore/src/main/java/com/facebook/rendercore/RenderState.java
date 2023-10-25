@@ -23,7 +23,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -63,7 +62,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
      * @param committedState
      * @param stateUpdatesToApply
      */
-    Pair<Node<RenderContext>, State> resolve(
+    ResolveResult<Node<RenderContext>, State> resolve(
         ResolveContext<RenderContext> resolveContext,
         @Nullable Node<RenderContext> committedTree,
         @Nullable State committedState,
@@ -187,14 +186,15 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   }
 
   private void resolveTreeAndMaybeCommit(ResolveFuture<State, RenderContext> future) {
-    final Pair<Node<RenderContext>, State> result = future.runAndGet();
+    final ResolveResult<Node<RenderContext>, State> result = future.runAndGet();
     if (maybeCommitResolveResult(result, future)) {
       layoutAndMaybeCommitInternal(null);
     }
   }
 
   private synchronized boolean maybeCommitResolveResult(
-      Pair<Node<RenderContext>, State> result, ResolveFuture<State, RenderContext> future) {
+      ResolveResult<Node<RenderContext>, State> result,
+      ResolveFuture<State, RenderContext> future) {
     // We don't want to compute, layout, or reduce trees while holding a lock. However this means
     // that another thread could compute a layout and commit it before we get to this point. To
     // handle this, we make sure that the committed resolve version is only ever increased, meaning
@@ -202,8 +202,8 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
     boolean didCommit = false;
     if (future.getVersion() > mCommittedResolveVersion) {
       mCommittedResolveVersion = future.getVersion();
-      mCommittedResolvedTree = result.first;
-      mCommittedState = result.second;
+      mCommittedResolvedTree = result.resolvedNode;
+      mCommittedState = result.resolvedState;
       mPendingStateUpdates.removeAll(future.getStateUpdatesToApply());
       didCommit = true;
     }
@@ -328,7 +328,8 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
     }
 
     if (futureToResolveBeforeMeasuring != null) {
-      final Pair<Node<RenderContext>, State> result = futureToResolveBeforeMeasuring.runAndGet();
+      final ResolveResult<Node<RenderContext>, State> result =
+          futureToResolveBeforeMeasuring.runAndGet();
       maybeCommitResolveResult(result, futureToResolveBeforeMeasuring);
     }
 

@@ -21,7 +21,6 @@ import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 
 import android.os.Looper;
-import android.util.Pair;
 import android.view.View;
 import com.facebook.rendercore.testing.TestNode;
 import java.util.List;
@@ -79,13 +78,13 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
             wasCalledInExecute.set(executing.get());
-            return new Pair(new TestNode(), null);
+            return new ResolveResult(new TestNode(), null);
           }
         },
         new Executor() {
@@ -134,12 +133,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(new TestNode(), state);
+            return new ResolveResult<>(new TestNode(), state);
           }
         });
     renderState.measure(
@@ -193,12 +192,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(nodeToReturn, state);
+            return new ResolveResult(nodeToReturn, state);
           }
         });
 
@@ -210,12 +209,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(nodeToReturn, secondState);
+            return new ResolveResult(nodeToReturn, secondState);
           }
         });
 
@@ -244,12 +243,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(
+            return new ResolveResult(
                 new TestNode() {
                   @Override
                   public LayoutResult calculateLayout(
@@ -270,12 +269,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(
+            return new ResolveResult(
                 new TestNode() {
                   @Override
                   public LayoutResult calculateLayout(
@@ -309,13 +308,13 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
             resolveCount.incrementAndGet();
-            return new Pair(
+            return new ResolveResult(
                 new TestNode() {
                   @Override
                   public LayoutResult calculateLayout(
@@ -387,12 +386,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(testNode, new Object());
+            return new ResolveResult(testNode, new Object());
           }
         });
 
@@ -402,12 +401,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(testNode, new Object());
+            return new ResolveResult(testNode, new Object());
           }
         });
 
@@ -451,12 +450,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(testNode, state);
+            return new ResolveResult(testNode, state);
           }
         });
 
@@ -466,12 +465,12 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
-            return new Pair(testNode, state);
+            return new ResolveResult(testNode, state);
           }
         });
 
@@ -490,14 +489,14 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
             resolveCount.incrementAndGet();
             appliedStateUpdates.set(stateUpdatesToApply);
-            return new Pair(new TestNode(), new Object());
+            return new ResolveResult(new TestNode(), new Object());
           }
         });
     assertThat(resolveCount.intValue()).isEqualTo(1);
@@ -517,13 +516,13 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
             appliedStateUpdates.set(stateUpdatesToApply);
-            return new Pair(new TestNode(), new Object());
+            return new ResolveResult(new TestNode(), new Object());
           }
         });
 
@@ -533,7 +532,7 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
@@ -541,7 +540,7 @@ public class RenderStateTest {
             // Below we check that these 'stateUpdatesToApply' are empty, meaning that
             // 'pendingStateUpdates' were empty.
             appliedStateUpdates.set(stateUpdatesToApply);
-            return new Pair(new TestNode(), new Object());
+            return new ResolveResult(new TestNode(), new Object());
           }
         });
 
@@ -562,14 +561,14 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
             resolveCount.incrementAndGet();
             appliedStateUpdates.set(stateUpdatesToApply);
-            return new Pair(new TestNode(), new Object());
+            return new ResolveResult(new TestNode(), new Object());
           }
         });
 
@@ -589,7 +588,7 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
@@ -597,7 +596,7 @@ public class RenderStateTest {
 
             resolveCount.incrementAndGet();
             appliedStateUpdates.set(stateUpdatesToApply);
-            return new Pair(new TestNode(), new Object());
+            return new ResolveResult(new TestNode(), new Object());
           }
         });
     assertThat(resolveCount.intValue()).isEqualTo(1);
@@ -626,14 +625,14 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
             resolveCount.incrementAndGet();
             appliedStateUpdates.set(stateUpdatesToApply);
-            return new Pair(new TestNode(), new Object());
+            return new ResolveResult(new TestNode(), new Object());
           }
         });
     assertThat(resolveCount.intValue()).isEqualTo(1);
@@ -647,14 +646,14 @@ public class RenderStateTest {
     renderState.setTree(
         new RenderState.ResolveFunc() {
           @Override
-          public Pair resolve(
+          public ResolveResult resolve(
               ResolveContext resolveContext,
               @Nullable Node committedTree,
               @Nullable Object committedState,
               List stateUpdatesToApply) {
             resolveCount.incrementAndGet();
             appliedStateUpdates.set(stateUpdatesToApply);
-            return new Pair(new TestNode(), new Object());
+            return new ResolveResult(new TestNode(), new Object());
           }
         });
 
