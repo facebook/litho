@@ -224,14 +224,14 @@ value class BlendingMode internal constructor(@DoNotStrip private val value: Int
       return when (name?.lowercase()) {
         "clear" -> Clear
         "src" -> Src
-        "srcOver" -> SrcOver
-        "dstOver" -> DstOver
-        "srcIn" -> SrcIn
-        "dstIn" -> DstIn
-        "srcOut" -> SrcOut
-        "dstOut" -> DstOut
-        "srcAtop" -> SrcAtop
-        "dstAtop" -> DstAtop
+        "src_over" -> SrcOver
+        "dst_over" -> DstOver
+        "src_in" -> SrcIn
+        "dst_in" -> DstIn
+        "src_out" -> SrcOut
+        "dst_out" -> DstOut
+        "src_atop" -> SrcAtop
+        "dst_atop" -> DstAtop
         "xor" -> Xor
         "screen" -> Screen
         "overlay" -> Overlay
