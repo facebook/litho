@@ -162,6 +162,8 @@ import javax.annotation.Nullable;
  *     integer of the text view, without modifying any other state. This prop will override
  *     inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
+ * @prop disableAutofill If set to true, disables autofill for this text input by setting the
+ *     underlying {@link EditText}'s autofillType to {@link android.view.View#AUTOFILL_TYPE_NONE}.
  * @prop inputFilters Used to filter the input to e.g. a max character count.
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
  *     passwords or numbers couldn't be multiline by definition.
@@ -224,6 +226,7 @@ class TextInputSpec {
   @PropDefault protected static final int minLines = 1;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
   @PropDefault protected static final int importantForAutofill = 0;
+  @PropDefault protected static final boolean disableAutofill = false;
 
   @PropDefault
   protected static final MovementMethod movementMethod = ArrowKeyMovementMethod.getInstance();
@@ -289,6 +292,7 @@ class TextInputSpec {
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
+      @Prop(optional = true) boolean disableAutofill,
       @State AtomicReference<CharSequence> savedText) {
     EditText forMeasure =
         TextInputSpec.createAndMeasureEditText(
@@ -325,6 +329,7 @@ class TextInputSpec {
             errorDrawable,
             importantForAutofill,
             autofillHints,
+            disableAutofill,
             // onMeasure happens:
             // 1. After initState before onMount: savedText = initText.
             // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -378,9 +383,10 @@ class TextInputSpec {
       Drawable errorDrawable,
       int importantForAutofill,
       @Nullable String[] autofillHints,
+      boolean disableAutofill,
       CharSequence text) {
     // The height should be the measured height of EditText with relevant params
-    final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
+    final ForMeasureEditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
     // If text contains Spans, we don't want it to be mutable for the measurement case
     if (text instanceof Spannable) {
       text = text.toString();
@@ -419,6 +425,7 @@ class TextInputSpec {
         true,
         importantForAutofill,
         autofillHints);
+    forMeasure.setDisableAutofill(disableAutofill);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
     return forMeasure;
@@ -802,6 +809,7 @@ class TextInputSpec {
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
+      @Prop(optional = true) boolean disableAutofill,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -842,6 +850,7 @@ class TextInputSpec {
         false,
         importantForAutofill,
         autofillHints);
+    editText.setDisableAutofill(disableAutofill);
     editText.setTextState(savedText);
   }
 
@@ -1075,6 +1084,8 @@ class TextInputSpec {
     @Nullable private TextWatcher mTextWatcher;
     private boolean mIsSoftInputRequested = false;
 
+    private boolean mDisableAutofill = false;
+
     public EditTextWithEventHandlers(Context context) {
       super(context);
       // Unfortunately we can't just override `void onEditorAction(int actionCode)` as that only
@@ -1166,6 +1177,19 @@ class TextInputSpec {
             mInputConnectionEventHandler, inputConnection, editorInfo);
       }
       return inputConnection;
+    }
+
+    @Override
+    public int getAutofillType() {
+      if (SDK_INT >= Build.VERSION_CODES.O && mDisableAutofill) {
+        return AUTOFILL_TYPE_NONE;
+      } else {
+        return super.getAutofillType();
+      }
+    }
+
+    void setDisableAutofill(Boolean value) {
+      mDisableAutofill = value;
     }
 
     void setTextChangedEventHandler(
@@ -1311,6 +1335,8 @@ class TextInputSpec {
    */
   static class ForMeasureEditText extends EditText {
 
+    private boolean mDisableAutofill = false;
+
     public ForMeasureEditText(Context context) {
       super(context);
     }
@@ -1325,6 +1351,19 @@ class TextInputSpec {
         background.mutate();
       }
       super.setBackground(background);
+    }
+
+    @Override
+    public int getAutofillType() {
+      if (SDK_INT >= Build.VERSION_CODES.O && mDisableAutofill) {
+        return AUTOFILL_TYPE_NONE;
+      } else {
+        return super.getAutofillType();
+      }
+    }
+
+    public void setDisableAutofill(Boolean value) {
+      mDisableAutofill = value;
     }
   }
 

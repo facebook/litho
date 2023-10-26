@@ -113,6 +113,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int editTextEndPadding = UNSET;
   @PropDefault protected static final int editTextBottomPadding = UNSET;
   @PropDefault protected static final int importantForAutofill = 0;
+  @PropDefault protected static final boolean disableAutofill = false;
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -172,6 +173,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
+      @Prop(optional = true) boolean disableAutofill,
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
@@ -209,6 +211,7 @@ class MaterialTextInputSpec {
             errorDrawable,
             importantForAutofill,
             autofillHints,
+            disableAutofill,
             savedText.get());
     MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
     setParams(
