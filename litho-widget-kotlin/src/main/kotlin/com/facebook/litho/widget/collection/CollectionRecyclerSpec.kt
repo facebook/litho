@@ -86,6 +86,7 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) pullToRefreshEnabled: Boolean,
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
       @Prop(optional = true) sectionsViewLogger: SectionsRecyclerViewLogger?,
+      @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean,
       @State internalRecyclerEventsController: RecyclerEventsController?,
       @State binder: Binder<RecyclerView>,
       @State sectionTree: SectionTree
@@ -111,6 +112,7 @@ object CollectionRecyclerSpec {
         .touchInterceptor(touchInterceptor)
         .onItemTouchListener(itemTouchListener)
         .binder(binder)
+        .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
         .touchHandler(recyclerTouchEventHandler)
         .sectionsViewLogger(sectionsViewLogger)
         .apply {

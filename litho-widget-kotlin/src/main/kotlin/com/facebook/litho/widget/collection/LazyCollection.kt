@@ -90,6 +90,7 @@ class LazyCollection(
     private val overlayRenderCount: Boolean = false,
     private val alwaysDetectDuplicates: Boolean = false,
     private val fadingEdgeLength: Dimen? = null,
+    private val shouldExcludeFromIncrementalMount: Boolean = false,
     private val lazyCollectionChildren: LazyCollectionChildren
 ) : KComponent() {
 
@@ -190,6 +191,7 @@ class LazyCollection(
         .onScrollListener(onScrollListener)
         .onScrollListeners(onScrollListeners)
         .lazyCollectionController(lazyCollectionController)
+        .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
         .apply {
           val fadingEdgeLengthPx = fadingEdgeLength?.toPixels()
           if (fadingEdgeLengthPx != null && fadingEdgeLengthPx > 0) {

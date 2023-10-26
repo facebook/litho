@@ -72,6 +72,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     fadingEdgeLength: Dimen? = null,
     preallocationPerMountContentEnabled: Boolean =
         context.lithoConfiguration.preallocationPerMountContentEnabled,
+    shouldExcludeFromIncrementalMount: Boolean = false,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
@@ -118,5 +119,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
       overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
+      shouldExcludeFromIncrementalMount,
       lazyStaggeredGridScope.children)
 }

@@ -50,6 +50,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
+import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import java.util.List;
@@ -95,6 +96,12 @@ class RecyclerSpec {
   // This is the default value for refresh spinner background from
   // SwipeRefreshLayout.CIRCLE_BG_LIGHT which is unfortunately private.
   static final int DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = 0xFFFAFAFA;
+
+  @ShouldExcludeFromIncrementalMount
+  static boolean shouldExcludeFromIncrementalMount(
+      @Prop(optional = true) boolean shouldExcludeFromIncrementalMount) {
+    return shouldExcludeFromIncrementalMount;
+  }
 
   @OnMeasure
   static void onMeasure(

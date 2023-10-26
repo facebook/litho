@@ -170,6 +170,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger,
       @Prop(optional = true) @Nullable CharSequence recyclerContentDescription,
+      @Prop(optional = true) boolean shouldExcludeFromIncrementalMount,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -232,6 +233,7 @@ public class RecyclerCollectionComponentSpec {
             .touchInterceptor(touchInterceptor)
             .onItemTouchListener(itemTouchListener)
             .binder(binder)
+            .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
             .itemAnimator(
                 RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
                     ? new NoUpdateItemAnimator()
