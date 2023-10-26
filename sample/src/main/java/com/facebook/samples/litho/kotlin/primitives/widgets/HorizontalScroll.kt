@@ -26,6 +26,7 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.R
+import com.facebook.litho.SimpleNestedTreeLifecycleProvider
 import com.facebook.litho.Size
 import com.facebook.litho.Style
 import com.facebook.litho.useState
@@ -128,6 +129,10 @@ class HorizontalScroll(
                   lastScrollPosition.value,
                   onScrollChangeListener,
                   scrollStateListener) { content, horizontalScrollLayoutData ->
+                    if (context.lifecycleProvider != null) {
+                      childComponentTree.value.subscribeOrUpdateLifecycleProvider(
+                          SimpleNestedTreeLifecycleProvider(context.lifecycleProvider))
+                    }
                     content.mount(
                         childComponentTree.value,
                         lastScrollPosition.value,

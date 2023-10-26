@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
+import com.facebook.litho.SimpleNestedTreeLifecycleProvider
 import com.facebook.litho.Size
 import com.facebook.litho.Style
 import com.facebook.litho.Wrapper
@@ -118,6 +119,10 @@ class VerticalScroll(
               doesMountRenderTreeHosts = true
 
               bind(componentTree.value, scrollPosition.value, onScrollStateChange) { content ->
+                if (context.lifecycleProvider != null) {
+                  componentTree.value.subscribeOrUpdateLifecycleProvider(
+                      SimpleNestedTreeLifecycleProvider(context.lifecycleProvider))
+                }
                 content.mount(
                     componentTree.value,
                     scrollPosition.value,

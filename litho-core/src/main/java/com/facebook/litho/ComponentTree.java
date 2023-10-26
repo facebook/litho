@@ -195,9 +195,43 @@ public class ComponentTree
     }
   }
 
+  // This is a centralized method to test a fix. If it works and
+  // the test of enableUpdateSubscribeToLifecycleProvider works, we should delete this method and
+  // use subscribeToLifecycleProvider instead
+  @UiThread
+  public synchronized void subscribeOrUpdateLifecycleProvider(
+      LithoLifecycleProvider lifecycleProvider) {
+    if (ComponentsConfiguration.enableFixForNestedComponentTree) {
+      if (mLifecycleProvider == lifecycleProvider) {
+        return;
+      }
+      if (mLifecycleProvider != null) {
+        mLifecycleProvider.removeListener(this);
+      }
+      mLifecycleProvider = lifecycleProvider;
+      mLifecycleProvider.addListener(this);
+
+      LifecycleOwner lifecycleOwner = null;
+      if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
+        lifecycleOwner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      }
+
+      setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
+    }
+  }
+
   public synchronized void subscribeToLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
-    if (mLifecycleProvider != null) {
-      throw new IllegalStateException("Already subscribed");
+    if (ComponentsConfiguration.enableUpdateSubscribeToLifecycleProvider) {
+      if (mLifecycleProvider == lifecycleProvider) {
+        return;
+      }
+      if (mLifecycleProvider != null) {
+        mLifecycleProvider.removeListener(this);
+      }
+    } else {
+      if (mLifecycleProvider != null) {
+        throw new IllegalStateException("Already subscribed");
+      }
     }
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
@@ -503,7 +537,16 @@ public class ComponentTree
             builder.visibilityBoundsTransformer,
             builder.componentTreeDebugEventListener);
 
-    mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
+    if (ComponentsConfiguration.enableFixForNestedComponentTree) {
+      mContext =
+          ComponentContextUtils.withLithoTree(
+              builder.context,
+              config,
+              LithoTree.Companion.create(this),
+              builder.mLifecycleProvider);
+    } else {
+      mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
+    }
 
     if (ComponentsConfiguration.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
@@ -511,8 +554,14 @@ public class ComponentTree
       mTimeMachine = null;
     }
 
-    if (builder.mLifecycleProvider != null) {
-      subscribeToLifecycleProvider(builder.mLifecycleProvider);
+    if (ComponentsConfiguration.enableFixForNestedComponentTree) {
+      if (mContext.getLifecycleProvider() != null) {
+        subscribeToLifecycleProvider(mContext.getLifecycleProvider());
+      }
+    } else {
+      if (builder.mLifecycleProvider != null) {
+        subscribeToLifecycleProvider(builder.mLifecycleProvider);
+      }
     }
 
     if (config.debugEventListener != null) {

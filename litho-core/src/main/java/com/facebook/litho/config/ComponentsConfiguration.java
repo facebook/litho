@@ -237,6 +237,10 @@ public class ComponentsConfiguration {
 
   public static boolean shouldOverrideHasTransientState = false;
 
+  public static boolean enableFixForNestedComponentTree = false;
+
+  public static boolean enableUpdateSubscribeToLifecycleProvider = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;

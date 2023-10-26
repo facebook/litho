@@ -33,6 +33,7 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Diff;
 import com.facebook.litho.Output;
+import com.facebook.litho.SimpleNestedTreeLifecycleProvider;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
@@ -216,6 +217,10 @@ public class VerticalScrollSpec {
           LithoScrollView.OnInterceptTouchListener onInterceptTouchListener,
       @State ComponentTree childComponentTree,
       @State final LithoScrollView.ScrollPosition scrollPosition) {
+    if (context.getLifecycleProvider() != null) {
+      childComponentTree.subscribeOrUpdateLifecycleProvider(
+          new SimpleNestedTreeLifecycleProvider(context.getLifecycleProvider()));
+    }
     lithoScrollView.mount(childComponentTree, scrollPosition, scrollStateListener);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);

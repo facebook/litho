@@ -31,6 +31,7 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
+import com.facebook.litho.SimpleNestedTreeLifecycleProvider;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
@@ -186,6 +187,10 @@ class HorizontalScrollSpec {
     horizontalScrollLithoView.setOverScrollMode(overScrollMode);
     horizontalScrollLithoView.setHorizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled);
     horizontalScrollLithoView.setFadingEdgeLength(fadingEdgeLength);
+    if (context.getLifecycleProvider() != null) {
+      childComponentTree.subscribeOrUpdateLifecycleProvider(
+          new SimpleNestedTreeLifecycleProvider(context.getLifecycleProvider()));
+    }
     horizontalScrollLithoView.mount(
         childComponentTree,
         lastScrollPosition,
