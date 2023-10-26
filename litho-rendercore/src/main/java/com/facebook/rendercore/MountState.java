@@ -1038,7 +1038,7 @@ public class MountState implements MountDelegateTarget {
       mountDelegate.startNotifyVisibleBoundsChangedSection();
     }
 
-    if (currentRenderUnit != renderUnit || currentLayoutData != newLayoutData) {
+    if (currentRenderUnit != renderUnit) {
       Integer traceIdentifier = generateTraceIdentifier(DebugEvent.RenderUnitUpdated);
       if (traceIdentifier != null) {
         HashMap<String, Object> attributes = new HashMap<>();
