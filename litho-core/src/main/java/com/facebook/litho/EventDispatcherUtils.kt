@@ -56,7 +56,7 @@ internal object EventDispatcherUtils {
     val longClickEvent = LongClickEvent()
     longClickEvent.view = view
     val returnValue = longClickHandler.dispatchEvent(longClickEvent)
-    return returnValue != null && returnValue as Boolean
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -70,7 +70,7 @@ internal object EventDispatcherUtils {
     touchEvent.view = view
     touchEvent.motionEvent = event
     val returnValue = touchHandler.dispatchEvent(touchEvent)
-    return returnValue != null && returnValue as Boolean
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -84,7 +84,7 @@ internal object EventDispatcherUtils {
     interceptTouchEvent.motionEvent = event
     interceptTouchEvent.view = view
     val returnValue = interceptTouchHandler.dispatchEvent(interceptTouchEvent)
-    return returnValue != null && returnValue as Boolean
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -100,7 +100,7 @@ internal object EventDispatcherUtils {
     dispatchPopulateAccessibilityEventEvent.event = event
     dispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate
     val returnValue = eventHandler.dispatchEvent(dispatchPopulateAccessibilityEventEvent)
-    return returnValue != null && returnValue as Boolean
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -176,7 +176,7 @@ internal object EventDispatcherUtils {
     onRequestSendAccessibilityEventEvent.event = event
     onRequestSendAccessibilityEventEvent.superDelegate = superDelegate
     val returnValue = eventHandler.dispatchEvent(onRequestSendAccessibilityEventEvent)
-    return returnValue != null && returnValue as Boolean
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -194,7 +194,7 @@ internal object EventDispatcherUtils {
     performAccessibilityActionEvent.args = args
     performAccessibilityActionEvent.superDelegate = superDelegate
     val returnValue = eventHandler.dispatchEvent(performAccessibilityActionEvent)
-    return returnValue != null && returnValue as Boolean
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
