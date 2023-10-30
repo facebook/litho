@@ -467,27 +467,15 @@ class DynamicPropsTest {
     legacyLithoViewRule.idle()
 
     // should unsubscribe from the old DV and subscribe to the new DV
-    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
-      // works correctly when fix is applied
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
-      assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
-    } else {
-      // doesn't work without the fix
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
-      assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
-    }
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
 
     lithoView.unmountAllItems()
     legacyLithoViewRule.idle()
 
     // should unsubscribe from all DVs
-    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
-      // works correctly when fix is applied
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
-    } else {
-      // doesn't work without the fix
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
-    }
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+
     assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
   }
 
@@ -527,27 +515,15 @@ class DynamicPropsTest {
     legacyLithoViewRule.idle()
 
     // should unsubscribe from the old DV and subscribe to the new DV
-    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
-      // works correctly when fix is applied
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
-      assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
-    } else {
-      // doesn't work without the fix
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
-      assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
-    }
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
 
     lithoView.unmountAllItems()
     legacyLithoViewRule.idle()
 
     // should unsubscribe from all DVs
-    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
-      // works correctly when fix is applied
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
-    } else {
-      // doesn't work without the fix
-      assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
-    }
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+
     assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
   }
 

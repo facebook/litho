@@ -233,8 +233,6 @@ public class ComponentsConfiguration {
   public static boolean enableMountableRecyclerInGroups = false;
   public static boolean hostComponentAlwaysShouldUpdate = true;
 
-  public static boolean enablePrimitiveDynamicPropsExtensionFix = false;
-
   public static boolean shouldOverrideHasTransientState = false;
 
   public static boolean enableFixForNestedComponentTree = false;

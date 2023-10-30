@@ -20,7 +20,6 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -83,28 +82,16 @@ public class DynamicPropsExtension
       final @Nullable Object layoutData) {
     final DynamicPropsExtensionState state = extensionState.getState();
 
-    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
-      @Nullable
-      final DynamicValueOutput dynamicValueOutput =
-          state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
+    @Nullable
+    final DynamicValueOutput dynamicValueOutput =
+        state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
 
-      if (dynamicValueOutput != null) {
-        state.mDynamicPropsManager.onBindComponentToContent(
-            dynamicValueOutput.getComponent(),
-            dynamicValueOutput.getScopedContext(),
-            dynamicValueOutput.getCommonDynamicProps(),
-            content);
-      }
-    } else {
-      if (renderUnit instanceof LithoRenderUnit) {
-        final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-
-        state.mDynamicPropsManager.onBindComponentToContent(
-            lithoRenderUnit.getComponent(),
-            lithoRenderUnit.componentContext,
-            lithoRenderUnit.commonDynamicProps,
-            content);
-      }
+    if (dynamicValueOutput != null) {
+      state.mDynamicPropsManager.onBindComponentToContent(
+          dynamicValueOutput.getComponent(),
+          dynamicValueOutput.getScopedContext(),
+          dynamicValueOutput.getCommonDynamicProps(),
+          content);
     }
   }
 
@@ -116,24 +103,15 @@ public class DynamicPropsExtension
       final @Nullable Object layoutData) {
     final DynamicPropsExtensionState state = extensionState.getState();
 
-    if (ComponentsConfiguration.enablePrimitiveDynamicPropsExtensionFix) {
-      @Nullable
-      final DynamicValueOutput dynamicValueOutput =
-          state.mPreviousInput != null
-              ? state.mPreviousInput.get(renderUnit.getId())
-              : state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
+    @Nullable
+    final DynamicValueOutput dynamicValueOutput =
+        state.mPreviousInput != null
+            ? state.mPreviousInput.get(renderUnit.getId())
+            : state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
 
-      if (dynamicValueOutput != null) {
-        state.mDynamicPropsManager.onUnbindComponent(
-            dynamicValueOutput.getComponent(), dynamicValueOutput.getCommonDynamicProps(), content);
-      }
-    } else {
-      if (renderUnit instanceof LithoRenderUnit) {
-        final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-
-        state.mDynamicPropsManager.onUnbindComponent(
-            lithoRenderUnit.getComponent(), lithoRenderUnit.commonDynamicProps, content);
-      }
+    if (dynamicValueOutput != null) {
+      state.mDynamicPropsManager.onUnbindComponent(
+          dynamicValueOutput.getComponent(), dynamicValueOutput.getCommonDynamicProps(), content);
     }
   }
 

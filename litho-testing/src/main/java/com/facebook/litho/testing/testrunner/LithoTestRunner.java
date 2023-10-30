@@ -76,7 +76,6 @@ public class LithoTestRunner extends RobolectricTestRunner {
     return Arrays.asList(
         LayoutCachingTestRunConfiguration.class,
         SkipRootCheckingTestRunConfiguration.class,
-        DynamicValuesTestRunConfiguration.class,
         CustomBindersTestRunConfiguration.class);
   }
 
