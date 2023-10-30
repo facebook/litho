@@ -90,7 +90,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     addView(mStickyHeader);
   }
 
-  public void setSectionsRecyclerViewLogger(SectionsRecyclerViewLogger lithoViewLogger) {
+  public void setSectionsRecyclerViewLogger(@Nullable SectionsRecyclerViewLogger lithoViewLogger) {
     mSectionsRecyclerViewLogger = lithoViewLogger;
   }
 

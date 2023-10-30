@@ -53,6 +53,7 @@ import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import java.util.List;
 
 /**
@@ -216,7 +217,7 @@ class RecyclerSpec {
       @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) @Nullable RecyclerView.OnItemTouchListener onItemTouchListener,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler,
-      @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger) {
+      @Prop(optional = true) @Nullable SectionsRecyclerViewLogger sectionsViewLogger) {
 
     sectionsRecycler.setSectionsRecyclerViewLogger(sectionsViewLogger);
 

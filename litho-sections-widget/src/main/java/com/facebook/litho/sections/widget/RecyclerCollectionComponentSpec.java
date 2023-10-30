@@ -68,7 +68,7 @@ import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
 import com.facebook.litho.widget.RecyclerEventsController;
-import com.facebook.litho.widget.SectionsRecyclerView;
+import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
@@ -168,7 +168,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean setRootAsync,
       @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
-      @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger,
+      @Prop(optional = true) @Nullable SectionsRecyclerViewLogger sectionsViewLogger,
       @Prop(optional = true) @Nullable CharSequence recyclerContentDescription,
       @Prop(optional = true) boolean shouldExcludeFromIncrementalMount,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
