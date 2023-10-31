@@ -23,9 +23,9 @@ import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.DESTROYED
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
 
-import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.OnLifecycleEvent;
 import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class AOSPLithoLifecycleProvider
-    implements LithoLifecycleProvider, LifecycleObserver, AOSPLifecycleOwnerProvider {
+    implements LithoLifecycleProvider, LifecycleEventObserver, AOSPLifecycleOwnerProvider {
   private LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
   private LifecycleOwner mLifecycleOwner;
 
@@ -67,19 +67,18 @@ public class AOSPLithoLifecycleProvider
     mLithoLifecycleProviderDelegate.removeListener(listener);
   }
 
-  @OnLifecycleEvent(ON_RESUME)
-  private void onVisible() {
-    moveToLifecycle(HINT_VISIBLE);
-  }
-
-  @OnLifecycleEvent(ON_PAUSE)
-  private void onInvisible() {
-    moveToLifecycle(HINT_INVISIBLE);
-  }
-
-  @OnLifecycleEvent(ON_DESTROY)
-  private void onDestroy() {
-    moveToLifecycle(DESTROYED);
+  public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) {
+    switch (event) {
+      case ON_RESUME:
+        moveToLifecycle(HINT_VISIBLE);
+        break;
+      case ON_PAUSE:
+        moveToLifecycle(HINT_INVISIBLE);
+        break;
+      case ON_DESTROY:
+        moveToLifecycle(DESTROYED);
+        break;
+    }
   }
 
   @Override
