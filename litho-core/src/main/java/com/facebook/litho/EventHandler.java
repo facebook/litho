@@ -44,15 +44,6 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
     this(id, new EventDispatchInfo(hasEventDispatcher, null), params);
   }
 
-  /**
-   * The EventDispatchInfo ctors are used to construct EventHandlers from generated code. The
-   * HasEventDispatcher ones above are mostly from manual construction of EventHandlers, e.g. in
-   * tests.
-   */
-  public EventHandler(int id, EventDispatchInfo dispatchInfo) {
-    this(id, dispatchInfo, null);
-  }
-
   public EventHandler(int id, EventDispatchInfo dispatchInfo, @Nullable Object[] params) {
     this(id, EventHandlerRebindMode.REBIND, dispatchInfo, params);
     // TODO: MUST be cleaned up before landing stack
