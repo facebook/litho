@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -96,9 +97,19 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithDifferentHasEventDispatchInfos() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(1, EventDispatchInfo(mock(), mock()), arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(mock(), mock()),
+            arrayOf<Any>(1, 2, 3),
+        )
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(1, EventDispatchInfo(mock(), mock()), arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(mock(), mock()),
+            arrayOf<Any>(1, 2, 3),
+        )
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isTrue
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isTrue
   }
