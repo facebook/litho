@@ -36,14 +36,7 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   public final @Nullable Object[] params;
 
   protected EventHandler(@Nullable HasEventDispatcher hasEventDispatcher, int id) {
-    this(hasEventDispatcher, id, null);
-  }
-
-  public EventHandler(
-      final @Nullable HasEventDispatcher hasEventDispatcher,
-      final int id,
-      final @Nullable Object[] params) {
-    this(id, REBIND, new EventDispatchInfo(hasEventDispatcher, null), params);
+    this(id, REBIND, new EventDispatchInfo(hasEventDispatcher, null), null);
   }
 
   public EventHandler(

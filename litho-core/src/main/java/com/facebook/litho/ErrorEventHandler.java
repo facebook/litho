@@ -21,6 +21,7 @@ import static com.facebook.litho.Component.ERROR_EVENT_HANDLER_ID;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 
 /**
  * This class is an error event handler that clients can optionally set on a {@link ComponentTree}
@@ -33,7 +34,11 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
 
   public ErrorEventHandler() {
     // sets up HasEventDispatcher immediately after constructing EventHandler
-    super(null, ERROR_EVENT_HANDLER_ID, null);
+    super(
+        ERROR_EVENT_HANDLER_ID,
+        EventHandlerRebindMode.NONE,
+        new EventDispatchInfo(null, null),
+        null);
     this.dispatchInfo.hasEventDispatcher = this;
   }
 

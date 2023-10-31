@@ -51,7 +51,12 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithOneNullParams() {
     val eventHandler1: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
-    val eventHandler2: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1, arrayOfNulls(0))
+    val eventHandler2: EventHandler<*> =
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOfNulls(0))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
@@ -67,9 +72,17 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithDifferentLengthParams() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2, 3))
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
@@ -77,9 +90,17 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithDifferentParams() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2, 3))
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 3, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 3, 3))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
@@ -87,9 +108,17 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithFirstParamDifferent() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2, 3))
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(2, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(2, 2, 3))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }

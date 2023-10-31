@@ -17,7 +17,9 @@
 package com.facebook.litho.sections;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.EventDispatchInfo;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import java.lang.ref.WeakReference;
 
 public class SectionTreeLoadingEventHandler extends EventHandler<LoadingEvent> {
@@ -31,7 +33,7 @@ public class SectionTreeLoadingEventHandler extends EventHandler<LoadingEvent> {
   }
 
   SectionTreeLoadingEventHandler(SectionTree sectionTree, int id, Object[] params) {
-    super(null, id, params);
+    super(id, EventHandlerRebindMode.NONE, new EventDispatchInfo(null, null), params);
     mSectionTree = new WeakReference<>(sectionTree);
   }
 

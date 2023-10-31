@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.Comparable
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.config.ComponentsConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -210,10 +211,13 @@ class ComponentUtilsTest(disableGetAnnotationUsage: Boolean) {
   @Test
   fun hasEquivalentFieldsEventHandlerPropTest() {
     // The first item of the params is skipped as explained in the EventHandler class.
-    c1.propEventHandler = EventHandler<Any?>(null, 3, arrayOf<Any>("", "1"))
-    c2.propEventHandler = EventHandler<Any?>(null, 3, arrayOf<Any>("", "1"))
+    c1.propEventHandler =
+        EventHandler<Any?>(3, EventHandlerRebindMode.REBIND, null, arrayOf<Any>("", "1"))
+    c2.propEventHandler =
+        EventHandler<Any?>(3, EventHandlerRebindMode.REBIND, null, arrayOf<Any>("", "1"))
     assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isTrue
-    c2.propEventHandler = EventHandler<Any?>(null, 3, arrayOf<Any>("", "2"))
+    c2.propEventHandler =
+        EventHandler<Any?>(3, EventHandlerRebindMode.REBIND, null, arrayOf<Any>("", "2"))
     assertThat(ComponentUtils.hasEquivalentFields(c1, c2)).isFalse
   }
 
