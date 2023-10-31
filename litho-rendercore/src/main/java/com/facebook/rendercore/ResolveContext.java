@@ -20,13 +20,15 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ResolveContext<RenderContext> {
+public class ResolveContext<
+    RenderContext, StateUpdateType extends StateUpdateReceiver.StateUpdate> {
 
   private final @Nullable RenderContext mRenderContext;
-  private final StateUpdateReceiver mStateUpdateReceiver;
+  private final StateUpdateReceiver<StateUpdateType> mStateUpdateReceiver;
 
   public ResolveContext(
-      @Nullable RenderContext renderContext, StateUpdateReceiver stateUpdateReceiver) {
+      @Nullable RenderContext renderContext,
+      StateUpdateReceiver<StateUpdateType> stateUpdateReceiver) {
     mRenderContext = renderContext;
     mStateUpdateReceiver = stateUpdateReceiver;
   }
@@ -35,7 +37,7 @@ public class ResolveContext<RenderContext> {
     return mRenderContext;
   }
 
-  public StateUpdateReceiver getStateUpdateReceiver() {
+  public StateUpdateReceiver<StateUpdateType> getStateUpdateReceiver() {
     return mStateUpdateReceiver;
   }
 }

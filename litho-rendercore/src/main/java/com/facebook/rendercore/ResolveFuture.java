@@ -23,18 +23,18 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ResolveFuture<State, RenderContext>
+public class ResolveFuture<State, RenderContext, StateUpdateType extends StateUpdate>
     extends ThreadInheritingPriorityFuture<ResolveResult<Node<RenderContext>, State>> {
 
   private final int mVersion;
-  private final List<StateUpdate> mStateUpdatesToApply;
+  private final List<StateUpdateType> mStateUpdatesToApply;
 
   public ResolveFuture(
-      final RenderState.ResolveFunc<State, RenderContext> resolveFunc,
-      ResolveContext<RenderContext> resolveContext,
+      final RenderState.ResolveFunc<State, RenderContext, StateUpdateType> resolveFunc,
+      ResolveContext<RenderContext, StateUpdateType> resolveContext,
       @Nullable Node<RenderContext> committedTree,
       @Nullable State committedState,
-      List<StateUpdate> stateUpdatesToApply,
+      List<StateUpdateType> stateUpdatesToApply,
       int resolveVersion) {
     super(
         new Callable<ResolveResult<Node<RenderContext>, State>>() {
@@ -53,7 +53,7 @@ public class ResolveFuture<State, RenderContext>
     return mVersion;
   }
 
-  public List<StateUpdate> getStateUpdatesToApply() {
+  public List<StateUpdateType> getStateUpdatesToApply() {
     return mStateUpdatesToApply;
   }
 }

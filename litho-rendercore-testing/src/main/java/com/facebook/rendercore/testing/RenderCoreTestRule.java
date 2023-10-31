@@ -69,7 +69,7 @@ public class RenderCoreTestRule implements TestRule {
   private Context context;
   private @Nullable RootHost rootHost;
   private @Nullable RenderTreeHost renderTreeHost;
-  private @Nullable RenderState<?, ?> renderState;
+  private @Nullable RenderState<?, ?, ?> renderState;
   private @Nullable Node<?> rootNode;
   private @Nullable RenderCoreExtension<?, ?>[] extensions;
   private int widthSpec = DEFAULT_WIDTH_SPEC;
@@ -119,7 +119,7 @@ public class RenderCoreTestRule implements TestRule {
     return renderTreeHost;
   }
 
-  public RenderState<?, ?> getRenderState() {
+  public RenderState<?, ?, ?> getRenderState() {
     if (renderState == null) {
       renderState = new RenderState(getContext(), DELEGATE, null, extensions);
     }

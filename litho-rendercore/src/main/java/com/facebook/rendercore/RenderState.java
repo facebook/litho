@@ -35,7 +35,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.ThreadSafe;
 
 /** todo: javadocs * */
-public class RenderState<State, RenderContext> implements StateUpdateReceiver<State> {
+public class RenderState<
+        State, RenderContext, StateUpdateType extends StateUpdateReceiver.StateUpdate>
+    implements StateUpdateReceiver<StateUpdateType> {
 
   private static final int UNSET = -1;
   private static final int PROMOTION_MESSAGE = 99;
@@ -52,7 +54,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
    *     committed
    */
   @ThreadSafe
-  public interface ResolveFunc<State, RenderContext> {
+  public interface ResolveFunc<State, RenderContext, StateUpdateType extends StateUpdate> {
     /**
      * Resolves the tree represented by this ResolveFunc. Results for resolve might be cached. The
      * assumption is that multiple resolve calls on a ResolveFunc would return equivalent trees.
@@ -63,10 +65,10 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
      * @param stateUpdatesToApply
      */
     ResolveResult<Node<RenderContext>, State> resolve(
-        ResolveContext<RenderContext> resolveContext,
+        ResolveContext<RenderContext, StateUpdateType> resolveContext,
         @Nullable Node<RenderContext> committedTree,
         @Nullable State committedState,
-        List<? extends StateUpdate> stateUpdatesToApply);
+        List<StateUpdateType> stateUpdatesToApply);
   }
 
   public interface Delegate<State> {
@@ -95,14 +97,14 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   private @Nullable HostListener mHostListener;
 
   private @Nullable RenderTree mUIRenderTree;
-  private @Nullable ResolveFunc<State, RenderContext> mLatestResolveFunc;
-  private @Nullable ResolveFuture<State, RenderContext> mResolveFuture;
+  private @Nullable ResolveFunc<State, RenderContext, StateUpdateType> mLatestResolveFunc;
+  private @Nullable ResolveFuture<State, RenderContext, StateUpdateType> mResolveFuture;
   private @Nullable LayoutFuture<State, RenderContext> mLayoutFuture;
 
   private @Nullable Node<RenderContext> mCommittedResolvedTree;
   private @Nullable State mCommittedState;
 
-  private final List<StateUpdate> mPendingStateUpdates = new ArrayList<>();
+  private final List<StateUpdateType> mPendingStateUpdates = new ArrayList<>();
 
   private @Nullable RenderResult<State, RenderContext> mCommittedRenderResult;
 
@@ -126,18 +128,19 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
+  public void setTree(ResolveFunc<State, RenderContext, StateUpdateType> resolveFunc) {
     setTree(resolveFunc, null);
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(ResolveFunc<State, RenderContext> resolveFunc, @Nullable Executor executor) {
+  public void setTree(
+      ResolveFunc<State, RenderContext, StateUpdateType> resolveFunc, @Nullable Executor executor) {
     requestResolve(resolveFunc, executor);
   }
 
   @ThreadConfined(ThreadConfined.ANY)
   @Override
-  public void enqueueStateUpdate(StateUpdate stateUpdate) {
+  public void enqueueStateUpdate(StateUpdateType stateUpdate) {
     synchronized (this) {
       mPendingStateUpdates.add(stateUpdate);
       if (mLatestResolveFunc == null) {
@@ -155,8 +158,9 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   }
 
   private void requestResolve(
-      @Nullable ResolveFunc<State, RenderContext> resolveFunc, @Nullable Executor executor) {
-    final ResolveFuture<State, RenderContext> future;
+      @Nullable ResolveFunc<State, RenderContext, StateUpdateType> resolveFunc,
+      @Nullable Executor executor) {
+    final ResolveFuture<State, RenderContext, StateUpdateType> future;
 
     synchronized (this) {
       // Resolve was triggered by State Update, but all pendingStateUpdates are already applied.
@@ -185,7 +189,8 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
     }
   }
 
-  private void resolveTreeAndMaybeCommit(ResolveFuture<State, RenderContext> future) {
+  private void resolveTreeAndMaybeCommit(
+      ResolveFuture<State, RenderContext, StateUpdateType> future) {
     final ResolveResult<Node<RenderContext>, State> result = future.runAndGet();
     if (maybeCommitResolveResult(result, future)) {
       layoutAndMaybeCommitInternal(null);
@@ -194,7 +199,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
 
   private synchronized boolean maybeCommitResolveResult(
       ResolveResult<Node<RenderContext>, State> result,
-      ResolveFuture<State, RenderContext> future) {
+      ResolveFuture<State, RenderContext, StateUpdateType> future) {
     // We don't want to compute, layout, or reduce trees while holding a lock. However this means
     // that another thread could compute a layout and commit it before we get to this point. To
     // handle this, we make sure that the committed resolve version is only ever increased, meaning
@@ -279,7 +284,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
 
   @ThreadConfined(ThreadConfined.UI)
   public void measure(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
-    final ResolveFuture<State, RenderContext> futureToResolveBeforeMeasuring;
+    final ResolveFuture<State, RenderContext, StateUpdateType> futureToResolveBeforeMeasuring;
 
     synchronized (this) {
       if (mWidthSpec != widthSpec || mHeightSpec != heightSpec) {

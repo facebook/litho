@@ -19,10 +19,10 @@ package com.facebook.rendercore;
 import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public interface StateUpdateReceiver<State> {
+public interface StateUpdateReceiver<StateUpdateType extends StateUpdateReceiver.StateUpdate> {
   interface StateUpdate<State> {
     State update(State state);
   }
 
-  void enqueueStateUpdate(StateUpdate<State> stateUpdate);
+  void enqueueStateUpdate(StateUpdateType stateUpdate);
 }

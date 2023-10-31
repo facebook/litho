@@ -483,7 +483,7 @@ public class RenderStateTest {
     final AtomicInteger resolveCount = new AtomicInteger(0);
     final AtomicReference<List<?>> appliedStateUpdates = new AtomicReference<>();
 
-    final RenderState<Object, Void> renderState =
+    final RenderState<Object, Void, TestStateUpdate> renderState =
         new RenderState<>(RuntimeEnvironment.getApplication(), emptyDelegate, null, null);
 
     renderState.setTree(
@@ -510,7 +510,7 @@ public class RenderStateTest {
   public void enqueueStateUpdate_whenResolveWithStateUpdates_appliesAndClearsStateUpdates() {
     final AtomicReference<List<?>> appliedStateUpdates = new AtomicReference<>();
 
-    final RenderState<Object, Void> renderState =
+    final RenderState<Object, Void, TestStateUpdate> renderState =
         new RenderState<>(RuntimeEnvironment.getApplication(), emptyDelegate, null, null);
 
     renderState.setTree(
@@ -552,7 +552,7 @@ public class RenderStateTest {
     final AtomicInteger resolveCount = new AtomicInteger(0);
     final AtomicReference<List<?>> appliedStateUpdates = new AtomicReference<>();
 
-    final RenderState<Object, Void> renderState =
+    final RenderState<Object, Void, TestStateUpdate> renderState =
         new RenderState<>(RuntimeEnvironment.getApplication(), emptyDelegate, null, null);
 
     renderState.enqueueStateUpdate(new TestStateUpdate());
@@ -582,7 +582,7 @@ public class RenderStateTest {
     final AtomicInteger resolveCount = new AtomicInteger(0);
     final AtomicReference<List<?>> appliedStateUpdates = new AtomicReference<>();
 
-    final RenderState<Object, Void> renderState =
+    final RenderState<Object, Void, TestStateUpdate> renderState =
         new RenderState<>(RuntimeEnvironment.getApplication(), emptyDelegate, null, null);
 
     renderState.setTree(
@@ -619,7 +619,7 @@ public class RenderStateTest {
     final AtomicInteger resolveCount = new AtomicInteger(0);
     final AtomicReference<List<?>> appliedStateUpdates = new AtomicReference<>();
 
-    final RenderState<Object, Void> renderState =
+    final RenderState<Object, Void, TestStateUpdate> renderState =
         new RenderState<>(RuntimeEnvironment.getApplication(), emptyDelegate, null, null);
 
     renderState.setTree(
