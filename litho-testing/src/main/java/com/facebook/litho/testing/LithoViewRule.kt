@@ -24,12 +24,14 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
+import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.LithoLifecycleProvider
 import com.facebook.litho.LithoView
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
+import java.lang.Exception
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -182,5 +184,24 @@ constructor(
   fun idle() {
     threadLooperController.runToEndOfTasksSync()
     shadowOf(Looper.getMainLooper()).idle()
+  }
+
+  /**
+   * Creates a ComponentTree that will propagate exceptions.
+   *
+   * ```
+   * val componentTree = lithoViewRule.withThrowOnErrorHandler()
+   * val lithoView = lithoViewRule.render(componentTree = componentTree)
+   * ```
+   */
+  fun withThrowOnErrorHandler(): ComponentTree {
+    return ComponentTree.create(context)
+        .errorHandler(
+            object : ErrorEventHandler() {
+              override fun onError(cc: ComponentContext, e: Exception): Component? {
+                throw e
+              }
+            })
+        .build()
   }
 }
