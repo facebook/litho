@@ -24,6 +24,7 @@ import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.atMost
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
@@ -57,7 +58,12 @@ class LayoutCachingTest {
     val component =
         Column.create(c)
             .backgroundColor(Color.LTGRAY)
-            .child(SimpleStateUpdateEmulator.create(c).prefix("\n\n\n").caller(caller).build())
+            .child(
+                SimpleStateUpdateEmulator.create(c)
+                    .prefix("\n\n\n")
+                    .initialCount(0)
+                    .caller(caller)
+                    .build())
             .build()
 
     legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
@@ -73,6 +79,95 @@ class LayoutCachingTest {
     caller.increment()
     val background3 = legacyLithoViewRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
     Assertions.assertThat(background2 === background3).isTrue
+  }
+
+  @Test
+  fun `verify the layout behavior of container with background, padding is as expected`() {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
+      return
+    }
+
+    val caller = SimpleStateUpdateEmulatorSpec.Caller()
+    val component =
+        Column.create(c)
+            .child(Column.create(c).backgroundColor(Color.LTGRAY).paddingPx(YogaEdge.VERTICAL, 10))
+            .child(SimpleStateUpdateEmulator.create(c).prefix("\n\n\n").caller(caller).build())
+            .build()
+
+    legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
+
+    val background1 = legacyLithoViewRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+
+    // the background of column should be reused because it doesn't change at all
+    caller.increment()
+    val background2 = legacyLithoViewRule.committedLayoutState?.getMountableOutputAt(1)?.renderUnit
+    Assertions.assertThat(background1 === background2).isTrue
+  }
+
+  @Test
+  fun `verify the layout result of a fixed size component is not reused when its size has changed`() {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
+      return
+    }
+
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecLifecycleTester.create(c)
+            .widthPercent(100f)
+            .heightPercent(100f)
+            .lifecycleTracker(lifecycleTracker)
+            .build()
+
+    legacyLithoViewRule
+        .setRoot(component)
+        .setSizeSpecs(exactly(400), exactly(200))
+        .attachToWindow()
+        .measure()
+        .layout()
+    lifecycleTracker.reset()
+
+    legacyLithoViewRule.setSizeSpecs(exactly(200), exactly(400)).measure().layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+  }
+
+  @Test
+  fun `verify the layout result of a fixed size component with different size specs is not reused`() {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
+      return
+    }
+
+    val lifecycleTracker = LifecycleTracker()
+    val component =
+        MountSpecLifecycleTester.create(c)
+            .widthPercent(100f)
+            .heightPercent(100f)
+            .lifecycleTracker(lifecycleTracker)
+            .build()
+
+    legacyLithoViewRule
+        .setRoot(component)
+        .setSizeSpecs(exactly(1080), unspecified())
+        .attachToWindow()
+        .measure()
+        .layout()
+    lifecycleTracker.reset()
+
+    legacyLithoViewRule.setSizeSpecs(atMost(200), atMost(200)).measure().layout()
+    Assertions.assertThat(lifecycleTracker.steps)
+        .containsExactly(
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
   }
 
   @Test
@@ -104,12 +199,8 @@ class LayoutCachingTest {
     caller.increment()
     Assertions.assertThat(lifecycleTracker.steps)
         .describedAs(
-            "Node with inter stage props doesn't need remeasurement but rebinding if layout caching is turned on")
-        .containsExactly(
-            LifecycleStep.ON_UNBIND,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT,
-            LifecycleStep.ON_BIND)
+            "Node with inter stage props doesn't need re-measurement and rebinding if layout caching is turned on")
+        .isEmpty()
   }
 
   @Test

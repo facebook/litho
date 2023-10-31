@@ -345,9 +345,6 @@ open class LithoLayoutResult(
   }
 
   fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
-    if (this.widthSpec != widthSpec || this.heightSpec != heightSpec) {
-      lastMeasuredSize = Long.MIN_VALUE
-    }
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
   }
@@ -378,39 +375,36 @@ open class LithoLayoutResult(
   fun onBoundsDefined() {
     val context = node.tailComponentContext
     val component = node.tailComponent
-    var hasLayoutSizeChanged = false
+    val hasLayoutSizeChanged: Boolean
 
+    // Since `measure` would be called without padding and border size, in order to align with this
+    // behavior for layout diffing(DiffNode) which relies on the last measured size directly, we're
+    // going to save the size without padding and border.
+    val newContentWidth =
+        (width -
+            paddingRight -
+            paddingLeft -
+            getLayoutBorder(YogaEdge.RIGHT) -
+            getLayoutBorder(YogaEdge.LEFT))
+    val newContentHeight =
+        (height -
+            paddingTop -
+            paddingBottom -
+            getLayoutBorder(YogaEdge.TOP) -
+            getLayoutBorder(YogaEdge.BOTTOM))
     if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
 
-      val newContentWidth: Int =
-          if (wasMeasured ||
-              (isCachedLayout && MeasureSpecUtils.getMode(widthSpec) == SizeSpec.EXACTLY)) {
-            contentWidth
+      hasLayoutSizeChanged =
+          if ((lastMeasuredSize != Long.MIN_VALUE) && !wasMeasured && isCachedLayout) {
+            // Two scenarios would skip measurement and fall into this case:
+            // 1. cached result from Yoga (may also contain fixed size)
+            // 2. fixed size without measurement which size might change
+            (newContentWidth != contentWidth) || (newContentHeight != contentHeight)
           } else {
-            (width -
-                paddingRight -
-                paddingLeft -
-                getLayoutBorder(YogaEdge.RIGHT) -
-                getLayoutBorder(YogaEdge.LEFT))
+            true
           }
 
-      val newContentHeight: Int =
-          if (wasMeasured ||
-              (isCachedLayout && MeasureSpecUtils.getMode(heightSpec) == SizeSpec.EXACTLY)) {
-            contentHeight
-          } else {
-            (height -
-                paddingTop -
-                paddingBottom -
-                getLayoutBorder(YogaEdge.TOP) -
-                getLayoutBorder(YogaEdge.BOTTOM))
-          }
-
-      if (lastMeasuredSize == Long.MIN_VALUE ||
-          !isCachedLayout ||
-          wasMeasured ||
-          newContentWidth != contentWidth ||
-          newContentHeight != contentHeight) {
+      if (hasLayoutSizeChanged) {
 
         // We should only invoke `onBoundsDefined` if layout is non cached or size has changed.
         // Note: MountSpec is always treated as size changed once `onMeasure` is invoked no matter
@@ -447,33 +441,17 @@ open class LithoLayoutResult(
           contentRenderUnit = null
         }
         this.layoutData = layoutData
-
-        hasLayoutSizeChanged = true
       }
       if (!wasMeasured) {
         wasMeasured = true
-        widthSpec = MeasureSpecUtils.exactly(width)
-        heightSpec = MeasureSpecUtils.exactly(height)
-        lastMeasuredSize = YogaMeasureOutput.make(width, height)
+        widthSpec = MeasureSpecUtils.exactly(newContentWidth)
+        heightSpec = MeasureSpecUtils.exactly(newContentHeight)
+        lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
     } else if (Component.isPrimitive(component)) {
 
-      val measuredContentWidth: Int =
-          (width -
-              paddingRight -
-              paddingLeft -
-              getLayoutBorder(YogaEdge.RIGHT) -
-              getLayoutBorder(YogaEdge.LEFT))
-      val measuredContentHeight: Int =
-          (height -
-              paddingTop -
-              paddingBottom -
-              getLayoutBorder(YogaEdge.TOP) -
-              getLayoutBorder(YogaEdge.BOTTOM))
-
       hasLayoutSizeChanged =
-          (isCachedLayout &&
-              (measuredContentWidth != contentWidth || measuredContentHeight != contentHeight))
+          (isCachedLayout && (newContentWidth != contentWidth || newContentHeight != contentHeight))
 
       if (delegate == null || hasLayoutSizeChanged) {
 
@@ -482,15 +460,16 @@ open class LithoLayoutResult(
         @Suppress("UNCHECKED_CAST")
         measure(
             layoutContext as LayoutContext<LithoRenderContext>,
-            MeasureSpecUtils.exactly(measuredContentWidth),
-            MeasureSpecUtils.exactly(measuredContentHeight))
+            MeasureSpecUtils.exactly(newContentWidth),
+            MeasureSpecUtils.exactly(newContentHeight))
       }
     } else {
       hasLayoutSizeChanged =
           (lastMeasuredSize == Long.MIN_VALUE) ||
-              (isCachedLayout && (contentWidth != width || contentHeight != height))
+              (isCachedLayout &&
+                  (contentWidth != newContentWidth || contentHeight != newContentHeight))
       if (hasLayoutSizeChanged) {
-        lastMeasuredSize = YogaMeasureOutput.make(width, height)
+        lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
     }
 
