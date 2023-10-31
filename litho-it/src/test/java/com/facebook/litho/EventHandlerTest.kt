@@ -30,27 +30,27 @@ class EventHandlerTest {
 
   @Test
   fun testIsEquivalentToWithNullHandler() {
-    val eventHandler: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
+    val eventHandler: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
     assertThat(eventHandler.isEquivalentTo(null)).isFalse
   }
 
   @Test
   fun testIsEquivalentToWithSameHandler() {
-    val eventHandler: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
+    val eventHandler: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
     assertThat(eventHandler.isEquivalentTo(eventHandler)).isTrue
   }
 
   @Test
   fun testIsEquivalentToWithDifferentIds() {
-    val eventHandler1: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
-    val eventHandler2: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 2)
+    val eventHandler1: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
+    val eventHandler2: EventHandler<*> = EventHandlerTestUtil.create<Any?>(2, hasEventDispatcher)
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
 
   @Test
   fun testIsEquivalentToWithOneNullParams() {
-    val eventHandler1: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
+    val eventHandler1: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
     val eventHandler2: EventHandler<*> =
         EventHandler<Any?>(
             1,
@@ -63,8 +63,8 @@ class EventHandlerTest {
 
   @Test
   fun testIsEquivalentToWithBothNullParams() {
-    val eventHandler1: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
-    val eventHandler2: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
+    val eventHandler1: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
+    val eventHandler2: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isTrue
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isTrue
   }

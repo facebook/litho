@@ -68,12 +68,11 @@ class MountItemTest {
     contentDescription = "contentDescription"
     viewTag = "tag"
     viewTags = SparseArray()
-    clickHandler = EventHandler<ClickEvent>(component, 5)
-    longClickHandler = EventHandler<LongClickEvent>(component, 3)
-    focusChangeHandler = EventHandler<FocusChangedEvent>(component, 9)
-    touchHandler = EventHandler<TouchEvent>(component, 1)
-    dispatchPopulateAccessibilityEventHandler =
-        EventHandler<DispatchPopulateAccessibilityEventEvent>(component, 7)
+    clickHandler = EventHandlerTestUtil.create(5, component)
+    longClickHandler = EventHandlerTestUtil.create(3, component)
+    focusChangeHandler = EventHandlerTestUtil.create(9, component)
+    touchHandler = EventHandlerTestUtil.create(1, component)
+    dispatchPopulateAccessibilityEventHandler = EventHandlerTestUtil.create(7, component)
     flags = 114
     nodeInfo = NodeInfo()
     nodeInfo.contentDescription = contentDescription

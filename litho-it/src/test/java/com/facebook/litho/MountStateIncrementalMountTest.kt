@@ -1171,8 +1171,8 @@ class MountStateIncrementalMountTest {
   fun incrementalMount_setVisibilityHintFalse_preventMount() {
     val child1 = TestViewComponent.create(context).build()
     val child2 = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(child1, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(child1, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, child1)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, child1)
     val root =
         Column.create(context)
             .child(
@@ -1218,8 +1218,8 @@ class MountStateIncrementalMountTest {
   @Test
   fun incrementalMount_setVisibilityHintTrue_mountIfNeeded() {
     val child1 = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(child1, 1)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(child1, 2)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, child1)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(2, child1)
     val root =
         Column.create(context)
             .child(
@@ -1240,8 +1240,8 @@ class MountStateIncrementalMountTest {
     assertThat(child1.dispatchedEventHandlers).contains(visibleEventHandler1)
     lithoView.setVisibilityHint(false, true)
     val child2 = TestViewComponent.create(context).build()
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(child2, 3)
-    val invisibleEventHandler2 = EventHandler<InvisibleEvent>(child2, 4)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(3, child2)
+    val invisibleEventHandler2 = EventHandlerTestUtil.create<InvisibleEvent>(4, child2)
     val newRoot =
         Column.create(context)
             .child(

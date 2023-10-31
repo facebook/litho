@@ -295,8 +295,8 @@ class VisibilityEventsTest {
   fun testMultipleFocusAndUnfocusEvents() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val focusedHandler = EventHandler<FocusedVisibleEvent>(content, 2)
-    val unfocusedHandler = EventHandler<UnfocusedVisibleEvent>(content, 3)
+    val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(2, content)
+    val unfocusedHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(3, content)
     val root =
         Column.create(context)
             .child(
@@ -450,7 +450,7 @@ class VisibilityEventsTest {
   fun testVisibleRectChangedEventItemVisible() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content, 3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
         Column.create(context)
             .child(
@@ -497,7 +497,7 @@ class VisibilityEventsTest {
   fun testVisibleRectChangedEventItemNotVisible() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content, 3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
         Column.create(context)
             .child(
@@ -531,7 +531,7 @@ class VisibilityEventsTest {
   fun whenItemIsFullyVisible_VisibleTopAndLeftShouldBe0() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content, 3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
         Column.create(context)
             .child(
@@ -563,7 +563,7 @@ class VisibilityEventsTest {
   fun testVisibleRectChangedEventLargeView() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content, 3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
         Column.create(context)
             .child(
@@ -1239,7 +1239,7 @@ class VisibilityEventsTest {
   fun testDetachWithReleasedTreeTriggersInvisibilityItems() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(content, 2)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
     val root =
         Column.create(context)
             .child(
@@ -1266,10 +1266,10 @@ class VisibilityEventsTest {
   fun testSetComponentWithDifferentKeyGeneratesVisibilityEvents() {
     val context = lithoViewRule.context
     val component1 = TestViewComponent.create(context).key("component1").build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(component1, 1)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(component1, 2)
-    val focusedEventHandler1 = EventHandler<FocusedVisibleEvent>(component1, 3)
-    val unfocusedEventHandler1 = EventHandler<UnfocusedVisibleEvent>(component1, 4)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, component1)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(2, component1)
+    val focusedEventHandler1 = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, component1)
+    val unfocusedEventHandler1 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(4, component1)
     val root =
         Column.create(context)
             .child(
@@ -1299,7 +1299,7 @@ class VisibilityEventsTest {
     assertThat(component1.dispatchedEventHandlers).contains(visibleEventHandler1)
     assertThat(component1.dispatchedEventHandlers).contains(focusedEventHandler1)
     val component2 = TestViewComponent.create(context).key("component2").build()
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(component2, 3)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(3, component2)
     val newRoot =
         Column.create(context)
             .child(
@@ -1321,10 +1321,10 @@ class VisibilityEventsTest {
     val context = lithoViewRule.context
     val firstComponent = TestViewComponent.create(context).build()
     val secondComponent = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(firstComponent, 1)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(firstComponent, 2)
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(secondComponent, 1)
-    val invisibleEventHandler2 = EventHandler<InvisibleEvent>(secondComponent, 2)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, firstComponent)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(2, firstComponent)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(1, secondComponent)
+    val invisibleEventHandler2 = EventHandlerTestUtil.create<InvisibleEvent>(2, secondComponent)
     val root =
         Column.create(context)
             .child(
@@ -1370,8 +1370,8 @@ class VisibilityEventsTest {
   fun testSetComponentTreeToNullDispatchesInvisibilityEvents() {
     val context = lithoViewRule.context
     val component = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(component, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(component, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
     val root =
         Column.create(context)
             .child(
@@ -1400,7 +1400,7 @@ class VisibilityEventsTest {
   fun testTransientStateDoesNotTriggerVisibilityEvents() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val root =
         Column.create(context)
             .child(
@@ -1433,7 +1433,7 @@ class VisibilityEventsTest {
   fun visibilityOutputs_setTransientStateFalse_parentInTransientState_processVisibilityOutputs() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val root =
         Column.create(context)
             .child(
@@ -1475,8 +1475,8 @@ class VisibilityEventsTest {
   fun testRemovingComponentTriggersInvisible() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, content)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
     val wrappedContent =
         Wrapper.create(context)
             .delegate(content)
@@ -1598,11 +1598,12 @@ class VisibilityEventsTest {
   fun testSetVisibilityHint() {
     val context = lithoViewRule.context
     val component = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(component, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(component, 2)
-    val focusedEventHandler = EventHandler<FocusedVisibleEvent>(component, 3)
-    val unfocusedEventHandler = EventHandler<UnfocusedVisibleEvent>(component, 4)
-    val fullImpressionHandler = EventHandler<FullImpressionVisibleEvent>(component, 5)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
+    val focusedEventHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, component)
+    val unfocusedEventHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(4, component)
+    val fullImpressionHandler =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(5, component)
     val root =
         Column.create(context)
             .child(
@@ -1650,8 +1651,9 @@ class VisibilityEventsTest {
     // TODO(festevezga, T68365308) - replace with SimpleMountSpecTesterSpec
     val context = lithoViewRule.context
     val testComponentInner = TestDrawableComponent.create(context).build()
-    val visibleEventHandlerInner = EventHandler<VisibleEvent>(testComponentInner, 1)
-    val invisibleEventHandlerInner = EventHandler<InvisibleEvent>(testComponentInner, 2)
+    val visibleEventHandlerInner = EventHandlerTestUtil.create<VisibleEvent>(1, testComponentInner)
+    val invisibleEventHandlerInner =
+        EventHandlerTestUtil.create<InvisibleEvent>(2, testComponentInner)
     val mountedTestComponentInner =
         Column.create(context)
             .child(
@@ -1697,10 +1699,10 @@ class VisibilityEventsTest {
     val content1 = TestViewComponent.create(context).build()
     val content2 = TestViewComponent.create(context).build()
     val content3 = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(content1, 1)
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(content2, 2)
-    val visibleEventHandler3 = EventHandler<VisibleEvent>(content3, 3)
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content3, 4)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, content1)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(2, content2)
+    val visibleEventHandler3 = EventHandlerTestUtil.create<VisibleEvent>(3, content3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(4, content3)
     val root =
         Column.create(context)
             .child(
@@ -1765,11 +1767,12 @@ class VisibilityEventsTest {
   fun testSetVisibilityHintIncrementalMountDisabled() {
     val context = lithoViewRule.context
     val component = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(component, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(component, 2)
-    val focusedEventHandler = EventHandler<FocusedVisibleEvent>(component, 3)
-    val unfocusedEventHandler = EventHandler<UnfocusedVisibleEvent>(component, 4)
-    val fullImpressionHandler = EventHandler<FullImpressionVisibleEvent>(component, 5)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
+    val focusedEventHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, component)
+    val unfocusedEventHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(4, component)
+    val fullImpressionHandler =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(5, component)
     val root =
         Column.create(context)
             .child(
@@ -1820,7 +1823,7 @@ class VisibilityEventsTest {
       return
     }
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val root =
         Column.create(context)
             .child(
@@ -1850,8 +1853,8 @@ class VisibilityEventsTest {
   fun setNewComponentTree_noMount_noVisibilityEventsDispatched() {
     val context = lithoViewRule.context
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(content, 1)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(1, content)
     val root =
         Column.create(context)
             .child(

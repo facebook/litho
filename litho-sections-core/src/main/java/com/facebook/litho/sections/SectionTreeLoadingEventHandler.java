@@ -28,7 +28,7 @@ public class SectionTreeLoadingEventHandler extends EventHandler<LoadingEvent> {
   private final WeakReference<SectionTree> mSectionTree;
 
   SectionTreeLoadingEventHandler(SectionTree sectionTree) {
-    super(null, INVALID_ID);
+    super(INVALID_ID, EventHandlerRebindMode.NONE, new EventDispatchInfo(null, null), null);
     mSectionTree = new WeakReference<>(sectionTree);
   }
 

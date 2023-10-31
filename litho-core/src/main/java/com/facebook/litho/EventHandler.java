@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.annotations.EventHandlerRebindMode.REBIND;
-
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
@@ -34,10 +32,6 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   public final EventHandlerRebindMode mode;
   public EventDispatchInfo dispatchInfo;
   public final @Nullable Object[] params;
-
-  protected EventHandler(@Nullable HasEventDispatcher hasEventDispatcher, int id) {
-    this(id, REBIND, new EventDispatchInfo(hasEventDispatcher, null), null);
-  }
 
   public EventHandler(
       final int id,
