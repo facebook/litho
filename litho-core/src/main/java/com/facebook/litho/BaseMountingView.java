@@ -40,7 +40,6 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeUpdateListener;
-import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
@@ -856,19 +855,6 @@ public abstract class BaseMountingView extends ComponentHost
 
   boolean isMounting() {
     return mIsMounting;
-  }
-
-  public void registerUIDebugger(MountExtension extension) {
-    if (mLithoHostListenerCoordinator == null) {
-      setupMountExtensions();
-    }
-    mLithoHostListenerCoordinator.registerUIDebugger(extension);
-  }
-
-  public void unregisterUIDebugger() {
-    if (mLithoHostListenerCoordinator != null) {
-      mLithoHostListenerCoordinator.unregisterUIDebugger();
-    }
   }
 
   void resetVisibilityHint() {

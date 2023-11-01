@@ -46,7 +46,6 @@ public class LithoHostListenerCoordinator {
   private @Nullable ExtensionState<TransitionsExtensionState> mTransitionsExtensionState;
   private @Nullable ExtensionState<IncrementalMountExtensionState> mIncrementalMountExtensionState;
   private @Nullable ExtensionState<Void> mEndToEndTestingExtensionState;
-  private @Nullable MountExtension mUIDebuggerExtension;
 
   public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountDelegateTarget = mountDelegateTarget;
@@ -280,24 +279,6 @@ public class LithoHostListenerCoordinator {
   public void clearVisibilityItems() {
     if (mVisibilityExtensionState != null) {
       VisibilityMountExtension.clearVisibilityItems(mVisibilityExtensionState);
-    }
-  }
-
-  public void registerUIDebugger(MountExtension extension) {
-    if (mUIDebuggerExtension == extension) {
-      return;
-    }
-
-    unregisterUIDebugger();
-    mMountDelegateTarget.registerMountExtension(extension);
-    mUIDebuggerExtension = extension;
-  }
-
-  public void unregisterUIDebugger() {
-    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
-    if (mUIDebuggerExtension != null && mountDelegate != null) {
-      mountDelegate.unregisterMountExtension(mUIDebuggerExtension);
-      mUIDebuggerExtension = null;
     }
   }
 }
