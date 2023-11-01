@@ -374,7 +374,7 @@ public class ComponentsConfiguration {
 
     boolean mUseCancelableLayoutFutures = true;
     boolean mUseInterruptibleResolution = true;
-    boolean mShouldCacheLayouts = false;
+    boolean mShouldCacheLayouts = true;
     boolean mShouldAddHostViewForRootComponent = false;
     boolean mShouldDisableBgFgOutputs = false;
     boolean mUseIncrementalMountGapWorker = IncrementalMountExtensionConfigs.useGapWorker;
