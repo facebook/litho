@@ -27,6 +27,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -60,7 +61,7 @@ public abstract class BaseMountingView extends ComponentHost
   private final MountState mMountState;
   protected int mAnimatedWidth = -1;
   protected int mAnimatedHeight = -1;
-  private LithoHostListenerCoordinator mLithoHostListenerCoordinator;
+  private @Nullable LithoHostListenerCoordinator mLithoHostListenerCoordinator;
   private boolean mIsMountStateDirty;
   private boolean mIsMounting;
   private @Nullable Deque<ReentrantMount> mReentrantMounts;
@@ -504,6 +505,7 @@ public abstract class BaseMountingView extends ComponentHost
       // that occur in toRenderTree() happen prior to "beforeMount".
       final RenderTree renderTree = layoutState.toRenderTree();
       setupMountExtensions();
+      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       mMountState.mount(renderTree);
       LithoStats.incrementComponentMountCount();
@@ -1120,7 +1122,7 @@ public abstract class BaseMountingView extends ComponentHost
     notifyVisibleBoundsChanged(rect, true);
   }
 
-  protected LithoHostListenerCoordinator getLithoHostListenerCoordinator() {
+  protected @Nullable LithoHostListenerCoordinator getLithoHostListenerCoordinator() {
     return mLithoHostListenerCoordinator;
   }
 

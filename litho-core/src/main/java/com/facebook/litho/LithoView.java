@@ -33,6 +33,7 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat.Accessibility
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
@@ -705,9 +706,20 @@ public class LithoView extends BaseMountingView {
     }
   }
 
+  @Nullable
   VisibilityMountExtension.VisibilityMountExtensionState getVisibilityExtensionState() {
-    return (VisibilityMountExtension.VisibilityMountExtensionState)
-        getLithoHostListenerCoordinator().getVisibilityExtensionState().getState();
+
+    LithoHostListenerCoordinator lithoHostListenerCoordinator = getLithoHostListenerCoordinator();
+    if (lithoHostListenerCoordinator != null) {
+      ExtensionState visibilityExtensionState =
+          lithoHostListenerCoordinator.getVisibilityExtensionState();
+      if (visibilityExtensionState != null) {
+        return (VisibilityMountExtension.VisibilityMountExtensionState)
+            visibilityExtensionState.getState();
+      }
+    }
+
+    return null;
   }
 
   public void setMountStartupLoggingInfo(
