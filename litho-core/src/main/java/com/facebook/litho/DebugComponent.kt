@@ -403,8 +403,9 @@ private constructor(
     @JvmStatic
     fun isVisible(debugComponent: DebugComponent, lithoView: LithoView): Boolean {
       val componentGlobalKey = debugComponent.componentGlobalKey
-      val visibilityState = lithoView.visibilityExtensionState
-      return VisibilityMountExtension.isVisible(visibilityState, componentGlobalKey)
+      return lithoView.visibilityExtensionState?.let {
+        VisibilityMountExtension.isVisible(it, componentGlobalKey)
+      } ?: false
     }
 
     private fun generateGlobalKey(context: ComponentContext, componentKey: String): String =
