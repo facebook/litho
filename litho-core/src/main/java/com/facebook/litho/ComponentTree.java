@@ -3151,7 +3151,7 @@ public class ComponentTree
       return this;
     }
 
-    public Builder withLithoLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
+    public Builder withLithoLifecycleProvider(@Nullable LithoLifecycleProvider lifecycleProvider) {
       this.mLifecycleProvider = lifecycleProvider;
       return this;
     }
