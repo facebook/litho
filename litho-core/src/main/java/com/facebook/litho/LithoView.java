@@ -295,7 +295,7 @@ public class LithoView extends BaseMountingView {
     }
 
     final TreeMountInfo mountInfo = getMountInfo();
-    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
+    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
 
     final boolean canAnimateRootBounds =
         !mSuppressMeasureComponentTree

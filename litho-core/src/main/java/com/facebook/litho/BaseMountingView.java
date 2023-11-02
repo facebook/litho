@@ -412,9 +412,9 @@ public abstract class BaseMountingView extends ComponentHost
 
     final boolean isDirtyMount = isMountStateDirty();
     final TreeMountInfo mountInfo = getMountInfo();
-    if (mountInfo != null && !mountInfo.mHasMounted) {
-      mountInfo.mIsFirstMount = true;
-      mountInfo.mHasMounted = true;
+    if (mountInfo != null && !mountInfo.hasMounted) {
+      mountInfo.isFirstMount = true;
+      mountInfo.hasMounted = true;
     }
     mIsMounting = true;
 
@@ -429,7 +429,7 @@ public abstract class BaseMountingView extends ComponentHost
       throw ComponentUtils.wrapWithMetadata(this, e);
     } finally {
       if (getMountInfo() != null) {
-        getMountInfo().mIsFirstMount = false;
+        getMountInfo().isFirstMount = false;
       }
       mIsMounting = false;
       if (isDirtyMount) {
@@ -716,7 +716,7 @@ public abstract class BaseMountingView extends ComponentHost
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
     final TreeMountInfo mountInfo = getMountInfo();
-    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
+    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
     final LayoutState layoutState = getCurrentLayoutState();
 
     return hasTree()
@@ -1012,7 +1012,7 @@ public abstract class BaseMountingView extends ComponentHost
     }
     final TreeState treeState = getTreeState();
     final TreeMountInfo mountInfo = treeState != null ? treeState.getMountInfo() : null;
-    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
+    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
     if (!hasMounted && rootBoundsTransition.appearTransition != null) {
       return (int)
           Transition.getRootAppearFromValue(

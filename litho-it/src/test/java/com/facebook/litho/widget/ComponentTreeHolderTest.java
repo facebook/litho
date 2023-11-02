@@ -107,7 +107,7 @@ public class ComponentTreeHolderTest {
       treeState = new TreeState();
     }
     TreeState.TreeMountInfo treeMountInfo = treeState.getMountInfo();
-    treeMountInfo.mHasMounted = true;
+    treeMountInfo.hasMounted = true;
     Whitebox.setInternalState(holder.getComponentTree(), "mTreeState", treeState);
 
     // component goes out of range

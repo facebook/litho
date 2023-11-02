@@ -92,7 +92,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
           else 0)
       return
     }
-    val hasMounted = requireTreeState.mountInfo.mHasMounted
+    val hasMounted = requireTreeState.mountInfo.hasMounted
 
     val canAnimateRootBounds = !hasNewTree || !hasMounted
     var width = requireLayoutState.width

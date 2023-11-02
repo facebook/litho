@@ -85,12 +85,12 @@ public class StateUpdatesTest {
 
   private StateHandler getResolveState(final ComponentTree componentTree) {
     final TreeState treeState = Whitebox.getInternalState(componentTree, "mTreeState");
-    return Whitebox.getInternalState(treeState, "mResolveState");
+    return Whitebox.getInternalState(treeState, "resolveState");
   }
 
   private StateHandler getLayoutState(final ComponentTree componentTree) {
     final TreeState treeState = Whitebox.getInternalState(componentTree, "mTreeState");
-    return Whitebox.getInternalState(treeState, "mLayoutState");
+    return Whitebox.getInternalState(treeState, "layoutState");
   }
 
   private TreeState getTreeState(final ComponentTree componentTree) {

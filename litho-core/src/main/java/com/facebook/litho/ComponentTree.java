@@ -651,7 +651,7 @@ public class ComponentTree
     if (treeState == null) {
       return false;
     }
-    return treeState.getMountInfo().mHasMounted;
+    return treeState.getMountInfo().hasMounted;
   }
 
   @Override
@@ -660,7 +660,7 @@ public class ComponentTree
     if (treeState == null) {
       return false;
     }
-    return treeState.getMountInfo().mIsFirstMount;
+    return treeState.getMountInfo().isFirstMount;
   }
 
   @Override
@@ -697,7 +697,7 @@ public class ComponentTree
     if (treeState == null) {
       return;
     }
-    treeState.getMountInfo().mIsFirstMount = isFirstMount;
+    treeState.getMountInfo().isFirstMount = isFirstMount;
   }
 
   public void setNewLayoutStateReadyListener(@Nullable NewLayoutStateReadyListener listener) {
