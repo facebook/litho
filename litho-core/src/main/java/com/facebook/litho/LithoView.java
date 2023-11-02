@@ -71,7 +71,6 @@ public class LithoView extends BaseMountingView {
   private @Nullable ComponentTree mTemporaryDetachedComponentTree;
   private boolean mDoMeasureInLayout;
   private @Nullable MountStartupLoggingInfo mMountStartupLoggingInfo;
-  public final int mViewAttributeFlags;
 
   /**
    * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
@@ -151,8 +150,6 @@ public class LithoView extends BaseMountingView {
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-
-    mViewAttributeFlags = LithoMountData.getViewAttributeFlags(this);
   }
 
   protected void forceRelayout() {

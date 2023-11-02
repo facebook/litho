@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.BaseMountingView;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoMetadataExceptionWrapper;
@@ -39,15 +40,22 @@ import java.util.List;
  */
 public class LithoScrollView extends NestedScrollView implements HasLithoViewChildren {
 
-  private final LithoView mLithoView;
+  private final BaseMountingView mLithoView;
 
   @Nullable private ScrollPosition mScrollPosition;
   @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
   @Nullable private OnInterceptTouchListener mOnInterceptTouchListener;
   @Nullable private ScrollStateDetector mScrollStateDetector;
 
+  private @Nullable String mCurrentRootComponent;
+  private @Nullable String mCurrentLogTag;
+
   public LithoScrollView(Context context) {
-    this(context, null);
+    this(context, new LithoView(context));
+  }
+
+  public LithoScrollView(Context context, BaseMountingView view) {
+    this(context, view, null, 0);
   }
 
   public LithoScrollView(Context context, @Nullable AttributeSet attrs) {
@@ -55,8 +63,16 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   }
 
   public LithoScrollView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    this(context, new LithoView(context), attrs, defStyleAttr);
+  }
+
+  public LithoScrollView(
+      final Context context,
+      final BaseMountingView view,
+      final @Nullable AttributeSet attrs,
+      final int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    mLithoView = new LithoView(context);
+    mLithoView = view;
     addView(mLithoView);
   }
 
@@ -88,20 +104,15 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
         mScrollStateDetector.onDraw();
       }
     } catch (Throwable t) {
-      final ComponentTree ct = mLithoView.getComponentTree();
-      if (ct != null) {
-        ErrorReporter.getInstance()
-            .report(
-                LogLevel.ERROR,
-                "LITHO:NPE:LITHO_SCROLL_VIEW_DRAW",
-                "Root component: " + ct.getSimpleName(),
-                t,
-                0,
-                null);
-        throw new LithoMetadataExceptionWrapper(ct, t);
-      } else {
-        throw t;
-      }
+      ErrorReporter.getInstance()
+          .report(
+              LogLevel.ERROR,
+              "LITHO:NPE:LITHO_SCROLL_VIEW_DRAW",
+              "Root component: " + (mCurrentRootComponent != null ? mCurrentRootComponent : "null"),
+              t,
+              0,
+              null);
+      throw new LithoMetadataExceptionWrapper(null, mCurrentRootComponent, mCurrentLogTag, t);
     }
   }
 
@@ -156,7 +167,16 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
       ScrollStateListener scrollStateListener) {
-    mLithoView.setComponentTree(contentComponentTree);
+    if (!(mLithoView instanceof LithoView)) {
+      throw new UnsupportedOperationException("API can only be invoked from Vertical Scroll Spec");
+    }
+
+    if (contentComponentTree != null) {
+      final @Nullable Component component = contentComponentTree.getRoot();
+      mCurrentRootComponent = component != null ? component.getSimpleName() : "null";
+      mCurrentLogTag = contentComponentTree.getLogTag();
+    }
+    ((LithoView) mLithoView).setComponentTree(contentComponentTree);
 
     mScrollPosition = scrollPosition;
     final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
@@ -183,7 +203,12 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   }
 
   public void unmount() {
-    mLithoView.setComponentTree(null, false);
+    if (!(mLithoView instanceof LithoView)) {
+      throw new UnsupportedOperationException("API can only be invoked from Vertical Scroll Spec");
+    }
+
+    ((LithoView) mLithoView).setComponentTree(null, false);
+
     mScrollPosition = null;
     getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     mOnPreDrawListener = null;

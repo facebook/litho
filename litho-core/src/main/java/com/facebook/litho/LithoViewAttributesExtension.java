@@ -136,7 +136,7 @@ public class LithoViewAttributesExtension
       if (!state.hasDefaultViewAttributes(id)) {
         final int flags;
         if (renderUnit.getId() == ROOT_HOST_ID) {
-          flags = ((LithoView) content).mViewAttributeFlags;
+          flags = ((BaseMountingView) content).mViewAttributeFlags;
         } else {
           flags = LithoMountData.getViewAttributeFlags(content);
         }

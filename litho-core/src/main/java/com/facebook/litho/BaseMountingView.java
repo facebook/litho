@@ -58,6 +58,7 @@ public abstract class BaseMountingView extends ComponentHost
   private static final String TAG = BaseMountingView.class.getSimpleName();
 
   private final MountState mMountState;
+  public final int mViewAttributeFlags;
   protected int mAnimatedWidth = -1;
   protected int mAnimatedHeight = -1;
   private @Nullable LithoHostListenerCoordinator mLithoHostListenerCoordinator;
@@ -90,6 +91,7 @@ public abstract class BaseMountingView extends ComponentHost
     super(context.getAndroidContext(), attrs);
     mMountState = new MountState(this, ComponentsSystrace.getSystrace());
     mMountState.setEnsureParentMounted(true);
+    mViewAttributeFlags = LithoMountData.getViewAttributeFlags(this);
   }
   /**
    * Sets the width that the BaseMountingView should take on the next measure pass and then requests
