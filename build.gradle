@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-def latestSdkVersion = 33
+def latestSdkVersion = 34
 
 buildscript {
 
@@ -98,7 +98,7 @@ ext {
     minSdkVersion = 19
     targetSdkVersion = latestSdkVersion
     compileSdkVersion = latestSdkVersion
-    buildToolsVersion = '33.0.2'
+    buildToolsVersion = '34.0.0'
     sourceCompatibilityVersion = JavaVersion.VERSION_1_8
     targetCompatibilityVersion = JavaVersion.VERSION_1_8
 }
