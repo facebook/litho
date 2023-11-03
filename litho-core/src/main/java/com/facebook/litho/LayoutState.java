@@ -653,7 +653,7 @@ public class LayoutState
     }
 
     final List<Transition> updateStateTransitions = mTreeState.getPendingStateUpdateTransitions();
-    if (updateStateTransitions != null) {
+    if (!updateStateTransitions.isEmpty()) {
       if (mountTimeTransitions == null) {
         mountTimeTransitions = new ArrayList<>();
       }

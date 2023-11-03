@@ -16,8 +16,6 @@
 
 package com.facebook.litho
 
-import androidx.arch.core.util.Function
-
 /**
  * StateUpdater lets a [Component] rendered with a scoped [ComponentContext] interact with Litho's
  * state. An implementation of StateUpdater is responsible for collecting state update operations
@@ -120,7 +118,7 @@ interface StateUpdater {
   ): Boolean
 
   fun <T> canSkipStateUpdate(
-      newValueFunction: Function<T, T>,
+      newValueFunction: (T) -> T,
       globalKey: String,
       hookStateIndex: Int,
       isNestedTreeContext: Boolean

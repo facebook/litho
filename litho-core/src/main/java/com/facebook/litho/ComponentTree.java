@@ -71,7 +71,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
-import androidx.arch.core.util.Function;
 import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -99,6 +98,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Represents a tree of components and controls their life cycle. ComponentTree takes in a single
@@ -679,16 +679,16 @@ public class ComponentTree
 
   @Override
   public <T> boolean canSkipStateUpdate(
-      final Function<T, T> newValueFunction,
+      final Function1<? super T, ? extends T> newValueFunction,
       final String globalKey,
       final int hookStateIndex,
-      final boolean isNestedTree) {
+      final boolean isLayoutState) {
     final TreeState treeState = getTreeState();
     if (treeState == null) {
       return false;
     }
 
-    return treeState.canSkipStateUpdate(newValueFunction, globalKey, hookStateIndex, isNestedTree);
+    return treeState.canSkipStateUpdate(newValueFunction, globalKey, hookStateIndex, isLayoutState);
   }
 
   @Override

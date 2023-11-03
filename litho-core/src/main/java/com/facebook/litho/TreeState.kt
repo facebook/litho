@@ -18,18 +18,16 @@ package com.facebook.litho
 
 import android.util.Pair
 import androidx.annotation.VisibleForTesting
-import androidx.arch.core.util.Function
 import com.facebook.rendercore.annotations.UIState
 
 class TreeState {
   val resolveState: StateHandler
   val layoutState: StateHandler
 
-  @UIState private val renderState: RenderState
   private val eventTriggersContainer: EventTriggersContainer
+  @UIState private val renderState: RenderState
 
   @UIState val mountInfo: TreeMountInfo
-
   @get:VisibleForTesting val eventHandlersController: EventHandlersController
 
   /**
@@ -41,26 +39,23 @@ class TreeState {
     @JvmField @Volatile var isFirstMount: Boolean = false
   }
 
-  constructor() {
-    resolveState = StateHandler()
-    layoutState = StateHandler()
-    mountInfo = TreeMountInfo()
-    renderState = RenderState()
-    eventTriggersContainer = EventTriggersContainer()
-    eventHandlersController = EventHandlersController()
-  }
+  constructor() : this(fromState = null)
 
-  constructor(treeState: TreeState) {
-    resolveState = StateHandler(treeState.resolveState)
-    layoutState = StateHandler(treeState.layoutState)
-    mountInfo = treeState.mountInfo
-    renderState = treeState.renderState
-    eventTriggersContainer = treeState.eventTriggersContainer
-    eventHandlersController = treeState.eventHandlersController
+  constructor(fromState: TreeState?) {
+    resolveState = StateHandler(fromState?.resolveState)
+    layoutState = StateHandler(fromState?.layoutState)
+    mountInfo = fromState?.mountInfo ?: TreeMountInfo()
+    renderState = fromState?.renderState ?: RenderState()
+    eventTriggersContainer = fromState?.eventTriggersContainer ?: EventTriggersContainer()
+    eventHandlersController = fromState?.eventHandlersController ?: EventHandlersController()
   }
 
   private fun getStateHandler(isNestedTree: Boolean): StateHandler {
-    return if (isNestedTree) layoutState else resolveState
+    return if (isNestedTree) {
+      layoutState
+    } else {
+      resolveState
+    }
   }
 
   fun registerResolveState() {
@@ -93,13 +88,11 @@ class TreeState {
       isLazyStateUpdate: Boolean,
       isNestedTree: Boolean
   ) {
-    val stateHandler = getStateHandler(isNestedTree)
-    stateHandler.queueStateUpdate(key, stateUpdate, isLazyStateUpdate)
+    getStateHandler(isNestedTree).queueStateUpdate(key, stateUpdate, isLazyStateUpdate)
   }
 
   fun queueHookStateUpdate(key: String, updater: HookUpdater, isNestedTree: Boolean) {
-    val stateHandler = getStateHandler(isNestedTree)
-    stateHandler.queueHookStateUpdate(key, updater)
+    getStateHandler(isNestedTree).queueHookStateUpdate(key, updater)
   }
 
   fun applyLazyStateUpdatesForContainer(
@@ -107,8 +100,7 @@ class TreeState {
       container: StateContainer,
       isNestedTree: Boolean
   ): StateContainer {
-    val stateHandler = getStateHandler(isNestedTree)
-    return stateHandler.applyLazyStateUpdatesForContainer(componentKey, container)
+    return getStateHandler(isNestedTree).applyLazyStateUpdatesForContainer(componentKey, container)
   }
 
   fun hasUncommittedUpdates(): Boolean {
@@ -124,8 +116,7 @@ class TreeState {
       prevTreeRootNode: LithoNode?,
       isNestedTree: Boolean
   ) {
-    val stateHandler = getStateHandler(isNestedTree)
-    stateHandler.applyStateUpdatesEarly(context, component, prevTreeRootNode)
+    getStateHandler(isNestedTree).applyStateUpdatesEarly(context, component, prevTreeRootNode)
   }
 
   val keysForPendingResolveStateUpdates: Set<String>
@@ -143,18 +134,15 @@ class TreeState {
     }
 
   fun addStateContainer(key: String, stateContainer: StateContainer, isNestedTree: Boolean) {
-    val stateHandler = getStateHandler(isNestedTree)
-    stateHandler.addStateContainer(key, stateContainer)
+    getStateHandler(isNestedTree).addStateContainer(key, stateContainer)
   }
 
   fun keepStateContainerForGlobalKey(key: String, isNestedTree: Boolean) {
-    val stateHandler = getStateHandler(isNestedTree)
-    stateHandler.keepStateContainerForGlobalKey(key)
+    getStateHandler(isNestedTree).keepStateContainerForGlobalKey(key)
   }
 
   fun getStateContainer(key: String, isNestedTree: Boolean): StateContainer? {
-    val stateHandler = getStateHandler(isNestedTree)
-    return stateHandler.getStateContainer(key)
+    return getStateHandler(isNestedTree).getStateContainer(key)
   }
 
   fun createOrGetStateContainerForComponent(
@@ -162,82 +150,66 @@ class TreeState {
       component: Component,
       key: String
   ): StateContainer {
-    val stateHandler = getStateHandler(scopedContext.isNestedTreeContext)
-    return stateHandler.createOrGetStateContainerForComponent(scopedContext, component, key)
+    return getStateHandler(scopedContext.isNestedTreeContext)
+        .createOrGetStateContainerForComponent(
+            scopedContext,
+            component,
+            key,
+        )
   }
 
   fun removePendingStateUpdate(key: String, isNestedTree: Boolean) {
-    val stateHandler = getStateHandler(isNestedTree)
-    stateHandler.removePendingStateUpdate(key)
+    getStateHandler(isNestedTree).removePendingStateUpdate(key)
   }
 
   fun <T> canSkipStateUpdate(
       globalKey: String,
       hookStateIndex: Int,
-      newValue: T?,
+      newValue: T,
       isNestedTree: Boolean
   ): Boolean {
-    val stateHandler = getStateHandler(isNestedTree)
-    val committedStateContainer = stateHandler.getStateContainer(globalKey) as KStateContainer?
-    if (committedStateContainer != null && committedStateContainer.states[hookStateIndex] != null) {
-      val committedStateContainerWithAppliedPendingHooks =
-          stateHandler.getStateContainerWithHookUpdates(globalKey)
-      if (committedStateContainerWithAppliedPendingHooks != null) {
-        val committedUpdatedValue: T? =
-            committedStateContainerWithAppliedPendingHooks.states[hookStateIndex] as T
-        return if (committedUpdatedValue == null && newValue == null) {
-          true
-        } else committedUpdatedValue != null && committedUpdatedValue == newValue
-      }
-    }
-    return false
+    return canSkipStateUpdate<T>(
+        updater = { newValue },
+        globalKey = globalKey,
+        hookStateIndex = hookStateIndex,
+        isNestedTree = isNestedTree,
+    )
   }
 
   fun <T> canSkipStateUpdate(
-      newValueFunction: Function<T?, T>,
+      updater: (T) -> T,
       globalKey: String,
       hookStateIndex: Int,
       isNestedTree: Boolean
   ): Boolean {
     val stateHandler = getStateHandler(isNestedTree)
-    val committedStateContainer = stateHandler.getStateContainer(globalKey) as KStateContainer?
-    if (committedStateContainer != null && committedStateContainer.states[hookStateIndex] != null) {
-      val committedStateContainerWithAppliedPendingHooks =
+    val committedState = stateHandler.getStateContainer(globalKey) as KStateContainer?
+    if (committedState != null && committedState.states[hookStateIndex] != null) {
+      val committedStateWithUpdatesApplied =
           stateHandler.getStateContainerWithHookUpdates(globalKey)
-      if (committedStateContainerWithAppliedPendingHooks != null) {
-        val committedUpdatedValue: T? =
-            committedStateContainerWithAppliedPendingHooks.states[hookStateIndex] as T
-        val newValueAfterPendingUpdate = newValueFunction.apply(committedUpdatedValue)
-        return if (committedUpdatedValue == null && newValueAfterPendingUpdate == null) {
+      if (committedStateWithUpdatesApplied != null) {
+        val committedUpdatedValue: T = committedStateWithUpdatesApplied.states[hookStateIndex] as T
+        val newValueAfterUpdate = updater.invoke(committedUpdatedValue)
+        return if (committedUpdatedValue == null && newValueAfterUpdate == null) {
           true
-        } else committedUpdatedValue != null && committedUpdatedValue == newValueAfterPendingUpdate
+        } else {
+          committedUpdatedValue != null && committedUpdatedValue == newValueAfterUpdate
+        }
       }
     }
     return false
   }
 
-  val pendingStateUpdateTransitions: List<Transition?>?
+  val pendingStateUpdateTransitions: List<Transition>
     get() {
-      var updateStateTransitions: MutableList<Transition>? = null
+      val updateStateTransitions: MutableList<Transition> = ArrayList()
 
-      val pendingResolveStateUpdateTransitions: Map<String, List<Transition>>? =
-          resolveState.pendingStateUpdateTransitions
-      if (pendingResolveStateUpdateTransitions != null) {
-        updateStateTransitions = ArrayList()
-        for (pendingTransitions in pendingResolveStateUpdateTransitions.values) {
-          updateStateTransitions.addAll(pendingTransitions)
-        }
+      for (pendingTransitions in resolveState.pendingStateUpdateTransitions.values) {
+        updateStateTransitions.addAll(pendingTransitions)
       }
 
-      val pendingLayoutStateUpdateTransitions: Map<String, List<Transition>>? =
-          layoutState.pendingStateUpdateTransitions
-      if (pendingLayoutStateUpdateTransitions != null) {
-        if (updateStateTransitions == null) {
-          updateStateTransitions = ArrayList()
-        }
-        for (pendingTransitions in pendingLayoutStateUpdateTransitions.values) {
-          updateStateTransitions.addAll(pendingTransitions)
-        }
+      for (pendingTransitions in layoutState.pendingStateUpdateTransitions.values) {
+        updateStateTransitions.addAll(pendingTransitions)
       }
       return updateStateTransitions
     }
@@ -249,8 +221,7 @@ class TreeState {
       cachedValue: Any?,
       isNestedTree: Boolean
   ) {
-    val stateHandler = getStateHandler(isNestedTree)
-    stateHandler.putCachedValue(globalKey, index, cachedValueInputs, cachedValue)
+    getStateHandler(isNestedTree).putCachedValue(globalKey, index, cachedValueInputs, cachedValue)
   }
 
   fun getCachedValue(
@@ -259,8 +230,7 @@ class TreeState {
       cachedValueInputs: Any,
       isNestedTree: Boolean
   ): Any? {
-    val stateHandler = getStateHandler(isNestedTree)
-    return stateHandler.getCachedValue(globalKey, index, cachedValueInputs)
+    return getStateHandler(isNestedTree).getCachedValue(globalKey, index, cachedValueInputs)
   }
 
   fun <T> createOrGetInitialHookState(
@@ -270,32 +240,34 @@ class TreeState {
       isNestedTree: Boolean,
       componentName: String
   ): KStateContainer {
-    val stateHandler = getStateHandler(isNestedTree)
-    return stateHandler.initialStateContainer.createOrGetInitialHookState(
-        key, hookStateIndex, initializer, componentName)
+
+    return getStateHandler(isNestedTree)
+        .initialStateContainer
+        .createOrGetInitialHookState(
+            key,
+            hookStateIndex,
+            initializer,
+            componentName,
+        )
   }
 
-  fun applyPreviousRenderData(scopedComponentInfos: List<ScopedComponentInfo>?) {
-    if (CollectionsUtils.isNullOrEmpty(scopedComponentInfos)) {
+  fun applyPreviousRenderData(componentScopes: List<ScopedComponentInfo>?) {
+    if (CollectionsUtils.isNullOrEmpty(componentScopes)) {
       return
     }
-    if (renderState == null) {
-      return
-    }
-    renderState.applyPreviousRenderData(scopedComponentInfos)
+    renderState.applyPreviousRenderData(componentScopes)
   }
 
   fun applyPreviousRenderData(layoutState: LayoutState) {
-    val scopedComponentInfos = layoutState.scopedComponentInfosNeedingPreviousRenderData
-    applyPreviousRenderData(scopedComponentInfos)
+    applyPreviousRenderData(layoutState.scopedComponentInfosNeedingPreviousRenderData)
   }
 
   fun recordRenderData(layoutState: LayoutState) {
-    val scopedComponentInfos = layoutState.scopedComponentInfosNeedingPreviousRenderData
-    if (CollectionsUtils.isNullOrEmpty(scopedComponentInfos)) {
+    val componentScopes = layoutState.scopedComponentInfosNeedingPreviousRenderData
+    if (CollectionsUtils.isNullOrEmpty(componentScopes)) {
       return
     }
-    renderState?.recordRenderData(scopedComponentInfos)
+    renderState.recordRenderData(componentScopes)
   }
 
   fun getEventTrigger(triggerKey: String): EventTrigger<*>? {
@@ -316,20 +288,23 @@ class TreeState {
 
   fun bindEventAndTriggerHandlers(
       createdEventHandlers: List<Pair<String, EventHandler<*>>>?,
-      scopedSpecComponentInfos: List<ScopedComponentInfo>?
+      componentScopes: List<ScopedComponentInfo>?
   ) {
     synchronized(eventTriggersContainer) {
       clearUnusedTriggerHandlers()
       if (createdEventHandlers != null) {
         eventHandlersController.canonicalizeEventDispatchInfos(createdEventHandlers)
       }
-      if (scopedSpecComponentInfos != null) {
-        for (scopedSpecComponentInfo in scopedSpecComponentInfos) {
-          val component = scopedSpecComponentInfo.component as SpecGeneratedComponent
-          val scopedContext = scopedSpecComponentInfo.context
+      if (componentScopes != null) {
+        for (componentScope in componentScopes) {
+          val component = componentScope.component as SpecGeneratedComponent
+          val context = componentScope.context
           eventHandlersController.updateEventDispatchInfoForGlobalKey(
-              scopedContext, component, scopedContext.globalKey)
-          component.recordEventTrigger(scopedContext, eventTriggersContainer)
+              context,
+              component,
+              context.globalKey,
+          )
+          component.recordEventTrigger(context, eventTriggersContainer)
         }
       }
     }
