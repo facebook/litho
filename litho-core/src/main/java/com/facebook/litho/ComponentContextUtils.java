@@ -38,7 +38,7 @@ public class ComponentContextUtils {
     final String contextLogTag = c.mLithoConfiguration.logTag;
     final ComponentsLogger contextLogger = c.mLithoConfiguration.logger;
 
-    final ComponentTree.LithoConfiguration lithoConfiguration =
+    final LithoConfiguration lithoConfiguration =
         (contextLogTag != null || contextLogger != null)
             ? mergeConfigurationWithNewLogTagAndLogger(
                 componentTree.getLithoConfiguration(), contextLogTag, contextLogger)
@@ -49,16 +49,14 @@ public class ComponentContextUtils {
 
   @Deprecated
   static ComponentContext withComponentTree(
-      ComponentContext c,
-      ComponentTree.LithoConfiguration lithoConfiguration,
-      ComponentTree componentTree) {
+      ComponentContext c, LithoConfiguration lithoConfiguration, ComponentTree componentTree) {
     final LithoTree lithoTree = LithoTree.Companion.create(componentTree);
     return withLithoTree(c, lithoConfiguration, lithoTree, componentTree.getLifecycleProvider());
   }
 
   static ComponentContext withLithoTree(
       ComponentContext c,
-      ComponentTree.LithoConfiguration config,
+      LithoConfiguration config,
       LithoTree lithoTree,
       @Nullable LithoLifecycleProvider lifecycleProvider) {
     return new ComponentContext(
@@ -72,11 +70,11 @@ public class ComponentContextUtils {
         c.getParentTreeProps());
   }
 
-  private static ComponentTree.LithoConfiguration mergeConfigurationWithNewLogTagAndLogger(
-      ComponentTree.LithoConfiguration lithoConfiguration,
+  private static LithoConfiguration mergeConfigurationWithNewLogTagAndLogger(
+      LithoConfiguration lithoConfiguration,
       @Nullable String logTag,
       @Nullable ComponentsLogger logger) {
-    return new ComponentTree.LithoConfiguration(
+    return new LithoConfiguration(
         lithoConfiguration.mComponentsConfiguration,
         lithoConfiguration.areTransitionsEnabled,
         lithoConfiguration.isReconciliationEnabled,
@@ -92,7 +90,7 @@ public class ComponentContextUtils {
         lithoConfiguration.debugEventListener);
   }
 
-  public static ComponentTree.LithoConfiguration buildDefaultLithoConfiguration(
+  public static LithoConfiguration buildDefaultLithoConfiguration(
       Context context,
       final @Nullable VisibilityBoundsTransformer transformer,
       @Nullable String logTag,
@@ -106,7 +104,7 @@ public class ComponentContextUtils {
       logTagToUse = "global-components-logger";
     }
 
-    return new ComponentTree.LithoConfiguration(
+    return new LithoConfiguration(
         ComponentsConfiguration.getDefaultComponentsConfiguration(),
         AnimationsDebug.areTransitionsEnabled(context),
         ComponentsConfiguration.overrideReconciliation != null

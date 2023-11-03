@@ -32,7 +32,6 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.ComponentTree.LithoConfiguration;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
