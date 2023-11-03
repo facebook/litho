@@ -38,7 +38,7 @@ interface StateUpdater {
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /**
@@ -50,7 +50,7 @@ interface StateUpdater {
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /**
@@ -60,7 +60,7 @@ interface StateUpdater {
   fun updateStateLazy(
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /** Same as updateStateAsync but for Hook State. */
@@ -69,7 +69,7 @@ interface StateUpdater {
       updateBlock: HookUpdater,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /** Same as updateStateSync but for Hook State. */
@@ -78,13 +78,13 @@ interface StateUpdater {
       updateBlock: HookUpdater,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   fun applyLazyStateUpdatesForContainer(
       globalKey: String,
       container: StateContainer,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   ): StateContainer?
 
   /** Returns a Cached value that is accessible across all re-render operations. */
@@ -92,7 +92,7 @@ interface StateUpdater {
       globalKey: String,
       index: Int,
       cachedValueInputs: Any,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   ): Any?
 
   /** Stores a Cached value that will be accessible across all re-render operations. */
@@ -101,27 +101,27 @@ interface StateUpdater {
       index: Int,
       cachedValueInputs: Any,
       cachedValue: Any?,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /**
    * Removes a state update that was previously enqueued if the state update has not been processed
    * yet.
    */
-  fun removePendingStateUpdate(key: String, isNestedTreeContext: Boolean)
+  fun removePendingStateUpdate(key: String, isLayoutState: Boolean)
 
   fun <T> canSkipStateUpdate(
       globalKey: String,
       hookStateIndex: Int,
       newValue: T?,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   ): Boolean
 
   fun <T> canSkipStateUpdate(
       newValueFunction: (T) -> T,
       globalKey: String,
       hookStateIndex: Int,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   ): Boolean
 
   fun getEventTrigger(key: String): EventTrigger<*>?

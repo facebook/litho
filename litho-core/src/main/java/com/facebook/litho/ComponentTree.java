@@ -668,13 +668,13 @@ public class ComponentTree
       final String globalKey,
       final int hookStateIndex,
       final @Nullable T newValue,
-      final boolean isNestedTree) {
+      final boolean isLayoutState) {
     final TreeState treeState = getTreeState();
     if (treeState == null) {
       return false;
     }
 
-    return treeState.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isNestedTree);
+    return treeState.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isLayoutState);
   }
 
   @Override
@@ -1287,13 +1287,13 @@ public class ComponentTree
 
   @Override
   public synchronized void updateStateLazy(
-      String componentKey, StateUpdate stateUpdate, boolean isNestedTree) {
+      String componentKey, StateUpdate stateUpdate, boolean isLayoutState) {
     if (mRoot == null) {
       return;
     }
 
     if (mTreeState != null) {
-      mTreeState.queueStateUpdate(componentKey, stateUpdate, true, isNestedTree);
+      mTreeState.queueStateUpdate(componentKey, stateUpdate, true, isLayoutState);
     }
   }
 
@@ -1303,13 +1303,13 @@ public class ComponentTree
    */
   @Override
   public synchronized StateContainer applyLazyStateUpdatesForContainer(
-      String componentKey, StateContainer container, boolean isNestedTree) {
+      String componentKey, StateContainer container, boolean isLayoutState) {
 
     if (mRoot == null || mTreeState == null) {
       return container;
     }
 
-    return mTreeState.applyLazyStateUpdatesForContainer(componentKey, container, isNestedTree);
+    return mTreeState.applyLazyStateUpdatesForContainer(componentKey, container, isLayoutState);
   }
 
   @VisibleForTesting
@@ -1327,14 +1327,14 @@ public class ComponentTree
       StateUpdate stateUpdate,
       String attribution,
       boolean isCreateLayoutInProgress,
-      boolean isNestedTree) {
+      boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isNestedTree);
+        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
       }
     }
 
@@ -1356,14 +1356,14 @@ public class ComponentTree
       StateUpdate stateUpdate,
       String attribution,
       boolean isCreateLayoutInProgress,
-      boolean isNestedTree) {
+      boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isNestedTree);
+        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
       }
     }
 
@@ -1377,14 +1377,14 @@ public class ComponentTree
       HookUpdater updater,
       String attribution,
       boolean isCreateLayoutInProgress,
-      boolean isNestedTree) {
+      boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueHookStateUpdate(globalKey, updater, isNestedTree);
+        mTreeState.queueHookStateUpdate(globalKey, updater, isLayoutState);
       }
     }
 
@@ -1397,14 +1397,14 @@ public class ComponentTree
       HookUpdater updater,
       String attribution,
       boolean isCreateLayoutInProgress,
-      boolean isNestedTree) {
+      boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueHookStateUpdate(globalKey, updater, isNestedTree);
+        mTreeState.queueHookStateUpdate(globalKey, updater, isLayoutState);
       }
     }
 
@@ -2745,11 +2745,11 @@ public class ComponentTree
 
   @Override
   public synchronized @Nullable Object getCachedValue(
-      String globalKey, int index, Object cachedValueInputs, boolean isNestedTree) {
+      String globalKey, int index, Object cachedValueInputs, boolean isLayoutState) {
     if (mReleased || mTreeState == null) {
       return null;
     }
-    return mTreeState.getCachedValue(globalKey, index, cachedValueInputs, isNestedTree);
+    return mTreeState.getCachedValue(globalKey, index, cachedValueInputs, isLayoutState);
   }
 
   @VisibleForTesting
@@ -2764,11 +2764,11 @@ public class ComponentTree
       int index,
       Object cachedValueInputs,
       Object cachedValue,
-      boolean isNestedTree) {
+      boolean isLayoutState) {
     if (mReleased || mTreeState == null) {
       return;
     }
-    mTreeState.putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isNestedTree);
+    mTreeState.putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isLayoutState);
   }
 
   @Override
