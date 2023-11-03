@@ -23,7 +23,7 @@ add_compile_options(
     -fexceptions
     -Wall
     -O3
-    -std=c++20)
+    -std=c++11)
 
 file(GLOB jni_SRC
     jni/*.cpp)
