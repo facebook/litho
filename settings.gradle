@@ -64,11 +64,7 @@ include ':sample'
 include ':sample-barebones'
 include ':sample-barebones-kotlin'
 include ':sample-codelab'
-include ':yoga'
-include ':yogajni'
 
-project(':yoga').projectDir = file('lib/yoga')
-project(':yogajni').projectDir = file('lib/yogajni')
 project(':test-processor').projectDir = file('litho-it/processor')
 project(':test-specs').projectDir = file('litho-it/specs')
 project(':litho-primitive-canvas').projectDir = file("litho-rendercore-primitive-components/canvas")

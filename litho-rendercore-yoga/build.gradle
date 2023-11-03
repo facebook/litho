@@ -38,7 +38,6 @@ android {
 
 dependencies {
     api project(':litho-rendercore')
-    api project(':yoga')
 
     // Annotations
     compileOnly deps.jsr305
@@ -49,6 +48,9 @@ dependencies {
     // Android Support Library
     compileOnly deps.supportAnnotations
     implementation deps.supportCore
+
+    // Yoga
+    implementation deps.yoga
 }
 
 apply plugin: "com.vanniktech.maven.publish"

@@ -75,12 +75,7 @@ dependencies {
     implementation deps.supportCustomView
     implementation deps.supportViewPager
 
-    // First-party dependencies
-    if (project.isRelease()) {
-        api deps.yoga
-    } else {
-        api project(':yogajni')
-    }
+    api deps.yoga
 
     testImplementation deps.assertjCore
     testImplementation deps.junit
