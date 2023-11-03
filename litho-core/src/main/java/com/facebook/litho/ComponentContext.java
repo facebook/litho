@@ -395,7 +395,7 @@ public class ComponentContext implements Cloneable {
   }
 
   ComponentsConfiguration getComponentsConfiguration() {
-    return mLithoConfiguration.mComponentsConfiguration;
+    return mLithoConfiguration.componentsConfig;
   }
 
   /**
@@ -781,12 +781,11 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldCacheLayouts() {
-    return isReconciliationEnabled()
-        && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
+    return isReconciliationEnabled() && mLithoConfiguration.componentsConfig.shouldCacheLayouts();
   }
 
   public final boolean shouldUseNonRebindingEventHandlers() {
-    return mLithoConfiguration.mComponentsConfiguration.useNonRebindingEventHandlers();
+    return mLithoConfiguration.componentsConfig.useNonRebindingEventHandlers();
   }
 
   boolean isNestedTreeContext() {
@@ -834,6 +833,6 @@ public class ComponentContext implements Cloneable {
   }
 
   static ComponentsConfiguration getComponentsConfig(ComponentContext c) {
-    return c.mLithoConfiguration.mComponentsConfiguration;
+    return c.mLithoConfiguration.componentsConfig;
   }
 }

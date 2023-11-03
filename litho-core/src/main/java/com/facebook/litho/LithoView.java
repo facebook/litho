@@ -646,9 +646,7 @@ public class LithoView extends BaseMountingView {
   @Nullable
   @Override
   public ComponentsConfiguration getConfiguration() {
-    return mComponentTree != null
-        ? mComponentTree.getLithoConfiguration().mComponentsConfiguration
-        : null;
+    return mComponentTree != null ? mComponentTree.getLithoConfiguration().componentsConfig : null;
   }
 
   @Override

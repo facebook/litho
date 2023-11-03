@@ -2220,10 +2220,8 @@ public class ComponentTree
     // we mark it as Non-Interruptible.
     final boolean isInterruptible =
         !LayoutState.isFromSyncLayout(source)
-            && (mContext.mLithoConfiguration.mComponentsConfiguration
-                    .getUseInterruptibleResolution()
-                || mContext.mLithoConfiguration.mComponentsConfiguration
-                    .getUseCancelableLayoutFutures());
+            && (mContext.mLithoConfiguration.componentsConfig.getUseInterruptibleResolution()
+                || mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures());
 
     ResolveTreeFuture treeFuture =
         new ResolveTreeFuture(
@@ -2257,8 +2255,7 @@ public class ComponentTree
     if (resolveResult == null) {
       if (!isReleased()
           && isFromSyncLayout(source)
-          && !mContext.mLithoConfiguration.mComponentsConfiguration
-              .getUseCancelableLayoutFutures()) {
+          && !mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "ResolveResult is null, but only async operations can return a null ResolveResult. Source: "
                 + layoutSourceToString(source)
@@ -2455,8 +2452,7 @@ public class ComponentTree
     if (layoutState == null) {
       if (!isReleased()
           && isSync
-          && !mContext.mLithoConfiguration.mComponentsConfiguration
-              .getUseCancelableLayoutFutures()) {
+          && !mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
@@ -2863,7 +2859,7 @@ public class ComponentTree
    * after that because it's in an incomplete state, so it needs to be released.
    */
   public void cancelLayoutAndReleaseTree() {
-    if (!mContext.mLithoConfiguration.mComponentsConfiguration.getUseCancelableLayoutFutures()) {
+    if (!mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           TAG,
@@ -3284,7 +3280,7 @@ public class ComponentTree
       }
 
       if (config == null) {
-        config = context.mLithoConfiguration.mComponentsConfiguration;
+        config = context.mLithoConfiguration.componentsConfig;
       }
 
       if (visibilityBoundsTransformer == null) {

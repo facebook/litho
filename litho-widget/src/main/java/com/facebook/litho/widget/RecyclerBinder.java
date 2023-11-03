@@ -822,8 +822,7 @@ public class RecyclerBinder
       // off, so always disable it in that case
       incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
       if (preallocateMountContentHandler == null
-          && componentContext.mLithoConfiguration.mComponentsConfiguration
-              .isNestedPreallocationEnabled()) {
+          && componentContext.mLithoConfiguration.componentsConfig.isNestedPreallocationEnabled()) {
         preallocateMountContentHandler = ComponentContext.getMountContentPreallocationHandler(c);
       }
       visibilityProcessing =

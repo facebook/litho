@@ -75,7 +75,7 @@ public class ComponentContextUtils {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger) {
     return new LithoConfiguration(
-        lithoConfiguration.mComponentsConfiguration,
+        lithoConfiguration.componentsConfig,
         lithoConfiguration.areTransitionsEnabled,
         lithoConfiguration.isReconciliationEnabled,
         lithoConfiguration.isVisibilityProcessingEnabled,

@@ -52,7 +52,7 @@ class ComponentsConfigurationTest {
         ComponentTree.create(componentContext)
             .componentsConfiguration(ComponentsConfiguration.getDefaultComponentsConfiguration())
             .build()
-    val componentsConfiguration = componentTree.context.mLithoConfiguration.mComponentsConfiguration
+    val componentsConfiguration = componentTree.context.mLithoConfiguration.componentsConfig
 
     assertThat(componentsConfiguration.useCancelableLayoutFutures).isTrue
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(defaultBuilder)
@@ -87,7 +87,7 @@ class ComponentsConfigurationTest {
     val childView = legacyLithoViewRule.lithoView.findViewWithTag("rv_row") as LithoView?
     assertThat(childView).isNotNull
     val componentsConfiguration =
-        childView?.componentTree?.context?.mLithoConfiguration?.mComponentsConfiguration
+        childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig
     assertThat(componentsConfiguration?.useCancelableLayoutFutures).isTrue
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(defaultBuilder)
   }
