@@ -362,8 +362,13 @@ public class ComponentsConfiguration {
   public static ComponentsConfiguration.Builder create(ComponentsConfiguration config) {
     return new Builder()
         .useCancelableLayoutFutures(config.getUseCancelableLayoutFutures())
+        .useInterruptibleResolution(config.getUseInterruptibleResolution())
+        .shouldCacheLayouts(config.shouldCacheLayouts())
         .shouldAddHostViewForRootComponent(config.isShouldAddHostViewForRootComponent())
-        .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs());
+        .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs())
+        .useIncrementalMountGapWorker(config.useIncrementalMountGapWorker())
+        .nestedPreallocationEnabled(config.isNestedPreallocationEnabled())
+        .useNonRebindingEventHandlers(config.useNonRebindingEventHandlers());
   }
 
   public boolean shouldCacheLayouts() {
