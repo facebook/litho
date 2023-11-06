@@ -100,6 +100,8 @@ public class LayoutState
   @Nullable List<ScopedComponentInfo> mScopedSpecComponentInfos;
   private @Nullable List<Pair<String, EventHandler<?>>> mCreatedEventHandlers;
 
+  final ResolveResult mResolveResult;
+
   final ComponentContext mContext;
 
   private final Component mComponent;
@@ -167,12 +169,7 @@ public class LayoutState
   private boolean mShouldProcessVisibilityOutputs;
 
   LayoutState(
-      ComponentContext context,
-      Component rootComponent,
-      TreeState treeState,
-      @Nullable List<Attachable> attachables,
-      @Nullable List<Transition> transitions,
-      @Nullable List<ScopedComponentInfo> componentsThatNeedPreviousRenderData,
+      ResolveResult resolveResult,
       @Nullable LayoutState current,
       @Nullable LithoNode root,
       int widthSpec,
@@ -180,30 +177,37 @@ public class LayoutState
       int componentTreeId,
       boolean isLayoutDiffingEnabled,
       boolean isAccessibilityEnabled) {
-    mContext = context;
-    mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
+    mResolveResult = resolveResult;
+    mContext = resolveResult.context;
+    mComponent = resolveResult.component;
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mLayoutCacheData = current != null ? current.mLayoutCacheData : null;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedSpecComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
 
-    mTreeState = treeState;
-    mAttachables = attachables != null ? new ArrayList<>(attachables) : null;
-    mTransitions = transitions != null ? new ArrayList<>(transitions) : null;
+    mTreeState = resolveResult.treeState;
+    mAttachables =
+        resolveResult.outputs != null ? new ArrayList<>(resolveResult.outputs.attachables) : null;
+    mTransitions =
+        resolveResult.outputs != null ? new ArrayList<>(resolveResult.outputs.transitions) : null;
     mScopedComponentInfosNeedingPreviousRenderData =
-        componentsThatNeedPreviousRenderData != null
-            ? new ArrayList<>(componentsThatNeedPreviousRenderData)
+        resolveResult.outputs != null
+            ? new ArrayList<>(resolveResult.outputs.componentsThatNeedPreviousRenderData)
             : null;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
-    mRootComponentName = rootComponent.getSimpleName();
+    mRootComponentName = mComponent.getSimpleName();
     mShouldGenerateDiffTree = isLayoutDiffingEnabled;
     mRoot = root;
     mRootTransitionId = LithoNodeUtils.createTransitionId(root);
     mIsAccessibilityEnabled = isAccessibilityEnabled;
+  }
+
+  ResolveResult getResolveResult() {
+    return mResolveResult;
   }
 
   @VisibleForTesting
