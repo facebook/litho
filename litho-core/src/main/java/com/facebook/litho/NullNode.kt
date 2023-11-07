@@ -29,7 +29,8 @@ class NullNode : LithoNode() {
 
   override fun createLayoutResult(
       node: YogaNode,
-      layoutProps: YogaLayoutProps?
+      widthFromStyle: Float,
+      heightFromStyle: Float,
   ): LithoLayoutResult {
     throw UnsupportedOperationException("NullNode must not be used for layout")
   }

@@ -350,7 +350,7 @@ open class LithoLayoutResult(
   }
 
   fun copyLayoutResult(node: LithoNode, yogaNode: YogaNode): LithoLayoutResult {
-    val copiedResult = node.createLayoutResult(yogaNode, null)
+    val copiedResult = node.createLayoutResult(yogaNode, widthFromStyle, heightFromStyle)
     copiedResult.isCachedLayout = true
     copiedResult.cachedMeasuresValid = true
     copiedResult.widthSpec = widthSpec
@@ -358,8 +358,6 @@ open class LithoLayoutResult(
     copiedResult.lastMeasuredSize = lastMeasuredSize
     copiedResult.delegate = delegate
     copiedResult.layoutData = layoutData
-    copiedResult.widthFromStyle = widthFromStyle
-    copiedResult.heightFromStyle = heightFromStyle
     copiedResult.contentRenderUnit = contentRenderUnit
     copiedResult.hostRenderUnit = hostRenderUnit
     copiedResult.backgroundRenderUnit = backgroundRenderUnit

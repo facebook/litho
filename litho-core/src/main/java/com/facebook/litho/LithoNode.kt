@@ -521,17 +521,15 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
   open fun createLayoutResult(
       node: YogaNode,
-      layoutProps: YogaLayoutProps? = null
-  ): LithoLayoutResult {
-    val widthFromStyle: Float = layoutProps?.widthFromStyle ?: YogaConstants.UNDEFINED
-    val heightFromStyle: Float = layoutProps?.heightFromStyle ?: YogaConstants.UNDEFINED
-    return LithoLayoutResult(
-        context = tailComponentContext,
-        node = this,
-        yogaNode = node,
-        widthFromStyle = widthFromStyle,
-        heightFromStyle = heightFromStyle)
-  }
+      widthFromStyle: Float,
+      heightFromStyle: Float,
+  ): LithoLayoutResult =
+      LithoLayoutResult(
+          context = tailComponentContext,
+          node = this,
+          yogaNode = node,
+          widthFromStyle = widthFromStyle,
+          heightFromStyle = heightFromStyle)
 
   open fun border(widths: IntArray, colors: IntArray, radii: FloatArray, effect: PathEffect?) {
     privateFlags = privateFlags or PFLAG_BORDER_IS_SET
@@ -1090,7 +1088,11 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
         // Transfer the layout props to YogaNode
         currentNode.writeToYogaNode(writer)
         yogaNode = writer.node
-        layoutResult = currentNode.createLayoutResult(yogaNode, writer)
+        layoutResult =
+            currentNode.createLayoutResult(
+                node = yogaNode,
+                widthFromStyle = writer.widthFromStyle,
+                heightFromStyle = writer.heightFromStyle)
 
         if (isTracing) {
           ComponentsSystrace.endSection()
