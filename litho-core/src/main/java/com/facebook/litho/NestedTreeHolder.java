@@ -73,9 +73,9 @@ public class NestedTreeHolder extends LithoNode {
   public void border(int[] widths, int[] colors, float[] radii, PathEffect effect) {
     mNestedBorderEdges = new int[Border.EDGE_COUNT];
     System.arraycopy(widths, 0, mNestedBorderEdges, 0, mNestedBorderEdges.length);
-    System.arraycopy(colors, 0, mBorderColors, 0, mBorderColors.length);
-    System.arraycopy(radii, 0, mBorderRadius, 0, mBorderRadius.length);
-    mBorderPathEffect = effect;
+    System.arraycopy(colors, 0, getBorderColors(), 0, getBorderColors().length);
+    System.arraycopy(radii, 0, getBorderRadius(), 0, getBorderRadius().length);
+    setBorderPathEffect(effect);
   }
 
   @Override
@@ -84,7 +84,7 @@ public class NestedTreeHolder extends LithoNode {
   }
 
   @Override
-  void writeToYogaNode(YogaLayoutProps writer) {
+  public void writeToYogaNode(YogaLayoutProps writer) {
     NestedTreeYogaLayoutProps actual = (NestedTreeYogaLayoutProps) writer;
     super.writeToYogaNode(writer);
     mNestedBorderEdges = actual.getBorderWidth();
@@ -93,7 +93,7 @@ public class NestedTreeHolder extends LithoNode {
   }
 
   @Override
-  NestedTreeHolderResult createLayoutResult(
+  public NestedTreeHolderResult createLayoutResult(
       final YogaNode node, @Nullable final YogaLayoutProps layoutProps) {
     final float widthFromStyle =
         layoutProps != null ? layoutProps.widthFromStyle : YogaConstants.UNDEFINED;
@@ -110,70 +110,71 @@ public class NestedTreeHolder extends LithoNode {
   }
 
   public void transferInto(LithoNode target) {
-    if (mNodeInfo != null) {
-      target.applyNodeInfo(mNodeInfo);
+    if (getNodeInfo() != null) {
+      target.applyNodeInfo(getNodeInfo());
     }
     if (target.isImportantForAccessibilityIsSet()) {
-      target.importantForAccessibility(mImportantForAccessibility);
+      target.importantForAccessibility(getImportantForAccessibility());
     }
-    target.duplicateParentState(mDuplicateParentState);
-    if ((mPrivateFlags & PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET) != 0L) {
-      target.duplicateChildrenStates(mDuplicateChildrenStates);
+    target.duplicateParentState(isDuplicateParentStateEnabled());
+    if ((getPrivateFlags() & PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET) != 0L) {
+      target.duplicateChildrenStates(isDuplicateChildrenStatesEnabled());
     }
-    if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
-      target.background(mBackground);
-      target.setPaddingFromBackground(mPaddingFromBackground);
+    if ((getPrivateFlags() & PFLAG_BACKGROUND_IS_SET) != 0L) {
+      target.background(getBackground());
+      target.setPaddingFromBackground(getPaddingFromBackground());
     }
-    if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
-      target.foreground(mForeground);
+    if ((getPrivateFlags() & PFLAG_FOREGROUND_IS_SET) != 0L) {
+      target.foreground(getForeground());
     }
-    if (mForceViewWrapping) {
+    if (isForceViewWrapping()) {
       target.wrapInView();
     }
-    if ((mPrivateFlags & PFLAG_VISIBLE_HANDLER_IS_SET) != 0L) {
-      target.visibleHandler(mVisibleHandler);
+    if ((getPrivateFlags() & PFLAG_VISIBLE_HANDLER_IS_SET) != 0L) {
+      target.visibleHandler(getVisibleHandler());
     }
-    if ((mPrivateFlags & PFLAG_FOCUSED_HANDLER_IS_SET) != 0L) {
-      target.focusedHandler(mFocusedHandler);
+    if ((getPrivateFlags() & PFLAG_FOCUSED_HANDLER_IS_SET) != 0L) {
+      target.focusedHandler(getFocusedHandler());
     }
-    if ((mPrivateFlags & PFLAG_FULL_IMPRESSION_HANDLER_IS_SET) != 0L) {
-      target.fullImpressionHandler(mFullImpressionHandler);
+    if ((getPrivateFlags() & PFLAG_FULL_IMPRESSION_HANDLER_IS_SET) != 0L) {
+      target.fullImpressionHandler(getFullImpressionHandler());
     }
-    if ((mPrivateFlags & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
-      target.invisibleHandler(mInvisibleHandler);
+    if ((getPrivateFlags() & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
+      target.invisibleHandler(getInvisibleHandler());
     }
-    if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
-      target.unfocusedHandler(mUnfocusedHandler);
+    if ((getPrivateFlags() & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
+      target.unfocusedHandler(getUnfocusedHandler());
     }
-    if ((mPrivateFlags & PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET) != 0L) {
-      target.visibilityChangedHandler(mVisibilityChangedHandler);
+    if ((getPrivateFlags() & PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET) != 0L) {
+      target.visibilityChangedHandler(getVisibilityChangedHandler());
     }
-    if (mTestKey != null) {
-      target.testKey(mTestKey);
+    if (getTestKey() != null) {
+      target.testKey(getTestKey());
     }
     if (mNestedBorderEdges != null) {
-      target.border(mNestedBorderEdges, mBorderColors, mBorderRadius, mBorderPathEffect);
+      target.border(
+          mNestedBorderEdges, getBorderColors(), getBorderRadius(), getBorderPathEffect());
     }
-    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
-      target.transitionKey(mTransitionKey, mTransitionOwnerKey);
+    if ((getPrivateFlags() & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
+      target.transitionKey(getTransitionKey(), getTransitionOwnerKey());
     }
-    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
-      target.transitionKeyType(mTransitionKeyType);
+    if ((getPrivateFlags() & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
+      target.transitionKeyType(getTransitionKeyType());
     }
-    if (mVisibleHeightRatio != 0) {
-      target.visibleHeightRatio(mVisibleHeightRatio);
+    if (getVisibleHeightRatio() != 0) {
+      target.visibleHeightRatio(getVisibleHeightRatio());
     }
-    if (mVisibleWidthRatio != 0) {
-      target.visibleWidthRatio(mVisibleWidthRatio);
+    if (getVisibleWidthRatio() != 0) {
+      target.visibleWidthRatio(getVisibleWidthRatio());
     }
-    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_SET) != 0L) {
-      target.stateListAnimator(mStateListAnimator);
+    if ((getPrivateFlags() & PFLAG_STATE_LIST_ANIMATOR_SET) != 0L) {
+      target.stateListAnimator(getStateListAnimator());
     }
-    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0L) {
-      target.stateListAnimatorRes(mStateListAnimatorRes);
+    if ((getPrivateFlags() & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0L) {
+      target.stateListAnimatorRes(getStateListAnimatorRes());
     }
-    if (mLayerType != LayerType.LAYER_TYPE_NOT_SET) {
-      target.layerType(mLayerType, mLayerPaint);
+    if (getLayerType() != LayerType.LAYER_TYPE_NOT_SET) {
+      target.layerType(getLayerType(), getLayerPaint());
     }
 
     target.setNestedPadding(mNestedTreePadding, mNestedIsPaddingPercentage);

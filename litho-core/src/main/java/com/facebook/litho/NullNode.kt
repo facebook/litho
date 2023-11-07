@@ -27,7 +27,7 @@ class NullNode : LithoNode() {
 
   override fun createYogaNodeWriter(): YogaLayoutProps? = null
 
-  public override fun createLayoutResult(
+  override fun createLayoutResult(
       node: YogaNode,
       layoutProps: YogaLayoutProps?
   ): LithoLayoutResult {

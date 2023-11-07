@@ -661,7 +661,7 @@ object LithoReducer {
       // might not be accessing the correct props and state on the event handlers. The null
       // checkers cover tests, the scope and tree should not be null at this point of the layout
       // calculation.
-      node.getComponentContextAt(i)?.let { delegateScopedContext ->
+      node.getComponentContextAt(i).let { delegateScopedContext ->
         if (delegate is SpecGeneratedComponent) {
           layoutState.mScopedSpecComponentInfos?.add(delegateScopedContext.scopedComponentInfo)
         }
@@ -783,7 +783,7 @@ object LithoReducer {
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
-    require(!(node.willMountView() && !layoutState.isLayoutRoot(result))) {
+    require(!(node.willMountView && !layoutState.isLayoutRoot(result))) {
       "We shouldn't insert a host as a parent of a View"
     }
     val hostRenderTreeNode: RenderTreeNode =

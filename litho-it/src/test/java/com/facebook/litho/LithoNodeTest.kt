@@ -392,19 +392,19 @@ class LithoNodeTest {
 
     private fun isFlagSet(node: LithoNode, flagName: String): Boolean {
       val flagPosition = Whitebox.getInternalState<Long>(LithoNode::class.java, flagName)
-      val flags = Whitebox.getInternalState<Long>(node, "mPrivateFlags")
+      val flags = Whitebox.getInternalState<Long>(node, "privateFlags")
       return flags and flagPosition != 0L
     }
 
     private fun clearFlag(node: LithoNode, flagName: String) {
       val flagPosition = Whitebox.getInternalState<Long>(LithoNode::class.java, flagName)
-      var flags = Whitebox.getInternalState<Long>(node, "mPrivateFlags")
+      var flags = Whitebox.getInternalState<Long>(node, "privateFlags")
       flags = flags and flagPosition.inv()
-      Whitebox.setInternalState(node, "mPrivateFlags", flags)
+      Whitebox.setInternalState(node, "privateFlags", flags)
     }
 
     private fun assertEmptyFlags(node: LithoNode) {
-      assertThat(Whitebox.getInternalState<Any>(node, "mPrivateFlags") as Long).isEqualTo(0L)
+      assertThat(Whitebox.getInternalState<Any>(node, "privateFlags") as Long).isEqualTo(0L)
     }
   }
 }

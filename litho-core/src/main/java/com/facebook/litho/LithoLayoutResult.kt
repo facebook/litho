@@ -349,7 +349,7 @@ open class LithoLayoutResult(
     this.heightSpec = heightSpec
   }
 
-  fun copyLayoutResult(node: LithoNode, yogaNode: YogaNode?): LithoLayoutResult {
+  fun copyLayoutResult(node: LithoNode, yogaNode: YogaNode): LithoLayoutResult {
     val copiedResult = node.createLayoutResult(yogaNode, null)
     copiedResult.isCachedLayout = true
     copiedResult.cachedMeasuresValid = true

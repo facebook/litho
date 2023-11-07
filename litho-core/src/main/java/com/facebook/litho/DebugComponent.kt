@@ -408,11 +408,11 @@ private constructor(
       } ?: false
     }
 
-    private fun generateGlobalKey(context: ComponentContext, componentKey: String): String =
+    private fun generateGlobalKey(context: ComponentContext, componentKey: String?): String =
         generateGlobalKey(context.lithoTree?.id, componentKey)
 
     @JvmStatic
-    fun generateGlobalKey(treeId: Int?, globalKey: String): String =
+    fun generateGlobalKey(treeId: Int?, globalKey: String?): String =
         "${treeId?: "notree"}:${globalKey}"
 
     @JvmStatic

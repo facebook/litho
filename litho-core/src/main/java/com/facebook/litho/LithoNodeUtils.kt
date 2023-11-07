@@ -78,7 +78,7 @@ object LithoNodeUtils {
             },
         duplicateParentState = node.isDuplicateParentStateEnabled,
         hasHostView = node.needsHostView(),
-        isMountViewSpec = node.willMountView(),
+        isMountViewSpec = node.willMountView,
         customDelegateBindersForMountSpec =
             if (node.needsHostView() || node.primitive != null) {
               null
@@ -122,7 +122,7 @@ object LithoNodeUtils {
         node = node,
         importantForAccessibility = node.importantForAccessibility,
         updateState = MountSpecLithoRenderUnit.STATE_UNKNOWN,
-        duplicateParentState = node.isHostDuplicateParentState,
+        duplicateParentState = node.isHostDuplicateParentStateEnabled,
         duplicateChildrenStates = node.isDuplicateChildrenStatesEnabled,
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
@@ -153,13 +153,13 @@ object LithoNodeUtils {
         importantForAccessibility = node.importantForAccessibility,
         updateState =
             MountSpecLithoRenderUnit.STATE_DIRTY, // set as dirty to skip shouldComponentUpdate()
-        duplicateParentState = node.isHostDuplicateParentState,
+        duplicateParentState = node.isHostDuplicateParentStateEnabled,
         duplicateChildrenStates = node.isDuplicateChildrenStatesEnabled,
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
-            if (node.willMountView()) null else node.customDelegateBindersForMountSpec,
+            if (node.willMountView) null else node.customDelegateBindersForMountSpec,
         customBindersForMountSpec =
-            if (node.willMountView()) null else node.customBindersForMountSpec,
+            if (node.willMountView) null else node.customBindersForMountSpec,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST))
   }
 
@@ -175,7 +175,7 @@ object LithoNodeUtils {
 
     // Only create a background output when the component does not mount a View because
     // the background will get set in the output of the component.
-    return if (background != null && !node.willMountView()) {
+    return if (background != null && !node.willMountView) {
       createDrawableRenderUnit(node, background, width, height, OutputUnitType.BACKGROUND, diffNode)
     } else {
       null
@@ -195,7 +195,7 @@ object LithoNodeUtils {
     /// Only create a foreground output when the component does not mount a View because
     // the foreground has already been set in the output of the component.
     return if (foreground != null &&
-        (!node.willMountView() || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)) {
+        (!node.willMountView || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)) {
       createDrawableRenderUnit(node, foreground, width, height, OutputUnitType.FOREGROUND, diffNode)
     } else {
       null
@@ -291,10 +291,9 @@ object LithoNodeUtils {
       duplicateChildrenStates: Boolean = false,
       hasHostView: Boolean = false,
       isMountViewSpec: Boolean = false,
-      customDelegateBindersForMountSpec:
-          Map<Class<*>?, RenderUnit.DelegateBinder<Any, Any, Any>?>? =
+      customDelegateBindersForMountSpec: Map<Class<*>, RenderUnit.DelegateBinder<Any, Any?, Any>>? =
           null,
-      customBindersForMountSpec: Map<Class<*>?, RenderUnit.Binder<Any, Any, Any>?>? = null,
+      customBindersForMountSpec: Map<Class<*>, RenderUnit.Binder<Any, Any, Any>>? = null,
       debugKey: String? = null,
   ): LithoRenderUnit {
     var flags = 0
@@ -366,7 +365,7 @@ object LithoNodeUtils {
 
     if (customDelegateBindersForMountSpec != null) {
       for (binder in customDelegateBindersForMountSpec.values) {
-        renderUnit.addOptionalMountBinder(binder as RenderUnit.DelegateBinder<*, Any?, *>)
+        renderUnit.addOptionalMountBinder(binder)
       }
     }
 
@@ -437,7 +436,7 @@ object LithoNodeUtils {
           OutputUnitType.HOST -> true
           OutputUnitType.CONTENT -> {
             if (result is LithoLayoutResult) {
-              result.node.willMountView()
+              result.node.willMountView
             } else {
               false
             }
