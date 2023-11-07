@@ -164,7 +164,7 @@ class ResolveTreeFutureTest {
     assertThat(renderResult).isNotNull
     val layoutTreeFuture =
         LayoutTreeFuture(
-            renderResult,
+            renderResult!!,
             null,
             null,
             null,
