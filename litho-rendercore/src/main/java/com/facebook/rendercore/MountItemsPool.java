@@ -172,7 +172,7 @@ public class MountItemsPool {
 
         // PoolableMountContent might produce a null pool. In this case, just create a default one.
         if (pool == null) {
-          pool = new DefaultItemPool(poolableContentType, size, false);
+          pool = new DefaultItemPool(poolableContentType, size);
         }
 
         poolsMap.put(poolableContentType, pool);
@@ -373,49 +373,32 @@ public class MountItemsPool {
 
     private final Pools.Pool<Object> mPool;
     private Object mDebugIdentifier;
-    private final boolean mIsSync;
     private final AtomicInteger mCurrentPoolSize = new AtomicInteger(0);
     private final int mMaxPoolSize;
-    private final Object mLock = new Object();
 
     public DefaultItemPool(Class<?> poolableContentType, int maxPoolSize) {
-      this(poolableContentType, maxPoolSize, false);
-    }
-
-    /**
-     * We are in the process of migrating to unsynchronized item pools. Please refer to the
-     * constructor that doesn't specify the {@param isSync} nature.
-     */
-    @Deprecated
-    public DefaultItemPool(Class<?> poolableContentType, int maxPoolSize, boolean isSync) {
-      mPool =
-          isSync ? new Pools.SynchronizedPool<>(maxPoolSize) : new Pools.SimplePool<>(maxPoolSize);
-      mIsSync = isSync;
+      mPool = new Pools.SimplePool<>(maxPoolSize);
       mMaxPoolSize = maxPoolSize;
       mDebugIdentifier = poolableContentType.getName();
     }
 
     @Override
     public @Nullable Object acquire(ContentAllocator contentAllocator) {
-      if (mIsSync) {
-        synchronized (mLock) {
-          return getFromPool();
-        }
-      } else {
-        return getFromPool();
+      Object content = mPool.acquire();
+      if (content != null) {
+        mCurrentPoolSize.decrementAndGet();
       }
+      return content;
     }
 
     @Override
     public boolean release(Object item) {
       try {
-        if (mIsSync) {
-          synchronized (mLock) {
-            return addToPool(item);
-          }
-        } else {
-          return addToPool(item);
+        boolean releasedIntoPool = mPool.release(item);
+        if (releasedIntoPool) {
+          mCurrentPoolSize.incrementAndGet();
         }
+        return releasedIntoPool;
       } catch (IllegalStateException e) {
         String metadata = "Failed to release item to MountItemPool: " + mDebugIdentifier;
         throw new IllegalStateException(metadata, e);
@@ -428,23 +411,6 @@ public class MountItemsPool {
         return release(contentAllocator.createContent(c));
       }
       return false;
-    }
-
-    private boolean addToPool(Object item) {
-      boolean releasedIntoPool = mPool.release(item);
-      if (releasedIntoPool) {
-        mCurrentPoolSize.incrementAndGet();
-      }
-      return releasedIntoPool;
-    }
-
-    @Nullable
-    private Object getFromPool() {
-      Object content = mPool.acquire();
-      if (content != null) {
-        mCurrentPoolSize.decrementAndGet();
-      }
-      return content;
     }
   }
 }
