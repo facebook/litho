@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import androidx.test.core.app.ApplicationProvider
@@ -24,7 +25,6 @@ import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.atMost
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.helper.ComponentTestHelper
-import com.facebook.litho.testing.logging.TestComponentsLogger
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import org.assertj.core.api.Assertions.assertThat
@@ -40,12 +40,10 @@ class MountStateRemountInPlaceTest {
 
   @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
   private lateinit var context: ComponentContext
-  private lateinit var componentsLogger: TestComponentsLogger
 
   @Before
   fun setup() {
-    componentsLogger = TestComponentsLogger()
-    context = ComponentContext(ApplicationProvider.getApplicationContext(), "tag", componentsLogger)
+    context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
   }
 
   @Test

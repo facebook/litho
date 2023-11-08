@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.LogTreePopulatorTest.MyKey
 import com.facebook.litho.testing.logging.TestComponentsLogger
@@ -35,7 +36,7 @@ class LogTreePopulatorTest {
 
   @Before
   fun setup() {
-    context = ComponentContext(getApplicationContext(), "test", TestComponentsLogger())
+    context = ComponentContext(getApplicationContext<Context>(), "test", null)
   }
 
   @Test

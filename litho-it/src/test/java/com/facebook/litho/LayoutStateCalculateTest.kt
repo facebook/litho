@@ -37,7 +37,6 @@ import com.facebook.litho.testing.TestSizeDependentComponent
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
-import com.facebook.litho.testing.logging.TestComponentsLogger
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentCaching
 import com.facebook.litho.widget.ItemCardComponent
@@ -2274,32 +2273,6 @@ class LayoutStateCalculateTest {
     assertThat(cachedLayout).isNotNull
     assertThat(Component.willRender(c, component)).isTrue
     assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isEqualTo(cachedLayout)
-  }
-
-  @Test
-  fun testComponentsLoggerCanReturnNullPerfEventsDuringLayout() {
-    val component: Component =
-        object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
-              Column.create(c).child(TestDrawableComponent.create(c)).wrapInView().build()
-        }
-    val logger: ComponentsLogger =
-        object : TestComponentsLogger() {
-          override fun newPerformanceEvent(eventId: Int): PerfEvent? = null
-        }
-    val componentTree =
-        ComponentTree.create(legacyLithoViewRule.context)
-            .componentsConfiguration(config)
-            .logger(logger, "test")
-            .build()
-    val layoutState =
-        calculateLayoutState(
-            componentTree.context,
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
   }
 
   @Test
