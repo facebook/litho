@@ -318,8 +318,8 @@ object LithoReducer {
       result: LayoutResult,
       node: LithoNode,
       layoutState: LayoutState,
-      x: Int = 0,
-      y: Int = 0,
+      x: Int,
+      y: Int,
       renderTreeNode: RenderTreeNode?
   ): VisibilityOutput {
 
@@ -359,8 +359,8 @@ object LithoReducer {
       result: LayoutResult,
       node: LithoNode,
       layoutState: LayoutState,
-      x: Int = 0,
-      y: Int = 0,
+      x: Int,
+      y: Int,
       renderUnit: LithoRenderUnit? = null
   ): TestOutput {
 
@@ -414,8 +414,8 @@ object LithoReducer {
       result: LayoutResult,
       layoutState: LayoutState,
       lithoLayoutContext: LithoLayoutContext,
-      x: Int = 0,
-      y: Int = 0,
+      x: Int,
+      y: Int,
       parent: RenderTreeNode? = null,
       parentDiffNode: DiffNode? = null,
       parentHierarchy: DebugHierarchy.Node? = null
@@ -442,8 +442,8 @@ object LithoReducer {
       val nestedTree: LithoLayoutResult = result.nestedResult ?: return
 
       // Account for position of the holder node.
-      layoutState.mCurrentX += result.x
-      layoutState.mCurrentY += result.y
+      layoutState.mCurrentX += x
+      layoutState.mCurrentY += y
 
       collectResults(
           parentContext = immediateParentContext,
@@ -456,8 +456,8 @@ object LithoReducer {
           parentDiffNode = parentDiffNode,
           parentHierarchy = hierarchy)
 
-      layoutState.mCurrentX -= result.x
-      layoutState.mCurrentY -= result.y
+      layoutState.mCurrentX -= x
+      layoutState.mCurrentY -= y
       return
     }
 
@@ -636,6 +636,8 @@ object LithoReducer {
           createTestOutput(
               result = result,
               node = node,
+              x = x,
+              y = y,
               layoutState = layoutState,
               renderUnit = contentRenderTreeNode?.renderUnit as? LithoRenderUnit)
       layoutState.mTestOutputs.add(testOutput)
