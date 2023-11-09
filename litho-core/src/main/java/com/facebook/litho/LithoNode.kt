@@ -117,7 +117,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       return _transitionId
     }
 
-  val unresolvedComponents: List<Component>?
+  val unresolvedComponents: MutableList<Component>?
     get() = _unresolvedComponents
 
   val isImportantForAccessibilityIsSet: Boolean
@@ -847,7 +847,8 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
   fun getComponentAt(index: Int): Component = getComponentInfoAt(index).component
 
-  fun getGlobalKeyAt(index: Int): String? = getComponentContextAt(index).globalKey
+  fun getGlobalKeyAt(index: Int): String =
+      checkNotNull(getComponentContextAt(index).globalKey) { "Cannot have a null global key" }
 
   fun setNestedPadding(padding: Edges?, isPercentage: BooleanArray?) {
     nestedPaddingEdges = padding
