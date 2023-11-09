@@ -85,7 +85,6 @@ internal object Layout {
   fun measurePendingSubtrees(
       parentContext: ComponentContext,
       result: LithoLayoutResult,
-      node: LithoNode,
       layoutState: LayoutState,
       lithoLayoutContext: LithoLayoutContext
   ) {
@@ -93,7 +92,8 @@ internal object Layout {
       // Exit early if the layout future as been released or if this result had exceptions.
       return
     }
-    val component: Component = node.tailComponent
+    val lithoNode: LithoNode = result.node
+    val component: Component = lithoNode.tailComponent
     val isTracing: Boolean = ComponentsSystrace.isTracing
 
     if (result is NestedTreeHolderResult) {
@@ -103,15 +103,15 @@ internal object Layout {
         ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:${component.simpleName}")
             .arg("widthSpec", "EXACTLY ${result.getWidth()}")
             .arg("heightSpec", "EXACTLY ${result.getHeight()}")
-            .arg("rootComponentId", node.tailComponent.id)
+            .arg("rootComponentId", lithoNode.tailComponent.id)
             .flush()
       }
-      val size: Int = node.componentCount
+      val size: Int = lithoNode.componentCount
       val immediateParentContext: ComponentContext =
           if (size == 1) {
             parentContext
           } else {
-            node.getComponentContextAt(1)
+            lithoNode.getComponentContextAt(1)
           }
       val nestedTree: LithoLayoutResult? =
           measure(
@@ -153,7 +153,6 @@ internal object Layout {
       measurePendingSubtrees(
           parentContext = parentContext,
           result = nestedTree,
-          node = nestedTree.node,
           layoutState = layoutState,
           lithoLayoutContext = lithoLayoutContext)
       return
@@ -164,7 +163,6 @@ internal object Layout {
         measurePendingSubtrees(
             parentContext = context,
             result = child,
-            node = child.node,
             layoutState = layoutState,
             lithoLayoutContext = lithoLayoutContext)
       }

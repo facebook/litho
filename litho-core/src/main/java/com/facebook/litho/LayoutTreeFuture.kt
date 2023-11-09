@@ -166,7 +166,7 @@ class LayoutTreeFuture(
           c.setLithoLayoutContext(lsc)
           val root = measureTree(lsc, c.androidContext, node, widthSpec, heightSpec, perfEvent)
           if (root != null) {
-            measurePendingSubtrees(c, root, root.node, layoutState, lsc)
+            measurePendingSubtrees(c, root, layoutState, lsc)
           }
 
           layoutState.mLayoutResult = root
