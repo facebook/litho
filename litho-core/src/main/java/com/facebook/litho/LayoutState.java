@@ -102,10 +102,6 @@ public class LayoutState
 
   final ResolveResult mResolveResult;
 
-  final ComponentContext mContext;
-
-  private final Component mComponent;
-
   int mWidthSpec;
   int mHeightSpec;
 
@@ -125,7 +121,6 @@ public class LayoutState
   @Nullable LithoNode mRoot;
   @Nullable LayoutResult mLayoutResult;
   @Nullable TransitionId mRootTransitionId;
-  @Nullable String mRootComponentName;
   @Nullable LayoutCache.CachedData mLayoutCacheData;
 
   @Nullable DiffNode mDiffTreeRoot;
@@ -144,7 +139,6 @@ public class LayoutState
 
   private final boolean mIsAccessibilityEnabled;
 
-  private final TreeState mTreeState;
   @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   @Nullable TransitionId mCurrentTransitionId;
   @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
@@ -170,24 +164,20 @@ public class LayoutState
 
   LayoutState(
       ResolveResult resolveResult,
-      @Nullable LayoutState current,
-      @Nullable LithoNode root,
       int widthSpec,
       int heightSpec,
       int componentTreeId,
       boolean isLayoutDiffingEnabled,
-      boolean isAccessibilityEnabled) {
+      boolean isAccessibilityEnabled,
+      @Nullable LayoutState current) {
     mId = sIdGenerator.getAndIncrement();
     mResolveResult = resolveResult;
-    mContext = resolveResult.context;
-    mComponent = resolveResult.component;
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mLayoutCacheData = current != null ? current.mLayoutCacheData : null;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedSpecComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
 
-    mTreeState = resolveResult.treeState;
     mAttachables =
         resolveResult.outputs != null ? new ArrayList<>(resolveResult.outputs.attachables) : null;
     mTransitions =
@@ -199,10 +189,8 @@ public class LayoutState
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
-    mRootComponentName = mComponent.getSimpleName();
     mShouldGenerateDiffTree = isLayoutDiffingEnabled;
-    mRoot = root;
-    mRootTransitionId = LithoNodeUtils.createTransitionId(root);
+    mRootTransitionId = LithoNodeUtils.createTransitionId(resolveResult.node);
     mIsAccessibilityEnabled = isAccessibilityEnabled;
   }
 
@@ -212,7 +200,7 @@ public class LayoutState
 
   @VisibleForTesting
   Component getRootComponent() {
-    return mComponent;
+    return mResolveResult.component;
   }
 
   @Override
@@ -329,7 +317,7 @@ public class LayoutState
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("preAllocateMountContent:" + mComponent.getSimpleName());
+      ComponentsSystrace.beginSection("preAllocateMountContentForTree");
     }
 
     if (!mMountableOutputs.isEmpty()) {
@@ -350,23 +338,17 @@ public class LayoutState
 
         if (ComponentsConfiguration.enableDrawablePreAllocation
             || isMountableView(treeNode.getRenderUnit())) {
-          if (isTracing) {
-            ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
-          }
 
           boolean preallocated =
               MountItemsPool.maybePreallocateContent(
-                  mContext.getAndroidContext(), treeNode.getRenderUnit().getContentAllocator());
+                  mResolveResult.context.getAndroidContext(),
+                  treeNode.getRenderUnit().getContentAllocator());
 
           Log.d(
               "LayoutState",
               "Preallocation of"
                   + component.getSimpleName()
                   + (preallocated ? " succeeded" : " failed"));
-
-          if (isTracing) {
-            ComponentsSystrace.endSection();
-          }
         }
       }
     }
@@ -390,7 +372,7 @@ public class LayoutState
   }
 
   boolean isActivityValid() {
-    return getValidActivityForContext(mContext.getAndroidContext()) != null;
+    return getValidActivityForContext(mResolveResult.context.getAndroidContext()) != null;
   }
 
   @VisibleForTesting
@@ -410,7 +392,8 @@ public class LayoutState
   }
 
   boolean isCompatibleComponentAndSpec(int componentId, int widthSpec, int heightSpec) {
-    return mComponent.getId() == componentId && isCompatibleSpec(widthSpec, heightSpec);
+    return mResolveResult.component.getId() == componentId
+        && isCompatibleSpec(widthSpec, heightSpec);
   }
 
   boolean isCompatibleSize(int width, int height) {
@@ -418,7 +401,7 @@ public class LayoutState
   }
 
   boolean isForComponentId(int componentId) {
-    return mComponent.getId() == componentId;
+    return mResolveResult.component.getId() == componentId;
   }
 
   @Override
@@ -536,7 +519,7 @@ public class LayoutState
   }
 
   public ComponentContext getComponentContext() {
-    return mContext;
+    return mResolveResult.context;
   }
 
   boolean isAccessibilityEnabled() {
@@ -550,7 +533,7 @@ public class LayoutState
    */
   @CheckReturnValue
   TreeState getTreeState() {
-    return mTreeState;
+    return mResolveResult.treeState;
   }
 
   @Nullable
@@ -628,10 +611,11 @@ public class LayoutState
   @Nullable
   @Override
   public List<Transition> getMountTimeTransitions() {
-    if (mTreeState == null) {
+    final TreeState state = mResolveResult.treeState;
+    if (state == null) {
       return null;
     }
-    mTreeState.applyPreviousRenderData(this);
+    state.applyPreviousRenderData(this);
 
     List<Transition> mountTimeTransitions = null;
 
@@ -656,7 +640,7 @@ public class LayoutState
       }
     }
 
-    final List<Transition> updateStateTransitions = mTreeState.getPendingStateUpdateTransitions();
+    final List<Transition> updateStateTransitions = state.getPendingStateUpdateTransitions();
     if (!updateStateTransitions.isEmpty()) {
       if (mountTimeTransitions == null) {
         mountTimeTransitions = new ArrayList<>();
@@ -669,7 +653,7 @@ public class LayoutState
 
   @Override
   public boolean isIncrementalMountEnabled() {
-    return mContext != null && ComponentContext.isIncrementalMountEnabled(mContext);
+    return ComponentContext.isIncrementalMountEnabled(mResolveResult.context);
   }
 
   @Override
@@ -694,7 +678,7 @@ public class LayoutState
         "LayoutState w/ "
             + getMountableOutputCount()
             + " mountable outputs, root: "
-            + mRootComponentName
+            + mResolveResult.component
             + "\n";
 
     for (int i = 0; i < getMountableOutputCount(); i++) {
@@ -745,12 +729,12 @@ public class LayoutState
 
   @Override
   public boolean needsToRerunTransitions() {
-    return mContext.getStateUpdater().isFirstMount();
+    return mResolveResult.context.getStateUpdater().isFirstMount();
   }
 
   @Override
   public void setNeedsToRerunTransitions(boolean needsToRerunTransitions) {
-    mContext.getStateUpdater().setFirstMount(needsToRerunTransitions);
+    mResolveResult.context.getStateUpdater().setFirstMount(needsToRerunTransitions);
   }
 
   boolean isCommitted() {
@@ -771,8 +755,8 @@ public class LayoutState
   }
 
   @Override
-  public @Nullable String getRootName() {
-    return mRootComponentName;
+  public String getRootName() {
+    return mResolveResult.component.getSimpleName();
   }
 
   RenderTreeNode getRenderTreeNode(IncrementalMountOutput output) {

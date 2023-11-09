@@ -147,13 +147,13 @@ class LayoutTreeFuture(
         val layoutState =
             LayoutState(
                 resolveResult,
-                currentLayoutState,
-                node,
                 widthSpec,
                 heightSpec,
                 treeId,
                 isLayoutDiffingEnabled,
-                lsc.isAccessibilityEnabled)
+                lsc.isAccessibilityEnabled,
+                currentLayoutState,
+            )
 
         if (perfEvent != null) {
           lsc.perfEvent = perfEvent

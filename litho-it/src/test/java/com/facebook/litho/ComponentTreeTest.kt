@@ -404,8 +404,7 @@ class ComponentTreeTest {
         makeSizeSpec(100, EXACTLY),
         size,
         treeProps)
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
+    val c = componentTree.mainThreadLayoutState!!.componentContext
     assertThat(c.treeProps).isSameAs(treeProps)
   }
 
@@ -434,8 +433,8 @@ class ComponentTreeTest {
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.measure(
         makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), IntArray(2), false)
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
+    val c = componentTree.mainThreadLayoutState!!.componentContext
+
     assertThat(c.treeProps).isNotNull
     assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
   }
@@ -454,8 +453,7 @@ class ComponentTreeTest {
         treeProps)
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.setSizeSpec(makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY))
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
+    val c = componentTree.mainThreadLayoutState!!.componentContext
     assertThat(c.treeProps).isNotNull
     assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
   }
@@ -477,8 +475,7 @@ class ComponentTreeTest {
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(200, EXACTLY),
         makeSizeSpec(200, EXACTLY))
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
+    val c = componentTree.mainThreadLayoutState!!.componentContext
     assertThat(c.treeProps).isNotNull
     assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
   }
@@ -506,8 +503,7 @@ class ComponentTreeTest {
         treeProps)
     caller.increment()
     ShadowLooper.runUiThreadTasks()
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
+    val c = componentTree.mainThreadLayoutState!!.componentContext
     assertThat(c.treeProps).isNotNull
     assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
   }

@@ -1141,7 +1141,7 @@ public abstract class BaseMountingView extends ComponentHost
   protected String getTreeName() {
     final LayoutState layoutState = getCurrentLayoutState();
 
-    return layoutState != null ? layoutState.mRootComponentName : "";
+    return layoutState != null ? layoutState.getRootName() : "";
   }
 
   static void drawDebugOverlay(@Nullable BaseMountingView view, int id) {

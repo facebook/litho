@@ -59,7 +59,7 @@ object LithoReducer {
     }
     check(layoutState.mMountableOutputs.isEmpty()) {
       """Attempting to collect results on an already populated LayoutState.
-        | Root: ${layoutState.mRootComponentName}"""
+        | Root: ${layoutState.rootName}"""
           .trimIndent()
     }
 
@@ -909,7 +909,7 @@ object LithoReducer {
             result,
             type,
             unit.importantForAccessibility,
-            layoutState.mContext.componentsConfiguration.isShouldDisableBgFgOutputs)
+            layoutState.resolveResult.context.componentsConfiguration.isShouldDisableBgFgOutputs)
 
     if (attrs != null) {
       layoutState.mRenderUnitsWithViewAttributes[id] = attrs
