@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.debug.tracer.TraceMethod;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
@@ -118,7 +117,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @Override
-  @TraceMethod
   public void onVisibleBoundsChanged(
       ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect) {
@@ -212,7 +210,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @UiThread
-  @TraceMethod
   private static void processVisibilityOutputsNonInc(
       final ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect,
@@ -486,7 +483,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
   }
 
-  @TraceMethod
   private static boolean isInVisibleRange(
       final VisibilityOutput visibilityOutput, final Rect bounds, final Rect visibleBounds) {
     float heightRatio = visibilityOutput.getVisibleHeightRatio();
@@ -501,7 +497,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   /** Returns true if the component is in the focused visible range. */
-  @TraceMethod
   private static boolean isInFocusedRange(
       ExtensionState<VisibilityMountExtensionState> extensionState,
       Rect componentBounds,
