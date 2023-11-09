@@ -95,7 +95,7 @@ tasks.withType(org.jetbrains.dokka.gradle.DokkaMultiModuleTask).configureEach {
 project.gradle.startParameter.excludedTaskNames.add('testReleaseUnitTest')
 
 ext {
-    minSdkVersion = 19
+    minSdkVersion = 21
     targetSdkVersion = latestSdkVersion
     compileSdkVersion = latestSdkVersion
     buildToolsVersion = '33.0.2'
