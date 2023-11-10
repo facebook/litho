@@ -715,7 +715,23 @@ class TreeDiffingTest {
       val unit: LithoRenderUnit =
           MountSpecLithoRenderUnit.create(
               0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN, null)
-      return create(unit, Rect(), LithoLayoutData(0, 0, 0, 0, null, null, null), null)
+      return create(
+          unit,
+          Rect(),
+          LithoLayoutData(
+              0,
+              0,
+              0,
+              0,
+              null,
+              null,
+              if (component is SpecGeneratedComponent) {
+                component.isMountSizeDependent
+              } else {
+                false
+              },
+              null),
+          null)
     }
   }
 }

@@ -166,6 +166,7 @@ object LithoReducer {
                     previousLayoutStateId = layoutState.mPreviousLayoutStateId,
                     expandedTouchBounds = null,
                     layoutData = null,
+                    isSizeDependant = true,
                     debugHierarchy = debugNode))
     addRenderTreeNode(
         layoutState = layoutState,
@@ -221,6 +222,12 @@ object LithoReducer {
         result = result,
         useNodePadding = true,
         hasExactSize = !result.wasMeasured,
+        isSizeDependant =
+            if (node.tailComponent is SpecGeneratedComponent) {
+              (node.tailComponent as SpecGeneratedComponent).isMountSizeDependent
+            } else {
+              false
+            },
         layoutData = layoutData,
         parent = parent,
         debugHierarchyNode = debugNode)
@@ -239,6 +246,7 @@ object LithoReducer {
           result = result as LithoLayoutResult,
           useNodePadding = false,
           hasExactSize = false,
+          isSizeDependant = true,
           parent = parent,
           debugHierarchyNode = hierarchy?.mutateType(OutputUnitType.HOST))
 
@@ -248,6 +256,7 @@ object LithoReducer {
       result: LithoLayoutResult,
       useNodePadding: Boolean,
       hasExactSize: Boolean,
+      isSizeDependant: Boolean,
       layoutData: Any? = null,
       parent: RenderTreeNode? = null,
       debugHierarchyNode: DebugHierarchy.Node? = null,
@@ -305,6 +314,7 @@ object LithoReducer {
                 currentLayoutStateId = layoutState.mId,
                 previousLayoutStateId = layoutState.mPreviousLayoutStateId,
                 expandedTouchBounds = result.expandedTouchBounds,
+                isSizeDependant = isSizeDependant,
                 layoutData = layoutData,
                 debugHierarchy = debugHierarchyNode),
         parent = parent)
@@ -702,6 +712,7 @@ object LithoReducer {
             result = result as LithoLayoutResult,
             useNodePadding = false,
             hasExactSize = false,
+            isSizeDependant = true,
             parent = parent,
             debugHierarchyNode = debugNode)
     val drawableRenderUnit: LithoRenderUnit = renderTreeNode.renderUnit as LithoRenderUnit

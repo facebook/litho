@@ -249,6 +249,7 @@ open class LithoLayoutResult(
       }
       try {
         val primitive = node.primitive
+        val newLayoutData: Any?
         // measure Primitive
         if (primitive != null) {
           context.setPreviousLayoutDataForCurrentNode(this.layoutData)
@@ -258,22 +259,26 @@ open class LithoLayoutResult(
               primitive.calculateLayout(context as LayoutContext<Any?>, widthSpec, heightSpec)
           width = delegate.width
           height = delegate.height
-          layoutData = delegate.layoutData
+          newLayoutData = delegate.layoutData
         } else {
           val size = Size(Int.MIN_VALUE, Int.MIN_VALUE)
           // If the Layout Result was cached, but the size specs changed, then layout data
           // will be mutated. To avoid that create new (layout data) interstage props container
           // for mount specs to avoid mutating the currently mount layout data.
-          layoutData = (component as SpecGeneratedComponent).createInterStagePropsContainer()
-          component.onMeasure(componentScopedContext, this, widthSpec, heightSpec, size, layoutData)
+          newLayoutData = (component as SpecGeneratedComponent).createInterStagePropsContainer()
+          component.onMeasure(
+              componentScopedContext, this, widthSpec, heightSpec, size, newLayoutData)
           delegate = null
           width = size.width
           height = size.height
         }
 
         // If layout data has changed then content render unit should be recreated
-        if (!hasEquivalentFields(this.layoutData, layoutData)) {
+        if (!hasEquivalentFields(this.layoutData, newLayoutData)) {
+          layoutData = newLayoutData
           contentRenderUnit = null
+        } else {
+          layoutData = this.layoutData
         }
       } finally {
         if (isTracing) {
@@ -437,8 +442,8 @@ open class LithoLayoutResult(
         // If layout data has changed then content render unit should be recreated
         if (!hasEquivalentFields(this.layoutData, layoutData)) {
           contentRenderUnit = null
+          this.layoutData = layoutData
         }
-        this.layoutData = layoutData
       }
       if (!wasMeasured) {
         wasMeasured = true

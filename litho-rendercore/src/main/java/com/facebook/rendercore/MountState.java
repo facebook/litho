@@ -39,6 +39,7 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.utils.CommonUtils;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1038,7 +1039,8 @@ public class MountState implements MountDelegateTarget {
       mountDelegate.startNotifyVisibleBoundsChangedSection();
     }
 
-    if (currentRenderUnit != renderUnit) {
+    if (currentRenderUnit != renderUnit
+        || !EquivalenceUtils.isEqualOrEquivalentTo(currentLayoutData, newLayoutData)) {
       Integer traceIdentifier = generateTraceIdentifier(DebugEvent.RenderUnitUpdated);
       if (traceIdentifier != null) {
         HashMap<String, Object> attributes = new HashMap<>();
