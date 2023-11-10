@@ -570,7 +570,7 @@ public class LithoView extends BaseMountingView {
         LithoView.MountStartupLoggingInfo.maybeLogFirstMountStart(mMountStartupLoggingInfo);
     final boolean loggedLastMount =
         LithoView.MountStartupLoggingInfo.maybeLogLastMountStart(mMountStartupLoggingInfo, this);
-    return new boolean[] {loggedFirstMount, loggedLastMount};
+    return (loggedFirstMount ? 1 : 0) | (loggedLastMount ? 2 : 0);
   }
 
   @Override
@@ -580,15 +580,15 @@ public class LithoView extends BaseMountingView {
       throw new IllegalStateException(
           "Should have received wether firs and last mount should be logged");
     }
-    final boolean[] fromBefore = (boolean[]) fromOnBeforeMount;
+    final int fromBefore = (Integer) fromOnBeforeMount;
     if (mIsAttachedForTest) {
       dispatchAttachedForTestToChildren();
     }
 
-    if (fromBefore[0]) {
+    if ((fromBefore & 1) != 0) {
       LithoView.MountStartupLoggingInfo.logFirstMountEnd(mMountStartupLoggingInfo);
     }
-    if (fromBefore[1]) {
+    if ((fromBefore & 2) != 0) {
       LithoView.MountStartupLoggingInfo.logLastMountEnd(mMountStartupLoggingInfo);
     }
   }
