@@ -307,7 +307,7 @@ public class ComponentsConfiguration {
 
   private final boolean mShouldAddHostViewForRootComponent;
 
-  private final boolean mShouldDisableBgFgOutputs;
+  protected final boolean mShouldDisableBgFgOutputs;
 
   private final boolean mUseIncrementalMountGapWorker;
 
@@ -331,7 +331,7 @@ public class ComponentsConfiguration {
     return mShouldAddHostViewForRootComponent;
   }
 
-  public boolean isShouldDisableBgFgOutputs() {
+  public boolean shouldAddRootHostViewOrDisableBgFgOutputs() {
     return mShouldAddHostViewForRootComponent || mShouldDisableBgFgOutputs;
   }
 
@@ -364,7 +364,7 @@ public class ComponentsConfiguration {
         .useInterruptibleResolution(config.getUseInterruptibleResolution())
         .shouldCacheLayouts(config.shouldCacheLayouts())
         .shouldAddHostViewForRootComponent(config.isShouldAddHostViewForRootComponent())
-        .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs())
+        .shouldDisableBgFgOutputs(config.mShouldDisableBgFgOutputs)
         .useIncrementalMountGapWorker(config.useIncrementalMountGapWorker())
         .nestedPreallocationEnabled(config.isNestedPreallocationEnabled())
         .useNonRebindingEventHandlers(config.useNonRebindingEventHandlers());

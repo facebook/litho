@@ -508,7 +508,7 @@ object LithoReducer {
     }
 
     // 2. Add background if defined.
-    if (!context.mLithoConfiguration.componentsConfig.isShouldDisableBgFgOutputs) {
+    if (!context.mLithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs()) {
       result.backgroundRenderUnit?.let { backgroundRenderUnit ->
         val backgroundRenderTreeNode =
             addDrawableRenderTreeNode(
@@ -597,7 +597,7 @@ object LithoReducer {
     }
 
     // 6. Add foreground if defined.
-    if (!context.mLithoConfiguration.componentsConfig.isShouldDisableBgFgOutputs) {
+    if (!context.mLithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs()) {
       result.foregroundRenderUnit?.let { foregroundRenderUnit ->
         val foregroundRenderTreeNode: RenderTreeNode =
             addDrawableRenderTreeNode(
@@ -911,7 +911,8 @@ object LithoReducer {
             result,
             type,
             unit.importantForAccessibility,
-            layoutState.resolveResult.context.componentsConfiguration.isShouldDisableBgFgOutputs)
+            layoutState.resolveResult.context.componentsConfiguration
+                .shouldAddRootHostViewOrDisableBgFgOutputs())
 
     if (attrs != null) {
       layoutState.mRenderUnitsWithViewAttributes[id] = attrs

@@ -1436,7 +1436,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       // tree is mounted. Click handling is also considered accessibility content but
       // this is already covered separately i.e. click handler is not null.
       val hasBackgroundOrForeground =
-          ComponentContext.getComponentsConfig(c).isShouldDisableBgFgOutputs &&
+          ComponentContext.getComponentsConfig(c).shouldAddRootHostViewOrDisableBgFgOutputs() &&
               (node.background != null || node.foreground != null)
       val hasAccessibilityContent =
           (context?.isAccessibilityEnabled == true) &&
