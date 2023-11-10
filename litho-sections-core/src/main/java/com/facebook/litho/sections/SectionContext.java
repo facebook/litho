@@ -55,11 +55,6 @@ public class SectionContext extends ComponentContext {
   }
 
   public SectionContext(
-      Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
-    this(context, logTag, logger, null);
-  }
-
-  public SectionContext(
       Context context,
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,

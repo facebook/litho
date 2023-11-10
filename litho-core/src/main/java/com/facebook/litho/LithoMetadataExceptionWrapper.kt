@@ -101,8 +101,10 @@ internal constructor(
         }
         msg.appendLine()
       }
-      if (componentContext?.logTag != null) {
-        msg.append("  log_tag: ").appendLine(componentContext.logTag)
+
+      val contextLogTag = componentContext?.logTag ?: ""
+      if (contextLogTag.isNotBlank()) {
+        msg.append("  log_tag: ").appendLine(contextLogTag)
       } else if (logTag != null) {
         msg.append("  log_tag: ").appendLine(logTag)
       }

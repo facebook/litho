@@ -77,7 +77,7 @@ object LogTreePopulator {
     if (perfEvent == null) {
       return null
     }
-    if (logTag == null) {
+    if (logTag.isNullOrBlank()) {
       logger.cancelPerfEvent(perfEvent)
       return null
     }

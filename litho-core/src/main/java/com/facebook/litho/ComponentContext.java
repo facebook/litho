@@ -94,10 +94,10 @@ public class ComponentContext implements Cloneable {
   private final ThreadLocal<CalculationContext> mCalculationStateContextThreadLocal;
 
   public ComponentContext(Context context) {
-    this(context, null, null);
+    this(context, "", null);
   }
 
-  public ComponentContext(Context context, LithoConfiguration lithoConfiguration) {
+  public ComponentContext(Context context, @Nullable LithoConfiguration lithoConfiguration) {
     this(context, null, lithoConfiguration, null, null, null, null, null);
   }
   /**
@@ -132,7 +132,7 @@ public class ComponentContext implements Cloneable {
   protected ComponentContext(
       Context androidContext,
       @Nullable TreeProps treeProps,
-      LithoConfiguration lithoConfiguration,
+      @Nullable LithoConfiguration lithoConfiguration,
       @Nullable LithoTree lithoTree,
       @Nullable String globalKey,
       @Nullable LithoLifecycleProvider lifecycleProvider,

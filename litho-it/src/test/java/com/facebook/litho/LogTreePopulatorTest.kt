@@ -36,7 +36,7 @@ class LogTreePopulatorTest {
 
   @Before
   fun setup() {
-    context = ComponentContext(getApplicationContext<Context>(), "test", null)
+    context = ComponentContext(getApplicationContext(), "test", null)
   }
 
   @Test
@@ -45,7 +45,7 @@ class LogTreePopulatorTest {
         object : TestComponentsLogger() {
           override fun getExtraAnnotations(
               treePropertyProvider: TreePropertyProvider
-          ): Map<String, String>? {
+          ): Map<String, String> {
             return mapOf("my_key" to treePropertyProvider.getProperty(MyKey::class.java).toString())
           }
         }
@@ -61,13 +61,13 @@ class LogTreePopulatorTest {
         object : TestComponentsLogger() {
           override fun getExtraAnnotations(
               treePropertyProvider: TreePropertyProvider
-          ): Map<String, String>? {
+          ): Map<String, String> {
             return mapOf("my_key" to treePropertyProvider.getProperty(MyKey::class.java).toString())
           }
         }
     val event: PerfEvent = mock()
     context.treeProps = TreeProps().apply { put(MyKey::class.java, 1_337) }
-    val noLogTagContext = ComponentContext(getApplicationContext(), null, null)
+    val noLogTagContext = ComponentContext(getApplicationContext<Context>())
     val perfEvent = LogTreePopulator.populatePerfEventFromLogger(noLogTagContext, logger, event)
     assertThat(perfEvent).isNull()
     assertThat(logger.canceledPerfEvents).containsExactly(event)
