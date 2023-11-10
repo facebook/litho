@@ -28,6 +28,7 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaEdge;
 
 // start_counter
 @LayoutSpec
@@ -41,9 +42,19 @@ class CounterComponentSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @State int count) {
     return Row.create(c)
-        .child(Text.create(c).text("+").clickHandler(CounterComponent.onClickIncrease(c)))
-        .child(Text.create(c).text("" + count))
-        .child(Text.create(c).text("-").clickHandler(CounterComponent.onClickDecrease(c)))
+        .child(
+            Text.create(c)
+                .text(" INCREASE ")
+                .textSizeSp(16)
+                .paddingPx(YogaEdge.END, 8)
+                .clickHandler(CounterComponent.onClickIncrease(c)))
+        .child(Text.create(c).textSizeSp(16).text("" + count))
+        .child(
+            Text.create(c)
+                .text(" DECREASE ")
+                .textSizeSp(16)
+                .paddingPx(YogaEdge.START, 8)
+                .clickHandler(CounterComponent.onClickDecrease(c)))
         .build();
   }
 
