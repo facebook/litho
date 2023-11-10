@@ -293,7 +293,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       c: LayoutContext<LithoRenderContext>,
       widthSpec: Int,
       heightSpec: Int
-  ): LithoLayoutResult? {
+  ): LithoLayoutResult {
 
     val renderContext: LithoRenderContext? = c.renderContext
     checkNotNull(renderContext) { "Cannot calculate a layout without RenderContext." }
@@ -309,15 +309,11 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       ComponentsSystrace.beginSection("buildYogaTree:${headComponent.simpleName}")
     }
 
-    val layoutResult: LithoLayoutResult? = buildYogaTree(context = c, currentNode = this)
-    val yogaRoot: YogaNode? = layoutResult?.yogaNode
+    val layoutResult: LithoLayoutResult = buildYogaTree(context = c, currentNode = this)
+    val yogaRoot: YogaNode = layoutResult.yogaNode
 
     if (isTracing) {
       ComponentsSystrace.endSection()
-    }
-
-    if (layoutResult == null || yogaRoot == null) {
-      return null
     }
 
     if (isLayoutDirectionInherit && Layout.isLayoutDirectionRTL(c.androidContext)) {
@@ -446,7 +442,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
     return node
   }
 
-  protected open fun createYogaNodeWriter(): YogaLayoutProps? =
+  protected open fun createYogaNodeWriter(): YogaLayoutProps =
       YogaLayoutProps(NodeConfig.createYogaNode())
 
   open fun writeToYogaNode(writer: YogaLayoutProps) {
@@ -1041,7 +1037,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
         context: LayoutContext<LithoRenderContext>,
         currentNode: LithoNode,
         parentNode: YogaNode? = null,
-    ): LithoLayoutResult? {
+    ): LithoLayoutResult {
 
       val isTracing: Boolean = ComponentsSystrace.isTracing
       var layoutResult: LithoLayoutResult? = null
@@ -1081,7 +1077,9 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       }
 
       if (layoutResult == null) {
-        val writer: YogaLayoutProps = currentNode.createYogaNodeWriter() ?: return null
+        val writer: YogaLayoutProps = currentNode.createYogaNodeWriter()
+
+        // return am empty layout result if the writer is null
         if (isTracing) {
           ComponentsSystrace.beginSection("createYogaNode:${currentNode.headComponent.simpleName}")
         }

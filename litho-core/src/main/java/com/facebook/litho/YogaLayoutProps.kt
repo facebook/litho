@@ -190,19 +190,19 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     node.setGap(gutter, length.toFloat())
   }
 
-  fun flexDirection(direction: YogaFlexDirection) {
+  open fun flexDirection(direction: YogaFlexDirection) {
     node.flexDirection = direction
   }
 
-  fun wrap(wrap: YogaWrap) {
+  open fun wrap(wrap: YogaWrap) {
     node.wrap = wrap
   }
 
-  fun justifyContent(justify: YogaJustify) {
+  open fun justifyContent(justify: YogaJustify) {
     node.justifyContent = justify
   }
 
-  fun alignItems(align: YogaAlign) {
+  open fun alignItems(align: YogaAlign) {
     node.alignItems = align
   }
 }

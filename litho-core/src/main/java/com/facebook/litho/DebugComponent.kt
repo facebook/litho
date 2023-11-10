@@ -135,21 +135,25 @@ private constructor(
    */
   val childComponents: List<DebugComponent>
     get() {
-      return when {
-        isNotTailComponent -> getImmediateDescendantAsChild()
-        result is NestedTreeHolderResult -> {
-          val nestedResult = result.nestedResult ?: return emptyList()
-          if (nestedResult.node.componentCount == 1) {
-            return when (nestedResult.childCount) {
-              0 -> emptyList()
-              else -> getChildren(nestedResult, xFromRoot, yFromRoot)
+      if (result is NullLithoLayoutResult) {
+        return emptyList()
+      } else {
+        return when {
+          isNotTailComponent -> getImmediateDescendantAsChild()
+          result is NestedTreeHolderResult -> {
+            val nestedResult = result.nestedResult ?: return emptyList()
+            if (nestedResult.node.componentCount == 1) {
+              return when (nestedResult.childCount) {
+                0 -> emptyList()
+                else -> getChildren(nestedResult, xFromRoot, yFromRoot)
+              }
             }
+            val index = (nestedResult.node.componentCount - 2).coerceAtLeast(0)
+            val component = getInstance(nestedResult, index, xFromRoot, yFromRoot, null)
+            listOfNotNull(component)
           }
-          val index = (nestedResult.node.componentCount - 2).coerceAtLeast(0)
-          val component = getInstance(nestedResult, index, xFromRoot, yFromRoot, null)
-          listOfNotNull(component)
+          else -> getChildren(result, xFromRoot, yFromRoot)
         }
-        else -> getChildren(result, xFromRoot, yFromRoot)
       }
     }
 
@@ -329,7 +333,7 @@ private constructor(
     ): DebugComponent? {
       val node = result.node
       val context = result.context
-      if (componentIndex >= node.componentCount) {
+      if (result is NullLithoLayoutResult || componentIndex >= node.componentCount) {
         return null
       }
       val componentKey = node.getGlobalKeyAt(componentIndex)
@@ -351,7 +355,10 @@ private constructor(
     @JvmStatic
     fun getRootInstance(componentTree: ComponentTree?): DebugComponent? {
       val layoutState = componentTree?.mainThreadLayoutState
-      val root = layoutState?.rootLayoutResult ?: return null
+      val root = layoutState?.rootLayoutResult
+      if (root == null || root is NullLithoLayoutResult) {
+        return null
+      }
       check(root is LithoLayoutResult) { "Expected root to be a LithoLayoutResult" }
       val node = root.node
       val outerWrapperComponentIndex = (node.componentCount - 1).coerceAtLeast(0)

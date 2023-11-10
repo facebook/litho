@@ -50,10 +50,15 @@ internal object Layout {
             0,
             lithoLayoutContext.layoutCache,
             null)
-    val result: LithoLayoutResult? = node.calculateLayout(context, widthSpec, heightSpec)
+    val result: LithoLayoutResult = node.calculateLayout(context, widthSpec, heightSpec)
 
     layoutStatePerfEvent?.markerPoint("end_measure")
-    return result
+
+    return if (result !is NullLithoLayoutResult) {
+      result
+    } else {
+      null
+    }
   }
 
   @JvmStatic
