@@ -24,7 +24,7 @@ import com.facebook.litho.ResourcesScope
 @ContainerDsl
 class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
 
-  val children = LazyCollectionChildren()
+  val children: LazyCollectionChildren = LazyCollectionChildren()
 
   /**
    * Add a child [Component] to the collection.
@@ -84,16 +84,28 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
    *
    * @param items Data models to be rendered as children
    * @param id A function to create a unique id from each data model
+   * @param isSticky A function that indicates if the child should fix to the top of the collection
+   *   when it is scrolled out of view
+   * @param isFullSpan A function that indicates whether the child should span across all columns
+   * @param spanSize A function to return the number of columns that a child should span
    * @param componentFunction A function that generates a [Component] from a data model
    */
   fun <T> children(
       items: Iterable<T>,
       id: (T) -> Any,
+      isSticky: ((T) -> Boolean)? = null,
+      isFullSpan: ((T) -> Boolean)? = null,
+      spanSize: ((T) -> Int)? = null,
       componentFunction: ComponentCreationScope.(T) -> Component?,
   ) {
     val componentCreationScope = ComponentCreationScope(context)
     items.forEach { item ->
-      children.add(id = id(item), component = componentCreationScope.componentFunction(item))
+      children.add(
+          id = id(item),
+          isSticky = isSticky?.invoke(item) ?: false,
+          isFullSpan = isFullSpan?.invoke(item) ?: false,
+          spanSize = spanSize?.invoke(item),
+          component = componentCreationScope.componentFunction(item))
     }
   }
 
@@ -104,12 +116,19 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
    * @param items Data models to be rendered as children
    * @param id A function to create a unique id from each data model
    * @param deps A function to create a list of deps from each data model
+   * @param isSticky A function that indicates if the child should fix to the top of the collection
+   *   when it is scrolled out of view
+   * @param isFullSpan A function that indicates whether the child should span across all columns
+   * @param spanSize A function to return the number of columns that a child should span
    * @param componentFunction A function that generates a [Component] from a data model
    */
   fun <T> children(
       items: List<T>,
       id: (T) -> Any,
       deps: (T) -> Array<Any?>,
+      isSticky: ((T) -> Boolean)? = null,
+      isFullSpan: ((T) -> Boolean)? = null,
+      spanSize: ((T) -> Int)? = null,
       componentFunction: ComponentCreationScope.(T) -> Component?,
   ) {
     val componentCreationScope = ComponentCreationScope(context)
@@ -117,6 +136,9 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
       children.add(
           id = id(item),
           deps = deps(item),
+          isSticky = isSticky?.invoke(item) ?: false,
+          isFullSpan = isFullSpan?.invoke(item) ?: false,
+          spanSize = spanSize?.invoke(item),
           componentFunction = { componentCreationScope.componentFunction(item) })
     }
   }

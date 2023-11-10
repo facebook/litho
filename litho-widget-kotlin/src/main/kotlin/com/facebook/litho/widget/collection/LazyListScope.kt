@@ -23,7 +23,8 @@ import com.facebook.litho.ResourcesScope
 
 @ContainerDsl
 class LazyListScope(override val context: ComponentContext) : ResourcesScope {
-  val children = LazyCollectionChildren()
+
+  val children: LazyCollectionChildren = LazyCollectionChildren()
 
   /**
    * Add a child [Component] to the Lazy Collection.
@@ -103,16 +104,30 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
    *
    * @param items Data models to be rendered as children
    * @param id A function to create a unique id from each data model
+   * @param isSticky A function that indicates if the child should fix to the top of the collection
+   *   when it is scrolled out of view
+   * @param parentWidthPercent A function that sets the fill width of the child based on the parent
+   *   container's size
+   * @param parentHeightPercent A function that sets the fill height of the child based on the
+   *   parent container's size
    * @param componentFunction A function that generates a [Component] from a data model
    */
   fun <T> children(
       items: Iterable<T>,
       id: (T) -> Any,
+      isSticky: ((T) -> Boolean)? = null,
+      parentWidthPercent: ((T) -> Float)? = null,
+      parentHeightPercent: ((T) -> Float)? = null,
       componentFunction: ComponentCreationScope.(T) -> Component?,
   ) {
     val componentCreationScope = ComponentCreationScope(context)
     items.forEach { item ->
-      children.add(id = id(item), component = componentCreationScope.componentFunction(item))
+      children.add(
+          id = id(item),
+          isSticky = isSticky?.invoke(item) ?: false,
+          parentWidthPercent = parentWidthPercent?.invoke(item) ?: -1f,
+          parentHeightPercent = parentHeightPercent?.invoke(item) ?: -1f,
+          component = componentCreationScope.componentFunction(item))
     }
   }
 
@@ -123,12 +138,21 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
    * @param items Data models to be rendered as children
    * @param id A function to create a unique id from each data model
    * @param deps A function to create a list of deps from each data model
+   * @param isSticky A function that indicates if the child should fix to the top of the collection
+   *   when it is scrolled out of view
+   * @param parentWidthPercent A function that sets the fill width of the child based on the parent
+   *   container's size
+   * @param parentHeightPercent A function that sets the fill height of the child based on the
+   *   parent container's size
    * @param componentFunction A function that generates a [Component] from a data model
    */
   fun <T> children(
       items: Iterable<T>,
       id: (T) -> Any,
       deps: (T) -> Array<Any?>,
+      isSticky: ((T) -> Boolean)? = null,
+      parentWidthPercent: ((T) -> Float)? = null,
+      parentHeightPercent: ((T) -> Float)? = null,
       componentFunction: ComponentCreationScope.(T) -> Component?,
   ) {
     val componentCreationScope = ComponentCreationScope(context)
@@ -136,6 +160,9 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
       children.add(
           id = id(item),
           deps = deps(item),
+          isSticky = isSticky?.invoke(item) ?: false,
+          parentWidthPercent = parentWidthPercent?.invoke(item) ?: -1f,
+          parentHeightPercent = parentHeightPercent?.invoke(item) ?: -1f,
           componentFunction = { componentCreationScope.componentFunction(item) })
     }
   }
