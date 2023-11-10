@@ -27,10 +27,10 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
-import com.facebook.litho.SimpleNestedTreeLifecycleProvider
 import com.facebook.litho.Size
 import com.facebook.litho.Style
 import com.facebook.litho.Wrapper
+import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.litho.widget.VerticalScrollEventsController
@@ -106,25 +106,21 @@ class VerticalScroll(
       LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
     }
 
-    val componentTree = useState {
-      ComponentTree.createNestedComponentTree(context, child)
+    val componentTree = useCached {
+      ComponentTree.createNestedComponentTree(context)
           .incrementalMount(incrementalMountEnabled)
           .build()
     }
 
     return LithoPrimitive(
-        layoutBehavior = VerticalScrollLayoutBehavior(child, fillViewport, componentTree.value),
+        layoutBehavior = VerticalScrollLayoutBehavior(child, fillViewport, componentTree),
         mountBehavior =
             MountBehavior(ViewAllocator { context -> LithoScrollView(context) }) {
               doesMountRenderTreeHosts = true
 
-              bind(componentTree.value, scrollPosition.value, onScrollStateChange) { content ->
-                if (context.lifecycleProvider != null) {
-                  componentTree.value.subscribeOrUpdateLifecycleProvider(
-                      SimpleNestedTreeLifecycleProvider(context.lifecycleProvider))
-                }
+              bind(componentTree, scrollPosition.value, onScrollStateChange) { content ->
                 content.mount(
-                    componentTree.value,
+                    componentTree,
                     scrollPosition.value,
                     onScrollStateChange,
                 )
@@ -200,6 +196,10 @@ internal class VerticalScrollLayoutBehavior(
     private val componentTree: ComponentTree
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    if (componentTree.isReleased) {
+      return PrimitiveLayoutResult(
+          width = 0, height = 0, layoutData = VerticalScrollLayoutData(0, 0))
+    }
     // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
     val actualComponent =
         if (fillViewport) {

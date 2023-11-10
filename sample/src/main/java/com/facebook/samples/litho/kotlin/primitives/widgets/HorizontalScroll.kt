@@ -26,9 +26,9 @@ import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.R
-import com.facebook.litho.SimpleNestedTreeLifecycleProvider
 import com.facebook.litho.Size
 import com.facebook.litho.Style
+import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.HorizontalScrollEventsController
 import com.facebook.litho.widget.HorizontalScrollLithoView
@@ -90,8 +90,8 @@ class HorizontalScroll(
       HorizontalScrollLithoView.ScrollPosition(initialScrollPosition)
     }
 
-    val childComponentTree = useState {
-      ComponentTree.createNestedComponentTree(context, child)
+    val childComponentTree = useCached {
+      ComponentTree.createNestedComponentTree(context)
           .incrementalMount(incrementalMountEnabled)
           .build()
     }
@@ -107,8 +107,7 @@ class HorizontalScroll(
         if (scrollbarsAttr == -1) scrollbarEnabled else scrollbarsAttr != 0
 
     return LithoPrimitive(
-        layoutBehavior =
-            HorizontalScrollLayoutBehavior(fillViewport, child, childComponentTree.value),
+        layoutBehavior = HorizontalScrollLayoutBehavior(fillViewport, child, childComponentTree),
         mountBehavior =
             MountBehavior(ViewAllocator { context -> HorizontalScrollLithoView(context) }) {
               doesMountRenderTreeHosts = true
@@ -125,16 +124,12 @@ class HorizontalScroll(
               }
 
               bindWithLayoutData<HorizontalScrollLayoutData>(
-                  childComponentTree.value,
+                  childComponentTree,
                   lastScrollPosition.value,
                   onScrollChangeListener,
                   scrollStateListener) { content, horizontalScrollLayoutData ->
-                    if (context.lifecycleProvider != null) {
-                      childComponentTree.value.subscribeOrUpdateLifecycleProvider(
-                          SimpleNestedTreeLifecycleProvider(context.lifecycleProvider))
-                    }
                     content.mount(
-                        childComponentTree.value,
+                        childComponentTree,
                         lastScrollPosition.value,
                         horizontalScrollLayoutData.measuredWidth,
                         horizontalScrollLayoutData.measuredHeight,
@@ -183,6 +178,12 @@ internal class HorizontalScrollLayoutBehavior(
     private val childComponentTree: ComponentTree
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    if (childComponentTree.isReleased) {
+      return PrimitiveLayoutResult(
+          width = 0,
+          height = 0,
+          layoutData = HorizontalScrollLayoutData(0, 0, DEFAULT_LAYOUT_DIRECTION))
+    }
     val size = Size()
 
     // Measure the component with undefined width spec, as the contents of the
