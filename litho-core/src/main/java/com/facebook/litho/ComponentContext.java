@@ -98,7 +98,7 @@ public class ComponentContext implements Cloneable {
   }
 
   public ComponentContext(Context context, LithoConfiguration lithoConfiguration) {
-    this(context, null, lithoConfiguration, null);
+    this(context, null, lithoConfiguration, null, null, null, null, null);
   }
   /**
    * Constructor that can be used to receive log data from components. Check {@link
@@ -122,6 +122,10 @@ public class ComponentContext implements Cloneable {
         context,
         treeProps,
         buildDefaultLithoConfiguration(context, null, logTag, logger, -1),
+        null,
+        null,
+        null,
+        null,
         null);
   }
 
@@ -129,29 +133,19 @@ public class ComponentContext implements Cloneable {
       Context androidContext,
       @Nullable TreeProps treeProps,
       LithoConfiguration lithoConfiguration,
-      LithoTree lithoTree,
+      @Nullable LithoTree lithoTree,
       @Nullable String globalKey,
       @Nullable LithoLifecycleProvider lifecycleProvider,
       @Nullable Component componentScope,
       @Nullable TreeProps parentTreeProps) {
-    this(androidContext, treeProps, lithoConfiguration, lithoTree);
-    mGlobalKey = globalKey;
-    mLifecycleProvider = lifecycleProvider;
-    mComponentScope = componentScope;
-    mParentTreeProps = parentTreeProps;
-  }
-
-  protected ComponentContext(
-      Context context,
-      @Nullable TreeProps treeProps,
-      @Nullable LithoConfiguration lithoConfiguration,
-      @Nullable LithoTree lithoTree) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
     mContext =
-        Preconditions.checkNotNull(context, "ComponentContext requires a non null Android Context");
+        Preconditions.checkNotNull(
+            androidContext, "ComponentContext requires a non null Android Context");
     mResourceResolver =
         new ResourceResolver(
-            context, ResourceCache.getLatest(context.getResources().getConfiguration()));
+            androidContext,
+            ResourceCache.getLatest(androidContext.getResources().getConfiguration()));
     mTreeProps = treeProps;
     mLithoConfiguration =
         lithoConfiguration != null
@@ -163,6 +157,10 @@ public class ComponentContext implements Cloneable {
     }
 
     mLithoTree = lithoTree;
+    mGlobalKey = globalKey;
+    mLifecycleProvider = lifecycleProvider;
+    mComponentScope = componentScope;
+    mParentTreeProps = parentTreeProps;
   }
 
   public ComponentContext(ComponentContext context) {
@@ -243,6 +241,10 @@ public class ComponentContext implements Cloneable {
         parentTreeContext.getAndroidContext(),
         parentTreeContext.getTreePropsCopy(),
         parentTreeContext.mLithoConfiguration,
+        null,
+        null,
+        null,
+        null,
         null);
   }
 

@@ -70,7 +70,7 @@ public class SectionContext extends ComponentContext {
   }
 
   public SectionContext(Context context, LithoConfiguration config, @Nullable TreeProps treeProps) {
-    super(context, treeProps, config, null);
+    super(context, treeProps, config, null, null, null, null, null);
     mKeyHandler = new KeyHandler();
   }
 
