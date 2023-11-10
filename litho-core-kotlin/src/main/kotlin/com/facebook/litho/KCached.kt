@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.Hook
-import com.facebook.rendercore.primitives.utils.areObjectsEquivalent
+import com.facebook.rendercore.utils.areObjectsEquivalent
 
 /**
  * Create a CachedValue variable within a Component. The [calculator] will provide the calculated

@@ -22,7 +22,7 @@ import android.os.Build;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.OkToExtend;
-import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.util.Arrays;
 
 /** A comparable gradient drawable. */

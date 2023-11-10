@@ -24,7 +24,7 @@ import android.graphics.Path
 import android.graphics.PathDashPathEffect
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.rendercore.primitives.utils.isEquivalentTo
+import com.facebook.rendercore.utils.isEquivalentTo
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test

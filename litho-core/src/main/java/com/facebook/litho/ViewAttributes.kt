@@ -29,8 +29,8 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import com.facebook.litho.drawable.DrawableUtils
-import com.facebook.rendercore.primitives.utils.equals
-import com.facebook.rendercore.primitives.utils.isEquivalentTo
+import com.facebook.rendercore.utils.equals
+import com.facebook.rendercore.utils.isEquivalentTo
 import com.facebook.yoga.YogaDirection
 
 class ViewAttributes {

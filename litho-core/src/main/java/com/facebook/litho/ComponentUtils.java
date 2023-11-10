@@ -20,7 +20,7 @@ import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.Equivalence;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

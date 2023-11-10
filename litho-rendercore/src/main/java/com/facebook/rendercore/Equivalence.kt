@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.primitives
+package com.facebook.rendercore
 
 /** Equivalence is a concept to have a custom equal-like method. */
 fun interface Equivalence<in T> {

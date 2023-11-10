@@ -25,8 +25,8 @@ import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 import com.facebook.rendercore.utils.MeasureSpecUtils
+import com.facebook.rendercore.utils.hasEquivalentFields
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge

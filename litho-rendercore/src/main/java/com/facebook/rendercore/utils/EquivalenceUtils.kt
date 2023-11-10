@@ -16,10 +16,10 @@
 
 @file:JvmName("EquivalenceUtils")
 
-package com.facebook.rendercore.primitives.utils
+package com.facebook.rendercore.utils
 
 import android.util.SparseArray
-import com.facebook.rendercore.primitives.Equivalence
+import com.facebook.rendercore.Equivalence
 
 /** Checks if two objects are equal. */
 fun equals(a: Any?, b: Any?): Boolean {

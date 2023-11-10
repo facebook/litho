@@ -20,8 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.Function;
-import com.facebook.rendercore.primitives.Equivalence;
 import com.facebook.rendercore.utils.CommonUtils;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {

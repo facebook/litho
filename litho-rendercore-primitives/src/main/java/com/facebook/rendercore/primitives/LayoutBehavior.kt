@@ -17,14 +17,15 @@
 package com.facebook.rendercore.primitives
 
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
-import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.exact
 import com.facebook.rendercore.utils.fillSpace
+import com.facebook.rendercore.utils.hasEquivalentFields
 import com.facebook.rendercore.utils.withAspectRatio
 import com.facebook.rendercore.utils.withEqualDimensions
 

@@ -18,7 +18,7 @@ package com.facebook.litho.utils;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)

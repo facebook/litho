@@ -29,8 +29,8 @@ import androidx.annotation.DimenRes
 import androidx.annotation.Dimension
 import androidx.annotation.IntDef
 import androidx.annotation.Px
+import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.ResourceResolver
-import com.facebook.rendercore.primitives.Equivalence
 import com.facebook.yoga.YogaEdge
 
 /**

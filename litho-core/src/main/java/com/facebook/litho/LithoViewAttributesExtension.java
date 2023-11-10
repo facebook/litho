@@ -50,7 +50,7 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
-import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -19,6 +19,7 @@
 package com.facebook.litho
 
 import android.os.Handler
+import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LruResourceCache
 import com.facebook.rendercore.MountItemsPool
@@ -31,7 +32,6 @@ import com.facebook.rendercore.primitives.AspectRatioLayoutBehavior
 import com.facebook.rendercore.primitives.BindScope
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.EqualDimensionsLayoutBehavior
-import com.facebook.rendercore.primitives.Equivalence
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 import com.facebook.rendercore.primitives.FillLayoutBehavior
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior

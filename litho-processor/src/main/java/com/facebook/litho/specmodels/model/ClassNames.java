@@ -29,7 +29,7 @@ public interface ClassNames {
   ClassName EXCEPTION = ClassName.bestGuess("java.lang.Exception");
   ClassName COMMON_UTILS = ClassName.bestGuess("com.facebook.litho.CommonUtils");
   ClassName EQUIVALENCE_UTILS =
-      ClassName.bestGuess("com.facebook.rendercore.primitives.utils.EquivalenceUtils");
+      ClassName.bestGuess("com.facebook.rendercore.utils.EquivalenceUtils");
   ClassName NULLABLE = ClassName.bestGuess("androidx.annotation.Nullable");
 
   String VIEW_NAME = "android.view.View";

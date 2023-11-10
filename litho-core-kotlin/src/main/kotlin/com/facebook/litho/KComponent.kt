@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
-import com.facebook.rendercore.primitives.utils.hasEquivalentFields
+import com.facebook.rendercore.utils.hasEquivalentFields
 
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {

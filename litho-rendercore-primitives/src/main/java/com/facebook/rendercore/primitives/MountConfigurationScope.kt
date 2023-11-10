@@ -18,7 +18,7 @@ package com.facebook.rendercore.primitives
 
 import android.content.Context
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.primitives.utils.areObjectsEquivalent
+import com.facebook.rendercore.utils.areObjectsEquivalent
 import kotlin.reflect.KFunction2
 import kotlin.reflect.KMutableProperty1
 

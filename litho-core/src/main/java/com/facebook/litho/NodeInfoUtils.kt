@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
-import com.facebook.rendercore.primitives.utils.equals
-import com.facebook.rendercore.primitives.utils.isEquivalentTo
+import com.facebook.rendercore.utils.equals
+import com.facebook.rendercore.utils.isEquivalentTo
 
 object NodeInfoUtils {
   @JvmStatic

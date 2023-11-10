@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.Equivalence;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;

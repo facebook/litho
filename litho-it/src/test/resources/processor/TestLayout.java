@@ -897,7 +897,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
         return false;
       }
       CachedInputs cachedValueInputs = (CachedInputs) other;
-      if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(
+      if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(
           globalKey, cachedValueInputs.globalKey)) {
         return false;
       }
