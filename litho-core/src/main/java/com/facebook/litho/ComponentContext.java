@@ -44,7 +44,7 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
  * information used internally in the library.
  */
-public class ComponentContext implements Cloneable {
+public class ComponentContext {
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
@@ -773,16 +773,6 @@ public class ComponentContext implements Cloneable {
 
   public ScopedComponentInfo getScopedComponentInfo() {
     return Preconditions.checkNotNull(mScopedComponentInfo);
-  }
-
-  @Override
-  protected ComponentContext clone() {
-    try {
-      return (ComponentContext) super.clone();
-    } catch (CloneNotSupportedException e) {
-      // Should not be possible!
-      throw new RuntimeException(e);
-    }
   }
 
   boolean shouldCacheLayouts() {
