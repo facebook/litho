@@ -220,7 +220,7 @@ public class ComponentsConfiguration {
 
   public static boolean crashIfExceedingStateUpdateThreshold = false;
 
-  public static boolean enableRecyclerBinderStableId = false;
+  public static boolean enableRecyclerBinderStableId = true;
 
   public static int recyclerBinderStrategy = 0;
 
