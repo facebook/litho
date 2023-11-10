@@ -97,6 +97,9 @@ public class ComponentContext implements Cloneable {
     this(context, null, null);
   }
 
+  public ComponentContext(Context context, LithoConfiguration lithoConfiguration) {
+    this(context, null, lithoConfiguration, null);
+  }
   /**
    * Constructor that can be used to receive log data from components. Check {@link
    * ComponentsLogger} for the type of events you can listen for.
@@ -122,7 +125,7 @@ public class ComponentContext implements Cloneable {
         null);
   }
 
-  public ComponentContext(
+  protected ComponentContext(
       Context androidContext,
       @Nullable TreeProps treeProps,
       LithoConfiguration lithoConfiguration,
@@ -138,7 +141,7 @@ public class ComponentContext implements Cloneable {
     mParentTreeProps = parentTreeProps;
   }
 
-  public ComponentContext(
+  protected ComponentContext(
       Context context,
       @Nullable TreeProps treeProps,
       @Nullable LithoConfiguration lithoConfiguration,
