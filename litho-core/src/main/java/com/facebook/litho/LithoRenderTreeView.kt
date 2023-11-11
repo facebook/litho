@@ -45,7 +45,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     }
 
   override fun getConfiguration(): ComponentsConfiguration? {
-    return layoutState?.componentContext?.componentsConfiguration
+    return layoutState?.componentContext?.lithoConfiguration?.componentsConfig
   }
 
   override fun isIncrementalMountEnabled(): Boolean {

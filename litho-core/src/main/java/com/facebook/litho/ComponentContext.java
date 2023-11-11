@@ -394,10 +394,6 @@ public class ComponentContext {
     return mLithoConfiguration;
   }
 
-  ComponentsConfiguration getComponentsConfiguration() {
-    return mLithoConfiguration.componentsConfig;
-  }
-
   /**
    * Notify the Component Tree that it needs to synchronously perform a state update.
    *

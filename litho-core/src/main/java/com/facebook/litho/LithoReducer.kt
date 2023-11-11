@@ -922,7 +922,7 @@ object LithoReducer {
             result,
             type,
             unit.importantForAccessibility,
-            layoutState.resolveResult.context.componentsConfiguration
+            layoutState.resolveResult.context.lithoConfiguration.componentsConfig
                 .shouldAddRootHostViewOrDisableBgFgOutputs())
 
     if (attrs != null) {
