@@ -43,7 +43,8 @@ class ComponentTreeBuilderTest {
     looper = mock()
     componentsLogger = mock()
     context =
-        ComponentContext(ApplicationProvider.getApplicationContext(), LOG_TAG, componentsLogger)
+        ComponentContext(
+            ApplicationProvider.getApplicationContext(), LOG_TAG, componentsLogger, null)
     root = TestLayoutComponent.create(context).build()
     componentTreeBuilder = ComponentTree.create(context, root)
   }

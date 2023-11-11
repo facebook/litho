@@ -93,24 +93,19 @@ public class ComponentContext {
 
   private final ThreadLocal<CalculationContext> mCalculationStateContextThreadLocal;
 
+  /**
+   * This constructors takes a {@link Context}. This should only be used to create {@link
+   * ComponentTree}
+   */
   public ComponentContext(Context context) {
-    this(context, "", null);
+    this(context, null, null);
   }
 
-  public ComponentContext(Context context, @Nullable LithoConfiguration lithoConfiguration) {
-    this(context, null, lithoConfiguration, null, null, null, null, null);
-  }
-  /**
-   * Constructor that can be used to receive log data from components. Check {@link
-   * ComponentsLogger} for the type of events you can listen for.
-   *
-   * @param context Android context.
-   * @param logTag a log tag to be used with the logger.
-   * @param logger a lifecycle logger to be used.
-   */
   public ComponentContext(
-      Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
-    this(context, logTag, logger, null);
+      Context context,
+      @Nullable LithoConfiguration lithoConfiguration,
+      @Nullable TreeProps treeProps) {
+    this(context, treeProps, lithoConfiguration, null, null, null, null, null);
   }
 
   public ComponentContext(

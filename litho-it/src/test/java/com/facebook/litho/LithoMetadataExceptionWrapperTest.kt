@@ -160,7 +160,7 @@ class LithoMetadataExceptionWrapperTest {
   fun onCreateLayout_withLogTag_showsLogTagInStack() {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null)
+    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
     legacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setRoot(TestCrasherOnCreateLayout.create(c))
@@ -173,7 +173,7 @@ class LithoMetadataExceptionWrapperTest {
   fun onMount_withLogTag_showsLogTagInStack() {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null)
+    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
     legacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setSizePx(100, 100)
@@ -188,7 +188,7 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
     expectedException.expectMessage("<cls>com.facebook.litho.widget.OnClickCallbackComponent</cls>")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null)
+    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
     val component: Component =
         Column.create(c)
             .child(
@@ -210,7 +210,7 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
     expectedException.expectMessage("<cls>com.facebook.litho.widget.TriggerCallbackComponent</cls>")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null)
+    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
     val handle = Handle()
     val component: Component =
         Column.create(c)

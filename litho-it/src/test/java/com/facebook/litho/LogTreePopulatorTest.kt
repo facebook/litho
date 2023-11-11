@@ -36,7 +36,7 @@ class LogTreePopulatorTest {
 
   @Before
   fun setup() {
-    context = ComponentContext(getApplicationContext(), "test", null)
+    context = ComponentContext(getApplicationContext(), "test", null, null)
   }
 
   @Test

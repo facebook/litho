@@ -19,6 +19,7 @@ package com.facebook.samples.litho.kotlin.logging
 import android.os.Bundle
 import android.util.Log
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentContextUtils
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentTreeDebugEventListener
 import com.facebook.litho.LithoView
@@ -33,7 +34,13 @@ class LoggingActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val c = ComponentContext(this, "LITHOSAMPLE", SampleComponentsLogger())
+    val c =
+        ComponentContext(
+            this,
+            ComponentContextUtils.buildDefaultLithoConfiguration(
+                this, null, "LITHOSAMPLE", SampleComponentsLogger(), -1),
+            null)
+
     val lithoView =
         LithoView.create(
             c,
