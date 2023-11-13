@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.TouchExpansionDelegateTest.Companion.emulateClickEvent
 import com.facebook.litho.config.ComponentsConfiguration
@@ -160,7 +161,7 @@ class LithoMetadataExceptionWrapperTest {
   fun onCreateLayout_withLogTag_showsLogTagInStack() {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
+    val c = getComponentContextForTest()
     legacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setRoot(TestCrasherOnCreateLayout.create(c))
@@ -173,7 +174,7 @@ class LithoMetadataExceptionWrapperTest {
   fun onMount_withLogTag_showsLogTagInStack() {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
+    val c = getComponentContextForTest()
     legacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setSizePx(100, 100)
@@ -188,7 +189,7 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
     expectedException.expectMessage("<cls>com.facebook.litho.widget.OnClickCallbackComponent</cls>")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
+    val c = getComponentContextForTest()
     val component: Component =
         Column.create(c)
             .child(
@@ -210,7 +211,7 @@ class LithoMetadataExceptionWrapperTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("log_tag: myLogTag")
     expectedException.expectMessage("<cls>com.facebook.litho.widget.TriggerCallbackComponent</cls>")
-    val c = ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null, null)
+    val c = getComponentContextForTest()
     val handle = Handle()
     val component: Component =
         Column.create(c)
@@ -228,5 +229,14 @@ class LithoMetadataExceptionWrapperTest {
         .measure()
         .layout()
     TriggerCallbackComponent.doTrigger(legacyLithoViewRule.componentTree.context, handle)
+  }
+
+  private fun getComponentContextForTest(): ComponentContext {
+    val androidContext = ApplicationProvider.getApplicationContext<Context>()
+    return ComponentContext(
+        androidContext,
+        ComponentContextUtils.buildDefaultLithoConfiguration(
+            androidContext, null, "myLogTag", null, -1),
+        null)
   }
 }

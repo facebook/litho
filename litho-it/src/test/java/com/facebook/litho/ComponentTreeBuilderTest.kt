@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
@@ -40,11 +41,15 @@ class ComponentTreeBuilderTest {
 
   @Before
   fun setup() {
+    val androidContext = ApplicationProvider.getApplicationContext<Context>()
     looper = mock()
-    componentsLogger = mock()
     context =
         ComponentContext(
-            ApplicationProvider.getApplicationContext(), LOG_TAG, componentsLogger, null)
+            androidContext,
+            ComponentContextUtils.buildDefaultLithoConfiguration(
+                androidContext, null, LOG_TAG, null, -1),
+            null)
+
     root = TestLayoutComponent.create(context).build()
     componentTreeBuilder = ComponentTree.create(context, root)
   }
@@ -62,7 +67,6 @@ class ComponentTreeBuilderTest {
     assertSameAsInternalState(componentTree, root, "mRoot")
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled")
     assertThat(componentTree.isIncrementalMountEnabled).isTrue
-    assertThat(context.logger).isEqualTo(componentsLogger)
     assertThat(context.logTag).isEqualTo(LOG_TAG)
     val handler = Whitebox.getInternalState<Handler>(componentTree, "mLayoutThreadHandler")
     assertThat(looper).isSameAs(handler.looper)

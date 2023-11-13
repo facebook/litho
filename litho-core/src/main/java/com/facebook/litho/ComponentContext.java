@@ -108,22 +108,6 @@ public class ComponentContext {
     this(context, treeProps, lithoConfiguration, null, null, null, null, null);
   }
 
-  public ComponentContext(
-      Context context,
-      @Nullable String logTag,
-      @Nullable ComponentsLogger logger,
-      @Nullable TreeProps treeProps) {
-    this(
-        context,
-        treeProps,
-        buildDefaultLithoConfiguration(context, null, logTag, logger, -1),
-        null,
-        null,
-        null,
-        null,
-        null);
-  }
-
   protected ComponentContext(
       Context androidContext,
       @Nullable TreeProps treeProps,

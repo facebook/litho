@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.facebook.litho.LogTreePopulatorTest.MyKey
 import com.facebook.litho.testing.logging.TestComponentsLogger
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
@@ -36,7 +35,13 @@ class LogTreePopulatorTest {
 
   @Before
   fun setup() {
-    context = ComponentContext(getApplicationContext(), "test", null, null)
+    val androidContext = getApplicationContext<Context>()
+    context =
+        ComponentContext(
+            androidContext,
+            ComponentContextUtils.buildDefaultLithoConfiguration(
+                androidContext, null, "test", null, -1),
+            null)
   }
 
   @Test
