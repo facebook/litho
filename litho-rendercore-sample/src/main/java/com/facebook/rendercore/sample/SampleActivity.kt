@@ -23,7 +23,9 @@ import com.facebook.rendercore.DefaultNode
 import com.facebook.rendercore.DefaultTextNode
 import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderTree
+import com.facebook.rendercore.ResolveResult
 import com.facebook.rendercore.RootHostView
+import com.facebook.rendercore.StateUpdateReceiver
 import com.facebook.rendercore.YogaProps
 import com.facebook.rendercore.text.TextRenderUnit
 import com.facebook.rendercore.text.TextStyle
@@ -38,8 +40,8 @@ class SampleActivity : Activity(), RenderState.Delegate<SurfaceData?> {
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val renderState: RenderState<SurfaceData?, Any?> =
-        RenderState<SurfaceData?, Any?>(
+    val renderState: RenderState<SurfaceData?, Any?, StateUpdateReceiver.StateUpdate<Any?>> =
+        RenderState<SurfaceData?, Any?, StateUpdateReceiver.StateUpdate<Any?>>(
             this,
             this,
             null,
@@ -59,7 +61,7 @@ class SampleActivity : Activity(), RenderState.Delegate<SurfaceData?> {
       val root: DefaultNode =
           DefaultTextNode(YogaProps(), "Hello World!", textRenderUnit, textStyle)
 
-      Pair(root, null)
+      ResolveResult(root, null, null)
     }
   }
 
