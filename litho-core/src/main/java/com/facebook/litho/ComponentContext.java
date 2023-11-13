@@ -22,7 +22,6 @@ import static com.facebook.litho.StateContainer.StateUpdate;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.os.Looper;
 import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorRes;
@@ -315,10 +314,6 @@ public class ComponentContext {
 
   public ResourceResolver getResourceResolver() {
     return mResourceResolver;
-  }
-
-  public final Looper getMainLooper() {
-    return mContext.getMainLooper();
   }
 
   public CharSequence getText(@StringRes int resId) {
