@@ -19,6 +19,64 @@ package com.facebook.rendercore
 import android.view.View
 import android.view.View.MeasureSpec
 
+/** Creates [SizeConstraints] from the provided values. */
+fun SizeConstraints(
+    minWidth: Int,
+    maxWidth: Int,
+    minHeight: Int,
+    maxHeight: Int,
+): SizeConstraints {
+  return SizeConstraints(Helper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
+}
+
+/**
+ * Returns the minWidth and maxWidth represented as width [View.MeasureSpec].
+ *
+ * **IMPORTANT** - this is a lossy conversion. With [View.MeasureSpec], it's not possible to
+ * represent a range of values where the minimum is != 0 so the information about minWidth may be
+ * lost.
+ */
+fun SizeConstraints.toWidthSpec(): Int {
+  if (minWidth == maxWidth) {
+    return MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.EXACTLY)
+  }
+  if (maxWidth != SizeConstraints.Infinity) {
+    return MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST)
+  }
+  return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+}
+
+/**
+ * Returns the minHeight and maxHeight represented as width [View.MeasureSpec].
+ *
+ * **IMPORTANT** - this is a lossy conversion. With [View.MeasureSpec], it's not possible to
+ * represent a range of values where the minimum is != 0 so the information about minHeight may be
+ * lost.
+ */
+fun SizeConstraints.toHeightSpec(): Int {
+  if (minHeight == maxHeight) {
+    return MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY)
+  }
+  if (maxHeight != SizeConstraints.Infinity) {
+    return MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST)
+  }
+  return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+}
+
+/** A maximum width value that can be stored in this [SizeConstraints] instance. */
+val SizeConstraints.MaxPossibleWidthValue: Int
+  get() = Helper.Mode.forRange(minWidth, maxWidth).supportedRange.last
+
+/** A maximum height value that can be stored in this [SizeConstraints] instance. */
+val SizeConstraints.MaxPossibleHeightValue: Int
+  get() = Helper.Mode.forRange(minHeight, maxHeight).supportedRange.last
+
+/** Returns true if the size fits within the given constraints, otherwise returns false. */
+fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
+  return (width in sizeConstraints.minWidth..sizeConstraints.maxWidth) &&
+      (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
+}
+
 /**
  * Size constraints for measuring layouts. The parent container can decide what [SizeConstraints]
  * will be passed to its children, which will use these constraints to measure themselves. When a
@@ -29,25 +87,25 @@ import android.view.View.MeasureSpec
  *
  * In order to avoid runtime overhead, [SizeConstraints] is a Kotlin value class that wraps a Long
  * value. That wrapped Long value encodes [minWidth], [minHeight], [maxWidth], and [maxHeight]
- * values. For mode details about the encoding see [SizeConstraintsHelper.Mode].
+ * values. For mode details about the encoding see [Helper.Mode].
  */
 @JvmInline
 value class SizeConstraints internal constructor(@PublishedApi internal val encodedValue: Long) {
   /** Minimum width in pixels. It'll be always <= maxWidth. */
   val minWidth: Int
-    get() = SizeConstraintsHelper.getMinWidth(encodedValue)
+    get() = Helper.getMinWidth(encodedValue)
 
   /** Maximum width in pixels. It'll be always >= minWidth and <= Infinity. */
   val maxWidth: Int
-    get() = SizeConstraintsHelper.getMaxWidth(encodedValue)
+    get() = Helper.getMaxWidth(encodedValue)
 
   /** Minimum height in pixels. It'll be always <= maxHeight. */
   val minHeight: Int
-    get() = SizeConstraintsHelper.getMinHeight(encodedValue)
+    get() = Helper.getMinHeight(encodedValue)
 
   /** Maximum height in pixels. It'll be always >= minWidth and <= Infinity. */
   val maxHeight: Int
-    get() = SizeConstraintsHelper.getMaxHeight(encodedValue)
+    get() = Helper.getMaxHeight(encodedValue)
 
   /** Returns true if maxWidth is != Infinity, false otherwise. */
   val hasBoundedWidth: Boolean
@@ -101,8 +159,7 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
 
     /** Creates [SizeConstraints] from the provided width and height [View.MeasureSpec]s. */
     fun fromMeasureSpecs(widthSpec: Int, heightSpec: Int): SizeConstraints {
-      val maxSupportedWidth =
-          SizeConstraintsHelper.Mode.forMeasureSpec(widthSpec).supportedRange.last
+      val maxSupportedWidth = Helper.Mode.forMeasureSpec(widthSpec).supportedRange.last
 
       val widthMode = MeasureSpec.getMode(widthSpec)
       val widthSize = MeasureSpec.getSize(widthSpec).coerceIn(0, maxSupportedWidth)
@@ -124,8 +181,7 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
         else -> throw IllegalStateException("Unknown width spec mode.")
       }
 
-      val maxSupportedHeight =
-          SizeConstraintsHelper.Mode.forMeasureSpec(heightSpec).supportedRange.last
+      val maxSupportedHeight = Helper.Mode.forMeasureSpec(heightSpec).supportedRange.last
 
       val heightMode = MeasureSpec.getMode(heightSpec)
       val heightSize = MeasureSpec.getSize(heightSpec).coerceIn(0, maxSupportedHeight)
@@ -147,74 +203,13 @@ value class SizeConstraints internal constructor(@PublishedApi internal val enco
         else -> throw IllegalStateException("Unknown height spec mode.")
       }
 
-      return SizeConstraints(
-          SizeConstraintsHelper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
+      return SizeConstraints(Helper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
     }
   }
 }
 
-/** Creates [SizeConstraints] from the provided values. */
-fun SizeConstraints(
-    minWidth: Int,
-    maxWidth: Int,
-    minHeight: Int,
-    maxHeight: Int,
-): SizeConstraints {
-  return SizeConstraints(
-      SizeConstraintsHelper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
-}
+private object Helper {
 
-/**
- * Returns the minWidth and maxWidth represented as width [View.MeasureSpec].
- *
- * **IMPORTANT** - this is a lossy conversion. With [View.MeasureSpec], it's not possible to
- * represent a range of values where the minimum is != 0 so the information about minWidth may be
- * lost.
- */
-fun SizeConstraints.toWidthSpec(): Int {
-  if (minWidth == maxWidth) {
-    return MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.EXACTLY)
-  }
-  if (maxWidth != SizeConstraints.Infinity) {
-    return MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST)
-  }
-  return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-}
-
-/**
- * Returns the minHeight and maxHeight represented as width [View.MeasureSpec].
- *
- * **IMPORTANT** - this is a lossy conversion. With [View.MeasureSpec], it's not possible to
- * represent a range of values where the minimum is != 0 so the information about minHeight may be
- * lost.
- */
-fun SizeConstraints.toHeightSpec(): Int {
-  if (minHeight == maxHeight) {
-    return MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY)
-  }
-  if (maxHeight != SizeConstraints.Infinity) {
-    return MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST)
-  }
-  return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-}
-
-/** A maximum width value that can be stored in this [SizeConstraints] instance. */
-val SizeConstraints.MaxPossibleWidthValue: Int
-  get() = SizeConstraintsHelper.Mode.forRange(minWidth, maxWidth).supportedRange.last
-
-/** A maximum height value that can be stored in this [SizeConstraints] instance. */
-val SizeConstraints.MaxPossibleHeightValue: Int
-  get() = SizeConstraintsHelper.Mode.forRange(minHeight, maxHeight).supportedRange.last
-
-/** Returns true if the size fits within the given constraints, otherwise returns false. */
-fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
-  return (width in sizeConstraints.minWidth..sizeConstraints.maxWidth) &&
-      (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
-}
-
-private object SizeConstraintsHelper {
-
-  @JvmStatic
   fun sizeConstraints(
       minWidth: Int,
       maxWidth: Int,
@@ -232,7 +227,7 @@ private object SizeConstraintsHelper {
         widthMode.supportedRange.last,
         heightMode.supportedRange.first,
         heightMode.supportedRange.last,
-        "minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
+    )
 
     val encodedWidth: Long = widthMode.encode(minWidth, maxWidth)
     val encodedHeight: Long = heightMode.encode(minHeight, maxHeight)
@@ -240,27 +235,22 @@ private object SizeConstraintsHelper {
     return encodedWidth.shl(32) or encodedHeight
   }
 
-  @JvmStatic
   fun getMinWidth(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.high).decodeMinWidth(sizeConstraints)
   }
 
-  @JvmStatic
   fun getMaxWidth(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.high).decodeMaxWidth(sizeConstraints)
   }
 
-  @JvmStatic
   fun getMinHeight(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.low).decodeMinHeight(sizeConstraints)
   }
 
-  @JvmStatic
   fun getMaxHeight(sizeConstraints: Long): Int {
     return Mode.forConstraints(sizeConstraints.low).decodeMaxHeight(sizeConstraints)
   }
 
-  @JvmStatic
   private fun validateSizes(
       minWidth: Int,
       maxWidth: Int,
@@ -270,39 +260,38 @@ private object SizeConstraintsHelper {
       maxSupportedMaxWidth: Int,
       maxSupportedMinHeight: Int,
       maxSupportedMaxHeight: Int,
-      additionalErrorMessage: String
   ) {
     if (minWidth < 0) {
       throw IllegalArgumentException(
-          "minWidth must be >= 0, but was: $minWidth $additionalErrorMessage")
+          "minWidth must be >= 0, but was: $minWidth. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
     if (minHeight < 0) {
       throw IllegalArgumentException(
-          "minHeight must be >= 0, but was: $minHeight $additionalErrorMessage")
+          "minHeight must be >= 0, but was: $minHeight. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
     if (minWidth > maxSupportedMinWidth && minWidth != SizeConstraints.Infinity) {
       throw IllegalArgumentException(
-          "minWidth must be <= ${maxSupportedMinWidth}, but was: $minWidth. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+          "minWidth must be <= ${maxSupportedMinWidth}, but was: $minWidth. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
     if (maxWidth > maxSupportedMaxWidth && maxWidth != SizeConstraints.Infinity) {
       throw IllegalArgumentException(
-          "maxWidth must be <= ${maxSupportedMaxWidth}, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+          "maxWidth must be <= ${maxSupportedMaxWidth}, but was: $maxWidth. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
     if (minHeight > maxSupportedMinHeight && minHeight != SizeConstraints.Infinity) {
       throw IllegalArgumentException(
-          "minHeight must be <= ${maxSupportedMinHeight}, but was: $minHeight. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+          "minHeight must be <= ${maxSupportedMinHeight}, but was: $minHeight. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
     if (maxHeight > maxSupportedMaxHeight && maxHeight != SizeConstraints.Infinity) {
       throw IllegalArgumentException(
-          "maxHeight must be <= ${maxSupportedMaxHeight}, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors. $additionalErrorMessage")
+          "maxHeight must be <= ${maxSupportedMaxHeight}, but was: $maxHeight. Components this big may affect performance and lead to out of memory errors. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
     if (minWidth > maxWidth) {
       throw IllegalArgumentException(
-          "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth $additionalErrorMessage")
+          "maxWidth must be >= minWidth, but was: maxWidth=$maxWidth; minWidth=$minWidth. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
     if (minHeight > maxHeight) {
       throw IllegalArgumentException(
-          "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight $additionalErrorMessage")
+          "maxHeight must be >= minHeight, but was: maxHeight=$maxHeight; minHeight=$minHeight. minWidth=$minWidth, maxWidth=$maxWidth, minHeight=$minHeight, maxHeight=$maxHeight")
     }
   }
 
@@ -424,18 +413,21 @@ private object SizeConstraintsHelper {
 
       // mask where 30 bits are set to 1
       const val Mask30Bits: Int = 0x3FFFFFFF
+
       // max constraint value representable on 30 bits, we need to subtract 1 because one value is
       // reserved for Infinity
       const val MaxValue30Bits: Int = Mask30Bits - 1
 
       // mask where 18 bits are set to 1
       const val Mask18Bits: Int = 0x3FFFF
+
       // max constraint value representable on 18 bits, we need to subtract 1 because one value is
       // reserved for Infinity
       const val MaxValue18Bits: Int = Mask18Bits - 1
 
       // mask where 13 bits are set to 1
       const val Mask13Bits: Int = 0x1FFF
+
       // max constraint value representable on 13 bits, we need to subtract 1 because one value is
       // reserved for Infinity
       const val MaxValue13Bits: Int = Mask13Bits - 1
