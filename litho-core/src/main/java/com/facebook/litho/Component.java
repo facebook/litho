@@ -982,7 +982,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * Controls how a child aligns in the cross direction, overriding the alignItems of the parent.
      * See <a
-     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
+     * href="https://yogalayout.dev/docs/align-items">https://yogalayout.dev/docs/align-items</a>
      * for more information.
      *
      * <p>Default: {@link YogaAlign#AUTO}
@@ -1010,7 +1010,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * Defined as the ratio between the width and the height of a node. See <a
-     * href="https://yogalayout.com/docs/aspect-ratio">https://yogalayout.com/docs/aspect-ratio</a>
+     * href="https://yogalayout.dev/docs/aspect-ratio">https://yogalayout.dev/docs/aspect-ratio</a>
      * for more information
      */
     public T aspectRatio(float aspectRatio) {
@@ -1190,7 +1190,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * <p>When flex is -1, the component is normally sized according width and height. However, if
      * there's not enough space, the component will shrink to its minWidth and minHeight.
      *
-     * <p>See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for
+     * <p>See <a href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for
      * more information.
      *
      * <p>Default: 0
@@ -1231,7 +1231,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * parent is a container with FlexDirection = column. The FlexBasis of an item is the default
      * size of that item, the size of the item before any FlexGrow and FlexShrink calculations are
      * performed. See <a
-     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for more
      * information.
      *
      * <p>Default: 0
@@ -1250,7 +1250,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * If the sum of childrens' main axis dimensions is less than the minimum size, how much should
      * this component grow? This value represents the "flex grow factor" and determines how much
      * this component should grow along the main axis in relation to any other flexible children.
-     * See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * See <a href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for more
      * information.
      *
      * <p>Default: 0
@@ -1263,7 +1263,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * The FlexShrink property describes how to shrink children along the main axis in the case that
      * the total size of the children overflow the size of the container on the main axis. See <a
-     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for more
      * information.
      *
      * <p>Default: 1
@@ -1387,7 +1387,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * Specifies the height of the element's content area. See <a
-     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * href="https://yogalayout.dev/docs/width-height">https://yogalayout.dev/docs/width-height</a>
      * for more information
      */
     public T heightPx(@Px int height) {
@@ -1489,7 +1489,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * Effects the spacing around the outside of a node. A node with margin will offset itself from
      * the bounds of its parent but also offset the location of any siblings. See <a
-     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a>
      * for more information
      */
     public T marginPx(@Nullable YogaEdge edge, @Px int margin) {
@@ -1633,7 +1633,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * This property has higher priority than all other properties and will always be respected. See
-     * <a href="https://yogalayout.com/docs/min-max/">https://yogalayout.com/docs/min-max/</a> for
+     * <a href="https://yogalayout.dev/docs/min-max/">https://yogalayout.dev/docs/min-max/</a> for
      * more information
      */
     public T minWidthPx(@Px int minWidth) {
@@ -1717,7 +1717,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * Affects the size of the node it is applied to. Padding will not add to the total size of an
      * element if it has an explicit size set. See <a
-     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a>
      * for more information
      */
     public T paddingPx(@Nullable YogaEdge edge, @Px int padding) {
@@ -1765,7 +1765,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * When used in combination with {@link #positionType} of {@link YogaPositionType#ABSOLUTE},
      * allows the component to specify how it should be positioned within its parent. See <a
-     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * href="https://yogalayout.dev/docs/absolute-relative-layout">https://yogalayout.dev/docs/absolute-relative-layout</a>
      * for more information.
      */
     public T positionPx(@Nullable YogaEdge edge, @Px int position) {
@@ -1780,7 +1780,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * Controls how this component will be positioned within its parent. See <a
-     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * href="https://yogalayout.dev/docs/absolute-relative-layout">https://yogalayout.dev/docs/absolute-relative-layout</a>
      * for more details.
      *
      * <p>Default: {@link YogaPositionType#RELATIVE}
@@ -2108,7 +2108,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * Specifies the width of the element's content area. See <a
-     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * href="https://yogalayout.dev/docs/width-height">https://yogalayout.dev/docs/width-height</a>
      * for more information
      */
     public T widthPx(@Px int width) {
@@ -2178,7 +2178,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * The AlignSelf property has the same options and effect as AlignItems but instead of affecting
      * the children within a container, you can apply this property to a single child to change its
      * alignment within its parent. See <a
-     * href="https://yogalayout.com/docs/align-content">https://yogalayout.com/docs/align-content</a>
+     * href="https://yogalayout.dev/docs/align-content">https://yogalayout.dev/docs/align-content</a>
      * for more information.
      *
      * <p>Default: {@link YogaAlign#AUTO}
@@ -2189,7 +2189,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * The AlignItems property describes how to align children along the cross axis of their
      * container. AlignItems is very similar to JustifyContent but instead of applying to the main
      * axis, it applies to the cross axis. See <a
-     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
+     * href="https://yogalayout.dev/docs/align-items">https://yogalayout.dev/docs/align-items</a>
      * for more information.
      *
      * <p>Default: {@link YogaAlign#STRETCH}
@@ -2205,7 +2205,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * container. For example, you can use this property to center a child horizontally within a
      * container with FlexDirection = Row or vertically within one with FlexDirection = Column. See
      * <a
-     * href="https://yogalayout.com/docs/justify-content">https://yogalayout.com/docs/justify-content</a>
+     * href="https://yogalayout.dev/docs/justify-content">https://yogalayout.dev/docs/justify-content</a>
      * for more information.
      *
      * <p>Default: {@link YogaJustify#FLEX_START}
@@ -2223,7 +2223,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * <p>The next line will have the same FlexDirection as the first line and will appear next to
      * the first line along the cross axis - below it if using FlexDirection = Column and to the
      * right if using FlexDirection = Row. See <a
-     * href="https://yogalayout.com/docs/flex-wrap">https://yogalayout.com/docs/flex-wrap</a> for
+     * href="https://yogalayout.dev/docs/flex-wrap">https://yogalayout.dev/docs/flex-wrap</a> for
      * more information.
      *
      * <p>Default: {@link YogaWrap#NO_WRAP}

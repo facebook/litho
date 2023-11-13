@@ -233,7 +233,7 @@ inline fun Style.padding(
 /**
  * Defines padding on the component on a per-edge basis, with a percent value of container's size.
  * See
- * [https://yogalayout.com/docs/margins-paddings-borders](https://yogalayout.com/docs/margins-paddings-borders)
+ * [https://yogalayout.dev/docs/margins-paddings-borders](https://yogalayout.dev/docs/margins-paddings-borders)
  * for more information.
  */
 inline fun Style.paddingPercent(
@@ -284,7 +284,7 @@ inline fun Style.margin(
 /**
  * Defines margin around the component on a per-edge basis, with a percent value of container's
  * size. See
- * [https://yogalayout.com/docs/margins-paddings-borders](https://yogalayout.com/docs/margins-paddings-borders)
+ * [https://yogalayout.dev/docs/margins-paddings-borders](https://yogalayout.dev/docs/margins-paddings-borders)
  * for more information.
  */
 inline fun Style.marginPercent(

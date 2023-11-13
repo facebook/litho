@@ -169,7 +169,7 @@ internal class FlexboxObjectStyleItem(
  * parent's size. Values should be from 0 to 100.
  * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
  *   properties.
- * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
+ * - See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.
  *
  * Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null, flex-basis-percent = null
  */
@@ -190,7 +190,7 @@ inline fun Style.flex(
  * property for this child.
  * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
  *   properties.
- * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
+ * - See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.
  */
 inline fun Style.alignSelf(align: YogaAlign): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.ALIGN_SELF, align)
@@ -216,7 +216,7 @@ inline fun Style.aspectRatio(aspectRatio: Float): Style =
  * For positionType of RELATIVE: the values specified here will define how the child is positioned
  * relative to where that edge would have normally been positioned.
  *
- * See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
+ * See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.
  */
 inline fun Style.position(
     all: Dimen? = null,

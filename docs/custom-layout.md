@@ -4,7 +4,7 @@ title: Manual Measurement
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that can create very complex UIs for layout calculations.  However, there are few exceptions where Yoga is not sufficient and you may need to implement your own measuring and layout logic.
+Litho relies on [Yoga](https://yogalayout.dev/docs/), a powerful layout engine that can create very complex UIs for layout calculations.  However, there are few exceptions where Yoga is not sufficient and you may need to implement your own measuring and layout logic.
 
 Litho provides a manual component measurement API for determining component sizes during layout creation, which enables Developers to implement dynamic logic based on component sizes.
 
