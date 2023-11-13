@@ -39,10 +39,10 @@ public class ResourceResolver {
   private final Resources mResources;
   private final Resources.Theme mTheme;
 
-  @Nullable private final ResourceCache mResourceCache;
+  private final ResourceCache mResourceCache;
   private final Context mAndroidContext;
 
-  public ResourceResolver(Context context, @Nullable ResourceCache resourceCache) {
+  public ResourceResolver(Context context, ResourceCache resourceCache) {
     mAndroidContext = context;
     mResources = mAndroidContext.getResources();
     mTheme = mAndroidContext.getTheme();
@@ -75,7 +75,7 @@ public class ResourceResolver {
   }
 
   public @Nullable String resolveStringRes(@StringRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       String cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -90,22 +90,25 @@ public class ResourceResolver {
     return null;
   }
 
-  public @Nullable String resolveStringRes(@StringRes int resId, Object... formatArgs) {
+  @Nullable
+  public String resolveStringRes(@StringRes int resId, Object... formatArgs) {
     return resId != 0 ? mResources.getString(resId, formatArgs) : null;
   }
 
-  public @Nullable String resolveQuantityStringRes(@PluralsRes int resId, int quantity) {
+  @Nullable
+  public String resolveQuantityStringRes(@PluralsRes int resId, int quantity) {
     return resId != 0 ? mResources.getQuantityString(resId, quantity) : null;
   }
 
-  public @Nullable String resolveQuantityStringRes(
+  @Nullable
+  public String resolveQuantityStringRes(
       @PluralsRes int resId, int quantity, Object... formatArgs) {
     return resId != 0 ? mResources.getQuantityString(resId, quantity, formatArgs) : null;
   }
 
   @Nullable
   public String[] resolveStringArrayRes(@ArrayRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       String[] cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -121,7 +124,7 @@ public class ResourceResolver {
   }
 
   public int resolveIntRes(@IntegerRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -138,7 +141,7 @@ public class ResourceResolver {
 
   @Nullable
   public final int[] resolveIntArrayRes(@ArrayRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       int[] cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -167,7 +170,7 @@ public class ResourceResolver {
   }
 
   public boolean resolveBoolRes(@BoolRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       Boolean cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -183,7 +186,7 @@ public class ResourceResolver {
   }
 
   public @ColorInt int resolveColorRes(@ColorRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -199,7 +202,7 @@ public class ResourceResolver {
   }
 
   public int resolveDimenSizeRes(@DimenRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -215,7 +218,7 @@ public class ResourceResolver {
   }
 
   public int resolveDimenOffsetRes(@DimenRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -231,7 +234,7 @@ public class ResourceResolver {
   }
 
   public float resolveFloatRes(@DimenRes int resId) {
-    if (mResourceCache != null && resId != 0) {
+    if (resId != 0) {
       Float cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
@@ -252,21 +255,17 @@ public class ResourceResolver {
       return null;
     }
 
-    if (mResourceCache != null) {
-      final Drawable cachedDrawable = mResourceCache.getDrawable(resId, mResources);
-      if (cachedDrawable != null) {
-        return cachedDrawable;
-      }
-
-      final Drawable result = ContextCompat.getDrawable(mAndroidContext, resId);
-      if (result != null) {
-        mResourceCache.setDrawable(resId, result);
-      }
-
-      return result;
-    } else {
-      return ContextCompat.getDrawable(mAndroidContext, resId);
+    final Drawable cachedDrawable = mResourceCache.getDrawable(resId, mResources);
+    if (cachedDrawable != null) {
+      return cachedDrawable;
     }
+
+    final Drawable result = ContextCompat.getDrawable(mAndroidContext, resId);
+    if (result != null) {
+      mResourceCache.setDrawable(resId, result);
+    }
+
+    return result;
   }
 
   @Nullable
