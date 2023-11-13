@@ -412,6 +412,11 @@ public class LithoView extends BaseMountingView {
     assertMainThread();
     assertNotInMeasure();
 
+    // Cannot set a released ComponentTree
+    if (componentTree != null && componentTree.isReleased()) {
+      return;
+    }
+
     mTemporaryDetachedComponentTree = null;
     if (mComponentTree == componentTree) {
       if (ComponentsConfiguration.bindOnSameComponentTree && isAttached()) {
