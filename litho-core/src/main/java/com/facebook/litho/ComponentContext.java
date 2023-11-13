@@ -146,7 +146,7 @@ public class ComponentContext {
     this(context, context.mTreeProps);
   }
 
-  public ComponentContext(ComponentContext context, @Nullable TreeProps treeProps) {
+  protected ComponentContext(ComponentContext context, @Nullable TreeProps treeProps) {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
