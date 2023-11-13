@@ -22,6 +22,7 @@ litho_android_library(
         "src/main/java/com/facebook/rendercore/**/*.kt",
     ]),
     autoglob = False,
+    extra_kotlinc_arguments = ["-Xjvm-default=all"],
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JSR_TARGET,
