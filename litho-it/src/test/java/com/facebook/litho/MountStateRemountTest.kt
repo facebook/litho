@@ -43,7 +43,8 @@ import org.robolectric.annotation.LooperMode
 class MountStateRemountTest {
 
   private val config =
-      ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build()
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
+
   private lateinit var context: ComponentContext
 
   @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)

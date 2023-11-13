@@ -353,7 +353,7 @@ public class DataDiffSectionSpec<T> {
         renderInfo = ComponentRenderInfo.createEmpty();
       }
 
-      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled) {
         renderInfo.addDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, mSectionContext.getSectionScope());
       }
 
@@ -437,7 +437,7 @@ public class DataDiffSectionSpec<T> {
         } else {
           isSameItemEventState = mIsSameItemEventStates.get();
         }
-        if (ComponentsConfiguration.reduceMemorySpikeDataDiffSection()
+        if (ComponentsConfiguration.reduceMemorySpikeDataDiffSection
             && hasEventDispatcher != null
             && isSameItemEventState != null
             && isSameItemEventState.previousItem == sDummy.previousItem) {

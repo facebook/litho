@@ -45,17 +45,16 @@ class LayoutStateFutureReleaseTest {
   private var widthSpec = 0
   private var heightSpec = 0
   private lateinit var context: ComponentContext
-  private val config =
-      ComponentsConfiguration.getDefaultComponentsConfiguration().useCancelableLayoutFutures
   private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
+
+  private val defaultConfig = ComponentsConfiguration.defaultInstance
 
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.getDefaultComponentsConfigurationBuilder()
-            .useCancelableLayoutFutures(true))
+    ComponentsConfiguration.defaultInstance = defaultConfig.copy(useCancellableLayoutFutures = true)
+
     widthSpec = makeSizeSpec(40, EXACTLY)
     heightSpec = makeSizeSpec(40, EXACTLY)
     layoutThreadShadowLooper =
@@ -75,9 +74,7 @@ class LayoutStateFutureReleaseTest {
 
   @After
   fun tearDown() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.getDefaultComponentsConfigurationBuilder()
-            .useCancelableLayoutFutures(config))
+    ComponentsConfiguration.defaultInstance = defaultConfig
   }
 
   @Test
@@ -170,8 +167,7 @@ class LayoutStateFutureReleaseTest {
     val handler = ThreadPoolLayoutHandler.getNewInstance(LayoutThreadPoolConfigurationImpl(1, 1, 5))
     componentTree =
         ComponentTree.create(context, column_0)
-            .componentsConfiguration(
-                ComponentsConfiguration.create().useCancelableLayoutFutures(true).build())
+            .componentsConfiguration(defaultConfig.copy(useCancellableLayoutFutures = true))
             .layoutThreadHandler(handler)
             .build()
     componentTree.setLithoView(LithoView(context))

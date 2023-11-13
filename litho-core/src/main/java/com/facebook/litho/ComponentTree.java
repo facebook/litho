@@ -2196,7 +2196,7 @@ public class ComponentTree
     final boolean isInterruptible =
         !LayoutState.isFromSyncLayout(source)
             && (mContext.mLithoConfiguration.componentsConfig.getUseInterruptibleResolution()
-                || mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures());
+                || mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures());
 
     ResolveTreeFuture treeFuture =
         new ResolveTreeFuture(
@@ -2230,7 +2230,7 @@ public class ComponentTree
     if (resolveResult == null) {
       if (!isReleased()
           && isFromSyncLayout(source)
-          && !mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures()) {
+          && !mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures()) {
         final String errorMessage =
             "ResolveResult is null, but only async operations can return a null ResolveResult. Source: "
                 + layoutSourceToString(source)
@@ -2427,7 +2427,7 @@ public class ComponentTree
     if (layoutState == null) {
       if (!isReleased()
           && isSync
-          && !mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures()) {
+          && !mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures()) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
@@ -2834,7 +2834,7 @@ public class ComponentTree
    * after that because it's in an incomplete state, so it needs to be released.
    */
   public void cancelLayoutAndReleaseTree() {
-    if (!mContext.mLithoConfiguration.componentsConfig.getUseCancelableLayoutFutures()) {
+    if (!mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           TAG,

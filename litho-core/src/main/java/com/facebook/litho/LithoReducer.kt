@@ -91,7 +91,7 @@ object LithoReducer {
 
     var parent: RenderTreeNode? = null
     var hierarchy: DebugHierarchy.Node? = null
-    if (c.mLithoConfiguration.componentsConfig.isShouldAddHostViewForRootComponent) {
+    if (c.mLithoConfiguration.componentsConfig.shouldAddHostViewForRootComponent) {
       hierarchy = if (root is LithoLayoutResult) root.node.getDebugHierarchy() else null
       addRootHostRenderTreeNode(layoutState, root, hierarchy)
       parent = layoutState.mMountableOutputs[0]
@@ -518,7 +518,7 @@ object LithoReducer {
     }
 
     // 2. Add background if defined.
-    if (!context.mLithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs()) {
+    if (!context.mLithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs) {
       result.backgroundRenderUnit?.let { backgroundRenderUnit ->
         val backgroundRenderTreeNode =
             addDrawableRenderTreeNode(
@@ -607,7 +607,7 @@ object LithoReducer {
     }
 
     // 6. Add foreground if defined.
-    if (!context.mLithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs()) {
+    if (!context.mLithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs) {
       result.foregroundRenderUnit?.let { foregroundRenderUnit ->
         val foregroundRenderTreeNode: RenderTreeNode =
             addDrawableRenderTreeNode(
@@ -923,7 +923,7 @@ object LithoReducer {
             type,
             unit.importantForAccessibility,
             layoutState.resolveResult.context.lithoConfiguration.componentsConfig
-                .shouldAddRootHostViewOrDisableBgFgOutputs())
+                .shouldAddRootHostViewOrDisableBgFgOutputs)
 
     if (attrs != null) {
       layoutState.mRenderUnitsWithViewAttributes[id] = attrs

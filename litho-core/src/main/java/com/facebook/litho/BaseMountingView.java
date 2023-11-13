@@ -644,7 +644,7 @@ public abstract class BaseMountingView extends ComponentHost
   @Override
   public void onRegisterForPremount(@Nullable Long frameTime) {
     final @Nullable ComponentsConfiguration config = getConfiguration();
-    if (config != null && config.useIncrementalMountGapWorker()) {
+    if (config != null && config.useIncrementalMountGapWorker) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onRegisterForPremount");
@@ -660,7 +660,7 @@ public abstract class BaseMountingView extends ComponentHost
   @Override
   public void onUnregisterForPremount() {
     final @Nullable ComponentsConfiguration config = getConfiguration();
-    if (config != null && config.useIncrementalMountGapWorker()) {
+    if (config != null && config.useIncrementalMountGapWorker) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onUnregisterForPremount");
@@ -816,7 +816,7 @@ public abstract class BaseMountingView extends ComponentHost
     if (hasTree()) {
       if (isIncrementalMountEnabled()) {
         final @Nullable ComponentsConfiguration config = getConfiguration();
-        boolean useGapWorker = config != null && config.useIncrementalMountGapWorker();
+        boolean useGapWorker = config != null && config.useIncrementalMountGapWorker;
         mLithoHostListenerCoordinator.enableIncrementalMount(useGapWorker);
       } else {
         mLithoHostListenerCoordinator.disableIncrementalMount();

@@ -179,7 +179,7 @@ public class SingleComponentSectionSpec {
       SectionContext c,
       Diff<Component> component,
       @Nullable Diff<ComponentsLogger> componentsLogger) {
-    if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+    if (ComponentsConfiguration.isRenderInfoDebuggingEnabled) {
       builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV, component.getPrevious());
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_NEXT, component.getNext());

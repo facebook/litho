@@ -324,7 +324,7 @@ object LithoNodeUtils {
       flags = flags or LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS
     }
     if (ComponentContext.getComponentsConfig(node.headComponentContext)
-        .shouldAddRootHostViewOrDisableBgFgOutputs()) {
+        .shouldAddRootHostViewOrDisableBgFgOutputs) {
       flags = flags or LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED
     }
     if (nodeInfo?.hasTouchEventHandlers() == true) {

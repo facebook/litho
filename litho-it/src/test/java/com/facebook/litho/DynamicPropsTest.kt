@@ -54,7 +54,8 @@ class DynamicPropsTest {
 
   private lateinit var context: ComponentContext
 
-  val config = ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build()
+  val config =
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
 
   @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
 

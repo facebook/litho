@@ -1368,7 +1368,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
     private fun hasSelectedStateWhenDisablingDrawableOutputs(node: LithoNode): Boolean =
         ComponentContext.getComponentsConfig(node.headComponentContext)
-            .isShouldAddHostViewForRootComponent &&
+            .shouldAddHostViewForRootComponent &&
             !node.willMountView &&
             node.nodeInfo != null &&
             node.nodeInfo?.selectedState != NodeInfo.SELECTED_UNSET
@@ -1434,7 +1434,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       // tree is mounted. Click handling is also considered accessibility content but
       // this is already covered separately i.e. click handler is not null.
       val hasBackgroundOrForeground =
-          ComponentContext.getComponentsConfig(c).shouldAddRootHostViewOrDisableBgFgOutputs() &&
+          ComponentContext.getComponentsConfig(c).shouldAddRootHostViewOrDisableBgFgOutputs &&
               (node.background != null || node.foreground != null)
       val hasAccessibilityContent =
           (context?.isAccessibilityEnabled == true) &&

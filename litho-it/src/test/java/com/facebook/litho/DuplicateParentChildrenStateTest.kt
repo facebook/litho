@@ -37,7 +37,8 @@ class DuplicateParentChildrenStateTest {
   val lithoViewRule: LithoViewRule =
       LithoViewRule(
           componentsConfiguration =
-              ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+              ComponentsConfiguration.defaultInstance.copy(
+                  shouldAddHostViewForRootComponent = true))
 
   @Test
   fun duplicateParentState_avoidedIfRedundant() {

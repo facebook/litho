@@ -822,7 +822,7 @@ public class RecyclerBinder
       // off, so always disable it in that case
       incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
       if (preallocateMountContentHandler == null
-          && componentContext.mLithoConfiguration.componentsConfig.isNestedPreallocationEnabled()) {
+          && componentContext.mLithoConfiguration.componentsConfig.nestedPreallocationEnabled) {
         preallocateMountContentHandler = ComponentContext.getMountContentPreallocationHandler(c);
       }
       visibilityProcessing =
@@ -4021,7 +4021,7 @@ public class RecyclerBinder
         }
       }
 
-      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled) {
         RenderInfoDebugInfoRegistry.setRenderInfoToViewMapping(
             holder.itemView,
             renderInfo.getDebugInfo(RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG));

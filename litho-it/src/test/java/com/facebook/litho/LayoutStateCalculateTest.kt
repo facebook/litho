@@ -73,7 +73,8 @@ import org.robolectric.shadows.ShadowAccessibilityManager
 @RunWith(LithoTestRunner::class)
 class LayoutStateCalculateTest {
 
-  val config = ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build()
+  val config =
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
 
   @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
   private lateinit var context: ComponentContext

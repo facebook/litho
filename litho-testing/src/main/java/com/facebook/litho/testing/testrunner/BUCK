@@ -12,7 +12,7 @@ load(
 
 litho_android_library(
     name = "testrunner",
-    language = "JAVA",
+    pure_kotlin = False,
     visibility = [
         "PUBLIC",
     ],

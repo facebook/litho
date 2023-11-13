@@ -85,7 +85,7 @@ class MountStateIncrementalMountTest {
   @Rule
   val legacyLithoViewRule =
       LegacyLithoViewRule(
-          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Before
   fun setup() {

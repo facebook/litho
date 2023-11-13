@@ -76,7 +76,7 @@ class NestedPreallocationTest {
     val componentTree =
         ComponentTree.create(context, EmptyComponent())
             .componentsConfiguration(
-                ComponentsConfiguration.create().nestedPreallocationEnabled(true).build())
+                ComponentsConfiguration.defaultInstance.copy(nestedPreallocationEnabled = true))
             .shouldPreallocateMountContentPerMountSpec(preallocationEnabled)
             .useDefaultHandlerForContentPreallocation()
             .build()

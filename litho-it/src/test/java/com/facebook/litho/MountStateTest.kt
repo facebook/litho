@@ -187,9 +187,8 @@ class MountStateTest {
         .useComponentTree(
             ComponentTree.create(context)
                 .componentsConfiguration(
-                    ComponentsConfiguration.create()
-                        .shouldAddHostViewForRootComponent(true)
-                        .build())
+                    ComponentsConfiguration.defaultInstance.copy(
+                        shouldAddHostViewForRootComponent = true))
                 .build())
         .attachToWindow()
         .setRoot(root)

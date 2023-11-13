@@ -42,29 +42,29 @@ class ComponentsConfigurationTest {
   private val componentContext =
       ComponentContext(ApplicationProvider.getApplicationContext<Context>())
 
-  private val defaultBuilder = ComponentsConfiguration.getDefaultComponentsConfigurationBuilder()
+  private val defaultConfiguration = ComponentsConfiguration.defaultInstance
 
   @Test
   fun testSetFlagThroughComponentConfigToComponentTree() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useCancelableLayoutFutures(true))
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(useCancellableLayoutFutures = true)
     val componentTree =
         ComponentTree.create(componentContext)
-            .componentsConfiguration(ComponentsConfiguration.getDefaultComponentsConfiguration())
+            .componentsConfiguration(ComponentsConfiguration.defaultInstance)
             .build()
     val componentsConfiguration = componentTree.context.mLithoConfiguration.componentsConfig
 
-    assertThat(componentsConfiguration.useCancelableLayoutFutures).isTrue
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(defaultBuilder)
+    assertThat(componentsConfiguration.useCancellableLayoutFutures).isTrue
+    ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testSetFlagThroughComponentConfigToComponentTreeWithRecyclerCollectionComponent() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useCancelableLayoutFutures(true))
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(useCancellableLayoutFutures = true)
     val recyclerBinderConfiguration =
         RecyclerBinderConfiguration.create()
-            .componentsConfiguration(ComponentsConfiguration.getDefaultComponentsConfiguration())
+            .componentsConfiguration(ComponentsConfiguration.defaultInstance)
             .build()
     legacyLithoViewRule
         .setRoot(
@@ -88,22 +88,20 @@ class ComponentsConfigurationTest {
     assertThat(childView).isNotNull
     val componentsConfiguration =
         childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig
-    assertThat(componentsConfiguration?.useCancelableLayoutFutures).isTrue
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(defaultBuilder)
+    assertThat(componentsConfiguration?.useCancellableLayoutFutures).isTrue
+    ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testOverrideDefaultBuilder() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useCancelableLayoutFutures(true))
-    assertThat(
-            ComponentsConfiguration.getDefaultComponentsConfiguration().useCancelableLayoutFutures)
-        .isTrue
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useCancelableLayoutFutures(false))
-    assertThat(
-            ComponentsConfiguration.getDefaultComponentsConfiguration().useCancelableLayoutFutures)
-        .isFalse
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(defaultBuilder)
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(useCancellableLayoutFutures = true)
+    assertThat(ComponentsConfiguration.defaultInstance.useCancellableLayoutFutures).isTrue
+
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(useCancellableLayoutFutures = false)
+    assertThat(ComponentsConfiguration.defaultInstance.useCancellableLayoutFutures).isFalse
+
+    ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 }

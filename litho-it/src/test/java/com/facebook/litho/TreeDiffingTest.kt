@@ -56,7 +56,7 @@ class TreeDiffingTest {
   @Rule
   val legacyLithoViewRule =
       LegacyLithoViewRule(
-          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Before
   @Throws(Exception::class)

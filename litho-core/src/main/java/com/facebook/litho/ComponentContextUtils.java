@@ -97,7 +97,7 @@ public class ComponentContextUtils {
       @Nullable ComponentsLogger logger,
       int treeID) {
     ComponentsLogger loggerToUse =
-        logger != null ? logger : ComponentsConfiguration.sComponentsLogger;
+        logger != null ? logger : ComponentsConfiguration.componentsLogger;
 
     String logTagToUse = logTag;
     if (logTag == null && logger == null && loggerToUse != null) {
@@ -105,7 +105,7 @@ public class ComponentContextUtils {
     }
 
     return new LithoConfiguration(
-        ComponentsConfiguration.getDefaultComponentsConfiguration(),
+        ComponentsConfiguration.defaultInstance,
         AnimationsDebug.areTransitionsEnabled(context),
         ComponentsConfiguration.overrideReconciliation != null
             ? ComponentsConfiguration.overrideReconciliation

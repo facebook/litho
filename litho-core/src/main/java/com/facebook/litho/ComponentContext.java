@@ -767,11 +767,12 @@ public class ComponentContext {
   }
 
   boolean shouldCacheLayouts() {
-    return isReconciliationEnabled() && mLithoConfiguration.componentsConfig.shouldCacheLayouts();
+    return isReconciliationEnabled()
+        && mLithoConfiguration.componentsConfig.getShouldCacheLayouts();
   }
 
   public final boolean shouldUseNonRebindingEventHandlers() {
-    return mLithoConfiguration.componentsConfig.useNonRebindingEventHandlers();
+    return mLithoConfiguration.componentsConfig.getUseNonRebindingEventHandlers();
   }
 
   boolean isNestedTreeContext() {
