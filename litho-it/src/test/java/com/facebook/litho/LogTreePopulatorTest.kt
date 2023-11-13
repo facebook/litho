@@ -40,7 +40,7 @@ class LogTreePopulatorTest {
         ComponentContext(
             androidContext,
             ComponentContextUtils.buildDefaultLithoConfiguration(
-                androidContext, null, "test", null, -1),
+                androidContext, null, "test", null),
             null)
   }
 

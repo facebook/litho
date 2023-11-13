@@ -94,8 +94,7 @@ public class ComponentContextUtils {
       Context context,
       final @Nullable VisibilityBoundsTransformer transformer,
       @Nullable String logTag,
-      @Nullable ComponentsLogger logger,
-      int treeID) {
+      @Nullable ComponentsLogger logger) {
     ComponentsLogger loggerToUse =
         logger != null ? logger : ComponentsConfiguration.componentsLogger;
 
@@ -117,9 +116,7 @@ public class ComponentContextUtils {
         DefaultErrorEventHandler.INSTANCE,
         logTagToUse,
         loggerToUse,
-        treeID != ComponentTree.INVALID_ID
-            ? new RenderUnitIdGenerator(treeID)
-            : null, // TODO check if we can make this not nullable and always instantiate one
+        null,
         transformer,
         null);
   }

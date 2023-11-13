@@ -236,7 +236,7 @@ class LithoMetadataExceptionWrapperTest {
     return ComponentContext(
         androidContext,
         ComponentContextUtils.buildDefaultLithoConfiguration(
-            androidContext, null, "myLogTag", null, -1),
+            androidContext, null, "myLogTag", null),
         null)
   }
 }

@@ -50,8 +50,7 @@ public class SectionContext extends ComponentContext {
   public SectionContext(ComponentContext context) {
     this(
         context.getAndroidContext(),
-        buildDefaultLithoConfiguration(
-            context.getAndroidContext(), null, context.getLogTag(), context.getLogger(), -1),
+        buildDefaultLithoConfiguration(context.getAndroidContext(), null, null, null),
         context.getTreePropsCopy());
   }
 
