@@ -22,5 +22,5 @@
 
   <!-- This is the version BUCK tests will run against to -->
   <uses-sdk
-      android:targetSdkVersion="19" />
+      android:targetSdkVersion="33" />
 </manifest>

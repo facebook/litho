@@ -40,7 +40,7 @@ import org.robolectric.shadows.ShadowLooper;
 @LooperMode(LooperMode.Mode.LEGACY)
 @Config(
     shadows = TextureWarmerTest.ShadowPicture.class,
-    sdk = {Build.VERSION_CODES.KITKAT})
+    sdk = {Build.VERSION_CODES.LOLLIPOP})
 @RunWith(LithoTestRunner.class)
 public class TextureWarmerTest {
   private ShadowLooper mShadowLooper;
