@@ -74,6 +74,22 @@ public class ResourceResolver {
     return pixels / scale;
   }
 
+  public @Nullable CharSequence resolveText(@StringRes int resId) {
+    if (resId != 0) {
+      CharSequence cached = mResourceCache.get(resId);
+      if (cached != null) {
+        return cached;
+      }
+
+      CharSequence result = mResources.getText(resId);
+      mResourceCache.set(resId, result);
+
+      return result;
+    }
+
+    return null;
+  }
+
   public @Nullable String resolveStringRes(@StringRes int resId) {
     if (resId != 0) {
       String cached = mResourceCache.get(resId);
