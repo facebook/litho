@@ -19,8 +19,10 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.testing.unspecified
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
@@ -69,7 +71,13 @@ class LithoNodeTouchExpansionTest {
     val context =
         LayoutContext(
             context.androidContext, LithoRenderContext(lithoLayoutContext), 0, LayoutCache(), null)
-    return node.calculateLayout(context, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
+    return node.calculateLayout(
+        context,
+        SizeConstraints.fromMeasureSpecs(
+            widthSpec = unspecified(),
+            heightSpec = unspecified(),
+        ),
+    )
   }
 
   @Test

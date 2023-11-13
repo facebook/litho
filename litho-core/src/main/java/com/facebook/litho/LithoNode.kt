@@ -44,7 +44,10 @@ import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.Node
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.Primitive
+import com.facebook.rendercore.toHeightSpec
+import com.facebook.rendercore.toWidthSpec
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
@@ -290,12 +293,11 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
   // endregion
 
   override fun calculateLayout(
-      c: LayoutContext<LithoRenderContext>,
-      widthSpec: Int,
-      heightSpec: Int
+      context: LayoutContext<LithoRenderContext>,
+      sizeConstraints: SizeConstraints,
   ): LithoLayoutResult {
 
-    val renderContext: LithoRenderContext? = c.renderContext
+    val renderContext: LithoRenderContext? = context.renderContext
     checkNotNull(renderContext) { "Cannot calculate a layout without RenderContext." }
     check(!renderContext.lithoLayoutContext.isReleased) {
       "Cannot calculate a layout with a released LayoutStateContext."
@@ -309,14 +311,17 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       ComponentsSystrace.beginSection("buildYogaTree:${headComponent.simpleName}")
     }
 
-    val layoutResult: LithoLayoutResult = buildYogaTree(context = c, currentNode = this)
+    val layoutResult: LithoLayoutResult = buildYogaTree(context = context, currentNode = this)
     val yogaRoot: YogaNode = layoutResult.yogaNode
 
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
 
-    if (isLayoutDirectionInherit && Layout.isLayoutDirectionRTL(c.androidContext)) {
+    val widthSpec = sizeConstraints.toWidthSpec()
+    val heightSpec = sizeConstraints.toHeightSpec()
+
+    if (isLayoutDirectionInherit && Layout.isLayoutDirectionRTL(context.androidContext)) {
       yogaRoot.setDirection(YogaDirection.RTL)
     }
     if (YogaConstants.isUndefined(yogaRoot.width.value)) {

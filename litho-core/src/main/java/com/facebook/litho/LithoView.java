@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.utils.MeasureSpecUtils.unspecified;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -823,7 +824,7 @@ public class LithoView extends BaseMountingView {
    */
   public interface LayoutManagerOverrideParams {
 
-    int UNINITIALIZED = -1;
+    int UNINITIALIZED = unspecified();
 
     int getWidthMeasureSpec();
 

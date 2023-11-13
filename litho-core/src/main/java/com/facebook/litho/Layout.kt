@@ -22,6 +22,7 @@ import android.view.View
 import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
 import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaNode
@@ -50,7 +51,8 @@ internal object Layout {
             0,
             lithoLayoutContext.layoutCache,
             null)
-    val result: LithoLayoutResult = node.calculateLayout(context, widthSpec, heightSpec)
+    val result: LithoLayoutResult =
+        node.calculateLayout(context, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
 
     layoutStatePerfEvent?.markerPoint("end_measure")
 
