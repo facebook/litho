@@ -50,10 +50,10 @@
   <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.config</a><span class="delimiter">/</span><span class="current">ComponentsConfiguration</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Components</span><wbr><span><span>Configuration</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">ComponentsConfiguration</a></div><p class="paragraph">Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It contains mainly flags for features that are either under active development and not ready for public consumption, or for use in experiments. </p><p class="paragraph">These values are safe defaults and should not require manual changes. </p><p class="paragraph">This class hosts all the config parameters that the ComponentTree configures it self .... enable and disable features ... A Component tree uses the <a href="default-components-configuration.html">defaultComponentsConfiguration</a> by default but a <a href="-builder/index.html">Builder</a> can be used to create new instances of the config to override the default parameters ... The default config values can also be overridden by manually setting their values in <a href="../../../litho-core/com.facebook.litho.config/-components-configuration/default-builder.html">defaultBuilder</a></p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">ComponentsConfiguration</a></div><p class="paragraph">Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It contains mainly flags for features that are either under active development and not ready for public consumption, or for use in experiments.</p><p class="paragraph">These values are safe defaults and should not require manual changes.</p><p class="paragraph">This class hosts all the config parameters that the ComponentTree configures it self .... enable and disable features ... A Component tree uses the .defaultComponentsConfiguration by default but a <a href="-builder/index.html">Builder</a> can be used to create new instances of the config to override the default parameters ... The default config values can also be overridden by manually setting their values in .defaultBuilder</p></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
     <div class="tabs-section-body">
       <h2 class="">Types</h2>
       <div class="table" data-togglable="Types"><a data-name="-865239322%2FClasslikes%2F947585829" anchor-label="Builder" id="-865239322%2FClasslikes%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
@@ -66,1271 +66,144 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-builder/index.html">Builder</a></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-builder/index.html">Builder</a></div><div class="brief "><p class="paragraph">This is a builder that only exists so that Java clients can have an easier time creating and overriding specific configurations. For Kotlin one can use directly the named parameters on the <a href="index.html">ComponentsConfiguration</a> constructor.</p></div></div></div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="-403335593%2FFunctions%2F947585829" anchor-label="create" id="-403335593%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="-1766629227%2FClasslikes%2F947585829" anchor-label="Companion" id="-1766629227%2FClasslikes%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="create.html"><span><span>create</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-403335593%2FFunctions%2F947585829"></span>
+                <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1766629227%2FClasslikes%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-builder/index.html">ComponentsConfiguration.Builder</a></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><a href="index.html">ComponentsConfiguration</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-builder/index.html">ComponentsConfiguration.Builder</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-594167322%2FFunctions%2F947585829" anchor-label="getDefaultComponentsConfigurationBuilder" id="-594167322%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="get-default-components-configuration-builder.html"><span>get</span><wbr><span>Default</span><wbr><span>Components</span><wbr><span>Configuration</span><wbr><span><span>Builder</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-594167322%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-default-components-configuration-builder.html"><span class="token function">getDefaultComponentsConfigurationBuilder</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-builder/index.html">ComponentsConfiguration.Builder</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="2096362349%2FFunctions%2F947585829" anchor-label="getUseCancelableLayoutFutures" id="2096362349%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="get-use-cancelable-layout-futures.html"><span>get</span><wbr><span>Use</span><wbr><span>Cancelable</span><wbr><span>Layout</span><wbr><span><span>Futures</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2096362349%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-use-cancelable-layout-futures.html"><span class="token function">getUseCancelableLayoutFutures</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1785296738%2FFunctions%2F947585829" anchor-label="getUseInterruptibleResolution" id="-1785296738%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="get-use-interruptible-resolution.html"><span>get</span><wbr><span>Use</span><wbr><span>Interruptible</span><wbr><span><span>Resolution</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1785296738%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-use-interruptible-resolution.html"><span class="token function">getUseInterruptibleResolution</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1202117875%2FFunctions%2F947585829" anchor-label="isNestedPreallocationEnabled" id="-1202117875%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-nested-preallocation-enabled.html"><span>is</span><wbr><span>Nested</span><wbr><span>Preallocation</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1202117875%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-nested-preallocation-enabled.html"><span class="token function">isNestedPreallocationEnabled</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-2147094805%2FFunctions%2F947585829" anchor-label="isRenderInfoDebuggingEnabled" id="-2147094805%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-render-info-debugging-enabled.html"><span>is</span><wbr><span>Render</span><wbr><span>Info</span><wbr><span>Debugging</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2147094805%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-render-info-debugging-enabled.html"><span class="token function">isRenderInfoDebuggingEnabled</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="909085419%2FFunctions%2F947585829" anchor-label="isShouldAddHostViewForRootComponent" id="909085419%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-should-add-host-view-for-root-component.html"><span>is</span><wbr><span>Should</span><wbr><span>Add</span><wbr><span>Host</span><wbr><span>View</span><wbr><span>For</span><wbr><span>Root</span><wbr><span><span>Component</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="909085419%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-should-add-host-view-for-root-component.html"><span class="token function">isShouldAddHostViewForRootComponent</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1926709227%2FFunctions%2F947585829" anchor-label="reduceMemorySpikeDataDiffSection" id="-1926709227%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="reduce-memory-spike-data-diff-section.html"><span>reduce</span><wbr><span>Memory</span><wbr><span>Spike</span><wbr><span>Data</span><wbr><span>Diff</span><wbr><span><span>Section</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1926709227%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reduce-memory-spike-data-diff-section.html"><span class="token function">reduceMemorySpikeDataDiffSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="442297817%2FFunctions%2F947585829" anchor-label="reduceMemorySpikeGetUri" id="442297817%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="reduce-memory-spike-get-uri.html"><span>reduce</span><wbr><span>Memory</span><wbr><span>Spike</span><wbr><span>Get</span><wbr><span><span>Uri</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="442297817%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reduce-memory-spike-get-uri.html"><span class="token function">reduceMemorySpikeGetUri</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-923169408%2FFunctions%2F947585829" anchor-label="reduceMemorySpikeUserSession" id="-923169408%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="reduce-memory-spike-user-session.html"><span>reduce</span><wbr><span>Memory</span><wbr><span>Spike</span><wbr><span>User</span><wbr><span><span>Session</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-923169408%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reduce-memory-spike-user-session.html"><span class="token function">reduceMemorySpikeUserSession</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1836484100%2FFunctions%2F947585829" anchor-label="setDefaultComponentsConfigurationBuilder" id="1836484100%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="set-default-components-configuration-builder.html"><span>set</span><wbr><span>Default</span><wbr><span>Components</span><wbr><span>Configuration</span><wbr><span><span>Builder</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1836484100%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-default-components-configuration-builder.html"><span class="token function">setDefaultComponentsConfigurationBuilder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="-builder/index.html">ComponentsConfiguration.Builder</a></span></span><span class="token punctuation">)</span></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1086538965%2FFunctions%2F947585829" anchor-label="setReduceMemorySpikeDataDiffSection" id="1086538965%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="set-reduce-memory-spike-data-diff-section.html"><span>set</span><wbr><span>Reduce</span><wbr><span>Memory</span><wbr><span>Spike</span><wbr><span>Data</span><wbr><span>Diff</span><wbr><span><span>Section</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1086538965%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-reduce-memory-spike-data-diff-section.html"><span class="token function">setReduceMemorySpikeDataDiffSection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="2008420633%2FFunctions%2F947585829" anchor-label="setReduceMemorySpikeGetUri" id="2008420633%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="set-reduce-memory-spike-get-uri.html"><span>set</span><wbr><span>Reduce</span><wbr><span>Memory</span><wbr><span>Spike</span><wbr><span>Get</span><wbr><span><span>Uri</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2008420633%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-reduce-memory-spike-get-uri.html"><span class="token function">setReduceMemorySpikeGetUri</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="34894400%2FFunctions%2F947585829" anchor-label="setReduceMemorySpikeUserSession" id="34894400%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="set-reduce-memory-spike-user-session.html"><span>set</span><wbr><span>Reduce</span><wbr><span>Memory</span><wbr><span>Spike</span><wbr><span>User</span><wbr><span><span>Session</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="34894400%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-reduce-memory-spike-user-session.html"><span class="token function">setReduceMemorySpikeUserSession</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="241784746%2FFunctions%2F947585829" anchor-label="shouldAddRootHostViewOrDisableBgFgOutputs" id="241784746%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-add-root-host-view-or-disable-bg-fg-outputs.html"><span>should</span><wbr><span>Add</span><wbr><span>Root</span><wbr><span>Host</span><wbr><span>View</span><wbr><span>Or</span><wbr><span>Disable</span><wbr><span>Bg</span><wbr><span>Fg</span><wbr><span><span>Outputs</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="241784746%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="should-add-root-host-view-or-disable-bg-fg-outputs.html"><span class="token function">shouldAddRootHostViewOrDisableBgFgOutputs</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="73385618%2FFunctions%2F947585829" anchor-label="shouldCacheLayouts" id="73385618%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-cache-layouts.html"><span>should</span><wbr><span>Cache</span><wbr><span><span>Layouts</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="73385618%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="should-cache-layouts.html"><span class="token function">shouldCacheLayouts</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-198505538%2FFunctions%2F947585829" anchor-label="useIncrementalMountGapWorker" id="-198505538%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="use-incremental-mount-gap-worker.html"><span>use</span><wbr><span>Incremental</span><wbr><span>Mount</span><wbr><span>Gap</span><wbr><span><span>Worker</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-198505538%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="use-incremental-mount-gap-worker.html"><span class="token function">useIncrementalMountGapWorker</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="611232181%2FFunctions%2F947585829" anchor-label="useNonRebindingEventHandlers" id="611232181%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="use-non-rebinding-event-handlers.html"><span>use</span><wbr><span>Non</span><wbr><span>Rebinding</span><wbr><span>Event</span><wbr><span><span>Handlers</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="611232181%2FFunctions%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="use-non-rebinding-event-handlers.html"><span class="token function">useNonRebindingEventHandlers</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <h2 class="">Properties</h2>
-      <div class="table" data-togglable="Properties"><a data-name="-1124152363%2FProperties%2F947585829" anchor-label="bindOnSameComponentTree" id="-1124152363%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+      <div class="table" data-togglable="Properties"><a data-name="1939643479%2FProperties%2F947585829" anchor-label="nestedPreallocationEnabled" id="1939643479%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="bind-on-same-component-tree.html"><span>bind</span><wbr><span>On</span><wbr><span>Same</span><wbr><span>Component</span><wbr><span><span>Tree</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1124152363%2FProperties%2F947585829"></span>
+                <div><a href="nested-preallocation-enabled.html"><span>nested</span><wbr><span>Preallocation</span><wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1939643479%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1124152363%2FProperties%2F947585829" anchor-label="bindOnSameComponentTree" id="-1124152363%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="bind-on-same-component-tree.html">bindOnSameComponentTree</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1939643479%2FProperties%2F947585829" anchor-label="nestedPreallocationEnabled" id="1939643479%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-field/index.html"><span class="token annotation builtin">JvmField</span></a></div></div><span class="token keyword"></span><span class="token keyword">val </span><a href="nested-preallocation-enabled.html">nestedPreallocationEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="-1305265746%2FProperties%2F947585829" anchor-label="boostPerfLayoutStateFuture" id="-1305265746%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="1322838625%2FProperties%2F947585829" anchor-label="shouldAddHostViewForRootComponent" id="1322838625%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="boost-perf-layout-state-future.html"><span>boost</span><wbr><span>Perf</span><wbr><span>Layout</span><wbr><span>State</span><wbr><span><span>Future</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1305265746%2FProperties%2F947585829"></span>
+                <div><a href="should-add-host-view-for-root-component.html"><span>should</span><wbr><span>Add</span><wbr><span>Host</span><wbr><span>View</span><wbr><span>For</span><wbr><span>Root</span><wbr><span><span>Component</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1322838625%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1305265746%2FProperties%2F947585829" anchor-label="boostPerfLayoutStateFuture" id="-1305265746%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="boost-perf-layout-state-future.html">boostPerfLayoutStateFuture</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1305265746%2FProperties%2F947585829" anchor-label="boostPerfLayoutStateFuture" id="-1305265746%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>If true, the <a href="perf-booster-factory.html">perfBoosterFactory</a> will be used to indicate that LayoutStateFuture thread can use the perf boost</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1322838625%2FProperties%2F947585829" anchor-label="shouldAddHostViewForRootComponent" id="1322838625%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="should-add-host-view-for-root-component.html">shouldAddHostViewForRootComponent</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="1062149671%2FProperties%2F947585829" anchor-label="CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS" id="1062149671%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="241784746%2FProperties%2F947585829" anchor-label="shouldAddRootHostViewOrDisableBgFgOutputs" id="241784746%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="-c-a-n_-c-h-e-c-k_-g-l-o-b-a-l_-a-n-i-m-a-t-o-r_-s-e-t-t-i-n-g-s.html"><span><span>CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1062149671%2FProperties%2F947585829"></span>
+                <div><a href="should-add-root-host-view-or-disable-bg-fg-outputs.html"><span>should</span><wbr><span>Add</span><wbr><span>Root</span><wbr><span>Host</span><wbr><span>View</span><wbr><span>Or</span><wbr><span>Disable</span><wbr><span>Bg</span><wbr><span>Fg</span><wbr><span><span>Outputs</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="241784746%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1062149671%2FProperties%2F947585829" anchor-label="CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS" id="1062149671%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-c-a-n_-c-h-e-c-k_-g-l-o-b-a-l_-a-n-i-m-a-t-o-r_-s-e-t-t-i-n-g-s.html">CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="1062149671%2FProperties%2F947585829" anchor-label="CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS" id="1062149671%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Whether we can access properties in Settings.Global for animations.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="241784746%2FProperties%2F947585829" anchor-label="shouldAddRootHostViewOrDisableBgFgOutputs" id="241784746%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="should-add-root-host-view-or-disable-bg-fg-outputs.html">shouldAddRootHostViewOrDisableBgFgOutputs</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="194293929%2FProperties%2F947585829" anchor-label="componentPreallocationBlocklist" id="194293929%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="73385618%2FProperties%2F947585829" anchor-label="shouldCacheLayouts" id="73385618%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="component-preallocation-blocklist.html"><span>component</span><wbr><span>Preallocation</span><wbr><span><span>Blocklist</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="194293929%2FProperties%2F947585829"></span>
+                <div><a href="should-cache-layouts.html"><span>should</span><wbr><span>Cache</span><wbr><span><span>Layouts</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="73385618%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="194293929%2FProperties%2F947585829" anchor-label="componentPreallocationBlocklist" id="194293929%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="component-preallocation-blocklist.html">componentPreallocationBlocklist</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html">Set</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="73385618%2FProperties%2F947585829" anchor-label="shouldCacheLayouts" id="73385618%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="should-cache-layouts.html">shouldCacheLayouts</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="-1663941630%2FProperties%2F947585829" anchor-label="computeRangeOnSyncLayout" id="-1663941630%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="-1684418259%2FProperties%2F947585829" anchor-label="useCancellableLayoutFutures" id="-1684418259%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="compute-range-on-sync-layout.html"><span>compute</span><wbr><span>Range</span><wbr><span>On</span><wbr><span>Sync</span><wbr><span><span>Layout</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1663941630%2FProperties%2F947585829"></span>
+                <div><a href="use-cancellable-layout-futures.html"><span>use</span><wbr><span>Cancellable</span><wbr><span>Layout</span><wbr><span><span>Futures</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1684418259%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1663941630%2FProperties%2F947585829" anchor-label="computeRangeOnSyncLayout" id="-1663941630%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="compute-range-on-sync-layout.html">computeRangeOnSyncLayout</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1663941630%2FProperties%2F947585829" anchor-label="computeRangeOnSyncLayout" id="-1663941630%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1684418259%2FProperties%2F947585829" anchor-label="useCancellableLayoutFutures" id="-1684418259%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="use-cancellable-layout-futures.html">useCancellableLayoutFutures</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="-2143192815%2FProperties%2F947585829" anchor-label="crashIfExceedingStateUpdateThreshold" id="-2143192815%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="-198505538%2FProperties%2F947585829" anchor-label="useIncrementalMountGapWorker" id="-198505538%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="crash-if-exceeding-state-update-threshold.html"><span>crash</span><wbr><span>If</span><wbr><span>Exceeding</span><wbr><span>State</span><wbr><span>Update</span><wbr><span><span>Threshold</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2143192815%2FProperties%2F947585829"></span>
+                <div><a href="use-incremental-mount-gap-worker.html"><span>use</span><wbr><span>Incremental</span><wbr><span>Mount</span><wbr><span>Gap</span><wbr><span><span>Worker</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-198505538%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-2143192815%2FProperties%2F947585829" anchor-label="crashIfExceedingStateUpdateThreshold" id="-2143192815%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="crash-if-exceeding-state-update-threshold.html">crashIfExceedingStateUpdateThreshold</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-198505538%2FProperties%2F947585829" anchor-label="useIncrementalMountGapWorker" id="-198505538%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-field/index.html"><span class="token annotation builtin">JvmField</span></a></div></div><span class="token keyword"></span><span class="token keyword">val </span><a href="use-incremental-mount-gap-worker.html">useIncrementalMountGapWorker</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="-1333969224%2FProperties%2F947585829" anchor-label="debugHighlightInteractiveBounds" id="-1333969224%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="-959225006%2FProperties%2F947585829" anchor-label="useInterruptibleResolution" id="-959225006%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="debug-highlight-interactive-bounds.html"><span>debug</span><wbr><span>Highlight</span><wbr><span>Interactive</span><wbr><span><span>Bounds</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1333969224%2FProperties%2F947585829"></span>
+                <div><a href="use-interruptible-resolution.html"><span>use</span><wbr><span>Interruptible</span><wbr><span><span>Resolution</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-959225006%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1333969224%2FProperties%2F947585829" anchor-label="debugHighlightInteractiveBounds" id="-1333969224%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="debug-highlight-interactive-bounds.html">debugHighlightInteractiveBounds</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1333969224%2FProperties%2F947585829" anchor-label="debugHighlightInteractiveBounds" id="-1333969224%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Debug option to highlight interactive areas in mounted components.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-959225006%2FProperties%2F947585829" anchor-label="useInterruptibleResolution" id="-959225006%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="use-interruptible-resolution.html">useInterruptibleResolution</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="1884442657%2FProperties%2F947585829" anchor-label="debugHighlightMountBounds" id="1884442657%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="611232181%2FProperties%2F947585829" anchor-label="useNonRebindingEventHandlers" id="611232181%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="debug-highlight-mount-bounds.html"><span>debug</span><wbr><span>Highlight</span><wbr><span>Mount</span><wbr><span><span>Bounds</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1884442657%2FProperties%2F947585829"></span>
+                <div><a href="use-non-rebinding-event-handlers.html"><span>use</span><wbr><span>Non</span><wbr><span>Rebinding</span><wbr><span>Event</span><wbr><span><span>Handlers</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="611232181%2FProperties%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1884442657%2FProperties%2F947585829" anchor-label="debugHighlightMountBounds" id="1884442657%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="debug-highlight-mount-bounds.html">debugHighlightMountBounds</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="1884442657%2FProperties%2F947585829" anchor-label="debugHighlightMountBounds" id="1884442657%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Debug option to highlight mount bounds of mounted components.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1294608378%2FProperties%2F947585829" anchor-label="DEFAULT_BACKGROUND_THREAD_PRIORITY" id="-1294608378%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-d-e-f-a-u-l-t_-b-a-c-k-g-r-o-u-n-d_-t-h-r-e-a-d_-p-r-i-o-r-i-t-y.html"><span><span>DEFAULT_BACKGROUND_THREAD_PRIORITY</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1294608378%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1294608378%2FProperties%2F947585829" anchor-label="DEFAULT_BACKGROUND_THREAD_PRIORITY" id="-1294608378%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="-d-e-f-a-u-l-t_-b-a-c-k-g-r-o-u-n-d_-t-h-r-e-a-d_-p-r-i-o-r-i-t-y.html">DEFAULT_BACKGROUND_THREAD_PRIORITY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><a data-name="-1294608378%2FProperties%2F947585829" anchor-label="DEFAULT_BACKGROUND_THREAD_PRIORITY" id="-1294608378%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>The default priority for threads that perform background layout calculations.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1618527137%2FProperties%2F947585829" anchor-label="DEFAULT_CHANGE_SET_THREAD_PRIORITY" id="1618527137%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-d-e-f-a-u-l-t_-c-h-a-n-g-e_-s-e-t_-t-h-r-e-a-d_-p-r-i-o-r-i-t-y.html"><span><span>DEFAULT_CHANGE_SET_THREAD_PRIORITY</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1618527137%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1618527137%2FProperties%2F947585829" anchor-label="DEFAULT_CHANGE_SET_THREAD_PRIORITY" id="1618527137%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-c-h-a-n-g-e_-s-e-t_-t-h-r-e-a-d_-p-r-i-o-r-i-t-y.html">DEFAULT_CHANGE_SET_THREAD_PRIORITY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></div><div class="brief "><a data-name="1618527137%2FProperties%2F947585829" anchor-label="DEFAULT_CHANGE_SET_THREAD_PRIORITY" id="1618527137%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>The default priority for threads that perform background sections change set calculations.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-956507219%2FProperties%2F947585829" anchor-label="defaultComponentsConfiguration" id="-956507219%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="default-components-configuration.html"><span>default</span><wbr><span>Components</span><wbr><span><span>Configuration</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-956507219%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-956507219%2FProperties%2F947585829" anchor-label="defaultComponentsConfiguration" id="-956507219%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">val </span><a href="default-components-configuration.html">defaultComponentsConfiguration</a><span class="token operator">: </span><a href="index.html">ComponentsConfiguration</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-546841782%2FProperties%2F947585829" anchor-label="disableGetAnnotationUsage" id="-546841782%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="disable-get-annotation-usage.html"><span>disable</span><wbr><span>Get</span><wbr><span>Annotation</span><wbr><span><span>Usage</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-546841782%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-546841782%2FProperties%2F947585829" anchor-label="disableGetAnnotationUsage" id="-546841782%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="disable-get-annotation-usage.html">disableGetAnnotationUsage</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-546841782%2FProperties%2F947585829" anchor-label="disableGetAnnotationUsage" id="-546841782%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>field.getAnnotation() has bugs which is causing java crashes in the App, in addition to this we suspect this might be a reason for few other native crashes as well.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="2147308279%2FProperties%2F947585829" anchor-label="emitMessageForZeroSizedTexture" id="2147308279%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="emit-message-for-zero-sized-texture.html"><span>emit</span><wbr><span>Message</span><wbr><span>For</span><wbr><span>Zero</span><wbr><span>Sized</span><wbr><span><span>Texture</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2147308279%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="2147308279%2FProperties%2F947585829" anchor-label="emitMessageForZeroSizedTexture" id="2147308279%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="emit-message-for-zero-sized-texture.html">emitMessageForZeroSizedTexture</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1494077307%2FProperties%2F947585829" anchor-label="enableComputeLayoutAsyncAfterInsertion" id="1494077307%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-compute-layout-async-after-insertion.html"><span>enable</span><wbr><span>Compute</span><wbr><span>Layout</span><wbr><span>Async</span><wbr><span>After</span><wbr><span><span>Insertion</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1494077307%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1494077307%2FProperties%2F947585829" anchor-label="enableComputeLayoutAsyncAfterInsertion" id="1494077307%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-compute-layout-async-after-insertion.html">enableComputeLayoutAsyncAfterInsertion</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-593797844%2FProperties%2F947585829" anchor-label="enableDrawablePreAllocation" id="-593797844%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-drawable-pre-allocation.html"><span>enable</span><wbr><span>Drawable</span><wbr><span>Pre</span><wbr><span><span>Allocation</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-593797844%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-593797844%2FProperties%2F947585829" anchor-label="enableDrawablePreAllocation" id="-593797844%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-drawable-pre-allocation.html">enableDrawablePreAllocation</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1844643841%2FProperties%2F947585829" anchor-label="enableFixForNestedComponentTree" id="1844643841%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-fix-for-nested-component-tree.html"><span>enable</span><wbr><span>Fix</span><wbr><span>For</span><wbr><span>Nested</span><wbr><span>Component</span><wbr><span><span>Tree</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1844643841%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1844643841%2FProperties%2F947585829" anchor-label="enableFixForNestedComponentTree" id="1844643841%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-fix-for-nested-component-tree.html">enableFixForNestedComponentTree</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="292945951%2FProperties%2F947585829" anchor-label="enableIsBoringLayoutCheckTimeout" id="292945951%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-is-boring-layout-check-timeout.html"><span>enable</span><wbr><span>Is</span><wbr><span>Boring</span><wbr><span>Layout</span><wbr><span>Check</span><wbr><span><span>Timeout</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="292945951%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="292945951%2FProperties%2F947585829" anchor-label="enableIsBoringLayoutCheckTimeout" id="292945951%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-is-boring-layout-check-timeout.html">enableIsBoringLayoutCheckTimeout</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="841354591%2FProperties%2F947585829" anchor-label="enableMountableRecycler" id="841354591%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-mountable-recycler.html"><span>enable</span><wbr><span>Mountable</span><wbr><span><span>Recycler</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="841354591%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="841354591%2FProperties%2F947585829" anchor-label="enableMountableRecycler" id="841354591%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-mountable-recycler.html">enableMountableRecycler</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1257467398%2FProperties%2F947585829" anchor-label="enableMountableRecyclerInGroups" id="1257467398%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-mountable-recycler-in-groups.html"><span>enable</span><wbr><span>Mountable</span><wbr><span>Recycler</span><wbr><span>In</span><wbr><span><span>Groups</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1257467398%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1257467398%2FProperties%2F947585829" anchor-label="enableMountableRecyclerInGroups" id="1257467398%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-mountable-recycler-in-groups.html">enableMountableRecyclerInGroups</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="295219074%2FProperties%2F947585829" anchor-label="enableMountableTwoBindersRecycler" id="295219074%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-mountable-two-binders-recycler.html"><span>enable</span><wbr><span>Mountable</span><wbr><span>Two</span><wbr><span>Binders</span><wbr><span><span>Recycler</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="295219074%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="295219074%2FProperties%2F947585829" anchor-label="enableMountableTwoBindersRecycler" id="295219074%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-mountable-two-binders-recycler.html">enableMountableTwoBindersRecycler</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="783145418%2FProperties%2F947585829" anchor-label="enableRecyclerBinderStableId" id="783145418%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-recycler-binder-stable-id.html"><span>enable</span><wbr><span>Recycler</span><wbr><span>Binder</span><wbr><span>Stable</span><wbr><span><span>Id</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="783145418%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="783145418%2FProperties%2F947585829" anchor-label="enableRecyclerBinderStableId" id="783145418%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-recycler-binder-stable-id.html">enableRecyclerBinderStableId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-952394347%2FProperties%2F947585829" anchor-label="enableSeparateAnimatorBinder" id="-952394347%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-separate-animator-binder.html"><span>enable</span><wbr><span>Separate</span><wbr><span>Animator</span><wbr><span><span>Binder</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-952394347%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-952394347%2FProperties%2F947585829" anchor-label="enableSeparateAnimatorBinder" id="-952394347%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-separate-animator-binder.html">enableSeparateAnimatorBinder</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1862632920%2FProperties%2F947585829" anchor-label="enableStateUpdatesBatching" id="-1862632920%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-state-updates-batching.html"><span>enable</span><wbr><span>State</span><wbr><span>Updates</span><wbr><span><span>Batching</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1862632920%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1862632920%2FProperties%2F947585829" anchor-label="enableStateUpdatesBatching" id="-1862632920%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-state-updates-batching.html">enableStateUpdatesBatching</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1384791260%2FProperties%2F947585829" anchor-label="enableThreadTracingStacktrace" id="1384791260%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enable-thread-tracing-stacktrace.html"><span>enable</span><wbr><span>Thread</span><wbr><span>Tracing</span><wbr><span><span>Stacktrace</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1384791260%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1384791260%2FProperties%2F947585829" anchor-label="enableThreadTracingStacktrace" id="1384791260%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="enable-thread-tracing-stacktrace.html">enableThreadTracingStacktrace</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1371020456%2FProperties%2F947585829" anchor-label="eventHandlerRebindLoggingSamplingRate" id="1371020456%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="event-handler-rebind-logging-sampling-rate.html"><span>event</span><wbr><span>Handler</span><wbr><span>Rebind</span><wbr><span>Logging</span><wbr><span>Sampling</span><wbr><span><span>Rate</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1371020456%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1371020456%2FProperties%2F947585829" anchor-label="eventHandlerRebindLoggingSamplingRate" id="1371020456%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="event-handler-rebind-logging-sampling-rate.html">eventHandlerRebindLoggingSamplingRate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="708661263%2FProperties%2F947585829" anchor-label="forceDelegateViewBinder" id="708661263%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="force-delegate-view-binder.html"><span>force</span><wbr><span>Delegate</span><wbr><span>View</span><wbr><span><span>Binder</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="708661263%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="708661263%2FProperties%2F947585829" anchor-label="forceDelegateViewBinder" id="708661263%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="force-delegate-view-binder.html">forceDelegateViewBinder</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-282292926%2FProperties%2F947585829" anchor-label="forceEnableTransitionsForInstrumentationTests" id="-282292926%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="force-enable-transitions-for-instrumentation-tests.html"><span>force</span><wbr><span>Enable</span><wbr><span>Transitions</span><wbr><span>For</span><wbr><span>Instrumentation</span><wbr><span><span>Tests</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-282292926%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-282292926%2FProperties%2F947585829" anchor-label="forceEnableTransitionsForInstrumentationTests" id="-282292926%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="force-enable-transitions-for-instrumentation-tests.html">forceEnableTransitionsForInstrumentationTests</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-282292926%2FProperties%2F947585829" anchor-label="forceEnableTransitionsForInstrumentationTests" id="-282292926%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>By default end-to-end tests will disable transitions and this flag lets to explicitly enable transitions to test animation related behavior.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1542270098%2FProperties%2F947585829" anchor-label="hostComponentAlwaysShouldUpdate" id="-1542270098%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="host-component-always-should-update.html"><span>host</span><wbr><span>Component</span><wbr><span>Always</span><wbr><span>Should</span><wbr><span><span>Update</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1542270098%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1542270098%2FProperties%2F947585829" anchor-label="hostComponentAlwaysShouldUpdate" id="-1542270098%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="host-component-always-should-update.html">hostComponentAlwaysShouldUpdate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-316193668%2FProperties%2F947585829" anchor-label="hostComponentPoolSize" id="-316193668%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="host-component-pool-size.html"><span>host</span><wbr><span>Component</span><wbr><span>Pool</span><wbr><span><span>Size</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-316193668%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-316193668%2FProperties%2F947585829" anchor-label="hostComponentPoolSize" id="-316193668%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="host-component-pool-size.html">hostComponentPoolSize</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="310308977%2FProperties%2F947585829" anchor-label="initStickyHeaderInLayoutWhenComponentTreeIsNull" id="310308977%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="init-sticky-header-in-layout-when-component-tree-is-null.html"><span>init</span><wbr><span>Sticky</span><wbr><span>Header</span><wbr><span>In</span><wbr><span>Layout</span><wbr><span>When</span><wbr><span>Component</span><wbr><span>Tree</span><wbr><span>Is</span><wbr><span><span>Null</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="310308977%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="310308977%2FProperties%2F947585829" anchor-label="initStickyHeaderInLayoutWhenComponentTreeIsNull" id="310308977%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="init-sticky-header-in-layout-when-component-tree-is-null.html">initStickyHeaderInLayoutWhenComponentTreeIsNull</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="310308977%2FProperties%2F947585829" anchor-label="initStickyHeaderInLayoutWhenComponentTreeIsNull" id="310308977%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Initialize sticky header during layout when its component tree is null</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="744173421%2FProperties%2F947585829" anchor-label="IS_INTERNAL_BUILD" id="744173421%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-i-s_-i-n-t-e-r-n-a-l_-b-u-i-l-d.html"><span><span>IS_INTERNAL_BUILD</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="744173421%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="744173421%2FProperties%2F947585829" anchor-label="IS_INTERNAL_BUILD" id="744173421%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-i-s_-i-n-t-e-r-n-a-l_-b-u-i-l-d.html">IS_INTERNAL_BUILD</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="744173421%2FProperties%2F947585829" anchor-label="IS_INTERNAL_BUILD" id="744173421%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Indicates whether this is an internal build.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-2087939912%2FProperties%2F947585829" anchor-label="isAnimationDisabled" id="-2087939912%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-animation-disabled.html"><span>is</span><wbr><span>Animation</span><wbr><span><span>Disabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2087939912%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-2087939912%2FProperties%2F947585829" anchor-label="isAnimationDisabled" id="-2087939912%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-animation-disabled.html">isAnimationDisabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1775817337%2FProperties%2F947585829" anchor-label="isDebugHierarchyEnabled" id="1775817337%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-debug-hierarchy-enabled.html"><span>is</span><wbr><span>Debug</span><wbr><span>Hierarchy</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1775817337%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1775817337%2FProperties%2F947585829" anchor-label="isDebugHierarchyEnabled" id="1775817337%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-debug-hierarchy-enabled.html">isDebugHierarchyEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="1775817337%2FProperties%2F947585829" anchor-label="isDebugHierarchyEnabled" id="1775817337%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Lightweight tracking of component class hierarchy of MountItems.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1214835753%2FProperties%2F947585829" anchor-label="isDebugModeEnabled" id="-1214835753%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-debug-mode-enabled.html"><span>is</span><wbr><span>Debug</span><wbr><span>Mode</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1214835753%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1214835753%2FProperties%2F947585829" anchor-label="isDebugModeEnabled" id="-1214835753%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-debug-mode-enabled.html">isDebugModeEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1214835753%2FProperties%2F947585829" anchor-label="isDebugModeEnabled" id="-1214835753%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Option to enabled debug mode.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1011125372%2FProperties%2F947585829" anchor-label="isEndToEndTestRun" id="-1011125372%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-end-to-end-test-run.html"><span>is</span><wbr><span>End</span><wbr><span>To</span><wbr><span>End</span><wbr><span>Test</span><wbr><span><span>Run</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1011125372%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1011125372%2FProperties%2F947585829" anchor-label="isEndToEndTestRun" id="-1011125372%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-end-to-end-test-run.html">isEndToEndTestRun</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1011125372%2FProperties%2F947585829" anchor-label="isEndToEndTestRun" id="-1011125372%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Populates additional metadata to find mounted components at runtime.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="484281888%2FProperties%2F947585829" anchor-label="isEventHandlerRebindLoggingEnabled" id="484281888%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-event-handler-rebind-logging-enabled.html"><span>is</span><wbr><span>Event</span><wbr><span>Handler</span><wbr><span>Rebind</span><wbr><span>Logging</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="484281888%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="484281888%2FProperties%2F947585829" anchor-label="isEventHandlerRebindLoggingEnabled" id="484281888%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-event-handler-rebind-logging-enabled.html">isEventHandlerRebindLoggingEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="514893413%2FProperties%2F947585829" anchor-label="isHostComponentPreallocationEnabled" id="514893413%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-host-component-preallocation-enabled.html"><span>is</span><wbr><span>Host</span><wbr><span>Component</span><wbr><span>Preallocation</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="514893413%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="514893413%2FProperties%2F947585829" anchor-label="isHostComponentPreallocationEnabled" id="514893413%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-host-component-preallocation-enabled.html">isHostComponentPreallocationEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="514893413%2FProperties%2F947585829" anchor-label="isHostComponentPreallocationEnabled" id="514893413%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Whether a ComponentHost can be pre-allocated</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1523976169%2FProperties%2F947585829" anchor-label="isIncrementalMountGloballyDisabled" id="-1523976169%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-incremental-mount-globally-disabled.html"><span>is</span><wbr><span>Incremental</span><wbr><span>Mount</span><wbr><span>Globally</span><wbr><span><span>Disabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1523976169%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1523976169%2FProperties%2F947585829" anchor-label="isIncrementalMountGloballyDisabled" id="-1523976169%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-incremental-mount-globally-disabled.html">isIncrementalMountGloballyDisabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1523976169%2FProperties%2F947585829" anchor-label="isIncrementalMountGloballyDisabled" id="-1523976169%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>When <code class="lang-kotlin">true</code>, disables incremental mount globally.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1841095180%2FProperties%2F947585829" anchor-label="isLayoutDiffingEnabled" id="-1841095180%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-layout-diffing-enabled.html"><span>is</span><wbr><span>Layout</span><wbr><span>Diffing</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1841095180%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1841095180%2FProperties%2F947585829" anchor-label="isLayoutDiffingEnabled" id="-1841095180%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-layout-diffing-enabled.html">isLayoutDiffingEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1841095180%2FProperties%2F947585829" anchor-label="isLayoutDiffingEnabled" id="-1841095180%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Sets if layout diffing is enabled.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1905616561%2FProperties%2F947585829" anchor-label="isLazyListUsingComponentContextReconciliationConfig" id="-1905616561%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-lazy-list-using-component-context-reconciliation-config.html"><span>is</span><wbr><span>Lazy</span><wbr><span>List</span><wbr><span>Using</span><wbr><span>Component</span><wbr><span>Context</span><wbr><span>Reconciliation</span><wbr><span><span>Config</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1905616561%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1905616561%2FProperties%2F947585829" anchor-label="isLazyListUsingComponentContextReconciliationConfig" id="-1905616561%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-lazy-list-using-component-context-reconciliation-config.html">isLazyListUsingComponentContextReconciliationConfig</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1905616561%2FProperties%2F947585829" anchor-label="isLazyListUsingComponentContextReconciliationConfig" id="-1905616561%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>The LazyList is having a default of <code class="lang-kotlin">false</code> for the reconciliation being enabled.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1564813254%2FProperties%2F947585829" anchor-label="isReconciliationEnabled" id="-1564813254%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-reconciliation-enabled.html"><span>is</span><wbr><span>Reconciliation</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1564813254%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1564813254%2FProperties%2F947585829" anchor-label="isReconciliationEnabled" id="-1564813254%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-reconciliation-enabled.html">isReconciliationEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1564813254%2FProperties%2F947585829" anchor-label="isReconciliationEnabled" id="-1564813254%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Sets if is reconciliation is enabled</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1054979730%2FProperties%2F947585829" anchor-label="isSkipRootCheckingEnabled" id="1054979730%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-skip-root-checking-enabled.html"><span>is</span><wbr><span>Skip</span><wbr><span>Root</span><wbr><span>Checking</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1054979730%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1054979730%2FProperties%2F947585829" anchor-label="isSkipRootCheckingEnabled" id="1054979730%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-skip-root-checking-enabled.html">isSkipRootCheckingEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="1054979730%2FProperties%2F947585829" anchor-label="isSkipRootCheckingEnabled" id="1054979730%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Skip checking for root component and tree-props while layout</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-564203048%2FProperties%2F947585829" anchor-label="isTimelineEnabled" id="-564203048%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-timeline-enabled.html"><span>is</span><wbr><span>Timeline</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-564203048%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-564203048%2FProperties%2F947585829" anchor-label="isTimelineEnabled" id="-564203048%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="is-timeline-enabled.html">isTimelineEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-564203048%2FProperties%2F947585829" anchor-label="isTimelineEnabled" id="-564203048%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>When <code class="lang-kotlin">true</code> ComponentTree records state change snapshots</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-926673337%2FProperties%2F947585829" anchor-label="keepLayoutResults" id="-926673337%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="keep-layout-results.html"><span>keep</span><wbr><span>Layout</span><wbr><span><span>Results</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-926673337%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-926673337%2FProperties%2F947585829" anchor-label="keepLayoutResults" id="-926673337%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="keep-layout-results.html">keepLayoutResults</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-926673337%2FProperties%2F947585829" anchor-label="keepLayoutResults" id="-926673337%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Keeps the litho layout result tree in the LayoutState.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1900140455%2FProperties%2F947585829" anchor-label="layoutThreadKeepAliveTimeMs" id="1900140455%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="layout-thread-keep-alive-time-ms.html"><span>layout</span><wbr><span>Thread</span><wbr><span>Keep</span><wbr><span>Alive</span><wbr><span>Time</span><wbr><span><span>Ms</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1900140455%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1900140455%2FProperties%2F947585829" anchor-label="layoutThreadKeepAliveTimeMs" id="1900140455%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="layout-thread-keep-alive-time-ms.html">layoutThreadKeepAliveTimeMs</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1907148483%2FProperties%2F947585829" anchor-label="lithoViewSelfManageViewPortChanges" id="1907148483%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="litho-view-self-manage-view-port-changes.html"><span>litho</span><wbr><span>View</span><wbr><span>Self</span><wbr><span>Manage</span><wbr><span>View</span><wbr><span>Port</span><wbr><span><span>Changes</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1907148483%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1907148483%2FProperties%2F947585829" anchor-label="lithoViewSelfManageViewPortChanges" id="1907148483%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="litho-view-self-manage-view-port-changes.html">lithoViewSelfManageViewPortChanges</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="1907148483%2FProperties%2F947585829" anchor-label="lithoViewSelfManageViewPortChanges" id="1907148483%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Used by LithoViews to determine whether or not to self-manage the view-port changes, rather than rely on calls to notifyVisibleBoundsChanged.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-89343322%2FProperties%2F947585829" anchor-label="NEEDS_THEME_SYNCHRONIZATION" id="-89343322%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-n-e-e-d-s_-t-h-e-m-e_-s-y-n-c-h-r-o-n-i-z-a-t-i-o-n.html"><span><span>NEEDS_THEME_SYNCHRONIZATION</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-89343322%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-89343322%2FProperties%2F947585829" anchor-label="NEEDS_THEME_SYNCHRONIZATION" id="-89343322%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-n-e-e-d-s_-t-h-e-m-e_-s-y-n-c-h-r-o-n-i-z-a-t-i-o-n.html">NEEDS_THEME_SYNCHRONIZATION</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-89343322%2FProperties%2F947585829" anchor-label="NEEDS_THEME_SYNCHRONIZATION" id="-89343322%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Whether we need to account for lack of synchronization while accessing Themes.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1311751436%2FProperties%2F947585829" anchor-label="overlappingRenderingViewSizeLimit" id="1311751436%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="overlapping-rendering-view-size-limit.html"><span>overlapping</span><wbr><span>Rendering</span><wbr><span>View</span><wbr><span>Size</span><wbr><span><span>Limit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1311751436%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1311751436%2FProperties%2F947585829" anchor-label="overlappingRenderingViewSizeLimit" id="1311751436%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="overlapping-rendering-view-size-limit.html">overlappingRenderingViewSizeLimit</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1136857319%2FProperties%2F947585829" anchor-label="overrideLayoutDiffing" id="1136857319%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="override-layout-diffing.html"><span>override</span><wbr><span>Layout</span><wbr><span><span>Diffing</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1136857319%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1136857319%2FProperties%2F947585829" anchor-label="overrideLayoutDiffing" id="1136857319%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="override-layout-diffing.html">overrideLayoutDiffing</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="361921757%2FProperties%2F947585829" anchor-label="overrideReconciliation" id="361921757%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="override-reconciliation.html"><span>override</span><wbr><span><span>Reconciliation</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="361921757%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="361921757%2FProperties%2F947585829" anchor-label="overrideReconciliation" id="361921757%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="override-reconciliation.html">overrideReconciliation</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-110176589%2FProperties%2F947585829" anchor-label="partialAlphaWarningSizeThresold" id="-110176589%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="partial-alpha-warning-size-thresold.html"><span>partial</span><wbr><span>Alpha</span><wbr><span>Warning</span><wbr><span>Size</span><wbr><span><span>Thresold</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-110176589%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-110176589%2FProperties%2F947585829" anchor-label="partialAlphaWarningSizeThresold" id="-110176589%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="partial-alpha-warning-size-thresold.html">partialAlphaWarningSizeThresold</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1906666999%2FProperties%2F947585829" anchor-label="perfBoosterFactory" id="-1906666999%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="perf-booster-factory.html"><span>perf</span><wbr><span>Booster</span><wbr><span><span>Factory</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1906666999%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1906666999%2FProperties%2F947585829" anchor-label="perfBoosterFactory" id="-1906666999%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="perf-booster-factory.html">perfBoosterFactory</a><span class="token operator">: </span><a href="../../com.facebook.litho.perfboost/-litho-perf-booster-factory/index.html">LithoPerfBoosterFactory</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1584244208%2FProperties%2F947585829" anchor-label="recyclerBinderStrategy" id="1584244208%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="recycler-binder-strategy.html"><span>recycler</span><wbr><span>Binder</span><wbr><span><span>Strategy</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1584244208%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1584244208%2FProperties%2F947585829" anchor-label="recyclerBinderStrategy" id="1584244208%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="recycler-binder-strategy.html">recyclerBinderStrategy</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-907476684%2FProperties%2F947585829" anchor-label="runLooperPrepareForLayoutThreadFactory" id="-907476684%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="run-looper-prepare-for-layout-thread-factory.html"><span>run</span><wbr><span>Looper</span><wbr><span>Prepare</span><wbr><span>For</span><wbr><span>Layout</span><wbr><span>Thread</span><wbr><span><span>Factory</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-907476684%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-907476684%2FProperties%2F947585829" anchor-label="runLooperPrepareForLayoutThreadFactory" id="-907476684%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="run-looper-prepare-for-layout-thread-factory.html">runLooperPrepareForLayoutThreadFactory</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1555306091%2FProperties%2F947585829" anchor-label="sComponentsLogger" id="-1555306091%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="s-components-logger.html"><span>s</span><wbr><span>Components</span><wbr><span><span>Logger</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1555306091%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1555306091%2FProperties%2F947585829" anchor-label="sComponentsLogger" id="-1555306091%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="s-components-logger.html">sComponentsLogger</a><span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-components-logger/index.html">ComponentsLogger</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="607482602%2FProperties%2F947585829" anchor-label="shouldAllowCoreThreadTimeout" id="607482602%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-allow-core-thread-timeout.html"><span>should</span><wbr><span>Allow</span><wbr><span>Core</span><wbr><span>Thread</span><wbr><span><span>Timeout</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="607482602%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="607482602%2FProperties%2F947585829" anchor-label="shouldAllowCoreThreadTimeout" id="607482602%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="should-allow-core-thread-timeout.html">shouldAllowCoreThreadTimeout</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="607482602%2FProperties%2F947585829" anchor-label="shouldAllowCoreThreadTimeout" id="607482602%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1504657083%2FProperties%2F947585829" anchor-label="shouldCompareCommonPropsInIsEquivalentTo" id="-1504657083%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-compare-common-props-in-is-equivalent-to.html"><span>should</span><wbr><span>Compare</span><wbr><span>Common</span><wbr><span>Props</span><wbr><span>In</span><wbr><span>Is</span><wbr><span>Equivalent</span><wbr><span><span>To</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1504657083%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1504657083%2FProperties%2F947585829" anchor-label="shouldCompareCommonPropsInIsEquivalentTo" id="-1504657083%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="should-compare-common-props-in-is-equivalent-to.html">shouldCompareCommonPropsInIsEquivalentTo</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1423219674%2FProperties%2F947585829" anchor-label="shouldCompareRootCommonPropsInSingleComponentSection" id="-1423219674%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-compare-root-common-props-in-single-component-section.html"><span>should</span><wbr><span>Compare</span><wbr><span>Root</span><wbr><span>Common</span><wbr><span>Props</span><wbr><span>In</span><wbr><span>Single</span><wbr><span>Component</span><wbr><span><span>Section</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1423219674%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1423219674%2FProperties%2F947585829" anchor-label="shouldCompareRootCommonPropsInSingleComponentSection" id="-1423219674%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="should-compare-root-common-props-in-single-component-section.html">shouldCompareRootCommonPropsInSingleComponentSection</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1329197877%2FProperties%2F947585829" anchor-label="shouldContinueIncrementalMountWhenVisibileRectIsEmpty" id="-1329197877%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-continue-incremental-mount-when-visibile-rect-is-empty.html"><span>should</span><wbr><span>Continue</span><wbr><span>Incremental</span><wbr><span>Mount</span><wbr><span>When</span><wbr><span>Visibile</span><wbr><span>Rect</span><wbr><span>Is</span><wbr><span><span>Empty</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1329197877%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1329197877%2FProperties%2F947585829" anchor-label="shouldContinueIncrementalMountWhenVisibileRectIsEmpty" id="-1329197877%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="should-continue-incremental-mount-when-visibile-rect-is-empty.html">shouldContinueIncrementalMountWhenVisibileRectIsEmpty</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="-1329197877%2FProperties%2F947585829" anchor-label="shouldContinueIncrementalMountWhenVisibileRectIsEmpty" id="-1329197877%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>When true, IM will not stop when the LithoView's visible rect is empty, and will proceed to unmount everything.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1921639519%2FProperties%2F947585829" anchor-label="shouldDelegateContentDescriptionChangeEvent" id="1921639519%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-delegate-content-description-change-event.html"><span>should</span><wbr><span>Delegate</span><wbr><span>Content</span><wbr><span>Description</span><wbr><span>Change</span><wbr><span><span>Event</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1921639519%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1921639519%2FProperties%2F947585829" anchor-label="shouldDelegateContentDescriptionChangeEvent" id="1921639519%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="should-delegate-content-description-change-event.html">shouldDelegateContentDescriptionChangeEvent</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-534867380%2FProperties%2F947585829" anchor-label="shouldOverrideHasTransientState" id="-534867380%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-override-has-transient-state.html"><span>should</span><wbr><span>Override</span><wbr><span>Has</span><wbr><span>Transient</span><wbr><span><span>State</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-534867380%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-534867380%2FProperties%2F947585829" anchor-label="shouldOverrideHasTransientState" id="-534867380%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="should-override-has-transient-state.html">shouldOverrideHasTransientState</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-476668269%2FProperties%2F947585829" anchor-label="textureSizeWarningLimit" id="-476668269%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="texture-size-warning-limit.html"><span>texture</span><wbr><span>Size</span><wbr><span>Warning</span><wbr><span><span>Limit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-476668269%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-476668269%2FProperties%2F947585829" anchor-label="textureSizeWarningLimit" id="-476668269%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="texture-size-warning-limit.html">textureSizeWarningLimit</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1164659138%2FProperties%2F947585829" anchor-label="threadPoolConfiguration" id="-1164659138%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="thread-pool-configuration.html"><span>thread</span><wbr><span>Pool</span><wbr><span><span>Configuration</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1164659138%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1164659138%2FProperties%2F947585829" anchor-label="threadPoolConfiguration" id="-1164659138%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="thread-pool-configuration.html">threadPoolConfiguration</a><span class="token operator">: </span><a href="../-layout-thread-pool-configuration/index.html">LayoutThreadPoolConfiguration</a></div><div class="brief "><a data-name="-1164659138%2FProperties%2F947585829" anchor-label="threadPoolConfiguration" id="-1164659138%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>If non-null, a thread pool will be used for async layouts instead of a single layout thread.</div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1051079574%2FProperties%2F947585829" anchor-label="timelineDocsLink" id="1051079574%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="timeline-docs-link.html"><span>timeline</span><wbr><span>Docs</span><wbr><span><span>Link</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1051079574%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1051079574%2FProperties%2F947585829" anchor-label="timelineDocsLink" id="1051079574%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="timeline-docs-link.html">timelineDocsLink</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1037038600%2FProperties%2F947585829" anchor-label="unsafeHostComponentRecyclingIsEnabled" id="-1037038600%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="unsafe-host-component-recycling-is-enabled.html"><span>unsafe</span><wbr><span>Host</span><wbr><span>Component</span><wbr><span>Recycling</span><wbr><span>Is</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1037038600%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="-1037038600%2FProperties%2F947585829" anchor-label="unsafeHostComponentRecyclingIsEnabled" id="-1037038600%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="unsafe-host-component-recycling-is-enabled.html">unsafeHostComponentRecyclingIsEnabled</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1584343739%2FProperties%2F947585829" anchor-label="USE_INCREMENTAL_MOUNT_HELPER" id="1584343739%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-u-s-e_-i-n-c-r-e-m-e-n-t-a-l_-m-o-u-n-t_-h-e-l-p-e-r.html"><span><span>USE_INCREMENTAL_MOUNT_HELPER</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1584343739%2FProperties%2F947585829"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="1584343739%2FProperties%2F947585829" anchor-label="USE_INCREMENTAL_MOUNT_HELPER" id="1584343739%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-u-s-e_-i-n-c-r-e-m-e-n-t-a-l_-m-o-u-n-t_-h-e-l-p-e-r.html">USE_INCREMENTAL_MOUNT_HELPER</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><a data-name="1584343739%2FProperties%2F947585829" anchor-label="USE_INCREMENTAL_MOUNT_HELPER" id="1584343739%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>Indicates that the incremental mount helper is required for this build.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><a data-name="611232181%2FProperties%2F947585829" anchor-label="useNonRebindingEventHandlers" id="611232181%2FProperties%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="use-non-rebinding-event-handlers.html">useNonRebindingEventHandlers</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div></div></div>
               </div>
             </div>
           </div>
