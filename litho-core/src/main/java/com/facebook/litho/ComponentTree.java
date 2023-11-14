@@ -1134,7 +1134,7 @@ public class ComponentTree
         + SizeSpec.toSimpleString(heightSpec);
   }
 
-  LithoConfiguration getLithoConfiguration() {
+  public LithoConfiguration getLithoConfiguration() {
     return mContext.mLithoConfiguration;
   }
 
@@ -3197,24 +3197,14 @@ public class ComponentTree
     }
 
     /**
-     * This should not be used in majority of cases and should only be used when overriding previous
-     * component tree id {@link ComponentTree.Builder#overrideComponentTreeId}
-     *
-     * @param prevComponentTree Previous ComponentTree to override the render unit id map
-     */
-    public Builder overrideRenderUnitIdMap(ComponentTree prevComponentTree) {
-      this.mRenderUnitIdGenerator = prevComponentTree.getLithoConfiguration().renderUnitIdGenerator;
-      return this;
-    }
-
-    /**
-     * This should not be used in majority of cases and should only be used when overriding previous
-     * component tree id {@link ComponentTree.Builder#overrideComponentTreeId}
+     * This should not be used in majority of cases.
      *
      * @param renderUnitIdGenerator to override the {@link ComponentTree} renderUnitIgGenerator.
      */
-    public Builder overrideRenderUnitIdMap(RenderUnitIdGenerator renderUnitIdGenerator) {
+    public Builder overrideRenderUnitIdMap(
+        RenderUnitIdGenerator renderUnitIdGenerator, int overrideComponentTreeId) {
       this.mRenderUnitIdGenerator = renderUnitIdGenerator;
+      this.overrideComponentTreeId = overrideComponentTreeId;
       return this;
     }
 

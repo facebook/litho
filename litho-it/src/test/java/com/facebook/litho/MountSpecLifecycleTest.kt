@@ -482,8 +482,9 @@ class MountSpecLifecycleTest {
     // tree so that new ids match the current one
     val newComponentTree =
         ComponentTree.create(c, newComponent)
-            .overrideRenderUnitIdMap(initialComponentTree)
-            .overrideComponentTreeId(initialComponentTree.mId)
+            .overrideRenderUnitIdMap(
+                initialComponentTree.lithoConfiguration.renderUnitIdGenerator,
+                initialComponentTree.mId)
             .build()
     lithoView.componentTree = newComponentTree
 
