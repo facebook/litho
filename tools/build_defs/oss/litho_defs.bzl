@@ -396,7 +396,7 @@ def define_yogajni_targets():
             "-fexceptions",
             "-Wall",
             "-O3",
-            "-std=c++11",  # FIXME
+            "-std=c++20",  # FIXME
         ],
         soname = "libyoga.$(ext)",
         visibility = LITHO_VISIBILITY,
@@ -430,7 +430,7 @@ def define_cpp_yoga_targets():
             "-fno-omit-frame-pointer",
             "-fexceptions",
             "-Wall",
-            "-std=c++11",  # FIXME
+            "-std=c++20",  # FIXME
             "-O3",
         ],
         force_static = True,

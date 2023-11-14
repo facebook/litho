@@ -17,6 +17,15 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 11
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26b
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -50,6 +59,15 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 11
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26b
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -99,6 +117,15 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 11
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26b
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
