@@ -41,7 +41,6 @@ interface Node<RenderContext> {
    * @param context The LayoutContext associated with this layout calculation [LayoutContext]
    * @param sizeConstraints The size constraints for this layout pass
    */
-  @JvmDefault
   fun calculateLayout(
       context: LayoutContext<@UnsafeVariance RenderContext>,
       sizeConstraints: SizeConstraints
