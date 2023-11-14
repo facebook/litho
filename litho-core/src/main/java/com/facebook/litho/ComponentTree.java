@@ -3045,7 +3045,6 @@ public class ComponentTree
     private RunnableHandler layoutThreadHandler;
     private @Nullable RunnableHandler preAllocateMountContentHandler;
     private @Nullable TreeState treeState;
-    private RenderState previousRenderState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
@@ -3174,15 +3173,6 @@ public class ComponentTree
      */
     public Builder treeState(@Nullable TreeState treeState) {
       this.treeState = treeState;
-      return this;
-    }
-
-    /**
-     * Specify an existing previous render state that the ComponentTree can use to set the current
-     * values for providing previous versions of @Prop/@State variables.
-     */
-    public Builder previousRenderState(RenderState previousRenderState) {
-      this.previousRenderState = previousRenderState;
       return this;
     }
 
