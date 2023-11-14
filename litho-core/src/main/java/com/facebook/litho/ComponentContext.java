@@ -46,6 +46,9 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 public class ComponentContext {
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
+
+  private final boolean mForceResourcesResolver =
+      ComponentsConfiguration.forceResourcesResolverUsage;
   private final Context mContext;
 
   public LithoConfiguration mLithoConfiguration;
@@ -317,19 +320,53 @@ public class ComponentContext {
   }
 
   public CharSequence getText(@StringRes int resId) {
-    return mContext.getResources().getText(resId);
+    if (mForceResourcesResolver) {
+      CharSequence text = mResourceResolver.resolveText(resId);
+      if (text == null) {
+        throw new RuntimeException(
+            "String resource not found for ID #0x" + Integer.toHexString(resId));
+      } else {
+        return text;
+      }
+    } else {
+      return mContext.getResources().getText(resId);
+    }
   }
 
   public String getString(@StringRes int resId) {
-    return mContext.getResources().getString(resId);
+    if (mForceResourcesResolver) {
+      String text = mResourceResolver.resolveStringRes(resId);
+      if (text == null) {
+        throw new RuntimeException(
+            "String resource not found for ID #0x" + Integer.toHexString(resId));
+      } else {
+        return text;
+      }
+    } else {
+      return mContext.getResources().getString(resId);
+    }
   }
 
   public String getString(@StringRes int resId, Object... formatArgs) {
-    return mContext.getResources().getString(resId, formatArgs);
+    if (mForceResourcesResolver) {
+      String text = mResourceResolver.resolveStringRes(resId, formatArgs);
+      if (text == null) {
+        throw new RuntimeException(
+            "String resource not found for ID #0x" + Integer.toHexString(resId));
+      } else {
+        return text;
+      }
+    } else {
+      return mContext.getResources().getString(resId, formatArgs);
+    }
   }
 
   public int getColor(@ColorRes int id) {
-    return mContext.getResources().getColor(id);
+    if (mForceResourcesResolver) {
+      return mResourceResolver.resolveColorRes(id);
+    } else {
+      return mContext.getResources().getColor(id);
+    }
   }
 
   public Component getComponentScope() {
