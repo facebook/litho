@@ -1299,17 +1299,22 @@ public class ComponentTree
       String attribution,
       boolean isCreateLayoutInProgress,
       boolean isLayoutState) {
+    boolean isStateEnqueued = false;
+
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
+        isStateEnqueued =
+            mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
       }
     }
 
-    ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
+    if (isStateEnqueued) {
+      ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
+    }
   }
 
   @VisibleForTesting
@@ -1328,18 +1333,23 @@ public class ComponentTree
       String attribution,
       boolean isCreateLayoutInProgress,
       boolean isLayoutState) {
+    boolean isStateUpdateEnqueued = false;
+
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
+        isStateUpdateEnqueued =
+            mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
       }
     }
 
-    LithoStats.incrementComponentStateUpdateAsyncCount();
-    onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
+    if (isStateUpdateEnqueued) {
+      LithoStats.incrementComponentStateUpdateAsyncCount();
+      onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
+    }
   }
 
   @Override

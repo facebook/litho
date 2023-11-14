@@ -18,7 +18,9 @@ package com.facebook.litho
 
 import android.util.Pair
 import androidx.annotation.VisibleForTesting
+import com.facebook.litho.SpecGeneratedComponent.TransitionContainer
 import com.facebook.rendercore.annotations.UIState
+import com.facebook.rendercore.utils.isEqualOrEquivalentTo
 
 class TreeState {
   val resolveState: StateHandler
@@ -41,6 +43,7 @@ class TreeState {
 
   constructor() : this(fromState = null)
 
+  @JvmOverloads
   constructor(fromState: TreeState?) {
     resolveState = StateHandler(fromState?.resolveState)
     layoutState = StateHandler(fromState?.layoutState)
@@ -87,8 +90,39 @@ class TreeState {
       stateUpdate: StateContainer.StateUpdate,
       isLazyStateUpdate: Boolean,
       isNestedTree: Boolean
-  ) {
-    getStateHandler(isNestedTree).queueStateUpdate(key, stateUpdate, isLazyStateUpdate)
+  ): Boolean = queueStateUpdate(key, stateUpdate, isLazyStateUpdate, isNestedTree, true)
+
+  fun queueStateUpdate(
+      key: String,
+      stateUpdate: StateContainer.StateUpdate,
+      isLazyStateUpdate: Boolean,
+      isNestedTree: Boolean,
+      queueDuplicateStateUpdates: Boolean = true,
+  ): Boolean {
+    val stateHandler = getStateHandler(isNestedTree)
+    val stateContainer = stateHandler.getStateContainer(key)
+    return if (queueDuplicateStateUpdates ||
+        isLazyStateUpdate ||
+        stateContainer == null ||
+        stateContainer is TransitionContainer) {
+      stateHandler.queueStateUpdate(key, stateUpdate, isLazyStateUpdate)
+      true
+    } else {
+      /**
+       * Ideally we would apply the state update only once if it is not a duplicate. We should
+       * improve this further if this experiment is successful.
+       */
+      val containerClone = stateContainer.clone()
+      containerClone.applyStateUpdate(stateUpdate)
+
+      val isDuplicate = isEqualOrEquivalentTo(stateContainer, containerClone)
+      if (isDuplicate) {
+        false
+      } else {
+        stateHandler.queueStateUpdate(key, stateUpdate, false)
+        true
+      }
+    }
   }
 
   fun queueHookStateUpdate(key: String, updater: HookUpdater, isNestedTree: Boolean) {

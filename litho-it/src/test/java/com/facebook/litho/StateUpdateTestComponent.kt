@@ -52,6 +52,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
         STATE_UPDATE_TYPE_NOOP -> {}
         STATE_UPDATE_TYPE_INCREMENT -> count += 1
         STATE_UPDATE_TYPE_MULTIPLY -> count *= 2
+        STATE_UPDATE_TYPE_VALUE -> count = (stateUpdate.params.first() as Int)
       }
       finalCounterValue.set(count)
     }
@@ -61,6 +62,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
     private const val STATE_UPDATE_TYPE_NOOP = 0
     private const val STATE_UPDATE_TYPE_INCREMENT = 1
     private const val STATE_UPDATE_TYPE_MULTIPLY = 2
+    private const val STATE_UPDATE_TYPE_VALUE = 3
     const val INITIAL_COUNT_STATE_VALUE = 4
 
     @JvmStatic
@@ -74,6 +76,9 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
     @JvmStatic
     fun createMultiplyStateUpdate(): StateContainer.StateUpdate =
         StateContainer.StateUpdate(STATE_UPDATE_TYPE_MULTIPLY)
+
+    fun createValueStateUpdate(value: Int): StateContainer.StateUpdate =
+        StateContainer.StateUpdate(STATE_UPDATE_TYPE_VALUE, value)
 
     private val idGenerator = AtomicInteger(0)
     private val finalCounterValue = AtomicInteger(0)
