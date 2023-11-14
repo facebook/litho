@@ -17,8 +17,6 @@
 package com.facebook.litho.config
 
 import android.os.Build
-import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.BuildConfig
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
@@ -37,7 +35,6 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
  * parameters ... The default config values can also be overridden by manually setting their values
  * in [.defaultBuilder]
  */
-@DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 data class ComponentsConfiguration
 internal constructor(
     val useCancellableLayoutFutures: Boolean = true,
