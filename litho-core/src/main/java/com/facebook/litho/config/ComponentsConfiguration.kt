@@ -278,6 +278,10 @@ internal constructor(
       baseConfig = baseConfig.copy(shouldCacheLayouts = enabled)
     }
 
+    fun specsApiStateUpdateDetectionEnabled(enabled: Boolean) = also {
+      baseConfig = baseConfig.copy(specsApiStateUpdateDuplicateDetectionEnabled = enabled)
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig
     }
