@@ -506,7 +506,8 @@ public class ComponentTree
             logger,
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer,
-            builder.componentTreeDebugEventListener);
+            builder.componentTreeDebugEventListener,
+            builder.config.specsApiStateUpdateDuplicateDetectionEnabled);
 
     if (ComponentsConfiguration.enableFixForNestedComponentTree) {
       mContext =
@@ -1138,6 +1139,10 @@ public class ComponentTree
     return mContext.mLithoConfiguration;
   }
 
+  private boolean isSpecsDuplicateStateUpdateDetectionEnabled() {
+    return mContext.mLithoConfiguration.isSpecsDuplicateStateUpdateDetectionEnabled;
+  }
+
   /** Returns whether incremental mount is enabled or not in this component. */
   public boolean isIncrementalMountEnabled() {
     return mContext.mLithoConfiguration.incrementalMountEnabled;
@@ -1308,7 +1313,12 @@ public class ComponentTree
 
       if (mTreeState != null) {
         isStateEnqueued =
-            mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
+            mTreeState.queueStateUpdate(
+                componentKey,
+                stateUpdate,
+                false,
+                isLayoutState,
+                !isSpecsDuplicateStateUpdateDetectionEnabled());
       }
     }
 
@@ -1342,7 +1352,12 @@ public class ComponentTree
 
       if (mTreeState != null) {
         isStateUpdateEnqueued =
-            mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
+            mTreeState.queueStateUpdate(
+                componentKey,
+                stateUpdate,
+                false,
+                isLayoutState,
+                !isSpecsDuplicateStateUpdateDetectionEnabled());
       }
     }
 

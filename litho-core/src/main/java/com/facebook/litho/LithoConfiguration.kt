@@ -36,5 +36,6 @@ data class LithoConfiguration(
     @JvmField val logger: ComponentsLogger? = null,
     @JvmField val renderUnitIdGenerator: RenderUnitIdGenerator?,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer?,
-    @JvmField val debugEventListener: ComponentTreeDebugEventListener?
+    @JvmField val debugEventListener: ComponentTreeDebugEventListener?,
+    @JvmField val isSpecsDuplicateStateUpdateDetectionEnabled: Boolean
 ) {}

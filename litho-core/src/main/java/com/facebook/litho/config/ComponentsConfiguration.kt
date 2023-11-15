@@ -37,6 +37,11 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
  */
 data class ComponentsConfiguration
 internal constructor(
+    /**
+     * This determines if the [ComponentTree] attached to this configuration, will attempt to detect
+     * and ignore duplicate state updates coming from usages in the Specs API.
+     */
+    @JvmField val specsApiStateUpdateDuplicateDetectionEnabled: Boolean = false,
     val useCancellableLayoutFutures: Boolean = true,
     val useInterruptibleResolution: Boolean = true,
     val shouldCacheLayouts: Boolean = true,

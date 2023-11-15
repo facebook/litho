@@ -87,7 +87,8 @@ public class ComponentContextUtils {
         logger != null ? logger : lithoConfiguration.logger,
         lithoConfiguration.renderUnitIdGenerator,
         lithoConfiguration.visibilityBoundsTransformer,
-        lithoConfiguration.debugEventListener);
+        lithoConfiguration.debugEventListener,
+        lithoConfiguration.isSpecsDuplicateStateUpdateDetectionEnabled);
   }
 
   public static LithoConfiguration buildDefaultLithoConfiguration(
@@ -118,6 +119,7 @@ public class ComponentContextUtils {
         loggerToUse,
         null,
         transformer,
-        null);
+        null,
+        ComponentsConfiguration.defaultInstance.specsApiStateUpdateDuplicateDetectionEnabled);
   }
 }
