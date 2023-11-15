@@ -31,7 +31,7 @@ data class LithoConfiguration(
     @JvmField val preallocationPerMountContentEnabled: Boolean,
     @JvmField val mountContentPreallocationHandler: RunnableHandler?,
     @JvmField val incrementalMountEnabled: Boolean,
-    @JvmField val errorEventHandler: ErrorEventHandler? = DefaultErrorEventHandler.INSTANCE,
+    @JvmField val errorEventHandler: ErrorEventHandler,
     @JvmField val logTag: String? = null,
     @JvmField val logger: ComponentsLogger? = null,
     @JvmField val renderUnitIdGenerator: RenderUnitIdGenerator?,
