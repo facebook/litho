@@ -422,8 +422,7 @@ class MountSpecLifecycleTest {
             .child(
                 SimpleStateUpdateEmulator.create(legacyLithoViewRule.context).caller(stateUpdater))
             .build()
-    legacyLithoViewRule.useComponentTree(
-        ComponentTree.create(legacyLithoViewRule.context).isReconciliationEnabled(false).build())
+    legacyLithoViewRule.useComponentTree(ComponentTree.create(legacyLithoViewRule.context).build())
     legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
     val mountDelegateTarget = legacyLithoViewRule.lithoView.getMountDelegateTarget()
     assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1)
