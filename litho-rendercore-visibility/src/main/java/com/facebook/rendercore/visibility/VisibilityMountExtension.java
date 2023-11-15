@@ -241,11 +241,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
       final @Nullable VisibilityBoundsTransformer transformer =
           extensionState.getState().mVisibilityBoundsTransformer;
+      @Nullable Rect transformedLocalVisibleRect = null;
       if (transformer != null) {
-        Rect transformed = transformer.getTransformedLocalVisibleRect(extensionState.getRootHost());
-        if (transformed != null) {
-          localVisibleRect = transformed;
-        }
+        transformedLocalVisibleRect =
+            transformer.getTransformedLocalVisibleRect(extensionState.getRootHost());
       }
 
       final boolean isTracing = RenderCoreSystrace.isTracing();
@@ -264,8 +263,14 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
         final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
+        final boolean shouldUseTransformedVisibleRect =
+            transformer != null && transformer.shouldUseTransformedVisibleRect(visibilityOutput);
         final boolean boundsIntersect =
-            intersection.setIntersect(visibilityOutputBounds, localVisibleRect);
+            intersection.setIntersect(
+                visibilityOutputBounds,
+                shouldUseTransformedVisibleRect && transformedLocalVisibleRect != null
+                    ? transformedLocalVisibleRect
+                    : localVisibleRect);
         final boolean isFullyVisible =
             boundsIntersect && intersection.equals(visibilityOutputBounds);
         final String visibilityOutputId = visibilityOutput.getId();
@@ -382,7 +387,11 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
           // Check if the component has entered or exited the focused range.
           if (focusedHandler != null || unfocusedHandler != null) {
-            if (isInFocusedRange(extensionState, visibilityOutputBounds, intersection)) {
+            if (isInFocusedRange(
+                extensionState,
+                visibilityOutputBounds,
+                intersection,
+                shouldUseTransformedVisibleRect)) {
               if (!visibilityItem.isInFocusedRange()) {
                 visibilityItem.setFocusedRange(true);
                 if (focusedHandler != null) {
@@ -500,7 +509,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   private static boolean isInFocusedRange(
       ExtensionState<VisibilityMountExtensionState> extensionState,
       Rect componentBounds,
-      Rect componentVisibleBounds) {
+      Rect componentVisibleBounds,
+      boolean shouldUseTransformedVisibleRect) {
     final Host host = getRootHost(extensionState);
     if (host == null) {
       return false;
@@ -515,11 +525,11 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
     final @Nullable VisibilityBoundsTransformer transformer =
         extensionState.getState().mVisibilityBoundsTransformer;
-    final int halfViewportArea =
-        (transformer != null
-                ? transformer.getViewportArea(parent)
-                : parent.getWidth() * parent.getHeight())
-            / 2;
+    int halfViewportArea = parent.getWidth() * parent.getHeight() / 2;
+    if (shouldUseTransformedVisibleRect && transformer != null) {
+      halfViewportArea = transformer.getViewportArea(parent) / 2;
+    }
+
     final int totalComponentArea = computeRectArea(componentBounds);
     final int visibleComponentArea = computeRectArea(componentVisibleBounds);
 
