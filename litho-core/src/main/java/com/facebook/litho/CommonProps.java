@@ -680,6 +680,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     getOrCreateOtherProps().layerType(type, paint);
   }
 
+  public void visibilityOutputTag(@Nullable String visibilityOutputTag) {
+    getOrCreateOtherProps().visibilityOutputTag(visibilityOutputTag);
+  }
+
   @Nullable
   public Transition.TransitionKeyType getTransitionKeyType() {
     return getOrCreateOtherProps().mTransitionKeyType;
@@ -811,6 +815,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     @DrawableRes private int mStateListAnimatorRes;
     private int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
     private @Nullable Paint mLayerPaint;
+    private @Nullable String mVisibilityOutputTag;
 
     private void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
       if (mTypeToViewBinder == null) {
@@ -931,6 +936,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       mLayerPaint = paint;
     }
 
+    private void visibilityOutputTag(@Nullable String visibilityOutputTag) {
+      mVisibilityOutputTag = visibilityOutputTag;
+    }
+
     void copyInto(LithoNode node) {
       if ((mPrivateFlags & PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET) != 0L) {
         node.importantForAccessibility(mImportantForAccessibility);
@@ -996,6 +1005,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         node.stateListAnimatorRes(mStateListAnimatorRes);
       }
       node.layerType(mLayerType, mLayerPaint);
+      node.visibilityOutputTag(mVisibilityOutputTag);
     }
 
     @Override
