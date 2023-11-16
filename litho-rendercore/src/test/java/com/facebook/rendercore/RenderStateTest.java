@@ -667,7 +667,7 @@ public class RenderStateTest {
     assertThat(resolveCount.intValue()).isEqualTo(2);
   }
 
-  static class TestStateUpdate implements StateUpdateReceiver.StateUpdate {
+  static class TestStateUpdate implements StateUpdateReceiver.StateUpdate<Object> {
 
     @Override
     public Object update(Object o) {

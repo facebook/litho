@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ResolveFuture<State, RenderContext, StateUpdateType extends StateUpdate>
+public class ResolveFuture<State, RenderContext, StateUpdateType extends StateUpdate<?>>
     extends ThreadInheritingPriorityFuture<ResolveResult<Node<RenderContext>, State>> {
 
   private final int mVersion;
