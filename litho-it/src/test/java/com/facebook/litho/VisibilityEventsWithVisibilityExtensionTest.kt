@@ -94,7 +94,7 @@ class VisibilityEventsWithVisibilityExtensionTest {
     whenever(layoutState.toRenderTree()).thenReturn(renderTree)
     whenever(layoutState.tracer).thenReturn(systrace)
     whenever(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode)
-    whenever(rootNode.renderUnit).thenReturn(Reducer.sRootHostRenderUnit)
+    whenever(rootNode.renderUnit).thenReturn(Reducer.ROOT_HOST_RENDER_UNIT)
     legacyLithoViewRule.lithoView.setMountStateDirty()
     val visibilityExtension: VisibilityMountExtension<LayoutState> =
         spy(VisibilityMountExtension.getInstance() as VisibilityMountExtension<LayoutState>)
@@ -118,7 +118,7 @@ class VisibilityEventsWithVisibilityExtensionTest {
     val rootNode: RenderTreeNode = mock()
     whenever(layoutState.toRenderTree()).thenReturn(renderTree)
     whenever(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode)
-    whenever(rootNode.renderUnit).thenReturn(Reducer.sRootHostRenderUnit)
+    whenever(rootNode.renderUnit).thenReturn(Reducer.ROOT_HOST_RENDER_UNIT)
     legacyLithoViewRule.lithoView.setMountStateDirty()
     val visibilityExtension: VisibilityMountExtension<*> =
         spy(VisibilityMountExtension.getInstance())

@@ -203,7 +203,7 @@ public class RenderCoreExtensionTest {
 
     RootHostView rootView = (RootHostView) mRenderCoreTestRule.getRootHost();
 
-    extension.idsMarkedForRelease = new long[] {Reducer.sRootHostRenderUnit.getId()};
+    extension.idsMarkedForRelease = new long[] {Reducer.ROOT_HOST_RENDER_UNIT.getId()};
 
     rootView.offsetTopAndBottom(100);
     assertThat(extension.onVisibleBoundsChanged).isEqualTo(1);
