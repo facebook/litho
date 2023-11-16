@@ -201,6 +201,7 @@ object LithoReducer {
   private fun createContentRenderTreeNode(
       result: LayoutResult,
       node: LithoNode,
+      bounds: Rect,
       layoutState: LayoutState,
       parent: RenderTreeNode? = null,
       debugHierarchyNode: DebugHierarchy.Node? = null,
@@ -218,6 +219,7 @@ object LithoReducer {
     val debugNode: DebugHierarchy.Node? = debugHierarchyNode?.mutateType(OutputUnitType.CONTENT)
     return createRenderTreeNode(
         unit = unit,
+        bounds = bounds,
         layoutState = layoutState,
         result = result,
         useNodePadding = true,
@@ -235,6 +237,7 @@ object LithoReducer {
 
   private fun createHostRenderTreeNode(
       unit: LithoRenderUnit,
+      bounds: Rect,
       layoutState: LayoutState,
       result: LayoutResult,
       parent: RenderTreeNode? = null,
@@ -242,6 +245,7 @@ object LithoReducer {
   ): RenderTreeNode =
       createRenderTreeNode(
           unit = unit,
+          bounds = bounds,
           layoutState = layoutState,
           result = result as LithoLayoutResult,
           useNodePadding = false,
@@ -252,6 +256,7 @@ object LithoReducer {
 
   private fun createRenderTreeNode(
       unit: LithoRenderUnit,
+      bounds: Rect,
       layoutState: LayoutState,
       result: LithoLayoutResult,
       useNodePadding: Boolean,
@@ -262,20 +267,13 @@ object LithoReducer {
       debugHierarchyNode: DebugHierarchy.Node? = null,
   ): RenderTreeNode {
 
-    val hostTranslationX: Int
-    val hostTranslationY: Int
-    if (parent != null) {
-      hostTranslationX = parent.absoluteX
-      hostTranslationY = parent.absoluteY
-    } else {
-      hostTranslationX = 0
-      hostTranslationY = 0
-    }
+    val hostTranslationX: Int = parent?.absoluteX ?: 0
+    val hostTranslationY: Int = parent?.absoluteY ?: 0
 
-    var l: Int = layoutState.mCurrentX - hostTranslationX + result.x
-    var t: Int = layoutState.mCurrentY - hostTranslationY + result.y
-    var r: Int = l + result.width
-    var b: Int = t + result.height
+    var l: Int = bounds.left - hostTranslationX
+    var t: Int = bounds.top - hostTranslationY
+    var r: Int = l + bounds.width()
+    var b: Int = t + bounds.height()
 
     if (useNodePadding) {
       if (Component.isPrimitive(unit.component)) {
@@ -302,15 +300,15 @@ object LithoReducer {
       }
     }
 
-    val bounds = Rect(l, t, r, b)
+    val resolvedBounds = Rect(l, t, r, b)
 
     return create(
         unit = unit,
-        bounds = bounds,
+        bounds = resolvedBounds,
         layoutData =
             LithoLayoutData(
-                width = bounds.width(),
-                height = bounds.height(),
+                width = resolvedBounds.width(),
+                height = resolvedBounds.height(),
                 currentLayoutStateId = layoutState.mId,
                 previousLayoutStateId = layoutState.mPreviousLayoutStateId,
                 expandedTouchBounds = result.expandedTouchBounds,
@@ -325,18 +323,10 @@ object LithoReducer {
    * stored in the [LithoNode].
    */
   private fun createVisibilityOutput(
-      result: LayoutResult,
       node: LithoNode,
-      layoutState: LayoutState,
-      x: Int,
-      y: Int,
+      bounds: Rect,
       renderTreeNode: RenderTreeNode?
   ): VisibilityOutput {
-
-    val l: Int = layoutState.mCurrentX + x
-    val t: Int = layoutState.mCurrentY + y
-    val r: Int = l + result.width
-    val b: Int = t + result.height
 
     val visibleHandler: EventHandler<VisibleEvent>? = node.visibleHandler
     val focusedHandler: EventHandler<FocusedVisibleEvent>? = node.focusedHandler
@@ -352,7 +342,7 @@ object LithoReducer {
     return VisibilityOutput(
         componentGlobalKey,
         component.simpleName,
-        Rect(l, t, r, b),
+        Rect(bounds),
         renderTreeNode != null,
         renderTreeNode?.renderUnit?.id ?: 0,
         node.visibleHeightRatio,
@@ -367,22 +357,13 @@ object LithoReducer {
   }
 
   private fun createTestOutput(
-      result: LayoutResult,
       node: LithoNode,
-      layoutState: LayoutState,
-      x: Int,
-      y: Int,
+      bounds: Rect,
       renderUnit: LithoRenderUnit? = null
   ): TestOutput {
-
-    val l: Int = layoutState.mCurrentX + x
-    val t: Int = layoutState.mCurrentY + y
-    val r: Int = l + result.width
-    val b: Int = t + result.height
-
     val output = TestOutput()
     output.testKey = checkNotNull(node.testKey)
-    output.setBounds(l, t, r, b)
+    output.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom)
     if (renderUnit != null) {
       output.layoutOutputId = renderUnit.id
     }
@@ -502,11 +483,19 @@ object LithoReducer {
     layoutState.mCurrentLayoutOutputAffinityGroup =
         if (layoutState.mCurrentTransitionId != null) OutputUnitsAffinityGroup() else null
 
+    // create bounds
+    val l: Int = layoutState.mCurrentX + x
+    val t: Int = layoutState.mCurrentY + y
+    val r: Int = l + result.width
+    val b: Int = t + result.height
+    val bounds = Rect(l, t, r, b)
+
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (hostRenderUnit != null) {
       val hostLayoutPosition =
           addHostRenderTreeNode(
               hostRenderUnit = hostRenderUnit,
+              bounds = bounds,
               parent = parentRenderTreeNode,
               result = result,
               node = node,
@@ -524,6 +513,7 @@ object LithoReducer {
         val backgroundRenderTreeNode =
             addDrawableRenderTreeNode(
                 unit = backgroundRenderUnit,
+                bounds = bounds,
                 parent = parentRenderTreeNode,
                 result = result,
                 layoutState = layoutState,
@@ -540,6 +530,7 @@ object LithoReducer {
         createContentRenderTreeNode(
             result = result,
             node = node,
+            bounds = bounds,
             layoutState = layoutState,
             parent = parentRenderTreeNode,
             debugHierarchyNode = hierarchy)
@@ -597,6 +588,7 @@ object LithoReducer {
       val borderRenderTreeNode: RenderTreeNode =
           addDrawableRenderTreeNode(
               unit = borderRenderUnit,
+              bounds = bounds,
               parent = parentRenderTreeNode,
               result = result,
               layoutState = layoutState,
@@ -613,6 +605,7 @@ object LithoReducer {
         val foregroundRenderTreeNode: RenderTreeNode =
             addDrawableRenderTreeNode(
                 unit = foregroundRenderUnit,
+                bounds = bounds,
                 parent = parentRenderTreeNode,
                 result = result,
                 layoutState = layoutState,
@@ -628,11 +621,8 @@ object LithoReducer {
     if (node.hasVisibilityHandlers()) {
       val visibilityOutput: VisibilityOutput =
           createVisibilityOutput(
-              result = result,
               node = node,
-              x = x,
-              y = y,
-              layoutState = layoutState,
+              bounds = bounds,
               renderTreeNode =
                   contentRenderTreeNode ?: if (needsHostView) parentRenderTreeNode else null)
 
@@ -645,25 +635,14 @@ object LithoReducer {
     if (layoutState.mTestOutputs != null && !node.testKey.isNullOrEmpty()) {
       val testOutput: TestOutput =
           createTestOutput(
-              result = result,
               node = node,
-              x = x,
-              y = y,
-              layoutState = layoutState,
+              bounds = bounds,
               renderUnit = contentRenderTreeNode?.renderUnit as? LithoRenderUnit)
       layoutState.mTestOutputs.add(testOutput)
     }
 
-    val rect: Rect
-    if (contentRenderTreeNode != null) {
-      rect = contentRenderTreeNode.getAbsoluteBounds(Rect())
-    } else {
-      rect = Rect()
-      rect.left = layoutState.mCurrentX + x
-      rect.top = layoutState.mCurrentY + y
-      rect.right = rect.left + result.width
-      rect.bottom = rect.top + result.height
-    }
+    // collect the adjusted bounds of the content render node if it exists
+    val rect: Rect = contentRenderTreeNode?.getAbsoluteBounds(Rect()) ?: bounds
 
     for (i in 0 until node.componentCount) {
       val delegate: Component = node.getComponentAt(i)
@@ -697,6 +676,7 @@ object LithoReducer {
 
   private fun addDrawableRenderTreeNode(
       unit: LithoRenderUnit,
+      bounds: Rect,
       parent: RenderTreeNode? = null,
       result: LayoutResult,
       layoutState: LayoutState,
@@ -709,6 +689,7 @@ object LithoReducer {
     val renderTreeNode: RenderTreeNode =
         createRenderTreeNode(
             unit = unit,
+            bounds = bounds,
             layoutState = layoutState,
             result = result as LithoLayoutResult,
             useNodePadding = false,
@@ -787,6 +768,7 @@ object LithoReducer {
    */
   private fun addHostRenderTreeNode(
       hostRenderUnit: LithoRenderUnit,
+      bounds: Rect,
       parent: RenderTreeNode? = null,
       result: LithoLayoutResult,
       node: LithoNode,
@@ -803,6 +785,7 @@ object LithoReducer {
     val hostRenderTreeNode: RenderTreeNode =
         createHostRenderTreeNode(
             unit = hostRenderUnit,
+            bounds = bounds,
             layoutState = layoutState,
             result = result,
             parent = parent,
