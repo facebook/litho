@@ -59,8 +59,7 @@ class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExten
       // We could run into the case that mounting a tree ends up requesting another mount.
       // We need to keep re-mounting until the mounted renderTree matches the currentRenderResult.
       var retries = 0
-      while (lazyRenderTreeProvider != this.lazyRenderTreeProvider ||
-          currentRenderResult == null) {
+      while (lazyRenderTreeProvider != this.lazyRenderTreeProvider || currentRenderResult == null) {
         if (retries > RootHostDelegate.MAX_REMOUNT_RETRIES) {
           ErrorReporter.report(
               LogLevel.ERROR,

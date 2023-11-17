@@ -18,7 +18,6 @@ package com.facebook.rendercore.sample
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Pair
 import com.facebook.rendercore.DefaultNode
 import com.facebook.rendercore.DefaultTextNode
 import com.facebook.rendercore.RenderState
