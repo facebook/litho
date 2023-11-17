@@ -37,5 +37,8 @@ data class LithoConfiguration(
     @JvmField val renderUnitIdGenerator: RenderUnitIdGenerator?,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer?,
     @JvmField val debugEventListener: ComponentTreeDebugEventListener?,
-    @JvmField val isSpecsDuplicateStateUpdateDetectionEnabled: Boolean
-) {}
+) {
+
+  val isSpecsDuplicateStateUpdateDetectionEnabled: Boolean
+    get() = componentsConfig.specsApiStateUpdateDuplicateDetectionEnabled
+}

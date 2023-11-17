@@ -506,8 +506,7 @@ public class ComponentTree
             logger,
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer,
-            builder.componentTreeDebugEventListener,
-            builder.config.specsApiStateUpdateDuplicateDetectionEnabled);
+            builder.componentTreeDebugEventListener);
 
     if (ComponentsConfiguration.enableFixForNestedComponentTree) {
       mContext =
@@ -1140,7 +1139,7 @@ public class ComponentTree
   }
 
   private boolean isSpecsDuplicateStateUpdateDetectionEnabled() {
-    return mContext.mLithoConfiguration.isSpecsDuplicateStateUpdateDetectionEnabled;
+    return mContext.mLithoConfiguration.isSpecsDuplicateStateUpdateDetectionEnabled();
   }
 
   /** Returns whether incremental mount is enabled or not in this component. */
