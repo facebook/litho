@@ -42,13 +42,12 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -166,8 +165,8 @@ class ComponentHostTest {
 
     // Touchables are traversed backwards as drawing order.
     // The n.4 is the first parsed, and returning false means the n.2 will be parsed too.
-    val touchableDrawableOnItem2 = Mockito.spy(TouchableDrawable())
-    val touchableDrawableOnItem4 = Mockito.spy(TouchableDrawable())
+    val touchableDrawableOnItem2 = spy(TouchableDrawable())
+    val touchableDrawableOnItem4 = spy(TouchableDrawable())
     whenever(touchableDrawableOnItem2.shouldHandleTouchEvent(dummyMotionEvent)).thenReturn(true)
     whenever(touchableDrawableOnItem4.shouldHandleTouchEvent(dummyMotionEvent)).thenReturn(false)
     val mountItem1 = mount(0, ColorDrawable())
@@ -193,7 +192,7 @@ class ComponentHostTest {
     val mountItem1 = mount(0, ColorDrawable())
     val mountItem2 = mount(1, TouchableDrawable(), LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
     val mountItem3 = mount(2, View(context.androidContext))
-    val mountItem4 = mount(4, Mockito.spy(TouchableDrawable()))
+    val mountItem4 = mount(4, spy(TouchableDrawable()))
     val mountItem5 = mount(5, TouchableDrawable(), LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
     val mountItem6 = mount(7, View(context.androidContext))
     val mountItem7 = mount(8, TouchableDrawable(), LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
@@ -283,7 +282,7 @@ class ComponentHostTest {
   fun testDuplicateParentStateOnViews() {
     val v1 = mock<View>()
     mount(0, v1)
-    verify(v1, never()).isDuplicateParentStateEnabled = ArgumentMatchers.anyBoolean()
+    verify(v1, never()).isDuplicateParentStateEnabled = any()
     val v2 = mock<View>()
     mount(1, v2, LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
     verify(v2, times(1)).isDuplicateParentStateEnabled = eq(true)
@@ -325,7 +324,7 @@ class ComponentHostTest {
     verify(d1, times(2)).setVisible(eq(false), eq(false))
     verify(d2, times(2)).setVisible(eq(true), eq(false))
     verify(d2, times(2)).setVisible(eq(false), eq(false))
-    verify(v1, never()).visibility = ArgumentMatchers.anyInt()
+    verify(v1, never()).visibility = any()
   }
 
   @Test

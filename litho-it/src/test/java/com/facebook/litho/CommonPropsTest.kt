@@ -40,12 +40,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 
 @RunWith(LithoTestRunner::class)
@@ -191,7 +190,7 @@ class CommonPropsTest {
     commonProps.stateListAnimator(stateListAnimator)
     commonProps.gap(YogaGutter.ALL, 10)
     commonProps.copyInto(componentContext, node)
-    val output: LayoutProps = Mockito.spy<LayoutProps>(LayoutProps::class.java)
+    val output: LayoutProps = spy()
     commonProps.copyLayoutProps(output)
     verify(output).layoutDirection(YogaDirection.INHERIT)
     verify(output).alignSelf(YogaAlign.AUTO)
@@ -256,7 +255,7 @@ class CommonPropsTest {
     verify(node).fullImpressionHandler(fullImpressionHandler)
     verify(node).invisibleHandler(invisibleHandler)
     verify(node).visibilityChangedHandler(visibleRectChangedHandler)
-    verify(node).transitionKey(eq("transitionKey"), ArgumentMatchers.anyString())
+    verify(node).transitionKey(eq("transitionKey"), any())
     verify(node).testKey("testKey")
     verify(node).stateListAnimator(stateListAnimator)
   }
