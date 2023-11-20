@@ -124,8 +124,8 @@ constructor(
     return section.globalKey
   }
 
-  val sectionScope: Section
-    get() = scope?.get() ?: error("The scope is not set.")
+  val sectionScope: Section?
+    get() = scope?.get()
 
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   override fun getTreeProps(): TreeProps? = super.getTreeProps()
