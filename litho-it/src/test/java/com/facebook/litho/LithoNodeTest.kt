@@ -310,9 +310,8 @@ class LithoNodeTest {
   @Test
   fun testComponentCreateAndRetrieveCachedLayoutLS_measure() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
+    val componentTree = ComponentTree.create(baseContext).build()
+    val c = componentTree.context
     val resolveContext = c.setRenderStateContextForTests()
     val resultCache = resolveContext.cache
     val unspecifiedSizeSpec = unspecified(0)
@@ -332,9 +331,8 @@ class LithoNodeTest {
   @Test
   fun testComponentCreateAndRetrieveCachedLayoutLS_measureMightNotCacheInternalNode() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
+    val componentTree = ComponentTree.create(baseContext).build()
+    val c = componentTree.context
     val resolveContext = c.setRenderStateContextForTests()
     val resultCache = resolveContext.cache
     val unspecifiedSizeSpec = unspecified(0)

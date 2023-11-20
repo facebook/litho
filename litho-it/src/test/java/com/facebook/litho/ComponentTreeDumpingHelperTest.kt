@@ -46,11 +46,12 @@ class ComponentTreeDumpingHelperTest {
           override fun onCreateLayout(c: ComponentContext): Component? =
               SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build()
         }
-    var componentContext: ComponentContext =
-        ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(componentContext, component).build()
-    componentContext = ComponentContextUtils.withComponentTree(componentContext, componentTree)
-    val lithoView = LithoView(ApplicationProvider.getApplicationContext<Context>())
+
+    val androidContext = ApplicationProvider.getApplicationContext<Context>()
+    val baseContext = ComponentContext(androidContext)
+    val componentTree = ComponentTree.create(baseContext, component).build()
+    val lithoView = LithoView(androidContext)
+
     lithoView.componentTree = componentTree
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

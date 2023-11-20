@@ -888,15 +888,15 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithSameSpecs() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val componentContext = componentTree.context
+    val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(componentContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, EXACTLY)
     val heightSpec = makeSizeSpec(100, EXACTLY)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
+    innerComponent.measure(componentContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
@@ -926,15 +926,16 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val componentContext = componentTree.context
+
+    val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(componentContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, AT_MOST)
     val heightSpec = makeSizeSpec(100, AT_MOST)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
+    innerComponent.measure(componentContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
@@ -964,15 +965,15 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecified() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val componentContext = componentTree.context
+    val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(componentContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(0, UNSPECIFIED)
     val heightSpec = makeSizeSpec(0, UNSPECIFIED)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
+    innerComponent.measure(componentContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
@@ -1000,15 +1001,15 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithOldAndNewAtMost() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val treeContext = componentTree.context
+    val resolveContext = treeContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(treeContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, AT_MOST)
     val heightSpec = makeSizeSpec(100, AT_MOST)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
+    innerComponent.measure(treeContext, widthSpec, heightSpec, size)
     val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
     internalNode?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()

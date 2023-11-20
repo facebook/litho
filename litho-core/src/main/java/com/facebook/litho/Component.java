@@ -605,7 +605,17 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         // we could be using a treeless context here as well. Might be worth revisiting later.
         ComponentTree ct = ComponentTree.create(c).build();
         componentTreeId = ct.mId;
-        c = ComponentContextUtils.withComponentTree(c, ct);
+
+        c =
+            new ComponentContext(
+                c.getAndroidContext(),
+                c.getTreeProps(),
+                ct.getLithoConfiguration(),
+                LithoTree.Companion.create(ct),
+                c.mGlobalKey,
+                c.getLifecycleProvider(),
+                null,
+                c.getParentTreeProps());
       } else {
         componentTreeId = lithoTree.getId();
       }

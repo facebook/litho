@@ -18,77 +18,10 @@ package com.facebook.litho;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 
 public class ComponentContextUtils {
-
-  /**
-   * Creates a new ComponentContext instance and sets the {@link ComponentTree} on the component.
-   *
-   * @param c context scoped to the parent component
-   * @param componentTree component tree associated with the newly created context
-   * @return a new ComponentContext instance
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  @Deprecated
-  public static ComponentContext withComponentTree(
-      ComponentContext c, ComponentTree componentTree) {
-    final String contextLogTag = c.mLithoConfiguration.logTag;
-    final ComponentsLogger contextLogger = c.mLithoConfiguration.logger;
-
-    final LithoConfiguration lithoConfiguration =
-        (contextLogTag != null || contextLogger != null)
-            ? mergeConfigurationWithNewLogTagAndLogger(
-                componentTree.getLithoConfiguration(), contextLogTag, contextLogger)
-            : componentTree.getLithoConfiguration();
-
-    return withComponentTree(c, lithoConfiguration, componentTree);
-  }
-
-  @Deprecated
-  static ComponentContext withComponentTree(
-      ComponentContext c, LithoConfiguration lithoConfiguration, ComponentTree componentTree) {
-    final LithoTree lithoTree = LithoTree.Companion.create(componentTree);
-    return withLithoTree(c, lithoConfiguration, lithoTree, componentTree.getLifecycleProvider());
-  }
-
-  static ComponentContext withLithoTree(
-      ComponentContext c,
-      LithoConfiguration config,
-      LithoTree lithoTree,
-      @Nullable LithoLifecycleProvider lifecycleProvider) {
-    return new ComponentContext(
-        c.getAndroidContext(),
-        c.getTreeProps(),
-        config,
-        lithoTree,
-        c.mGlobalKey,
-        lifecycleProvider,
-        null,
-        c.getParentTreeProps());
-  }
-
-  private static LithoConfiguration mergeConfigurationWithNewLogTagAndLogger(
-      LithoConfiguration lithoConfiguration,
-      @Nullable String logTag,
-      @Nullable ComponentsLogger logger) {
-    return new LithoConfiguration(
-        lithoConfiguration.componentsConfig,
-        lithoConfiguration.areTransitionsEnabled,
-        lithoConfiguration.isReconciliationEnabled,
-        lithoConfiguration.isVisibilityProcessingEnabled,
-        lithoConfiguration.preallocationPerMountContentEnabled,
-        lithoConfiguration.mountContentPreallocationHandler,
-        lithoConfiguration.incrementalMountEnabled,
-        lithoConfiguration.errorEventHandler,
-        logTag != null ? logTag : lithoConfiguration.logTag,
-        logger != null ? logger : lithoConfiguration.logger,
-        lithoConfiguration.renderUnitIdGenerator,
-        lithoConfiguration.visibilityBoundsTransformer,
-        lithoConfiguration.debugEventListener);
-  }
 
   public static LithoConfiguration buildDefaultLithoConfiguration(
       Context context,

@@ -508,16 +508,19 @@ public class ComponentTree
             builder.visibilityBoundsTransformer,
             builder.componentTreeDebugEventListener);
 
-    if (ComponentsConfiguration.enableFixForNestedComponentTree) {
-      mContext =
-          ComponentContextUtils.withLithoTree(
-              builder.context,
-              config,
-              LithoTree.Companion.create(this),
-              builder.mLifecycleProvider);
-    } else {
-      mContext = ComponentContextUtils.withComponentTree(builder.context, config, this);
-    }
+    ComponentContext builderContext = builder.context;
+    mContext =
+        new ComponentContext(
+            builderContext.getAndroidContext(),
+            builderContext.getTreeProps(),
+            config,
+            LithoTree.Companion.create(this),
+            "root",
+            ComponentsConfiguration.enableFixForNestedComponentTree
+                ? builder.mLifecycleProvider
+                : getLifecycleProvider(),
+            null,
+            builderContext.getParentTreeProps());
 
     if (ComponentsConfiguration.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);

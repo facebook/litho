@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.ResolveTreeFutureTest.BlockedRenderComponent
 import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -36,8 +35,9 @@ class ResolveTreeFutureTest {
 
   @Before
   fun setup() {
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    componentContext = ComponentContextUtils.withComponentTree(c, ComponentTree.create(c).build())
+    val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    val componentTree = ComponentTree.create(baseContext).build()
+    componentContext = componentTree.context
   }
 
   /**

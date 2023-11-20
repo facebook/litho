@@ -61,7 +61,19 @@ class DeprecatedLithoTooltipTest {
                   .build()
         }
     componentTree = ComponentTree.create(context, component).build()
-    context = ComponentContextUtils.withComponentTree(context, componentTree)
+
+    val ctContext = componentTree.context
+    context =
+        ComponentContext(
+            ctContext.androidContext,
+            ctContext.treeProps,
+            componentTree.lithoConfiguration,
+            LithoTree.create(componentTree),
+            ctContext.mGlobalKey,
+            ctContext.lifecycleProvider,
+            null,
+            ctContext.parentTreeProps)
+
     context = ComponentContext.withComponentScope(context, component, component.key)
     lithoView = getLithoView(componentTree)
     anchorGlobalKey =

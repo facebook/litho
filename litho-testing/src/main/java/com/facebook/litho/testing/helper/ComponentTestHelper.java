@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentContextUtils;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
@@ -447,10 +446,9 @@ public final class ComponentTestHelper {
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
 
     ComponentTree tree = ComponentTree.create(context).build();
-    ComponentContext c =
-        new ComponentContext(
-            ComponentContextUtils.withComponentTree(new ComponentContext(context), tree));
+    ComponentContext treeContext = tree.getContext();
 
+    ComponentContext c = new ComponentContext(treeContext);
     final ResolveContext rsc = c.setRenderStateContextForTests();
 
     LithoNode root = resolveImmediateSubtree(rsc, c, component, widthSpec, heightSpec);
