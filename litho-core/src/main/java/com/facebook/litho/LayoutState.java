@@ -499,6 +499,10 @@ public class LayoutState
     return mHeight;
   }
 
+  public SizeConstraints getSizeConstraints() {
+    return mSizeConstraints;
+  }
+
   int getWidthSpec() {
     return SizeConstraints.Helper.getWidthSpec(mSizeConstraints.getEncodedValue());
   }
