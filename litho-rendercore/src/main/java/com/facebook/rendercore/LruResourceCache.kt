@@ -17,8 +17,6 @@
 package com.facebook.rendercore
 
 import android.content.res.Configuration
-import android.content.res.Resources
-import android.graphics.drawable.Drawable
 import androidx.collection.LruCache
 
 open class LruResourceCache(configuration: Configuration) : ResourceCache(configuration) {
@@ -29,22 +27,9 @@ open class LruResourceCache(configuration: Configuration) : ResourceCache(config
         override fun sizeOf(key: Int, value: Any): Int = if (value is String) value.length else 1
       }
 
-  private val drawableConstantStateCache =
-      LruCache<Int, Drawable.ConstantState>(RenderCoreConfig.drawableCacheSize)
-
   override fun <T> get(key: Int): T? = cache[key] as T?
 
   override fun set(key: Int, value: Any) {
     cache.put(key, value)
-  }
-
-  override fun getDrawable(key: Int, resources: Resources): Drawable? {
-    return drawableConstantStateCache.get(key)?.newDrawable(resources)
-  }
-
-  override fun setDrawable(key: Int, drawable: Drawable) {
-    drawable.constantState?.let { constantState ->
-      drawableConstantStateCache.put(key, constantState)
-    }
   }
 }

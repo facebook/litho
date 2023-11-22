@@ -271,17 +271,7 @@ public class ResourceResolver {
       return null;
     }
 
-    final Drawable cachedDrawable = mResourceCache.getDrawable(resId, mResources);
-    if (cachedDrawable != null) {
-      return cachedDrawable;
-    }
-
-    final Drawable result = ContextCompat.getDrawable(mAndroidContext, resId);
-    if (result != null) {
-      mResourceCache.setDrawable(resId, result);
-    }
-
-    return result;
+    return ContextCompat.getDrawable(mAndroidContext, resId);
   }
 
   @Nullable
