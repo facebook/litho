@@ -474,12 +474,10 @@ object LithoNodeUtils {
       attrs.layoutDirection = result.resolvedLayoutDirection
       attrs.layerType = lithoNode.layerType
       attrs.layoutPaint = lithoNode.layerPaint
-      if (attrs.isHostSpec) {
-        if (lithoNode.hasStateListAnimatorResSet()) {
-          attrs.stateListAnimatorRes = lithoNode.stateListAnimatorRes
-        } else {
-          attrs.stateListAnimator = lithoNode.stateListAnimator
-        }
+      if (lithoNode.hasStateListAnimatorResSet()) {
+        attrs.stateListAnimatorRes = lithoNode.stateListAnimatorRes
+      } else {
+        attrs.stateListAnimator = lithoNode.stateListAnimator
       }
     }
     return attrs
