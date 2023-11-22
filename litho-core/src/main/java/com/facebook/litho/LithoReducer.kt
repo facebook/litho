@@ -64,8 +64,8 @@ object LithoReducer {
     }
 
     val isTracing: Boolean = ComponentsSystrace.isTracing
-    val widthSpec: Int = layoutState.mWidthSpec
-    val heightSpec: Int = layoutState.mHeightSpec
+    val widthSpec: Int = layoutState.widthSpec
+    val heightSpec: Int = layoutState.heightSpec
     val root: LayoutResult? = layoutState.mLayoutResult
     val rootWidth: Int = root?.width ?: 0
     val rootHeight: Int = root?.height ?: 0

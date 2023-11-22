@@ -24,13 +24,13 @@ import com.facebook.litho.ComponentsSystrace.endSection
 import com.facebook.litho.Layout.measurePendingSubtrees
 import com.facebook.litho.Layout.measureTree
 import com.facebook.litho.LithoReducer.setSizeAfterMeasureAndCollectResults
-import com.facebook.litho.SizeSpec.toString
 import com.facebook.litho.debug.DebugOverlay
 import com.facebook.litho.debug.DebugOverlay.Companion.updateLayoutHistory
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.LayoutCache
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace
 import com.facebook.rendercore.debug.DebugEventDispatcher.endTrace
@@ -84,8 +84,7 @@ class LayoutTreeFuture(
     /** Function to calculate a new layout. */
     fun layout(
         resolveResult: ResolveResult,
-        widthSpec: Int,
-        heightSpec: Int,
+        sizeConstraints: SizeConstraints,
         version: Int,
         treeId: Int,
         isLayoutDiffingEnabled: Boolean,
@@ -114,8 +113,7 @@ class LayoutTreeFuture(
           beginSectionWithArgs("layoutTree:" + resolveResult.component.simpleName)
               .arg("treeId", treeId)
               .arg("rootId", resolveResult.component.id)
-              .arg("widthSpec", toString(widthSpec))
-              .arg("heightSpec", toString(heightSpec))
+              .arg("sizeConstraints", sizeConstraints.toString())
               .flush()
         }
 
@@ -147,8 +145,7 @@ class LayoutTreeFuture(
         val layoutState =
             LayoutState(
                 resolveResult,
-                widthSpec,
-                heightSpec,
+                sizeConstraints,
                 treeId,
                 isLayoutDiffingEnabled,
                 lsc.isAccessibilityEnabled,
@@ -164,7 +161,7 @@ class LayoutTreeFuture(
         try {
 
           c.setLithoLayoutContext(lsc)
-          val root = measureTree(lsc, c.androidContext, node, widthSpec, heightSpec, perfEvent)
+          val root = measureTree(lsc, c.androidContext, node, sizeConstraints, perfEvent)
           if (root != null) {
             measurePendingSubtrees(c, root, layoutState, lsc)
           }
@@ -209,5 +206,29 @@ class LayoutTreeFuture(
         }
       }
     }
+
+    fun layout(
+        resolveResult: ResolveResult,
+        widthSpec: Int,
+        heightSpec: Int,
+        version: Int,
+        treeId: Int,
+        isLayoutDiffingEnabled: Boolean,
+        currentLayoutState: LayoutState?,
+        diffTreeRoot: DiffNode?,
+        future: TreeFuture<*>?,
+        perfEvent: PerfEvent?
+    ): LayoutState =
+        layout(
+            resolveResult = resolveResult,
+            sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+            version = version,
+            treeId = treeId,
+            isLayoutDiffingEnabled = isLayoutDiffingEnabled,
+            currentLayoutState = currentLayoutState,
+            diffTreeRoot = diffTreeRoot,
+            future = future,
+            perfEvent = perfEvent,
+        )
   }
 }

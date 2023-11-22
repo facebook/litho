@@ -38,6 +38,25 @@ internal object Layout {
       heightSpec: Int,
       layoutStatePerfEvent: PerfEvent? = null,
   ): LithoLayoutResult? {
+    return measureTree(
+        lithoLayoutContext = lithoLayoutContext,
+        androidContext = androidContext,
+        node = node,
+        sizeConstraints =
+            SizeConstraints.fromMeasureSpecs(
+                widthSpec = widthSpec,
+                heightSpec = heightSpec,
+            ),
+        layoutStatePerfEvent = layoutStatePerfEvent)
+  }
+
+  fun measureTree(
+      lithoLayoutContext: LithoLayoutContext,
+      androidContext: Context,
+      node: LithoNode? = null,
+      sizeConstraints: SizeConstraints,
+      layoutStatePerfEvent: PerfEvent? = null,
+  ): LithoLayoutResult? {
     if (node == null) {
       return null
     }
@@ -51,8 +70,8 @@ internal object Layout {
             0,
             lithoLayoutContext.layoutCache,
             null)
-    val result: LithoLayoutResult =
-        node.calculateLayout(context, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+
+    val result: LithoLayoutResult = node.calculateLayout(context, sizeConstraints)
 
     layoutStatePerfEvent?.markerPoint("end_measure")
 
@@ -302,8 +321,7 @@ internal object Layout {
           lithoLayoutContext = lithoLayoutContext,
           androidContext = currentLayout.context.androidContext,
           node = currentLayout.node,
-          widthSpec = widthSpec,
-          heightSpec = heightSpec)
+          sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
     }
 
     // 4. If current layout result is not available or component uses OnCreateLayoutWithSizeSpec
@@ -393,8 +411,7 @@ internal object Layout {
           lithoLayoutContext = nestedLsc,
           androidContext = parentContext.androidContext,
           node = newNode,
-          widthSpec = widthSpec,
-          heightSpec = heightSpec)
+          sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
     } finally {
       parentContext.calculationStateContext = prevContext
     }
@@ -433,8 +450,7 @@ internal object Layout {
             lithoLayoutContext = lithoLayoutContext,
             androidContext = cachedLayout.context.androidContext,
             node = cachedLayout.node,
-            widthSpec = widthSpec,
-            heightSpec = heightSpec)
+            sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
       }
     }
     return null

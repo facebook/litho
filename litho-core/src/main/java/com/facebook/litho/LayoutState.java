@@ -39,6 +39,7 @@ import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.SizeConstraints;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
@@ -102,8 +103,7 @@ public class LayoutState
 
   final ResolveResult mResolveResult;
 
-  int mWidthSpec;
-  int mHeightSpec;
+  SizeConstraints mSizeConstraints;
 
   final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   List<VisibilityOutput> mVisibilityOutputs;
@@ -164,14 +164,14 @@ public class LayoutState
 
   LayoutState(
       ResolveResult resolveResult,
-      int widthSpec,
-      int heightSpec,
+      SizeConstraints sizeConstraints,
       int componentTreeId,
       boolean isLayoutDiffingEnabled,
       boolean isAccessibilityEnabled,
       @Nullable LayoutState current) {
     mId = sIdGenerator.getAndIncrement();
     mResolveResult = resolveResult;
+    mSizeConstraints = sizeConstraints;
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mLayoutCacheData = current != null ? current.mLayoutCacheData : null;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
@@ -186,8 +186,6 @@ public class LayoutState
         resolveResult.outputs != null
             ? new ArrayList<>(resolveResult.outputs.componentsThatNeedPreviousRenderData)
             : null;
-    mWidthSpec = widthSpec;
-    mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
     mShouldGenerateDiffTree = isLayoutDiffingEnabled;
     mRootTransitionId = LithoNodeUtils.createTransitionId(resolveResult.node);
@@ -274,7 +272,14 @@ public class LayoutState
     }
 
     final RenderTree renderTree =
-        new RenderTree(root, flatList, mWidthSpec, mHeightSpec, mComponentTreeId, null, null);
+        new RenderTree(
+            root,
+            flatList,
+            SizeConstraints.Helper.getWidthSpec(mSizeConstraints.getEncodedValue()),
+            SizeConstraints.Helper.getHeightSpec(mSizeConstraints.getEncodedValue()),
+            mComponentTreeId,
+            null,
+            null);
     mCachedRenderTree = renderTree;
 
     return renderTree;
@@ -383,10 +388,16 @@ public class LayoutState
 
   boolean isCompatibleSpec(int widthSpec, int heightSpec) {
     final boolean widthIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(mWidthSpec, widthSpec, mWidth);
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            SizeConstraints.Helper.getWidthSpec(mSizeConstraints.getEncodedValue()),
+            widthSpec,
+            mWidth);
 
     final boolean heightIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(mHeightSpec, heightSpec, mHeight);
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            SizeConstraints.Helper.getHeightSpec(mSizeConstraints.getEncodedValue()),
+            heightSpec,
+            mHeight);
 
     return widthIsCompatible && heightIsCompatible;
   }
@@ -489,11 +500,11 @@ public class LayoutState
   }
 
   int getWidthSpec() {
-    return mWidthSpec;
+    return SizeConstraints.Helper.getWidthSpec(mSizeConstraints.getEncodedValue());
   }
 
   int getHeightSpec() {
-    return mHeightSpec;
+    return SizeConstraints.Helper.getHeightSpec(mSizeConstraints.getEncodedValue());
   }
 
   @Override
