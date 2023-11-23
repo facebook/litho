@@ -248,7 +248,6 @@ public class ComponentTree
     void onNewLayoutStateReady(ComponentTree componentTree);
   }
 
-  private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   // Do not access sDefaultLayoutThreadLooper directly, use getDefaultLayoutThreadLooper().
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultLayoutThreadLooper;
@@ -429,7 +428,7 @@ public class ComponentTree
     if (builder.overrideComponentTreeId != INVALID_ID) {
       mId = builder.overrideComponentTreeId;
     } else {
-      mId = generateComponentTreeId();
+      mId = LithoTree.generateComponentTreeId();
     }
     final RenderUnitIdGenerator renderUnitIdGenerator;
     if (builder.mRenderUnitIdGenerator != null) {
@@ -2947,10 +2946,6 @@ public class ComponentTree
 
   public int getId() {
     return mId;
-  }
-
-  public static int generateComponentTreeId() {
-    return sIdGenerator.getAndIncrement();
   }
 
   private class DoLayoutRunnable extends ThreadTracingRunnable {
