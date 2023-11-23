@@ -21,10 +21,10 @@ import android.view.View.MeasureSpec
 
 /** Creates [SizeConstraints] from the provided values. */
 fun SizeConstraints(
-    minWidth: Int,
-    maxWidth: Int,
-    minHeight: Int,
-    maxHeight: Int,
+    minWidth: Int = 0,
+    maxWidth: Int = SizeConstraints.Infinity,
+    minHeight: Int = 0,
+    maxHeight: Int = SizeConstraints.Infinity,
 ): SizeConstraints {
   return SizeConstraints(
       SizeConstraints.Helper.sizeConstraints(minWidth, maxWidth, minHeight, maxHeight))
@@ -76,6 +76,50 @@ val SizeConstraints.MaxPossibleHeightValue: Int
 fun Size.fitsWithin(sizeConstraints: SizeConstraints): Boolean {
   return (width in sizeConstraints.minWidth..sizeConstraints.maxWidth) &&
       (height in sizeConstraints.minHeight..sizeConstraints.maxHeight)
+}
+
+/**
+ * Returns true if the given [size] that was measured using [otherConstraints] is compatible with
+ * current size constraints.
+ *
+ * Knowing that a Size that was measured with one SizeConstraints wouldn't change if it was measured
+ * with other SizeConstraints may be used to avoid unnecessary measurements.
+ */
+fun SizeConstraints.areCompatible(otherConstraints: SizeConstraints, size: Size): Boolean {
+  // exactly the same constraints, return early
+  if (encodedValue == otherConstraints.encodedValue) {
+    return true
+  }
+
+  // new width constraint is exact - check if measured width matches its size
+  val isNewWidthExactAndMeasuredWidthFits = hasExactWidth && maxWidth == size.width
+
+  // check if new new width constraints are not less strict than the old width constraints
+  val doesNewWidthConstraintFitTheOldOne =
+      otherConstraints.minWidth <= minWidth && otherConstraints.maxWidth >= maxWidth
+
+  // check if measured width fits within the new width constraints
+  val doesMeasuredWidthFitNewWidthConstraint = size.width in minWidth..maxWidth
+
+  val isWidthCompatible =
+      isNewWidthExactAndMeasuredWidthFits ||
+          (doesNewWidthConstraintFitTheOldOne && doesMeasuredWidthFitNewWidthConstraint)
+
+  // new height constraint is exact - check if measured height matches its size
+  val isNewHeightExactAndMeasuredHeightFits = hasExactHeight && maxHeight == size.height
+
+  // check if new new height constraints are not less strict than the old height constraints
+  val doesNewHeightConstraintFitTheOldOne =
+      otherConstraints.minHeight <= minHeight && otherConstraints.maxHeight >= maxHeight
+
+  // check if measured height fits within the new height constraints
+  val doesMeasuredHeightFitNewHeightConstraint = size.height in minHeight..maxHeight
+
+  val isHeightCompatible =
+      isNewHeightExactAndMeasuredHeightFits ||
+          (doesNewHeightConstraintFitTheOldOne && doesMeasuredHeightFitNewHeightConstraint)
+
+  return isWidthCompatible && isHeightCompatible
 }
 
 /**
@@ -157,6 +201,24 @@ value class SizeConstraints internal constructor(val encodedValue: Long) {
      * [maxHeight] is set to Infinity, then [hasBoundedHeight] returns false.
      */
     const val Infinity: Int = Int.MAX_VALUE
+
+    /**
+     * Creates [SizeConstraints] with exact size in both dimension using the provided width and
+     * height.
+     */
+    fun exact(width: Int, height: Int): SizeConstraints {
+      return SizeConstraints(width, width, height, height)
+    }
+
+    /** Creates [SizeConstraints] with exact width and unbounded height. */
+    fun fixedWidth(width: Int): SizeConstraints {
+      return SizeConstraints(width, width, 0, Infinity)
+    }
+
+    /** Creates [SizeConstraints] with exact height and unbounded width. */
+    fun fixedHeight(height: Int): SizeConstraints {
+      return SizeConstraints(0, Infinity, height, height)
+    }
 
     /** Creates encoded [Long] from the provided width and height [View.MeasureSpec]s. */
     @JvmStatic

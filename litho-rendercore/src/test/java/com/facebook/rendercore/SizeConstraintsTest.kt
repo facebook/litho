@@ -997,4 +997,330 @@ class SizeConstraintsTest {
         .isInstanceOf(IllegalArgumentException::class.java)
         .hasMessageContaining("maxHeight must be >= minHeight")
   }
+
+  @Test
+  fun `compatibility - same constraints - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, old and new widths are exact min and max width values are the same and size width is the same as new max width - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, old and new widths are exact min and max width values are different and size width is the same as new max width - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 20, maxWidth = 20, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, old width is not exact and new width is exact and size width is the same as new max width - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, old width is not exact and new width is exact and size width is different than new max width - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 5, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - height fits, old and new max widths are unbounded and size width fits min width - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, old and new max widths are unbounded and size width doesn't fit min width - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(
+            minWidth = 20, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - height fits, new width is exact and matches size width - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, old width is unbounded, new width is bounded and size width fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 30, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, old width is unbounded, new width is bounded and size width doesn't fit min width - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 15, maxWidth = 30, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - height fits, old width is unbounded, new width is bounded and size width doesn't fit max width - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = SizeConstraints.Infinity, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 10, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 15, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - height fits, widths are bounded, new max width is stricter and size width fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 15, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 10, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, widths are bounded, new min width is stricter and size width fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 20, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 15, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, widths are bounded, new min and max widths are stricter and size width fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 15, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 15, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - height fits, widths are bounded, new min and max widths are stricter and size width doesn't fit min width - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 15, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 5, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - height fits, widths are bounded, new min and max widths are stricter and size width doesn't fit max width - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 5, maxWidth = 20, minHeight = 0, maxHeight = 100)
+    val newConstraints =
+        SizeConstraints(minWidth = 10, maxWidth = 15, minHeight = 0, maxHeight = 100)
+    val size = Size(width = 20, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - width fits, old and new heights are exact min and max height values are the same and size height is the same as new max width - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, old and new heights are exact min and max height values are different and size height is the same as new max width - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 20, maxHeight = 20)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, old height is not exact and new height is exact and size height is the same as new max height - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 10)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, old height is not exact and new height is exact and size height is different than new max height - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 10)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
+    val size = Size(width = 20, height = 5)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - width fits, old and new max heights are unbounded and size height fits min height - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val newConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, old and new max heights are unbounded and size height doesn't fit min height - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val newConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 20, maxHeight = SizeConstraints.Infinity)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - width fits, new height is exact and matches size height - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 10)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, old height is unbounded, new height is bounded and size height fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 30)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, old height is unbounded, new height is bounded and size height doesn't fit min height - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 15, maxHeight = 30)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - width fits, old height is unbounded, new height is bounded and size height doesn't fit max height - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(
+            minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = SizeConstraints.Infinity)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 10)
+    val size = Size(width = 20, height = 15)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - width fits, heights are bounded, new max height is stricter and size height fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 15)
+    val size = Size(width = 20, height = 10)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, heights are bounded, new min height is stricter and size height fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 20)
+    val size = Size(width = 20, height = 15)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, heights are bounded, new min and max heights are stricter and size height fits - are compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 15)
+    val size = Size(width = 20, height = 15)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isTrue
+  }
+
+  @Test
+  fun `compatibility - width fits, heights are bounded, new min and max heights are stricter and size height doesn't fit min height - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 15)
+    val size = Size(width = 20, height = 5)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
+
+  @Test
+  fun `compatibility - width fits, heights are bounded, new min and max heights are stricter and size height doesn't fit max height - are not compatible`() {
+    val oldConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 5, maxHeight = 20)
+    val newConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 10, maxHeight = 15)
+    val size = Size(width = 20, height = 20)
+    assertThat(newConstraints.areCompatible(oldConstraints, size)).isFalse
+  }
 }
