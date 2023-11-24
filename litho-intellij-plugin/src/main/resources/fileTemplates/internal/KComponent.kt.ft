@@ -1,14 +1,26 @@
 package ${PACKAGE_NAME}
 
+import android.graphics.Color
+import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.view.backgroundColor
+import com.facebook.rendercore.dp
+import com.facebook.yoga.YogaAlign
 
 class ${NAME} : KComponent() {
 
   override fun ComponentScope.render(): Component {
-    return #[[$END$]]#
+    return #[[$END$]]#Column(
+        /* TODO: layout https://fblitho.com/docs/tutorial/introducing-layout/ */
+        style = Style.backgroundColor(Color.CYAN),
+        alignItems = YogaAlign.CENTER,
+    ) {
+      child(Text(text = "Hello, Litho!", textColor = Color.BLUE, textSize = 24.dp))
+    }
   }
 }
 
