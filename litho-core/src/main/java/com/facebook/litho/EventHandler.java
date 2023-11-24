@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
@@ -58,13 +57,6 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
       final EventDispatchInfo info = dispatchInfo;
       final boolean isUnbound = (info == null) || !info.isBound;
       if (isUnbound && mode != EventHandlerRebindMode.NONE) {
-
-        Log.e(
-            "litho-events",
-            CommonUtils.getSectionNameForTracing(event.getClass())
-                + ": Unbound event handler dispatched from : "
-                + this);
-
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.ERROR, // does not crash
             UnboundEventHandler + CommonUtils.getSectionNameForTracing(event.getClass()),
