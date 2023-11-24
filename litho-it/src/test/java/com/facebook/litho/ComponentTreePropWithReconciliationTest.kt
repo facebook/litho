@@ -48,7 +48,7 @@ class ComponentTreePropWithReconciliationTest {
 
   private fun getLithoView(component: Component): LithoView {
     val lithoView = LithoView(c)
-    val componentTree = ComponentTree.create(c, component).isReconciliationEnabled(true).build()
+    val componentTree = ComponentTree.create(c, component).build()
     lithoView.componentTree = componentTree
     lithoView.measure(unspecified(640), unspecified(480))
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
