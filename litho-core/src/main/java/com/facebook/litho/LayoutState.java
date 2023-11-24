@@ -335,12 +335,6 @@ public class LayoutState
           continue;
         }
 
-        if (ComponentsConfiguration.componentPreallocationBlocklist != null
-            && ComponentsConfiguration.componentPreallocationBlocklist.contains(
-                component.getSimpleName())) {
-          continue;
-        }
-
         if (ComponentsConfiguration.enableDrawablePreAllocation
             || isMountableView(treeNode.getRenderUnit())) {
 

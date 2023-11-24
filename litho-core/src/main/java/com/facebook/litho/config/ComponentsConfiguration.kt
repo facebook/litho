@@ -194,7 +194,6 @@ internal constructor(
     @JvmField var textureSizeWarningLimit: Int = Int.MAX_VALUE
     @JvmField var overlappingRenderingViewSizeLimit: Int = Int.MAX_VALUE
     @JvmField var partialAlphaWarningSizeThresold: Int = Int.MAX_VALUE
-    @JvmField var componentPreallocationBlocklist: Set<String>? = null
 
     /** Initialize sticky header during layout when its component tree is null */
     @JvmField var initStickyHeaderInLayoutWhenComponentTreeIsNull: Boolean = false
