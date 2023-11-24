@@ -165,7 +165,7 @@ ext.deps = [
         // Misc
         khronos            : 'org.khronos:opengl-api:gl1.1-android-2.1_r1',
         // Kotlin
-        kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_VERSION}",
+        kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}",
         kotlinCoroutines   : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4",
         kotlinCoroutinesTest  : "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4",
         kotlinReflect      : "org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}"
@@ -174,8 +174,8 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:2.0.0' // can be a '-SNAPSHOT' release
-        : 'com.facebook.yoga:yoga:2.0.0'
+        ? 'com.facebook.yoga:yoga:2.0.1' // can be a '-SNAPSHOT' release
+        : 'com.facebook.yoga:yoga:2.0.1'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.

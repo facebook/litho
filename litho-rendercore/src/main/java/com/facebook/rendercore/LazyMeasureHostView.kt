@@ -18,7 +18,6 @@ package com.facebook.rendercore
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.annotation.VisibleForTesting.Companion.PROTECTED
 import com.facebook.rendercore.extensions.RenderCoreExtension
 import com.facebook.rendercore.utils.MeasureSpecUtils
 
@@ -101,13 +100,13 @@ class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExten
     requestLayout()
   }
 
-  @VisibleForTesting(otherwise = PROTECTED)
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
     mountState.detach()
   }
 
-  @VisibleForTesting(otherwise = PROTECTED)
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     mountState.attach()

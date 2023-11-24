@@ -19,7 +19,6 @@ package com.facebook.rendercore
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.VisibleForTesting
-import androidx.annotation.VisibleForTesting.Companion.PROTECTED
 
 open class RootHostView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     HostView(context, attrs), RootHost {
@@ -59,13 +58,13 @@ open class RootHostView @JvmOverloads constructor(context: Context, attrs: Attri
     performLayoutOnChildrenIfNecessary(this)
   }
 
-  @VisibleForTesting(otherwise = PROTECTED)
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
     rootHostDelegate.detach()
   }
 
-  @VisibleForTesting(otherwise = PROTECTED)
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     rootHostDelegate.attach()
