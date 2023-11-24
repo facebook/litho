@@ -221,7 +221,7 @@ internal constructor(
     @JvmField var shouldAllowCoreThreadTimeout: Boolean = false
     @JvmField var layoutThreadKeepAliveTimeMs: Long = 1_000
     @JvmField var crashIfExceedingStateUpdateThreshold: Boolean = false
-    @JvmField var enableRecyclerBinderStableId: Boolean = false
+    @JvmField var enableRecyclerBinderStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var enableMountableRecycler: Boolean = false
     @JvmField var enableMountableTwoBindersRecycler: Boolean = false
@@ -234,7 +234,7 @@ internal constructor(
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
     @JvmField var reduceMemorySpikeGetUri: Boolean = false
     @JvmField var bindOnSameComponentTree: Boolean = true
-    @JvmField var enableStateUpdatesBatching = true
+    @JvmField var enableStateUpdatesBatching: Boolean = true
     @JvmField var componentsLogger: ComponentsLogger? = null
 
     /** Debug option to highlight interactive areas in mounted components. */
