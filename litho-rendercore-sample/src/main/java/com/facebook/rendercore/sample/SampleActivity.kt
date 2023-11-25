@@ -67,7 +67,7 @@ class SampleActivity : Activity(), RenderState.Delegate<SurfaceData?> {
   override fun commit(
       layoutVersion: Int,
       current: RenderTree?,
-      next: RenderTree?,
+      next: RenderTree,
       currentState: SurfaceData?,
       nextState: SurfaceData?
   ) {
