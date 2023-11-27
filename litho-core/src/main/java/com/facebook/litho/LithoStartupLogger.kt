@@ -66,7 +66,7 @@ abstract class LithoStartupLogger {
       buildString {
         append(LITHO_PREFIX)
         if (NEEDS_THREAD_INFO.contains(eventName)) {
-          append(if (ThreadUtils.isMainThread()) "_ui" else "_bg")
+          append(if (ThreadUtils.isMainThread) "_ui" else "_bg")
         }
         if (dataAttribution.isNotEmpty()) {
           append('_')

@@ -326,7 +326,7 @@ object Resolver {
   ): PerfEvent? {
     val event: PerfEvent = componentsLogger?.newPerformanceEvent(eventId) ?: return null
     event.markerAnnotate(FrameworkLogEvents.PARAM_COMPONENT, component.simpleName)
-    event.markerAnnotate(FrameworkLogEvents.PARAM_IS_MAIN_THREAD, ThreadUtils.isMainThread())
+    event.markerAnnotate(FrameworkLogEvents.PARAM_IS_MAIN_THREAD, ThreadUtils.isMainThread)
     return event
   }
 

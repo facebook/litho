@@ -184,7 +184,7 @@ class LayoutTreeFuture(
 
         LithoStats.incrementComponentCalculateLayoutCount()
 
-        if (ThreadUtils.isMainThread()) {
+        if (ThreadUtils.isMainThread) {
           LithoStats.incrementComponentCalculateLayoutOnUICount()
         }
 
