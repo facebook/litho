@@ -39,10 +39,8 @@ import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
 public class LithoView extends BaseMountingView {
@@ -984,29 +982,6 @@ public class LithoView extends BaseMountingView {
           loggingInfo.startupLoggerAttribution);
       loggingInfo.lastMountLogged[0] = true;
     }
-  }
-
-  @Override
-  protected Map<String, Object> getLayoutErrorMetadata(int width, int height) {
-    final Map<String, Object> metadata = super.getLayoutErrorMetadata(width, height);
-
-    final @Nullable ComponentTree tree = getComponentTree();
-    if (tree == null) {
-      metadata.put("lithoView", null);
-      return metadata;
-    }
-
-    final Map<String, Object> lithoSpecific = new HashMap<>();
-    metadata.put("lithoView", lithoSpecific);
-    if (tree.getRoot() == null) {
-      lithoSpecific.put("root", null);
-      return metadata;
-    }
-
-    lithoSpecific.put("root", tree.getRoot().getSimpleName());
-    lithoSpecific.put("tree", ComponentTreeDumpingHelper.dumpContextTree(tree));
-
-    return metadata;
   }
 
   public interface OnDirtyMountListener {

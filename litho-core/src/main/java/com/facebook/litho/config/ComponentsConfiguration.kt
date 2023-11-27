@@ -185,8 +185,6 @@ internal constructor(
      * than rely on calls to notifyVisibleBoundsChanged.
      */
     @JvmField var lithoViewSelfManageViewPortChanges: Boolean = false
-    @JvmField var emitMessageForZeroSizedTexture: Boolean = false
-    @JvmField var textureSizeWarningLimit: Int = Int.MAX_VALUE
     @JvmField var overlappingRenderingViewSizeLimit: Int = Int.MAX_VALUE
     @JvmField var partialAlphaWarningSizeThresold: Int = Int.MAX_VALUE
 
