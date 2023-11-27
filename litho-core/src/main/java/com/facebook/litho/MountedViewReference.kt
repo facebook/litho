@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.view.View;
-import androidx.annotation.Nullable;
+import android.view.View
 
 /**
  * An interfaced used by ComponentContext to access the root view on which a hierarchy is mounted.
  * This interface needs to be passed in the ComponentContext when it's built.
  */
-public interface MountedViewReference {
-
-  @Nullable
-  View getMountedView();
+interface MountedViewReference {
+  val mountedView: View?
 }
