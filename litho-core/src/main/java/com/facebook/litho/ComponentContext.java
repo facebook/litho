@@ -812,7 +812,11 @@ public class ComponentContext {
 
   @Nullable
   public LithoLifecycleProvider getLifecycleProvider() {
-    return mLifecycleProvider;
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return null;
+    } else {
+      return mLifecycleProvider;
+    }
   }
 
   @VisibleForTesting

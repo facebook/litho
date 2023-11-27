@@ -25,8 +25,6 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VERSION;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
-import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
-import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
 import static com.facebook.litho.RenderSourceUtils.getExecutionMode;
 import static com.facebook.litho.RenderSourceUtils.getSource;
 import static com.facebook.litho.StateContainer.StateUpdate;
@@ -136,6 +134,11 @@ public class ComponentTree
   private static final String STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD =
       "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold:";
   private static boolean sBoostPerfLayoutStateFuture = false;
+
+  // In the new LifecycleProvider system,`mLifecycleProvider` will become the way to support the
+  // existing API to set LifecycleProvider from ComponentTree. But ideally, we should set
+  // LifecycleProvider to LithoView directly. The getter `getLifecycleProviderForLithoView` method
+  // should be only called by LithoView
   @Nullable LithoLifecycleProvider mLifecycleProvider;
 
   @GuardedBy("this")
@@ -189,30 +192,50 @@ public class ComponentTree
   private void onMoveToStateDestroy() {
     // This will call setComponentTree(null) on the LithoView if any.
     release();
-    if (mLifecycleProvider != null) {
+    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider
+        && mLifecycleProvider != null) {
       mLifecycleProvider.removeListener(this);
       mLifecycleProvider = null;
     }
   }
 
   public synchronized void subscribeToLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
-    if (mLifecycleProvider != null) {
-      throw new IllegalStateException("Already subscribed");
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      mLifecycleProvider = lifecycleProvider;
+      if (mLithoView != null) {
+        mLithoView.subscribeComponentTreeToLifecycleProvider(lifecycleProvider);
+      }
+    } else {
+      if (mLifecycleProvider != null) {
+        throw new IllegalStateException("Already subscribed");
+      }
+
+      mLifecycleProvider = lifecycleProvider;
+      mLifecycleProvider.addListener(this);
+
+      LifecycleOwner lifecycleOwner = null;
+      if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
+        lifecycleOwner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      }
+
+      setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
     }
+  }
 
-    mLifecycleProvider = lifecycleProvider;
-    mLifecycleProvider.addListener(this);
-
-    LifecycleOwner lifecycleOwner = null;
+  synchronized void setLifecycleOwner(@Nullable LithoLifecycleProvider lifecycleProvider) {
     if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-      lifecycleOwner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      LifecycleOwner lifecycleOwner =
+          ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
     }
-
-    setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
   }
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
-    return mLifecycleProvider != null;
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return mLithoView != null && mLithoView.componentTreeHasLifecycleProvider();
+    } else {
+      return mLifecycleProvider != null;
+    }
   }
 
   public interface MeasureListener {
@@ -405,7 +428,7 @@ public class ComponentTree
     return create(context, root.build());
   }
 
-  public static Builder create(ComponentContext context, Component root) {
+  public static Builder create(ComponentContext context, @Nullable Component root) {
     return create(context, root, null);
   }
 
@@ -413,7 +436,6 @@ public class ComponentTree
       ComponentContext context,
       @Nullable Component root,
       @Nullable LithoLifecycleProvider lifecycleProvider) {
-    // TODO T88511125: Enforce non-null lithoLifecycleOwner here.
     final Builder builder = new ComponentTree.Builder(context);
 
     if (root != null) {
@@ -515,9 +537,11 @@ public class ComponentTree
             config,
             LithoTree.Companion.create(this),
             "root",
-            ComponentsConfiguration.enableFixForNestedComponentTree
-                ? builder.mLifecycleProvider
-                : getLifecycleProvider(),
+            ComponentsConfiguration.enableRefactorLithoLifecycleProvider
+                ? null
+                : ComponentsConfiguration.enableFixForNestedComponentTree
+                    ? builder.mLifecycleProvider
+                    : getLifecycleProvider(),
             null,
             builderContext.getParentTreeProps());
 
@@ -526,14 +550,17 @@ public class ComponentTree
     } else {
       mTimeMachine = null;
     }
-
-    if (ComponentsConfiguration.enableFixForNestedComponentTree) {
-      if (mContext.getLifecycleProvider() != null) {
-        subscribeToLifecycleProvider(mContext.getLifecycleProvider());
-      }
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      mLifecycleProvider = builder.mLifecycleProvider;
     } else {
-      if (builder.mLifecycleProvider != null) {
-        subscribeToLifecycleProvider(builder.mLifecycleProvider);
+      if (ComponentsConfiguration.enableFixForNestedComponentTree) {
+        if (mContext.getLifecycleProvider() != null) {
+          subscribeToLifecycleProvider(mContext.getLifecycleProvider());
+        }
+      } else {
+        if (builder.mLifecycleProvider != null) {
+          subscribeToLifecycleProvider(builder.mLifecycleProvider);
+        }
       }
     }
 
@@ -900,14 +927,16 @@ public class ComponentTree
     if (mLithoView == view) {
       return;
     }
-
-    if (mLifecycleProvider != null && view != null) {
-      final LithoLifecycle currentStatus = mLifecycleProvider.getLifecycleStatus();
-      if (currentStatus == HINT_VISIBLE) {
+    LithoLifecycle currentStatus = null;
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      currentStatus = view.getLithoLifecycleProvider().getLifecycleStatus();
+    } else if (mLifecycleProvider != null) {
+      currentStatus = mLifecycleProvider.getLifecycleStatus();
+    }
+    if (currentStatus != null) {
+      if (currentStatus == LithoLifecycle.HINT_VISIBLE) {
         view.setVisibilityHintNonRecursive(true);
-      }
-
-      if (currentStatus == HINT_INVISIBLE) {
+      } else if (currentStatus == LithoLifecycle.HINT_INVISIBLE) {
         view.setVisibilityHintNonRecursive(false);
       }
     }
@@ -946,8 +975,8 @@ public class ComponentTree
     if (mIsAttached) {
       throw new IllegalStateException("Clearing the LithoView while the ComponentTree is attached");
     }
-
-    if (mLifecycleProvider != null) {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider
+        || mLifecycleProvider != null) {
       mLithoView.resetVisibilityHint();
     }
 
@@ -1826,8 +1855,21 @@ public class ComponentTree
     return context.getLifecycleProvider();
   }
 
-  public @Nullable LithoLifecycleProvider getLifecycleProvider() {
+  // In the new LifecycleProvider system,`mLifecycleProvider` will become the way to support the
+  // existing API to set LifecycleProvider from ComponentTree. But ideally, we should set
+  // LifecycleProvider to LithoView directly. The getter `getLifecycleProviderForLithoView` method
+  // should be only called by LithoView
+  @Nullable
+  LithoLifecycleProvider getLifecycleProviderForLithoView() {
     return mLifecycleProvider;
+  }
+
+  public @Nullable LithoLifecycleProvider getLifecycleProvider() {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return mLithoView != null ? mLithoView.getLithoLifecycleProvider() : null;
+    } else {
+      return mLifecycleProvider;
+    }
   }
 
   /**
@@ -1842,20 +1884,24 @@ public class ComponentTree
    */
   public static ComponentTree.Builder createNestedComponentTree(
       final ComponentContext parentContext, @Nullable Component component) {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return ComponentTree.create(ComponentContext.makeCopyForNestedTree(parentContext), component);
+    } else {
+      final SimpleNestedTreeLifecycleProvider lifecycleProvider =
+          parentContext.getLifecycleProvider() == null
+              ? null
+              : new SimpleNestedTreeLifecycleProvider(parentContext.getLifecycleProvider());
 
-    final SimpleNestedTreeLifecycleProvider lifecycleProvider =
-        parentContext.getLifecycleProvider() == null
-            ? null
-            : new SimpleNestedTreeLifecycleProvider(parentContext.getLifecycleProvider());
-
-    return ComponentTree.create(
-        ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
+      return ComponentTree.create(
+          ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
+    }
   }
 
   public static ComponentTree.Builder createNestedComponentTree(
       final ComponentContext parentContext) {
     return createNestedComponentTree(parentContext, null);
   }
+
   /**
    * Common internal entry-point for calls which are updating the root. If the provided root is
    * null, an EmptyComponent is used instead.
@@ -3066,7 +3112,6 @@ public class ComponentTree
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
-
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
     private @Nullable ComponentTreeDebugEventListener componentTreeDebugEventListener;
@@ -3096,7 +3141,7 @@ public class ComponentTree
     }
 
     public Builder withLithoLifecycleProvider(@Nullable LithoLifecycleProvider lifecycleProvider) {
-      this.mLifecycleProvider = lifecycleProvider;
+      mLifecycleProvider = lifecycleProvider;
       return this;
     }
 

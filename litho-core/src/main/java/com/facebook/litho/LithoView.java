@@ -26,6 +26,7 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -45,13 +46,15 @@ import java.util.Map;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
 public class LithoView extends BaseMountingView {
+
   private static final String LITHO_LIFECYCLE_FOUND = "lithoView:LithoLifecycleProviderFound";
 
   private @Nullable ComponentTree mComponentTree;
   private final ComponentContext mComponentContext;
   private boolean mIsAttachedForTest;
   // The bounds of the visible rect that was used for the previous incremental mount.
-
+  private final LithoLifecycleProviderHolder mLithoLifecycleProviderHolder =
+      new LithoLifecycleProviderHolder();
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
@@ -114,9 +117,16 @@ public class LithoView extends BaseMountingView {
   public static LithoView create(
       ComponentContext context, Component component, LithoLifecycleProvider lifecycleProvider) {
     final LithoView lithoView = new LithoView(context);
-    lithoView.setComponentTree(ComponentTree.create(context, component, lifecycleProvider).build());
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      lithoView.setLifecycleProvider(lifecycleProvider);
+      lithoView.setComponentTree(ComponentTree.create(context, component).build());
+    } else {
+      lithoView.setComponentTree(
+          ComponentTree.create(context, component, lifecycleProvider).build());
+    }
     return lithoView;
   }
+
   /**
    * Create a new {@link LithoView} instance and initialize it with a custom {@link ComponentTree}.
    */
@@ -200,6 +210,7 @@ public class LithoView extends BaseMountingView {
 
     dispatchAttachedForTestToChildren();
   }
+
   /**
    * If set to true, the onMeasure(..) call won't measure the ComponentTree with the given measure
    * specs, but it will just use them as measured dimensions.
@@ -442,6 +453,9 @@ public class LithoView extends BaseMountingView {
       }
 
       mComponentTree.clearLithoView();
+      if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+        mLithoLifecycleProviderHolder.removeListener(mComponentTree);
+      }
     }
 
     mComponentTree = componentTree;
@@ -456,7 +470,13 @@ public class LithoView extends BaseMountingView {
                 + mComponentTree.getReleasedComponent());
       }
       mComponentTree.setLithoView(this);
-
+      if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+        if (mComponentTree.getLifecycleProviderForLithoView() != null) {
+          setLifecycleProvider(mComponentTree.getLifecycleProviderForLithoView());
+        }
+        mLithoLifecycleProviderHolder.addListener(mComponentTree);
+        mComponentTree.setLifecycleOwner(mLithoLifecycleProviderHolder.getHeldLifecycleProvider());
+      }
       if (isAttached()) {
         mComponentTree.attach();
       } else {
@@ -492,7 +512,11 @@ public class LithoView extends BaseMountingView {
    *     on it, false otherwise.
    */
   public synchronized boolean componentTreeHasLifecycleProvider() {
-    return mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider();
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return mLithoLifecycleProviderHolder.getHeldLifecycleProvider() != null;
+    } else {
+      return mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider();
+    }
   }
 
   /**
@@ -504,16 +528,40 @@ public class LithoView extends BaseMountingView {
    */
   public synchronized boolean subscribeComponentTreeToLifecycleProvider(
       LithoLifecycleProvider lifecycleProvider) {
-    if (mComponentTree == null) {
-      return false;
-    }
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      setLifecycleProvider(lifecycleProvider);
+      return true;
+    } else {
+      if (mComponentTree == null) {
+        return false;
+      }
 
-    if (mComponentTree.isSubscribedToLifecycleProvider()) {
-      return false;
-    }
+      if (mComponentTree.isSubscribedToLifecycleProvider()) {
+        return false;
+      }
 
-    mComponentTree.subscribeToLifecycleProvider(lifecycleProvider);
-    return true;
+      mComponentTree.subscribeToLifecycleProvider(lifecycleProvider);
+      return true;
+    }
+  }
+
+  public LithoLifecycleProvider getLithoLifecycleProvider() {
+    return mLithoLifecycleProviderHolder;
+  }
+
+  private synchronized void setLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
+    mLithoLifecycleProviderHolder.setHeldLifecycleProvider(lifecycleProvider);
+  }
+
+  public @Nullable LithoView getParentLithoView() {
+    ViewParent parent = this.getParent();
+    while (parent != null) {
+      if (parent instanceof LithoView) {
+        return (LithoView) parent;
+      }
+      parent = parent.getParent();
+    }
+    return null;
   }
 
   @Override
@@ -554,6 +602,13 @@ public class LithoView extends BaseMountingView {
 
     AccessibilityManagerCompat.addAccessibilityStateChangeListener(
         mAccessibilityManager, mAccessibilityStateChangeListener);
+
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      LithoView parentLithoView = getParentLithoView();
+      if (parentLithoView != null) {
+        parentLithoView.getLithoLifecycleProvider().addListener(mLithoLifecycleProviderHolder);
+      }
+    }
   }
 
   @Override
@@ -567,6 +622,13 @@ public class LithoView extends BaseMountingView {
         mAccessibilityManager, mAccessibilityStateChangeListener);
 
     mSuppressMeasureComponentTree = false;
+
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      LithoView parentLithoView = getParentLithoView();
+      if (parentLithoView != null) {
+        parentLithoView.getLithoLifecycleProvider().removeListener(mLithoLifecycleProviderHolder);
+      }
+    }
   }
 
   @Override
@@ -785,6 +847,7 @@ public class LithoView extends BaseMountingView {
 
   private static class AccessibilityStateChangeListener
       extends AccessibilityStateChangeListenerCompat {
+
     private final WeakReference<LithoView> mLithoView;
 
     private AccessibilityStateChangeListener(LithoView lithoView) {
@@ -841,6 +904,7 @@ public class LithoView extends BaseMountingView {
   }
 
   static class MountStartupLoggingInfo {
+
     private final LithoStartupLogger startupLogger;
     private final String startupLoggerAttribution;
     private final boolean[] firstMountLogged;
@@ -946,6 +1010,7 @@ public class LithoView extends BaseMountingView {
   }
 
   public interface OnDirtyMountListener {
+
     /**
      * Called when finishing a mount where the mount state was dirty. This indicates that there were
      * new props/state in the tree, or the LithoView was mounting a new ComponentTree
@@ -954,6 +1019,7 @@ public class LithoView extends BaseMountingView {
   }
 
   public interface OnPostDrawListener {
+
     void onPostDraw();
   }
 }

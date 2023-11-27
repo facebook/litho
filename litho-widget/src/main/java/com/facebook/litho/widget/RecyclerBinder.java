@@ -372,6 +372,7 @@ public class RecyclerBinder
       };
 
   static class RenderCompleteRunnable implements Runnable {
+
     private final EventHandler<RenderCompleteEvent> renderCompleteEventHandler;
     private final RenderCompleteEvent.RenderState renderState;
     private final long timestampMillis;
@@ -392,6 +393,7 @@ public class RecyclerBinder
   }
 
   interface ComponentTreeHolderFactory {
+
     ComponentTreeHolder create(
         RenderInfo renderInfo,
         @Nullable RunnableHandler layoutHandler,
@@ -441,6 +443,7 @@ public class RecyclerBinder
       };
 
   public static class Builder {
+
     public static final float DEFAULT_RANGE_RATIO = 2f;
 
     private float rangeRatio = DEFAULT_RANGE_RATIO;
@@ -3695,6 +3698,7 @@ public class RecyclerBinder
   })
   @Retention(RetentionPolicy.SOURCE)
   private @interface Operation {
+
     int INSERT = 0;
     int UPDATE = 1;
     int UPDATE_RANGE = 2;
@@ -3711,6 +3715,7 @@ public class RecyclerBinder
   @IntDef({CommitPolicy.IMMEDIATE, CommitPolicy.LAYOUT_BEFORE_INSERT})
   @Retention(RetentionPolicy.SOURCE)
   public @interface CommitPolicy {
+
     int IMMEDIATE = 0;
     int LAYOUT_BEFORE_INSERT = 1;
   }
@@ -3718,6 +3723,7 @@ public class RecyclerBinder
   /** Strategies for recycling layouts of items in binder */
   @IntDef({RecyclingStrategy.DEFAULT, RecyclingStrategy.RETAIN_MAXIMUM_RANGE})
   public @interface RecyclingStrategy {
+
     int DEFAULT = 0;
     int RETAIN_MAXIMUM_RANGE = 1;
   }
@@ -3862,7 +3868,6 @@ public class RecyclerBinder
           mLithoViewFactory == null
               ? new LithoView(mComponentContext, null)
               : mLithoViewFactory.createLithoView(mComponentContext);
-
       return new BaseViewHolder(lithoView, true);
     }
 
@@ -4114,6 +4119,7 @@ public class RecyclerBinder
 
   public static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
       implements LithoView.LayoutManagerOverrideParams {
+
     private final int mWidthMeasureSpec;
     private final int mHeightMeasureSpec;
     private final boolean mIsFullSpan;
@@ -4337,6 +4343,7 @@ public class RecyclerBinder
 
   @VisibleForTesting
   static class ComponentTreeHolderRangeInfo {
+
     private final int mPosition;
     private final List<ComponentTreeHolder> mHolders;
 

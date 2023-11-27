@@ -31,7 +31,7 @@ import java.util.ArrayList
  */
 class LithoLifecycleProviderDelegate : LithoLifecycleProvider {
 
-  private val lithoLifecycleListeners: MutableList<LithoLifecycleListener> = ArrayList(4)
+  private val lithoLifecycleListeners: MutableSet<LithoLifecycleListener> = HashSet()
   override var lifecycleStatus = LithoLifecycle.HINT_VISIBLE
     private set
 

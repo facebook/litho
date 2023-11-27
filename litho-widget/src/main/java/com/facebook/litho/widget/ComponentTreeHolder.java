@@ -436,12 +436,17 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      if (mParentLifecycle != null) {
-        mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderLifecycleProvider();
+      ComponentTree.Builder builder;
+      if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+        builder = ComponentTree.create(context, mRenderInfo.getComponent(), mParentLifecycle);
+      } else {
+        if (mParentLifecycle != null) {
+          mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderLifecycleProvider();
+        }
+        builder =
+            ComponentTree.create(
+                context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
       }
-      final ComponentTree.Builder builder =
-          ComponentTree.create(
-              context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
 
       // if custom attributes are provided on RenderInfo, they will be preferred over builder values
       applyCustomAttributesIfProvided(builder);
@@ -496,10 +501,12 @@ public class ComponentTreeHolder {
   @UiThread
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
-      if (mComponentTreeHolderLifecycleProvider != null) {
-        mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
+      if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+        if (mComponentTreeHolderLifecycleProvider != null) {
+          mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
 
-        return;
+          return;
+        }
       }
 
       mComponentTree.release();
@@ -536,7 +543,6 @@ public class ComponentTreeHolder {
 
     mTreeState = mComponentTree.acquireTreeState();
   }
-
   /** Lifecycle controlled by a ComponentTreeHolder. */
   private class ComponentTreeHolderLifecycleProvider
       implements LithoLifecycleProvider, LithoLifecycleListener, AOSPLifecycleOwnerProvider {
