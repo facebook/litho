@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.Rect
 import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
+import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
@@ -27,6 +28,7 @@ import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinde
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension
 import com.facebook.rendercore.visibility.VisibilityOutput
+import com.facebook.yoga.YogaEdge
 import kotlin.math.max
 import kotlin.math.min
 
@@ -201,7 +203,6 @@ object LithoReducer {
       node: LithoNode,
       bounds: Rect,
       layoutState: LayoutState,
-      expandedTouchBounds: Rect?,
       parent: RenderTreeNode? = null,
       debugHierarchyNode: DebugHierarchy.Node? = null,
   ): RenderTreeNode? {
@@ -218,20 +219,17 @@ object LithoReducer {
     val debugNode: DebugHierarchy.Node? = debugHierarchyNode?.mutateType(OutputUnitType.CONTENT)
     return createRenderTreeNode(
         unit = unit,
-        bounds =
-            Rect(
-                bounds.left + result.adjustedLeft(),
-                bounds.top + result.adjustedTop(),
-                bounds.right + result.adjustedRight(),
-                bounds.bottom + result.adjustedBottom()),
+        bounds = bounds,
         layoutState = layoutState,
+        result = result,
+        useNodePadding = true,
+        hasExactSize = !result.wasMeasured,
         isSizeDependant =
             if (node.tailComponent is SpecGeneratedComponent) {
               (node.tailComponent as SpecGeneratedComponent).isMountSizeDependent
             } else {
               false
             },
-        expandedTouchBounds = expandedTouchBounds,
         layoutData = layoutData,
         parent = parent,
         debugHierarchyNode = debugNode)
@@ -241,7 +239,7 @@ object LithoReducer {
       unit: LithoRenderUnit,
       bounds: Rect,
       layoutState: LayoutState,
-      expandedTouchBounds: Rect?,
+      result: LayoutResult,
       parent: RenderTreeNode? = null,
       hierarchy: DebugHierarchy.Node? = null,
   ): RenderTreeNode =
@@ -249,17 +247,21 @@ object LithoReducer {
           unit = unit,
           bounds = bounds,
           layoutState = layoutState,
+          result = result as LithoLayoutResult,
+          useNodePadding = false,
+          hasExactSize = false,
           isSizeDependant = true,
           parent = parent,
-          expandedTouchBounds = expandedTouchBounds,
           debugHierarchyNode = hierarchy?.mutateType(OutputUnitType.HOST))
 
   private fun createRenderTreeNode(
       unit: LithoRenderUnit,
       bounds: Rect,
       layoutState: LayoutState,
+      result: LithoLayoutResult,
+      useNodePadding: Boolean,
+      hasExactSize: Boolean,
       isSizeDependant: Boolean,
-      expandedTouchBounds: Rect?,
       layoutData: Any? = null,
       parent: RenderTreeNode? = null,
       debugHierarchyNode: DebugHierarchy.Node? = null,
@@ -267,10 +269,37 @@ object LithoReducer {
 
     val hostTranslationX: Int = parent?.absoluteX ?: 0
     val hostTranslationY: Int = parent?.absoluteY ?: 0
-    val l: Int = bounds.left - hostTranslationX
-    val t: Int = bounds.top - hostTranslationY
-    val r: Int = l + bounds.width()
-    val b: Int = t + bounds.height()
+
+    var l: Int = bounds.left - hostTranslationX
+    var t: Int = bounds.top - hostTranslationY
+    var r: Int = l + bounds.width()
+    var b: Int = t + bounds.height()
+
+    if (useNodePadding) {
+      if (Component.isPrimitive(unit.component)) {
+        if (!LithoRenderUnit.isMountableView(unit)) {
+          if (!hasExactSize) {
+            l += (result.paddingLeft + result.getLayoutBorder(YogaEdge.LEFT))
+            t += (result.paddingTop + result.getLayoutBorder(YogaEdge.TOP))
+            r -= (result.paddingRight + result.getLayoutBorder(YogaEdge.RIGHT))
+            b -= (result.paddingBottom + result.getLayoutBorder(YogaEdge.BOTTOM))
+          } else {
+            // for exact size the border doesn't need to be adjusted since it's inside the bounds of
+            // the content
+            l += result.paddingLeft
+            t += result.paddingTop
+            r -= result.paddingRight
+            b -= result.paddingBottom
+          }
+        }
+      } else if (!LithoRenderUnit.isMountableView(unit)) {
+        l += result.paddingLeft
+        t += result.paddingTop
+        r -= result.paddingRight
+        b -= result.paddingBottom
+      }
+    }
+
     val resolvedBounds = Rect(l, t, r, b)
 
     return create(
@@ -282,7 +311,7 @@ object LithoReducer {
                 height = resolvedBounds.height(),
                 currentLayoutStateId = layoutState.mId,
                 previousLayoutStateId = layoutState.mPreviousLayoutStateId,
-                expandedTouchBounds = expandedTouchBounds,
+                expandedTouchBounds = result.expandedTouchBounds,
                 isSizeDependant = isSizeDependant,
                 layoutData = layoutData,
                 debugHierarchy = debugHierarchyNode),
@@ -404,16 +433,23 @@ object LithoReducer {
 
       val nestedTree: LithoLayoutResult = result.nestedResult ?: return
 
+      // Account for position of the holder node.
+      layoutState.mCurrentX += x
+      layoutState.mCurrentY += y
+
       collectResults(
           parentContext = immediateParentContext,
           result = nestedTree,
           layoutState = layoutState,
           lithoLayoutContext = lithoLayoutContext,
-          x = x + nestedTree.x, // Account for position of the holder node.
-          y = y + nestedTree.y, // Account for position of the holder node.
+          x = nestedTree.x,
+          y = nestedTree.y,
           parent = parent,
           parentDiffNode = parentDiffNode,
           parentHierarchy = hierarchy)
+
+      layoutState.mCurrentX -= x
+      layoutState.mCurrentY -= y
       return
     }
 
@@ -448,8 +484,8 @@ object LithoReducer {
         if (layoutState.mCurrentTransitionId != null) OutputUnitsAffinityGroup() else null
 
     // create bounds
-    val l: Int = x
-    val t: Int = y
+    val l: Int = layoutState.mCurrentX + x
+    val t: Int = layoutState.mCurrentY + y
     val r: Int = l + result.width
     val b: Int = t + result.height
     val bounds = Rect(l, t, r, b)
@@ -481,7 +517,6 @@ object LithoReducer {
                 parent = parentRenderTreeNode,
                 result = result,
                 layoutState = layoutState,
-                expandedTouchBounds = result.expandedTouchBounds,
                 hierarchy = hierarchy,
                 type = OutputUnitType.BACKGROUND,
                 matchHostBoundsTransitions = needsHostView)
@@ -497,7 +532,6 @@ object LithoReducer {
             node = node,
             bounds = bounds,
             layoutState = layoutState,
-            expandedTouchBounds = result.expandedTouchBounds,
             parent = parentRenderTreeNode,
             debugHierarchyNode = hierarchy)
 
@@ -528,6 +562,9 @@ object LithoReducer {
       diffNode.delegate = result.delegate
     }
 
+    layoutState.mCurrentX += x
+    layoutState.mCurrentY += y
+
     // We must process the nodes in order so that the layout state output order is correct.
     for (i in 0 until result.childCount) {
       val child: LithoLayoutResult = result.getChildAt(i)
@@ -536,12 +573,15 @@ object LithoReducer {
           result = child,
           layoutState = layoutState,
           lithoLayoutContext = lithoLayoutContext,
-          x = x + child.x,
-          y = y + child.y,
+          x = child.x,
+          y = child.y,
           parent = parentRenderTreeNode,
           parentDiffNode = diffNode,
           parentHierarchy = hierarchy)
     }
+
+    layoutState.mCurrentX -= x
+    layoutState.mCurrentY -= y
 
     // 5. Add border color if defined.
     result.borderRenderUnit?.let { borderRenderUnit ->
@@ -552,7 +592,6 @@ object LithoReducer {
               parent = parentRenderTreeNode,
               result = result,
               layoutState = layoutState,
-              expandedTouchBounds = result.expandedTouchBounds,
               hierarchy = hierarchy,
               type = OutputUnitType.BORDER,
               matchHostBoundsTransitions = needsHostView)
@@ -570,7 +609,6 @@ object LithoReducer {
                 parent = parentRenderTreeNode,
                 result = result,
                 layoutState = layoutState,
-                expandedTouchBounds = result.expandedTouchBounds,
                 hierarchy = hierarchy,
                 type = OutputUnitType.FOREGROUND,
                 matchHostBoundsTransitions = needsHostView)
@@ -642,7 +680,6 @@ object LithoReducer {
       parent: RenderTreeNode? = null,
       result: LayoutResult,
       layoutState: LayoutState,
-      expandedTouchBounds: Rect?,
       hierarchy: DebugHierarchy.Node? = null,
       @OutputUnitType type: Int,
       matchHostBoundsTransitions: Boolean
@@ -654,8 +691,10 @@ object LithoReducer {
             unit = unit,
             bounds = bounds,
             layoutState = layoutState,
+            result = result as LithoLayoutResult,
+            useNodePadding = false,
+            hasExactSize = false,
             isSizeDependant = true,
-            expandedTouchBounds = expandedTouchBounds,
             parent = parent,
             debugHierarchyNode = debugNode)
     val drawableRenderUnit: LithoRenderUnit = renderTreeNode.renderUnit as LithoRenderUnit
@@ -748,7 +787,7 @@ object LithoReducer {
             unit = hostRenderUnit,
             bounds = bounds,
             layoutState = layoutState,
-            expandedTouchBounds = result.expandedTouchBounds,
+            result = result,
             parent = parent,
             hierarchy = hierarchy)
 
