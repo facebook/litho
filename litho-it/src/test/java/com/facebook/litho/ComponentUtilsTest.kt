@@ -18,29 +18,17 @@ package com.facebook.litho
 
 import com.facebook.litho.annotations.Comparable
 import com.facebook.litho.annotations.EventHandlerRebindMode
-import com.facebook.litho.config.ComponentsConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(ParameterizedRobolectricTestRunner::class)
-class ComponentUtilsTest(disableGetAnnotationUsage: Boolean) {
-
-  companion object {
-    @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
-    @JvmStatic
-    fun data(): List<Array<Any>> = listOf(arrayOf(true), arrayOf(false))
-  }
+@RunWith(RobolectricTestRunner::class)
+class ComponentUtilsTest {
 
   private lateinit var c1: ComponentTest
   private lateinit var c2: ComponentTest
-
-  // Run all the tests with and without field.getAnnotationUsage()
-  init {
-    ComponentsConfiguration.disableGetAnnotationUsage = disableGetAnnotationUsage
-  }
 
   @Before
   fun setUp() {

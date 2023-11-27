@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.Equivalence;
 import java.lang.reflect.Field;
@@ -114,10 +113,7 @@ public class ComponentUtils {
         throw new IllegalStateException("Unable to get fields by reflection.", e);
       }
 
-      boolean intermediateResult =
-          ComponentsConfiguration.disableGetAnnotationUsage
-              ? isEquivalentUtilWithoutGetAnnotation(field, classType, val1, val2)
-              : isEquivalentUtil(field, classType, val1, val2);
+      boolean intermediateResult = isEquivalentUtil(field, classType, val1, val2);
       if (!intermediateResult) {
         return intermediateResult;
       }
@@ -216,62 +212,6 @@ public class ComponentUtils {
           return false;
         }
         break;
-    }
-    return true;
-  }
-
-  private static boolean isEquivalentUtilWithoutGetAnnotation(
-      Field field, Class<?> classType, @Nullable Object val1, @Nullable Object val2) {
-
-    final Type type = field.getGenericType();
-
-    if (classType.isArray()) {
-      if (!areArraysEquals(classType, val1, val2)) {
-        return false;
-      }
-
-    } else if (Double.TYPE.isAssignableFrom(classType)) {
-      if (Double.compare((Double) val1, (Double) val2) != 0) {
-        return false;
-      }
-
-    } else if (Float.TYPE.isAssignableFrom(classType)) {
-      if (Float.compare((Float) val1, (Float) val2) != 0) {
-        return false;
-      }
-
-    } else if (ComparableDrawable.class.isAssignableFrom(classType)) {
-      if (val1 != null
-          ? !((ComparableDrawable) val1).isEquivalentTo((ComparableDrawable) val2)
-          : val2 != null) {
-        return false;
-      }
-
-    } else if (Collection.class.isAssignableFrom(classType)) {
-      return areCollectionsEquals(type, (Collection) val1, (Collection) val2);
-
-    } else if (Component.class.isAssignableFrom(classType)) {
-      if (val1 != null ? !((Component) val1).isEquivalentTo((Component) val2) : val2 != null) {
-        return false;
-      }
-
-      // Sections implement Equivalence interface.
-    } else if (Equivalence.class.isAssignableFrom(classType)) {
-      if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
-        return false;
-      }
-
-    } else if (EventHandler.class.isAssignableFrom(classType)
-        || (type instanceof ParameterizedType
-            && EventHandler.class.isAssignableFrom(
-                (Class) ((ParameterizedType) type).getRawType()))) {
-      if (val1 != null
-          ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
-          : val2 != null) {
-        return false;
-      }
-    } else if (val1 != null ? !val1.equals(val2) : val2 != null) {
-      return false;
     }
     return true;
   }

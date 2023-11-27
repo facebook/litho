@@ -153,12 +153,6 @@ internal constructor(
     @JvmField var runLooperPrepareForLayoutThreadFactory: Boolean = true
     @JvmField var enableDrawablePreAllocation: Boolean = false
 
-    /**
-     * field.getAnnotation() has bugs which is causing java crashes in the App, in addition to this
-     * we suspect this might be a reason for few other native crashes as well. Adding this flag to
-     * verify if this is the root cause.
-     */
-    @JvmField var disableGetAnnotationUsage: Boolean = false
     @JvmField var perfBoosterFactory: LithoPerfBoosterFactory? = null
 
     /**
