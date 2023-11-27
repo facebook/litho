@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import static com.facebook.litho.EventDispatcherUtils.dispatchOnTouch;
-
-import android.view.MotionEvent;
-import android.view.View;
-import androidx.annotation.Nullable;
+import android.annotation.SuppressLint
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.OnTouchListener
 
 /** Touch listener that triggers its underlying event handler. */
-class ComponentTouchListener implements View.OnTouchListener {
-  private @Nullable EventHandler<TouchEvent> mEventHandler;
+class ComponentTouchListener : OnTouchListener {
 
-  EventHandler<TouchEvent> getEventHandler() {
-    return mEventHandler;
-  }
+  var eventHandler: EventHandler<TouchEvent>? = null
 
-  void setEventHandler(@Nullable EventHandler<TouchEvent> eventHandler) {
-    mEventHandler = eventHandler;
-  }
-
-  @Override
-  public boolean onTouch(View v, MotionEvent event) {
-    return mEventHandler != null && dispatchOnTouch(mEventHandler, v, event);
+  @SuppressLint("ClickableViewAccessibility")
+  override fun onTouch(v: View, event: MotionEvent): Boolean {
+    return eventHandler?.let { handler ->
+      return@let EventDispatcherUtils.dispatchOnTouch(handler, v, event)
+    } ?: false
   }
 }
