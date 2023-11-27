@@ -45,6 +45,7 @@ internal constructor(
     val useCancellableLayoutFutures: Boolean = true,
     val useInterruptibleResolution: Boolean = true,
     val shouldCacheLayouts: Boolean = true,
+    val disableNestedTreeCaching: Boolean = false,
     val shouldAddHostViewForRootComponent: Boolean = false,
     @JvmField
     val useIncrementalMountGapWorker: Boolean = IncrementalMountExtensionConfigs.useGapWorker,

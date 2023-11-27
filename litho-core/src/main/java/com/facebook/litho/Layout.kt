@@ -21,6 +21,7 @@ import android.content.pm.ApplicationInfo
 import android.view.View
 import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
+import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.utils.MeasureSpecUtils
@@ -389,6 +390,14 @@ internal object Layout {
         newNode.layoutDirection(holderResult.resolvedLayoutDirection)
       }
 
+      val layoutCache: LayoutCache =
+          if (newNode.tailComponentContext.lithoConfiguration.componentsConfig
+              .disableNestedTreeCaching) {
+            // Stop caching result for nested tree due to memory issue
+            LayoutCache()
+          } else {
+            lithoLayoutContext.layoutCache
+          }
       val nestedLsc =
           LithoLayoutContext(
               treeId = nestedRsc.treeId,
@@ -398,7 +407,7 @@ internal object Layout {
               layoutVersion = nestedRsc.layoutVersion,
               rootComponentId = nestedRsc.rootComponentId,
               isAccessibilityEnabled = lithoLayoutContext.isAccessibilityEnabled,
-              layoutCache = lithoLayoutContext.layoutCache,
+              layoutCache = layoutCache,
               currentDiffTree = lithoLayoutContext.currentDiffTree,
               layoutStateFuture = null)
 
