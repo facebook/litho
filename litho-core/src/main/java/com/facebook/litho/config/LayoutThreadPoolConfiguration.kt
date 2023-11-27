@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.config;
+package com.facebook.litho.config
 
-import androidx.annotation.Nullable;
+interface LayoutThreadPoolConfiguration {
 
-public interface LayoutThreadPoolConfiguration {
-  int getCorePoolSize();
-
-  int getMaxPoolSize();
-
-  int getThreadPriority();
+  val corePoolSize: Int
+  val maxPoolSize: Int
+  val threadPriority: Int
 
   /** Called and set for each new thread immediately after creation */
-  @Nullable
-  Runnable getLayoutThreadInitializer();
+  val layoutThreadInitializer: Runnable?
 }

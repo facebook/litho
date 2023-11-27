@@ -17,7 +17,6 @@ load(
 litho_android_library(
     name = "config",
     srcs = glob([
-        "*.java",
         "*.kt",
     ]),
     autoglob = False,
@@ -30,7 +29,6 @@ litho_android_library(
         LITHO_YOGA_TARGET,
         LITHO_PERF_LOGGER,
     ],
-    pure_kotlin = False,
     visibility = ["PUBLIC"],
     deps = [
         "//fbandroid/libraries/rendercore/rendercore-incremental-mount:rendercore-incremental-mount",
