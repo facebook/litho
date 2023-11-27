@@ -67,6 +67,13 @@ open class LithoLayoutResult(
           null
         }
       }
+
+  /**
+   * In order to avoid redundant calculation that are happening in [adjustRenderUnitBounds], we save
+   * the adjustments in a Rect that is initialised during layout, which is specifically inside
+   * [onBoundsDefined].
+   */
+  private val adjustedBounds: Rect = Rect()
   private var layoutData: Any? = _layoutData
   private var isCachedLayout = false
   private var lastMeasuredSize = Long.MIN_VALUE
@@ -202,6 +209,14 @@ open class LithoLayoutResult(
 
   override fun getLayoutData(): Any? = layoutData
 
+  fun adjustedLeft(): Int = adjustedBounds.left
+
+  fun adjustedTop(): Int = adjustedBounds.top
+
+  fun adjustedRight(): Int = adjustedBounds.right
+
+  fun adjustedBottom(): Int = adjustedBounds.bottom
+
   fun setLayoutData(data: Any?) {
     layoutData = data
   }
@@ -318,7 +333,10 @@ open class LithoLayoutResult(
       try {
         size = measureInternal(context, widthSpec, heightSpec)
         check(!(size.width < 0 || size.height < 0)) {
-          ("MeasureOutput not set, Component is: $component WidthSpec: ${MeasureSpecUtils.getMeasureSpecDescription(widthSpec)} HeightSpec: ${MeasureSpecUtils.getMeasureSpecDescription(heightSpec)} Measured width : ${size.width} Measured Height: ${size.height}")
+          ("MeasureOutput not set, Component is: $component WidthSpec: ${
+            MeasureSpecUtils.getMeasureSpecDescription(
+                widthSpec)
+          } HeightSpec: ${MeasureSpecUtils.getMeasureSpecDescription(heightSpec)} Measured width : ${size.width} Measured Height: ${size.height}")
         }
       } catch (e: Exception) {
 
@@ -446,7 +464,6 @@ open class LithoLayoutResult(
         }
       }
       if (!wasMeasured) {
-        wasMeasured = true
         widthSpec = MeasureSpecUtils.exactly(newContentWidth)
         heightSpec = MeasureSpecUtils.exactly(newContentHeight)
         lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
@@ -480,6 +497,7 @@ open class LithoLayoutResult(
     if (contentRenderUnit == null) {
       contentRenderUnit =
           LithoNodeUtils.createContentRenderUnit(node, cachedMeasuresValid, diffNode)
+      adjustRenderUnitBounds()
     }
     if (hostRenderUnit == null) {
       hostRenderUnit = LithoNodeUtils.createHostRenderUnit(node)
@@ -497,6 +515,37 @@ open class LithoLayoutResult(
           LithoNodeUtils.createBorderRenderUnit(
               node, createBorderColorDrawable(this), width, height, diffNode)
     }
+  }
+
+  private fun adjustRenderUnitBounds() {
+    val renderUnit: LithoRenderUnit = contentRenderUnit ?: return
+    val bounds = Rect()
+    if (Component.isPrimitive(renderUnit.component)) {
+      if (!LithoRenderUnit.isMountableView(renderUnit)) {
+        if (!wasMeasured) {
+          // for exact size the border doesn't need to be adjusted since it's inside the bounds of
+          // the content
+          bounds.left += paddingLeft
+          bounds.top += paddingTop
+          bounds.right -= paddingRight
+          bounds.bottom -= paddingBottom
+        } else {
+          bounds.left += (paddingLeft + getLayoutBorder(YogaEdge.LEFT))
+          bounds.top += (paddingTop + getLayoutBorder(YogaEdge.TOP))
+          bounds.right -= (paddingRight + getLayoutBorder(YogaEdge.RIGHT))
+          bounds.bottom -= (paddingBottom + getLayoutBorder(YogaEdge.BOTTOM))
+        }
+      }
+    } else if (!LithoRenderUnit.isMountableView(renderUnit)) {
+      bounds.left += paddingLeft
+      bounds.top += paddingTop
+      bounds.right -= paddingRight
+      bounds.bottom -= paddingBottom
+    }
+    adjustedBounds.left = bounds.left
+    adjustedBounds.top = bounds.top
+    adjustedBounds.right = bounds.right
+    adjustedBounds.bottom = bounds.bottom
   }
 
   companion object {
