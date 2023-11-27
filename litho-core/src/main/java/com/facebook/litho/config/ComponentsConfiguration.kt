@@ -168,12 +168,6 @@ internal constructor(
      */
     @JvmField var computeRangeOnSyncLayout: Boolean = false
 
-    /**
-     * When true, IM will not stop when the LithoView's visible rect is empty, and will proceed to
-     * unmount everything.
-     */
-    @JvmField var shouldContinueIncrementalMountWhenVisibileRectIsEmpty: Boolean = false
-
     /** When `true`, disables incremental mount globally. */
     @JvmField var isIncrementalMountGloballyDisabled: Boolean = false
 

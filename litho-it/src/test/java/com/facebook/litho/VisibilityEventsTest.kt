@@ -1957,44 +1957,6 @@ class VisibilityEventsTest {
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
   }
 
-  @Test
-  fun testOnInvisibleWhenVisibleRectBecomesEmpty() {
-    // Test only relevant when IM continues when the visible rect is empty.
-    if (!ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty) {
-      return
-    }
-    val c = lithoViewRule.context
-    val steps: MutableList<StepInfo> = mutableListOf()
-    val component =
-        LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(10).build()
-
-    // Set root with non-empty size specs.
-    val testLithoView =
-        lithoViewRule
-            .createTestLithoView()
-            .setRoot(component)
-            .setSizeSpecs(exactly(10), exactly(10))
-            .attachToWindow()
-            .measure()
-            .layout()
-
-    // Ensure onVisible is fired.
-    assertThat(LifecycleStep.getSteps(steps))
-        .describedAs("Visible event should be dispatched")
-        .contains(LifecycleStep.ON_EVENT_VISIBLE)
-
-    // Clear the steps.
-    steps.clear()
-
-    // Keep the same root, but now set the width size specs to 0 and remeasure / layout.
-    testLithoView.setSizeSpecs(exactly(0), exactly(10)).measure().layout()
-
-    // Ensure onInvisible is now fired.
-    assertThat(LifecycleStep.getSteps(steps))
-        .describedAs("Invisible event should be dispatched")
-        .contains(LifecycleStep.ON_EVENT_INVISIBLE)
-  }
-
   private fun createHorizontalScrollChildren(
       c: ComponentContext,
       numberOfItems: Int,

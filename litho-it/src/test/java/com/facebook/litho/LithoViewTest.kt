@@ -146,9 +146,7 @@ class LithoViewTest {
 
     // With no volume, ensure the component is not mounted.
     // When IM is blocked when rect is empty - nothing is mounted, so we expect 0 items.
-    // When IM continues when rect is empty - the root host is mounted, so we expect 1 item.
-    val totalExpectedMountedItems =
-        if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty) 1 else 0
+    val totalExpectedMountedItems = 0
     assertThat(getInternalMountItems(lithoView)).isEqualTo(totalExpectedMountedItems)
   }
 

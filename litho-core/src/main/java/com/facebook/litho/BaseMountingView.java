@@ -700,14 +700,7 @@ public abstract class BaseMountingView extends ComponentHost
     final Rect currentVisibleArea = new Rect();
     final boolean hasNonEmptyVisibleRect = getLocalVisibleRect(currentVisibleArea);
 
-    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
-        && !hasNonEmptyVisibleRect) {
-      // Set to pure empty to allow for easy comparisons.
-      currentVisibleArea.setEmpty();
-    }
-
-    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
-        || hasNonEmptyVisibleRect
+    if (hasNonEmptyVisibleRect
         || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
         // It might not be yet visible but animating from 0 height/width in which case we still
         // need to mount them to trigger animation.
