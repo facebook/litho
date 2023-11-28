@@ -186,8 +186,6 @@ internal constructor(
     @JvmField var initStickyHeaderInLayoutWhenComponentTreeIsNull: Boolean = false
     @JvmField var unsafeHostComponentRecyclingIsEnabled: Boolean = false
 
-    /** Whether a [ComponentHost] can be pre-allocated */
-    @JvmField var isHostComponentPreallocationEnabled: Boolean = false
     @JvmField var hostComponentPoolSize: Int = 30
 
     /** When `true` ComponentTree records state change snapshots */

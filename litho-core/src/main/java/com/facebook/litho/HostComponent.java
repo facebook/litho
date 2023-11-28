@@ -54,7 +54,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   public boolean canPreallocate() {
-    return ComponentsConfiguration.isHostComponentPreallocationEnabled;
+    return ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled;
   }
 
   @Override
