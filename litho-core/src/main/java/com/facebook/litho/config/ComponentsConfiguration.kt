@@ -193,7 +193,6 @@ internal constructor(
     /** When `true` ComponentTree records state change snapshots */
     @JvmField var isTimelineEnabled: Boolean = isRenderInfoDebuggingEnabled
     @JvmField var timelineDocsLink: String? = null
-    @JvmField var enableIsBoringLayoutCheckTimeout: Boolean = false
 
     /** Skip checking for root component and tree-props while layout */
     @JvmField var isSkipRootCheckingEnabled: Boolean = false

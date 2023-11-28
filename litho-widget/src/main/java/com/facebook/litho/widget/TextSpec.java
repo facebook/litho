@@ -86,7 +86,6 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;
@@ -547,11 +546,6 @@ public class TextSpec {
     layoutBuilder.setTextDirection(textDirection);
     layoutBuilder.setAlignment(
         getLayoutAlignment(textAlignment, textDirection, text, layoutDirection));
-
-    // T146855657 this is a temporary step to enable timeout for checking whether layout
-    // isBoringLayout
-    layoutBuilder.enableIsBoringLayoutCheckTimeout(
-        ComponentsConfiguration.enableIsBoringLayoutCheckTimeout);
 
     try {
       newLayout = layoutBuilder.build();
