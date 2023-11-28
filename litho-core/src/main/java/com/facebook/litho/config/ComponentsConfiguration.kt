@@ -199,7 +199,6 @@ internal constructor(
     @JvmField var enableComputeLayoutAsyncAfterInsertion: Boolean = true
     @JvmField var shouldCompareCommonPropsInIsEquivalentTo: Boolean = false
     @JvmField var shouldCompareRootCommonPropsInSingleComponentSection: Boolean = false
-    @JvmField var shouldDelegateContentDescriptionChangeEvent: Boolean = false
     @JvmField var forceDelegateViewBinder: Boolean = false
 
     /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
