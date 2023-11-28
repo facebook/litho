@@ -203,7 +203,8 @@ internal constructor(
     @JvmField var shouldAllowCoreThreadTimeout: Boolean = false
     @JvmField var layoutThreadKeepAliveTimeMs: Long = 1_000
     @JvmField var crashIfExceedingStateUpdateThreshold: Boolean = false
-    @JvmField var enableRecyclerBinderStableId: Boolean = true
+    @JvmField var defaultRecyclerBinderConfigUseStableId: Boolean = true
+    @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var enableMountableRecycler: Boolean = false
     @JvmField var enableMountableTwoBindersRecycler: Boolean = false

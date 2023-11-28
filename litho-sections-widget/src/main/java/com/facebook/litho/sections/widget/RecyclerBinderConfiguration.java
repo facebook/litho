@@ -226,7 +226,8 @@ public class RecyclerBinderConfiguration {
     private boolean mWrapContent = false;
     private boolean mDynamicItemHeight = false;
     private boolean mHScrollAsyncMode = false;
-    private boolean mEnableStableIds = ComponentsConfiguration.enableRecyclerBinderStableId;
+    private boolean mEnableStableIds =
+        ComponentsConfiguration.defaultRecyclerBinderConfigUseStableId;
     private boolean mEnableItemPrefetch = false;
     private int mItemViewCacheSize = 0;
     private boolean mRequestMountForPrefetchedItems = false;

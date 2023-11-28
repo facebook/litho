@@ -459,7 +459,7 @@ public class RecyclerBinder
     private boolean wrapContent;
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
-    private boolean enableStableIds = true;
+    private boolean enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId;
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private @Nullable LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean canMeasure;
