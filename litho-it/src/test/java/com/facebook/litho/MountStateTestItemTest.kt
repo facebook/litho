@@ -130,10 +130,7 @@ class MountStateTestItemTest {
                     .build()
               }
             })
-    assertThat(lithoView)
-        .doesNotContainTestKey("")
-        .doesNotContainTestKey(null)
-        .containsTestKey(TEST_ID_1)
+    assertThat(lithoView).doesNotContainTestKey("").containsTestKey(TEST_ID_1)
   }
 
   @Test

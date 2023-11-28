@@ -50,7 +50,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
     AbstractAssert<LithoViewAssert, LithoView>(actual, LithoViewAssert::class.java) {
 
   @JvmOverloads
-  fun containsTestKey(testKey: String?, count: OccurrenceCount = once()): LithoViewAssert {
+  fun containsTestKey(testKey: String, count: OccurrenceCount = once()): LithoViewAssert {
     val testItems = LithoViewTestHelper.findTestItems(actual, testKey)
     assertThat(testItems)
         .hasSize(count.times)
@@ -65,7 +65,7 @@ class LithoViewAssert internal constructor(actual: LithoView) :
     return this
   }
 
-  fun doesNotContainTestKey(testKey: String?): LithoViewAssert {
+  fun doesNotContainTestKey(testKey: String): LithoViewAssert {
     val testItem = LithoViewTestHelper.findTestItem(actual, testKey)
     val bounds = testItem?.bounds
     assertThat(testItem)
@@ -81,13 +81,13 @@ class LithoViewAssert internal constructor(actual: LithoView) :
   private fun assertThatViewTree(): ViewTreeAssert = ViewTreeAssert.assertThat(ViewTree.of(actual))
 
   /** Assert that any view in the given Component has the provided content description. */
-  fun hasContentDescription(contentDescription: String?): LithoViewAssert {
+  fun hasContentDescription(contentDescription: String): LithoViewAssert {
     assertThatViewTree().hasContentDescription(contentDescription)
     return this
   }
 
   /** Assert that any view in the given Component do not have the provided content description. */
-  fun hasNoContentDescription(contentDescription: String?): LithoViewAssert {
+  fun hasNoContentDescription(contentDescription: String): LithoViewAssert {
     assertThatViewTree().hasNoContentDescription(contentDescription)
     return this
   }
