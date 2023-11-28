@@ -128,9 +128,6 @@ public class LayoutState
   int mWidth;
   int mHeight;
 
-  int mCurrentX;
-  int mCurrentY;
-
   final boolean mShouldGenerateDiffTree;
   private int mComponentTreeId = -1;
   final int mId;
