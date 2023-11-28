@@ -46,7 +46,8 @@ open class RootHostView @JvmOverloads constructor(context: Context, attrs: Attri
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-    if (rootHostDelegate.onMeasure(widthMeasureSpec, heightMeasureSpec, MEASURE_OUTPUTS)) {
+    if (rootHostDelegate.onMeasure(
+        SizeConstraints.fromMeasureSpecs(widthMeasureSpec, heightMeasureSpec), MEASURE_OUTPUTS)) {
       setMeasuredDimension(MEASURE_OUTPUTS[0], MEASURE_OUTPUTS[1])
     } else {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec)

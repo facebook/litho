@@ -23,12 +23,13 @@ import java.util.concurrent.Callable
 class RenderResultFuture<State, RenderContext>(
     private val previousResult: RenderResult<State, RenderContext>?,
     val setRootId: Int,
-    val widthSpec: Int,
-    val heightSpec: Int,
+    val sizeConstraints: SizeConstraints,
     callable: Callable<RenderResult<State, RenderContext>?>
 ) :
     ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>?>(
         callable, "RenderResultFuture") {
+
+  @Deprecated(message = "Use the constructor that accepts SizeConstraints")
   constructor(
       context: Context,
       resolveResult: ResolveResult<Node<RenderContext>, State>,
@@ -39,10 +40,26 @@ class RenderResultFuture<State, RenderContext>(
       widthSpec: Int,
       heightSpec: Int
   ) : this(
+      context,
+      resolveResult,
+      renderContext,
+      extensions,
       previousResult,
       setRootId,
-      widthSpec,
-      heightSpec,
+      SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+
+  constructor(
+      context: Context,
+      resolveResult: ResolveResult<Node<RenderContext>, State>,
+      renderContext: RenderContext?,
+      extensions: Array<RenderCoreExtension<*, *>>?,
+      previousResult: RenderResult<State, RenderContext>?,
+      setRootId: Int,
+      sizeConstraints: SizeConstraints
+  ) : this(
+      previousResult,
+      setRootId,
+      sizeConstraints,
       Callable<RenderResult<State, RenderContext>?> {
         RenderResult.render<State, RenderContext>(
             context,
@@ -51,8 +68,7 @@ class RenderResultFuture<State, RenderContext>(
             extensions,
             previousResult,
             setRootId,
-            widthSpec,
-            heightSpec)
+            sizeConstraints)
       })
 
   val latestAvailableRenderResult: RenderResult<State, RenderContext>?

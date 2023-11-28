@@ -17,7 +17,6 @@
 package com.facebook.rendercore
 
 import android.os.Looper
-import android.view.View
 import com.facebook.rendercore.RenderState.ResolveFunc
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
 import com.facebook.rendercore.testing.TestNode
@@ -112,10 +111,7 @@ class RenderStateTest {
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->
       ResolveResult(TestNode(), state)
     }
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(100, 100), IntArray(2))
     assertThat(wasCalled.get()).isTrue
   }
 
@@ -125,8 +121,8 @@ class RenderStateTest {
     val secondState = Any()
     val layoutCount = AtomicInteger()
     val renderTreeCount = AtomicInteger()
-    val measureExactly100 = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY)
-    val measureExactly200 = View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY)
+    val sizeConstraints100 = SizeConstraints.exact(100, 100)
+    val sizeConstraints200 = SizeConstraints.exact(200, 200)
     val renderState: RenderState<Any?, Any?, TestStateUpdate> =
         RenderState(
             RuntimeEnvironment.application,
@@ -151,17 +147,16 @@ class RenderStateTest {
         object : TestNode() {
           override fun calculateLayout(
               context: LayoutContext<*>,
-              widthSpec: Int,
-              heightSpec: Int
+              sizeConstraints: SizeConstraints
           ): LayoutResult {
             layoutCount.incrementAndGet()
-            return super.calculateLayout(context, widthSpec, heightSpec)
+            return super.calculateLayout(context, sizeConstraints)
           }
         }
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->
       ResolveResult<Node<Any?>, Any?>(nodeToReturn, state)
     }
-    renderState.measure(measureExactly100, measureExactly100, IntArray(2))
+    renderState.measure(sizeConstraints100, IntArray(2))
     assertThat(layoutCount.toInt()).isEqualTo(1)
     assertThat(renderTreeCount.toInt()).isEqualTo(1)
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->
@@ -169,10 +164,10 @@ class RenderStateTest {
     }
     assertThat(layoutCount.toInt()).isEqualTo(1)
     assertThat(renderTreeCount.toInt()).isEqualTo(1)
-    renderState.measure(measureExactly100, measureExactly100, IntArray(2))
+    renderState.measure(sizeConstraints100, IntArray(2))
     assertThat(layoutCount.toInt()).isEqualTo(1)
     assertThat(renderTreeCount.toInt()).isEqualTo(1)
-    renderState.measure(measureExactly200, measureExactly200, IntArray(2))
+    renderState.measure(sizeConstraints200, IntArray(2))
     assertThat(layoutCount.toInt()).isEqualTo(2)
     assertThat(renderTreeCount.toInt()).isEqualTo(2)
   }
@@ -197,20 +192,16 @@ class RenderStateTest {
                 object : TestNode() {
                   override fun calculateLayout(
                       context: LayoutContext<*>,
-                      widthSpec: Int,
-                      heightSpec: Int
+                      sizeConstraints: SizeConstraints
                   ): LayoutResult {
                     firstLayoutVersion.set(context.layoutVersion)
-                    return super.calculateLayout(context, widthSpec, heightSpec)
+                    return super.calculateLayout(context, sizeConstraints)
                   }
                 },
                 state)
           }
         })
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(100, 100), IntArray(2))
     renderState.setTree(
         object : ResolveFunc<Any?, Any?, TestStateUpdate> {
           override fun resolve(
@@ -223,21 +214,17 @@ class RenderStateTest {
                 object : TestNode() {
                   override fun calculateLayout(
                       context: LayoutContext<*>,
-                      widthSpec: Int,
-                      heightSpec: Int
+                      sizeConstraints: SizeConstraints
                   ): LayoutResult {
                     secondLayoutVersion.set(context.layoutVersion)
-                    return super.calculateLayout(context, widthSpec, heightSpec)
+                    return super.calculateLayout(context, sizeConstraints)
                   }
                 },
                 secondState)
           }
         })
     assertThat(secondLayoutVersion.toInt()).isEqualTo(firstLayoutVersion.toInt() + 1)
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(200, 200), IntArray(2))
     assertThat(secondLayoutVersion.toInt()).isEqualTo(firstLayoutVersion.toInt() + 2)
   }
 
@@ -260,34 +247,24 @@ class RenderStateTest {
                 object : TestNode() {
                   override fun calculateLayout(
                       context: LayoutContext<*>,
-                      widthSpec: Int,
-                      heightSpec: Int
+                      sizeConstraints: SizeConstraints
                   ): LayoutResult {
                     layoutCount.incrementAndGet()
-                    return super.calculateLayout(context, widthSpec, heightSpec)
+                    return super.calculateLayout(context, sizeConstraints)
                   }
                 },
                 Any())
           }
         })
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(100, 100), IntArray(2))
     assertThat(resolveCount.toInt()).isEqualTo(1)
     assertThat(layoutCount.toInt()).isEqualTo(1)
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(200, 200), IntArray(2))
     assertThat(resolveCount.toInt()).isEqualTo(1)
     assertThat(layoutCount.toInt()).isEqualTo(2)
 
     // Remeasureing with the same constraints doesn't "layout" again
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(200, 200), IntArray(2))
     assertThat(resolveCount.toInt()).isEqualTo(1)
     assertThat(layoutCount.toInt()).isEqualTo(2)
   }
@@ -316,10 +293,7 @@ class RenderStateTest {
             },
             null,
             null)
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(100, 100), IntArray(2))
     val testNode: Node<Any?> = TestNode()
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->
       ResolveResult(testNode, Any())
@@ -357,10 +331,7 @@ class RenderStateTest {
             },
             null,
             null)
-    renderState.measure(
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        IntArray(2))
+    renderState.measure(SizeConstraints.exact(100, 100), IntArray(2))
     val testNode: Node<Any?> = TestNode()
     val state = Any()
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->

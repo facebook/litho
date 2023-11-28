@@ -19,7 +19,6 @@ package com.facebook.rendercore
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.facebook.rendercore.extensions.RenderCoreExtension
-import com.facebook.rendercore.utils.MeasureSpecUtils
 
 class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExtensionHost {
 
@@ -30,8 +29,7 @@ class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExten
 
   fun interface LazyRenderTreeProvider<RenderContext> {
     fun getRenderTreeForSize(
-        widthSpec: Int,
-        heightSpec: Int,
+        sizeConstraints: SizeConstraints,
         previousRenderResult: RenderResult<*, RenderContext>?
     ): RenderResult<*, RenderContext>
   }
@@ -43,9 +41,8 @@ class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExten
       currentRenderResult = null
       return
     }
-    val renderResult =
-        renderTreeProvider.getRenderTreeForSize(
-            widthMeasureSpec, heightMeasureSpec, currentRenderResult)
+    val sizeConstraints = SizeConstraints.fromMeasureSpecs(widthMeasureSpec, heightMeasureSpec)
+    val renderResult = renderTreeProvider.getRenderTreeForSize(sizeConstraints, currentRenderResult)
     setMeasuredDimension(renderResult.renderTree.width, renderResult.renderTree.height)
     currentRenderResult = renderResult
   }
@@ -71,9 +68,7 @@ class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExten
         lazyRenderTreeProvider = renderTreeProvider
         val renderResult =
             lazyRenderTreeProvider.getRenderTreeForSize(
-                MeasureSpecUtils.exactly(r - l),
-                MeasureSpecUtils.exactly(b - t),
-                currentRenderResult)
+                SizeConstraints.exact(r - l, b - t), currentRenderResult)
         mountState.mount(renderResult.renderTree)
         currentRenderResult = renderResult
         retries++

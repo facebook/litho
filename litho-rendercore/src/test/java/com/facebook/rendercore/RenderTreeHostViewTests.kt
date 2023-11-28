@@ -50,8 +50,7 @@ class RenderTreeHostViewTests {
                 null,
                 null,
                 0,
-                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST))
+                SizeConstraints(0, 100, 0, 100))
             .renderTree
     renderTreeHostView.setRenderTree(renderTree)
     renderTreeHostView.measure(
@@ -75,7 +74,8 @@ class RenderTreeHostViewTests {
     var exceptionOccurred = false
     try {
       // RenderTree ctor should detect duplicate RU ids and throw an illegal state exception here.
-      RenderTree(node1, arrayOf(node1, node2), 0, 0, RenderState.NO_ID, null, null)
+      RenderTree(
+          node1, arrayOf(node1, node2), SizeConstraints.exact(0, 0), RenderState.NO_ID, null, null)
     } catch (e: IllegalStateException) {
       // Exception occurred as expected, raise flag indicate valid state for assert.
       exceptionOccurred = true
@@ -98,8 +98,7 @@ class RenderTreeHostViewTests {
                 null,
                 null,
                 0,
-                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST))
+                SizeConstraints(0, 100, 0, 100))
             .renderTree
     renderTreeHostView.setRenderTree(renderTree)
     renderTreeHostView.measure(
@@ -134,8 +133,7 @@ class RenderTreeHostViewTests {
                           null,
                           null,
                           0,
-                          View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
-                          View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST))
+                          SizeConstraints(0, 100, 0, 100))
                       .renderTree)
             }))
     node.setRenderUnit(renderUnit)
@@ -147,8 +145,7 @@ class RenderTreeHostViewTests {
                 null,
                 null,
                 0,
-                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.AT_MOST))
+                SizeConstraints(0, 100, 0, 100))
             .renderTree
     renderTreeHostView.setRenderTree(renderTree)
     renderTreeHostView.measure(

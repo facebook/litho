@@ -285,12 +285,11 @@ class MountStateWithDelegateTest {
         root: TestNode,
         extensions: Array<RenderCoreExtension<*, *>>
     ): RenderTree {
-      val widthSpec = View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY)
-      val heightSpec = View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY)
+      val sizeConstraints = SizeConstraints.exact(200, 200)
       val layoutContext: LayoutContext<*> =
           LayoutContext<Any?>(c, null, -1, LayoutCache(), extensions)
-      val result = root.calculateLayout(layoutContext, widthSpec, heightSpec)
-      return getReducedTree(c, result, widthSpec, heightSpec, RenderState.NO_ID, extensions)
+      val result = root.calculateLayout(layoutContext, sizeConstraints)
+      return getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, extensions)
     }
 
     private fun createMountState(c: Context): MountState {

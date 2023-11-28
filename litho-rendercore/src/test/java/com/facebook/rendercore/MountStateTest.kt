@@ -901,11 +901,10 @@ class MountStateTest {
 
   companion object {
     private fun createRenderTree(c: Context, root: Node<Any?>): RenderTree {
-      val widthSpec = View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY)
-      val heightSpec = View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY)
+      val sizeConstraints = SizeConstraints.exact(200, 200)
       val layoutContext = LayoutContext<Any?>(c, null, -1, LayoutCache(), null)
-      val result = root.calculateLayout(layoutContext, widthSpec, heightSpec)
-      return getReducedTree(c, result, widthSpec, heightSpec, RenderState.NO_ID, null)
+      val result = root.calculateLayout(layoutContext, sizeConstraints)
+      return getReducedTree(c, result, sizeConstraints, RenderState.NO_ID, null)
     }
 
     private fun createMountState(c: Context): MountState {

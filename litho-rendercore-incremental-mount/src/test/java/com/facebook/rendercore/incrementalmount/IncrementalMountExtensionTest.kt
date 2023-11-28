@@ -29,6 +29,7 @@ import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderTree
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RootHostView
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.extensions.ExtensionState
 import com.facebook.rendercore.extensions.RenderCoreExtension
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState
@@ -415,8 +416,7 @@ class IncrementalMountExtensionTest {
         RenderTree(
             hostRenderTreeNode,
             flatList,
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,
             null)
@@ -456,8 +456,7 @@ class IncrementalMountExtensionTest {
         RenderTree(
             hostRenderTreeNode,
             flatList,
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,
             null)
@@ -482,8 +481,7 @@ class IncrementalMountExtensionTest {
         RenderTree(
             hostRenderTreeNode,
             flatListReparented,
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,
             null)

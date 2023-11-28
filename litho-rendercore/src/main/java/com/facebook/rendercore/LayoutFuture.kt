@@ -28,13 +28,12 @@ class LayoutFuture<State, RenderContext>(
     val version: Int,
     previousResult: RenderResult<State, RenderContext>?,
     extensions: Array<RenderCoreExtension<*, *>>?,
-    val widthSpec: Int,
-    val heightSpec: Int
+    val sizeConstraints: SizeConstraints
 ) :
     ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>?>(
         Callable {
           if (previousResult != null &&
-              RenderResult.shouldReuseResult(tree, widthSpec, heightSpec, previousResult)) {
+              RenderResult.shouldReuseResult(tree, sizeConstraints, previousResult)) {
             RenderResult(previousResult.renderTree, tree, previousResult.layoutCacheData, state)
           } else {
             RenderResult.layout(
@@ -42,8 +41,7 @@ class LayoutFuture<State, RenderContext>(
                     previousResult, renderContext, context, version, extensions),
                 tree,
                 state,
-                widthSpec,
-                heightSpec)
+                sizeConstraints)
           }
         },
         "LayoutFuture")

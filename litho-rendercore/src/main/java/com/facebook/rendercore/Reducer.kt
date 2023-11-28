@@ -132,8 +132,7 @@ object Reducer {
   fun getReducedTree(
       context: Context,
       layoutResult: LayoutResult,
-      widthSpec: Int,
-      heightSpec: Int,
+      sizeConstraints: SizeConstraints,
       renderStateId: Int,
       extensions: Array<RenderCoreExtension<*, *>>?
   ): RenderTree {
@@ -151,7 +150,7 @@ object Reducer {
     if (BuildConfig.DEBUG) {
       debugData = layoutResult
     }
-    return RenderTree(root, nodesArray, widthSpec, heightSpec, renderStateId, results, debugData)
+    return RenderTree(root, nodesArray, sizeConstraints, renderStateId, results, debugData)
   }
 
   @JvmStatic

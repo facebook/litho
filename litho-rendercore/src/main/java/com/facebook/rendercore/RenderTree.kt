@@ -19,15 +19,13 @@ package com.facebook.rendercore
 import android.util.LongSparseArray
 import android.util.Pair
 import com.facebook.rendercore.extensions.RenderCoreExtension
-import com.facebook.rendercore.utils.MeasureSpecUtils
 import java.util.Locale
 
 /** TODO add javadoc */
 class RenderTree(
     val root: RenderTreeNode,
     private val flatList: Array<RenderTreeNode>,
-    val widthSpec: Int,
-    val heightSpec: Int,
+    val sizeConstraints: SizeConstraints,
     val renderStateId: Int,
     val extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
     // This will vary by framework and will be null outside of debug builds
@@ -44,6 +42,23 @@ class RenderTree(
     get() = flatList.size
 
   private val idToIndexMap = LongSparseArray<Int>()
+
+  @Deprecated(message = "Use the constructor that accepts SizeConstraints")
+  constructor(
+      root: RenderTreeNode,
+      flatList: Array<RenderTreeNode>,
+      widthSpec: Int,
+      heightSpec: Int,
+      renderStateId: Int,
+      extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
+      debugData: Any?
+  ) : this(
+      root,
+      flatList,
+      SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+      renderStateId,
+      extensionResults,
+      debugData)
 
   init {
     for (i in 0 until flatList.size) {
@@ -90,12 +105,10 @@ class RenderTree(
 
   private fun generateDebugString(): String {
     val l = Locale.US
-    val widthSpecDesc = MeasureSpecUtils.getMeasureSpecDescription(widthSpec)
-    val heightSpecDesc = MeasureSpecUtils.getMeasureSpecDescription(heightSpec)
 
     return buildString {
       append("RenderTree details:\n")
-      append(String.format(l, "WidthSpec=%s; HeightSpec=%s\n", widthSpecDesc, heightSpecDesc))
+      append(String.format(l, "%s\n", sizeConstraints.toString()))
       append(String.format(l, "Full child list (size = %d):\n", flatList.size))
       for (node in flatList) {
         append(String.format(l, "%s\n", node.generateDebugString(this@RenderTree)))

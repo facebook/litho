@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore
 
-import android.view.View.MeasureSpec
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.rendercore.extensions.RenderCoreExtension
 
@@ -78,22 +77,19 @@ class RootHostDelegate(private val host: Host) : RenderState.HostListener, RootH
    * Returns true if the delegate has defined a size and filled the measureOutput array, returns
    * false if not in which case the hosting view should call super.onMeasure.
    */
-  fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int, measureOutput: IntArray): Boolean {
-    val width = MeasureSpec.getSize(widthMeasureSpec)
-    val height = MeasureSpec.getSize(heightMeasureSpec)
-    if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY &&
-        MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+  fun onMeasure(sizeConstraints: SizeConstraints, measureOutput: IntArray): Boolean {
+    if (sizeConstraints.hasExactWidth && sizeConstraints.hasExactHeight) {
       // If the measurements are exact, postpone LayoutState calculation from measure to layout.
       // This is part of the fix for android's double measure bug. Doing this means that if we get
       // remeasured with different exact measurements, we don't compute two layouts.
       doMeasureInLayout = true
-      measureOutput[0] = width
-      measureOutput[1] = height
+      measureOutput[0] = sizeConstraints.maxWidth
+      measureOutput[1] = sizeConstraints.maxHeight
       return true
     }
     val renderState = _renderState
     if (renderState != null) {
-      renderState.measure(widthMeasureSpec, heightMeasureSpec, measureOutput)
+      renderState.measure(sizeConstraints, measureOutput)
       doMeasureInLayout = false
       return true
     }
@@ -103,10 +99,7 @@ class RootHostDelegate(private val host: Host) : RenderState.HostListener, RootH
   fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     val renderState = _renderState
     if (doMeasureInLayout && renderState != null) {
-      renderState.measure(
-          MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY),
-          null)
+      renderState.measure(SizeConstraints.exact(right - left, bottom - top), null)
       doMeasureInLayout = false
     }
 

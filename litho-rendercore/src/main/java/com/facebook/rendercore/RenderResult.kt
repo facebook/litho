@@ -19,7 +19,6 @@ package com.facebook.rendercore
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.facebook.rendercore.extensions.RenderCoreExtension
-import com.facebook.rendercore.utils.MeasureSpecUtils
 
 /**
  * Result from laying out and reducing a [ResolveResult]. A [RenderResult] from a previous
@@ -36,6 +35,7 @@ internal constructor(
 
   companion object {
 
+    @Deprecated(message = "Use the render variant that accepts SizeConstraints")
     @JvmStatic
     fun <State, RenderContext> render(
         context: Context,
@@ -47,10 +47,30 @@ internal constructor(
         widthSpec: Int,
         heightSpec: Int
     ): RenderResult<State, RenderContext> {
+      return render(
+          context,
+          result,
+          renderContext,
+          extensions,
+          previousResult,
+          layoutVersion,
+          SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+    }
+
+    @JvmStatic
+    fun <State, RenderContext> render(
+        context: Context,
+        result: ResolveResult<Node<RenderContext>, State>,
+        renderContext: RenderContext?,
+        extensions: Array<RenderCoreExtension<*, *>>?,
+        previousResult: RenderResult<State, RenderContext>?,
+        layoutVersion: Int,
+        sizeConstraints: SizeConstraints
+    ): RenderResult<State, RenderContext> {
       RenderCoreSystrace.beginSection("RC Create Tree")
       val renderResult: RenderResult<State, RenderContext> =
           if (previousResult != null &&
-              shouldReuseResult(result.resolvedNode, widthSpec, heightSpec, previousResult)) {
+              shouldReuseResult(result.resolvedNode, sizeConstraints, previousResult)) {
             RenderResult(
                 previousResult.renderTree,
                 result.resolvedNode,
@@ -60,7 +80,7 @@ internal constructor(
             val layoutContext: LayoutContext<RenderContext> =
                 createLayoutContext(
                     previousResult, renderContext, context, layoutVersion, extensions)
-            layout(layoutContext, result.resolvedNode, result.resolvedState, widthSpec, heightSpec)
+            layout(layoutContext, result.resolvedNode, result.resolvedState, sizeConstraints)
           }
       RenderCoreSystrace.endSection()
       return renderResult
@@ -79,6 +99,7 @@ internal constructor(
           context, renderContext, layoutVersion, layoutCache, extensions)
     }
 
+    @Deprecated(message = "Use layout function that accepts SizeConstraints")
     @JvmStatic
     fun <State, RenderContext> layout(
         layoutContext: LayoutContext<RenderContext>,
@@ -87,17 +108,29 @@ internal constructor(
         widthSpec: Int,
         heightSpec: Int
     ): RenderResult<State, RenderContext> {
+      return layout(
+          layoutContext, node, state, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+    }
+
+    @JvmStatic
+    fun <State, RenderContext> layout(
+        layoutContext: LayoutContext<RenderContext>,
+        node: Node<RenderContext>,
+        state: State?,
+        sizeConstraints: SizeConstraints
+    ): RenderResult<State, RenderContext> {
       RenderCoreSystrace.beginSection("RC Layout")
-      val layoutResult = node.calculateLayout(layoutContext, widthSpec, heightSpec)
+      val layoutResult = node.calculateLayout(layoutContext, sizeConstraints)
       RenderCoreSystrace.endSection()
       RenderCoreSystrace.beginSection("RC Reduce")
       val renderResult: RenderResult<State, RenderContext> =
-          create(layoutContext, node, layoutResult, widthSpec, heightSpec, state)
+          create(layoutContext, node, layoutResult, sizeConstraints, state)
       RenderCoreSystrace.endSection()
       layoutContext.clearCache()
       return renderResult
     }
 
+    @Deprecated(message = "Use create function that accepts SizeConstraints")
     @JvmStatic
     fun <State, RenderContext> create(
         c: LayoutContext<RenderContext>,
@@ -107,12 +140,23 @@ internal constructor(
         heightSpec: Int,
         state: State?
     ): RenderResult<State, RenderContext> {
+      return create(
+          c, node, layoutResult, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec), state)
+    }
+
+    @JvmStatic
+    fun <State, RenderContext> create(
+        c: LayoutContext<RenderContext>,
+        node: Node<RenderContext>,
+        layoutResult: LayoutResult,
+        sizeConstraints: SizeConstraints,
+        state: State?
+    ): RenderResult<State, RenderContext> {
       return RenderResult(
           Reducer.getReducedTree(
               c.androidContext,
               layoutResult,
-              widthSpec,
-              heightSpec,
+              sizeConstraints,
               RenderState.NO_ID, // TODO: Get render state id from layout context
               c.extensions),
           node,
@@ -123,8 +167,7 @@ internal constructor(
     @JvmStatic
     fun <State, RenderContext> shouldReuseResult(
         node: Node<RenderContext>,
-        widthSpec: Int,
-        heightSpec: Int,
+        sizeConstraints: SizeConstraints,
         previousResult: RenderResult<State, RenderContext>?
     ): Boolean {
       if (previousResult == null) {
@@ -132,10 +175,8 @@ internal constructor(
       }
       val prevRenderTree = previousResult.renderTree
       return (node === previousResult.nodeTree &&
-          MeasureSpecUtils.isMeasureSpecCompatible(
-              prevRenderTree.widthSpec, widthSpec, prevRenderTree.width) &&
-          MeasureSpecUtils.isMeasureSpecCompatible(
-              prevRenderTree.heightSpec, heightSpec, prevRenderTree.height))
+          sizeConstraints.areCompatible(
+              prevRenderTree.sizeConstraints, Size(prevRenderTree.width, prevRenderTree.height)))
     }
 
     @VisibleForTesting

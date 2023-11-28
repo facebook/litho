@@ -23,7 +23,6 @@ import android.os.Message
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
 import com.facebook.rendercore.extensions.RenderCoreExtension
-import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.rendercore.utils.ThreadUtils
 import java.util.Objects
 import java.util.concurrent.Executor
@@ -100,8 +99,8 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
   private var layoutVersionCounter = 0
   private var committedResolveVersion = UNSET
   private var committedLayoutVersion = UNSET
-  private var widthSpec = UNSET
-  private var heightSpec = UNSET
+  private var sizeConstraints: SizeConstraints = SizeConstraints()
+  private var hasSizeConstraints = false
 
   @ThreadConfined(ThreadConfined.ANY)
   fun setTree(resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?) {
@@ -200,7 +199,7 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     val layoutFuture: LayoutFuture<State, RenderContext>
     val previousRenderResult: RenderResult<State, RenderContext>?
     synchronized(this) {
-      if (widthSpec == UNSET || heightSpec == UNSET) {
+      if (!hasSizeConstraints) {
         return
       }
       val commitedTree =
@@ -208,9 +207,7 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
             "Tried executing the layout step before resolving a tree"
           }
       val layout = this.layoutFuture
-      if (layout == null ||
-          layout.tree != commitedTree ||
-          !hasSameSpecs(layout, widthSpec, heightSpec)) {
+      if (layout == null || layout.tree != commitedTree || !hasSameSpecs(layout, sizeConstraints)) {
         this.layoutFuture =
             LayoutFuture(
                 context,
@@ -220,8 +217,7 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
                 layoutVersionCounter++,
                 committedRenderResult,
                 extensions,
-                widthSpec,
-                heightSpec)
+                sizeConstraints)
       }
       layoutFuture = requireNotNull(this.layoutFuture)
       previousRenderResult = committedRenderResult
@@ -229,7 +225,7 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     val renderResult = layoutFuture.runAndGet()
     var committedNewLayout = false
     synchronized(this) {
-      if (hasSameSpecs(layoutFuture, widthSpec, heightSpec) &&
+      if (hasSameSpecs(layoutFuture, sizeConstraints) &&
           layoutFuture.version > committedLayoutVersion &&
           committedRenderResult != renderResult) {
         committedLayoutVersion = layoutFuture.version
@@ -256,17 +252,17 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  fun measure(widthSpec: Int, heightSpec: Int, measureOutput: IntArray?) {
+  fun measure(sizeConstraints: SizeConstraints, measureOutput: IntArray?) {
     val futureToResolveBeforeMeasuring: ResolveFuture<State, RenderContext, StateUpdateType>?
     synchronized(this) {
-      if (this.widthSpec != widthSpec || this.heightSpec != heightSpec) {
-        this.widthSpec = widthSpec
-        this.heightSpec = heightSpec
+      if (!hasSizeConstraints || this.sizeConstraints != sizeConstraints) {
+        hasSizeConstraints = true
+        this.sizeConstraints = sizeConstraints
       }
 
       val renderTree = uiRenderTree
       // The current UI tree is compatible. We might just return those values
-      if (renderTree != null && hasCompatibleSize(renderTree, widthSpec, heightSpec)) {
+      if (renderTree != null && hasCompatibleSize(renderTree, sizeConstraints)) {
         if (measureOutput != null) {
           measureOutput[0] = renderTree.width
           measureOutput[1] = renderTree.height
@@ -274,8 +270,7 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
         return
       }
       val renderResult = committedRenderResult
-      if (renderResult != null &&
-          hasCompatibleSize(renderResult.renderTree, widthSpec, heightSpec)) {
+      if (renderResult != null && hasCompatibleSize(renderResult.renderTree, sizeConstraints)) {
         maybePromoteCommittedTreeToUI()
         if (measureOutput != null) {
           // We have a tree that we previously resolved with these contraints. For measuring we can
@@ -364,19 +359,16 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     private val ID_GENERATOR: AtomicInteger = AtomicInteger(0)
 
     @JvmStatic
-    private fun hasCompatibleSize(tree: RenderTree, widthSpec: Int, heightSpec: Int): Boolean {
-      return (MeasureSpecUtils.isMeasureSpecCompatible(tree.widthSpec, widthSpec, tree.width) &&
-          MeasureSpecUtils.isMeasureSpecCompatible(tree.heightSpec, heightSpec, tree.height))
+    private fun hasCompatibleSize(tree: RenderTree, sizeConstraints: SizeConstraints): Boolean {
+      return sizeConstraints.areCompatible(tree.sizeConstraints, Size(tree.width, tree.height))
     }
 
     @JvmStatic
     private fun <State, RenderContext> hasSameSpecs(
         future: LayoutFuture<State, RenderContext>,
-        widthSpec: Int,
-        heightSpec: Int
+        sizeConstraints: SizeConstraints
     ): Boolean {
-      return (MeasureSpecUtils.areMeasureSpecsEquivalent(future.widthSpec, widthSpec) &&
-          MeasureSpecUtils.areMeasureSpecsEquivalent(future.heightSpec, heightSpec))
+      return future.sizeConstraints == sizeConstraints
     }
   }
 }
