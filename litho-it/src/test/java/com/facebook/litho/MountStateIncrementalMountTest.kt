@@ -55,7 +55,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -606,14 +605,7 @@ class MountStateIncrementalMountTest {
    * the bounds of the component will be larger than the bounds of the view).
    */
   @Test
-  @Ignore("T146174263")
   fun testIncrementalMountVerticalDrawableStackNegativeMargin() {
-    // When self managing, LithoViews will not adhere to translation. Therefore components with
-    // negative margins + translations will not be mounted, hence this test is not relevant
-    // in this case.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
     parent.layout(0, 0, 10, 1_000)
@@ -649,13 +641,7 @@ class MountStateIncrementalMountTest {
   }
 
   @Test
-  @Ignore("T146174263")
   fun testIncrementalMountVerticalDrawableStackNegativeMargin_multipleUnmountedHosts() {
-    // When self managing, LithoViews do not adhere to translation, and so items set with negative
-    // margins won't be mounted.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
     parent.layout(0, 0, 10, 1_000)
@@ -817,11 +803,6 @@ class MountStateIncrementalMountTest {
 
   @Test
   fun testChildViewGroupIncrementallyMounted() {
-    // Incremental mounting works differently with self-managing LithoViews, so checking calls
-    // to notifyVisibleBoundsChanged is not needed.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val mountedView: ViewGroup = mock()
     whenever(mountedView.childCount).thenReturn(3)
     val childView1 = getMockLithoViewWithBounds(Rect(5, 10, 20, 30))
@@ -855,11 +836,6 @@ class MountStateIncrementalMountTest {
 
   @Test
   fun testChildViewGroupAllIncrementallyMountedNotProcessVisibilityOutputs() {
-    // Incremental mounting works differently with self-managing LithoViews, so checking calls
-    // to notifyVisibleBoundsChanged is not needed.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val mountedView: ViewGroup = mock()
     whenever(mountedView.left).thenReturn(0)
     whenever(mountedView.top).thenReturn(0)
@@ -1052,11 +1028,6 @@ class MountStateIncrementalMountTest {
    */
   @Test
   fun testIncrementalMountAfterLithoViewIsMounted() {
-    // Incremental mounting works differently with self-managing LithoViews, so checking calls
-    // to notifyVisibleBoundsChanged is not needed.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val lithoView: LithoView = mock()
     whenever(lithoView.isIncrementalMountEnabled).thenReturn(true)
     val viewGroup = ViewGroupWithLithoViewChildren(context.androidContext)
@@ -1130,11 +1101,6 @@ class MountStateIncrementalMountTest {
 
   @Test
   fun incrementalMount_dirtyMount_unmountItemsOffScreen_withTranslation() {
-    // When self-managing LithoViews, translation is ignored. Therefore, this test is redundant
-    // when the config is enabled.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val info_child1 = LifecycleTracker()
     val info_child2 = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()

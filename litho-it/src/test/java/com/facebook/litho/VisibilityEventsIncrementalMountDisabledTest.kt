@@ -1358,11 +1358,6 @@ class VisibilityEventsIncrementalMountDisabledTest {
 
   @Test
   fun testVisibilityProcessingNoScrollChange() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val content = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val lithoView =
@@ -1390,11 +1385,6 @@ class VisibilityEventsIncrementalMountDisabledTest {
 
   @Test
   fun visibilityProcessing_WhenViewIsFullyTranslatedOntoScreen_DispatchesFullImpressionEvent() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val content = TestViewComponent.create(context).build()
     val fullImpressionHandler = EventHandlerTestUtil.create<FullImpressionVisibleEvent>(2, content)
     val parent = FrameLayout(context.androidContext)
@@ -1430,17 +1420,14 @@ class VisibilityEventsIncrementalMountDisabledTest {
       throw RuntimeException(e)
     }
 
-    // When self managing, LithoViews ignore translation when calculating the visible rect.
-    if (!ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
-      lithoView.translationY = -5f
-      assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
+    assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
+    lithoView.translationY = -5f
+    assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
 
-      // Note: there seems to be some bug where the local visible rect is off by 1px when using
-      // translation, thus this check will not work with -1
-      lithoView.translationY = -2f
-      assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
-    }
+    // Note: there seems to be some bug where the local visible rect is off by 1px when using
+    // translation, thus this check will not work with -1
+    lithoView.translationY = -2f
+    assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
     lithoView.translationY = 0f
     assertThat(content.dispatchedEventHandlers).contains(fullImpressionHandler)
   }

@@ -174,11 +174,6 @@ internal constructor(
     /** Keeps the litho layout result tree in the LayoutState. This will increase memory use. */
     @JvmField var keepLayoutResults: Boolean = false
 
-    /**
-     * Used by LithoViews to determine whether or not to self-manage the view-port changes, rather
-     * than rely on calls to notifyVisibleBoundsChanged.
-     */
-    @JvmField var lithoViewSelfManageViewPortChanges: Boolean = false
     @JvmField var overlappingRenderingViewSizeLimit: Int = Int.MAX_VALUE
     @JvmField var partialAlphaWarningSizeThresold: Int = Int.MAX_VALUE
 

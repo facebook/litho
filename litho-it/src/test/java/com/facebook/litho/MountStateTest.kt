@@ -253,11 +253,6 @@ class MountStateTest {
    */
   @Test
   fun whenItemsAreMovedThenUnmountedInTheNextMountLoop_shouldUnmountTheCorrectItem() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val c = legacyLithoViewRule.context
     val initialComponent =
         Column.create(c)

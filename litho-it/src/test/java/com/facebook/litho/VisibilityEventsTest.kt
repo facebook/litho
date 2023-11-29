@@ -1818,10 +1818,6 @@ class VisibilityEventsTest {
   @Test
   fun testVisibilityProcessingNoScrollChange() {
     val context = lithoViewRule.context
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val content = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val root =
@@ -1920,11 +1916,6 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleEventHorizontalScroll() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val c = lithoViewRule.context
     val stepsList: MutableList<List<StepInfo>> = mutableListOf()
     val numberOfItems = 2
