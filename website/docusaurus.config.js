@@ -250,7 +250,7 @@ module.exports = {
           external: true,
         }),
         staticDocsProject: 'litho',
-        trackingFile: 'xplat/staticdocs/WATCHED_FILES',
+        trackingFile: 'fbcode/staticdocs/WATCHED_FILES',
         googleAnalytics: fbContent({
           internal: undefined,
           external: {
