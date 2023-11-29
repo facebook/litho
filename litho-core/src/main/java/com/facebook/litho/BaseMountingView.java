@@ -698,15 +698,76 @@ public abstract class BaseMountingView extends ComponentHost
     // Per ComponentTree visible area. Because BaseMountingViews can be nested and mounted
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = new Rect();
-    final boolean hasNonEmptyVisibleRect = getLocalVisibleRect(currentVisibleArea);
+    final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
 
-    if (hasNonEmptyVisibleRect
+    if (areBoundsVisible
         || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
         // It might not be yet visible but animating from 0 height/width in which case we still
         // need to mount them to trigger animation.
-        || animatingRootBoundsFromZero(currentVisibleArea)) {
+        || animatingRootBoundsFromZero(currentVisibleArea)
+        || hasBecomeInvisible()) {
       mountComponent(currentVisibleArea, true);
     }
+  }
+
+  /**
+   * This is used to detect an edge case of using Litho in a nested scenario. You can imagine a a
+   * host XML, which takes a LithoView on top.
+   *
+   * <p>As we scroll the LithoView out of the screen, we will process incremental mount correctly
+   * until the last visible pixel.
+   *
+   * <pre>
+   *        |________________________| top: 0
+   *        ||                      ||
+   *        ||        Litho View    ||
+   *        ||______________________|| bottom: 156
+   *        |                        |
+   *        |                        |
+   *        |    Remaining Host      |
+   *        |                        |
+   *        |_______________________ |
+   * </pre>
+   *
+   * However, once the LithoView goes off the screen but the remaining host is still visible, the
+   * LithoView rect coordinates become negative:
+   *
+   * <pre>
+   *        |________________________| top: -156
+   *        ||                      ||
+   *        ||        Litho View    ||
+   *        ||______________________|| bottom: 0
+   *
+   *                                    invisible
+   *    - - - - - - - - - - - - - - - - - - - - - -
+   *                                    visible
+   *        |_______________________ |
+   *        |                        |
+   *        |    Remaining Host      |
+   *        |                        |
+   *        |_______________________ |
+   * </pre>
+   *
+   * Therefore, the rect is considered not visible, and in normal conditions we wouldn't process an
+   * extra pass of incremental mount.
+   *
+   * <p>We use this check to understand if in the last IM pass, the rect was visible, and that now
+   * is not. If that is the case, we will do an extra pass of IM to guarantee that the visibility
+   * outputs are processed and any onInvisible callback is delivered.
+   */
+  private boolean hasBecomeInvisible() {
+    ComponentsConfiguration configuration = getConfiguration();
+    boolean shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
+        configuration != null
+            && configuration.shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible;
+
+    return shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible
+        && mPreviousMountVisibleRectBounds.bottom >= 0
+        && mPreviousMountVisibleRectBounds.top >= 0
+        && mPreviousMountVisibleRectBounds.height() > 0
+        && mPreviousMountVisibleRectBounds.left >= 0
+        && mPreviousMountVisibleRectBounds.right >= 0
+        && mPreviousMountVisibleRectBounds.width() > 0;
   }
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
