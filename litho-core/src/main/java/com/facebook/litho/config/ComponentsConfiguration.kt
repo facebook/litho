@@ -140,10 +140,6 @@ internal constructor(
      */
     @JvmField var forceEnableTransitionsForInstrumentationTests: Boolean = false
 
-    /**
-     * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
-     */
-    @JvmField var threadPoolConfiguration: LayoutThreadPoolConfiguration? = null
     @JvmField var enableThreadTracingStacktrace: Boolean = false
 
     /** Sets if is reconciliation is enabled */

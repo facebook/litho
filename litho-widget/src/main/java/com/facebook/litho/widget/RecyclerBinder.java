@@ -973,9 +973,6 @@ public class RecyclerBinder
       if (builder.threadPoolConfig != null) {
         mThreadPoolConfig = builder.threadPoolConfig;
         mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
-      } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
-        mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
-        mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
       } else {
         mThreadPoolConfig = null;
         mLayoutThreadPoolHandler = null;

@@ -50,8 +50,8 @@ public class RecyclerBinderConfiguration {
   private final boolean mEnableItemPrefetch;
   private final int mItemViewCacheSize;
   private final boolean mRequestMountForPrefetchedItems;
-  private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
-      ComponentsConfiguration.threadPoolConfiguration;
+
+  @Nullable private final LayoutThreadPoolConfiguration mThreadPoolConfiguration;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsIncrementalMountEnabled;
@@ -213,13 +213,11 @@ public class RecyclerBinderConfiguration {
   }
 
   public static class Builder {
-    public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
-        ComponentsConfiguration.threadPoolConfiguration;
     static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
     public static final int UNSET = -1;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
-    private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
+    private @Nullable LayoutThreadPoolConfiguration mThreadPoolConfiguration;
     private @Nullable ComponentsConfiguration mComponentsConfiguration;
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mCircular = false;
@@ -282,14 +280,12 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    /** Null value will fall back to the non-null default one. */
-    public Builder threadPoolConfiguration(
-        @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration) {
-      if (threadPoolConfiguration != null) {
-        mThreadPoolConfiguration = threadPoolConfiguration;
-      } else {
-        mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
-      }
+    /**
+     * Set the {@link LayoutThreadPoolConfiguration} to use in the {@link
+     * RecyclerBinderConfiguration}
+     */
+    public Builder threadPoolConfiguration(LayoutThreadPoolConfiguration threadPoolConfiguration) {
+      mThreadPoolConfiguration = threadPoolConfiguration;
       return this;
     }
 
