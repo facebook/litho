@@ -22,7 +22,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestViewComponent
