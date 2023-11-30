@@ -446,7 +446,7 @@ public class LithoView extends BaseMountingView {
         onBeforeSettingNewTree();
       }
 
-      if (isAttached()) {
+      if (mComponentTree.isAttached()) {
         mComponentTree.detach();
       }
 

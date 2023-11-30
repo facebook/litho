@@ -31,6 +31,7 @@ import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.TestDrawableComponent
@@ -40,8 +41,10 @@ import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.TimeOutSemaphore
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.atMost
+import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.ComponentTreeTester
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -59,6 +62,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -1318,6 +1322,38 @@ class ComponentTreeTest {
           componentTree.clearLithoView()
         }
     componentTree.setRootAndSizeSpecSync(this.component, widthSpec, heightSpec)
+  }
+
+  @Test
+  fun testSwapComponentTreeOnLithoViewWhileComponentTreeAttached() {
+    class TestComponent(val text: String) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row { child(Text(style = Style.viewTag(text), text = text)) }
+      }
+    }
+
+    fun measureLayoutLithoView(lithoView: LithoView) {
+      lithoView.onAttachedToWindow()
+      lithoView.measure(exactly(1000), exactly(1000))
+      lithoView.layout(0, 0, 1000, 1000)
+    }
+
+    val lithoView = LithoView(context)
+    val componentTree1 = ComponentTree.create(context, TestComponent(text = "First text")).build()
+    val componentTree2 = ComponentTree.create(context, TestComponent(text = "Second text")).build()
+    lithoView.componentTree = componentTree1
+    measureLayoutLithoView(lithoView)
+
+    assertThat(lithoView.findViewWithTag("First text") as? View).isNotNull
+
+    lithoView.onDetachedFromWindow()
+    // Simulate ComponentTree staying attached due to being in a bad state (e.g. due to error
+    // boundary)
+    componentTree1.attach()
+    lithoView.componentTree = componentTree2
+    measureLayoutLithoView(lithoView)
+
+    assertThat(lithoView.findViewWithTag("Second text") as? View).isNotNull
   }
 
   @Test

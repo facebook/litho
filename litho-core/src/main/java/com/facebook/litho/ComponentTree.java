@@ -901,6 +901,10 @@ public class ComponentTree
     }
   }
 
+  boolean isAttached() {
+    return mIsAttached;
+  }
+
   /**
    * Set a new LithoView to this ComponentTree checking that they have the same context and clear
    * the ComponentTree reference from the previous LithoView if any. Be sure this ComponentTree is
@@ -953,7 +957,7 @@ public class ComponentTree
     mLithoView = view;
   }
 
-  public void clearLithoView() {
+  void clearLithoView() {
     assertMainThread();
 
     // Crash if the ComponentTree is mounted to a view.
