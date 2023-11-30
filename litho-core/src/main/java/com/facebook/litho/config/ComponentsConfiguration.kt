@@ -221,6 +221,7 @@ internal constructor(
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var enableFixForNestedComponentTree: Boolean = false
     @JvmField var enableRefactorLithoLifecycleProvider: Boolean = false
+    @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
     @JvmField var reduceMemorySpikeGetUri: Boolean = false

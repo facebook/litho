@@ -883,14 +883,15 @@ public class RecyclerBinder
     }
   }
 
+  private void releaseComponentTreeHoldersImmediatelyOrOnViewDetached(
+      List<ComponentTreeHolder> holders) {
+    for (int i = 0, size = holders.size(); i < size; i++) {
+      holders.get(i).releaseTreeImmediatelyOrOnViewDetached();
+    }
+  }
+
   private void postReleaseComponentTreeHolders(final List<ComponentTreeHolder> holders) {
-    mMainThreadHandler.post(
-        new Runnable() {
-          @Override
-          public void run() {
-            releaseComponentTreeHolders(holders);
-          }
-        });
+    mMainThreadHandler.post(() -> releaseComponentTreeHolders(holders));
   }
 
   @UiThread
@@ -1512,9 +1513,16 @@ public class RecyclerBinder
     mInternalAdapter.notifyDataSetChanged();
     mViewportManager.setShouldUpdate(true);
 
-    // When items are removed, the corresponding views might want to disappear with animations,
-    // therefore we post a runnable to release the ComponentTrees later.
-    postReleaseComponentTreeHolders(toRelease);
+    if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      // When items are removed, the corresponding views might want to disappear with animations,
+      // but posting a runnable to release the ComponentTrees later may not work because the
+      // animation is not started yet. Therefore, we may need to wait until the view is detached.
+      releaseComponentTreeHoldersImmediatelyOrOnViewDetached(toRelease);
+    } else {
+      // When items are removed, the corresponding views might want to disappear with animations,
+      // therefore we post a runnable to release the ComponentTrees later.
+      postReleaseComponentTreeHolders(toRelease);
+    }
   }
 
   /** See {@link RecyclerBinder#appendItem(RenderInfo)}. */
@@ -1879,15 +1887,19 @@ public class RecyclerBinder
 
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, 1));
 
-    // When item is removed, the corresponding view might want to disappear with an animation,
-    // therefore we post a runnable to release the ComponentTree later.
-    mMainThreadHandler.post(
-        new Runnable() {
-          @Override
-          public void run() {
-            holder.releaseTree();
-          }
-        });
+    if (holder != null) {
+      if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+        // When item is removed, the corresponding view might want to disappear with animations,
+        // but posting a runnable to release the ComponentTrees later may not work because the
+        // animation is not started yet. Therefore, we may need to wait until the view is
+        // detached.
+        holder.releaseTreeImmediatelyOrOnViewDetached();
+      } else {
+        // When item is removed, the corresponding view might want to disappear with an animation,
+        // therefore we post a runnable to release the ComponentTree later.
+        mMainThreadHandler.post(holder::releaseTree);
+      }
+    }
   }
 
   /** Removes count items starting from position. */
@@ -1913,9 +1925,16 @@ public class RecyclerBinder
 
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, count));
 
-    // When items are removed, the corresponding views might want to disappear with animations,
-    // therefore we post a runnable to release the ComponentTrees later.
-    postReleaseComponentTreeHolders(toRelease);
+    if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      // When items are removed, the corresponding views might want to disappear with animations,
+      // but posting a runnable to release the ComponentTrees later may not work because the
+      // animation is not started yet. Therefore, we may need to wait until the view is detached.
+      releaseComponentTreeHoldersImmediatelyOrOnViewDetached(toRelease);
+    } else {
+      // When items are removed, the corresponding views might want to disappear with animations,
+      // therefore we post a runnable to release the ComponentTrees later.
+      postReleaseComponentTreeHolders(toRelease);
+    }
   }
 
   /**

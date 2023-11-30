@@ -19,6 +19,7 @@ package com.facebook.litho.widget;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.DESTROYED;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
+import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -495,6 +496,34 @@ public class ComponentTreeHolder {
 
     if (mErrorEventHandler != null) {
       builder.errorHandler(mErrorEventHandler);
+    }
+  }
+
+  /**
+   * We may need to wait until the corresponding view is detached before releasing the tree as the
+   * view might need to run an animation
+   */
+  @UiThread
+  public synchronized void releaseTreeImmediatelyOrOnViewDetached() {
+    if (mComponentTree != null) {
+      if (mComponentTree.getLithoView() != null
+          && mComponentTree.getLithoView().isAttachedToWindow()) {
+        mComponentTree
+            .getLithoView()
+            .addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                  @Override
+                  public void onViewAttachedToWindow(View view) {}
+
+                  @Override
+                  public void onViewDetachedFromWindow(View view) {
+                    releaseTree();
+                    view.removeOnAttachStateChangeListener(this);
+                  }
+                });
+      } else {
+        releaseTree();
+      }
     }
   }
 

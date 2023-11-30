@@ -5442,6 +5442,9 @@ public class RecyclerBinderTest {
 
   @Test
   public void binder_removeItem_onDetachedIsCalled() {
+    if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      return;
+    }
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5487,6 +5490,9 @@ public class RecyclerBinderTest {
 
   @Test
   public void binder_removeRange_onDetachedIsCalled() {
+    if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      return;
+    }
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5537,6 +5543,9 @@ public class RecyclerBinderTest {
 
   @Test
   public void binder_replaceAll_onDetachedIsCalled() {
+    if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      return;
+    }
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
