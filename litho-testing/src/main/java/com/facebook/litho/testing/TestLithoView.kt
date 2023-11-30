@@ -78,11 +78,14 @@ internal constructor(
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
-        _componentTree =
-            ComponentTree.create(context)
-                .withLithoLifecycleProvider(lithoLifecycleProvider)
-                .componentsConfiguration(componentsConfiguration)
-                .build()
+        val builder =
+            ComponentTree.create(context).withLithoLifecycleProvider(lithoLifecycleProvider)
+
+        if (componentsConfiguration != null) {
+          builder.componentsConfiguration(componentsConfiguration)
+        }
+
+        _componentTree = builder.build()
       }
       return _componentTree ?: throw AssertionError("Set to null by another thread")
     }
@@ -138,6 +141,7 @@ internal constructor(
     lithoView.componentTree = componentTree
     return this
   }
+
   /** Sets the new root [Component] to render. */
   fun setRoot(component: Component?): TestLithoView {
     componentTree.setRoot(component)
@@ -187,6 +191,7 @@ internal constructor(
     this.heightSpec = heightSpec
     return this
   }
+
   /** Explicitly calls measure on the current root [LithoView] */
   fun measure(): TestLithoView {
     lithoView.measure(widthSpec, heightSpec)
@@ -277,6 +282,7 @@ internal constructor(
     return findViewWithTextOrNull(text)
         ?: throw RuntimeException("Did not find view with text '$text'")
   }
+
   /**
    * Finds the first [View] with the specified content description in the rendered hierarchy,
    * returning null if is doesn't exist.
@@ -440,5 +446,6 @@ internal constructor(
 
 @JvmField
 val DEFAULT_WIDTH_SPEC: Int = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+
 @JvmField
 val DEFAULT_HEIGHT_SPEC: Int = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)

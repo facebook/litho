@@ -85,8 +85,12 @@ constructor(
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
-        _componentTree =
-            ComponentTree.create(context).componentsConfiguration(componentsConfiguration).build()
+        val builder = ComponentTree.create(context)
+
+        if (componentsConfiguration != null) {
+          builder.componentsConfiguration(componentsConfiguration)
+        }
+        _componentTree = builder.build()
       }
       return _componentTree ?: throw AssertionError("Set to null by another thread")
     }

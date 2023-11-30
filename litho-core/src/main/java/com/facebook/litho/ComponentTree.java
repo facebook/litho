@@ -463,22 +463,6 @@ public class ComponentTree
       renderUnitIdGenerator = new RenderUnitIdGenerator(mId);
     }
 
-    final String logTag;
-    if (builder.logTag != null) {
-      logTag = builder.logTag;
-    } else if (builder.context.getLogTag() != null) {
-      logTag = builder.context.getLogTag();
-    } else {
-      logTag = mRoot.getSimpleName();
-    }
-
-    final ComponentsLogger logger;
-    if (builder.logger != null) {
-      logger = builder.logger;
-    } else {
-      logger = builder.context.getLogger();
-    }
-
     if (ComponentsConfiguration.enableStateUpdatesBatching) {
       mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
     } else {
@@ -511,10 +495,12 @@ public class ComponentTree
       mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
     }
 
+    Context androidContext = builder.mAndroidContext;
+
     final LithoConfiguration config =
         new LithoConfiguration(
             builder.config,
-            AnimationsDebug.areTransitionsEnabled(builder.context.getAndroidContext()),
+            AnimationsDebug.areTransitionsEnabled(androidContext),
             ComponentsConfiguration.overrideReconciliation != null
                 ? ComponentsConfiguration.overrideReconciliation
                 : builder.isReconciliationEnabled,
@@ -523,17 +509,16 @@ public class ComponentTree
             mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
-            logTag,
-            logger,
+            builder.logTag,
+            builder.logger,
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer,
             builder.componentTreeDebugEventListener);
 
-    ComponentContext builderContext = builder.context;
     mContext =
         new ComponentContext(
-            builderContext.getAndroidContext(),
-            builderContext.getTreeProps(),
+            androidContext,
+            builder.treeProps,
             config,
             LithoTree.Companion.create(this),
             "root",
@@ -543,7 +528,7 @@ public class ComponentTree
                     ? builder.mLifecycleProvider
                     : getLifecycleProvider(),
             null,
-            builderContext.getParentTreeProps());
+            builder.parentTreeProps);
 
     if (ComponentsConfiguration.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
@@ -3092,12 +3077,13 @@ public class ComponentTree
   public static class Builder {
 
     // required
-    private final ComponentContext context;
     private boolean visibilityProcessingEnabled = true;
     private Component root;
 
+    private Context mAndroidContext;
+
     // optional
-    private @Nullable ComponentsConfiguration config;
+    private ComponentsConfiguration config;
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
     private RunnableHandler layoutThreadHandler;
@@ -3108,7 +3094,6 @@ public class ComponentTree
     private boolean shouldPreallocatePerMountSpec;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
-
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
@@ -3116,11 +3101,20 @@ public class ComponentTree
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
     private @Nullable ComponentTreeDebugEventListener componentTreeDebugEventListener;
 
+    private @Nullable final TreeProps treeProps;
+    private @Nullable final TreeProps parentTreeProps;
+
     protected Builder(ComponentContext context) {
-      this.context = context;
+      logger = context.getLogger();
+      logTag = context.getLogTag();
+      config = context.mLithoConfiguration.componentsConfig;
+      visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
+      treeProps = context.getTreeProps();
+      parentTreeProps = context.getParentTreeProps();
+      mAndroidContext = context.getAndroidContext();
     }
 
-    public Builder componentsConfiguration(@Nullable ComponentsConfiguration config) {
+    public Builder componentsConfiguration(ComponentsConfiguration config) {
       this.config = config;
       return this;
     }
@@ -3291,17 +3285,9 @@ public class ComponentTree
       if (root == null) {
         root = new EmptyComponent();
       }
-      // TODO: T48569046 verify logTag when it will be set on CT directly
-      if (logger != null && logTag == null) {
+
+      if (logTag == null) {
         logTag = root.getSimpleName();
-      }
-
-      if (config == null) {
-        config = context.mLithoConfiguration.componentsConfig;
-      }
-
-      if (visibilityBoundsTransformer == null) {
-        visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
       }
 
       return new ComponentTree(this);

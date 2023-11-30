@@ -463,9 +463,11 @@ public class ComponentTreeHolder {
                   : mComponentTreeMeasureListenerFactory.create(this))
           .incrementalMount(mIncrementalMount)
           .visibilityProcessing(mVisibilityProcessingEnabled)
-          .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
-          .componentsConfiguration(mComponentsConfiguration)
-          .build();
+          .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag());
+
+      if (mComponentsConfiguration != null) {
+        builder.componentsConfiguration(mComponentsConfiguration);
+      }
 
       mComponentTree = builder.build();
 
