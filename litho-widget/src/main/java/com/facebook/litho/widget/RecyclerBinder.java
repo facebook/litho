@@ -1648,13 +1648,13 @@ public class RecyclerBinder
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") requestRemeasure");
     }
 
-    if (mMountedView != null) {
-      mMainThreadHandler.removeCallbacks(mRemeasureRunnable);
-      mMountedView.removeCallbacks(mRemeasureRunnable);
-      ViewCompat.postOnAnimation(mMountedView, mRemeasureRunnable);
+    RecyclerView mountedView = mMountedView;
+    mMainThreadHandler.removeCallbacks(mRemeasureRunnable);
+    if (mountedView != null) {
+      mountedView.removeCallbacks(mRemeasureRunnable);
+      ViewCompat.postOnAnimation(mountedView, mRemeasureRunnable);
     } else {
       // We are not mounted but we still need to post this. Just post on the main thread.
-      mMainThreadHandler.removeCallbacks(mRemeasureRunnable);
       mMainThreadHandler.post(mRemeasureRunnable);
     }
   }
