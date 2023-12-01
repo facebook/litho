@@ -33,7 +33,6 @@ litho_android_library(
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
@@ -45,12 +44,16 @@ litho_android_library(
 
 litho_android_library(
     name = "widget-bare",
+    srcs = glob([
+        "*.java",
+        "*.kt",
+    ]),
+    autoglob = False,
     exported_provided_deps = [
         LITHO_ANDROIDSUPPORT_SWIPEREFRESHLAYOUT_TARGET,
     ],
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    language = "JAVA",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],
@@ -65,6 +68,7 @@ litho_android_library(
         LITHO_VIEWCOMPAT_TARGET,
         LITHO_YOGA_TARGET,
     ],
+    pure_kotlin = False,
     required_for_source_only_abi = True,
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho:litho"),

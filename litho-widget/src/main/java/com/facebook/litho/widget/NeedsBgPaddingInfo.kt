@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
-import android.graphics.Rect;
+import android.graphics.Rect
 
 /**
  * Because a LayoutInfo/LayoutManager may rely on padding to generate a child measure specs, and
@@ -28,6 +28,7 @@ import android.graphics.Rect;
  * info is set, the bg padding info will NOT be up-to-date. For most usecases, this shouldn't
  * matter.
  */
-public interface NeedsBgPaddingInfo {
-  void setBgPaddingInfo(Rect paddingInfo);
+interface NeedsBgPaddingInfo {
+
+  fun setBgPaddingInfo(paddingInfo: Rect)
 }
