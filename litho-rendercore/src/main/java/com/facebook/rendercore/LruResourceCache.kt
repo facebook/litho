@@ -22,7 +22,7 @@ import androidx.collection.LruCache
 open class LruResourceCache(configuration: Configuration) : ResourceCache(configuration) {
 
   private val cache =
-      object : LruCache<Int?, Any?>(500) {
+      object : LruCache<Int, Any>(500) {
 
         override fun sizeOf(key: Int, value: Any): Int = if (value is String) value.length else 1
       }
