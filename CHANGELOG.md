@@ -3,6 +3,7 @@
 ## Version 0.49.0-SNAPSHOT
 
 * [BREAKING] Removed `Component.canResolve()` and `Component.resolve(ResolveContext, ComponentContext)` methods. All classes extending Component must now implement the new `Component.resolve(ResolveContext, ScopedComponentInfo, int, int, ComponentsLogger)` method which is always used in the resolution flow.
+* [BREAKING] Rename `Style.performAccessibilityAction`, `Style.sendAccessibilityEvent` and `Style.sendAccessibilityEventUnchecked` methods.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.48.0...master).
 

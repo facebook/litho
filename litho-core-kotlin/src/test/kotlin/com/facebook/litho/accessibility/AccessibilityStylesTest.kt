@@ -252,12 +252,12 @@ class AccessibilityStylesTest {
 
   /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
   @Test
-  fun performAccessibilityAction_whenSet_isSetOnView() {
+  fun onPerformAccessibilityAction_whenSet_isSetOnView() {
     val eventHandler: EventHandler<PerformAccessibilityActionEvent> = mock()
 
     class TestComponentWithHandler : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(style = Style.performAccessibilityAction { eventHandler })
+        return Row(style = Style.onPerformAccessibilityAction { eventHandler })
       }
     }
     val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
@@ -268,7 +268,7 @@ class AccessibilityStylesTest {
 
   /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
   @Test
-  fun sendAccessibilityEvent_whenNotSet_isNotSetOnView() {
+  fun onSendAccessibilityEvent_whenNotSet_isNotSetOnView() {
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Row(style = Style.width(200.px))
@@ -282,12 +282,12 @@ class AccessibilityStylesTest {
 
   /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
   @Test
-  fun sendAccessibilityEvent_whenSet_isSetOnView() {
+  fun onSendAccessibilityEvent_whenSet_isSetOnView() {
     val eventHandler: EventHandler<SendAccessibilityEventEvent> = mock()
 
     class TestComponentWithHandler : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(style = Style.sendAccessibilityEvent { eventHandler })
+        return Row(style = Style.onSendAccessibilityEvent { eventHandler })
       }
     }
     val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
@@ -298,7 +298,7 @@ class AccessibilityStylesTest {
 
   /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
   @Test
-  fun sendAccessibilityEventUnchecked_whenNotSet_isNotSetOnView() {
+  fun onSendAccessibilityEventUnchecked_whenNotSet_isNotSetOnView() {
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Row(style = Style.width(200.px))
@@ -312,12 +312,12 @@ class AccessibilityStylesTest {
 
   /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
   @Test
-  fun sendAccessibilityEventUnchecked_whenSet_isSetOnView() {
+  fun onSendAccessibilityEventUnchecked_whenSet_isSetOnView() {
     val eventHandler: EventHandler<SendAccessibilityEventUncheckedEvent> = mock()
 
     class TestComponentWithHandler : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(style = Style.sendAccessibilityEventUnchecked { eventHandler })
+        return Row(style = Style.onSendAccessibilityEventUnchecked { eventHandler })
       }
     }
     val testLithoView = lithoViewRule.render { TestComponentWithHandler() }

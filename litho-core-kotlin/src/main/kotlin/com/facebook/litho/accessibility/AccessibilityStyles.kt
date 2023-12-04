@@ -202,29 +202,29 @@ inline fun Style.onRequestSendAccessibilityEvent(
             onRequestSendAccessibilityEventHandler)
 
 /**
- * Performs the specified accessibility action on the view.
+ * Called when performs the specified accessibility action on the view.
  *
  * See [android.view.View.AccessibilityDelegateCompat#performAccessibilityAction].
  */
-inline fun Style.performAccessibilityAction(
-    noinline performAccessibilityActionHandler: (PerformAccessibilityActionEvent) -> Unit
+inline fun Style.onPerformAccessibilityAction(
+    noinline onPerformAccessibilityActionHandler: (PerformAccessibilityActionEvent) -> Unit
 ): Style =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.PERFORM_ACCESSIBILITY_ACTION, performAccessibilityActionHandler)
+            AccessibilityField.PERFORM_ACCESSIBILITY_ACTION, onPerformAccessibilityActionHandler)
 
 /**
- * Sends an accessibility event of the given type. If accessibility is not enabled this method has
- * no effect.
+ * Called when Sends an accessibility event of the given type. If accessibility is not enabled this
+ * method has no effect.
  *
  * See [android.view.View.AccessibilityDelegateCompat#sendAccessibilityEvent].
  */
-inline fun Style.sendAccessibilityEvent(
-    noinline sendAccessibilityEventHandler: (SendAccessibilityEventEvent) -> Unit
+inline fun Style.onSendAccessibilityEvent(
+    noinline onSendAccessibilityEventHandler: (SendAccessibilityEventEvent) -> Unit
 ): Style =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.SEND_ACCESSIBILITY_EVENT, sendAccessibilityEventHandler)
+            AccessibilityField.SEND_ACCESSIBILITY_EVENT, onSendAccessibilityEventHandler)
 
 /**
  * Sends an accessibility event. This method behaves exactly as sendAccessibilityEvent() but takes
@@ -233,13 +233,14 @@ inline fun Style.sendAccessibilityEvent(
  *
  * See [android.view.View.AccessibilityDelegateCompat#sendAccessibilityEventUnchecked].
  */
-inline fun Style.sendAccessibilityEventUnchecked(
-    noinline sendAccessibilityEventUncheckedHandler: (SendAccessibilityEventUncheckedEvent) -> Unit
+inline fun Style.onSendAccessibilityEventUnchecked(
+    noinline onSendAccessibilityEventUncheckedHandler:
+        (SendAccessibilityEventUncheckedEvent) -> Unit
 ): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED,
-            sendAccessibilityEventUncheckedHandler)
+            onSendAccessibilityEventUncheckedHandler)
 
 /**
  * Initializes an [AccessibilityNodeInfoCompat] with information about the host view.
