@@ -47,7 +47,7 @@ class ComponentTreeBuilderTest {
         ComponentContext(
             androidContext,
             ComponentContextUtils.buildDefaultLithoConfiguration(
-                androidContext, null, LOG_TAG, null),
+                context = androidContext, logTag = LOG_TAG),
             null)
 
     root = TestLayoutComponent.create(context).build()

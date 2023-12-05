@@ -38,7 +38,7 @@ class LoggingActivity : NavigatableDemoActivity() {
         ComponentContext(
             this,
             ComponentContextUtils.buildDefaultLithoConfiguration(
-                this, null, "LITHOSAMPLE", SampleComponentsLogger()),
+                context = this, logTag = "LITHOSAMPLE", logger = SampleComponentsLogger()),
             null)
 
     val lithoView =

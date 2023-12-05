@@ -37,8 +37,7 @@ class SectionContext
 @JvmOverloads
 constructor(
     context: Context,
-    config: LithoConfiguration? =
-        ComponentContextUtils.buildDefaultLithoConfiguration(context, null, null, null),
+    config: LithoConfiguration? = ComponentContextUtils.buildDefaultLithoConfiguration(context),
     treeProps: TreeProps? = null
 ) : ComponentContext(context, config, treeProps) {
 
@@ -47,7 +46,7 @@ constructor(
   ) : this(
       context.androidContext,
       ComponentContextUtils.buildDefaultLithoConfiguration(
-          context.androidContext, null, context.logTag, context.logger),
+          context = context.androidContext, logTag = context.logTag, logger = context.logger),
       context.treePropsCopy)
 
   val keyHandler: KeyHandler = KeyHandler()
@@ -111,7 +110,6 @@ constructor(
 
   /** @return New instance of [EventTrigger] that is created by the current mScope. */
   fun <E> newEventTrigger(id: Int, childKey: String, handle: Handle?): EventTrigger<E> {
-    val section = scope?.get()
     val parentKey = scope?.get()?.globalKey ?: ""
     return EventTrigger(parentKey, id, childKey, handle)
   }
@@ -131,7 +129,7 @@ constructor(
   override fun getTreeProps(): TreeProps? = super.getTreeProps()
 
   companion object {
-    const val NO_SCOPE_EVENT_HANDLER = "SectionContext:NoScopeEventHandler"
+    const val NO_SCOPE_EVENT_HANDLER: String = "SectionContext:NoScopeEventHandler"
 
     @JvmStatic
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
