@@ -151,7 +151,6 @@ internal constructor(
      * the default will be retrieve via the ComponentContext.
      */
     @JvmField var isLazyListUsingComponentContextReconciliationConfig: Boolean = true
-    @JvmField var overrideReconciliation: Boolean? = null
     @JvmField var overrideLayoutDiffing: Boolean? = null
 
     /**

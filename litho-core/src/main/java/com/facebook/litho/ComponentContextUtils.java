@@ -39,9 +39,7 @@ public class ComponentContextUtils {
     return new LithoConfiguration(
         ComponentsConfiguration.defaultInstance,
         AnimationsDebug.areTransitionsEnabled(context),
-        ComponentsConfiguration.overrideReconciliation != null
-            ? ComponentsConfiguration.overrideReconciliation
-            : true,
+        ComponentsConfiguration.isReconciliationEnabled,
         true,
         false,
         null,

@@ -501,9 +501,7 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            ComponentsConfiguration.overrideReconciliation != null
-                ? ComponentsConfiguration.overrideReconciliation
-                : builder.isReconciliationEnabled,
+            builder.isReconciliationEnabled,
             builder.visibilityProcessingEnabled,
             mShouldPreallocatePerMountSpec,
             mPreAllocateMountContentHandler,
