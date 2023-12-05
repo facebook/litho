@@ -190,8 +190,9 @@ public class RecyclerBinderManualRangeTest {
         new RecyclerBinder.Builder()
             .estimatedViewportCount(1)
             .rangeRatio(.5f)
-            .canMeasure(true)
             .build(mComponentContext);
+
+    recyclerBinder.setCanMeasure(true);
 
     recyclerBinder.measure(
         new Size(),

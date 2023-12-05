@@ -271,7 +271,14 @@ public class RecyclerBinder
   private final boolean mIsCircular;
   private final boolean mHasDynamicItemHeight;
   private final boolean mWrapContent;
+
+  /**
+   * Only for horizontally scrolling layouts! If true, the height of the RecyclerView is not known
+   * when it's measured; the first item is measured and its height will determine the height of the
+   * RecyclerView.
+   */
   private boolean mCanMeasure;
+
   private int mLastWidthSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private Size mMeasuredSize;
@@ -462,7 +469,6 @@ public class RecyclerBinder
     private boolean enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId;
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private @Nullable LayoutThreadPoolConfiguration threadPoolConfig;
-    private boolean canMeasure;
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
@@ -709,16 +715,6 @@ public class RecyclerBinder
             "Estimated viewport count must be > 0: " + estimatedViewportCount);
       }
       this.estimatedViewportCount = estimatedViewportCount;
-      return this;
-    }
-
-    /**
-     * Only for horizontally scrolling layouts! If true, the height of the RecyclerView is not known
-     * when it's measured; the first item is measured and its height will determine the height of
-     * the RecyclerView.
-     */
-    public Builder canMeasure(boolean canMeasure) {
-      this.canMeasure = canMeasure;
       return this;
     }
 
@@ -986,7 +982,6 @@ public class RecyclerBinder
             };
 
     mWrapContent = builder.wrapContent;
-    mCanMeasure = builder.canMeasure;
     mTraverseLayoutBackwards = getStackFromEnd();
 
     if (builder.recyclerRangeTraverser != null) {
