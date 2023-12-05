@@ -45,6 +45,8 @@ sealed class DebugEvent(
     const val ViewOnLayout = "RenderCore.View.OnLayout"
     const val IncrementalMountStart = "RenderCore.IncrementalMount.Start"
     const val IncrementalMountEnd = "RenderCore.IncrementalMount.End"
+    const val RenderTreeMountStart = "RenderCore.RenderTreeMount.Start"
+    const val RenderTreeMountEnd = "RenderCore.RenderTreeMount.End"
   }
 
   /** Returns the value of attribute with [name]. */
@@ -97,6 +99,7 @@ object DebugEventAttribute {
   const val Key = "key"
   const val VisibleRect = "visibleRect"
   const val BoundsVisible = "areBoundsVisible"
+  const val NumMountableOutputs = "numMountableOutputs"
 }
 
 /** Base class for marker events */

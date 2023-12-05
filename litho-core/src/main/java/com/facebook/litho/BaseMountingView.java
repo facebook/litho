@@ -97,6 +97,7 @@ public abstract class BaseMountingView extends ComponentHost
     mMountState.setEnsureParentMounted(true);
     mViewAttributeFlags = LithoMountData.getViewAttributeFlags(this);
   }
+
   /**
    * Sets the width that the BaseMountingView should take on the next measure pass and then requests
    * a layout. This should be called from animation-driving code on each frame to animate the size

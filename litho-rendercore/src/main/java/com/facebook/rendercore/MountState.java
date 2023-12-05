@@ -20,6 +20,7 @@ import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Description;
 import static com.facebook.rendercore.debug.DebugEventAttribute.HashCode;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Key;
+import static com.facebook.rendercore.debug.DebugEventAttribute.NumMountableOutputs;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RootHostHashCode;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
@@ -34,6 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import androidx.core.util.Preconditions;
 import com.facebook.rendercore.debug.DebugEvent;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -43,6 +45,7 @@ import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import kotlin.Unit;
 
 public class MountState implements MountDelegateTarget {
 
@@ -127,6 +130,7 @@ public class MountState implements MountDelegateTarget {
     if (traceIdentifier != null) {
       HashMap<String, Object> attributes = new HashMap<>();
       attributes.put(RootHostHashCode, mRootHost.hashCode());
+      attributes.put(NumMountableOutputs, renderTree.getMountableOutputCount());
 
       beginTrace(
           traceIdentifier,
@@ -134,6 +138,16 @@ public class MountState implements MountDelegateTarget {
           String.valueOf(renderTree.getRenderStateId()),
           attributes);
     }
+
+    DebugEventDispatcher.dispatch(
+        DebugEvent.RenderTreeMountStart,
+        () -> String.valueOf(renderTree.getRenderStateId()),
+        attrs -> {
+          attrs.put(RootHostHashCode, mRootHost.hashCode());
+          attrs.put(NumMountableOutputs, renderTree.getMountableOutputCount());
+          return Unit.INSTANCE;
+        });
+
     try {
 
       if (mIsMounting) {
@@ -229,6 +243,15 @@ public class MountState implements MountDelegateTarget {
         endTrace(traceIdentifier);
       }
       mIsMounting = false;
+
+      DebugEventDispatcher.dispatch(
+          DebugEvent.RenderTreeMountEnd,
+          () -> String.valueOf(renderTree.getRenderStateId()),
+          attrs -> {
+            attrs.put(RootHostHashCode, mRootHost.hashCode());
+            attrs.put(NumMountableOutputs, renderTree.getMountableOutputCount());
+            return Unit.INSTANCE;
+          });
     }
   }
 
