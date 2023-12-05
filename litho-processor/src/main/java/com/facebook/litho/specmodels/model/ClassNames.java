@@ -145,4 +145,6 @@ public interface ClassNames {
   ClassName DYNAMIC_VALUE = ClassName.bestGuess("com.facebook.litho.DynamicValue");
 
   ClassName HANDLE = ClassName.bestGuess("com.facebook.litho.Handle");
+
+  ClassName BUNDLE = ClassName.bestGuess("android.os.Bundle");
 }

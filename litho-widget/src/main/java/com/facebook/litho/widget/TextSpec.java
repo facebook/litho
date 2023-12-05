@@ -40,6 +40,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.icu.text.BreakIterator;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.Layout;
 import android.text.Layout.Alignment;
 import android.text.SpannableStringBuilder;
@@ -80,9 +81,11 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnPerformActionForVirtualView;
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
 import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.OnVirtualViewKeyboardFocusChanged;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
@@ -1042,6 +1045,39 @@ public class TextSpec {
       @Prop(optional = true, resType = ResType.BOOL) boolean accessibleClickableSpans,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     return (accessibleClickableSpans && clickableSpans != null) ? clickableSpans.length : 0;
+  }
+
+  @OnPerformActionForVirtualView
+  static boolean onPerformActionForVirtualView(
+      ComponentContext c,
+      View host,
+      AccessibilityNodeInfoCompat accessibilityNode,
+      int virtualViewId,
+      int action,
+      @Nullable Bundle arguments,
+      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    if (action == AccessibilityNodeInfoCompat.ACTION_CLICK) {
+      clickableSpans[virtualViewId].onClick(host);
+      return true;
+    }
+    return false;
+  }
+
+  @OnVirtualViewKeyboardFocusChanged
+  static void onVirtualViewKeyboardFocusChanged(
+      ComponentContext c,
+      View host,
+      @Nullable AccessibilityNodeInfoCompat accessibilityNode,
+      int virtualViewId,
+      boolean hasFocus,
+      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    if (clickableSpans[virtualViewId] instanceof AccessibleClickableSpan) {
+      synchronized (clickableSpans) {
+        ((AccessibleClickableSpan) clickableSpans[virtualViewId]).setKeyboardFocused(hasFocus);
+      }
+      // force redraw when focus changes, so that any visual changes get applied.
+      host.invalidate();
+    }
   }
 
   @OnPopulateExtraAccessibilityNode

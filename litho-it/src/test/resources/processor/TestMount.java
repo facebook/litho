@@ -19,6 +19,7 @@ package com.facebook.litho.processor.integration.resources;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StringRes;
@@ -337,6 +338,56 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Override
   public boolean implementsAccessibility() {
+    return true;
+  }
+
+  @Override
+  protected boolean onPerformActionForVirtualView(
+      ComponentContext c,
+      View host,
+      AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      int action,
+      Bundle arguments,
+      InterStagePropsContainer _6) {
+    boolean _result;
+    _result =
+        (boolean)
+            TestMountSpec.onPerformActionForVirtualView(
+                (ComponentContext) c,
+                (View) host,
+                (AccessibilityNodeInfoCompat) node,
+                (int) virtualViewId,
+                (int) action,
+                (Bundle) arguments,
+                (CharSequence) prop7);
+    return _result;
+  }
+
+  @Override
+  public boolean implementsOnPerformActionForVirtualView() {
+    return true;
+  }
+
+  @Override
+  protected void onVirtualViewKeyboardFocusChanged(
+      ComponentContext c,
+      View host,
+      AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      boolean hasFocus,
+      InterStagePropsContainer _5) {
+    TestMountSpec.onVirtualViewKeyboardFocusChanged(
+        (ComponentContext) c,
+        (View) host,
+        (AccessibilityNodeInfoCompat) node,
+        (int) virtualViewId,
+        (boolean) hasFocus,
+        (CharSequence) prop7);
+  }
+
+  @Override
+  public boolean implementsKeyboardFocusChangeForVirtualViews() {
     return true;
   }
 

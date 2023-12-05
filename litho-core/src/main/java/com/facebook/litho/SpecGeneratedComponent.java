@@ -24,6 +24,7 @@ import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
 import androidx.annotation.AttrRes;
@@ -446,6 +447,44 @@ public abstract class SpecGeneratedComponent extends Component
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   /**
+   * Respond to an attempt to perform an AccessibilityAction on a virtual view.
+   *
+   * @param host host View containing the virtual view
+   * @param accessibilityNode node to populate
+   * @param virtualViewId ID of virtual view
+   * @param action ID of AccessibilityAction performed
+   * @param arguments a Bundle of arguments passed along with the AccessibilityAction
+   * @param interStagePropsContainer
+   */
+  protected boolean onPerformActionForVirtualView(
+      final ComponentContext c,
+      final View host,
+      final AccessibilityNodeInfoCompat accessibilityNode,
+      final int virtualViewId,
+      final int action,
+      final @Nullable Bundle arguments,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    return false;
+  }
+
+  /**
+   * Respond to an attempt to perform an AccessibilityAction on a virtual view.
+   *
+   * @param host host View containing the virtual view
+   * @param accessibilityNode node to populate
+   * @param virtualViewId ID of virtual view
+   * @param hasFocus whether ther virtual view has focus
+   * @param interStagePropsContainer
+   */
+  protected void onVirtualViewKeyboardFocusChanged(
+      final ComponentContext c,
+      final View host,
+      final @Nullable AccessibilityNodeInfoCompat accessibilityNode,
+      final int virtualViewId,
+      final boolean hasFocus,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
+
+  /**
    * Populate an extra accessibility node.
    *
    * @param accessibilityNode node to populate
@@ -551,6 +590,25 @@ public abstract class SpecGeneratedComponent extends Component
    * @return true if the component exposes extra accessibility nodes
    */
   protected boolean implementsExtraAccessibilityNodes() {
+    return false;
+  }
+
+  /**
+   * Whether this component will attempt to perform any AccessibilityActions on any virtual views
+   *
+   * @return true if the component implements {@link OnPerformActionForVirtualView} annotated method
+   */
+  protected boolean implementsOnPerformActionForVirtualView() {
+    return false;
+  }
+
+  /**
+   * Whether this component will attempt to change keyboard focus behavior for virtual views
+   *
+   * @return true if the component implements {@link OnVirtualViewKeyboardFocusChanged} annotated
+   *     method
+   */
+  protected boolean implementsKeyboardFocusChangeForVirtualViews() {
     return false;
   }
 

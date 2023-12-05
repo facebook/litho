@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -693,6 +694,23 @@ public class ComponentHost extends Host implements DisappearingHost {
             && mImplementsVirtualViews
             && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
         || super.dispatchHoverEvent(event);
+  }
+
+  @Override
+  public final void onFocusChanged(
+      boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    if (mComponentAccessibilityDelegate != null && mImplementsVirtualViews) {
+      mComponentAccessibilityDelegate.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    return (mComponentAccessibilityDelegate != null
+            && mImplementsVirtualViews
+            && mComponentAccessibilityDelegate.dispatchKeyEvent(event))
+        || super.dispatchKeyEvent(event);
   }
 
   public List<CharSequence> getContentDescriptions() {
