@@ -300,7 +300,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .wrapContent(binderConfiguration.isWrapContent)
             .enableStableIds(binderConfiguration.enableStableIds)
             .threadPoolConfig(binderConfiguration.threadPoolConfiguration)
-            .hscrollAsyncMode(binderConfiguration.hScrollAsyncMode)
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)

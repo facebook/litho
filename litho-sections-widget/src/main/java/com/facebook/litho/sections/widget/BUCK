@@ -56,4 +56,5 @@ litho_android_library(
         LITHO_WIDGET_TARGET,
         LITHO_YOGA_TARGET,
     ],
+    exported_deps = [LITHO_WIDGET_TARGET],
 )

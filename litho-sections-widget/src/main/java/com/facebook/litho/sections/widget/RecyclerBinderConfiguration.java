@@ -44,7 +44,6 @@ public class RecyclerBinderConfiguration {
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-  private boolean mHScrollAsyncMode;
   private boolean mEnableStableIds;
   private final boolean mEnableItemPrefetch;
   private final int mItemViewCacheSize;
@@ -78,7 +77,6 @@ public class RecyclerBinderConfiguration {
       @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
-      boolean hScrollAsyncMode,
       boolean enableStableIds,
       boolean enableItemPrefetch,
       int itemViewCacheSize,
@@ -99,7 +97,6 @@ public class RecyclerBinderConfiguration {
     mThreadPoolConfiguration = threadPoolConfiguration;
     mHasDynamicItemHeight = dynamicItemHeight;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
-    mHScrollAsyncMode = hScrollAsyncMode;
     mEnableStableIds = enableStableIds;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mIsReconciliationEnabled = isReconciliationEnabled;
@@ -138,10 +135,6 @@ public class RecyclerBinderConfiguration {
 
   public boolean getUseBackgroundChangeSets() {
     return mUseBackgroundChangeSets;
-  }
-
-  public boolean getHScrollAsyncMode() {
-    return mHScrollAsyncMode;
   }
 
   @Nullable
@@ -219,7 +212,6 @@ public class RecyclerBinderConfiguration {
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mWrapContent = false;
     private boolean mDynamicItemHeight = false;
-    private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds =
         ComponentsConfiguration.defaultRecyclerBinderConfigUseStableId;
     private boolean mEnableItemPrefetch = false;
@@ -246,7 +238,6 @@ public class RecyclerBinderConfiguration {
       this.mRangeRatio = configuration.mRangeRatio;
       this.mWrapContent = configuration.mIsWrapContent;
       this.mDynamicItemHeight = configuration.mHasDynamicItemHeight;
-      this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
@@ -334,12 +325,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder useBackgroundChangeSets(boolean useBackgroundChangeSets) {
       mUseBackgroundChangeSets = useBackgroundChangeSets;
-      return this;
-    }
-
-    /** Experimental. See {@link RecyclerBinder.Builder#hscrollAsyncMode(boolean)} for more info. */
-    public Builder hScrollAsyncMode(boolean hScrollAsyncMode) {
-      mHScrollAsyncMode = hScrollAsyncMode;
       return this;
     }
 
@@ -455,7 +440,6 @@ public class RecyclerBinderConfiguration {
           mThreadPoolConfiguration,
           mDynamicItemHeight,
           mUseBackgroundChangeSets,
-          mHScrollAsyncMode,
           mEnableStableIds,
           mEnableItemPrefetch,
           mItemViewCacheSize,

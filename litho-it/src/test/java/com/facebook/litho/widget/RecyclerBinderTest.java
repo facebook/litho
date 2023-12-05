@@ -4818,7 +4818,7 @@ public class RecyclerBinderTest {
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().hScrollAsyncMode(true).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
@@ -4868,7 +4868,7 @@ public class RecyclerBinderTest {
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().hScrollAsyncMode(true).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
@@ -4925,7 +4925,7 @@ public class RecyclerBinderTest {
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().hScrollAsyncMode(true).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -4972,7 +4972,7 @@ public class RecyclerBinderTest {
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().hScrollAsyncMode(true).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
@@ -5035,7 +5035,7 @@ public class RecyclerBinderTest {
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .rangeRatio(10)
-            .hscrollAsyncMode(false)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().hScrollAsyncMode(false).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {

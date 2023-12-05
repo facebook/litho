@@ -322,7 +322,6 @@ public class RecyclerCollectionComponentSpec {
             .wrapContent(binderConfiguration.isWrapContent())
             .enableStableIds(binderConfiguration.getEnableStableIds())
             .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
-            .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)

@@ -27,8 +27,7 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
  * [RecyclerBinder.Builder], but we aim to move all of them here.
  */
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
-data class RecyclerBinderConfig
-internal constructor(
+data class RecyclerBinderConfig(
     /**
      * Whether the underlying RecyclerBinder will have a circular behaviour. Defaults to false.
      * Note: circular lists DO NOT support any operation that changes the size of items like insert,
@@ -39,7 +38,15 @@ internal constructor(
      * The factory that will be used to create the nested [com.facebook.litho.LithoView] inside
      * Section/LazyCollection.
      */
-    @JvmField val lithoViewFactory: LithoViewFactory? = null
+    @JvmField val lithoViewFactory: LithoViewFactory? = null,
+    /**
+     * Experimental. Configuration to change the behavior of HScroll's when they are nested within a
+     * vertical scroll. With this mode, the hscroll will attempt to compute all layouts in the
+     * background before mounting so that no layouts are computed on the main thread. All subsequent
+     * insertions will be treated with LAYOUT_BEFORE_INSERT policy to ensure those layouts also do
+     * not happen on the main thread.
+     */
+    @JvmField val hScrollAsyncMode: Boolean = false
 ) {
 
   companion object {
@@ -70,15 +77,23 @@ internal constructor(
 class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBinderConfig) {
 
   private var isCircular = configuration.isCircular
+  private var hScrollAsyncMode = configuration.hScrollAsyncMode
   private var lithoViewFactory = configuration.lithoViewFactory
 
   fun isCircular(isCircular: Boolean) = also { this.isCircular = isCircular }
 
-  fun lithoViewFactory(lithoViewFactory: LithoViewFactory?) = also {
+  fun lithoViewFactory(lithoViewFactory: LithoViewFactory?): RecyclerBinderConfigBuilder = also {
     this.lithoViewFactory = lithoViewFactory
   }
 
+  fun hScrollAsyncMode(hScrollAsyncMode: Boolean): RecyclerBinderConfigBuilder = also {
+    this.hScrollAsyncMode = hScrollAsyncMode
+  }
+
   fun build(): RecyclerBinderConfig {
-    return RecyclerBinderConfig(isCircular = isCircular, lithoViewFactory = lithoViewFactory)
+    return RecyclerBinderConfig(
+        isCircular = isCircular,
+        lithoViewFactory = lithoViewFactory,
+        hScrollAsyncMode = hScrollAsyncMode)
   }
 }

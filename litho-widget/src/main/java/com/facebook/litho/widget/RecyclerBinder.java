@@ -463,7 +463,6 @@ public class RecyclerBinder
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private @Nullable LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean canMeasure;
-    private boolean hscrollAsyncMode = false;
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
@@ -720,18 +719,6 @@ public class RecyclerBinder
      */
     public Builder canMeasure(boolean canMeasure) {
       this.canMeasure = canMeasure;
-      return this;
-    }
-
-    /**
-     * Experimental. Configuration to change the behavior of HScroll's when they are nested within a
-     * vertical scroll. With this mode, the hscroll will attempt to compute all layouts in the
-     * background before mounting so that no layouts are computed on the main thread. All subsequent
-     * insertions will be treated with LAYOUT_BEFORE_INSERT policy to ensure those layouts also do
-     * not happen on the main thread.
-     */
-    public Builder hscrollAsyncMode(boolean hscrollAsyncMode) {
-      this.hscrollAsyncMode = hscrollAsyncMode;
       return this;
     }
 
@@ -1021,7 +1008,7 @@ public class RecyclerBinder
       mHasManualEstimatedViewportCount = false;
     }
 
-    mHScrollAsyncMode = builder.hscrollAsyncMode;
+    mHScrollAsyncMode = mRecyclerBinderConfig.hScrollAsyncMode;
     mIncrementalMountEnabled = builder.incrementalMount;
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
