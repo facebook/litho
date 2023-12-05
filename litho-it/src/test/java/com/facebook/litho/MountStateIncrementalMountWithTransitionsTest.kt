@@ -29,6 +29,7 @@ import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LithoViewFactory
 import com.facebook.litho.widget.MountSpecLifecycleTester
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.TestAnimationsComponent
 import com.facebook.litho.widget.TestComponentProvider
@@ -112,7 +113,10 @@ class MountStateIncrementalMountWithTransitionsTest {
             .build())
     val sectionContext = SectionContext(legacyLithoViewRule.context)
     val binderConfig =
-        RecyclerBinderConfiguration.create().lithoViewFactory(lithoViewFactory).build()
+        RecyclerBinderConfiguration.create()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+            .build()
     val config =
         ListRecyclerConfiguration.create()
             .orientation(0)
@@ -226,7 +230,10 @@ class MountStateIncrementalMountWithTransitionsTest {
     data.add(component)
     val sectionContext = SectionContext(legacyLithoViewRule.context)
     val binderConfig =
-        RecyclerBinderConfiguration.create().lithoViewFactory(lithoViewFactory).build()
+        RecyclerBinderConfiguration.create()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+            .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
     val root =

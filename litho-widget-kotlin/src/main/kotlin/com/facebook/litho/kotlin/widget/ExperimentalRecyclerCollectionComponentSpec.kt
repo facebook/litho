@@ -293,6 +293,7 @@ object ExperimentalRecyclerCollectionComponentSpec {
     layoutInfo.set(newLayoutInfo)
     val recyclerBinderBuilder =
         RecyclerBinder.Builder()
+            .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .layoutInfo(newLayoutInfo)
             .rangeRatio(binderConfiguration.rangeRatio)
             .layoutHandlerFactory(binderConfiguration.layoutHandlerFactory)
@@ -300,7 +301,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .enableStableIds(binderConfiguration.enableStableIds)
             .threadPoolConfig(binderConfiguration.threadPoolConfiguration)
             .hscrollAsyncMode(binderConfiguration.hScrollAsyncMode)
-            .isCircular(binderConfiguration.isCircular)
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
@@ -308,7 +308,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
             .componentWarmer(binderConfiguration.componentWarmer)
-            .lithoViewFactory(binderConfiguration.lithoViewFactory)
             .errorEventHandler(binderConfiguration.errorEventHandler)
             .recyclerViewItemPrefetch(binderConfiguration.enableItemPrefetch)
             .startupLogger(startupLogger)

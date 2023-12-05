@@ -247,7 +247,7 @@ public class RecyclerBinderTest {
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(mCircularLayoutInfo)
             .componentTreeHolderFactory(mComponentTreeHolderFactory)
-            .isCircular(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().isCircular(true).build())
             .build(mComponentContext);
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
@@ -5714,7 +5714,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
             .enableStableIds(true)
-            .isCircular(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().isCircular(true).build())
             .build(parent.getContext());
 
     assertThat(recyclerBinder.getInternalAdapter().hasStableIds()).isEqualTo(false);

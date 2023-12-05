@@ -17,6 +17,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 // Dokka requires the kotlin plugin to be applied, however
 // since this module has no Kotlin, we make it conditional

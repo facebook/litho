@@ -149,6 +149,7 @@ object CollectionRecyclerSpec {
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
             .startupLogger(startupLogger)
             .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
+            .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .apply {
               with(binderConfiguration) {
                 rangeRatio(rangeRatio)
@@ -157,14 +158,12 @@ object CollectionRecyclerSpec {
                 enableStableIds(enableStableIds)
                 threadPoolConfig(threadPoolConfiguration)
                 hscrollAsyncMode(hScrollAsyncMode)
-                isCircular(isCircular)
                 hasDynamicItemHeight(hasDynamicItemHeight())
                 componentsConfiguration(componentsConfiguration)
                 isReconciliationEnabled(isReconciliationEnabled)
                 incrementalMount(isIncrementalMountEnabled)
                 isLayoutDiffingEnabled(isLayoutDiffingEnabled)
                 componentWarmer(componentWarmer)
-                lithoViewFactory(lithoViewFactory)
                 errorEventHandler(errorEventHandler)
                 if (estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
                   estimatedViewportCount(estimatedViewportCount)

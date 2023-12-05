@@ -24,12 +24,13 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.ComponentWarmer;
 import com.facebook.litho.widget.LayoutHandlerFactory;
-import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.rendercore.RunnableHandler;
 
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
+
   /**
    * Used to pass through configuration flags to the componentTree that can be read directly from
    * this componentsConfiguration instance.
@@ -38,10 +39,8 @@ public class RecyclerBinderConfiguration {
 
   private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
-  private final boolean mIsCircular;
   private final boolean mIsWrapContent;
   private final @Nullable ComponentWarmer mComponentWarmer;
-  private final @Nullable LithoViewFactory mLithoViewFactory;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -50,8 +49,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mEnableItemPrefetch;
   private final int mItemViewCacheSize;
   private final boolean mRequestMountForPrefetchedItems;
-
-  @Nullable private final LayoutThreadPoolConfiguration mThreadPoolConfiguration;
+  @Nullable private LayoutThreadPoolConfiguration mThreadPoolConfiguration;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsIncrementalMountEnabled;
@@ -60,6 +58,7 @@ public class RecyclerBinderConfiguration {
   private final int mEstimatedViewportCount;
   @Nullable private final ErrorEventHandler mErrorEventHandler;
 
+  private final RecyclerBinderConfig mRecyclerBinderConfig;
   private final boolean mShouldPreallocatePerMountContent;
 
   public static Builder create() {
@@ -71,10 +70,10 @@ public class RecyclerBinderConfiguration {
   }
 
   private RecyclerBinderConfiguration(
+      RecyclerBinderConfig recyclerBinderConfig,
       float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
       @Nullable ComponentsConfiguration componentsConfiguration,
-      boolean circular,
       boolean wrapContent,
       @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean dynamicItemHeight,
@@ -91,13 +90,11 @@ public class RecyclerBinderConfiguration {
       boolean postToFrontOfQueueForFirstChangeset,
       @Nullable ComponentWarmer componentWarmer,
       int estimatedViewportCount,
-      @Nullable LithoViewFactory lithoViewFactory,
       @Nullable ErrorEventHandler errorEventHandler,
       boolean shouldPreallocatePerMountContent) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mComponentsConfiguration = componentsConfiguration;
-    mIsCircular = circular;
     mIsWrapContent = wrapContent;
     mThreadPoolConfiguration = threadPoolConfiguration;
     mHasDynamicItemHeight = dynamicItemHeight;
@@ -111,12 +108,12 @@ public class RecyclerBinderConfiguration {
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mComponentWarmer = componentWarmer;
     mEstimatedViewportCount = estimatedViewportCount;
-    mLithoViewFactory = lithoViewFactory;
     mErrorEventHandler = errorEventHandler;
     mEnableItemPrefetch = enableItemPrefetch;
     mItemViewCacheSize = itemViewCacheSize;
     mRequestMountForPrefetchedItems = requestMountForPrefetchedItems;
     mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
+    mRecyclerBinderConfig = recyclerBinderConfig;
   }
 
   public boolean shouldPreallocatePerMountContent() {
@@ -129,10 +126,6 @@ public class RecyclerBinderConfiguration {
 
   public @Nullable LayoutHandlerFactory getLayoutHandlerFactory() {
     return mLayoutHandlerFactory;
-  }
-
-  public boolean isCircular() {
-    return mIsCircular;
   }
 
   public boolean isWrapContent() {
@@ -196,10 +189,6 @@ public class RecyclerBinderConfiguration {
     return mComponentWarmer;
   }
 
-  public @Nullable LithoViewFactory getLithoViewFactory() {
-    return mLithoViewFactory;
-  }
-
   public int getEstimatedViewportCount() {
     return mEstimatedViewportCount;
   }
@@ -212,15 +201,22 @@ public class RecyclerBinderConfiguration {
     return mComponentsConfiguration;
   }
 
+  public RecyclerBinderConfig getRecyclerBinderConfig() {
+    return mRecyclerBinderConfig;
+  }
+
   public static class Builder {
+
     static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
     public static final int UNSET = -1;
 
-    @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
+    private RecyclerBinderConfig mRecyclerBinderConfig;
+
     private @Nullable LayoutThreadPoolConfiguration mThreadPoolConfiguration;
+
+    @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     private @Nullable ComponentsConfiguration mComponentsConfiguration;
     private float mRangeRatio = DEFAULT_RANGE;
-    private boolean mCircular = false;
     private boolean mWrapContent = false;
     private boolean mDynamicItemHeight = false;
     private boolean mHScrollAsyncMode = false;
@@ -238,18 +234,16 @@ public class RecyclerBinderConfiguration {
     private boolean mPostToFrontOfQueueForFirstChangeset;
     private @Nullable ComponentWarmer mComponentWarmer;
     private int mEstimatedViewportCount = UNSET;
-    private LithoViewFactory mLithoViewFactory;
     private ErrorEventHandler mErrorEventHandler;
     private boolean mShouldPreallocatePerMountContent;
 
     Builder() {}
 
     private Builder(RecyclerBinderConfiguration configuration) {
+      mRecyclerBinderConfig = configuration.mRecyclerBinderConfig;
       this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
-      this.mThreadPoolConfiguration = configuration.mThreadPoolConfiguration;
       this.mComponentsConfiguration = configuration.mComponentsConfiguration;
       this.mRangeRatio = configuration.mRangeRatio;
-      this.mCircular = configuration.mIsCircular;
       this.mWrapContent = configuration.mIsWrapContent;
       this.mDynamicItemHeight = configuration.mHasDynamicItemHeight;
       this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
@@ -263,12 +257,22 @@ public class RecyclerBinderConfiguration {
           configuration.mPostToFrontOfQueueForFirstChangeset;
       this.mComponentWarmer = configuration.mComponentWarmer;
       this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
-      this.mLithoViewFactory = configuration.mLithoViewFactory;
       this.mErrorEventHandler = configuration.mErrorEventHandler;
       this.mEnableItemPrefetch = configuration.mEnableItemPrefetch;
       this.mItemViewCacheSize = configuration.mItemViewCacheSize;
       this.mRequestMountForPrefetchedItems = configuration.mRequestMountForPrefetchedItems;
       mShouldPreallocatePerMountContent = configuration.mShouldPreallocatePerMountContent;
+    }
+
+    /**
+     * Sets the {@link RecyclerBinderConfig} to be used by the underlying {@link RecyclerBinder}
+     *
+     * <p>This is a transitory API, and eventually it will replace both the {@link
+     * RecyclerBinderConfiguration} and {@link RecyclerBinder.Builder}
+     */
+    public Builder recyclerBinderConfig(RecyclerBinderConfig recyclerBinderConfig) {
+      mRecyclerBinderConfig = recyclerBinderConfig;
+      return this;
     }
 
     /**
@@ -302,16 +306,6 @@ public class RecyclerBinderConfiguration {
         throw new IllegalArgumentException("Range ratio cannot be negative: " + rangeRatio);
       }
       mRangeRatio = rangeRatio;
-      return this;
-    }
-
-    /**
-     * @param isCircular If true, the underlying RecyclerBinder will have a circular behaviour.
-     *     Note: circular lists DO NOT support any operation that changes the size of items like
-     *     insert, remove, insert range, remove range
-     */
-    public Builder isCircular(boolean isCircular) {
-      mCircular = isCircular;
       return this;
     }
 
@@ -418,11 +412,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder lithoViewFactory(LithoViewFactory lithoViewFactory) {
-      mLithoViewFactory = lithoViewFactory;
-      return this;
-    }
-
     public Builder errorEventHandler(@Nullable ErrorEventHandler errorEventHandler) {
       mErrorEventHandler = errorEventHandler;
       return this;
@@ -453,11 +442,15 @@ public class RecyclerBinderConfiguration {
     }
 
     public RecyclerBinderConfiguration build() {
+      RecyclerBinderConfig builderRecyclerBinderConfig = mRecyclerBinderConfig;
+
       return new RecyclerBinderConfiguration(
+          builderRecyclerBinderConfig != null
+              ? builderRecyclerBinderConfig
+              : new RecyclerBinderConfig(),
           mRangeRatio,
           mLayoutHandlerFactory,
           mComponentsConfiguration,
-          mCircular,
           mWrapContent,
           mThreadPoolConfiguration,
           mDynamicItemHeight,
@@ -474,7 +467,6 @@ public class RecyclerBinderConfiguration {
           mPostToFrontOfQueueForFirstChangeset,
           mComponentWarmer,
           mEstimatedViewportCount,
-          mLithoViewFactory,
           mErrorEventHandler,
           mShouldPreallocatePerMountContent);
     }

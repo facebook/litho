@@ -315,6 +315,7 @@ public class RecyclerCollectionComponentSpec {
 
     RecyclerBinder.Builder recyclerBinderBuilder =
         new RecyclerBinder.Builder()
+            .recyclerBinderConfig(binderConfiguration.getRecyclerBinderConfig())
             .layoutInfo(newLayoutInfo)
             .rangeRatio(binderConfiguration.getRangeRatio())
             .layoutHandlerFactory(binderConfiguration.getLayoutHandlerFactory())
@@ -322,7 +323,6 @@ public class RecyclerCollectionComponentSpec {
             .enableStableIds(binderConfiguration.getEnableStableIds())
             .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
-            .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
@@ -330,7 +330,6 @@ public class RecyclerCollectionComponentSpec {
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())
-            .lithoViewFactory(binderConfiguration.getLithoViewFactory())
             .errorEventHandler(binderConfiguration.getErrorEventHandler())
             .recyclerViewItemPrefetch(binderConfiguration.getEnableItemPrefetch())
             .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())

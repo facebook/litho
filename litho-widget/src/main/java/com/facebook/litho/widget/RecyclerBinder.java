@@ -128,8 +128,9 @@ public class RecyclerBinder
   private final LayoutInfo mLayoutInfo;
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
+
+  private final RecyclerBinderConfig mRecyclerBinderConfig;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
-  private final @Nullable LithoViewFactory mLithoViewFactory;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
   private final float mRangeRatio;
@@ -446,6 +447,7 @@ public class RecyclerBinder
 
     public static final float DEFAULT_RANGE_RATIO = 2f;
 
+    private RecyclerBinderConfig mRecyclerBinderConfig;
     private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
     private @Nullable ComponentsConfiguration componentsConfiguration;
@@ -453,8 +455,6 @@ public class RecyclerBinder
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
-    private @Nullable LithoViewFactory lithoViewFactory;
-    private boolean isCircular;
     private boolean hasDynamicItemHeight;
     private boolean wrapContent;
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
@@ -485,6 +485,17 @@ public class RecyclerBinder
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
+
+    /**
+     * Associates a {@link RecyclerBinderConfig} to the {@link RecyclerBinder} created by this
+     * builder.
+     *
+     * <p>If none is specified, it will use the default behaviors.
+     */
+    public Builder recyclerBinderConfig(RecyclerBinderConfig config) {
+      mRecyclerBinderConfig = config;
+      return this;
+    }
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -531,21 +542,6 @@ public class RecyclerBinder
      */
     public Builder layoutHandlerFactory(@Nullable LayoutHandlerFactory layoutHandlerFactory) {
       this.layoutHandlerFactory = layoutHandlerFactory;
-      return this;
-    }
-
-    public Builder lithoViewFactory(@Nullable LithoViewFactory lithoViewFactory) {
-      this.lithoViewFactory = lithoViewFactory;
-      return this;
-    }
-
-    /**
-     * Whether the underlying RecyclerBinder will have a circular behaviour. Defaults to false.
-     * Note: circular lists DO NOT support any operation that changes the size of items like insert,
-     * remove, insert range, remove range
-     */
-    public Builder isCircular(boolean isCircular) {
-      this.isCircular = isCircular;
       return this;
     }
 
@@ -816,6 +812,10 @@ public class RecyclerBinder
 
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
+      if (mRecyclerBinderConfig == null) {
+        mRecyclerBinderConfig = new RecyclerBinderConfig();
+      }
+
       componentContext = ComponentContext.makeCopyForNestedTree(c);
       if (lifecycleProvider == null) {
         lifecycleProvider = ComponentTree.getLifecycleProvider(c);
@@ -836,7 +836,7 @@ public class RecyclerBinder
       }
 
       // we cannot enable circular list and stable id at the same time
-      enableStableIds = (!isCircular && enableStableIds);
+      enableStableIds = (!mRecyclerBinderConfig.isCircular && enableStableIds);
 
       return new RecyclerBinder(this);
     }
@@ -938,6 +938,7 @@ public class RecyclerBinder
   }
 
   private RecyclerBinder(Builder builder) {
+    mRecyclerBinderConfig = builder.mRecyclerBinderConfig;
     mComponentContext = builder.componentContext;
     mParentLifecycle = builder.lifecycleProvider;
 
@@ -956,7 +957,6 @@ public class RecyclerBinder
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
-    mLithoViewFactory = builder.lithoViewFactory;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
     mRequestMountForPrefetchedItems = builder.requestMountForPrefetchedItems;
@@ -985,7 +985,7 @@ public class RecyclerBinder
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(builder.componentViewType);
 
-    mIsCircular = builder.isCircular;
+    mIsCircular = mRecyclerBinderConfig.isCircular;
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mComponentTreeMeasureListenerFactory =
@@ -3880,10 +3880,11 @@ public class RecyclerBinder
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      LithoViewFactory lithoViewFactory = mRecyclerBinderConfig.lithoViewFactory;
       final LithoView lithoView =
-          mLithoViewFactory == null
+          lithoViewFactory == null
               ? new LithoView(mComponentContext, null)
-              : mLithoViewFactory.createLithoView(mComponentContext);
+              : lithoViewFactory.createLithoView(mComponentContext);
       return new BaseViewHolder(lithoView, true);
     }
 

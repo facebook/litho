@@ -43,6 +43,7 @@ import com.facebook.litho.widget.LithoViewFactory
 import com.facebook.litho.widget.MountSpecExcludeFromIncrementalMount
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecLifecycleTesterDrawable
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -1251,7 +1252,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
     val binderConfig =
-        RecyclerBinderConfiguration.create().lithoViewFactory(lithoViewFactory).build()
+        RecyclerBinderConfiguration.create()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+            .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
     val rcc =
@@ -1321,7 +1325,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(CHILD_HEIGHT))
             .build()
     val binderConfig =
-        RecyclerBinderConfiguration.create().lithoViewFactory(lithoViewFactory).build()
+        RecyclerBinderConfiguration.create()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+            .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
     val sectionContext = SectionContext(context)
