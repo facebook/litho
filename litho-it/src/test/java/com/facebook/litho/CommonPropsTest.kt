@@ -156,6 +156,11 @@ class CommonPropsTest {
     val sendAccessibilityEventHandler: EventHandler<SendAccessibilityEventEvent> = eventHandler {}
     val sendAccessibilityEventUncheckedHandler: EventHandler<SendAccessibilityEventUncheckedEvent> =
         eventHandler {}
+    val onPerformActionForVirtualViewHandler: EventHandler<PerformActionForVirtualViewEvent> =
+        eventHandler {}
+    val onVirtualViewKeyboardFocusChangedHandler:
+        EventHandler<VirtualViewKeyboardFocusChangedEvent> =
+        eventHandler {}
     commonProps.accessibilityRole(AccessibilityRole.BUTTON)
     commonProps.accessibilityRoleDescription("Test Role Description")
     commonProps.dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler)
@@ -167,6 +172,8 @@ class CommonPropsTest {
     commonProps.performAccessibilityActionHandler(performAccessibilityActionHandler)
     commonProps.sendAccessibilityEventHandler(sendAccessibilityEventHandler)
     commonProps.sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
+    commonProps.onPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler)
+    commonProps.onVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler)
 
     val stateListAnimator = StateListAnimator()
     commonProps.stateListAnimator(stateListAnimator)
@@ -462,6 +469,11 @@ class CommonPropsTest {
         EventHandlerTestUtil.create<SendAccessibilityEventEvent>(3, content)
     val sendAccessibilityEventUncheckedHandler =
         EventHandlerTestUtil.create<SendAccessibilityEventUncheckedEvent>(3, content)
+    val onPerformActionForVirtualViewHandler =
+        EventHandlerTestUtil.create<PerformActionForVirtualViewEvent>(3, content)
+    val onVirtualViewKeyboardFocusChangedHandler =
+        EventHandlerTestUtil.create<VirtualViewKeyboardFocusChangedEvent>(3, content)
+
     commonProps.accessibilityRole(AccessibilityRole.BUTTON)
     commonProps.accessibilityRoleDescription("Test Role Description")
     commonProps.dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler)
@@ -473,6 +485,8 @@ class CommonPropsTest {
     commonProps.performAccessibilityActionHandler(performAccessibilityActionHandler)
     commonProps.sendAccessibilityEventHandler(sendAccessibilityEventHandler)
     commonProps.sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
+    commonProps.onPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler)
+    commonProps.onVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler)
 
     /*
          Copied from ViewNodeInfo class TODO: (T33421916) We need compare StateListAnimators more accurately

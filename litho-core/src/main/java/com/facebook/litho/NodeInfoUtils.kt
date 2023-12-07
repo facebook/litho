@@ -110,6 +110,14 @@ object NodeInfoUtils {
         x.sendAccessibilityEventUncheckedHandler, y.sendAccessibilityEventUncheckedHandler)) {
       return false
     }
+    if (!isEquivalentTo(
+        x.onPerformActionForVirtualViewHandler, y.onPerformActionForVirtualViewHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        x.onVirtualViewKeyboardFocusChangedHandler, y.onVirtualViewKeyboardFocusChangedHandler)) {
+      return false
+    }
     if (x.shadowElevation != y.shadowElevation) {
       return false
     }

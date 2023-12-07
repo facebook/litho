@@ -101,6 +101,12 @@ class LithoNodeTest {
     val sendAccessibilityEventHandler: EventHandler<SendAccessibilityEventEvent> = mock()
     val sendAccessibilityEventUncheckedHandler: EventHandler<SendAccessibilityEventUncheckedEvent> =
         mock()
+    val onPerformActionForVirtualViewHandler: EventHandler<PerformActionForVirtualViewEvent> =
+        mock()
+    val onVirtualViewKeyboardFocusChangedHandler:
+        EventHandler<VirtualViewKeyboardFocusChangedEvent> =
+        mock()
+
     val toBeAppliedInfo = NodeInfo()
     toBeAppliedInfo.clickHandler = clickHandler
     toBeAppliedInfo.focusChangeHandler = focusChangedHandler
@@ -130,6 +136,9 @@ class LithoNodeTest {
     toBeAppliedInfo.performAccessibilityActionHandler = performAccessibilityActionHandler
     toBeAppliedInfo.sendAccessibilityEventHandler = sendAccessibilityEventHandler
     toBeAppliedInfo.sendAccessibilityEventUncheckedHandler = sendAccessibilityEventUncheckedHandler
+    toBeAppliedInfo.onPerformActionForVirtualViewHandler = onPerformActionForVirtualViewHandler
+    toBeAppliedInfo.onVirtualViewKeyboardFocusChangedHandler =
+        onVirtualViewKeyboardFocusChangedHandler
     node.applyNodeInfo(toBeAppliedInfo)
     verify(nodeInfo).clickHandler = clickHandler
     verify(nodeInfo).focusChangeHandler = focusChangedHandler
@@ -159,6 +168,9 @@ class LithoNodeTest {
     verify(nodeInfo).performAccessibilityActionHandler = performAccessibilityActionHandler
     verify(nodeInfo).sendAccessibilityEventHandler = sendAccessibilityEventHandler
     verify(nodeInfo).sendAccessibilityEventUncheckedHandler = sendAccessibilityEventUncheckedHandler
+    verify(nodeInfo).onPerformActionForVirtualViewHandler = onPerformActionForVirtualViewHandler
+    verify(nodeInfo).onVirtualViewKeyboardFocusChangedHandler =
+        onVirtualViewKeyboardFocusChangedHandler
   }
 
   @Test

@@ -608,6 +608,21 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
   }
 
+  public void onVirtualViewKeyboardFocusChangedHandler(
+      @Nullable
+          EventHandler<VirtualViewKeyboardFocusChangedEvent>
+              onVirtualViewKeyboardFocusChangedHandler) {
+    getOrCreateNodeInfo()
+        .setOnVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler);
+  }
+
+  public void onPerformActionForVirtualViewHandler(
+      @Nullable
+          EventHandler<PerformActionForVirtualViewEvent> onPerformActionForVirtualViewHandler) {
+    getOrCreateNodeInfo()
+        .setOnPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler);
+  }
+
   public void scale(float scale) {
     getOrCreateNodeInfo().setScale(scale);
     if (scale == 1) {

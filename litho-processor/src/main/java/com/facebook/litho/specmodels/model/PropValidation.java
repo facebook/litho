@@ -155,6 +155,8 @@ public class PropValidation {
           "performAccessibilityActionHandler",
           "sendAccessibilityEventHandler",
           "sendAccessibilityEventUncheckedHandler",
+          "onPerformActionForVirtualViewHandler",
+          "onVirtualViewKeyboardFocusChangedHandler",
           "transitionKey",
           "alpha",
           "scale",
@@ -291,6 +293,16 @@ public class PropValidation {
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
                   ClassName.bestGuess("com.facebook.litho.SendAccessibilityEventUncheckedEvent"))),
+          new CommonPropModel(
+              "onPerformActionForVirtualViewHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.PerformActionForVirtualViewEvent"))),
+          new CommonPropModel(
+              "onVirtualViewKeyboardFocusChangedHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.VirtualViewKeyboardFocusChangedEvent"))),
           new CommonPropModel("transitionKey", ClassNames.STRING),
           new CommonPropModel("scale", TypeName.FLOAT),
           new CommonPropModel("alpha", TypeName.FLOAT),

@@ -26,11 +26,13 @@ import com.facebook.litho.OnPopulateAccessibilityEventEvent
 import com.facebook.litho.OnPopulateAccessibilityNodeEvent
 import com.facebook.litho.OnRequestSendAccessibilityEventEvent
 import com.facebook.litho.PerformAccessibilityActionEvent
+import com.facebook.litho.PerformActionForVirtualViewEvent
 import com.facebook.litho.SendAccessibilityEventEvent
 import com.facebook.litho.SendAccessibilityEventUncheckedEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
+import com.facebook.litho.VirtualViewKeyboardFocusChangedEvent
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
@@ -53,6 +55,8 @@ internal enum class AccessibilityField : StyleItemField {
   PERFORM_ACCESSIBILITY_ACTION,
   SEND_ACCESSIBILITY_EVENT,
   SEND_ACCESSIBILITY_EVENT_UNCHECKED,
+  ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW,
+  ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED,
 }
 
 @PublishedApi
@@ -95,6 +99,12 @@ internal data class AccessibilityStyleItem(
       AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED ->
           commonProps.sendAccessibilityEventUncheckedHandler(
               eventHandler(value as (SendAccessibilityEventUncheckedEvent) -> Unit))
+      AccessibilityField.ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW ->
+          commonProps.onPerformActionForVirtualViewHandler(
+              eventHandler(value as (PerformActionForVirtualViewEvent) -> Unit))
+      AccessibilityField.ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED ->
+          commonProps.onVirtualViewKeyboardFocusChangedHandler(
+              eventHandler(value as (VirtualViewKeyboardFocusChangedEvent) -> Unit))
     }
   }
 }
@@ -241,6 +251,35 @@ inline fun Style.onSendAccessibilityEventUnchecked(
         AccessibilityStyleItem(
             AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED,
             onSendAccessibilityEventUncheckedHandler)
+
+/**
+ * Called when a virtual view child of the host View has changed keyboard focus and gives an
+ * opportunity to the parent (the host) to react (changing visual display, etc.)
+ *
+ * See [androidx.customview.widget.ExploreByTouchHelper#onVirtualViewKeyboardFocusChanged].
+ */
+inline fun Style.onVirtualViewKeyboardFocusChanged(
+    noinline onVirtualViewKeyboardFocusChangedHandler:
+        (VirtualViewKeyboardFocusChangedEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED,
+            onVirtualViewKeyboardFocusChangedHandler)
+
+/**
+ * Performs the specified accessibility action on a virtual view child of the host View and gives an
+ * opportunity to the parent (the host) to implement the desired behavior.
+ *
+ * See [androidx.customview.widget.ExploreByTouchHelper#onPerformActionForVirtualView].
+ */
+inline fun Style.onPerformActionForVirtualView(
+    noinline onPerformActionForVirtualViewHandler: (PerformActionForVirtualViewEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW,
+            onPerformActionForVirtualViewHandler)
 
 /**
  * Initializes an [AccessibilityNodeInfoCompat] with information about the host view.

@@ -80,61 +80,64 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface AccessibilityHeadingState {}
-
   // When this flag is set, contentDescription was explicitly set on this node.
-  private static final int PFLAG_CONTENT_DESCRIPTION_IS_SET = 1 << 0;
+  private static final long PFLAG_CONTENT_DESCRIPTION_IS_SET = 1L << 0;
   // When this flag is set, viewTag was explicitly set on this node.
-  private static final int PFLAG_VIEW_TAG_IS_SET = 1 << 1;
+  private static final long PFLAG_VIEW_TAG_IS_SET = 1L << 1;
   // When this flag is set, viewTags was explicitly set on this node.
-  private static final int PFLAG_VIEW_TAGS_IS_SET = 1 << 2;
+  private static final long PFLAG_VIEW_TAGS_IS_SET = 1L << 2;
   // When this flag is set, clickHandler was explicitly set on this node.
-  private static final int PFLAG_CLICK_HANDLER_IS_SET = 1 << 3;
+  private static final long PFLAG_CLICK_HANDLER_IS_SET = 1L << 3;
   // When this flag is set, longClickHandler was explicitly set on this node.
-  private static final int PFLAG_LONG_CLICK_HANDLER_IS_SET = 1 << 4;
+  private static final long PFLAG_LONG_CLICK_HANDLER_IS_SET = 1L << 4;
   // When this flag is set, touchHandler was explicitly set on this node.
-  private static final int PFLAG_TOUCH_HANDLER_IS_SET = 1 << 5;
+  private static final long PFLAG_TOUCH_HANDLER_IS_SET = 1L << 5;
   // When this flag is set, dispatchPopulateAccessibilityEventHandler
   // was explicitly set on this node.
-  private static final int PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 6;
+  private static final long PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 6;
   // When this flag is set, onInitializeAccessibilityEventHandler was explicitly set on this node.
-  private static final int PFLAG_ON_INITIALIZE_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 7;
+  private static final long PFLAG_ON_INITIALIZE_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1L << 7;
   // When this flag is set, onInitializeAccessibilityNodeInfo was explicitly set on this node.
-  private static final int PFLAG_ON_INITIALIZE_ACCESSIBILITY_NODE_INFO_HANDLER_IS_SET = 1 << 8;
+  private static final long PFLAG_ON_INITIALIZE_ACCESSIBILITY_NODE_INFO_HANDLER_IS_SET = 1L << 8;
   // When this flag is set, onPopulateAccessibilityEventHandler was explicitly set on this node
-  private static final int PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 9;
+  private static final long PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1L << 9;
   // When this flag is set, onRequestSendAccessibilityEventHandler was explicitly set on this node.
-  private static final int PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 10;
+  private static final long PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1L << 10;
   // When this flag is set, performAccessibilityActionHandler was explicitly set on this node.
-  private static final int PFLAG_PERFORM_ACCESSIBILITY_ACTION_HANDLER_IS_SET = 1 << 11;
+  private static final long PFLAG_PERFORM_ACCESSIBILITY_ACTION_HANDLER_IS_SET = 1L << 11;
   // When this flag is set, sendAccessibilityEventHandler was explicitly set on this node.
-  private static final int PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 12;
+  private static final long PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1L << 12;
   // When this flag is set, sendAccessibilityEventUncheckedHandler was explicitly set on this node.
-  private static final int PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET = 1 << 13;
+  private static final long PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET = 1L << 13;
   // When this flag is set, shadowElevation was explicitly set on this node.
-  private static final int PFLAG_SHADOW_ELEVATION_IS_SET = 1 << 14;
+  private static final long PFLAG_SHADOW_ELEVATION_IS_SET = 1L << 14;
   // When this flag is set, outlineProvider was explicitly set on this node.
-  private static final int PFLAG_OUTINE_PROVIDER_IS_SET = 1 << 15;
+  private static final long PFLAG_OUTINE_PROVIDER_IS_SET = 1L << 15;
   // When this flag is set, clipToOutline was explicitly set on this node.
-  private static final int PFLAG_CLIP_TO_OUTLINE_IS_SET = 1 << 16;
+  private static final long PFLAG_CLIP_TO_OUTLINE_IS_SET = 1L << 16;
   // When this flag is set, focusChangeHandler was explicitly set on this code.
-  private static final int PFLAG_FOCUS_CHANGE_HANDLER_IS_SET = 1 << 17;
+  private static final long PFLAG_FOCUS_CHANGE_HANDLER_IS_SET = 1L << 17;
   // When this flag is set, interceptTouchHandler was explicitly set on this node.
-  private static final int PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1 << 18;
-  private static final int PFLAG_SCALE_IS_SET = 1 << 19;
-  private static final int PFLAG_ALPHA_IS_SET = 1 << 20;
-  private static final int PFLAG_ROTATION_IS_SET = 1 << 21;
-  private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 22;
+  private static final long PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1L << 18;
+  private static final long PFLAG_SCALE_IS_SET = 1L << 19;
+  private static final long PFLAG_ALPHA_IS_SET = 1L << 20;
+  private static final long PFLAG_ROTATION_IS_SET = 1L << 21;
+  private static final long PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1L << 22;
   // When this flag is set, clipChildren was explicitly set on this node.
-  private static final int PFLAG_CLIP_CHILDREN_IS_SET = 1 << 23;
-  private static final int PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET = 1 << 24;
-  private static final int PFLAG_ROTATION_X_IS_SET = 1 << 25;
-  private static final int PFLAG_ROTATION_Y_IS_SET = 1 << 26;
-  private static final int PFLAG_AMBIENT_SHADOW_COLOR_IS_SET = 1 << 27;
-  private static final int PFLAG_SPOT_SHADOW_COLOR_IS_SET = 1 << 28;
+  private static final long PFLAG_CLIP_CHILDREN_IS_SET = 1L << 23;
+  private static final long PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET = 1L << 24;
+  private static final long PFLAG_ROTATION_X_IS_SET = 1L << 25;
+  private static final long PFLAG_ROTATION_Y_IS_SET = 1L << 26;
+  private static final long PFLAG_AMBIENT_SHADOW_COLOR_IS_SET = 1L << 27;
+  private static final long PFLAG_SPOT_SHADOW_COLOR_IS_SET = 1L << 28;
   // When this flag is set, onPopulateAccessibilityNodeHandler was explicitly set on this node
-  private static final int PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET = 1 << 29;
+  private static final long PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET = 1L << 29;
   // When this flag is set, view id was explicitly set on this node
-  private static final int PFLAG_VIEW_ID_IS_SET = 1 << 30;
+  private static final long PFLAG_VIEW_ID_IS_SET = 1L << 30;
+  // When this flag is set, onVirtualViewKeyboardFocusChangedHandler was explicitly set on this node
+  private static final long PFLAG_ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED_HANDLER_IS_SET = 1L << 31;
+  // When this flag is set, onPerformActionForVirtualViewHandler was explicitly set on this node
+  private static final long PFLAG_ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW_HANDLER_IS_SET = 1L << 32;
 
   private @Nullable CharSequence mContentDescription;
   private int mViewId = View.NO_ID;
@@ -168,6 +171,10 @@ public class NodeInfo implements Equivalence<NodeInfo> {
       mOnPopulateAccessibilityEventHandler;
   private @Nullable EventHandler<OnPopulateAccessibilityNodeEvent>
       mOnPopulateAccessibilityNodeHandler;
+  private @Nullable EventHandler<VirtualViewKeyboardFocusChangedEvent>
+      mOnVirtualViewKeyboardFocusChangedHandler;
+  private @Nullable EventHandler<PerformActionForVirtualViewEvent>
+      mOnPerformActionForVirtualViewHandler;
   private @Nullable EventHandler<OnInitializeAccessibilityNodeInfoEvent>
       mOnInitializeAccessibilityNodeInfoHandler;
   private @Nullable EventHandler<OnRequestSendAccessibilityEventEvent>
@@ -183,7 +190,7 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   private @SelectedState int mSelectedState = SELECTED_UNSET;
   private @AccessibilityHeadingState int mAccessibilityHeadingState = ACCESSIBILITY_HEADING_UNSET;
 
-  private int mPrivateFlags;
+  private long mPrivateFlags;
 
   public void setContentDescription(@Nullable CharSequence contentDescription) {
     mPrivateFlags |= PFLAG_CONTENT_DESCRIPTION_IS_SET;
@@ -427,6 +434,31 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     return mOnPopulateAccessibilityNodeHandler;
   }
 
+  public void setOnVirtualViewKeyboardFocusChangedHandler(
+      @Nullable
+          EventHandler<VirtualViewKeyboardFocusChangedEvent>
+              onVirtualViewKeyboardFocusChangedHandler) {
+    mPrivateFlags |= PFLAG_ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED_HANDLER_IS_SET;
+    mOnVirtualViewKeyboardFocusChangedHandler = onVirtualViewKeyboardFocusChangedHandler;
+  }
+
+  public @Nullable EventHandler<VirtualViewKeyboardFocusChangedEvent>
+      getOnVirtualViewKeyboardFocusChangedHandler() {
+    return mOnVirtualViewKeyboardFocusChangedHandler;
+  }
+
+  public void setOnPerformActionForVirtualViewHandler(
+      @Nullable
+          EventHandler<PerformActionForVirtualViewEvent> onPerformActionForVirtualViewHandler) {
+    mPrivateFlags |= PFLAG_ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW_HANDLER_IS_SET;
+    mOnPerformActionForVirtualViewHandler = onPerformActionForVirtualViewHandler;
+  }
+
+  public @Nullable EventHandler<PerformActionForVirtualViewEvent>
+      getOnPerformActionForVirtualViewHandler() {
+    return mOnPerformActionForVirtualViewHandler;
+  }
+
   public void setOnRequestSendAccessibilityEventHandler(
       @Nullable
           EventHandler<OnRequestSendAccessibilityEventEvent>
@@ -479,6 +511,8 @@ public class NodeInfo implements Equivalence<NodeInfo> {
         || mOnInitializeAccessibilityNodeInfoHandler != null
         || mOnPopulateAccessibilityEventHandler != null
         || mOnPopulateAccessibilityNodeHandler != null
+        || mOnVirtualViewKeyboardFocusChangedHandler != null
+        || mOnPerformActionForVirtualViewHandler != null
         || mOnRequestSendAccessibilityEventHandler != null
         || mPerformAccessibilityActionHandler != null
         || mDispatchPopulateAccessibilityEventHandler != null
@@ -674,6 +708,12 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     if ((mPrivateFlags & PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET) != 0) {
       target.setOnPopulateAccessibilityNodeHandler(mOnPopulateAccessibilityNodeHandler);
     }
+    if ((mPrivateFlags & PFLAG_ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED_HANDLER_IS_SET) != 0) {
+      target.setOnVirtualViewKeyboardFocusChangedHandler(mOnVirtualViewKeyboardFocusChangedHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW_HANDLER_IS_SET) != 0) {
+      target.setOnPerformActionForVirtualViewHandler(mOnPerformActionForVirtualViewHandler);
+    }
     if ((mPrivateFlags & PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       target.setOnRequestSendAccessibilityEventHandler(mOnRequestSendAccessibilityEventHandler);
     }
@@ -834,7 +874,7 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     }
   }
 
-  public int getFlags() {
+  public long getFlags() {
     return mPrivateFlags;
   }
 }

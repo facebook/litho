@@ -1890,6 +1890,25 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
+    public T onPerformActionForVirtualViewHandler(
+        @Nullable
+            EventHandler<PerformActionForVirtualViewEvent> onPerformActionForVirtualViewHandler) {
+      mComponent
+          .getOrCreateCommonProps()
+          .onPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler);
+      return getThis();
+    }
+
+    public T onVirtualViewKeyboardFocusChangedHandler(
+        @Nullable
+            EventHandler<VirtualViewKeyboardFocusChangedEvent>
+                onVirtualViewKeyboardFocusChangedHandler) {
+      mComponent
+          .getOrCreateCommonProps()
+          .onVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler);
+      return getThis();
+    }
+
     public T shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }

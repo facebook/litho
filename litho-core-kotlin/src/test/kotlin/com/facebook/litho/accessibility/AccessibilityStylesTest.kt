@@ -27,6 +27,7 @@ import com.facebook.litho.OnPopulateAccessibilityEventEvent
 import com.facebook.litho.OnPopulateAccessibilityNodeEvent
 import com.facebook.litho.OnRequestSendAccessibilityEventEvent
 import com.facebook.litho.PerformAccessibilityActionEvent
+import com.facebook.litho.PerformActionForVirtualViewEvent
 import com.facebook.litho.Row
 import com.facebook.litho.SendAccessibilityEventEvent
 import com.facebook.litho.SendAccessibilityEventUncheckedEvent
@@ -324,6 +325,62 @@ class AccessibilityStylesTest {
     val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.sendAccessibilityEventUncheckedHandler).isNotNull
+  }
+
+  @Test
+  fun performActionForVirtualView_whenNotSet_isNotSetOnView() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.width(200.px))
+      }
+    }
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onPerformActionForVirtualViewHandler).isNull()
+  }
+
+  @Test
+  fun performActionForVirtualView_whenSet_isSetOnView() {
+    val eventHandler: EventHandler<PerformActionForVirtualViewEvent> = mock()
+
+    class TestComponentWithHandler : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.onPerformActionForVirtualView { eventHandler })
+      }
+    }
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onPerformActionForVirtualViewHandler).isNotNull
+  }
+
+  @Test
+  fun virtualViewKeyboardFocusChanged_whenNotSet_isNotSetOnView() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.width(200.px))
+      }
+    }
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onVirtualViewKeyboardFocusChangedHandler).isNull()
+  }
+
+  @Test
+  fun virtualViewKeyboardFocusChanged_whenSet_isSetOnView() {
+    val eventHandler: EventHandler<PerformActionForVirtualViewEvent> = mock()
+
+    class TestComponentWithHandler : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.onVirtualViewKeyboardFocusChanged { eventHandler })
+      }
+    }
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onVirtualViewKeyboardFocusChangedHandler).isNotNull
   }
 
   @Test

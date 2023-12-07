@@ -329,6 +329,11 @@ class LayoutStateCreateTreeTest {
     val sendAccessibilityEventHandler: EventHandler<SendAccessibilityEventEvent> = mock()
     val sendAccessibilityEventUncheckedHandler: EventHandler<SendAccessibilityEventUncheckedEvent> =
         mock()
+    val onPerformActionForVirtualViewHandler: EventHandler<PerformActionForVirtualViewEvent> =
+        mock()
+    val onVirtualViewKeyboardFocusChangedHandler:
+        EventHandler<VirtualViewKeyboardFocusChangedEvent> =
+        mock()
     val stateListAnimator = mock<StateListAnimator>()
     val component: Component =
         TestDrawableComponentWithMockInternalNode.create(componentContext)
@@ -418,6 +423,8 @@ class LayoutStateCreateTreeTest {
             .performAccessibilityActionHandler(performAccessibilityActionHandler)
             .sendAccessibilityEventHandler(sendAccessibilityEventHandler)
             .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
+            .onPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler)
+            .onVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler)
             .stateListAnimator(stateListAnimator)
             .build()
     val node = Resolver.resolve(resolveContext, componentContext, component)

@@ -137,6 +137,37 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     }
   }
 
+  private void dispatchOnVirtualViewKeyboardFocusChangedEvent(
+      View host, @Nullable AccessibilityNodeInfoCompat node, int virtualViewId, boolean hasFocus) {
+    if (mNodeInfo != null && mNodeInfo.getOnVirtualViewKeyboardFocusChangedHandler() != null) {
+      EventDispatcherUtils.dispatchVirtualViewKeyboardFocusChanged(
+          mNodeInfo.getOnVirtualViewKeyboardFocusChangedHandler(),
+          host,
+          node,
+          virtualViewId,
+          hasFocus,
+          mSuperDelegate);
+    }
+  }
+
+  private boolean dispatchOnPerformActionForVirtualViewEvent(
+      View host,
+      AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      int action,
+      @Nullable Bundle arguments) {
+    if (mNodeInfo != null && mNodeInfo.getOnPerformActionForVirtualViewHandler() != null) {
+      return EventDispatcherUtils.dispatchPerformActionForVirtualView(
+          mNodeInfo.getOnPerformActionForVirtualViewHandler(),
+          host,
+          node,
+          virtualViewId,
+          action,
+          arguments);
+    }
+    return false;
+  }
+
   @Override
   protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {
     final MountItem mountItem = getAccessibleMountItem(mView);
@@ -273,6 +304,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
     if (!(renderUnit.getComponent() instanceof SpecGeneratedComponent)) {
+      dispatchOnVirtualViewKeyboardFocusChangedEvent(mView, node, virtualViewId, hasFocus);
       return;
     }
     final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
@@ -326,7 +358,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
     if (!(renderUnit.getComponent() instanceof SpecGeneratedComponent)) {
-      return false;
+      return dispatchOnPerformActionForVirtualViewEvent(
+          mView, node, virtualViewId, action, arguments);
     }
     final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
     final ComponentContext scopedContext = getComponentContext(mountItem);

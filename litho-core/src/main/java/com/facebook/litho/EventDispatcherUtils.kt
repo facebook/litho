@@ -226,4 +226,34 @@ internal object EventDispatcherUtils {
     sendAccessibilityEventUncheckedEvent.superDelegate = superDelegate
     eventHandler.dispatchEvent(sendAccessibilityEventUncheckedEvent)
   }
+
+  @JvmStatic
+  fun dispatchVirtualViewKeyboardFocusChanged(
+      eventHandler: EventHandler<VirtualViewKeyboardFocusChangedEvent>,
+      host: View,
+      nodeInfo: AccessibilityNodeInfoCompat?,
+      virtualViewId: Int,
+      hasFocus: Boolean,
+      superDelegate: AccessibilityDelegateCompat
+  ) {
+    ThreadUtils.assertMainThread()
+    val event =
+        VirtualViewKeyboardFocusChangedEvent(host, nodeInfo, virtualViewId, hasFocus, superDelegate)
+    eventHandler.dispatchEvent(event)
+  }
+
+  @JvmStatic
+  fun dispatchPerformActionForVirtualView(
+      eventHandler: EventHandler<PerformActionForVirtualViewEvent>,
+      host: View,
+      nodeInfo: AccessibilityNodeInfoCompat,
+      virtualViewId: Int,
+      action: Int,
+      arguments: Bundle?
+  ): Boolean {
+    ThreadUtils.assertMainThread()
+    val event = PerformActionForVirtualViewEvent(host, nodeInfo, virtualViewId, action, arguments)
+    val returnValue = eventHandler.dispatchEvent(event)
+    return returnValue is Boolean && returnValue
+  }
 }

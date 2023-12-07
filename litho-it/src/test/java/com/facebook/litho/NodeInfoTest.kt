@@ -195,6 +195,24 @@ class NodeInfoTest {
   }
 
   @Test
+  fun testOnPerformActionForVirtualViewHandler() {
+    val handler = EventHandlerTestUtil.create<PerformActionForVirtualViewEvent>(1, null)
+    nodeInfo.onPerformActionForVirtualViewHandler = handler
+    assertThat(handler).isSameAs(nodeInfo.onPerformActionForVirtualViewHandler)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(handler).isSameAs(updatedNodeInfo.onPerformActionForVirtualViewHandler)
+  }
+
+  @Test
+  fun testOnVirtualViewKeyboardFocusChangedHandler() {
+    val handler = EventHandlerTestUtil.create<VirtualViewKeyboardFocusChangedEvent>(1, null)
+    nodeInfo.onVirtualViewKeyboardFocusChangedHandler = handler
+    assertThat(handler).isSameAs(nodeInfo.onVirtualViewKeyboardFocusChangedHandler)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(handler).isSameAs(updatedNodeInfo.onVirtualViewKeyboardFocusChangedHandler)
+  }
+
+  @Test
   fun testClickHandlerFlag() {
     nodeInfo.clickHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_CLICK_HANDLER_IS_SET")
