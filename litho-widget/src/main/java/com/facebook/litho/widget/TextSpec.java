@@ -1071,10 +1071,9 @@ public class TextSpec {
       int virtualViewId,
       boolean hasFocus,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
-    if (clickableSpans[virtualViewId] instanceof AccessibleClickableSpan) {
-      synchronized (clickableSpans) {
-        ((AccessibleClickableSpan) clickableSpans[virtualViewId]).setKeyboardFocused(hasFocus);
-      }
+    final ClickableSpan span = clickableSpans[virtualViewId];
+    if (span instanceof AccessibleClickableSpan) {
+      ((AccessibleClickableSpan) span).setKeyboardFocused(hasFocus);
       // force redraw when focus changes, so that any visual changes get applied.
       host.invalidate();
     }
