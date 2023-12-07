@@ -51,6 +51,7 @@ object LithoDebugEvent {
   const val Layout = "Litho.ComponentTree.Layout"
   const val ComponentTreeResolveResumed = "Litho.ComponentTree.Resolve.Resumed"
   const val ComponentTreeMountContentPreallocated = "Litho.ComponentTree.MountContent.Preallocated"
+  const val DebugInfo = "Litho.DebugInfo" // used to report debug events upstream
 }
 
 object LithoDebugEventAttributes {
@@ -70,4 +71,5 @@ object LithoDebugEventAttributes {
   const val Forced = "forced"
   const val Component = "component"
   const val Stack = "stack"
+  const val Cause = "cause"
 }
