@@ -75,7 +75,14 @@ data class RecyclerBinderConfig(
      * LayoutManager to reuse those views unmodified without needing to return to the adapter to
      * rebind them.
      */
-    @JvmField val itemViewCacheSize: Int = 0
+    @JvmField val itemViewCacheSize: Int = 0,
+    /**
+     * Set pool for pre-computing and storing [ComponentTree], which can be used to pre-compute and
+     * store ComponentTrees before they are inserted in a [RecyclerBinder].
+     *
+     * @see [ComponentWarmer]
+     */
+    @JvmField val componentWarmer: ComponentWarmer? = null
 ) {
 
   companion object {
@@ -108,6 +115,8 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var isCircular = configuration.isCircular
   private var hScrollAsyncMode = configuration.hScrollAsyncMode
   private var lithoViewFactory = configuration.lithoViewFactory
+  private var componentWarmer = configuration.componentWarmer
+
   private var requestMountForPrefetchedItems = configuration.requestMountForPrefetchedItems
   private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
   private var itemViewCacheSize = configuration.itemViewCacheSize
@@ -130,6 +139,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
 
   fun itemViewCacheSize(size: Int) = also { itemViewCacheSize = size }
 
+  fun componentWarmer(componentWarmer: ComponentWarmer?) = also {
+    this.componentWarmer = componentWarmer
+  }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         isCircular = isCircular,
@@ -137,6 +150,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         hScrollAsyncMode = hScrollAsyncMode,
         requestMountForPrefetchedItems = requestMountForPrefetchedItems,
         recyclerViewItemPrefetch = recyclerViewItemPrefetch,
-        itemViewCacheSize = itemViewCacheSize)
+        itemViewCacheSize = itemViewCacheSize,
+        componentWarmer = componentWarmer)
   }
 }

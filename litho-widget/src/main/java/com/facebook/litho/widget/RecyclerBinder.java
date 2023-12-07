@@ -477,7 +477,6 @@ public class RecyclerBinder
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private @Nullable RunnableHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
-    private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;
     private RunnableHandler mAsyncInsertLayoutHandler;
     private boolean visibilityProcessing = true;
@@ -720,11 +719,6 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder componentWarmer(@Nullable ComponentWarmer componentWarmer) {
-      mComponentWarmer = componentWarmer;
-      return this;
-    }
-
     public Builder startupLogger(@Nullable LithoStartupLogger logger) {
       startupLogger = logger;
       return this;
@@ -964,7 +958,7 @@ public class RecyclerBinder
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
-    mComponentWarmer = builder.mComponentWarmer;
+    mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
     mStartupLogger = builder.startupLogger;
     mErrorEventHandler = builder.errorEventHandler;
     mRecyclingStrategy = builder.recyclingStrategy;

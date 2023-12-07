@@ -328,7 +328,6 @@ public class RecyclerCollectionComponentSpec {
             .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
-            .componentWarmer(binderConfiguration.getComponentWarmer())
             .errorEventHandler(binderConfiguration.getErrorEventHandler())
             .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
             .startupLogger(startupLogger);

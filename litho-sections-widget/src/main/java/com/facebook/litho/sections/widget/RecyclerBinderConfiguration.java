@@ -22,7 +22,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
-import com.facebook.litho.widget.ComponentWarmer;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinderConfig;
@@ -40,7 +39,6 @@ public class RecyclerBinderConfiguration {
   private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsWrapContent;
-  private final @Nullable ComponentWarmer mComponentWarmer;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -80,7 +78,6 @@ public class RecyclerBinderConfiguration {
       boolean isIncrementalMountEnabled,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
-      @Nullable ComponentWarmer componentWarmer,
       int estimatedViewportCount,
       @Nullable ErrorEventHandler errorEventHandler,
       boolean shouldPreallocatePerMountContent) {
@@ -97,7 +94,6 @@ public class RecyclerBinderConfiguration {
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
-    mComponentWarmer = componentWarmer;
     mEstimatedViewportCount = estimatedViewportCount;
     mErrorEventHandler = errorEventHandler;
     mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
@@ -157,10 +153,6 @@ public class RecyclerBinderConfiguration {
     return mPostToFrontOfQueueForFirstChangeset;
   }
 
-  public @Nullable ComponentWarmer getComponentWarmer() {
-    return mComponentWarmer;
-  }
-
   public int getEstimatedViewportCount() {
     return mEstimatedViewportCount;
   }
@@ -200,7 +192,6 @@ public class RecyclerBinderConfiguration {
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
-    private @Nullable ComponentWarmer mComponentWarmer;
     private int mEstimatedViewportCount = UNSET;
     private ErrorEventHandler mErrorEventHandler;
     private boolean mShouldPreallocatePerMountContent;
@@ -222,7 +213,6 @@ public class RecyclerBinderConfiguration {
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
-      this.mComponentWarmer = configuration.mComponentWarmer;
       this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
       this.mErrorEventHandler = configuration.mErrorEventHandler;
       mShouldPreallocatePerMountContent = configuration.mShouldPreallocatePerMountContent;
@@ -341,11 +331,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder componentWarmer(ComponentWarmer componentWarmer) {
-      mComponentWarmer = componentWarmer;
-      return this;
-    }
-
     public Builder errorEventHandler(@Nullable ErrorEventHandler errorEventHandler) {
       mErrorEventHandler = errorEventHandler;
       return this;
@@ -395,7 +380,6 @@ public class RecyclerBinderConfiguration {
           mIsIncrementalMountEnabled,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,
-          mComponentWarmer,
           mEstimatedViewportCount,
           mErrorEventHandler,
           mShouldPreallocatePerMountContent);

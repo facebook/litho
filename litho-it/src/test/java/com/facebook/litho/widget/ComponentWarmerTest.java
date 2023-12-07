@@ -296,7 +296,10 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer();
     assertThat(warmer.isReady()).isFalse();
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.isReady()).isFalse();
 
@@ -383,7 +386,10 @@ public class ComponentWarmerTest {
     warmer.prepare("tag1", renderInfo1, null);
     warmer.prepare("tag2", renderInfo2, null);
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.getPending().size()).isEqualTo(2);
     assertThat(warmer.getCache().get("tag1")).isNull();
@@ -433,7 +439,10 @@ public class ComponentWarmerTest {
     warmer.prepare("tag1", renderInfo1, null, lithoHandler);
     warmer.prepare("tag2", renderInfo2, null, lithoHandler);
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.getPending().size()).isEqualTo(2);
     assertThat(warmer.getCache().get("tag1")).isNull();
@@ -479,7 +488,10 @@ public class ComponentWarmerTest {
     warmer.prepareAsync("tag1", renderInfo1);
     warmer.prepareAsync("tag2", renderInfo2);
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.getPending().size()).isEqualTo(2);
     assertThat(warmer.getCache().get("tag1")).isNull();
@@ -521,7 +533,9 @@ public class ComponentWarmerTest {
     assertThat(testComponentPrepare.ranLayout.get()).isTrue();
 
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     final TestComponent testComponentInsert = new TestComponent("t2");
     final ComponentRenderInfo renderInfoInsert =

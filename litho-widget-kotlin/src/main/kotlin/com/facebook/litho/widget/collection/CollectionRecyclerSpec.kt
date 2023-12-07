@@ -162,7 +162,6 @@ object CollectionRecyclerSpec {
                 isReconciliationEnabled(isReconciliationEnabled)
                 incrementalMount(isIncrementalMountEnabled)
                 isLayoutDiffingEnabled(isLayoutDiffingEnabled)
-                componentWarmer(componentWarmer)
                 errorEventHandler(errorEventHandler)
                 if (estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
                   estimatedViewportCount(estimatedViewportCount)

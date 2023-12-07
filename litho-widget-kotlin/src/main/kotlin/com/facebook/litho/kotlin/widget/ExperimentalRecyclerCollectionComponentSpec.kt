@@ -306,7 +306,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .componentsConfiguration(binderConfiguration.componentsConfiguration)
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
-            .componentWarmer(binderConfiguration.componentWarmer)
             .errorEventHandler(binderConfiguration.errorEventHandler)
             .startupLogger(startupLogger)
     if (binderConfiguration.estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
