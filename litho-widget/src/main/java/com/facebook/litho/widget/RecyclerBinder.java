@@ -482,9 +482,6 @@ public class RecyclerBinder
     private RunnableHandler mAsyncInsertLayoutHandler;
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
-    private boolean recyclerViewItemPrefetch = false;
-    private boolean requestMountForPrefetchedItems = false;
-    private int itemViewCacheSize = 0;
     private @RecyclingStrategy int recyclingStrategy =
         ComponentsConfiguration.recyclerBinderStrategy;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
@@ -578,51 +575,6 @@ public class RecyclerBinder
 
     public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
       this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
-      return this;
-    }
-
-    /**
-     * Set whether item prefetch should be enabled on the underlying RecyclerView.LayoutManager.
-     * Defaults to false.
-     *
-     * <p>ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
-     * optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
-     * LithoView while it is still on screen making it render blank or zero height.
-     *
-     * <p>As ItemPrefetching is built on top of item view cache, please do remember to set a proper
-     * cache size if you want to enable this feature. Otherwise, prefetched item will be thrown into
-     * the recycler pool immediately. See {@link RecyclerBinder.Builder#setItemViewCacheSize(int)}.
-     */
-    public Builder recyclerViewItemPrefetch(boolean recyclerViewItemPrefetch) {
-      this.recyclerViewItemPrefetch = recyclerViewItemPrefetch;
-      return this;
-    }
-
-    /**
-     * Set the number of offscreen views to retain before adding them to the potentially shared
-     * recycled view pool.
-     *
-     * <p>The offscreen view cache stays aware of changes in the attached adapter, allowing a
-     * LayoutManager to reuse those views unmodified without needing to return to the adapter to
-     * rebind them.
-     *
-     * @param size Number of views to cache offscreen before returning them to the general recycled
-     *     view pool
-     */
-    public Builder setItemViewCacheSize(int size) {
-      // We had some issues with `ItemViewCache` before and disabled it in the
-      // [SectionsRecyclerView], but we need this feature to pre-bind offscreen items for
-      // full-screen size surfaces.
-      this.itemViewCacheSize = size;
-      return this;
-    }
-
-    /**
-     * Enable pre-mounting for pre-fetched items, which requires to turn on RecyclerView's item
-     * prefetching first. See {@link Builder#recyclerViewItemPrefetch(boolean) }.
-     */
-    public Builder requestMountForPrefetchedItems(boolean isEnabled) {
-      this.requestMountForPrefetchedItems = isEnabled;
       return this;
     }
 
@@ -941,9 +893,9 @@ public class RecyclerBinder
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
-    mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
-    mRequestMountForPrefetchedItems = builder.requestMountForPrefetchedItems;
-    mItemViewCacheSize = builder.itemViewCacheSize;
+    mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
+    mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
+    mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
     mComponentsConfiguration = builder.componentsConfiguration;
 
     if (mLayoutHandlerFactory == null) {

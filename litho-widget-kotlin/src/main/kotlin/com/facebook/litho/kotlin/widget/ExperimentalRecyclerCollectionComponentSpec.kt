@@ -308,7 +308,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
             .componentWarmer(binderConfiguration.componentWarmer)
             .errorEventHandler(binderConfiguration.errorEventHandler)
-            .recyclerViewItemPrefetch(binderConfiguration.enableItemPrefetch)
             .startupLogger(startupLogger)
     if (binderConfiguration.estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
       recyclerBinderBuilder.estimatedViewportCount(binderConfiguration.estimatedViewportCount)

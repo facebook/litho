@@ -46,7 +46,36 @@ data class RecyclerBinderConfig(
      * insertions will be treated with LAYOUT_BEFORE_INSERT policy to ensure those layouts also do
      * not happen on the main thread.
      */
-    @JvmField val hScrollAsyncMode: Boolean = false
+    @JvmField val hScrollAsyncMode: Boolean = false,
+    /**
+     * Enable pre-mounting for pre-fetched items, which requires to turn on RecyclerView's item
+     * prefetching first.
+     *
+     * @see recyclerViewItemPrefetch
+     */
+    @JvmField val requestMountForPrefetchedItems: Boolean = false,
+    /**
+     * Set whether item prefetch should be enabled on the underlying RecyclerView.LayoutManager.
+     * Defaults to false.
+     *
+     * <p>ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
+     * optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
+     * LithoView while it is still on screen making it render blank or zero height.
+     *
+     * <p>As ItemPrefetching is built on top of item view cache, please do remember to set a proper
+     * cache size if you want to enable this feature. Otherwise, prefetched item will be thrown into
+     * the recycler pool immediately. See [RecyclerBinder.Builder#setItemViewCacheSize]¬
+     */
+    @JvmField val recyclerViewItemPrefetch: Boolean = false,
+    /**
+     * Set the number of offscreen views to retain before adding them to the potentially shared
+     * recycled view pool.
+     *
+     * <p>The offscreen view cache stays aware of changes in the attached adapter, allowing a
+     * LayoutManager to reuse those views unmodified without needing to return to the adapter to
+     * rebind them.
+     */
+    @JvmField val itemViewCacheSize: Int = 0
 ) {
 
   companion object {
@@ -79,6 +108,9 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var isCircular = configuration.isCircular
   private var hScrollAsyncMode = configuration.hScrollAsyncMode
   private var lithoViewFactory = configuration.lithoViewFactory
+  private var requestMountForPrefetchedItems = configuration.requestMountForPrefetchedItems
+  private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
+  private var itemViewCacheSize = configuration.itemViewCacheSize
 
   fun isCircular(isCircular: Boolean) = also { this.isCircular = isCircular }
 
@@ -90,10 +122,21 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.hScrollAsyncMode = hScrollAsyncMode
   }
 
+  fun requestMountForPrefetchedItems(requestMountForPrefetchedItems: Boolean) = also {
+    this.requestMountForPrefetchedItems = requestMountForPrefetchedItems
+  }
+
+  fun itemViewPrefetch(enabled: Boolean) = also { recyclerViewItemPrefetch = enabled }
+
+  fun itemViewCacheSize(size: Int) = also { itemViewCacheSize = size }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         isCircular = isCircular,
         lithoViewFactory = lithoViewFactory,
-        hScrollAsyncMode = hScrollAsyncMode)
+        hScrollAsyncMode = hScrollAsyncMode,
+        requestMountForPrefetchedItems = requestMountForPrefetchedItems,
+        recyclerViewItemPrefetch = recyclerViewItemPrefetch,
+        itemViewCacheSize = itemViewCacheSize)
   }
 }

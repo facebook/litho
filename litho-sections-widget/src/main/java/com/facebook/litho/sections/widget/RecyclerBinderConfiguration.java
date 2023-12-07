@@ -45,9 +45,6 @@ public class RecyclerBinderConfiguration {
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mEnableStableIds;
-  private final boolean mEnableItemPrefetch;
-  private final int mItemViewCacheSize;
-  private final boolean mRequestMountForPrefetchedItems;
   @Nullable private LayoutThreadPoolConfiguration mThreadPoolConfiguration;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsReconciliationEnabled;
@@ -78,9 +75,6 @@ public class RecyclerBinderConfiguration {
       boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
       boolean enableStableIds,
-      boolean enableItemPrefetch,
-      int itemViewCacheSize,
-      boolean requestMountForPrefetchedItems,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isReconciliationEnabled,
       boolean isIncrementalMountEnabled,
@@ -106,9 +100,6 @@ public class RecyclerBinderConfiguration {
     mComponentWarmer = componentWarmer;
     mEstimatedViewportCount = estimatedViewportCount;
     mErrorEventHandler = errorEventHandler;
-    mEnableItemPrefetch = enableItemPrefetch;
-    mItemViewCacheSize = itemViewCacheSize;
-    mRequestMountForPrefetchedItems = requestMountForPrefetchedItems;
     mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
     mRecyclerBinderConfig = recyclerBinderConfig;
   }
@@ -144,18 +135,6 @@ public class RecyclerBinderConfiguration {
 
   public boolean getEnableStableIds() {
     return mEnableStableIds;
-  }
-
-  public boolean getEnableItemPrefetch() {
-    return mEnableItemPrefetch;
-  }
-
-  public int getItemViewCacheSize() {
-    return mItemViewCacheSize;
-  }
-
-  public boolean getRequestMountForPrefetchedItems() {
-    return mRequestMountForPrefetchedItems;
   }
 
   public @Nullable RunnableHandler getChangeSetThreadHandler() {
@@ -214,9 +193,6 @@ public class RecyclerBinderConfiguration {
     private boolean mDynamicItemHeight = false;
     private boolean mEnableStableIds =
         ComponentsConfiguration.defaultRecyclerBinderConfigUseStableId;
-    private boolean mEnableItemPrefetch = false;
-    private int mItemViewCacheSize = 0;
-    private boolean mRequestMountForPrefetchedItems = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
@@ -249,9 +225,6 @@ public class RecyclerBinderConfiguration {
       this.mComponentWarmer = configuration.mComponentWarmer;
       this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
       this.mErrorEventHandler = configuration.mErrorEventHandler;
-      this.mEnableItemPrefetch = configuration.mEnableItemPrefetch;
-      this.mItemViewCacheSize = configuration.mItemViewCacheSize;
-      this.mRequestMountForPrefetchedItems = configuration.mRequestMountForPrefetchedItems;
       mShouldPreallocatePerMountContent = configuration.mShouldPreallocatePerMountContent;
     }
 
@@ -330,30 +303,6 @@ public class RecyclerBinderConfiguration {
 
     public Builder enableStableIds(boolean enableStableIds) {
       mEnableStableIds = enableStableIds;
-      return this;
-    }
-
-    /**
-     * Experimental. See {@link RecyclerBinder.Builder#recyclerViewItemPrefetch(boolean)} for more
-     * info.
-     */
-    public Builder enableItemPrefetch(boolean enableItemPrefetch) {
-      mEnableItemPrefetch = enableItemPrefetch;
-      return this;
-    }
-
-    /** Experimental. See {@link RecyclerBinder.Builder#setItemViewCacheSize(int)} for more info. */
-    public Builder setItemViewCacheSize(int cacheSize) {
-      mItemViewCacheSize = cacheSize;
-      return this;
-    }
-
-    /**
-     * Experimental. See {@link RecyclerBinder.Builder#requestMountForPrefetchedItems(boolean)} for
-     * more info.
-     */
-    public Builder setRequestMountForPrefetchedItems(boolean isEnabled) {
-      mRequestMountForPrefetchedItems = isEnabled;
       return this;
     }
 
@@ -441,9 +390,6 @@ public class RecyclerBinderConfiguration {
           mDynamicItemHeight,
           mUseBackgroundChangeSets,
           mEnableStableIds,
-          mEnableItemPrefetch,
-          mItemViewCacheSize,
-          mRequestMountForPrefetchedItems,
           mChangeSetThreadHandler,
           mIsReconciliationEnabled,
           mIsIncrementalMountEnabled,

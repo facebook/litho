@@ -330,10 +330,7 @@ public class RecyclerCollectionComponentSpec {
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())
             .errorEventHandler(binderConfiguration.getErrorEventHandler())
-            .recyclerViewItemPrefetch(binderConfiguration.getEnableItemPrefetch())
             .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
-            .setItemViewCacheSize(binderConfiguration.getItemViewCacheSize())
-            .requestMountForPrefetchedItems(binderConfiguration.getRequestMountForPrefetchedItems())
             .startupLogger(startupLogger);
 
     if (binderConfiguration.getEstimatedViewportCount()
