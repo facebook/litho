@@ -16,17 +16,25 @@
 
 package com.facebook.litho;
 
+import static com.facebook.rendercore.debug.DebugEventAttribute.Key;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
+
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.Function;
+import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.utils.CommonUtils;
+import kotlin.Unit;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 
-  public static final String UnboundEventHandler = "UnboundEventHandler:";
+  public static final String UnboundEventHandler = "UnboundEventHandler";
 
   public final int id;
   public final EventHandlerRebindMode mode;
@@ -57,11 +65,16 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
       final EventDispatchInfo info = dispatchInfo;
       final boolean isUnbound = (info == null) || !info.isBound;
       if (isUnbound && mode != EventHandlerRebindMode.NONE) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR, // does not crash
-            UnboundEventHandler + CommonUtils.getSectionNameForTracing(event.getClass()),
-            "Unbound event handler dispatched from : " + this,
-            ComponentsConfiguration.eventHandlerRebindLoggingSamplingRate);
+        DebugEventDispatcher.dispatch(
+            LithoDebugEvent.DebugInfo,
+            () -> "-1",
+            LogLevel.DEBUG,
+            (attribute) -> {
+              attribute.put(Key, UnboundEventHandler);
+              attribute.put(Name, CommonUtils.getSectionNameForTracing(event.getClass()));
+              attribute.put(Source, this.toString());
+              return Unit.INSTANCE;
+            });
       }
     }
 
