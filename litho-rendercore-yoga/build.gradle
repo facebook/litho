@@ -38,7 +38,11 @@ android {
 
 dependencies {
     api project(':litho-rendercore')
-    api project(':yoga')
+    if (project.isRelease()) {
+        api project(':yoga')
+    } else {
+        api project(':yogajni')
+    }
 
     // Annotations
     compileOnly deps.jsr305

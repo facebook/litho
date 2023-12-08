@@ -45,6 +45,12 @@ dependencies {
     implementation project(':litho-rendercore-default-node')
     implementation project(':litho-rendercore-text')
     implementation project(':litho-rendercore-default-text-node')
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
 
     // Support
     implementation deps.supportAppCompat
