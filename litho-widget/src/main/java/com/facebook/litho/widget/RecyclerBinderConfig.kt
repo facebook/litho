@@ -82,8 +82,22 @@ data class RecyclerBinderConfig(
      *
      * @see [ComponentWarmer]
      */
-    @JvmField val componentWarmer: ComponentWarmer? = null
+    @JvmField val componentWarmer: ComponentWarmer? = null,
+    /**
+     * This is used in very specific cases on critical performance paths where measuring the first
+     * item cannot be relied on to estimate the viewport count. It should not be used in the common
+     * case, use with caution.
+     */
+    @JvmField val estimatedViewportCount: Int? = null,
 ) {
+
+  init {
+    if (estimatedViewportCount != null) {
+      require(estimatedViewportCount > 0) {
+        "Estimated viewport count must be > 0: $estimatedViewportCount"
+      }
+    }
+  }
 
   companion object {
     private val default: RecyclerBinderConfig = RecyclerBinderConfig()
@@ -116,7 +130,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var hScrollAsyncMode = configuration.hScrollAsyncMode
   private var lithoViewFactory = configuration.lithoViewFactory
   private var componentWarmer = configuration.componentWarmer
-
+  private var estimatedViewportCount = configuration.estimatedViewportCount
   private var requestMountForPrefetchedItems = configuration.requestMountForPrefetchedItems
   private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
   private var itemViewCacheSize = configuration.itemViewCacheSize
@@ -139,7 +153,11 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
 
   fun itemViewCacheSize(size: Int) = also { itemViewCacheSize = size }
 
-  fun componentWarmer(componentWarmer: ComponentWarmer?) = also {
+  fun estimatedViewportCount(estimatedViewportCount: Int?): RecyclerBinderConfigBuilder = also {
+    this.estimatedViewportCount = estimatedViewportCount
+  }
+
+  fun componentWarmer(componentWarmer: ComponentWarmer?): RecyclerBinderConfigBuilder = also {
     this.componentWarmer = componentWarmer
   }
 
@@ -151,6 +169,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         requestMountForPrefetchedItems = requestMountForPrefetchedItems,
         recyclerViewItemPrefetch = recyclerViewItemPrefetch,
         itemViewCacheSize = itemViewCacheSize,
-        componentWarmer = componentWarmer)
+        componentWarmer = componentWarmer,
+        estimatedViewportCount = estimatedViewportCount)
   }
 }

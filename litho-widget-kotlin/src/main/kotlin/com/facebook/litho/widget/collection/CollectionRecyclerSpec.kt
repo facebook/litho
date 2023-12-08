@@ -38,7 +38,6 @@ import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
-import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
@@ -163,9 +162,6 @@ object CollectionRecyclerSpec {
                 incrementalMount(isIncrementalMountEnabled)
                 isLayoutDiffingEnabled(isLayoutDiffingEnabled)
                 errorEventHandler(errorEventHandler)
-                if (estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
-                  estimatedViewportCount(estimatedViewportCount)
-                }
               }
             }
             .build(c)

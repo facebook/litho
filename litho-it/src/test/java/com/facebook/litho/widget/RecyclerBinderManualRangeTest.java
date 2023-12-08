@@ -89,7 +89,7 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .estimatedViewportCount(1)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
             .rangeRatio(.5f)
             .build(mComponentContext);
 
@@ -138,7 +138,7 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .estimatedViewportCount(1)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
             .rangeRatio(.5f)
             .build(mComponentContext);
 
@@ -188,7 +188,7 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .estimatedViewportCount(1)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
             .rangeRatio(.5f)
             .build(mComponentContext);
 

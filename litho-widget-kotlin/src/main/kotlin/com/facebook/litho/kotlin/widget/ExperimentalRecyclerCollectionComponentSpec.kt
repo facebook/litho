@@ -60,7 +60,6 @@ import com.facebook.litho.sections.SectionTree.Target.DynamicConfig
 import com.facebook.litho.sections.widget.ClearRefreshingEvent
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.NoUpdateItemAnimator
-import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionEventsController
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerDynamicConfigEvent
@@ -308,9 +307,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
             .errorEventHandler(binderConfiguration.errorEventHandler)
             .startupLogger(startupLogger)
-    if (binderConfiguration.estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
-      recyclerBinderBuilder.estimatedViewportCount(binderConfiguration.estimatedViewportCount)
-    }
     val recyclerBinder = recyclerBinderBuilder.build(c)
     val targetBinder =
         SectionBinderTarget(recyclerBinder, binderConfiguration.useBackgroundChangeSets)

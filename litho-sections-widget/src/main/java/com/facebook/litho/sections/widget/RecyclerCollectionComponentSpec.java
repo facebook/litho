@@ -332,10 +332,6 @@ public class RecyclerCollectionComponentSpec {
             .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
             .startupLogger(startupLogger);
 
-    if (binderConfiguration.getEstimatedViewportCount()
-        != RecyclerBinderConfiguration.Builder.UNSET) {
-      recyclerBinderBuilder.estimatedViewportCount(binderConfiguration.getEstimatedViewportCount());
-    }
     RecyclerBinder recyclerBinder = recyclerBinderBuilder.build(c);
 
     SectionBinderTarget targetBinder =

@@ -49,7 +49,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsIncrementalMountEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
-  private final int mEstimatedViewportCount;
   @Nullable private final ErrorEventHandler mErrorEventHandler;
 
   private final RecyclerBinderConfig mRecyclerBinderConfig;
@@ -78,7 +77,6 @@ public class RecyclerBinderConfiguration {
       boolean isIncrementalMountEnabled,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
-      int estimatedViewportCount,
       @Nullable ErrorEventHandler errorEventHandler,
       boolean shouldPreallocatePerMountContent) {
     mRangeRatio = rangeRatio;
@@ -94,7 +92,6 @@ public class RecyclerBinderConfiguration {
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
-    mEstimatedViewportCount = estimatedViewportCount;
     mErrorEventHandler = errorEventHandler;
     mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
     mRecyclerBinderConfig = recyclerBinderConfig;
@@ -153,10 +150,6 @@ public class RecyclerBinderConfiguration {
     return mPostToFrontOfQueueForFirstChangeset;
   }
 
-  public int getEstimatedViewportCount() {
-    return mEstimatedViewportCount;
-  }
-
   public @Nullable ErrorEventHandler getErrorEventHandler() {
     return mErrorEventHandler;
   }
@@ -192,7 +185,6 @@ public class RecyclerBinderConfiguration {
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
-    private int mEstimatedViewportCount = UNSET;
     private ErrorEventHandler mErrorEventHandler;
     private boolean mShouldPreallocatePerMountContent;
 
@@ -213,7 +205,6 @@ public class RecyclerBinderConfiguration {
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
-      this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
       this.mErrorEventHandler = configuration.mErrorEventHandler;
       mShouldPreallocatePerMountContent = configuration.mShouldPreallocatePerMountContent;
     }
@@ -346,20 +337,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    /**
-     * This is a temporary hack that allows a surface to manually provide an estimated range. It
-     * will go away so don't depend on it.
-     */
-    @Deprecated
-    public Builder estimatedViewportCount(int estimatedViewportCount) {
-      if (estimatedViewportCount <= 0) {
-        throw new IllegalArgumentException(
-            "Estimated viewport count must be > 0: " + estimatedViewportCount);
-      }
-      mEstimatedViewportCount = estimatedViewportCount;
-      return this;
-    }
-
     public RecyclerBinderConfiguration build() {
       RecyclerBinderConfig builderRecyclerBinderConfig = mRecyclerBinderConfig;
 
@@ -380,7 +357,6 @@ public class RecyclerBinderConfiguration {
           mIsIncrementalMountEnabled,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,
-          mEstimatedViewportCount,
           mErrorEventHandler,
           mShouldPreallocatePerMountContent);
     }

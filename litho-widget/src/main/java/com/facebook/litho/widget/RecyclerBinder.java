@@ -472,7 +472,6 @@ public class RecyclerBinder
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
-    private int estimatedViewportCount = UNSET;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private @Nullable RunnableHandler preallocateMountContentHandler;
@@ -652,20 +651,6 @@ public class RecyclerBinder
     /** Set a delegation to customize the adapter behaviour. */
     public Builder setAdapterDelegate(@Nullable RecyclerBinderAdapterDelegate delegate) {
       adapterDelegate = delegate;
-      return this;
-    }
-
-    /**
-     * This is used in very specific cases on critical performance paths where measuring the first
-     * item cannot be relied on to estimate the viewport count. It should not be used in the common
-     * case, use with caution.
-     */
-    public Builder estimatedViewportCount(int estimatedViewportCount) {
-      if (estimatedViewportCount <= 0) {
-        throw new IllegalArgumentException(
-            "Estimated viewport count must be > 0: " + estimatedViewportCount);
-      }
-      this.estimatedViewportCount = estimatedViewportCount;
       return this;
     }
 
@@ -942,8 +927,8 @@ public class RecyclerBinder
         new ViewportManager(
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
 
-    if (builder.estimatedViewportCount != UNSET) {
-      mEstimatedViewportCount = builder.estimatedViewportCount;
+    if (mRecyclerBinderConfig.estimatedViewportCount != null) {
+      mEstimatedViewportCount = mRecyclerBinderConfig.estimatedViewportCount;
       mHasManualEstimatedViewportCount = true;
     } else {
       mHasManualEstimatedViewportCount = false;
