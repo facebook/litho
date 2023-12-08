@@ -155,7 +155,6 @@ object CollectionRecyclerSpec {
                 layoutHandlerFactory(layoutHandlerFactory)
                 wrapContent(isWrapContent)
                 enableStableIds(enableStableIds)
-                threadPoolConfig(threadPoolConfiguration)
                 componentsConfiguration(componentsConfiguration)
                 isReconciliationEnabled(isReconciliationEnabled)
                 incrementalMount(isIncrementalMountEnabled)

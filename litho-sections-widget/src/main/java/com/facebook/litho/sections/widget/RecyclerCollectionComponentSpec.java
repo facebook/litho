@@ -321,7 +321,6 @@ public class RecyclerCollectionComponentSpec {
             .layoutHandlerFactory(binderConfiguration.getLayoutHandlerFactory())
             .wrapContent(binderConfiguration.isWrapContent())
             .enableStableIds(binderConfiguration.getEnableStableIds())
-            .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
             .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.getComponentsConfiguration())

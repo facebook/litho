@@ -4548,7 +4548,10 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+                    .build())
             .build(mComponentContext);
 
     final List<RenderInfo> components = new ArrayList<>();
@@ -4659,7 +4662,10 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
+                    .build())
             .build(mComponentContext);
 
     final List<RenderInfo> components = new ArrayList<>();
@@ -5109,7 +5115,10 @@ public class RecyclerBinderTest {
     final Component component = mock(Component.class);
     final RecyclerBinder binder =
         mRecyclerBinderBuilder
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 0))
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 0))
+                    .build())
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Override

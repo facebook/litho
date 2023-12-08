@@ -298,7 +298,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .layoutHandlerFactory(binderConfiguration.layoutHandlerFactory)
             .wrapContent(binderConfiguration.isWrapContent)
             .enableStableIds(binderConfiguration.enableStableIds)
-            .threadPoolConfig(binderConfiguration.threadPoolConfiguration)
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.componentsConfiguration)

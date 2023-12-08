@@ -151,7 +151,10 @@ public class ComponentWarmerTest {
         new RecyclerBinder.Builder()
             .componentsConfiguration(
                 ComponentsConfiguration.create().useCancellableLayoutFutures(true).build())
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+                    .build())
             .build(mContext);
 
     binder.measure(

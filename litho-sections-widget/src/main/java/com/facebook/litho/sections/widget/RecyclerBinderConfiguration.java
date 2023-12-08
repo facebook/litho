@@ -19,7 +19,6 @@ package com.facebook.litho.sections.widget;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.LayoutHandlerFactory;
@@ -42,7 +41,6 @@ public class RecyclerBinderConfiguration {
   // TODO T34627443 make all fields final after removing setters
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mEnableStableIds;
-  @Nullable private LayoutThreadPoolConfiguration mThreadPoolConfiguration;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsIncrementalMountEnabled;
@@ -67,7 +65,6 @@ public class RecyclerBinderConfiguration {
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
       @Nullable ComponentsConfiguration componentsConfiguration,
       boolean wrapContent,
-      @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean useBackgroundChangeSets,
       boolean enableStableIds,
       @Nullable RunnableHandler changeSetThreadHandler,
@@ -81,7 +78,6 @@ public class RecyclerBinderConfiguration {
     mLayoutHandlerFactory = layoutHandlerFactory;
     mComponentsConfiguration = componentsConfiguration;
     mIsWrapContent = wrapContent;
-    mThreadPoolConfiguration = threadPoolConfiguration;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mEnableStableIds = enableStableIds;
     mChangeSetThreadHandler = changeSetThreadHandler;
@@ -112,11 +108,6 @@ public class RecyclerBinderConfiguration {
 
   public boolean getUseBackgroundChangeSets() {
     return mUseBackgroundChangeSets;
-  }
-
-  @Nullable
-  public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
-    return mThreadPoolConfiguration;
   }
 
   public boolean getEnableStableIds() {
@@ -161,8 +152,6 @@ public class RecyclerBinderConfiguration {
     public static final int UNSET = -1;
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
-
-    private @Nullable LayoutThreadPoolConfiguration mThreadPoolConfiguration;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     private @Nullable ComponentsConfiguration mComponentsConfiguration;
@@ -217,15 +206,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder idleExecutor(@Nullable LayoutHandlerFactory idleExecutor) {
       mLayoutHandlerFactory = idleExecutor;
-      return this;
-    }
-
-    /**
-     * Set the {@link LayoutThreadPoolConfiguration} to use in the {@link
-     * RecyclerBinderConfiguration}
-     */
-    public Builder threadPoolConfiguration(LayoutThreadPoolConfiguration threadPoolConfiguration) {
-      mThreadPoolConfiguration = threadPoolConfiguration;
       return this;
     }
 
@@ -329,7 +309,6 @@ public class RecyclerBinderConfiguration {
           mLayoutHandlerFactory,
           mComponentsConfiguration,
           mWrapContent,
-          mThreadPoolConfiguration,
           mUseBackgroundChangeSets,
           mEnableStableIds,
           mChangeSetThreadHandler,

@@ -18,6 +18,7 @@ package com.facebook.litho.widget
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.config.LayoutThreadPoolConfiguration
 
 /**
  * This configuration is meant to be used in the context of [RecyclerBinder]. It allows you to
@@ -102,6 +103,14 @@ data class RecyclerBinderConfig(
      * in the h-scroll.
      */
     @JvmField val hasDynamicItemHeight: Boolean = false,
+    /**
+     * RecyclerBinder will use this [LayoutThreadPoolConfiguration] to create
+     * [com.facebook.litho.ThreadPoolLayoutHandler] this will create a new separate thread pool
+     * which might negatively affect the app's [RecyclerBinder.Builder.layoutHandlerFactory] is
+     * provided, the handler created by the factory will be used instead of the one that would have
+     * been created by this config.
+     */
+    @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null
 ) {
 
   init {
@@ -148,6 +157,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
   private var itemViewCacheSize = configuration.itemViewCacheSize
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
+  private var threadPoolConfig = configuration.threadPoolConfig
 
   fun isCircular(isCircular: Boolean) = also { this.isCircular = isCircular }
 
@@ -179,6 +189,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.hasDynamicItemHeight = hasDynamicItemHeight
   }
 
+  fun threadPoolConfig(
+      threadPoolConfig: LayoutThreadPoolConfiguration?
+  ): RecyclerBinderConfigBuilder = also { this.threadPoolConfig = threadPoolConfig }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         isCircular = isCircular,
@@ -189,6 +203,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         itemViewCacheSize = itemViewCacheSize,
         componentWarmer = componentWarmer,
         estimatedViewportCount = estimatedViewportCount,
-        hasDynamicItemHeight = hasDynamicItemHeight)
+        hasDynamicItemHeight = hasDynamicItemHeight,
+        threadPoolConfig = threadPoolConfig)
   }
 }

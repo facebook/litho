@@ -467,7 +467,6 @@ public class RecyclerBinder
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private boolean enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId;
     private RecyclerRangeTraverser recyclerRangeTraverser;
-    private @Nullable LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
@@ -597,20 +596,6 @@ public class RecyclerBinder
      */
     public Builder enableStableIds(boolean enableStableIds) {
       this.enableStableIds = enableStableIds;
-      return this;
-    }
-
-    /**
-     * @param config RecyclerBinder will use this {@link LayoutThreadPoolConfiguration} to create
-     *     {@link ThreadPoolLayoutHandler} which will be used to calculate layout in pool of
-     *     threads. However, this will create a new separate thread pool which might negatively
-     *     affect the app's performance.
-     *     <p>Note: if {@link #layoutHandlerFactory(LayoutHandlerFactory)} is provided, the handler
-     *     created by the factory will be used instead of the one that would have been created by
-     *     this config.
-     */
-    public Builder threadPoolConfig(@Nullable LayoutThreadPoolConfiguration config) {
-      this.threadPoolConfig = config;
       return this;
     }
 
@@ -859,20 +844,9 @@ public class RecyclerBinder
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
     mComponentsConfiguration = builder.componentsConfiguration;
 
-    if (mLayoutHandlerFactory == null) {
-
-      /*
-       * If a config is manually set, use it. If a global configuration is enabled, check if the
-       * configuration enables using a single thread pool for all RecyclerBinders or creates one per
-       * RecyclerBinder.
-       */
-      if (builder.threadPoolConfig != null) {
-        mThreadPoolConfig = builder.threadPoolConfig;
-        mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
-      } else {
-        mThreadPoolConfig = null;
-        mLayoutThreadPoolHandler = null;
-      }
+    if (mLayoutHandlerFactory == null && mRecyclerBinderConfig.threadPoolConfig != null) {
+      mThreadPoolConfig = mRecyclerBinderConfig.threadPoolConfig;
+      mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
     } else {
       mThreadPoolConfig = null;
       mLayoutThreadPoolHandler = null;
