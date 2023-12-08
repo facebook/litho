@@ -139,12 +139,6 @@ internal constructor(
     /** Sets if is reconciliation is enabled */
     @JvmField var isReconciliationEnabled: Boolean = true
 
-    /**
-     * The LazyList is having a default of `false` for the reconciliation being enabled. Ideally, it
-     * would default to whatever value is used in its ComponentContext. By enabling this setting,
-     * the default will be retrieve via the ComponentContext.
-     */
-    @JvmField var isLazyListUsingComponentContextReconciliationConfig: Boolean = true
     @JvmField var overrideLayoutDiffing: Boolean? = null
 
     /**
