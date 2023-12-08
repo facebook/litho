@@ -25,6 +25,7 @@ import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.SnapUtil
 
 /**
@@ -56,12 +57,9 @@ abstract class CollectionLayout(
           .reverseLayout(reverse)
           .recyclerBinderConfiguration(
               RecyclerBinderConfiguration.create()
-                  .apply {
-                    if (hasDynamicItemHeight) {
-                      hasDynamicItemHeight(hasDynamicItemHeight)
-                    }
-                    rangeRatio?.let { rangeRatio(it) }
-                  }
+                  .apply { rangeRatio?.let { rangeRatio(it) } }
+                  .recyclerBinderConfig(
+                      RecyclerBinderConfig(hasDynamicItemHeight = hasDynamicItemHeight))
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .isReconciliationEnabled(isReconciliationEnabled)

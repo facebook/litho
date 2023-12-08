@@ -40,7 +40,6 @@ public class RecyclerBinderConfiguration {
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsWrapContent;
   // TODO T34627443 make all fields final after removing setters
-  private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mEnableStableIds;
   @Nullable private LayoutThreadPoolConfiguration mThreadPoolConfiguration;
@@ -69,7 +68,6 @@ public class RecyclerBinderConfiguration {
       @Nullable ComponentsConfiguration componentsConfiguration,
       boolean wrapContent,
       @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration,
-      boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
       boolean enableStableIds,
       @Nullable RunnableHandler changeSetThreadHandler,
@@ -84,7 +82,6 @@ public class RecyclerBinderConfiguration {
     mComponentsConfiguration = componentsConfiguration;
     mIsWrapContent = wrapContent;
     mThreadPoolConfiguration = threadPoolConfiguration;
-    mHasDynamicItemHeight = dynamicItemHeight;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mEnableStableIds = enableStableIds;
     mChangeSetThreadHandler = changeSetThreadHandler;
@@ -111,10 +108,6 @@ public class RecyclerBinderConfiguration {
 
   public boolean isWrapContent() {
     return mIsWrapContent;
-  }
-
-  public boolean hasDynamicItemHeight() {
-    return mHasDynamicItemHeight;
   }
 
   public boolean getUseBackgroundChangeSets() {
@@ -175,7 +168,6 @@ public class RecyclerBinderConfiguration {
     private @Nullable ComponentsConfiguration mComponentsConfiguration;
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mWrapContent = false;
-    private boolean mDynamicItemHeight = false;
     private boolean mEnableStableIds =
         ComponentsConfiguration.defaultRecyclerBinderConfigUseStableId;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -196,7 +188,6 @@ public class RecyclerBinderConfiguration {
       this.mComponentsConfiguration = configuration.mComponentsConfiguration;
       this.mRangeRatio = configuration.mRangeRatio;
       this.mWrapContent = configuration.mIsWrapContent;
-      this.mDynamicItemHeight = configuration.mHasDynamicItemHeight;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
@@ -261,16 +252,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder wrapContent(boolean isWrapContent) {
       mWrapContent = isWrapContent;
-      return this;
-    }
-
-    /**
-     * TODO T23919104 mihaelao Do not enable this. This is an experimental feature and your Section
-     * surface will take a perf hit if you use it. Talk to the Litho team if you think you need
-     * this.
-     */
-    public Builder hasDynamicItemHeight(boolean hasDynamicItemHeight) {
-      mDynamicItemHeight = hasDynamicItemHeight;
       return this;
     }
 
@@ -349,7 +330,6 @@ public class RecyclerBinderConfiguration {
           mComponentsConfiguration,
           mWrapContent,
           mThreadPoolConfiguration,
-          mDynamicItemHeight,
           mUseBackgroundChangeSets,
           mEnableStableIds,
           mChangeSetThreadHandler,

@@ -34,6 +34,7 @@ import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.sections.widget.RecyclerConfiguration;
 import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextAlignment;
@@ -55,7 +56,10 @@ public class HorizontalScrollWithDynamicItemHeightSpec {
         ListRecyclerConfiguration.create()
             .orientation(LinearLayoutManager.HORIZONTAL)
             .recyclerBinderConfiguration(
-                RecyclerBinderConfiguration.create().hasDynamicItemHeight(true).build())
+                RecyclerBinderConfiguration.create()
+                    .recyclerBinderConfig(
+                        RecyclerBinderConfig.create().hasDynamicItemHeight(true).build())
+                    .build())
             .build();
 
     return Column.create(c)

@@ -156,7 +156,6 @@ object CollectionRecyclerSpec {
                 wrapContent(isWrapContent)
                 enableStableIds(enableStableIds)
                 threadPoolConfig(threadPoolConfiguration)
-                hasDynamicItemHeight(hasDynamicItemHeight())
                 componentsConfiguration(componentsConfiguration)
                 isReconciliationEnabled(isReconciliationEnabled)
                 incrementalMount(isIncrementalMountEnabled)

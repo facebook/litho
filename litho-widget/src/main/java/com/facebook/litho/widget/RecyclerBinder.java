@@ -462,7 +462,6 @@ public class RecyclerBinder
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
-    private boolean hasDynamicItemHeight;
     private boolean wrapContent;
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
@@ -573,23 +572,6 @@ public class RecyclerBinder
 
     public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
       this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
-      return this;
-    }
-
-    /**
-     * Do not enable this. This is an experimental feature and your Section surface will take a perf
-     * hit if you use it.
-     *
-     * <p>Whether the items of this RecyclerBinder can change height after the initial measure. Only
-     * applicable to horizontally scrolling RecyclerBinders. If true, the children of this h-scroll
-     * are all measured with unspecified height. When the ComponentTree of a child is remeasured,
-     * this will cause the RecyclerBinder to remeasure in case the height of the child changed and
-     * the RecyclerView needs to have a different height to account for it. This only supports
-     * changing the height of the item that triggered the remeasuring, not the height of all items
-     * in the h-scroll.
-     */
-    public Builder hasDynamicItemHeight(boolean hasDynamicItemHeight) {
-      this.hasDynamicItemHeight = hasDynamicItemHeight;
       return this;
     }
 
@@ -901,7 +883,9 @@ public class RecyclerBinder
 
     mIsCircular = mRecyclerBinderConfig.isCircular;
     mHasDynamicItemHeight =
-        mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
+        mLayoutInfo.getScrollDirection() == HORIZONTAL
+            ? mRecyclerBinderConfig.hasDynamicItemHeight
+            : false;
     mComponentTreeMeasureListenerFactory =
         !mHasDynamicItemHeight
             ? null

@@ -299,7 +299,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .wrapContent(binderConfiguration.isWrapContent)
             .enableStableIds(binderConfiguration.enableStableIds)
             .threadPoolConfig(binderConfiguration.threadPoolConfiguration)
-            .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.componentsConfiguration)

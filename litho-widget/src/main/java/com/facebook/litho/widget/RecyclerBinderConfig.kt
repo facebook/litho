@@ -89,6 +89,19 @@ data class RecyclerBinderConfig(
      * case, use with caution.
      */
     @JvmField val estimatedViewportCount: Int? = null,
+    /**
+     * Do not enable this. This is an experimental feature and your Section surface will take a perf
+     * hit if you use it.
+     *
+     * <p>Whether the items of this RecyclerBinder can change height after the initial measure. Only
+     * applicable to horizontally scrolling RecyclerBinders. If true, the children of this h-scroll
+     * are all measured with unspecified height. When the ComponentTree of a child is remeasured,
+     * this will cause the RecyclerBinder to remeasure in case the height of the child changed and
+     * the RecyclerView needs to have a different height to account for it. This only supports
+     * changing the height of the item that triggered the remeasuring, not the height of all items
+     * in the h-scroll.
+     */
+    @JvmField val hasDynamicItemHeight: Boolean = false,
 ) {
 
   init {
@@ -134,6 +147,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var requestMountForPrefetchedItems = configuration.requestMountForPrefetchedItems
   private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
   private var itemViewCacheSize = configuration.itemViewCacheSize
+  private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
 
   fun isCircular(isCircular: Boolean) = also { this.isCircular = isCircular }
 
@@ -161,6 +175,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.componentWarmer = componentWarmer
   }
 
+  fun hasDynamicItemHeight(hasDynamicItemHeight: Boolean): RecyclerBinderConfigBuilder = also {
+    this.hasDynamicItemHeight = hasDynamicItemHeight
+  }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         isCircular = isCircular,
@@ -170,6 +188,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         recyclerViewItemPrefetch = recyclerViewItemPrefetch,
         itemViewCacheSize = itemViewCacheSize,
         componentWarmer = componentWarmer,
-        estimatedViewportCount = estimatedViewportCount)
+        estimatedViewportCount = estimatedViewportCount,
+        hasDynamicItemHeight = hasDynamicItemHeight)
   }
 }
