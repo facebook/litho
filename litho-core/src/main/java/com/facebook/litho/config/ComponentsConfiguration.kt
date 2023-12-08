@@ -96,12 +96,6 @@ internal constructor(
     @JvmField var DEFAULT_BACKGROUND_THREAD_PRIORITY: Int = 5
 
     /**
-     * This makes [ComponentContext] to use the ResourcesResolver when retrieving color, string,
-     * etc.
-     */
-    @JvmField var forceResourcesResolverUsage: Boolean = false
-
-    /**
      * The default priority for threads that perform background sections change set calculations.
      */
     const val DEFAULT_CHANGE_SET_THREAD_PRIORITY: Int = 0
