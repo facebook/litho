@@ -366,20 +366,20 @@ class NodeInfoTest {
     }
 
     private fun isFlagSet(nodeInfo: NodeInfo?, flagName: String): Boolean {
-      val flagPosition = Whitebox.getInternalState<Int>(NodeInfo::class.java, flagName)
-      val flags = Whitebox.getInternalState<Int>(nodeInfo, "mPrivateFlags")
-      return flags and flagPosition != 0
+      val flagPosition = Whitebox.getInternalState<Long>(NodeInfo::class.java, flagName)
+      val flags = Whitebox.getInternalState<Long>(nodeInfo, "mPrivateFlags")
+      return flags and flagPosition != 0L
     }
 
     private fun clearFlag(nodeInfo: NodeInfo?, flagName: String) {
-      val flagPosition = Whitebox.getInternalState<Int>(NodeInfo::class.java, flagName)
-      var flags = Whitebox.getInternalState<Int>(nodeInfo, "mPrivateFlags")
+      val flagPosition = Whitebox.getInternalState<Long>(NodeInfo::class.java, flagName)
+      var flags = Whitebox.getInternalState<Long>(nodeInfo, "mPrivateFlags")
       flags = flags and flagPosition.inv()
       Whitebox.setInternalState(nodeInfo, "mPrivateFlags", flags)
     }
 
     private fun assertEmptyFlags(nodeInfo: NodeInfo?) {
-      assertThat(Whitebox.getInternalState<Any>(nodeInfo, "mPrivateFlags") as Int == 0).isTrue
+      assertThat(Whitebox.getInternalState<Any>(nodeInfo, "mPrivateFlags") as Long == 0L).isTrue
     }
   }
 }
