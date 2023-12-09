@@ -481,7 +481,6 @@ public class RecyclerBinder
     private @RecyclingStrategy int recyclingStrategy =
         ComponentsConfiguration.recyclerBinderStrategy;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
-    private @Nullable ErrorEventHandler errorEventHandler;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
 
     /**
@@ -678,11 +677,6 @@ public class RecyclerBinder
 
     public Builder asyncInsertLayoutHandler(RunnableHandler handler) {
       mAsyncInsertLayoutHandler = handler;
-      return this;
-    }
-
-    public Builder errorEventHandler(@Nullable ErrorEventHandler errorEventHandler) {
-      this.errorEventHandler = errorEventHandler;
       return this;
     }
 
@@ -903,7 +897,7 @@ public class RecyclerBinder
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
     mStartupLogger = builder.startupLogger;
-    mErrorEventHandler = builder.errorEventHandler;
+    mErrorEventHandler = mRecyclerBinderConfig.errorEventHandler;
     mRecyclingStrategy = builder.recyclingStrategy;
   }
 

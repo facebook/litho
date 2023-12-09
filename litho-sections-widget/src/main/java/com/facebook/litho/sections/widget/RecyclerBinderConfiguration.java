@@ -17,7 +17,6 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
@@ -46,7 +45,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsIncrementalMountEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
-  @Nullable private final ErrorEventHandler mErrorEventHandler;
 
   private final RecyclerBinderConfig mRecyclerBinderConfig;
   private final boolean mShouldPreallocatePerMountContent;
@@ -72,7 +70,6 @@ public class RecyclerBinderConfiguration {
       boolean isIncrementalMountEnabled,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
-      @Nullable ErrorEventHandler errorEventHandler,
       boolean shouldPreallocatePerMountContent) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
@@ -85,7 +82,6 @@ public class RecyclerBinderConfiguration {
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
-    mErrorEventHandler = errorEventHandler;
     mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
     mRecyclerBinderConfig = recyclerBinderConfig;
   }
@@ -134,10 +130,6 @@ public class RecyclerBinderConfiguration {
     return mPostToFrontOfQueueForFirstChangeset;
   }
 
-  public @Nullable ErrorEventHandler getErrorEventHandler() {
-    return mErrorEventHandler;
-  }
-
   public @Nullable ComponentsConfiguration getComponentsConfiguration() {
     return mComponentsConfiguration;
   }
@@ -166,7 +158,6 @@ public class RecyclerBinderConfiguration {
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
-    private ErrorEventHandler mErrorEventHandler;
     private boolean mShouldPreallocatePerMountContent;
 
     Builder() {}
@@ -185,7 +176,6 @@ public class RecyclerBinderConfiguration {
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
-      this.mErrorEventHandler = configuration.mErrorEventHandler;
       mShouldPreallocatePerMountContent = configuration.mShouldPreallocatePerMountContent;
     }
 
@@ -283,11 +273,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder errorEventHandler(@Nullable ErrorEventHandler errorEventHandler) {
-      mErrorEventHandler = errorEventHandler;
-      return this;
-    }
-
     /**
      * Whether this Recycler children should preallocate mount content after being generated. This
      * will only work if the root {@link com.facebook.litho.ComponentTree} has set a preallocation
@@ -316,7 +301,6 @@ public class RecyclerBinderConfiguration {
           mIsIncrementalMountEnabled,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,
-          mErrorEventHandler,
           mShouldPreallocatePerMountContent);
     }
   }

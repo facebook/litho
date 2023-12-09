@@ -303,7 +303,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .componentsConfiguration(binderConfiguration.componentsConfiguration)
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
-            .errorEventHandler(binderConfiguration.errorEventHandler)
             .startupLogger(startupLogger)
     val recyclerBinder = recyclerBinderBuilder.build(c)
     val targetBinder =

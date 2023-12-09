@@ -159,7 +159,6 @@ object CollectionRecyclerSpec {
                 isReconciliationEnabled(isReconciliationEnabled)
                 incrementalMount(isIncrementalMountEnabled)
                 isLayoutDiffingEnabled(isLayoutDiffingEnabled)
-                errorEventHandler(errorEventHandler)
               }
             }
             .build(c)

@@ -18,6 +18,7 @@ package com.facebook.litho.widget
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.LayoutThreadPoolConfiguration
 
 /**
@@ -110,7 +111,8 @@ data class RecyclerBinderConfig(
      * provided, the handler created by the factory will be used instead of the one that would have
      * been created by this config.
      */
-    @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null
+    @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null,
+    @JvmField val errorEventHandler: ErrorEventHandler? = null
 ) {
 
   init {
@@ -158,6 +160,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var itemViewCacheSize = configuration.itemViewCacheSize
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
   private var threadPoolConfig = configuration.threadPoolConfig
+  private var errorEventHandler = configuration.errorEventHandler
 
   fun isCircular(isCircular: Boolean) = also { this.isCircular = isCircular }
 
@@ -193,6 +196,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
       threadPoolConfig: LayoutThreadPoolConfiguration?
   ): RecyclerBinderConfigBuilder = also { this.threadPoolConfig = threadPoolConfig }
 
+  fun errorEventHandler(errorEventHandler: ErrorEventHandler?): RecyclerBinderConfigBuilder = also {
+    this.errorEventHandler = errorEventHandler
+  }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         isCircular = isCircular,
@@ -204,6 +211,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         componentWarmer = componentWarmer,
         estimatedViewportCount = estimatedViewportCount,
         hasDynamicItemHeight = hasDynamicItemHeight,
-        threadPoolConfig = threadPoolConfig)
+        threadPoolConfig = threadPoolConfig,
+        errorEventHandler = errorEventHandler)
   }
 }
