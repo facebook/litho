@@ -147,7 +147,6 @@ object CollectionRecyclerSpec {
         RecyclerBinder.Builder()
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
             .startupLogger(startupLogger)
-            .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
             .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .apply {
               with(binderConfiguration) {

@@ -61,11 +61,11 @@ abstract class CollectionLayout(
                   .recyclerBinderConfig(
                       RecyclerBinderConfig(
                           hasDynamicItemHeight = hasDynamicItemHeight,
-                          reconciliationEnabled = isReconciliationEnabled))
+                          reconciliationEnabled = isReconciliationEnabled,
+                          preallocateMountContent = preallocationPerMountContentEnabled))
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .isIncrementalMountEnabled(isIncrementalMountEnabled)
-                  .shouldPreallocatePerMountContent(preallocationPerMountContentEnabled)
                   .build())
           .build()
 

@@ -471,8 +471,6 @@ public class RecyclerBinder
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private @Nullable RunnableHandler preallocateMountContentHandler;
-    private boolean shouldPreallocatePerMountSpec;
     private @Nullable LithoStartupLogger startupLogger;
     private RunnableHandler mAsyncInsertLayoutHandler;
     private boolean visibilityProcessing = true;
@@ -558,17 +556,6 @@ public class RecyclerBinder
     public Builder componentTreeHolderFactory(
         ComponentTreeHolderFactory componentTreeHolderFactory) {
       this.componentTreeHolderFactory = componentTreeHolderFactory;
-      return this;
-    }
-
-    public Builder preallocateMountContentHandler(
-        @Nullable RunnableHandler preallocateMountContentHandler) {
-      this.preallocateMountContentHandler = preallocateMountContentHandler;
-      return this;
-    }
-
-    public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
-      this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
       return this;
     }
 
@@ -693,10 +680,7 @@ public class RecyclerBinder
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case
       incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
-      if (preallocateMountContentHandler == null
-          && componentContext.mLithoConfiguration.componentsConfig.nestedPreallocationEnabled) {
-        preallocateMountContentHandler = ComponentContext.getMountContentPreallocationHandler(c);
-      }
+
       visibilityProcessing =
           visibilityProcessing && ComponentContext.isVisibilityProcessingEnabled(c);
 
@@ -887,8 +871,17 @@ public class RecyclerBinder
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = mRecyclerBinderConfig.reconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
-    mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
-    mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
+
+    if (builder.mRecyclerBinderConfig.preallocateMountContentHandler == null
+        && mComponentContext.mLithoConfiguration.componentsConfig.nestedPreallocationEnabled) {
+      mPreallocateMountContentHandler =
+          ComponentContext.getMountContentPreallocationHandler(mComponentContext);
+    } else {
+      mPreallocateMountContentHandler =
+          builder.mRecyclerBinderConfig.preallocateMountContentHandler;
+    }
+
+    mPreallocatePerMountSpec = mRecyclerBinderConfig.preallocateMountContent;
     mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
     mStartupLogger = builder.startupLogger;
     mErrorEventHandler = mRecyclerBinderConfig.errorEventHandler;

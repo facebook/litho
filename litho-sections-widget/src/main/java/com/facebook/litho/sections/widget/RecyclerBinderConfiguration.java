@@ -46,7 +46,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mPostToFrontOfQueueForFirstChangeset;
 
   private final RecyclerBinderConfig mRecyclerBinderConfig;
-  private final boolean mShouldPreallocatePerMountContent;
 
   public static Builder create() {
     return new Builder();
@@ -67,8 +66,7 @@ public class RecyclerBinderConfiguration {
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isIncrementalMountEnabled,
       boolean isLayoutDiffingEnabled,
-      boolean postToFrontOfQueueForFirstChangeset,
-      boolean shouldPreallocatePerMountContent) {
+      boolean postToFrontOfQueueForFirstChangeset) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mComponentsConfiguration = componentsConfiguration;
@@ -79,12 +77,7 @@ public class RecyclerBinderConfiguration {
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
-    mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
     mRecyclerBinderConfig = recyclerBinderConfig;
-  }
-
-  public boolean shouldPreallocatePerMountContent() {
-    return mShouldPreallocatePerMountContent;
   }
 
   public float getRangeRatio() {
@@ -134,7 +127,6 @@ public class RecyclerBinderConfiguration {
   public static class Builder {
 
     static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
-    public static final int UNSET = -1;
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
 
@@ -150,7 +142,6 @@ public class RecyclerBinderConfiguration {
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
-    private boolean mShouldPreallocatePerMountContent;
 
     Builder() {}
 
@@ -167,7 +158,6 @@ public class RecyclerBinderConfiguration {
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
-      mShouldPreallocatePerMountContent = configuration.mShouldPreallocatePerMountContent;
     }
 
     /**
@@ -259,16 +249,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    /**
-     * Whether this Recycler children should preallocate mount content after being generated. This
-     * will only work if the root {@link com.facebook.litho.ComponentTree} has set a preallocation
-     * handler, since it will try to use it to run the preallocation.
-     */
-    public Builder shouldPreallocatePerMountContent(boolean shouldPreallocatePerMountContent) {
-      mShouldPreallocatePerMountContent = shouldPreallocatePerMountContent;
-      return this;
-    }
-
     public RecyclerBinderConfiguration build() {
       RecyclerBinderConfig builderRecyclerBinderConfig = mRecyclerBinderConfig;
 
@@ -285,8 +265,7 @@ public class RecyclerBinderConfiguration {
           mChangeSetThreadHandler,
           mIsIncrementalMountEnabled,
           mIsLayoutDiffingEnabled,
-          mPostToFrontOfQueueForFirstChangeset,
-          mShouldPreallocatePerMountContent);
+          mPostToFrontOfQueueForFirstChangeset);
     }
   }
 }

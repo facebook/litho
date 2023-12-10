@@ -21,6 +21,7 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LayoutThreadPoolConfiguration
+import com.facebook.rendercore.RunnableHandler
 
 /**
  * This configuration is meant to be used in the context of [RecyclerBinder]. It allows you to
@@ -114,7 +115,21 @@ data class RecyclerBinderConfig(
      */
     @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null,
     @JvmField val errorEventHandler: ErrorEventHandler? = null,
-    @JvmField val reconciliationEnabled: Boolean = ComponentsConfiguration.isReconciliationEnabled
+    @JvmField val reconciliationEnabled: Boolean = ComponentsConfiguration.isReconciliationEnabled,
+    /**
+     * Whether the [Recycler] children should preallocate mount content after being generated. This
+     * will only work if the root [com.facebook.litho.ComponentTree] has set a preallocation
+     * handler, since it will try to use it to run the preallocation.
+     *
+     * @see [com.facebook.litho.ComponentTree.Builder.useDefaultHandlerForContentPreallocation]
+     * @see [com.facebook.litho.ComponentTree.Builder.shouldPreallocateMountContentPerMountSpec]
+     */
+    @JvmField val preallocateMountContent: Boolean = false,
+    /**
+     * Define a different [com.facebook.RunnableHandler] to run the preallocation process. This
+     * handler is only used if [RecyclerBinderConfig.preallocateMountContent] is enabled.
+     */
+    @JvmField val preallocateMountContentHandler: RunnableHandler? = null
 ) {
 
   init {
@@ -164,8 +179,12 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var threadPoolConfig = configuration.threadPoolConfig
   private var errorEventHandler = configuration.errorEventHandler
   private var reconciliationEnabled = configuration.reconciliationEnabled
+  private var preallocateMountContent = configuration.preallocateMountContent
+  private var preallocateMountContentHandler = configuration.preallocateMountContentHandler
 
-  fun isCircular(isCircular: Boolean) = also { this.isCircular = isCircular }
+  fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
+    this.isCircular = isCircular
+  }
 
   fun lithoViewFactory(lithoViewFactory: LithoViewFactory?): RecyclerBinderConfigBuilder = also {
     this.lithoViewFactory = lithoViewFactory
@@ -175,13 +194,17 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.hScrollAsyncMode = hScrollAsyncMode
   }
 
-  fun requestMountForPrefetchedItems(requestMountForPrefetchedItems: Boolean) = also {
+  fun requestMountForPrefetchedItems(
+      requestMountForPrefetchedItems: Boolean
+  ): RecyclerBinderConfigBuilder = also {
     this.requestMountForPrefetchedItems = requestMountForPrefetchedItems
   }
 
-  fun itemViewPrefetch(enabled: Boolean) = also { recyclerViewItemPrefetch = enabled }
+  fun itemViewPrefetch(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    recyclerViewItemPrefetch = enabled
+  }
 
-  fun itemViewCacheSize(size: Int) = also { itemViewCacheSize = size }
+  fun itemViewCacheSize(size: Int): RecyclerBinderConfigBuilder = also { itemViewCacheSize = size }
 
   fun estimatedViewportCount(estimatedViewportCount: Int?): RecyclerBinderConfigBuilder = also {
     this.estimatedViewportCount = estimatedViewportCount
@@ -203,7 +226,18 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.errorEventHandler = errorEventHandler
   }
 
-  fun reconciliationEnabled(enabled: Boolean) = also { this.reconciliationEnabled = enabled }
+  fun reconciliationEnabled(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    this.reconciliationEnabled = enabled
+  }
+
+  fun preallocateMountContent(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    preallocateMountContent = enabled
+  }
+
+  fun preallocateMountContentHandler(handler: RunnableHandler?): RecyclerBinderConfigBuilder =
+      also {
+        preallocateMountContentHandler = handler
+      }
 
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
@@ -218,6 +252,8 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         hasDynamicItemHeight = hasDynamicItemHeight,
         threadPoolConfig = threadPoolConfig,
         errorEventHandler = errorEventHandler,
-        reconciliationEnabled = reconciliationEnabled)
+        reconciliationEnabled = reconciliationEnabled,
+        preallocateMountContent = preallocateMountContent,
+        preallocateMountContentHandler = preallocateMountContentHandler)
   }
 }

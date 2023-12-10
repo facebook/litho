@@ -325,7 +325,6 @@ public class RecyclerCollectionComponentSpec {
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
-            .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
             .startupLogger(startupLogger);
 
     RecyclerBinder recyclerBinder = recyclerBinderBuilder.build(c);
