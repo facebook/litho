@@ -19,6 +19,7 @@ package com.facebook.litho.widget
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ErrorEventHandler
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LayoutThreadPoolConfiguration
 
 /**
@@ -112,7 +113,8 @@ data class RecyclerBinderConfig(
      * been created by this config.
      */
     @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null,
-    @JvmField val errorEventHandler: ErrorEventHandler? = null
+    @JvmField val errorEventHandler: ErrorEventHandler? = null,
+    @JvmField val reconciliationEnabled: Boolean = ComponentsConfiguration.isReconciliationEnabled
 ) {
 
   init {
@@ -161,6 +163,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
   private var threadPoolConfig = configuration.threadPoolConfig
   private var errorEventHandler = configuration.errorEventHandler
+  private var reconciliationEnabled = configuration.reconciliationEnabled
 
   fun isCircular(isCircular: Boolean) = also { this.isCircular = isCircular }
 
@@ -200,6 +203,8 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.errorEventHandler = errorEventHandler
   }
 
+  fun reconciliationEnabled(enabled: Boolean) = also { this.reconciliationEnabled = enabled }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         isCircular = isCircular,
@@ -212,6 +217,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         estimatedViewportCount = estimatedViewportCount,
         hasDynamicItemHeight = hasDynamicItemHeight,
         threadPoolConfig = threadPoolConfig,
-        errorEventHandler = errorEventHandler)
+        errorEventHandler = errorEventHandler,
+        reconciliationEnabled = reconciliationEnabled)
   }
 }

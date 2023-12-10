@@ -301,7 +301,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.componentsConfiguration)
-            .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
             .startupLogger(startupLogger)
     val recyclerBinder = recyclerBinderBuilder.build(c)

@@ -59,10 +59,11 @@ abstract class CollectionLayout(
               RecyclerBinderConfiguration.create()
                   .apply { rangeRatio?.let { rangeRatio(it) } }
                   .recyclerBinderConfig(
-                      RecyclerBinderConfig(hasDynamicItemHeight = hasDynamicItemHeight))
+                      RecyclerBinderConfig(
+                          hasDynamicItemHeight = hasDynamicItemHeight,
+                          reconciliationEnabled = isReconciliationEnabled))
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
-                  .isReconciliationEnabled(isReconciliationEnabled)
                   .isIncrementalMountEnabled(isIncrementalMountEnabled)
                   .shouldPreallocatePerMountContent(preallocationPerMountContentEnabled)
                   .build())

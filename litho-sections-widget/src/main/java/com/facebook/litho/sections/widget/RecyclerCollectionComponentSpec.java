@@ -324,7 +324,6 @@ public class RecyclerCollectionComponentSpec {
             .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
-            .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
             .startupLogger(startupLogger);

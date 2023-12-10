@@ -77,13 +77,25 @@ The `RecyclerBinderConfiguration` and the `RecyclerBinder` builders both expose 
 
 ```java
 RecyclerBinderConfiguration.create()
-  .isReconciliationEnabled(false)
+  .recyclerBinderConfig(RecyclerBinderConfig.create().reconciliationEnabled(false).build())
+  .build();
+```
+
+```kotlin
+RecyclerBinderConfiguration.create()
+  .recyclerBinderConfig(RecyclerBinderConfig(reconciliationEnabled = false))
   .build();
 ```
 
 ```java
 new RecyclerBinder.Builder()
-  .isReconciliationEnabled(true)
+  .recyclerBinderConfig(RecyclerBinderConfig.create().reconciliationEnabled(true).build())
+  .build(context);
+```
+
+```kotlin
+new RecyclerBinder.Builder()
+  .recyclerBinderConfig(RecyclerBinderConfig(reconciliationEnabled = true))
   .build(context);
 ```
 <FbInternalOnly>

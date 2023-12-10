@@ -470,7 +470,6 @@ public class RecyclerBinder
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
-    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private @Nullable RunnableHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
@@ -652,11 +651,6 @@ public class RecyclerBinder
      */
     public Builder isSubAdapter(boolean isSubAdapter) {
       this.isSubAdapter = isSubAdapter;
-      return this;
-    }
-
-    public Builder isReconciliationEnabled(boolean isEnabled) {
-      isReconciliationEnabled = isEnabled;
       return this;
     }
 
@@ -891,7 +885,7 @@ public class RecyclerBinder
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mIsSubAdapter = builder.isSubAdapter;
-    mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIsReconciliationEnabled = mRecyclerBinderConfig.reconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;

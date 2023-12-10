@@ -156,7 +156,6 @@ object CollectionRecyclerSpec {
                 wrapContent(isWrapContent)
                 enableStableIds(enableStableIds)
                 componentsConfiguration(componentsConfiguration)
-                isReconciliationEnabled(isReconciliationEnabled)
                 incrementalMount(isIncrementalMountEnabled)
                 isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               }
