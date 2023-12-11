@@ -133,7 +133,7 @@ inline fun Size.Companion.withAspectRatio(
  *   [Size.Invalid]
  */
 fun Size.Companion.withAspectRatio(sizeConstraints: SizeConstraints, aspectRatio: Float): Size {
-  if (aspectRatio <= 0f) {
+  if (aspectRatio.isNaN() || aspectRatio.isInfinite() || (aspectRatio.compareTo(0) <= 0f)) {
     return Size.Invalid
   }
 

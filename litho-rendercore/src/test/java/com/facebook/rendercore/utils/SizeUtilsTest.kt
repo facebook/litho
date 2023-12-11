@@ -297,6 +297,22 @@ class SizeUtilsTest {
   }
 
   @Test
+  fun `aspect ratio - with ratio of NaN - returns Invalid Size`() {
+    val sizeConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 100)
+    assertThat(Size.withAspectRatio(sizeConstraints, aspectRatio = Float.NaN))
+        .isEqualTo(Size.Invalid)
+  }
+
+  @Test
+  fun `aspect ratio - with ratio of Infinity - returns Invalid Size`() {
+    val sizeConstraints =
+        SizeConstraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 100)
+    assertThat(Size.withAspectRatio(sizeConstraints, aspectRatio = Float.POSITIVE_INFINITY))
+        .isEqualTo(Size.Invalid)
+  }
+
+  @Test
   fun `equal dimensions - with bounded width and bounded height - returns size with equal dimensions`() {
     assertThat(
             Size.withEqualDimensions(

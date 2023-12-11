@@ -140,7 +140,7 @@ public final class MeasureUtils {
    * @param heightSpec A SizeSpec for the height
    * @param intrinsicWidth A pixel value for the intrinsic width of the measured component
    * @param intrinsicHeight A pixel value for the intrinsic height of the measured component
-   * @param aspectRatio The aspect ration size against
+   * @param aspectRatio The aspect ratio size against
    * @param outputSize The output size of this measurement
    */
   public static void measureWithAspectRatio(
@@ -170,7 +170,7 @@ public final class MeasureUtils {
    * @param heightSpec A SizeSpec for the height
    * @param intrinsicWidth A pixel value for the intrinsic width of the measured component
    * @param intrinsicHeight A pixel value for the intrinsic height of the measured component
-   * @param aspectRatio The aspect ration size against
+   * @param aspectRatio The aspect ratio size against
    */
   public static MeasureResult measureResultUsingAspectRatio(
       final int widthSpec,
@@ -192,14 +192,21 @@ public final class MeasureUtils {
    *
    * @param widthSpec A SizeSpec for the width
    * @param heightSpec A SizeSpec for the height
-   * @param aspectRatio The aspect ration size against
+   * @param aspectRatio The aspect ratio size against
    * @param outputSize The output size of this measurement
    */
   public static void measureWithAspectRatio(
       int widthSpec, int heightSpec, float aspectRatio, Size outputSize) {
 
-    if (aspectRatio < 0) {
-      throw new IllegalArgumentException("The aspect ratio must be a positive number");
+    if (Float.isNaN(aspectRatio)
+        || Float.isInfinite(aspectRatio)
+        || Float.compare(aspectRatio, 0) <= 0) {
+      outputSize.width = -1;
+      outputSize.height = -1;
+      if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+        Log.d(TAG, String.format("The aspect ratio:[%f] must be > 0", aspectRatio));
+      }
+      return;
     }
 
     final int widthMode = SizeSpec.getMode(widthSpec);
