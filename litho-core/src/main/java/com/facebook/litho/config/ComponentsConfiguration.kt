@@ -192,7 +192,6 @@ internal constructor(
     /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
     @JvmField var shouldAllowCoreThreadTimeout: Boolean = false
     @JvmField var layoutThreadKeepAliveTimeMs: Long = 1_000
-    @JvmField var crashIfExceedingStateUpdateThreshold: Boolean = false
     @JvmField var defaultRecyclerBinderConfigUseStableId: Boolean = true
     @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
