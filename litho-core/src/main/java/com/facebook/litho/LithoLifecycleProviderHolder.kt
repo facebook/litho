@@ -61,9 +61,11 @@ internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifec
 
   override fun onMovedToState(state: LithoLifecycle) {
     if (hasHeldLifecycleProvider) {
-      // The held LifecycleProvider should be affected by its LifecycleOwner only.
+      // If this holder has a held LifecycleProvider, we don't need to move state here because it
+      // should move state based on its LifecycleOwner
       return
     }
+
     when (state) {
       LithoLifecycle.HINT_VISIBLE -> {
         internalLifecycleProvider.moveToLifecycle(LithoLifecycle.HINT_VISIBLE)

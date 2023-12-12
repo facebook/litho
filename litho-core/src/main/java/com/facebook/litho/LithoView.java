@@ -543,8 +543,41 @@ public class LithoView extends BaseMountingView {
     }
   }
 
-  public LithoLifecycleProvider getLithoLifecycleProvider() {
-    return mLithoLifecycleProviderHolder;
+  // It is preferred to call getLifecycleStatus() directly if you need the status of the
+  // LifecycleProvider
+  @Nullable
+  LithoLifecycleProvider getLithoLifecycleProvider() {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return mLithoLifecycleProviderHolder;
+    } else {
+      return null;
+    }
+  }
+
+  @Nullable
+  LithoLifecycleProvider.LithoLifecycle getLifecycleStatus() {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return mLithoLifecycleProviderHolder.getLifecycleStatus();
+    } else {
+      return null;
+    }
+  }
+
+  private void subscribeToParentLifecycleProvider() {
+    LithoView parentLithoView = getParentLithoView();
+    if (parentLithoView != null) {
+      parentLithoView.mLithoLifecycleProviderHolder.addListener(mLithoLifecycleProviderHolder);
+      if (parentLithoView.getLifecycleStatus() != null) {
+        mLithoLifecycleProviderHolder.moveToLifecycle(parentLithoView.getLifecycleStatus());
+      }
+    }
+  }
+
+  private void unsubscribeFromParentLifecycleProvider() {
+    LithoView parentLithoView = getParentLithoView();
+    if (parentLithoView != null) {
+      parentLithoView.mLithoLifecycleProviderHolder.removeListener(mLithoLifecycleProviderHolder);
+    }
   }
 
   private synchronized void setLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
@@ -602,10 +635,7 @@ public class LithoView extends BaseMountingView {
         mAccessibilityManager, mAccessibilityStateChangeListener);
 
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      LithoView parentLithoView = getParentLithoView();
-      if (parentLithoView != null) {
-        parentLithoView.getLithoLifecycleProvider().addListener(mLithoLifecycleProviderHolder);
-      }
+      subscribeToParentLifecycleProvider();
     }
   }
 
@@ -622,10 +652,7 @@ public class LithoView extends BaseMountingView {
     mSuppressMeasureComponentTree = false;
 
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      LithoView parentLithoView = getParentLithoView();
-      if (parentLithoView != null) {
-        parentLithoView.getLithoLifecycleProvider().removeListener(mLithoLifecycleProviderHolder);
-      }
+      unsubscribeFromParentLifecycleProvider();
     }
   }
 

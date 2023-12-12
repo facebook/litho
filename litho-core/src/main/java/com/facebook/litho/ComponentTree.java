@@ -916,7 +916,7 @@ public class ComponentTree
     }
     LithoLifecycle currentStatus = null;
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      currentStatus = view.getLithoLifecycleProvider().getLifecycleStatus();
+      currentStatus = view.getLifecycleStatus();
     } else if (mLifecycleProvider != null) {
       currentStatus = mLifecycleProvider.getLifecycleStatus();
     }
