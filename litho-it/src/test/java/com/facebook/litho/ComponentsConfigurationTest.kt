@@ -27,6 +27,7 @@ import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.RecyclerBinderConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -61,11 +62,17 @@ class ComponentsConfigurationTest {
   @Test
   fun testSetFlagThroughComponentConfigToComponentTreeWithRecyclerCollectionComponent() {
     ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(useCancellableLayoutFutures = true)
+        defaultConfiguration.copy(useCancellableLayoutFutures = false)
+
     val recyclerBinderConfiguration =
         RecyclerBinderConfiguration.create()
-            .componentsConfiguration(ComponentsConfiguration.defaultInstance)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig(
+                    componentsConfiguration =
+                        ComponentsConfiguration.defaultInstance.copy(
+                            useCancellableLayoutFutures = true)))
             .build()
+
     legacyLithoViewRule
         .setRoot(
             RecyclerCollectionComponent.create(componentContext)

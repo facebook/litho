@@ -28,12 +28,6 @@ import com.facebook.rendercore.RunnableHandler;
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
 
-  /**
-   * Used to pass through configuration flags to the componentTree that can be read directly from
-   * this componentsConfiguration instance.
-   */
-  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
-
   private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsWrapContent;
@@ -59,7 +53,6 @@ public class RecyclerBinderConfiguration {
       RecyclerBinderConfig recyclerBinderConfig,
       float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
-      @Nullable ComponentsConfiguration componentsConfiguration,
       boolean wrapContent,
       boolean useBackgroundChangeSets,
       boolean enableStableIds,
@@ -69,7 +62,6 @@ public class RecyclerBinderConfiguration {
       boolean postToFrontOfQueueForFirstChangeset) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
-    mComponentsConfiguration = componentsConfiguration;
     mIsWrapContent = wrapContent;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mEnableStableIds = enableStableIds;
@@ -116,10 +108,6 @@ public class RecyclerBinderConfiguration {
     return mPostToFrontOfQueueForFirstChangeset;
   }
 
-  public @Nullable ComponentsConfiguration getComponentsConfiguration() {
-    return mComponentsConfiguration;
-  }
-
   public RecyclerBinderConfig getRecyclerBinderConfig() {
     return mRecyclerBinderConfig;
   }
@@ -131,7 +119,6 @@ public class RecyclerBinderConfiguration {
     private RecyclerBinderConfig mRecyclerBinderConfig;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
-    private @Nullable ComponentsConfiguration mComponentsConfiguration;
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mWrapContent = false;
     private boolean mEnableStableIds =
@@ -148,7 +135,6 @@ public class RecyclerBinderConfiguration {
     private Builder(RecyclerBinderConfiguration configuration) {
       mRecyclerBinderConfig = configuration.mRecyclerBinderConfig;
       this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
-      this.mComponentsConfiguration = configuration.mComponentsConfiguration;
       this.mRangeRatio = configuration.mRangeRatio;
       this.mWrapContent = configuration.mIsWrapContent;
       this.mEnableStableIds = configuration.mEnableStableIds;
@@ -219,11 +205,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
-      this.mComponentsConfiguration = componentsConfiguration;
-      return this;
-    }
-
     public Builder changeSetThreadHandler(@Nullable RunnableHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
@@ -258,7 +239,6 @@ public class RecyclerBinderConfiguration {
               : new RecyclerBinderConfig(),
           mRangeRatio,
           mLayoutHandlerFactory,
-          mComponentsConfiguration,
           mWrapContent,
           mUseBackgroundChangeSets,
           mEnableStableIds,

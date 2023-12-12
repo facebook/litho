@@ -457,7 +457,6 @@ public class RecyclerBinder
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
-    private @Nullable ComponentsConfiguration componentsConfiguration;
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
@@ -521,11 +520,6 @@ public class RecyclerBinder
      */
     public Builder layoutInfo(LayoutInfo layoutInfo) {
       this.layoutInfo = layoutInfo;
-      return this;
-    }
-
-    public Builder componentsConfiguration(@Nullable ComponentsConfiguration config) {
-      this.componentsConfiguration = config;
       return this;
     }
 
@@ -814,7 +808,7 @@ public class RecyclerBinder
     mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
     mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
-    mComponentsConfiguration = builder.componentsConfiguration;
+    mComponentsConfiguration = mRecyclerBinderConfig.componentsConfiguration;
 
     if (mLayoutHandlerFactory == null && mRecyclerBinderConfig.threadPoolConfig != null) {
       mThreadPoolConfig = mRecyclerBinderConfig.threadPoolConfig;

@@ -300,7 +300,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .enableStableIds(binderConfiguration.enableStableIds)
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
-            .componentsConfiguration(binderConfiguration.componentsConfiguration)
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
             .startupLogger(startupLogger)
     val recyclerBinder = recyclerBinderBuilder.build(c)

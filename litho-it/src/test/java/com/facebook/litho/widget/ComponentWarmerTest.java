@@ -149,11 +149,11 @@ public class ComponentWarmerTest {
   public void testCancelDuringPrepareAsync() {
     final RecyclerBinder binder =
         new RecyclerBinder.Builder()
-            .componentsConfiguration(
-                ComponentsConfiguration.create().useCancellableLayoutFutures(true).build())
             .recyclerBinderConfig(
                 RecyclerBinderConfig.create()
                     .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+                    .componentsConfiguration(
+                        ComponentsConfiguration.create().useCancellableLayoutFutures(true).build())
                     .build())
             .build(mContext);
 
@@ -222,8 +222,11 @@ public class ComponentWarmerTest {
   public void testCancelDuringPrepare() {
     final RecyclerBinder binder =
         new RecyclerBinder.Builder()
-            .componentsConfiguration(
-                ComponentsConfiguration.create().useCancellableLayoutFutures(true).build())
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .componentsConfiguration(
+                        ComponentsConfiguration.create().useCancellableLayoutFutures(true).build())
+                    .build())
             .build(mContext);
 
     binder.measure(

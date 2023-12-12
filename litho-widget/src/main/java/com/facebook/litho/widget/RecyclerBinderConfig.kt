@@ -33,6 +33,14 @@ import com.facebook.rendercore.RunnableHandler
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 data class RecyclerBinderConfig(
     /**
+     * Defines if an overriding [com.facebook.litho.config.ComponentsConfiguration] should be used
+     * in the [com.facebook.litho.ComponentTree] used in the [RecyclerBinder] hierarchy.
+     *
+     * If [null], then it will attempt to use the one associated with the
+     * [com.facebook.litho.ComponentContext] used to create the [RecyclerBinder].
+     */
+    @JvmField val componentsConfiguration: ComponentsConfiguration? = null,
+    /**
      * Whether the underlying RecyclerBinder will have a circular behaviour. Defaults to false.
      * Note: circular lists DO NOT support any operation that changes the size of items like insert,
      * remove, insert range, remove range
@@ -181,6 +189,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var reconciliationEnabled = configuration.reconciliationEnabled
   private var preallocateMountContent = configuration.preallocateMountContent
   private var preallocateMountContentHandler = configuration.preallocateMountContentHandler
+  private var componentsConfiguration = configuration.componentsConfiguration
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -239,8 +248,13 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         preallocateMountContentHandler = handler
       }
 
+  fun componentsConfiguration(
+      componentsConfiguration: ComponentsConfiguration?
+  ): RecyclerBinderConfigBuilder = also { this.componentsConfiguration = componentsConfiguration }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
+        componentsConfiguration = componentsConfiguration,
         isCircular = isCircular,
         lithoViewFactory = lithoViewFactory,
         hScrollAsyncMode = hScrollAsyncMode,
