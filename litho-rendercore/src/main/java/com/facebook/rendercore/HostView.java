@@ -167,9 +167,8 @@ public class HostView extends Host {
     }
     final Object content = item.getContent();
 
-    if (item.getRenderUnit().getRenderType() == DRAWABLE) {
-      invalidate();
-    } else {
+    invalidate();
+    if (item.getRenderUnit().getRenderType() == VIEW) {
       mIsChildDrawingOrderDirty = true;
 
       startTemporaryDetach((View) content);
