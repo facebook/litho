@@ -47,28 +47,6 @@ public class MeasureUtilsTest {
     assertThat(size.height).isEqualTo(20);
   }
 
-  public void testIncorrectAspectRatioWithZero() {
-    final Size size = new Size();
-    measureWithAspectRatio(makeSizeSpec(10, EXACTLY), makeSizeSpec(30, AT_MOST), 0f, size);
-    assertThat(size.width).isEqualTo(-1);
-    assertThat(size.height).isEqualTo(-1);
-  }
-
-  public void testIncorrectAspectRatioWithNaN() {
-    final Size size = new Size();
-    measureWithAspectRatio(makeSizeSpec(10, EXACTLY), makeSizeSpec(30, AT_MOST), Float.NaN, size);
-    assertThat(size.width).isEqualTo(-1);
-    assertThat(size.height).isEqualTo(-1);
-  }
-
-  public void testIncorrectAspectRatioWithInfinity() {
-    final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(10, EXACTLY), makeSizeSpec(30, AT_MOST), Float.POSITIVE_INFINITY, size);
-    assertThat(size.width).isEqualTo(-1);
-    assertThat(size.height).isEqualTo(-1);
-  }
-
   @Test
   public void testWidthExactlyHeightUnspecified() {
     final Size size = new Size();
