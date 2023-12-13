@@ -763,7 +763,7 @@ public class ComponentContext {
     return Preconditions.checkNotNull(mScopedComponentInfo);
   }
 
-  boolean shouldCacheLayouts() {
+  public boolean shouldCacheLayouts() {
     return isReconciliationEnabled()
         && mLithoConfiguration.componentsConfig.getShouldCacheLayouts();
   }
