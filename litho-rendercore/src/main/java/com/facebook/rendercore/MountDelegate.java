@@ -21,6 +21,8 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
+import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.GapWorkerCallbacks;
 import com.facebook.rendercore.extensions.InformsMountCallback;
@@ -38,6 +40,7 @@ import java.util.Set;
  * Can be passed to a MountState to override default mounting behaviour and control which items get
  * mounted or unmounted.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountDelegate {
 
   private final LongSparseArray<Integer> mReferenceCountMap = new LongSparseArray<>();
@@ -288,7 +291,7 @@ public class MountDelegate {
   public void onBindItem(
       final RenderUnit renderUnit,
       final Object content,
-      final Object layoutData,
+      final @Nullable Object layoutData,
       final Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
@@ -313,7 +316,7 @@ public class MountDelegate {
   public void onUnbindItem(
       final RenderUnit renderUnit,
       final Object content,
-      final Object layoutData,
+      @Nullable final Object layoutData,
       final Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
@@ -341,9 +344,9 @@ public class MountDelegate {
    */
   @Nullable
   List<ExtensionState> collateExtensionsToUpdate(
-      final @Nullable RenderUnit<?> previousRenderUnit,
+      final RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
-      final @Nullable RenderUnit<?> nextRenderUnit,
+      final RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Systracer tracer) {
     List<ExtensionState> extensionStatesToUpdate = null;
@@ -377,7 +380,7 @@ public class MountDelegate {
 
   static void onUnbindItemWhichRequiresUpdate(
       final List<ExtensionState> extensionStatesToUpdate,
-      final @Nullable RenderUnit<?> previousRenderUnit,
+      final RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
@@ -405,7 +408,7 @@ public class MountDelegate {
 
   static void onUnmountItemWhichRequiresUpdate(
       final List<ExtensionState> extensionStatesToUpdate,
-      final @Nullable RenderUnit<?> previousRenderUnit,
+      final RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
@@ -435,7 +438,7 @@ public class MountDelegate {
       final List<ExtensionState> extensionStatesToUpdate,
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
-      final @Nullable RenderUnit<?> nextRenderUnit,
+      final RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Object content,
       final Systracer tracer) {
@@ -462,7 +465,7 @@ public class MountDelegate {
       final List<ExtensionState> extensionStatesToUpdate,
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
-      final @Nullable RenderUnit<?> nextRenderUnit,
+      final RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Object content,
       final Systracer tracer) {
@@ -488,7 +491,7 @@ public class MountDelegate {
   public void onMountItem(
       final RenderUnit renderUnit,
       final Object content,
-      final Object layoutData,
+      @Nullable final Object layoutData,
       final Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
@@ -562,7 +565,7 @@ public class MountDelegate {
     return mUnmountDelegateExtensionState;
   }
 
-  public Object getContentAt(int position) {
+  public @Nullable Object getContentAt(int position) {
     return mMountDelegateTarget.getContentAt(position);
   }
 
@@ -731,7 +734,7 @@ public class MountDelegate {
 
   @VisibleForTesting
   public int getRefCount(long id) {
-    return mReferenceCountMap.get(id);
+    return Preconditions.checkNotNull(mReferenceCountMap.get(id));
   }
 
   @VisibleForTesting

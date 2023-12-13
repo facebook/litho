@@ -18,13 +18,15 @@ package com.facebook.rendercore;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountItem {
   private Object mContent;
   private @Nullable Host mHost = null;
   private boolean mBound;
   private RenderTreeNode mRenderTreeNode;
-  private Object mMountData;
+  private @Nullable Object mMountData;
   private final BindData mBindData = new BindData();
 
   public MountItem(RenderTreeNode renderTreeNode, Object content) {
@@ -70,6 +72,7 @@ public class MountItem {
 
   /** @deprecated Use BindData API instead. */
   @Deprecated
+  @Nullable
   public Object getMountData() {
     return mMountData;
   }
@@ -80,7 +83,7 @@ public class MountItem {
 
   /** @deprecated Use BindData API instead. */
   @Deprecated
-  public void setMountData(Object mountData) {
+  public void setMountData(@Nullable Object mountData) {
     mMountData = mountData;
   }
 

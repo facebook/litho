@@ -17,12 +17,14 @@
 package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
 
 /** Exposes Some RenderCore {@link MountState} API to {@link RenderCoreExtension} */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface MountDelegateTarget {
 
   void notifyMount(final long id);
@@ -45,8 +47,10 @@ public interface MountDelegateTarget {
 
   Host getRootHost();
 
+  @Nullable
   Object getContentAt(int position);
 
+  @Nullable
   Object getContentById(long id);
 
   void unregisterAllExtensions();
