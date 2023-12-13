@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -53,6 +54,7 @@ import java.util.Deque;
 import java.util.List;
 import kotlin.Unit;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class BaseMountingView extends ComponentHost
     implements RenderCoreExtensionHost, AnimatedRootHost {
 
@@ -401,7 +403,8 @@ public abstract class BaseMountingView extends ComponentHost
       mReentrantMounts.clear();
 
       while (!reentrantMounts.isEmpty()) {
-        final ReentrantMount reentrantMount = reentrantMounts.pollFirst();
+        final ReentrantMount reentrantMount =
+            Preconditions.checkNotNull(reentrantMounts.pollFirst());
         setMountStateDirty();
         mountComponentInternal(
             reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
@@ -505,13 +508,15 @@ public abstract class BaseMountingView extends ComponentHost
       LayoutState layoutState, @Nullable Rect currentVisibleArea) {
     final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
     if (currentVisibleArea != null && !needsMount) {
-      mMountState.getMountDelegate().notifyVisibleBoundsChanged(currentVisibleArea);
+      Preconditions.checkNotNull(mMountState.getMountDelegate())
+          .notifyVisibleBoundsChanged(currentVisibleArea);
     } else {
       // Generate the renderTree here so that any operations
       // that occur in toRenderTree() happen prior to "beforeMount".
       final RenderTree renderTree = layoutState.toRenderTree();
       setupMountExtensions();
       Preconditions.checkNotNull(mLithoHostListenerCoordinator);
+      Preconditions.checkNotNull(currentVisibleArea);
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       mMountState.mount(renderTree);
       LithoStats.incrementComponentMountCount();
@@ -612,6 +617,7 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected synchronized void onDirtyMountComplete() {}
 
+  @Nullable
   protected TreeMountInfo getMountInfo() {
     final TreeState treeState = getTreeState();
     return treeState != null ? treeState.getMountInfo() : null;
@@ -1092,7 +1098,9 @@ public abstract class BaseMountingView extends ComponentHost
     if (!hasMounted && rootBoundsTransition.appearTransition != null) {
       return (int)
           Transition.getRootAppearFromValue(
-              rootBoundsTransition.appearTransition, getCurrentLayoutState(), property);
+              rootBoundsTransition.appearTransition,
+              Preconditions.checkNotNull(getCurrentLayoutState()),
+              property);
     }
 
     if (hasMounted && !hasNewComponentTree) {
