@@ -99,7 +99,7 @@ public class ExtensionState<State> {
     return mLayoutOutputMountRefs.contains(id);
   }
 
-  public void beforeMount(Rect localVisibleRect, @Nullable Object input) {
+  public void beforeMount(@Nullable Rect localVisibleRect, @Nullable Object input) {
     mExtension.beforeMount(this, input, localVisibleRect);
   }
 

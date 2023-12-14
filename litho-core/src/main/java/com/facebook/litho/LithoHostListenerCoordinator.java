@@ -75,7 +75,7 @@ public class LithoHostListenerCoordinator {
     }
   }
 
-  public void beforeMount(LayoutState input, Rect localVisibleRect) {
+  public void beforeMount(LayoutState input, @Nullable Rect localVisibleRect) {
 
     if (mNestedLithoViewsExtensionState != null) {
       mNestedLithoViewsExtensionState.beforeMount(localVisibleRect, input);

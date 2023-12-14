@@ -516,7 +516,6 @@ public abstract class BaseMountingView extends ComponentHost
       final RenderTree renderTree = layoutState.toRenderTree();
       setupMountExtensions();
       Preconditions.checkNotNull(mLithoHostListenerCoordinator);
-      Preconditions.checkNotNull(currentVisibleArea);
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       mMountState.mount(renderTree);
       LithoStats.incrementComponentMountCount();
