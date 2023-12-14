@@ -72,6 +72,7 @@ inline fun ResourcesScope.LazyGrid(
     preallocationPerMountContentEnabled: Boolean =
         context.lithoConfiguration.preallocationPerMountContentEnabled,
     shouldExcludeFromIncrementalMount: Boolean = false,
+    recyclerContentDescription: CharSequence? = null,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -119,5 +120,6 @@ inline fun ResourcesScope.LazyGrid(
       alwaysDetectDuplicates,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,
+      recyclerContentDescription,
       lazyGridScope.children)
 }

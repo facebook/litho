@@ -73,6 +73,7 @@ inline fun ResourcesScope.LazyList(
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     shouldExcludeFromIncrementalMount: Boolean = false,
+    recyclerContentDescription: CharSequence? = null,
     init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
@@ -121,5 +122,6 @@ inline fun ResourcesScope.LazyList(
       alwaysDetectDuplicates,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,
+      recyclerContentDescription,
       lazyListScope.children)
 }
