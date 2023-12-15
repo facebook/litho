@@ -71,7 +71,6 @@ inline fun ResourcesScope.RecyclerCollectionComponent(
     sectionsViewLogger: SectionsRecyclerViewLogger? = null,
     handle: Handle? = null,
     style: Style? = null,
-    recyclerContentDescription: CharSequence? = null,
 ): RecyclerCollectionComponent =
     RecyclerCollectionComponent.create(context)
         .section(section)
@@ -99,7 +98,6 @@ inline fun ResourcesScope.RecyclerCollectionComponent(
         .eventsController(eventsController)
         .sectionTreeTag(sectionTreeTag)
         .startupLogger(startupLogger)
-        .recyclerContentDescription(recyclerContentDescription)
         .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
         .sectionsViewLogger(sectionsViewLogger)
         .handle(handle)

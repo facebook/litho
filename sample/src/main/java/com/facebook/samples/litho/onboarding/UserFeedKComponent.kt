@@ -26,7 +26,7 @@ import com.facebook.samples.litho.onboarding.model.Post
 class UserFeedKComponent(private val posts: List<Post>) : KComponent() {
   override fun ComponentScope.render(): Component {
 
-    return LazyList(recyclerContentDescription = "UserFeed") {
+    return LazyList {
       posts.forEach { post ->
         child(id = post.id, component = PostWithActionsKComponent(post = post))
       }

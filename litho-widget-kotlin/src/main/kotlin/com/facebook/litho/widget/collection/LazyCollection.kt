@@ -91,7 +91,6 @@ class LazyCollection(
     private val alwaysDetectDuplicates: Boolean = false,
     private val fadingEdgeLength: Dimen? = null,
     private val shouldExcludeFromIncrementalMount: Boolean = false,
-    private val recyclerContentDescription: CharSequence? = null,
     private val lazyCollectionChildren: LazyCollectionChildren
 ) : KComponent() {
 
@@ -192,7 +191,6 @@ class LazyCollection(
         .onScrollListener(onScrollListener)
         .onScrollListeners(onScrollListeners)
         .lazyCollectionController(lazyCollectionController)
-        .recyclerContentDescription(recyclerContentDescription)
         .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
         .apply {
           val fadingEdgeLengthPx = fadingEdgeLength?.toPixels()

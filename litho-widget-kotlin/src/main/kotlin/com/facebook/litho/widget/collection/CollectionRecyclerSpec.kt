@@ -86,7 +86,6 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
       @Prop(optional = true) sectionsViewLogger: SectionsRecyclerViewLogger?,
       @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean,
-      @Prop(optional = true) recyclerContentDescription: CharSequence?,
       @State internalRecyclerEventsController: RecyclerEventsController?,
       @State binder: Binder<RecyclerView>,
       @State sectionTree: SectionTree
@@ -114,7 +113,6 @@ object CollectionRecyclerSpec {
         .binder(binder)
         .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
         .touchHandler(recyclerTouchEventHandler)
-        .contentDescription(recyclerContentDescription)
         .sectionsViewLogger(sectionsViewLogger)
         .apply {
           clipToPadding?.let { clipToPadding(it) }
