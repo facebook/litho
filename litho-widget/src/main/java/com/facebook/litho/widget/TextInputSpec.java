@@ -156,6 +156,7 @@ import javax.annotation.Nullable;
  *     17 and above; it's up to you to handle earlier API levels by adjusting gravity.
  * @prop gravity Gravity for the text within its container.
  * @prop editable If set, allows the text to be editable.
+ * @prop cursorVisible Set whether the cursor is visible. The default is true.
  * @prop inputType Type of data being placed in a text field, used to help an input method decide
  *     how to let the user enter text. To add multiline use multiline(true) method.
  * @prop rawInputType Type of data being placed in a text field. Directly changes the content type
@@ -218,6 +219,7 @@ class TextInputSpec {
   @PropDefault protected static final int textAlignment = TEXT_ALIGNMENT_GRAVITY;
   @PropDefault protected static final int gravity = Gravity.CENTER_VERTICAL | Gravity.START;
   @PropDefault protected static final boolean editable = true;
+  @PropDefault protected static final boolean cursorVisible = true;
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
   @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
@@ -278,6 +280,7 @@ class TextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -315,6 +318,7 @@ class TextInputSpec {
             textAlignment,
             gravity,
             editable,
+            cursorVisible,
             inputType,
             rawInputType,
             keyListener,
@@ -369,6 +373,7 @@ class TextInputSpec {
       int textAlignment,
       int gravity,
       boolean editable,
+      boolean cursorVisible,
       int inputType,
       int rawInputType,
       @Nullable KeyListener keyListener,
@@ -408,6 +413,7 @@ class TextInputSpec {
         textAlignment,
         gravity,
         editable,
+        cursorVisible,
         inputType,
         rawInputType,
         keyListener,
@@ -447,6 +453,7 @@ class TextInputSpec {
       int textAlignment,
       int gravity,
       boolean editable,
+      boolean cursorVisible,
       int inputType,
       int rawInputType,
       @Nullable KeyListener keyListener,
@@ -518,7 +525,7 @@ class TextInputSpec {
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);
     editText.setLongClickable(editable);
-    editText.setCursorVisible(editable);
+    editText.setCursorVisible(cursorVisible);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
     if (highlightColor != null) {
@@ -600,6 +607,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> textAlignment,
       @Prop(optional = true) Diff<Integer> gravity,
       @Prop(optional = true) Diff<Boolean> editable,
+      @Prop(optional = true) Diff<Boolean> cursorVisible,
       @Prop(optional = true) Diff<Integer> inputType,
       @Prop(optional = true) Diff<Integer> rawInputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
@@ -658,6 +666,9 @@ class TextInputSpec {
       return true;
     }
     if (!ObjectsCompat.equals(editable.getPrevious(), editable.getNext())) {
+      return true;
+    }
+    if (!ObjectsCompat.equals(cursorVisible.getPrevious(), cursorVisible.getNext())) {
       return true;
     }
     if (!ObjectsCompat.equals(inputType.getPrevious(), inputType.getNext())) {
@@ -794,6 +805,7 @@ class TextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -830,6 +842,7 @@ class TextInputSpec {
         textAlignment,
         gravity,
         editable,
+        cursorVisible,
         inputType,
         rawInputType,
         keyListener,

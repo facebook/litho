@@ -99,6 +99,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int textAlignment = TextInputSpec.textAlignment;
   @PropDefault protected static final int gravity = TextInputSpec.gravity;
   @PropDefault protected static final boolean editable = TextInputSpec.editable;
+  @PropDefault protected static final boolean cursorVisible = TextInputSpec.cursorVisible;
   @PropDefault protected static final int inputType = TextInputSpec.inputType;
   @PropDefault protected static final int rawInputType = TextInputSpec.rawInputType;
   @PropDefault protected static final int imeOptions = TextInputSpec.imeOptions;
@@ -152,6 +153,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -197,6 +199,7 @@ class MaterialTextInputSpec {
             textAlignment,
             gravity,
             editable,
+            cursorVisible,
             inputType,
             rawInputType,
             keyListener,
@@ -252,6 +255,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) Diff<Integer> textAlignment,
       @Prop(optional = true) Diff<Integer> gravity,
       @Prop(optional = true) Diff<Boolean> editable,
+      @Prop(optional = true) Diff<Boolean> cursorVisible,
       @Prop(optional = true) Diff<Integer> inputType,
       @Prop(optional = true) Diff<Integer> rawInputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
@@ -292,6 +296,7 @@ class MaterialTextInputSpec {
             textAlignment,
             gravity,
             editable,
+            cursorVisible,
             inputType,
             rawInputType,
             imeOptions,
@@ -349,6 +354,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -393,6 +399,7 @@ class MaterialTextInputSpec {
         textAlignment,
         gravity,
         editable,
+        cursorVisible,
         inputType,
         rawInputType,
         keyListener,
