@@ -33,6 +33,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.key
+import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
@@ -205,6 +206,106 @@ class ViewStylesTest {
         .attachToWindow()
 
     assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+  }
+
+  @Test
+  fun `onFocused Changed - invoked when set`() {
+    val didFocusChangeTrigger = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                TextInput(
+                    initialText = "Try again",
+                    style =
+                        Style.width(100.px).height(100.px).onFocusedChanged {
+                          didFocusChangeTrigger.set(true)
+                        }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(didFocusChangeTrigger.get()).isFalse
+    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+    assertThat(didFocusChangeTrigger.get()).isTrue
+  }
+
+  @Test
+  fun `onFocused Changed - respects enablement check`() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                TextInput(
+                    initialText = "Try again",
+                    style =
+                        Style.width(100.px).height(100.px).onFocusedChanged(enabled = false) {
+                          error("We should not have hit this code")
+                        }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+  }
+
+  @Test
+  fun `onFocused Changed - overrides prior set one when new (disabled) one set`() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                TextInput(
+                    initialText = "Try again",
+                    style =
+                        Style.width(100.px)
+                            .height(100.px)
+                            .onFocusedChanged { error("This one should have been overridden") }
+                            .onFocusedChanged(enabled = false) {
+                              error("We should not have hit this code")
+                            }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+  }
+
+  @Test
+  fun `onFocused Changed - overrides prior set one when new (enabled) one set`() {
+    val didFocusChangeTrigger = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                TextInput(
+                    initialText = "Try again",
+                    style =
+                        Style.width(100.px)
+                            .height(100.px)
+                            .onFocusedChanged { error("This one should have been overridden") }
+                            .onFocusedChanged(enabled = true) { didFocusChangeTrigger.set(true) }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(didFocusChangeTrigger.get()).isFalse
+    lithoViewRule.findViewWithTextOrNull("Try again")!!.requestFocus()
+    assertThat(didFocusChangeTrigger.get()).isTrue
   }
 
   @Test
@@ -581,6 +682,7 @@ class ViewStylesTest {
   @Test
   fun outlineProvider_whenSet_isRespected() {
     val outlineProvider = ViewOutlineProvider.BOUNDS
+
     class OutlineProviderComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Row(style = Style.outlineProvider(outlineProvider))

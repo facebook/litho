@@ -29,6 +29,7 @@ import com.facebook.litho.ClickEvent
 import com.facebook.litho.CommonProps
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.FocusChangedEvent
 import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
@@ -53,6 +54,7 @@ internal enum class ObjectField : StyleItemField {
   FOCUSABLE,
   FOREGROUND,
   ON_CLICK,
+  ON_FOCUS_CHANGED,
   ON_INTERCEPT_TOUCH,
   ON_LONG_CLICK,
   ON_TOUCH,
@@ -108,6 +110,11 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
       ObjectField.DUPLICATE_PARENT_STATE -> commonProps.duplicateParentState(value as Boolean)
       ObjectField.FOCUSABLE -> commonProps.focusable(value as Boolean)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
+      ObjectField.ON_FOCUS_CHANGED -> {
+        val focusChangedHandler =
+            if (value != null) eventHandler(value as (FocusChangedEvent) -> Unit) else null
+        commonProps.focusChangeHandler(focusChangedHandler)
+      }
       ObjectField.ON_CLICK -> {
         val clickHandler = if (value != null) eventHandler(value as (ClickEvent) -> Unit) else null
         commonProps.clickHandler(clickHandler)
@@ -308,6 +315,18 @@ inline fun Style.foreground(foreground: Drawable?): Style =
  */
 inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
     this + ObjectStyleItem(ObjectField.FOREGROUND, ComparableColorDrawable.create(foregroundColor))
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component's focus changes but only if
+ * [enabled] is true. If enabled, setting this property will cause the Component to be represented
+ * as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.OnFocusChangeListener]
+ */
+inline fun Style.onFocusedChanged(
+    enabled: Boolean = true,
+    noinline action: (FocusChangedEvent) -> Unit
+): Style = this + ObjectStyleItem(ObjectField.ON_FOCUS_CHANGED, if (enabled) action else null)
 
 /**
  * Sets a listener that will invoke the given lambda when this Component is clicked but only if
