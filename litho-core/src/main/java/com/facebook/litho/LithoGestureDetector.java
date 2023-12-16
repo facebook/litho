@@ -33,7 +33,6 @@ import com.facebook.litho.annotations.OnCreateLayout;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoGestureDetector extends GestureDetector {
-
   public LithoGestureDetector(Context context, OnGestureListener listener) {
     super(context, listener, new Handler(Looper.getMainLooper()));
   }
