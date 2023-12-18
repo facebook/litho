@@ -323,7 +323,6 @@ public class RecyclerCollectionComponentSpec {
             .enableStableIds(binderConfiguration.getEnableStableIds())
             .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
-            .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .startupLogger(startupLogger);
 
     RecyclerBinder recyclerBinder = recyclerBinderBuilder.build(c);

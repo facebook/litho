@@ -175,7 +175,6 @@ public final class StateUpdatesTestHelper {
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
             .visibilityProcessing(visibilityProcessingEnabled)
-            .layoutDiffing(false)
             .build();
 
     final LithoView lithoView = new LithoView(context);

@@ -155,7 +155,6 @@ object CollectionRecyclerSpec {
                 wrapContent(isWrapContent)
                 enableStableIds(enableStableIds)
                 incrementalMount(isIncrementalMountEnabled)
-                isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               }
             }
             .build(c)

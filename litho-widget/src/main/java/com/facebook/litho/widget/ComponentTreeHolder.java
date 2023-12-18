@@ -54,7 +54,6 @@ public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private final boolean mIsReconciliationEnabled;
-  private final boolean mIsLayoutDiffingEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
@@ -126,7 +125,6 @@ public class ComponentTreeHolder {
     private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
-    private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean visibilityProcessingEnabled = true;
     private @Nullable LithoLifecycleProvider parentLifecycle;
     private @Nullable ErrorEventHandler errorEventHandler;
@@ -180,11 +178,6 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
-      isLayoutDiffingEnabled = isEnabled;
-      return this;
-    }
-
     public Builder parentLifecycleProvider(LithoLifecycleProvider parentLifecycle) {
       this.parentLifecycle = parentLifecycle;
       return this;
@@ -219,7 +212,6 @@ public class ComponentTreeHolder {
     mIncrementalMount = builder.incrementalMount;
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
-    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mParentLifecycle = builder.parentLifecycle;
     mErrorEventHandler = builder.errorEventHandler;
     mComponentsConfiguration = builder.componentsConfiguration;
@@ -480,20 +472,12 @@ public class ComponentTreeHolder {
   private void applyCustomAttributesIfProvided(ComponentTree.Builder builder) {
     final Object isReconciliationEnabledAttr =
         mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
-    final Object layoutDiffingEnabledAttr =
-        mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
 
     // If the custom attribute is NOT set, defer to the value from the builder.
     if (isReconciliationEnabledAttr != null) {
       builder.isReconciliationEnabled((boolean) isReconciliationEnabledAttr);
     } else {
       builder.isReconciliationEnabled(mIsReconciliationEnabled);
-    }
-
-    if (layoutDiffingEnabledAttr != null) {
-      builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
-    } else {
-      builder.layoutDiffing(mIsLayoutDiffingEnabled);
     }
 
     if (mErrorEventHandler != null) {

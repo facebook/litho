@@ -147,7 +147,6 @@ public class RecyclerBinder
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mIsReconciliationEnabled;
-  private final boolean mIsLayoutDiffingEnabled;
   private final boolean mRecyclerViewItemPrefetch;
   private final int mItemViewCacheSize;
   private final boolean mRequestMountForPrefetchedItems;
@@ -410,7 +409,6 @@ public class RecyclerBinder
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
         boolean isReconciliationEnabled,
-        boolean isLayoutDiffingEnabled,
         @Nullable RunnableHandler preallocateHandler,
         boolean preallocatePerMountSpec,
         @Nullable LithoLifecycleProvider lifecycleProvider,
@@ -428,7 +426,6 @@ public class RecyclerBinder
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
             boolean isReconciliationEnabled,
-            boolean isLayoutDiffingEnabled,
             @Nullable RunnableHandler preallocateHandler,
             boolean preallocatePerMountSpec,
             @Nullable LithoLifecycleProvider lifecycleProvider,
@@ -441,7 +438,6 @@ public class RecyclerBinder
               .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .isReconciliationEnabled(isReconciliationEnabled)
-              .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
               .parentLifecycleProvider(lifecycleProvider)
@@ -469,7 +465,6 @@ public class RecyclerBinder
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
-    private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private @Nullable LithoStartupLogger startupLogger;
     private RunnableHandler mAsyncInsertLayoutHandler;
     private boolean visibilityProcessing = true;
@@ -632,11 +627,6 @@ public class RecyclerBinder
      */
     public Builder isSubAdapter(boolean isSubAdapter) {
       this.isSubAdapter = isSubAdapter;
-      return this;
-    }
-
-    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
-      isLayoutDiffingEnabled = isEnabled;
       return this;
     }
 
@@ -864,7 +854,6 @@ public class RecyclerBinder
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = mRecyclerBinderConfig.reconciliationEnabled;
-    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
 
     if (builder.mRecyclerBinderConfig.preallocateMountContentHandler == null
         && mComponentContext.mLithoConfiguration.componentsConfig.nestedPreallocationEnabled) {
@@ -4076,7 +4065,6 @@ public class RecyclerBinder
         mIncrementalMountEnabled,
         mVisibilityProcessingEnabled,
         mIsReconciliationEnabled,
-        mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
         mPreallocatePerMountSpec,
         mParentLifecycle,

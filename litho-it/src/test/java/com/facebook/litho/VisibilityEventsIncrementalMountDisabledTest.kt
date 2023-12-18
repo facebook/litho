@@ -1400,7 +1400,6 @@ class VisibilityEventsIncrementalMountDisabledTest {
                             .heightPx(100))
                     .build())
             .incrementalMount(false)
-            .layoutDiffing(false)
             .visibilityProcessing(true)
             .build()
     lithoView.componentTree = componentTree

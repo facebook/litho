@@ -34,7 +34,6 @@ import org.mockito.kotlin.mock
 class ComponentTreeBuilderTest {
 
   private lateinit var looper: Looper
-  private lateinit var componentsLogger: ComponentsLogger
   private lateinit var context: ComponentContext
   private lateinit var root: Component
   private lateinit var componentTreeBuilder: ComponentTree.Builder
@@ -65,7 +64,6 @@ class ComponentTreeBuilderTest {
   fun testCreationWithInputs() {
     val componentTree = componentTreeBuilder.layoutThreadLooper(looper).build()
     assertSameAsInternalState(componentTree, root, "mRoot")
-    assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled")
     assertThat(componentTree.isIncrementalMountEnabled).isTrue
     assertThat(context.logTag).isEqualTo(LOG_TAG)
     val handler = Whitebox.getInternalState<Handler>(componentTree, "mLayoutThreadHandler")
@@ -95,7 +93,6 @@ class ComponentTreeBuilderTest {
 
     @JvmStatic
     private fun assertDefaults(componentTree: ComponentTree) {
-      assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled")
       assertThat(componentTree.isIncrementalMountEnabled).isTrue
     }
   }

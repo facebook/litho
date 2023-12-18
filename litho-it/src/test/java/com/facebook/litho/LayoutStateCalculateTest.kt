@@ -2419,7 +2419,7 @@ class LayoutStateCalculateTest {
     val result =
         ResolveTreeFuture.resolve(context, component, TreeState(), -1, -1, null, null, null, null)
     return LayoutTreeFuture.layout(
-        result, widthSpec, heightSpec, -1, componentTreeId, false, null, null, null, null)
+        result, widthSpec, heightSpec, -1, componentTreeId, null, null, null, null)
   }
 
   companion object {

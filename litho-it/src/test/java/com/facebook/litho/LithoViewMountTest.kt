@@ -235,10 +235,7 @@ class LithoViewMountTest {
       height: Int
   ): ComponentTree {
     val componentTree =
-        ComponentTree.create(context, component)
-            .incrementalMount(incMountEnabled)
-            .layoutDiffing(false)
-            .build()
+        ComponentTree.create(context, component).incrementalMount(incMountEnabled).build()
     componentTree.setSizeSpec(
         SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY))

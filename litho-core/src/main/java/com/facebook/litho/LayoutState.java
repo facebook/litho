@@ -128,7 +128,6 @@ public class LayoutState
   int mWidth;
   int mHeight;
 
-  final boolean mShouldGenerateDiffTree;
   private int mComponentTreeId = -1;
   final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
@@ -163,7 +162,6 @@ public class LayoutState
       ResolveResult resolveResult,
       SizeConstraints sizeConstraints,
       int componentTreeId,
-      boolean isLayoutDiffingEnabled,
       boolean isAccessibilityEnabled,
       @Nullable LayoutState current) {
     mId = sIdGenerator.getAndIncrement();
@@ -184,7 +182,6 @@ public class LayoutState
             ? new ArrayList<>(resolveResult.outputs.componentsThatNeedPreviousRenderData)
             : null;
     mComponentTreeId = componentTreeId;
-    mShouldGenerateDiffTree = isLayoutDiffingEnabled;
     mRootTransitionId = LithoNodeUtils.createTransitionId(resolveResult.node);
     mIsAccessibilityEnabled = isAccessibilityEnabled;
   }

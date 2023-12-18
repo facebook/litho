@@ -36,7 +36,6 @@ public class RecyclerBinderConfiguration {
   private boolean mEnableStableIds;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsIncrementalMountEnabled;
-  private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
 
   private final RecyclerBinderConfig mRecyclerBinderConfig;
@@ -58,7 +57,6 @@ public class RecyclerBinderConfiguration {
       boolean enableStableIds,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isIncrementalMountEnabled,
-      boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
@@ -67,7 +65,6 @@ public class RecyclerBinderConfiguration {
     mEnableStableIds = enableStableIds;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
-    mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mRecyclerBinderConfig = recyclerBinderConfig;
   }
@@ -100,10 +97,6 @@ public class RecyclerBinderConfiguration {
     return mIsIncrementalMountEnabled;
   }
 
-  public boolean isLayoutDiffingEnabled() {
-    return mIsLayoutDiffingEnabled;
-  }
-
   public boolean isPostToFrontOfQueueForFirstChangeset() {
     return mPostToFrontOfQueueForFirstChangeset;
   }
@@ -127,7 +120,6 @@ public class RecyclerBinderConfiguration {
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsIncrementalMountEnabled =
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled;
-    private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
 
     Builder() {}
@@ -141,7 +133,6 @@ public class RecyclerBinderConfiguration {
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       mIsIncrementalMountEnabled = configuration.mIsIncrementalMountEnabled;
-      this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
     }
@@ -219,11 +210,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
-      mIsLayoutDiffingEnabled = isEnabled;
-      return this;
-    }
-
     public Builder postToFrontOfQueueForFirstChangeset(
         boolean postToFrontOfQueueForFirstChangeset) {
       mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
@@ -244,7 +230,6 @@ public class RecyclerBinderConfiguration {
           mEnableStableIds,
           mChangeSetThreadHandler,
           mIsIncrementalMountEnabled,
-          mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset);
     }
   }

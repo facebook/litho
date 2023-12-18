@@ -215,7 +215,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .layoutDiffing(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -267,7 +266,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .layoutDiffing(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -313,7 +311,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .layoutDiffing(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup

@@ -45,7 +45,6 @@ class LayoutTreeFuture(
     private val heightSpec: Int,
     private val treeId: Int,
     private val version: Int,
-    private val isLayoutDiffingEnabled: Boolean,
     @RenderSource private val source: Int
 ) : TreeFuture<LayoutState>(false) {
 
@@ -60,7 +59,6 @@ class LayoutTreeFuture(
         heightSpec,
         version,
         treeId,
-        isLayoutDiffingEnabled,
         currentLayoutState,
         diffTreeRoot,
         this,
@@ -87,7 +85,6 @@ class LayoutTreeFuture(
         sizeConstraints: SizeConstraints,
         version: Int,
         treeId: Int,
-        isLayoutDiffingEnabled: Boolean,
         currentLayoutState: LayoutState?,
         diffTreeRoot: DiffNode?,
         future: TreeFuture<*>?,
@@ -147,7 +144,6 @@ class LayoutTreeFuture(
                 resolveResult,
                 sizeConstraints,
                 treeId,
-                isLayoutDiffingEnabled,
                 lsc.isAccessibilityEnabled,
                 currentLayoutState,
             )
@@ -213,7 +209,6 @@ class LayoutTreeFuture(
         heightSpec: Int,
         version: Int,
         treeId: Int,
-        isLayoutDiffingEnabled: Boolean,
         currentLayoutState: LayoutState?,
         diffTreeRoot: DiffNode?,
         future: TreeFuture<*>?,
@@ -224,7 +219,6 @@ class LayoutTreeFuture(
             sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
             version = version,
             treeId = treeId,
-            isLayoutDiffingEnabled = isLayoutDiffingEnabled,
             currentLayoutState = currentLayoutState,
             diffTreeRoot = diffTreeRoot,
             future = future,

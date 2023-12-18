@@ -143,7 +143,6 @@ class MountStateViewClickTest {
     lithoView.componentTree =
         ComponentTree.create(context, component)
             .incrementalMount(false)
-            .layoutDiffing(false)
             .visibilityProcessing(false)
             .build()
   }

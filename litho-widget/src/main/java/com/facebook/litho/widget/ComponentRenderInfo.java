@@ -27,7 +27,6 @@ import com.facebook.litho.RenderCompleteEvent;
 /** {@link RenderInfo} that can render components. */
 public class ComponentRenderInfo extends BaseRenderInfo {
 
-  public static final String LAYOUT_DIFFING_ENABLED = "layout_diffing_enabled";
   public static final String RECONCILIATION_ENABLED = "is_reconciliation_enabled";
 
   private final Component mComponent;

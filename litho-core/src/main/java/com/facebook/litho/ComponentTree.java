@@ -305,9 +305,6 @@ public class ComponentTree
   private boolean mIsMeasuring;
 
   @ThreadConfined(ThreadConfined.UI)
-  private final boolean mIsLayoutDiffingEnabled;
-
-  @ThreadConfined(ThreadConfined.UI)
   private boolean mIsAttached;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -467,12 +464,6 @@ public class ComponentTree
       mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
     } else {
       mBatchedStateUpdatesStrategy = null;
-    }
-
-    if (ComponentsConfiguration.overrideLayoutDiffing != null) {
-      mIsLayoutDiffingEnabled = ComponentsConfiguration.overrideLayoutDiffing;
-    } else {
-      mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     }
 
     addMeasureListener(builder.mMeasureListener);
@@ -2458,7 +2449,6 @@ public class ComponentTree
             heightSpec,
             mId,
             layoutVersion,
-            mIsLayoutDiffingEnabled,
             source);
 
     final TreeFuture.TreeFutureResult<LayoutState> layoutStateHolder =
@@ -3079,7 +3069,6 @@ public class ComponentTree
     // optional
     private ComponentsConfiguration config;
     private boolean incrementalMountEnabled = true;
-    private boolean isLayoutDiffingEnabled = true;
     private RunnableHandler layoutThreadHandler;
     private @Nullable RunnableHandler preAllocateMountContentHandler;
     private @Nullable TreeState treeState;
@@ -3147,18 +3136,6 @@ public class ComponentTree
 
     public Builder visibilityProcessing(boolean isEnabled) {
       visibilityProcessingEnabled = isEnabled;
-      return this;
-    }
-
-    /**
-     * Whether or not to enable layout tree diffing. This will reduce the cost of updates at the
-     * expense of using extra memory. True by default.
-     *
-     * <p>We will remove this option soon, please consider turning it on (which is on by default)
-     */
-    @Deprecated
-    public Builder layoutDiffing(boolean enabled) {
-      isLayoutDiffingEnabled = enabled;
       return this;
     }
 

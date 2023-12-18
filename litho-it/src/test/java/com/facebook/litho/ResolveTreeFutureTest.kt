@@ -172,7 +172,6 @@ class ResolveTreeFutureTest {
             heightSpec,
             -1,
             0,
-            true,
             RenderSource.SET_ROOT_SYNC)
     val layoutState = layoutTreeFuture.runAndGet(RenderSource.SET_ROOT_SYNC).result
     assertThat(layoutState).isNotNull

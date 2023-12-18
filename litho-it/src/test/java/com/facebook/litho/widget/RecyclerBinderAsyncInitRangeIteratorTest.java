@@ -85,7 +85,6 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               boolean incrementalMountEnabled,
               boolean visibilityProcessing,
               boolean isReconciliationEnabled,
-              boolean isLayoutDiffingEnabled,
               RunnableHandler preallocateHandler,
               boolean preallocatePerMountSpec,
               @Nullable LithoLifecycleProvider lifecycleProvider,

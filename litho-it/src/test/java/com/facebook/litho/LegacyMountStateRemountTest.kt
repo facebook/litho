@@ -57,11 +57,7 @@ class LegacyMountStateRemountTest {
                     .enabled(true))
             .build()
     val lithoView = LithoView(context)
-    val componentTree =
-        ComponentTree.create(context, oldComponent)
-            .incrementalMount(false)
-            .layoutDiffing(true)
-            .build()
+    val componentTree = ComponentTree.create(context, oldComponent).incrementalMount(false).build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldView = lithoView.getChildAt(0)
     val oldTag = oldView.tag
@@ -101,11 +97,7 @@ class LegacyMountStateRemountTest {
                     .contentDescription("some description"))
             .build()
     val lithoView = LithoView(context)
-    val componentTree =
-        ComponentTree.create(context, oldComponent)
-            .incrementalMount(false)
-            .layoutDiffing(true)
-            .build()
+    val componentTree = ComponentTree.create(context, oldComponent).incrementalMount(false).build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldView = lithoView.getChildAt(0)
     val oldTag = oldView.tag
@@ -149,11 +141,7 @@ class LegacyMountStateRemountTest {
                     .backgroundColor(Color.RED))
             .build()
     val lithoView = LithoView(context)
-    val componentTree =
-        ComponentTree.create(context, oldComponent)
-            .incrementalMount(false)
-            .layoutDiffing(true)
-            .build()
+    val componentTree = ComponentTree.create(context, oldComponent).incrementalMount(false).build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldView = lithoView.getChildAt(0)
     val oldDrawable = oldView.background as ComparableDrawable

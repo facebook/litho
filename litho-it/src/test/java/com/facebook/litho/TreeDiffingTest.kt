@@ -67,26 +67,7 @@ class TreeDiffingTest {
   }
 
   @Test
-  fun testDiffTreeDisabled() {
-    val component: Component =
-        object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component {
-            return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(Column.create(c).child(TestDrawableComponent.create(c)))
-                .build()
-          }
-        }
-    val layoutState =
-        calculateLayoutState(
-            legacyLithoViewRule.componentTree.context, component, exactly(350), exactly(200))
-
-    // Check diff tree is null.
-    assertThat(layoutState.diffTree).isNull()
-  }
-
-  @Test
-  fun testDiffTreeEnabled() {
+  fun testLayoutStateDiffing() {
     val component: Component =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component {
@@ -663,8 +644,7 @@ class TreeDiffingTest {
     ): LayoutState {
       val result =
           ResolveTreeFuture.resolve(context, component, TreeState(), -1, -1, null, null, null, null)
-      return LayoutTreeFuture.layout(
-          result, widthSpec, heightSpec, -1, -1, false, null, null, null, null)
+      return LayoutTreeFuture.layout(result, widthSpec, heightSpec, -1, -1, null, null, null, null)
     }
 
     private fun calculateLayoutStateWithDiffing(
@@ -683,7 +663,6 @@ class TreeDiffingTest {
           heightSpec,
           -1,
           -1,
-          true,
           previousLayoutState,
           previousLayoutState?.diffTree,
           null,

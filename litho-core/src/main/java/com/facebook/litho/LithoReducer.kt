@@ -419,15 +419,9 @@ object LithoReducer {
 
     val tail: ScopedComponentInfo = node.tailScopedComponentInfo
     val context: ComponentContext = tail.context
-    val shouldGenerateDiffTree: Boolean = layoutState.mShouldGenerateDiffTree
-    val diffNode: DiffNode?
-    if (shouldGenerateDiffTree) {
-      diffNode = createDiffNode(tail, parentDiffNode)
-      if (parentDiffNode == null) {
-        layoutState.mDiffTreeRoot = diffNode
-      }
-    } else {
-      diffNode = null
+    val diffNode = createDiffNode(tail, parentDiffNode)
+    if (parentDiffNode == null) {
+      layoutState.mDiffTreeRoot = diffNode
     }
 
     var parentRenderTreeNode: RenderTreeNode? = parent

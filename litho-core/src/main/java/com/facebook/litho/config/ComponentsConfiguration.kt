@@ -139,13 +139,6 @@ internal constructor(
     /** Sets if is reconciliation is enabled */
     @JvmField var isReconciliationEnabled: Boolean = true
 
-    @JvmField var overrideLayoutDiffing: Boolean? = null
-
-    /**
-     * Sets if layout diffing is enabled. This should be used in conjugation with
-     * {@link#isReconciliationEnabled}.
-     */
-    @JvmField var isLayoutDiffingEnabled: Boolean = true
     @JvmField var runLooperPrepareForLayoutThreadFactory: Boolean = true
     @JvmField var enableDrawablePreAllocation: Boolean = false
 

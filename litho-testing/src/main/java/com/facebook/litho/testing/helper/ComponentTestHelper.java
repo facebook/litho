@@ -192,7 +192,6 @@ public final class ComponentTestHelper {
         lithoView,
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
-            .layoutDiffing(false)
             .visibilityProcessing(visibilityProcessingEnabled)
             .build(),
         makeMeasureSpec(width, EXACTLY),
