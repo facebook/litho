@@ -264,8 +264,7 @@ class ComponentHostTest {
 
   @Test
   fun testMoveTouchExpansionItem() {
-    val view = mock<View>()
-    whenever(view.context).thenReturn(ApplicationProvider.getApplicationContext())
+    val view = View(context.androidContext)
     val mountItem = mountTouchExpansionItem(0, view)
     host.moveItem(mountItem, 0, 1)
     unmount(1, mountItem)
@@ -701,10 +700,6 @@ class ComponentHostTest {
   }
 
   private fun mountTouchExpansionItem(index: Int, content: Any): MountItem {
-    val result = mock<LithoLayoutResult>()
-    val node = mock<LithoNode>()
-    whenever(result.node).thenReturn(node)
-    whenever(node.hasTouchExpansion()).thenReturn(true)
     val viewMountItem =
         MountItemTestHelper.create(
             viewComponent,
