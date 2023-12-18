@@ -587,7 +587,7 @@ class MountStateTest {
     assertThat(mountState.mountItemCount).isEqualTo(2)
     val item = mountState.getMountItemAt(0)
     assertThat(item).isNotNull
-    mountState.unbindMountItem(item)
+    mountState.unbindMountItem(item!!)
     assertThat(mountState.mountItemCount).isEqualTo(2)
     assertThat(bindOrder).containsExactly(bindBinder)
   }
