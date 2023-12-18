@@ -25,7 +25,6 @@ import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
 import androidx.collection.SparseArrayCompat
-import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
