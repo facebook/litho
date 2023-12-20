@@ -27,8 +27,6 @@ import com.facebook.rendercore.RunnableHandler;
 
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
-
-  private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsWrapContent;
   // TODO T34627443 make all fields final after removing setters
@@ -50,7 +48,6 @@ public class RecyclerBinderConfiguration {
 
   private RecyclerBinderConfiguration(
       RecyclerBinderConfig recyclerBinderConfig,
-      float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
       boolean wrapContent,
       boolean useBackgroundChangeSets,
@@ -58,7 +55,6 @@ public class RecyclerBinderConfiguration {
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isIncrementalMountEnabled,
       boolean postToFrontOfQueueForFirstChangeset) {
-    mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsWrapContent = wrapContent;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
@@ -67,10 +63,6 @@ public class RecyclerBinderConfiguration {
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mRecyclerBinderConfig = recyclerBinderConfig;
-  }
-
-  public float getRangeRatio() {
-    return mRangeRatio;
   }
 
   public @Nullable LayoutHandlerFactory getLayoutHandlerFactory() {
@@ -107,12 +99,9 @@ public class RecyclerBinderConfiguration {
 
   public static class Builder {
 
-    static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
-
     private RecyclerBinderConfig mRecyclerBinderConfig;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
-    private float mRangeRatio = DEFAULT_RANGE;
     private boolean mWrapContent = false;
     private boolean mEnableStableIds =
         ComponentsConfiguration.defaultRecyclerBinderConfigUseStableId;
@@ -127,7 +116,6 @@ public class RecyclerBinderConfiguration {
     private Builder(RecyclerBinderConfiguration configuration) {
       mRecyclerBinderConfig = configuration.mRecyclerBinderConfig;
       this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
-      this.mRangeRatio = configuration.mRangeRatio;
       this.mWrapContent = configuration.mIsWrapContent;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
@@ -154,22 +142,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder idleExecutor(@Nullable LayoutHandlerFactory idleExecutor) {
       mLayoutHandlerFactory = idleExecutor;
-      return this;
-    }
-
-    /**
-     * @param rangeRatio Ratio to determine the number of components before and after the {@link
-     *     androidx.recyclerview.widget.RecyclerView}'s total number of currently visible items to
-     *     have their Component layout computed ahead of time.
-     *     <p>e.g total number of visible items = 5 rangeRatio = 10 total number of items before the
-     *     1st visible item to be computed = 5 * 10 = 50 total number of items after the last
-     *     visible item to be computed = 5 * 10 = 50
-     */
-    public Builder rangeRatio(float rangeRatio) {
-      if (rangeRatio < 0) {
-        throw new IllegalArgumentException("Range ratio cannot be negative: " + rangeRatio);
-      }
-      mRangeRatio = rangeRatio;
       return this;
     }
 
@@ -223,7 +195,6 @@ public class RecyclerBinderConfiguration {
           builderRecyclerBinderConfig != null
               ? builderRecyclerBinderConfig
               : new RecyclerBinderConfig(),
-          mRangeRatio,
           mLayoutHandlerFactory,
           mWrapContent,
           mUseBackgroundChangeSets,

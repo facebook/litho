@@ -57,12 +57,19 @@ abstract class CollectionLayout(
           .reverseLayout(reverse)
           .recyclerBinderConfiguration(
               RecyclerBinderConfiguration.create()
-                  .apply { rangeRatio?.let { rangeRatio(it) } }
                   .recyclerBinderConfig(
-                      RecyclerBinderConfig(
-                          hasDynamicItemHeight = hasDynamicItemHeight,
-                          reconciliationEnabled = isReconciliationEnabled,
-                          preallocateMountContent = preallocationPerMountContentEnabled))
+                      if (rangeRatio != null) {
+                        RecyclerBinderConfig(
+                            hasDynamicItemHeight = hasDynamicItemHeight,
+                            reconciliationEnabled = isReconciliationEnabled,
+                            preallocateMountContent = preallocationPerMountContentEnabled,
+                            rangeRatio = rangeRatio)
+                      } else {
+                        RecyclerBinderConfig(
+                            hasDynamicItemHeight = hasDynamicItemHeight,
+                            reconciliationEnabled = isReconciliationEnabled,
+                            preallocateMountContent = preallocationPerMountContentEnabled)
+                      })
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .isIncrementalMountEnabled(isIncrementalMountEnabled)

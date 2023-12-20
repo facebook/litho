@@ -137,7 +137,17 @@ data class RecyclerBinderConfig(
      * Define a different [com.facebook.RunnableHandler] to run the preallocation process. This
      * handler is only used if [RecyclerBinderConfig.preallocateMountContent] is enabled.
      */
-    @JvmField val preallocateMountContentHandler: RunnableHandler? = null
+    @JvmField val preallocateMountContentHandler: RunnableHandler? = null,
+    /**
+     * Ratio to determine the number of components before and after the
+     * [androidx.recyclerview.widget.RecyclerView]'s total number of currently visible items to have
+     * their [com.facebook.litho.Component] layout computed ahead of time.
+     *
+     * <p>e.g total number of visible items = 5 rangeRatio = 10 total number of items before the 1st
+     * visible item to be computed = 5 * 10 = 50 total number of items after the last visible item
+     * to be computed = 5 * 10 = 50
+     */
+    @JvmField val rangeRatio: Float = 2f
 ) {
 
   init {
@@ -146,6 +156,8 @@ data class RecyclerBinderConfig(
         "Estimated viewport count must be > 0: $estimatedViewportCount"
       }
     }
+
+    require(rangeRatio >= 0) { "range ratio has to be bigger or equal to 0: $rangeRatio" }
   }
 
   companion object {
@@ -190,6 +202,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var preallocateMountContent = configuration.preallocateMountContent
   private var preallocateMountContentHandler = configuration.preallocateMountContentHandler
   private var componentsConfiguration = configuration.componentsConfiguration
+  private var rangeRatio = configuration.rangeRatio
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -252,6 +265,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
       componentsConfiguration: ComponentsConfiguration?
   ): RecyclerBinderConfigBuilder = also { this.componentsConfiguration = componentsConfiguration }
 
+  fun rangeRatio(rangeRatio: Float): RecyclerBinderConfigBuilder = also {
+    this.rangeRatio = rangeRatio
+  }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -268,6 +285,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         errorEventHandler = errorEventHandler,
         reconciliationEnabled = reconciliationEnabled,
         preallocateMountContent = preallocateMountContent,
-        preallocateMountContentHandler = preallocateMountContentHandler)
+        preallocateMountContentHandler = preallocateMountContentHandler,
+        rangeRatio = rangeRatio)
   }
 }

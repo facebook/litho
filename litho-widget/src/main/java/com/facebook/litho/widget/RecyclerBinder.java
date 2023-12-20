@@ -451,7 +451,6 @@ public class RecyclerBinder
     public static final float DEFAULT_RANGE_RATIO = 2f;
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
-    private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
@@ -482,19 +481,6 @@ public class RecyclerBinder
      */
     public Builder recyclerBinderConfig(RecyclerBinderConfig config) {
       mRecyclerBinderConfig = config;
-      return this;
-    }
-
-    /**
-     * @param rangeRatio specifies how big a range this binder should try to compute. The range is
-     *     computed as number of items in the viewport (when the binder is measured) multiplied by
-     *     the range ratio. The ratio is to be intended in both directions. For example a ratio of 1
-     *     means that if there are currently N components on screen, the binder should try to
-     *     compute the layout for the N components before the first component on screen and for the
-     *     N components after the last component on screen. If not set, defaults to 4f.
-     */
-    public Builder rangeRatio(float rangeRatio) {
-      this.rangeRatio = rangeRatio;
       return this;
     }
 
@@ -790,7 +776,7 @@ public class RecyclerBinder
             ? builder.overrideInternalAdapter
             : new InternalAdapter();
 
-    mRangeRatio = builder.rangeRatio;
+    mRangeRatio = mRecyclerBinderConfig.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;

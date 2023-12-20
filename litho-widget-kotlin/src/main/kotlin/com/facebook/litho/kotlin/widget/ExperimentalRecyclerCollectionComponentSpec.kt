@@ -294,7 +294,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
         RecyclerBinder.Builder()
             .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .layoutInfo(newLayoutInfo)
-            .rangeRatio(binderConfiguration.rangeRatio)
             .layoutHandlerFactory(binderConfiguration.layoutHandlerFactory)
             .wrapContent(binderConfiguration.isWrapContent)
             .enableStableIds(binderConfiguration.enableStableIds)

@@ -98,7 +98,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
     mLayoutInfo = mock(LayoutInfo.class);
     mRecyclerBinderBuilder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(mLayoutInfo)
             .componentTreeHolderFactory(componentTreeHolderFactory);
     mRecyclerBinder = mRecyclerBinderBuilder.build(mComponentContext);

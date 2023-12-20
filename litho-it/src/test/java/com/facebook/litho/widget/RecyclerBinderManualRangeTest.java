@@ -89,8 +89,8 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
-            .rangeRatio(.5f)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().estimatedViewportCount(1).rangeRatio(0.5f).build())
             .build(mComponentContext);
 
     final List<RenderInfo> initialComponents = new ArrayList<>();
@@ -138,8 +138,8 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
-            .rangeRatio(.5f)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().estimatedViewportCount(1).rangeRatio(0.5f).build())
             .build(mComponentContext);
 
     recyclerBinder.measure(new Size(), widthSpec, heightSpec, null);
@@ -188,8 +188,8 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
-            .rangeRatio(.5f)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().estimatedViewportCount(1).rangeRatio(.05f).build())
             .build(mComponentContext);
 
     recyclerBinder.setCanMeasure(true);
