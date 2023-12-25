@@ -32,6 +32,7 @@ import com.facebook.litho.Transition
 import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
 import com.facebook.litho.annotations.CachedValue
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.FromTrigger
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnAttached
@@ -51,6 +52,7 @@ import com.facebook.litho.annotations.OnUpdateState
 import com.facebook.litho.annotations.OnUpdateStateWithTransition
 import com.facebook.litho.annotations.Param
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.events.EventWithoutAnnotation
 
@@ -58,6 +60,7 @@ import com.facebook.litho.widget.events.EventWithoutAnnotation
  * LayoutSpec that implements lifecycle methods and crashes from the one provided as crashFromStep
  * prop.
  */
+@ExcuseMySpec(reason = Reason.USES_WORKING_RANGES)
 @LayoutSpec(events = [EventWithoutAnnotation::class])
 object TestCrashFromEachLayoutLifecycleMethodSpec {
 
