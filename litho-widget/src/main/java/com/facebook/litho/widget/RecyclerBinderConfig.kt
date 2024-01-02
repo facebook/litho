@@ -115,6 +115,13 @@ data class RecyclerBinderConfig(
      */
     @JvmField val hasDynamicItemHeight: Boolean = false,
     /**
+     * The [RecyclerBinder] will use this [LayoutHandlerFactory] when creating
+     * [com.facebook.litho.ComponentTree] in order to specify on which thread layout calculation
+     * should happen. Setting it to [null] means that the computation will be done in the background
+     * thread.
+     */
+    @JvmField val layoutHandlerFactory: LayoutHandlerFactory? = null,
+    /**
      * RecyclerBinder will use this [LayoutThreadPoolConfiguration] to create
      * [com.facebook.litho.ThreadPoolLayoutHandler] this will create a new separate thread pool
      * which might negatively affect the app's [RecyclerBinder.Builder.layoutHandlerFactory] is
@@ -203,6 +210,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var preallocateMountContentHandler = configuration.preallocateMountContentHandler
   private var componentsConfiguration = configuration.componentsConfiguration
   private var rangeRatio = configuration.rangeRatio
+  private var layoutHandlerFactory = configuration.layoutHandlerFactory
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -269,6 +277,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.rangeRatio = rangeRatio
   }
 
+  fun layoutHandlerFactory(
+      layoutHandlerFactory: LayoutHandlerFactory?
+  ): RecyclerBinderConfigBuilder = also { this.layoutHandlerFactory = layoutHandlerFactory }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -286,6 +298,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         reconciliationEnabled = reconciliationEnabled,
         preallocateMountContent = preallocateMountContent,
         preallocateMountContentHandler = preallocateMountContentHandler,
-        rangeRatio = rangeRatio)
+        rangeRatio = rangeRatio,
+        layoutHandlerFactory = layoutHandlerFactory)
   }
 }

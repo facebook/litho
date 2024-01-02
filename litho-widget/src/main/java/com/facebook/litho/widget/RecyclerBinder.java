@@ -452,7 +452,6 @@ public class RecyclerBinder
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private LayoutInfo layoutInfo;
-    private @Nullable LayoutHandlerFactory layoutHandlerFactory;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
@@ -501,16 +500,6 @@ public class RecyclerBinder
      */
     public Builder layoutInfo(LayoutInfo layoutInfo) {
       this.layoutInfo = layoutInfo;
-      return this;
-    }
-
-    /**
-     * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when
-     *     creating {@link ComponentTree}s in order to specify on which thread layout calculation
-     *     should happen.
-     */
-    public Builder layoutHandlerFactory(@Nullable LayoutHandlerFactory layoutHandlerFactory) {
-      this.layoutHandlerFactory = layoutHandlerFactory;
       return this;
     }
 
@@ -778,7 +767,7 @@ public class RecyclerBinder
 
     mRangeRatio = mRecyclerBinderConfig.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
-    mLayoutHandlerFactory = builder.layoutHandlerFactory;
+    mLayoutHandlerFactory = mRecyclerBinderConfig.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;

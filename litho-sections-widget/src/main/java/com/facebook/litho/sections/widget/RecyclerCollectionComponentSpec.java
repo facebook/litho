@@ -317,7 +317,6 @@ public class RecyclerCollectionComponentSpec {
         new RecyclerBinder.Builder()
             .recyclerBinderConfig(binderConfiguration.getRecyclerBinderConfig())
             .layoutInfo(newLayoutInfo)
-            .layoutHandlerFactory(binderConfiguration.getLayoutHandlerFactory())
             .wrapContent(binderConfiguration.isWrapContent())
             .enableStableIds(binderConfiguration.getEnableStableIds())
             .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())

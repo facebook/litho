@@ -1771,29 +1771,33 @@ public class RecyclerBinderTest {
     final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Nullable
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
-                    if (handlerType == null) {
-                      return layoutHandlerBase;
-                    } else if ((Integer) handlerType == 1) {
-                      return layoutHandler1;
-                    } else if ((Integer) handlerType == 2) {
-                      return layoutHandler2;
-                    } else {
-                      return layoutHandlerN;
-                    }
-                  }
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Nullable
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                            if (handlerType == null) {
+                              return layoutHandlerBase;
+                            } else if ((Integer) handlerType == 1) {
+                              return layoutHandler1;
+                            } else if ((Integer) handlerType == 2) {
+                              return layoutHandler2;
+                            } else {
+                              return layoutHandlerN;
+                            }
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    return true;
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            return true;
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
     final Component component0 = mock(Component.class);
     final Component component1 = mock(Component.class);
@@ -1837,29 +1841,33 @@ public class RecyclerBinderTest {
     final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Nullable
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
-                    if (handlerType == null) {
-                      return null;
-                    } else if ((Integer) handlerType == 1) {
-                      return layoutHandler1;
-                    } else if ((Integer) handlerType == 2) {
-                      return layoutHandler2;
-                    } else {
-                      return layoutHandlerN;
-                    }
-                  }
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Nullable
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                            if (handlerType == null) {
+                              return null;
+                            } else if ((Integer) handlerType == 1) {
+                              return layoutHandler1;
+                            } else if ((Integer) handlerType == 2) {
+                              return layoutHandler2;
+                            } else {
+                              return layoutHandlerN;
+                            }
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    return false;
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            return false;
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
     final Component component0 = mock(Component.class);
     final Component component1 = mock(Component.class);
@@ -1899,35 +1907,40 @@ public class RecyclerBinderTest {
     final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Nullable
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
-                    if (handlerType == null) {
-                      return null;
-                    } else if ((Integer) handlerType == 1) {
-                      return layoutHandler1;
-                    } else if ((Integer) handlerType == 2) {
-                      return layoutHandler2;
-                    } else {
-                      return layoutHandlerN;
-                    }
-                  }
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Nullable
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                            if (handlerType == null) {
+                              return null;
+                            } else if ((Integer) handlerType == 1) {
+                              return layoutHandler1;
+                            } else if ((Integer) handlerType == 2) {
+                              return layoutHandler2;
+                            } else {
+                              return layoutHandlerN;
+                            }
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    final Object previousHandlerType =
-                        previousRenderInfo.getCustomAttribute("handlerType");
-                    final Object newHandlerType = newRenderInfo.getCustomAttribute("handlerType");
-                    return previousHandlerType != null
-                        && newHandlerType != null
-                        && previousHandlerType.equals(1)
-                        && newHandlerType.equals(2);
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            final Object previousHandlerType =
+                                previousRenderInfo.getCustomAttribute("handlerType");
+                            final Object newHandlerType =
+                                newRenderInfo.getCustomAttribute("handlerType");
+                            return previousHandlerType != null
+                                && newHandlerType != null
+                                && previousHandlerType.equals(1)
+                                && newHandlerType.equals(2);
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
     final Component component0 = mock(Component.class);
     final Component component1 = mock(Component.class);
@@ -5225,20 +5238,21 @@ public class RecyclerBinderTest {
             .recyclerBinderConfig(
                 RecyclerBinderConfig.create()
                     .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 0))
-                    .build())
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    return layoutHandler;
-                  }
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            return layoutHandler;
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    return false;
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            return false;
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
 
     binder.insertItemAt(0, ComponentRenderInfo.create().component(component).build());

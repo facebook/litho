@@ -150,7 +150,6 @@ object CollectionRecyclerSpec {
             .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .apply {
               with(binderConfiguration) {
-                layoutHandlerFactory(layoutHandlerFactory)
                 wrapContent(isWrapContent)
                 enableStableIds(enableStableIds)
                 incrementalMount(isIncrementalMountEnabled)

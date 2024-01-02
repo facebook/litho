@@ -20,14 +20,12 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
-import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.rendercore.RunnableHandler;
 
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
-  @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsWrapContent;
   // TODO T34627443 make all fields final after removing setters
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -48,14 +46,12 @@ public class RecyclerBinderConfiguration {
 
   private RecyclerBinderConfiguration(
       RecyclerBinderConfig recyclerBinderConfig,
-      @Nullable LayoutHandlerFactory layoutHandlerFactory,
       boolean wrapContent,
       boolean useBackgroundChangeSets,
       boolean enableStableIds,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isIncrementalMountEnabled,
       boolean postToFrontOfQueueForFirstChangeset) {
-    mLayoutHandlerFactory = layoutHandlerFactory;
     mIsWrapContent = wrapContent;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mEnableStableIds = enableStableIds;
@@ -63,10 +59,6 @@ public class RecyclerBinderConfiguration {
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mRecyclerBinderConfig = recyclerBinderConfig;
-  }
-
-  public @Nullable LayoutHandlerFactory getLayoutHandlerFactory() {
-    return mLayoutHandlerFactory;
   }
 
   public boolean isWrapContent() {
@@ -100,8 +92,6 @@ public class RecyclerBinderConfiguration {
   public static class Builder {
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
-
-    @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     private boolean mWrapContent = false;
     private boolean mEnableStableIds =
         ComponentsConfiguration.defaultRecyclerBinderConfigUseStableId;
@@ -115,7 +105,6 @@ public class RecyclerBinderConfiguration {
 
     private Builder(RecyclerBinderConfiguration configuration) {
       mRecyclerBinderConfig = configuration.mRecyclerBinderConfig;
-      this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
       this.mWrapContent = configuration.mIsWrapContent;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
@@ -133,15 +122,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder recyclerBinderConfig(RecyclerBinderConfig recyclerBinderConfig) {
       mRecyclerBinderConfig = recyclerBinderConfig;
-      return this;
-    }
-
-    /**
-     * @param idleExecutor This determines the thread on which the Component layout calculation will
-     *     be processed in. Null means that the computation will be done in the background thread.
-     */
-    public Builder idleExecutor(@Nullable LayoutHandlerFactory idleExecutor) {
-      mLayoutHandlerFactory = idleExecutor;
       return this;
     }
 
@@ -195,7 +175,6 @@ public class RecyclerBinderConfiguration {
           builderRecyclerBinderConfig != null
               ? builderRecyclerBinderConfig
               : new RecyclerBinderConfig(),
-          mLayoutHandlerFactory,
           mWrapContent,
           mUseBackgroundChangeSets,
           mEnableStableIds,
