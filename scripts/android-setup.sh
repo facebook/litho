@@ -46,7 +46,9 @@ function installsdk() {
   if [[ ! -z "$HTTPS_PROXY" ]]; then
     PROXY_HOST="$(echo "$HTTPS_PROXY" | cut -d : -f 1,1)"
     PROXY_PORT="$(echo "$HTTPS_PROXY" | cut -d : -f 2,2)"
-    PROXY_ARGS="--proxy=http --proxy_host=$PROXY_HOST --proxy_port=$PROXY_PORT"
+    # --no_https avoids
+    # javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: No trusted certificate found
+    PROXY_ARGS="--proxy=http --proxy_host=$PROXY_HOST --proxy_port=$PROXY_PORT --no_https"
   fi
 
   echo y | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" $PROXY_ARGS "$@"
