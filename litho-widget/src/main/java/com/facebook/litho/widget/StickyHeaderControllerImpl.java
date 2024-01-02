@@ -186,9 +186,10 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
   }
 
   private void initStickyHeader(int stickyHeaderPosition) {
-    final ComponentTree componentTree =
-        mHasStickyHeader.getComponentForStickyHeaderAt(stickyHeaderPosition);
-    mSectionsRecyclerView.setStickyComponent(componentTree);
+    final ComponentTree tree = mHasStickyHeader.getComponentForStickyHeaderAt(stickyHeaderPosition);
+    if (mSectionsRecyclerView != null && tree != null && !tree.isReleased()) {
+      mSectionsRecyclerView.setStickyComponent(tree);
+    }
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
