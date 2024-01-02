@@ -43,6 +43,8 @@ import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
+import com.facebook.rendercore.ErrorReporter;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -289,6 +291,8 @@ public class LithoViewAttributesExtension
       // as it otherwise overrides the padding.
       setViewBackground(view, attributes);
 
+      setViewPadding(view, attributes);
+
       ViewUtils.setViewForeground(view, attributes.getForeground());
 
       setViewLayoutDirection(view, attributes);
@@ -372,6 +376,7 @@ public class LithoViewAttributesExtension
       unsetViewForeground(view, attributes);
     }
     if (!isHostView) {
+      unsetViewPadding(view, attributes);
       unsetViewBackground(view, attributes);
       unsetViewForeground(view, attributes);
       unsetViewLayoutDirection(view);
@@ -832,6 +837,38 @@ public class LithoViewAttributesExtension
   private static void unsetRotationY(View view, ViewAttributes attributes) {
     if (attributes.isRotationYSet() && view.getRotationY() != 0) {
       view.setRotationY(0);
+    }
+  }
+
+  private static void setViewPadding(View view, ViewAttributes attributes) {
+    if (!attributes.hasPadding()) {
+      return;
+    }
+
+    view.setPadding(
+        attributes.getPaddingLeft(),
+        attributes.getPaddingTop(),
+        attributes.getPaddingRight(),
+        attributes.getPaddingBottom());
+  }
+
+  private static void unsetViewPadding(View view, ViewAttributes attributes) {
+    if (!attributes.hasPadding()) {
+      return;
+    }
+
+    try {
+      view.setPadding(0, 0, 0, 0);
+    } catch (NullPointerException e) {
+      // T53931759 Gathering extra info around this NPE
+      ErrorReporter.getInstance()
+          .report(
+              LogLevel.ERROR,
+              "LITHO:NPE:UNSET_PADDING",
+              "From component: " + attributes.getComponentName(),
+              e,
+              0,
+              null);
     }
   }
 

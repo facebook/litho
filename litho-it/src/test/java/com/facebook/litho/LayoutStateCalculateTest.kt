@@ -393,16 +393,11 @@ class LayoutStateCalculateTest {
     assertThat(getTextFromTextComponent(layoutState, 4)).isEqualTo("textRight1")
     assertThat(getTextFromTextComponent(layoutState, 6)).isEqualTo("textLeft2")
     val textLayoutBounds = layoutState.getMountableOutputAt(6).getAbsoluteBounds(Rect())
-    val textLayoutPadding = layoutState.getMountableOutputAt(6).resolvedPadding
     val textBackgroundBounds = layoutState.getMountableOutputAt(5).getAbsoluteBounds(Rect())
-    assertThat(textLayoutBounds.left).isEqualTo(textBackgroundBounds.left)
-    assertThat(textLayoutBounds.top).isEqualTo(textBackgroundBounds.top)
-    assertThat(textLayoutBounds.right).isEqualTo(textBackgroundBounds.right)
-    assertThat(textLayoutBounds.bottom).isEqualTo(textBackgroundBounds.bottom)
-    assertThat(textLayoutPadding?.left).isEqualTo(paddingSize)
-    assertThat(textLayoutPadding?.top).isEqualTo(paddingSize)
-    assertThat(textLayoutPadding?.right).isEqualTo(paddingSize)
-    assertThat(textLayoutPadding?.bottom).isEqualTo(paddingSize)
+    assertThat(textLayoutBounds.left - paddingSize).isEqualTo(textBackgroundBounds.left)
+    assertThat(textLayoutBounds.top - paddingSize).isEqualTo(textBackgroundBounds.top)
+    assertThat(textLayoutBounds.right + paddingSize).isEqualTo(textBackgroundBounds.right)
+    assertThat(textLayoutBounds.bottom + paddingSize).isEqualTo(textBackgroundBounds.bottom)
   }
 
   @Test

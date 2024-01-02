@@ -697,7 +697,6 @@ class TreeDiffingTest {
       return create(
           unit,
           Rect(),
-          Rect(),
           LithoLayoutData(
               0,
               0,

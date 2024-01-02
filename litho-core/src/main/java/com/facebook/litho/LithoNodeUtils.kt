@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.SparseArray
@@ -465,6 +466,10 @@ object LithoNodeUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
           attrs.foreground = lithoNode.foreground
         }
+      }
+      if (result.isPaddingSet) {
+        attrs.padding =
+            Rect(result.paddingLeft, result.paddingTop, result.paddingRight, result.paddingBottom)
       }
       attrs.layoutDirection = result.resolvedLayoutDirection
       attrs.layerType = lithoNode.layerType

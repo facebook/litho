@@ -68,18 +68,15 @@ open class LithoLayoutResult(
         }
       }
 
+  /**
+   * In order to avoid redundant calculation that are happening in [adjustRenderUnitBounds], we save
+   * the adjustments in a Rect that is initialised during layout, which is specifically inside
+   * [onBoundsDefined].
+   */
+  private var adjustedBounds: Rect = Rect()
   private var layoutData: Any? = _layoutData
   private var isCachedLayout = false
   private var lastMeasuredSize = Long.MIN_VALUE
-  private var wasMeasured: Boolean = false
-
-  /**
-   * In order to avoid redundant calculation that are happening in [resolvePadding], we save the
-   * adjustments in a Rect that is initialised during layout, which is specifically inside
-   * [onBoundsDefined].
-   */
-  var resolvedPadding: Rect = Rect()
-    private set
 
   var widthSpec: Int = DiffNode.UNSPECIFIED
     private set
@@ -103,6 +100,10 @@ open class LithoLayoutResult(
 
   var measureHadExceptions: Boolean = false
     @JvmName("measureHadExceptions") get
+
+  var wasMeasured: Boolean = false
+    @JvmName("wasMeasured") get
+    private set
 
   val contentWidth: Int
     get() = YogaMeasureOutput.getWidth(lastMeasuredSize).toInt()
@@ -207,6 +208,14 @@ open class LithoLayoutResult(
   override fun getYForChildAtIndex(index: Int): Int = children[index].y
 
   override fun getLayoutData(): Any? = layoutData
+
+  fun adjustedLeft(): Int = adjustedBounds.left
+
+  fun adjustedTop(): Int = adjustedBounds.top
+
+  fun adjustedRight(): Int = adjustedBounds.right
+
+  fun adjustedBottom(): Int = adjustedBounds.bottom
 
   fun setLayoutData(data: Any?) {
     layoutData = data
@@ -377,12 +386,7 @@ open class LithoLayoutResult(
     copiedResult.backgroundRenderUnit = backgroundRenderUnit
     copiedResult.foregroundRenderUnit = foregroundRenderUnit
     copiedResult.borderRenderUnit = borderRenderUnit
-    copiedResult.resolvedPadding =
-        Rect(
-            resolvedPadding.left,
-            resolvedPadding.top,
-            resolvedPadding.right,
-            resolvedPadding.bottom)
+    copiedResult.adjustedBounds = adjustedBounds
     return copiedResult
   }
 
@@ -494,7 +498,7 @@ open class LithoLayoutResult(
     if (contentRenderUnit == null) {
       contentRenderUnit =
           LithoNodeUtils.createContentRenderUnit(node, cachedMeasuresValid, diffNode)
-      resolvePadding()
+      adjustRenderUnitBounds()
     }
     if (hostRenderUnit == null) {
       hostRenderUnit = LithoNodeUtils.createHostRenderUnit(node)
@@ -514,17 +518,32 @@ open class LithoLayoutResult(
     }
   }
 
-  private fun resolvePadding() {
+  private fun adjustRenderUnitBounds() {
     val renderUnit: LithoRenderUnit = contentRenderUnit ?: return
-    val padding = Rect(paddingLeft, paddingTop, paddingRight, paddingBottom)
-    if (!LithoRenderUnit.isMountableView(renderUnit) &&
-        Component.isPrimitive(renderUnit.component)) {
-      padding.left += getLayoutBorder(YogaEdge.LEFT)
-      padding.top += getLayoutBorder(YogaEdge.TOP)
-      padding.right += getLayoutBorder(YogaEdge.RIGHT)
-      padding.bottom += getLayoutBorder(YogaEdge.BOTTOM)
+    val bounds = Rect()
+    if (Component.isPrimitive(renderUnit.component)) {
+      if (!LithoRenderUnit.isMountableView(renderUnit)) {
+        if (wasMeasured) {
+          bounds.left += (paddingLeft + getLayoutBorder(YogaEdge.LEFT))
+          bounds.top += (paddingTop + getLayoutBorder(YogaEdge.TOP))
+          bounds.right -= (paddingRight + getLayoutBorder(YogaEdge.RIGHT))
+          bounds.bottom -= (paddingBottom + getLayoutBorder(YogaEdge.BOTTOM))
+        } else {
+          // for exact size the border doesn't need to be adjusted since it's inside the bounds of
+          // the content
+          bounds.left += paddingLeft
+          bounds.top += paddingTop
+          bounds.right -= paddingRight
+          bounds.bottom -= paddingBottom
+        }
+      }
+    } else if (!LithoRenderUnit.isMountableView(renderUnit)) {
+      bounds.left += paddingLeft
+      bounds.top += paddingTop
+      bounds.right -= paddingRight
+      bounds.bottom -= paddingBottom
     }
-    resolvedPadding = padding
+    adjustedBounds = bounds
   }
 
   companion object {
