@@ -396,6 +396,7 @@ class LayoutStateCreateTreeTest {
             .focusable(true)
             .selected(false)
             .enabled(false)
+            .keyboardNavigationCluster(false)
             .accessibilityHeading(false)
             .visibleHeightRatio(55f)
             .visibleWidthRatio(56f)

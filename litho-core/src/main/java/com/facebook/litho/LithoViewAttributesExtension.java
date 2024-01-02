@@ -21,6 +21,7 @@ import static com.facebook.litho.ComponentHost.COMPONENT_NODE_INFO_ID;
 import static com.facebook.litho.LithoMountData.isViewClickable;
 import static com.facebook.litho.LithoMountData.isViewEnabled;
 import static com.facebook.litho.LithoMountData.isViewFocusable;
+import static com.facebook.litho.LithoMountData.isViewKeyboardNavigationCluster;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static com.facebook.litho.LithoMountData.isViewSelected;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
@@ -262,6 +263,7 @@ public class LithoViewAttributesExtension
     setClickable(view, attributes);
     setEnabled(view, attributes);
     setSelected(view, attributes);
+    setKeyboardNavigationCluster(view, attributes);
     setScale(view, attributes);
     setAlpha(view, attributes);
     setRotation(view, attributes);
@@ -361,6 +363,7 @@ public class LithoViewAttributesExtension
     unsetFocusable(view, mountFlags);
     unsetEnabled(view, mountFlags);
     unsetSelected(view, mountFlags);
+    unsetKeyboardNavigationCluster(view, mountFlags);
 
     if (attributes.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
@@ -771,6 +774,16 @@ public class LithoViewAttributesExtension
 
   private static void unsetSelected(View view, int flags) {
     view.setSelected(isViewSelected(flags));
+  }
+
+  private static void setKeyboardNavigationCluster(View view, ViewAttributes attributes) {
+    if (attributes.isKeyboardNavigationClusterSet()) {
+      ViewCompat.setKeyboardNavigationCluster(view, attributes.isKeyboardNavigationCluster());
+    }
+  }
+
+  private static void unsetKeyboardNavigationCluster(View view, int flags) {
+    ViewCompat.setKeyboardNavigationCluster(view, isViewKeyboardNavigationCluster(flags));
   }
 
   private static void setScale(View view, ViewAttributes attributes) {

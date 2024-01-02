@@ -116,6 +116,7 @@ class LithoNodeTest {
     toBeAppliedInfo.setFocusable(true)
     toBeAppliedInfo.setSelected(false)
     toBeAppliedInfo.setEnabled(false)
+    toBeAppliedInfo.setKeyboardNavigationCluster(false)
     toBeAppliedInfo.setAccessibilityHeading(false)
     toBeAppliedInfo.contentDescription = "test"
     toBeAppliedInfo.viewTag = viewTag
@@ -148,6 +149,7 @@ class LithoNodeTest {
     verify(nodeInfo).setFocusable(true)
     verify(nodeInfo).setSelected(false)
     verify(nodeInfo).setEnabled(false)
+    verify(nodeInfo).setKeyboardNavigationCluster(false)
     verify(nodeInfo).setAccessibilityHeading(false)
     verify(nodeInfo).contentDescription = "test"
     verify(nodeInfo).viewTag = viewTag

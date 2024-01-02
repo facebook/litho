@@ -358,6 +358,30 @@ class NodeInfoTest {
     assertThat(nodeInfo.enabledState).isEqualTo(NodeInfo.ENABLED_SET_FALSE)
   }
 
+  @Test
+  fun testKeyboardNavigationClusterTrue() {
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_UNSET)
+    nodeInfo.setKeyboardNavigationCluster(true)
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(updatedNodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE)
+  }
+
+  @Test
+  fun testKeyboardNavigationClusterFalse() {
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_UNSET)
+    nodeInfo.setKeyboardNavigationCluster(false)
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(updatedNodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE)
+  }
+
   companion object {
     private fun testFlagIsSetThenClear(nodeInfo: NodeInfo?, flagName: String) {
       assertThat(isFlagSet(nodeInfo, flagName)).isTrue

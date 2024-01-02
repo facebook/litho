@@ -103,6 +103,9 @@ object NodeInfoUtils {
     if (x.selectedState != y.selectedState) {
       return false
     }
+    if (x.keyboardNavigationClusterState != y.keyboardNavigationClusterState) {
+      return false
+    }
     if (!isEquivalentTo(x.sendAccessibilityEventHandler, y.sendAccessibilityEventHandler)) {
       return false
     }

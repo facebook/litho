@@ -623,6 +623,15 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         .setOnPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler);
   }
 
+  public void keyboardNavigationCluster(boolean isKeyboardNavigationCluster) {
+    getOrCreateNodeInfo().setKeyboardNavigationCluster(isKeyboardNavigationCluster);
+  }
+
+  public boolean isKeyboardNavigationCluster() {
+    return getOrCreateNodeInfo().getKeyboardNavigationClusterState()
+        == NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE;
+  }
+
   public void scale(float scale) {
     getOrCreateNodeInfo().setScale(scale);
     if (scale == 1) {
@@ -781,6 +790,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   private static final class OtherProps implements Equivalence<OtherProps> {
+
     // Flags used to indicate that a certain attribute was explicitly set on the node.
     private static final int PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1 << 0;
     private static final int PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1 << 1;
@@ -1061,6 +1071,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
 
   public static final class DefaultLayoutProps
       implements LayoutProps, Equivalence<DefaultLayoutProps> {
+
     private static final int PFLAG_WIDTH_IS_SET = 1 << 0;
     private static final int PFLAG_WIDTH_PERCENT_IS_SET = 1 << 1;
     private static final int PFLAG_MIN_WIDTH_IS_SET = 1 << 2;

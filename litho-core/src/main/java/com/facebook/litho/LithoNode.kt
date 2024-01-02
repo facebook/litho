@@ -1360,6 +1360,8 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       val hasClipToOutline = nodeInfo.clipToOutline
       val isFocusableSetTrue = nodeInfo.focusState == NodeInfo.FOCUS_SET_TRUE
       val isClickableSetTrue = nodeInfo.clickableState == NodeInfo.CLICKABLE_SET_TRUE
+      val isKeyboardNavigationClusterSetTrue =
+          nodeInfo.keyboardNavigationClusterState == NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE
       val hasClipChildrenSet = nodeInfo.isClipChildrenSet
       val hasTransitionName = nodeInfo.transitionName != null
       return hasFocusChangeHandler ||
@@ -1375,6 +1377,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
           hasClipChildrenSet ||
           isFocusableSetTrue ||
           isClickableSetTrue ||
+          isKeyboardNavigationClusterSetTrue ||
           hasTransitionName
     }
 

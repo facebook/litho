@@ -80,6 +80,19 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface AccessibilityHeadingState {}
+
+  public static final int KEYBOARD_NAVIGATION_CLUSTER_UNSET = 0;
+  public static final int KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE = 1;
+  public static final int KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE = 2;
+
+  @IntDef({
+    KEYBOARD_NAVIGATION_CLUSTER_UNSET,
+    KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE,
+    KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE
+  })
+  @Retention(RetentionPolicy.SOURCE)
+  @interface KeyboardNavigationClusterState {}
+
   // When this flag is set, contentDescription was explicitly set on this node.
   private static final long PFLAG_CONTENT_DESCRIPTION_IS_SET = 1L << 0;
   // When this flag is set, viewTag was explicitly set on this node.
@@ -189,6 +202,8 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   private @EnabledState int mEnabledState = ENABLED_UNSET;
   private @SelectedState int mSelectedState = SELECTED_UNSET;
   private @AccessibilityHeadingState int mAccessibilityHeadingState = ACCESSIBILITY_HEADING_UNSET;
+  private @KeyboardNavigationClusterState int mKeyboardNavigationClusterState =
+      KEYBOARD_NAVIGATION_CLUSTER_UNSET;
 
   private long mPrivateFlags;
 
@@ -659,6 +674,18 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     return (mPrivateFlags & PFLAG_ROTATION_Y_IS_SET) != 0;
   }
 
+  public void setKeyboardNavigationCluster(boolean isKeyboardNavigationCluster) {
+    if (isKeyboardNavigationCluster) {
+      mKeyboardNavigationClusterState = KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE;
+    } else {
+      mKeyboardNavigationClusterState = KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE;
+    }
+  }
+
+  public @KeyboardNavigationClusterState int getKeyboardNavigationClusterState() {
+    return mKeyboardNavigationClusterState;
+  }
+
   /**
    * Checks if this NodeInfo is equal to the {@param other}
    *
@@ -777,6 +804,10 @@ public class NodeInfo implements Equivalence<NodeInfo> {
       target.setAccessibilityHeading(
           getAccessibilityHeadingState() == ACCESSIBILITY_HEADING_SET_TRUE);
     }
+    if (getKeyboardNavigationClusterState() != KEYBOARD_NAVIGATION_CLUSTER_UNSET) {
+      target.setKeyboardNavigationCluster(
+          getKeyboardNavigationClusterState() == KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE);
+    }
     if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
       target.setScale(mScale);
     }
@@ -856,6 +887,10 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     }
     if (getSelectedState() != SELECTED_UNSET) {
       target.setSelected(getSelectedState() == SELECTED_SET_TRUE);
+    }
+    if (getKeyboardNavigationClusterState() != KEYBOARD_NAVIGATION_CLUSTER_UNSET) {
+      target.setKeyboardNavigationCluster(
+          getKeyboardNavigationClusterState() == KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE);
     }
     if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
       target.setScale(mScale);

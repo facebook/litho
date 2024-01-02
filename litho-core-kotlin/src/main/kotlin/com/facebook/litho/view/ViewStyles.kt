@@ -68,6 +68,7 @@ internal enum class ObjectField : StyleItemField {
   VIEW_TAG,
   VIEW_TAGS,
   ENABLED,
+  KEYBOARD_NAVIGATION_CLUSTER,
 }
 
 /** Enums for [FloatStyleItem]. */
@@ -146,6 +147,8 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
       ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
       ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
       ObjectField.ENABLED -> commonProps.enabled(value as Boolean)
+      ObjectField.KEYBOARD_NAVIGATION_CLUSTER ->
+          commonProps.keyboardNavigationCluster(value as Boolean)
     }
   }
 }
@@ -577,3 +580,13 @@ inline fun Style.shadow(
     @ColorInt ambientShadowColor: Int = Color.BLACK,
     @ColorInt spotShadowColor: Int = Color.BLACK
 ): Style = this + ShadowStyleItem(elevation, outlineProvider, ambientShadowColor, spotShadowColor)
+
+/**
+ * Setting this property will cause the Component to be a keyboard navigation cluster. Setting this
+ * property will cause the Component to be represented as a View at mount time if it wasn't going to
+ * already.
+ *
+ * See [android.view.View.setKeyboardNavigationCluster]
+ */
+inline fun Style.keyboardNavigationCluster(isKeyboardNavigationCluster: Boolean): Style =
+    this + ObjectStyleItem(ObjectField.KEYBOARD_NAVIGATION_CLUSTER, isKeyboardNavigationCluster)

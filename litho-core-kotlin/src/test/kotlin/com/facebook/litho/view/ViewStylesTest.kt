@@ -759,6 +759,18 @@ class ViewStylesTest {
     assertThat(node?.transitionOwnerKey).isEqualTo("\$root")
   }
 
+  @Test
+  fun keyboardNavigationCluster_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).keyboardNavigationCluster(true)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.isKeyboardNavigationCluster).isTrue
+  }
+
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {
     assertThat(componentHost.drawables).hasSize(1).first().isInstanceOf(MatrixDrawable::class.java)
     assertThat((componentHost.drawables[0] as MatrixDrawable<ColorDrawable>).mountedDrawable)
