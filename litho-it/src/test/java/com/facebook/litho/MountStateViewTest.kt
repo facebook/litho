@@ -168,8 +168,8 @@ class MountStateViewTest {
     val item2 = root.getMountItemAt(2)
     val textOutputBounds = item2.renderTreeNode.getAbsoluteBounds(Rect())
     val textActualBounds = (item2.content as Drawable).bounds
-    assertThat(textActualBounds.width()).isEqualTo(textOutputBounds.width())
-    assertThat(textActualBounds.height()).isEqualTo(textOutputBounds.height())
+    assertThat(textActualBounds.width()).isEqualTo(textOutputBounds.width() - 20) // padding
+    assertThat(textActualBounds.height()).isEqualTo(textOutputBounds.height() - 20) // padding
   }
 
   @Test

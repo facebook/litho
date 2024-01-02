@@ -218,12 +218,8 @@ object LithoReducer {
     val debugNode: DebugHierarchy.Node? = debugHierarchyNode?.mutateType(OutputUnitType.CONTENT)
     return createRenderTreeNode(
         unit = unit,
-        bounds =
-            Rect(
-                bounds.left + result.adjustedLeft(),
-                bounds.top + result.adjustedTop(),
-                bounds.right + result.adjustedRight(),
-                bounds.bottom + result.adjustedBottom()),
+        bounds = bounds,
+        resolvedPadding = result.resolvedPadding,
         layoutState = layoutState,
         isSizeDependant =
             if (node.tailComponent is SpecGeneratedComponent) {
@@ -257,6 +253,7 @@ object LithoReducer {
   private fun createRenderTreeNode(
       unit: LithoRenderUnit,
       bounds: Rect,
+      resolvedPadding: Rect? = null,
       layoutState: LayoutState,
       isSizeDependant: Boolean,
       expandedTouchBounds: Rect?,
@@ -276,6 +273,7 @@ object LithoReducer {
     return create(
         unit = unit,
         bounds = resolvedBounds,
+        resolvedPadding = resolvedPadding,
         layoutData =
             LithoLayoutData(
                 width = resolvedBounds.width(),

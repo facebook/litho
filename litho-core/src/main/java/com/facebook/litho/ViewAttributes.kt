@@ -21,7 +21,6 @@ package com.facebook.litho
 import android.animation.StateListAnimator
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.SparseArray
 import android.view.View
@@ -64,7 +63,6 @@ class ViewAttributes {
 
   var background: Drawable? = null
   var foreground: Drawable? = null
-  var padding: Rect? = null
   var layoutDirection: YogaDirection = YogaDirection.INHERIT
   var stateListAnimator: StateListAnimator? = null
   @DrawableRes var stateListAnimatorRes: Int = 0
@@ -211,20 +209,6 @@ class ViewAttributes {
   val isViewIdSet: Boolean
     get() = flags and FLAG_VIEW_ID != 0
 
-  fun hasPadding(): Boolean = padding != null
-
-  val paddingLeft: Int
-    get() = padding?.left ?: 0
-
-  val paddingTop: Int
-    get() = padding?.top ?: 0
-
-  val paddingRight: Int
-    get() = padding?.right ?: 0
-
-  val paddingBottom: Int
-    get() = padding?.bottom ?: 0
-
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is ViewAttributes) return false
@@ -262,7 +246,6 @@ class ViewAttributes {
 
     if (!DrawableUtils.isEquivalentTo(background, other.background)) return false
     if (!DrawableUtils.isEquivalentTo(foreground, other.foreground)) return false
-    if (!equals(padding, other.padding)) return false
     if (!equals(layoutDirection, other.layoutDirection)) return false
     if (stateListAnimatorRes != other.stateListAnimatorRes) return false
     // TODO: (T33421916) We need compare StateListAnimators more accurately
@@ -293,7 +276,6 @@ class ViewAttributes {
     result = 31 * result + (interceptTouchHandler?.hashCode() ?: 0)
     result = 31 * result + (background?.hashCode() ?: 0)
     result = 31 * result + (foreground?.hashCode() ?: 0)
-    result = 31 * result + (padding?.hashCode() ?: 0)
     result = 31 * result + layoutDirection.hashCode()
     result = 31 * result + (stateListAnimator?.hashCode() ?: 0)
     result = 31 * result + stateListAnimatorRes
@@ -337,7 +319,6 @@ class ViewAttributes {
 
     background?.let { target.background = it }
     foreground?.let { target.foreground = it }
-    padding?.let { target.padding = it }
     target.layoutDirection = layoutDirection
     stateListAnimator?.let { target.stateListAnimator = it }
     target.stateListAnimatorRes = stateListAnimatorRes
