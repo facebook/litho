@@ -1119,14 +1119,12 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       saveLithoLayoutResultIntoCache(context, currentNode, layoutResult)
 
       for (i in 0 until currentNode.childCount) {
-        val childLayoutResult: LithoLayoutResult? =
+        val childLayoutResult: LithoLayoutResult =
             buildYogaTree(
                 context = context, currentNode = currentNode.getChildAt(i), parentNode = yogaNode)
 
-        if (childLayoutResult != null) {
-          yogaNode.addChildAt(childLayoutResult.yogaNode, yogaNode.childCount)
-          layoutResult.addChild(childLayoutResult)
-        }
+        yogaNode.addChildAt(childLayoutResult.yogaNode, yogaNode.childCount)
+        layoutResult.addChild(childLayoutResult)
       }
 
       return layoutResult

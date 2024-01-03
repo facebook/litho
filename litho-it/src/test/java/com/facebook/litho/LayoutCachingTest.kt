@@ -139,7 +139,7 @@ class LayoutCachingTest {
   }
 
   @Test
-  fun `verify the layout result of a fixed size component with different size specs is not reused`() {
+  fun `verify the layout result of a component with different size specs is re-measured`() {
     val c = legacyLithoViewRule.context
     if (!c.shouldCacheLayouts()) {
       return
@@ -164,6 +164,7 @@ class LayoutCachingTest {
     legacyLithoViewRule.setSizeSpecs(atMost(200), atMost(200)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
+            LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
@@ -421,6 +422,296 @@ class LayoutCachingTest {
     lifecycleTracker.reset()
     legacyLithoViewRule.setSizeSpecs(exactly(200), exactly(200)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps).isEmpty()
+  }
+
+  @Test
+  fun `verify the behavior of nested container with flex settings`() {
+    val c = legacyLithoViewRule.context
+    if (!c.shouldCacheLayouts()) {
+      return
+    }
+
+    val lifecycleTracker1 = LifecycleTracker()
+    val lifecycleTracker2 = LifecycleTracker()
+    val lifecycleTracker3 = LifecycleTracker()
+    val lifecycleTracker4 = LifecycleTracker()
+    val mountSpec1 =
+        MountSpecLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker1)
+            .intrinsicSize(Size(70, 10))
+            .build()
+    val mountSpec2 =
+        MountSpecLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker2)
+            .intrinsicSize(Size(80, 10))
+            .build()
+    val mountSpec3 =
+        MountSpecLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker3)
+            .intrinsicSize(Size(25, 10))
+            .build()
+    val mountSpec4 =
+        MountSpecLifecycleTester.create(c)
+            .lifecycleTracker(lifecycleTracker4)
+            .intrinsicSize(Size(35, 10))
+            .build()
+    val caller: SimpleStateUpdateEmulatorSpec.Caller = SimpleStateUpdateEmulatorSpec.Caller()
+
+    val child1 =
+        Row.create(c)
+            .viewTag("child1")
+            .heightPx(20)
+            .child(mountSpec1)
+            .flex(1f)
+            .flexBasisPx(0)
+            .build()
+    val child2 =
+        Row.create(c)
+            .viewTag("child2")
+            .heightPx(20)
+            .child(mountSpec2)
+            .flex(1f)
+            .flexBasisPx(0)
+            .build()
+    val child3 =
+        Row.create(c) // Shrink this child with the default value(1f)
+            .viewTag("child3")
+            .heightPx(30)
+            .child(mountSpec3)
+            .build()
+    val child4 =
+        Row.create(c)
+            .viewTag("child4")
+            .heightPx(40)
+            .flexShrink(0f) // Don't shrink this child
+            .child(mountSpec4)
+            .build()
+    val component =
+        Column.create(c)
+            .child(SimpleStateUpdateEmulator.create(c).viewTag("StateUpdater").caller(caller))
+            .child(Row.create(c).viewTag("Row1").child(child1).child(child2))
+            .child(Row.create(c).viewTag("Row2").child(child3).child(child4))
+            .build()
+
+    legacyLithoViewRule
+        .setSizeSpecs(
+            SizeSpec.makeSizeSpec(SizeSpec.UNSPECIFIED, 0),
+            SizeSpec.makeSizeSpec(SizeSpec.UNSPECIFIED, 0))
+        .setRoot(component)
+        .attachToWindow()
+        .measure()
+        .layout()
+
+    Assertions.assertThat(lifecycleTracker1.steps)
+        .contains(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker2.steps)
+        .contains(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker3.steps)
+        .contains(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker4.steps)
+        .contains(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+
+    val lithoView = legacyLithoViewRule.lithoView
+    val component_child1 = legacyLithoViewRule.findViewWithTag("child1")
+    val component_child2 = legacyLithoViewRule.findViewWithTag("child2")
+    val component_row1 = legacyLithoViewRule.findViewWithTag("Row1")
+    val component_child3 = legacyLithoViewRule.findViewWithTag("child3")
+    val component_child4 = legacyLithoViewRule.findViewWithTag("child4")
+    val component_row2 = legacyLithoViewRule.findViewWithTag("Row2")
+    val component_updater = legacyLithoViewRule.findViewWithTag("StateUpdater")
+
+    Assertions.assertThat(component_child1.width)
+        .describedAs("Child1 should be measured with specified width")
+        .isEqualTo(70)
+    Assertions.assertThat(component_child2.width)
+        .describedAs("Child2 should be measured with specified width")
+        .isEqualTo(80)
+    Assertions.assertThat(component_child3.width)
+        .describedAs("Child3 should respect the value being set")
+        .isEqualTo(25)
+    Assertions.assertThat(component_child4.width)
+        .describedAs("Child4 should respect the value being set")
+        .isEqualTo(35)
+    Assertions.assertThat(component_row1.height)
+        .describedAs("Row should be filled with two children")
+        .isEqualTo(component_child1.height)
+        .isEqualTo(component_child2.height)
+    Assertions.assertThat(lithoView.height)
+        .describedAs("The height of the entire view should be equal to Row1 + Row2 + StateUpdater")
+        .isEqualTo(component_row1.height + component_row2.height + component_updater.height)
+
+    lifecycleTracker1.reset()
+    lifecycleTracker2.reset()
+    lifecycleTracker3.reset()
+    lifecycleTracker4.reset()
+    caller.increment()
+    Assertions.assertThat(lifecycleTracker1.steps)
+        .describedAs("Child1 should NOT be re-measured because nothing changed")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker2.steps)
+        .describedAs("Child2 should NOT be re-measured because nothing changed")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker3.steps)
+        .describedAs("Child3 should NOT be re-measured because nothing changed")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker4.steps)
+        .describedAs("Child4 should NOT be re-measured because nothing changed")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+
+    lifecycleTracker1.reset()
+    lifecycleTracker2.reset()
+    lifecycleTracker3.reset()
+    lifecycleTracker4.reset()
+    legacyLithoViewRule.setSizePx(200, 200).measure().layout()
+    Assertions.assertThat(component_child1.width)
+        .describedAs("Child1 should take half of the width")
+        .isEqualTo(100)
+    Assertions.assertThat(component_child2.width)
+        .describedAs("Child2 should take another half of the width")
+        .isEqualTo(100)
+    Assertions.assertThat(component_child3.width)
+        .describedAs("Child3 should be equal to the intrinsic size")
+        .isEqualTo(25)
+    Assertions.assertThat(component_child4.width)
+        .describedAs("Child4 should be equal to the intrinsic size")
+        .isEqualTo(35)
+    Assertions.assertThat(lifecycleTracker1.steps)
+        .describedAs(
+            "Child1 should NOT be re-measured because the root width is compatible with its size")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker2.steps)
+        .describedAs(
+            "Child2 should NOT be re-measured because the root width is compatible with its size")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker3.steps)
+        .describedAs(
+            "Child3 should NOT be re-measured because the root width is compatible with its size")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker4.steps)
+        .describedAs(
+            "Child4 should NOT be re-measured because the root width is compatible with its size")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+
+    lifecycleTracker1.reset()
+    lifecycleTracker2.reset()
+    lifecycleTracker3.reset()
+    lifecycleTracker4.reset()
+    legacyLithoViewRule.setSizePx(40, 200).measure().layout()
+    Assertions.assertThat(component_child1.width)
+        .describedAs("Shrink width due to the size constraints")
+        .isEqualTo(20)
+    Assertions.assertThat(component_child2.width)
+        .describedAs("The width should respect the value being set")
+        .isEqualTo(20)
+    Assertions.assertThat(component_child3.width)
+        .describedAs("Shrink width due to the size constraints")
+        .isEqualTo(5)
+    Assertions.assertThat(component_child4.width)
+        .describedAs("The width should respect the value being set")
+        .isEqualTo(35)
+    Assertions.assertThat(lifecycleTracker1.steps)
+        .describedAs(
+            "Child1 should be re-measured because the root width is NOT compatible with its size")
+        .contains(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker2.steps)
+        .describedAs(
+            "Child2 should be re-measured because the root width is NOT compatible with its size")
+        .contains(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker3.steps)
+        .describedAs("Child3 should be re-measured because we need to shrink its width")
+        .contains(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
+    Assertions.assertThat(lifecycleTracker4.steps)
+        .describedAs(
+            "Child4 should NOT be re-measured because we need to respect its shrink settings")
+        .doesNotContain(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND)
   }
 
   @Test

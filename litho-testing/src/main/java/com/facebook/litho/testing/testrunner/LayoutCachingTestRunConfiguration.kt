@@ -27,9 +27,11 @@ class LayoutCachingTestRunConfiguration : LithoTestRunConfiguration {
   override fun beforeTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance =
         defaultComponentsConfiguration.copy(shouldCacheLayouts = true)
+    ComponentsConfiguration.isYogaFlexBasisFixEnabled = true
   }
 
   override fun afterTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance = defaultComponentsConfiguration
+    ComponentsConfiguration.isYogaFlexBasisFixEnabled = false
   }
 }

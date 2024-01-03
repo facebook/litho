@@ -181,6 +181,7 @@ internal constructor(
     @JvmField var shouldCompareCommonPropsInIsEquivalentTo: Boolean = false
     @JvmField var shouldCompareRootCommonPropsInSingleComponentSection: Boolean = false
     @JvmField var forceDelegateViewBinder: Boolean = false
+    @JvmField var isYogaFlexBasisFixEnabled: Boolean = true
 
     /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
     @JvmField var shouldAllowCoreThreadTimeout: Boolean = false

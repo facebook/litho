@@ -40,28 +40,23 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
   }
 
   override fun widthPercent(percent: Float) {
-    widthFromStyle = percent
-    node.setWidthPercent(widthFromStyle)
+    node.setWidthPercent(percent)
   }
 
   override fun minWidthPx(minWidth: Int) {
-    widthFromStyle = minWidth.toFloat()
-    node.setMinWidth(widthFromStyle)
+    node.setMinWidth(minWidth.toFloat())
   }
 
   override fun maxWidthPx(maxWidth: Int) {
-    widthFromStyle = maxWidth.toFloat()
-    node.setMaxWidth(widthFromStyle)
+    node.setMaxWidth(maxWidth.toFloat())
   }
 
   override fun minWidthPercent(percent: Float) {
-    widthFromStyle = percent
-    node.setMinWidthPercent(widthFromStyle)
+    node.setMinWidthPercent(percent)
   }
 
   override fun maxWidthPercent(percent: Float) {
-    widthFromStyle = percent
-    node.setMaxWidthPercent(widthFromStyle)
+    node.setMaxWidthPercent(percent)
   }
 
   override fun heightPx(height: Int) {
@@ -70,28 +65,23 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
   }
 
   override fun heightPercent(percent: Float) {
-    heightFromStyle = percent
-    node.setHeightPercent(heightFromStyle)
+    node.setHeightPercent(percent)
   }
 
   override fun minHeightPx(minHeight: Int) {
-    heightFromStyle = minHeight.toFloat()
-    node.setMinHeight(heightFromStyle)
+    node.setMinHeight(minHeight.toFloat())
   }
 
   override fun maxHeightPx(maxHeight: Int) {
-    heightFromStyle = maxHeight.toFloat()
-    node.setMaxHeight(heightFromStyle)
+    node.setMaxHeight(maxHeight.toFloat())
   }
 
   override fun minHeightPercent(percent: Float) {
-    heightFromStyle = percent
-    node.setMinHeightPercent(heightFromStyle)
+    node.setMinHeightPercent(percent)
   }
 
   override fun maxHeightPercent(percent: Float) {
-    heightFromStyle = percent
-    node.setMaxHeightPercent(heightFromStyle)
+    node.setMaxHeightPercent(percent)
   }
 
   override fun layoutDirection(direction: YogaDirection) {
