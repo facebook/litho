@@ -30,6 +30,7 @@ import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.Primitive
+import com.facebook.rendercore.primitives.PrimitiveRenderUnit
 import com.facebook.rendercore.transitions.TransitionUtils
 
 object LithoNodeUtils {
@@ -333,14 +334,15 @@ object LithoNodeUtils {
 
     val primitive: Primitive? = node.primitive
     if (primitive != null && Component.isPrimitive(component)) {
+      @Suppress("UNCHECKED_CAST")
       return PrimitiveLithoRenderUnit.create(
           component,
-          commonDynamicProps,
+          commonDynamicProps as SparseArray<DynamicValue<Any?>>?,
           context,
           layoutOutputNodeInfo,
           flags,
           importantForAccessibility,
-          primitive.renderUnit,
+          primitive.renderUnit as PrimitiveRenderUnit<Any?>,
           debugKey)
     }
     @Suppress("UNCHECKED_CAST")
