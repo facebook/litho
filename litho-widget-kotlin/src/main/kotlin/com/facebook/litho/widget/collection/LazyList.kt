@@ -65,7 +65,8 @@ inline fun ResourcesScope.LazyList(
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean = context.lithoConfiguration.isReconciliationEnabled,
+    isReconciliationEnabled: Boolean =
+        context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     preallocationPerMountContentEnabled: Boolean =
         context.lithoConfiguration.preallocationPerMountContentEnabled,
     childEquivalenceIncludesCommonProps: Boolean = true,

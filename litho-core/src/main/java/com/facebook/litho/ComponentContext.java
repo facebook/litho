@@ -736,7 +736,7 @@ public class ComponentContext {
   }
 
   public boolean isReconciliationEnabled() {
-    return mLithoConfiguration.isReconciliationEnabled;
+    return mLithoConfiguration.componentsConfig.isReconciliationEnabled;
   }
 
   @Nullable

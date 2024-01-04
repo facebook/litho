@@ -64,6 +64,8 @@ internal constructor(
      */
     @JvmField
     val shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible: Boolean = false,
+    /** Whether the [ComponentTree] should be using State Reconciliation. */
+    @JvmField val isReconciliationEnabled: Boolean = true
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -135,9 +137,6 @@ internal constructor(
     @JvmField var forceEnableTransitionsForInstrumentationTests: Boolean = false
 
     @JvmField var enableThreadTracingStacktrace: Boolean = false
-
-    /** Sets if is reconciliation is enabled */
-    @JvmField var isReconciliationEnabled: Boolean = true
 
     @JvmField var runLooperPrepareForLayoutThreadFactory: Boolean = true
     @JvmField var enableDrawablePreAllocation: Boolean = false
@@ -236,6 +235,9 @@ internal constructor(
     private var specsApiStateUpdateDuplicateDetectionEnabled =
         baseConfig.specsApiStateUpdateDuplicateDetectionEnabled
     private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
+    private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
+
+    fun isReconciliationEnabled(enabled: Boolean) = also { isReconciliationEnabled = enabled }
 
     fun useCancellableLayoutFutures(enabled: Boolean) = also {
       useCancellableLayoutFutures = enabled
@@ -260,7 +262,8 @@ internal constructor(
           nestedPreallocationEnabled = nestedPreallocationEnabled,
           shouldCacheLayouts = shouldCacheLayouts,
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
-          useCancellableLayoutFutures = useCancellableLayoutFutures)
+          useCancellableLayoutFutures = useCancellableLayoutFutures,
+          isReconciliationEnabled = isReconciliationEnabled)
     }
   }
 }

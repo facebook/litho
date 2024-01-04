@@ -146,7 +146,6 @@ public class RecyclerBinder
   private final boolean mIncrementalMountEnabled;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
-  private final boolean mIsReconciliationEnabled;
   private final boolean mRecyclerViewItemPrefetch;
   private final int mItemViewCacheSize;
   private final boolean mRequestMountForPrefetchedItems;
@@ -408,7 +407,6 @@ public class RecyclerBinder
         @Nullable ComponentsConfiguration componentsConfiguration,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
-        boolean isReconciliationEnabled,
         @Nullable RunnableHandler preallocateHandler,
         boolean preallocatePerMountSpec,
         @Nullable LithoLifecycleProvider lifecycleProvider,
@@ -425,7 +423,6 @@ public class RecyclerBinder
             @Nullable ComponentsConfiguration componentsConfiguration,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
-            boolean isReconciliationEnabled,
             @Nullable RunnableHandler preallocateHandler,
             boolean preallocatePerMountSpec,
             @Nullable LithoLifecycleProvider lifecycleProvider,
@@ -437,7 +434,6 @@ public class RecyclerBinder
               .componentsConfiguration(componentsConfiguration)
               .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
-              .isReconciliationEnabled(isReconciliationEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
               .parentLifecycleProvider(lifecycleProvider)
@@ -828,7 +824,6 @@ public class RecyclerBinder
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mIsSubAdapter = builder.isSubAdapter;
-    mIsReconciliationEnabled = mRecyclerBinderConfig.reconciliationEnabled;
 
     if (builder.mRecyclerBinderConfig.preallocateMountContentHandler == null
         && mComponentContext.mLithoConfiguration.componentsConfig.nestedPreallocationEnabled) {
@@ -4039,7 +4034,6 @@ public class RecyclerBinder
         mComponentsConfiguration,
         mIncrementalMountEnabled,
         mVisibilityProcessingEnabled,
-        mIsReconciliationEnabled,
         mPreallocateMountContentHandler,
         mPreallocatePerMountSpec,
         mParentLifecycle,

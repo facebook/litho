@@ -130,7 +130,6 @@ data class RecyclerBinderConfig(
      */
     @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null,
     @JvmField val errorEventHandler: ErrorEventHandler? = null,
-    @JvmField val reconciliationEnabled: Boolean = ComponentsConfiguration.isReconciliationEnabled,
     /**
      * Whether the [Recycler] children should preallocate mount content after being generated. This
      * will only work if the root [com.facebook.litho.ComponentTree] has set a preallocation
@@ -154,7 +153,7 @@ data class RecyclerBinderConfig(
      * visible item to be computed = 5 * 10 = 50 total number of items after the last visible item
      * to be computed = 5 * 10 = 50
      */
-    @JvmField val rangeRatio: Float = 2f
+    @JvmField val rangeRatio: Float = DEFAULT_RANGE_RATIO
 ) {
 
   init {
@@ -168,6 +167,9 @@ data class RecyclerBinderConfig(
   }
 
   companion object {
+
+    const val DEFAULT_RANGE_RATIO = 2f
+
     private val default: RecyclerBinderConfig = RecyclerBinderConfig()
 
     @JvmStatic
@@ -205,7 +207,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
   private var threadPoolConfig = configuration.threadPoolConfig
   private var errorEventHandler = configuration.errorEventHandler
-  private var reconciliationEnabled = configuration.reconciliationEnabled
   private var preallocateMountContent = configuration.preallocateMountContent
   private var preallocateMountContentHandler = configuration.preallocateMountContentHandler
   private var componentsConfiguration = configuration.componentsConfiguration
@@ -256,10 +257,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.errorEventHandler = errorEventHandler
   }
 
-  fun reconciliationEnabled(enabled: Boolean): RecyclerBinderConfigBuilder = also {
-    this.reconciliationEnabled = enabled
-  }
-
   fun preallocateMountContent(enabled: Boolean): RecyclerBinderConfigBuilder = also {
     preallocateMountContent = enabled
   }
@@ -295,7 +292,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         hasDynamicItemHeight = hasDynamicItemHeight,
         threadPoolConfig = threadPoolConfig,
         errorEventHandler = errorEventHandler,
-        reconciliationEnabled = reconciliationEnabled,
         preallocateMountContent = preallocateMountContent,
         preallocateMountContentHandler = preallocateMountContentHandler,
         rangeRatio = rangeRatio,

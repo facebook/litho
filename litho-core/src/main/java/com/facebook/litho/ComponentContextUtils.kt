@@ -36,7 +36,6 @@ object ComponentContextUtils {
     return LithoConfiguration(
         componentsConfig = ComponentsConfiguration.defaultInstance,
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
-        isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled,
         isVisibilityProcessingEnabled = true,
         preallocationPerMountContentEnabled = false,
         mountContentPreallocationHandler = null,

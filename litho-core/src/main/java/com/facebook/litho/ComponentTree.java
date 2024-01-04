@@ -492,7 +492,6 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            builder.isReconciliationEnabled,
             builder.visibilityProcessingEnabled,
             mShouldPreallocatePerMountSpec,
             mPreAllocateMountContentHandler,
@@ -1161,7 +1160,7 @@ public class ComponentTree
   }
 
   public boolean isReconciliationEnabled() {
-    return mContext.mLithoConfiguration.isReconciliationEnabled;
+    return mContext.mLithoConfiguration.componentsConfig.isReconciliationEnabled;
   }
 
   public synchronized @Nullable Component getRoot() {
@@ -3075,7 +3074,6 @@ public class ComponentTree
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
-    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
@@ -3217,12 +3215,6 @@ public class ComponentTree
 
     public Builder measureListener(@Nullable MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
-      return this;
-    }
-
-    /** Sets if reconciliation is enabled */
-    public Builder isReconciliationEnabled(boolean isEnabled) {
-      this.isReconciliationEnabled = isEnabled;
       return this;
     }
 

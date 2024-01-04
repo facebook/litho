@@ -24,9 +24,8 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.OMIT)
 data class LithoConfiguration(
-    @JvmField var componentsConfig: ComponentsConfiguration,
+    @JvmField val componentsConfig: ComponentsConfiguration,
     @JvmField val areTransitionsEnabled: Boolean,
-    @JvmField val isReconciliationEnabled: Boolean,
     @JvmField val isVisibilityProcessingEnabled: Boolean,
     @JvmField val preallocationPerMountContentEnabled: Boolean,
     @JvmField val mountContentPreallocationHandler: RunnableHandler?,

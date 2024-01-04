@@ -58,18 +58,13 @@ abstract class CollectionLayout(
           .recyclerBinderConfiguration(
               RecyclerBinderConfiguration.create()
                   .recyclerBinderConfig(
-                      if (rangeRatio != null) {
-                        RecyclerBinderConfig(
-                            hasDynamicItemHeight = hasDynamicItemHeight,
-                            reconciliationEnabled = isReconciliationEnabled,
-                            preallocateMountContent = preallocationPerMountContentEnabled,
-                            rangeRatio = rangeRatio)
-                      } else {
-                        RecyclerBinderConfig(
-                            hasDynamicItemHeight = hasDynamicItemHeight,
-                            reconciliationEnabled = isReconciliationEnabled,
-                            preallocateMountContent = preallocationPerMountContentEnabled)
-                      })
+                      RecyclerBinderConfig(
+                          hasDynamicItemHeight = hasDynamicItemHeight,
+                          preallocateMountContent = preallocationPerMountContentEnabled,
+                          componentsConfiguration =
+                              ComponentsConfiguration.defaultInstance.copy(
+                                  isReconciliationEnabled = isReconciliationEnabled),
+                          rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO))
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .isIncrementalMountEnabled(isIncrementalMountEnabled)

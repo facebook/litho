@@ -53,7 +53,6 @@ import javax.annotation.concurrent.ThreadSafe;
 public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
-  private final boolean mIsReconciliationEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
@@ -124,7 +123,6 @@ public class ComponentTreeHolder {
     private @Nullable RunnableHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
-    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean visibilityProcessingEnabled = true;
     private @Nullable LithoLifecycleProvider parentLifecycle;
     private @Nullable ErrorEventHandler errorEventHandler;
@@ -173,11 +171,6 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder isReconciliationEnabled(boolean isEnabled) {
-      isReconciliationEnabled = isEnabled;
-      return this;
-    }
-
     public Builder parentLifecycleProvider(LithoLifecycleProvider parentLifecycle) {
       this.parentLifecycle = parentLifecycle;
       return this;
@@ -211,7 +204,6 @@ public class ComponentTreeHolder {
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
-    mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mParentLifecycle = builder.parentLifecycle;
     mErrorEventHandler = builder.errorEventHandler;
     mComponentsConfiguration = builder.componentsConfiguration;
@@ -470,16 +462,6 @@ public class ComponentTreeHolder {
   }
 
   private void applyCustomAttributesIfProvided(ComponentTree.Builder builder) {
-    final Object isReconciliationEnabledAttr =
-        mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
-
-    // If the custom attribute is NOT set, defer to the value from the builder.
-    if (isReconciliationEnabledAttr != null) {
-      builder.isReconciliationEnabled((boolean) isReconciliationEnabledAttr);
-    } else {
-      builder.isReconciliationEnabled(mIsReconciliationEnabled);
-    }
-
     if (mErrorEventHandler != null) {
       builder.errorHandler(mErrorEventHandler);
     }

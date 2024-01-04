@@ -67,7 +67,15 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ComponentErrorBoundaryTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule
+  @JvmField
+  val lithoViewRule =
+      LegacyLithoViewRule(
+          componentsConfiguration =
+              ComponentsConfiguration.create()
+                  // Disable reconciliation so that the onCreateLayout is called for layout.
+                  .isReconciliationEnabled(false)
+                  .build())
 
   @Rule @JvmField val expectedException = ExpectedException.none()
 
@@ -76,9 +84,6 @@ class ComponentErrorBoundaryTest {
 
   @Before
   fun assumeDebugAndChangeConfig() {
-    currentReconciliationValue = ComponentsConfiguration.isReconciliationEnabled
-    // Disable reconciliation so that the onCreateLayout is called for layout.
-    ComponentsConfiguration.isReconciliationEnabled = false
     ComponentsConfiguration.isAnimationDisabled = false
     assumeThat(
         "These tests can only be run in debug mode.",
@@ -88,8 +93,6 @@ class ComponentErrorBoundaryTest {
 
   @After
   fun adjustConfigs() {
-    // Reset the the values of the config.
-    ComponentsConfiguration.isReconciliationEnabled = currentReconciliationValue
     ComponentsConfiguration.isAnimationDisabled = true
   }
 
