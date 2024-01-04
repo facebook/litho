@@ -49,9 +49,7 @@ object NestedTreeComponentSpec {
         Row.create(c)
             .key("Row")
             .child(NestedTreeChildComponent.create(c).key("NestedTreeChildComponent"))
-    if (props?.mDirection != null) {
-      row.layoutDirection(props.mDirection)
-    }
+    props?.mDirection?.let { row.layoutDirection(it) }
     return row.build()
   }
 

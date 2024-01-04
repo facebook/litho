@@ -29,6 +29,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.rendercore.Equivalence;
@@ -44,10 +46,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 /** Internal class that holds props that are common to all {@link Component}s. */
 @ThreadConfined(ThreadConfined.ANY)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class CommonProps implements LayoutProps, Equivalence<CommonProps> {
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
@@ -125,11 +127,13 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
 
   @Override
   public void positionType(@Nullable YogaPositionType positionType) {
-    getOrCreateLayoutProps().positionType(positionType);
+    if (positionType != null) {
+      getOrCreateLayoutProps().positionType(positionType);
+    }
   }
 
   @Override
-  public void positionPx(@Nullable YogaEdge edge, @Px int position) {
+  public void positionPx(YogaEdge edge, @Px int position) {
     getOrCreateLayoutProps().positionPx(edge, position);
   }
 
@@ -186,12 +190,12 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   @Override
-  public void layoutDirection(@Nullable YogaDirection direction) {
+  public void layoutDirection(YogaDirection direction) {
     getOrCreateLayoutProps().layoutDirection(direction);
   }
 
   @Override
-  public void alignSelf(@Nullable YogaAlign alignSelf) {
+  public void alignSelf(YogaAlign alignSelf) {
     getOrCreateLayoutProps().alignSelf(alignSelf);
   }
 
@@ -233,27 +237,27 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   @Override
-  public void marginPx(@Nullable YogaEdge edge, @Px int margin) {
+  public void marginPx(YogaEdge edge, @Px int margin) {
     getOrCreateLayoutProps().marginPx(edge, margin);
   }
 
   @Override
-  public void marginPercent(@Nullable YogaEdge edge, float percent) {
+  public void marginPercent(YogaEdge edge, float percent) {
     getOrCreateLayoutProps().marginPercent(edge, percent);
   }
 
   @Override
-  public void marginAuto(@Nullable YogaEdge edge) {
+  public void marginAuto(YogaEdge edge) {
     getOrCreateLayoutProps().marginAuto(edge);
   }
 
   @Override
-  public void paddingPx(@Nullable YogaEdge edge, @Px int padding) {
+  public void paddingPx(YogaEdge edge, @Px int padding) {
     getOrCreateLayoutProps().paddingPx(edge, padding);
   }
 
   @Override
-  public void paddingPercent(@Nullable YogaEdge edge, float percent) {
+  public void paddingPercent(YogaEdge edge, float percent) {
     getOrCreateLayoutProps().paddingPercent(edge, percent);
   }
 
@@ -270,7 +274,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   @Override
-  public void positionPercent(@Nullable YogaEdge edge, float percent) {
+  public void positionPercent(YogaEdge edge, float percent) {
     getOrCreateLayoutProps().positionPercent(edge, percent);
   }
 
@@ -361,11 +365,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   @Override
-  public void gap(@NotNull YogaGutter gap, int length) {
+  public void gap(YogaGutter gap, int length) {
     getOrCreateLayoutProps().gap(gap, length);
   }
 
-  public void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
+  public void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
 
@@ -741,9 +745,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   void copyInto(ComponentContext c, LithoNode node) {
-    if (c != null) {
-      c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
-    }
+    c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
 
     if (mNodeInfo != null) {
       node.applyNodeInfo(mNodeInfo);
@@ -1013,6 +1015,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         node.visibleWidthRatio(mVisibleWidthRatio);
       }
       if ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mTouchExpansions);
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mTouchExpansions.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
@@ -1021,7 +1024,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         }
       }
       if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-        node.border(mBorder);
+        node.border(Preconditions.checkNotNull(mBorder));
       }
       if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_IS_SET) != 0L) {
         node.stateListAnimator(mStateListAnimator);
@@ -1223,7 +1226,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public void alignSelf(@Nullable YogaAlign alignSelf) {
+    public void alignSelf(YogaAlign alignSelf) {
       mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
       mAlignSelf = alignSelf;
     }
@@ -1271,17 +1274,16 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public void positionPx(@Nullable YogaEdge edge, @Px int position) {
+    public void positionPx(YogaEdge edge, @Px int position) {
       mPrivateFlags |= PFLAG_POSITION_IS_SET;
       if (mPositions == null) {
         mPositions = new Edges();
       }
-
       mPositions.set(edge, position);
     }
 
     @Override
-    public void positionPercent(@Nullable YogaEdge edge, float percent) {
+    public void positionPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_POSITION_PERCENT_IS_SET;
       if (mPositionPercents == null) {
         mPositionPercents = new Edges();
@@ -1290,7 +1292,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public void paddingPx(@Nullable YogaEdge edge, @Px int padding) {
+    public void paddingPx(YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
         mPaddings = new Edges();
@@ -1299,7 +1301,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public void paddingPercent(@Nullable YogaEdge edge, float percent) {
+    public void paddingPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
       if (mPaddingPercents == null) {
         mPaddingPercents = new Edges();
@@ -1308,7 +1310,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public void marginPx(@Nullable YogaEdge edge, @Px int margin) {
+    public void marginPx(YogaEdge edge, @Px int margin) {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
@@ -1318,7 +1320,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public void marginPercent(@Nullable YogaEdge edge, float percent) {
+    public void marginPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
       if (mMarginPercents == null) {
         mMarginPercents = new Edges();
@@ -1414,10 +1416,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         target.maxHeightPercent(mMaxHeightPercent);
       }
       if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
-        target.layoutDirection(mLayoutDirection);
+        target.layoutDirection(Preconditions.checkNotNull(mLayoutDirection));
       }
       if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
-        target.alignSelf(mAlignSelf);
+        target.alignSelf(Preconditions.checkNotNull(mAlignSelf));
       }
       if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
         target.flex(mFlex);
@@ -1438,9 +1440,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         target.aspectRatio(mAspectRatio);
       }
       if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
-        target.positionType(mPositionType);
+        target.positionType(Preconditions.checkNotNull(mPositionType));
       }
       if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mPositions);
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPositions.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
@@ -1449,6 +1452,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         }
       }
       if ((mPrivateFlags & PFLAG_POSITION_PERCENT_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mPositionPercents);
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPositionPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
@@ -1457,6 +1461,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mPaddings);
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPaddings.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
@@ -1465,6 +1470,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_PERCENT_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mPaddingPercents);
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPaddingPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
@@ -1473,6 +1479,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mMargins);
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mMargins.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
@@ -1481,6 +1488,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_PERCENT_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mMarginPercents);
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mMarginPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
@@ -1489,6 +1497,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_AUTO_IS_SET) != 0L) {
+        Preconditions.checkNotNull(mMarginAutos);
         for (YogaEdge edge : mMarginAutos) {
           target.marginAuto(edge);
         }

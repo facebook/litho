@@ -997,7 +997,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * <p>Default: {@link YogaAlign#AUTO}
      */
-    public T alignSelf(@Nullable YogaAlign alignSelf) {
+    public T alignSelf(YogaAlign alignSelf) {
       mComponent.getOrCreateCommonProps().alignSelf(alignSelf);
       return getThis();
     }
@@ -1456,7 +1456,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * <p>Default: {@link YogaDirection#INHERIT}
      */
-    public T layoutDirection(@Nullable YogaDirection layoutDirection) {
+    public T layoutDirection(YogaDirection layoutDirection) {
       mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);
       return getThis();
     }
@@ -1467,23 +1467,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /** @see #marginPx */
-    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    public T marginAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     /** @see #marginPx */
-    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+    public T marginAttr(YogaEdge edge, @AttrRes int resId) {
       return marginAttr(edge, resId, 0);
     }
 
     /** @see #marginPx */
-    public T marginAuto(@Nullable YogaEdge edge) {
+    public T marginAuto(YogaEdge edge) {
       mComponent.getOrCreateCommonProps().marginAuto(edge);
       return getThis();
     }
 
     /** @see #marginPx */
-    public T marginDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float margin) {
+    public T marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
       return marginPx(edge, mResourceResolver.dipsToPixels(margin));
     }
 
@@ -1491,7 +1491,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * @param percent a value between 0 and 100.
      * @see #marginPx
      */
-    public T marginPercent(@Nullable YogaEdge edge, float percent) {
+    public T marginPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
       return getThis();
     }
@@ -1502,13 +1502,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a>
      * for more information
      */
-    public T marginPx(@Nullable YogaEdge edge, @Px int margin) {
+    public T marginPx(YogaEdge edge, @Px int margin) {
       mComponent.getOrCreateCommonProps().marginPx(edge, margin);
       return getThis();
     }
 
     /** @see #marginPx */
-    public T marginRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    public T marginRes(YogaEdge edge, @DimenRes int resId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
@@ -1701,17 +1701,17 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /** @see #paddingPx */
-    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    public T paddingAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     /** @see #paddingPx */
-    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+    public T paddingAttr(YogaEdge edge, @AttrRes int resId) {
       return paddingAttr(edge, resId, 0);
     }
 
     /** @see #paddingPx */
-    public T paddingDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float padding) {
+    public T paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
       return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
     }
 
@@ -1719,7 +1719,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * @param percent a value between 0 and 100.
      * @see #paddingPx
      */
-    public T paddingPercent(@Nullable YogaEdge edge, float percent) {
+    public T paddingPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
       return getThis();
     }
@@ -1730,13 +1730,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a>
      * for more information
      */
-    public T paddingPx(@Nullable YogaEdge edge, @Px int padding) {
+    public T paddingPx(YogaEdge edge, @Px int padding) {
       mComponent.getOrCreateCommonProps().paddingPx(edge, padding);
       return getThis();
     }
 
     /** @see #paddingPx */
-    public T paddingRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    public T paddingRes(YogaEdge edge, @DimenRes int resId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
@@ -1749,17 +1749,17 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /** @see #positionPx */
-    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    public T positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     /** @see #positionPx */
-    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+    public T positionAttr(YogaEdge edge, @AttrRes int resId) {
       return positionAttr(edge, resId, 0);
     }
 
     /** @see #positionPx */
-    public T positionDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float position) {
+    public T positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
       return positionPx(edge, mResourceResolver.dipsToPixels(position));
     }
 
@@ -1767,7 +1767,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * @param percent a value between 0 and 100.
      * @see #positionPx
      */
-    public T positionPercent(@Nullable YogaEdge edge, float percent) {
+    public T positionPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().positionPercent(edge, percent);
       return getThis();
     }
@@ -1778,13 +1778,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * href="https://yogalayout.dev/docs/absolute-relative-layout">https://yogalayout.dev/docs/absolute-relative-layout</a>
      * for more information.
      */
-    public T positionPx(@Nullable YogaEdge edge, @Px int position) {
+    public T positionPx(YogaEdge edge, @Px int position) {
       mComponent.getOrCreateCommonProps().positionPx(edge, position);
       return getThis();
     }
 
     /** @see #positionPx */
-    public T positionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    public T positionRes(YogaEdge edge, @DimenRes int resId) {
       return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
@@ -1795,7 +1795,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * <p>Default: {@link YogaPositionType#RELATIVE}
      */
-    public T positionType(@Nullable YogaPositionType positionType) {
+    public T positionType(YogaPositionType positionType) {
       mComponent.getOrCreateCommonProps().positionType(positionType);
       return getThis();
     }
@@ -1991,26 +1991,24 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    public T touchExpansionAttr(
-        @Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    public T touchExpansionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+    public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId) {
       return touchExpansionAttr(edge, resId, 0);
     }
 
-    public T touchExpansionDip(
-        @Nullable YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
+    public T touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
       return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
-    public T touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
+    public T touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
       mComponent.getOrCreateCommonProps().touchExpansionPx(edge, touchExpansion);
       return getThis();
     }
 
-    public T touchExpansionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    public T touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
       return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
