@@ -230,28 +230,37 @@ internal constructor(
    */
   class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
 
+    private var useCancellableLayoutFutures = baseConfig.useCancellableLayoutFutures
+    private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
+    private var nestedPreallocationEnabled = baseConfig.nestedPreallocationEnabled
+    private var specsApiStateUpdateDuplicateDetectionEnabled =
+        baseConfig.specsApiStateUpdateDuplicateDetectionEnabled
+    private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
+
     fun useCancellableLayoutFutures(enabled: Boolean) = also {
-      baseConfig = baseConfig.copy(useCancellableLayoutFutures = enabled)
+      useCancellableLayoutFutures = enabled
     }
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean) = also {
-      baseConfig = baseConfig.copy(shouldAddHostViewForRootComponent = enabled)
+      shouldAddHostViewForRootComponent = enabled
     }
 
-    fun nestedPreallocationEnabled(enabled: Boolean) = also {
-      baseConfig = baseConfig.copy(nestedPreallocationEnabled = enabled)
-    }
+    fun nestedPreallocationEnabled(enabled: Boolean) = also { nestedPreallocationEnabled = enabled }
 
-    fun shouldCacheLayouts(enabled: Boolean) = also {
-      baseConfig = baseConfig.copy(shouldCacheLayouts = enabled)
-    }
+    fun shouldCacheLayouts(enabled: Boolean) = also { shouldCacheLayouts = enabled }
 
     fun specsApiStateUpdateDetectionEnabled(enabled: Boolean) = also {
-      baseConfig = baseConfig.copy(specsApiStateUpdateDuplicateDetectionEnabled = enabled)
+      specsApiStateUpdateDuplicateDetectionEnabled = enabled
     }
 
     fun build(): ComponentsConfiguration {
-      return baseConfig
+      return baseConfig.copy(
+          specsApiStateUpdateDuplicateDetectionEnabled =
+              specsApiStateUpdateDuplicateDetectionEnabled,
+          nestedPreallocationEnabled = nestedPreallocationEnabled,
+          shouldCacheLayouts = shouldCacheLayouts,
+          shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
+          useCancellableLayoutFutures = useCancellableLayoutFutures)
     }
   }
 }
