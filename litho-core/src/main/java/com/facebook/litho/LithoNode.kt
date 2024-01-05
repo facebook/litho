@@ -102,11 +102,10 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
   val debugLayoutEditor: LayoutProps?
     get() {
-      if (ComponentsConfiguration.isDebugModeEnabled) {
+      if (ComponentsConfiguration.isDebugModeEnabled && debugLayoutProps == null) {
         debugLayoutProps = DefaultLayoutProps()
-        return debugLayoutProps
       }
-      return null
+      return debugLayoutProps
     }
 
   val transitionGlobalKey: String
