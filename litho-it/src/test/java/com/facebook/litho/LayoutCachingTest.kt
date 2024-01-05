@@ -164,7 +164,6 @@ class LayoutCachingTest {
     legacyLithoViewRule.setSizeSpecs(atMost(200), atMost(200)).measure().layout()
     Assertions.assertThat(lifecycleTracker.steps)
         .containsExactly(
-            LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
