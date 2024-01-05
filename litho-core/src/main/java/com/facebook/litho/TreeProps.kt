@@ -18,10 +18,20 @@ package com.facebook.litho
 
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.infer.annotation.ThreadSafe
-import com.facebook.litho.annotations.TreeProp
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.litho.config.ComponentsConfiguration
 import java.util.Collections
 import java.util.HashMap
 import java.util.Objects
+
+interface TreeProp<T> {
+  val defaultValue: T?
+}
+
+@DataClassGenerate
+private data class ClassBasedTreeProp<T>(val clazz: Class<T>) : TreeProp<T> {
+  override val defaultValue: T? = null
+}
 
 /**
  * A data structure to store tree props.
@@ -32,12 +42,26 @@ import java.util.Objects
 class TreeProps {
 
   private val map = Collections.synchronizedMap(HashMap<Class<*>, Any?>())
+  private val objectMap = Collections.synchronizedMap(HashMap<TreeProp<*>, Any?>())
+  private val isObjectTreePropEnabled: Boolean = ComponentsConfiguration.isObjectTreePropEnabled
 
   fun put(key: Class<*>, value: Any?) {
-    map[key] = value
+    if (isObjectTreePropEnabled) {
+      val treeProp = createLegacyTreeProp(key)
+      objectMap[treeProp] = value
+    } else {
+      map[key] = value
+    }
   }
 
-  operator fun <T> get(key: Class<T>): T? = map[key] as T?
+  operator fun <T> get(key: Class<T>): T? {
+    return if (isObjectTreePropEnabled) {
+      val treeProp = createLegacyTreeProp(key)
+      objectMap[treeProp] as T?
+    } else {
+      map[key] as T?
+    }
+  }
 
   operator fun set(key: Class<*>, value: Any?) = put(key, value)
 
@@ -90,6 +114,11 @@ class TreeProps {
         synchronized(source.map) { newProps.map.putAll(source.map) }
       }
       return newProps
+    }
+
+    @JvmStatic
+    fun <T> createLegacyTreeProp(clazz: Class<T>): TreeProp<T> {
+      return ClassBasedTreeProp(clazz)
     }
   }
 }

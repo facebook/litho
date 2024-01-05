@@ -211,6 +211,7 @@ internal constructor(
     @JvmField var debugHighlightMountBounds: Boolean = false
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
     @JvmField var eventHandlerRebindLoggingSamplingRate: Int = 0
+    @JvmField var isObjectTreePropEnabled: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
