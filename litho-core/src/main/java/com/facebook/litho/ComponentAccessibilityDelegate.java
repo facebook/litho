@@ -25,13 +25,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import androidx.core.util.Preconditions;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
-import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItem;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -40,20 +38,16 @@ import javax.annotation.Nullable;
  * Class that is used to set up accessibility for {@link ComponentHost}s. Virtual nodes are only
  * exposed if the component implements support for extra accessibility nodes.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String TAG = "ComponentAccessibility";
 
   private final View mView;
-  @Nullable private NodeInfo mNodeInfo;
+  private NodeInfo mNodeInfo;
   private final AccessibilityDelegateCompat mSuperDelegate;
   private static final Rect sDefaultBounds = new Rect(0, 0, 1, 1);
 
   ComponentAccessibilityDelegate(
-      View view,
-      @Nullable NodeInfo nodeInfo,
-      boolean originalFocus,
-      int originalImportantForAccessibility) {
+      View view, NodeInfo nodeInfo, boolean originalFocus, int originalImportantForAccessibility) {
     super(view);
     mView = view;
     mNodeInfo = nodeInfo;
@@ -96,8 +90,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
       final Component component = getRenderUnit(mountItem).getComponent();
-      final ComponentContext scopedContext =
-          Preconditions.checkNotNull(getComponentContext(mountItem.getRenderTreeNode()));
+      final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       try {
         dispatchOnPopulateAccessibilityNodeEvent(host, node);
         if (component instanceof SpecGeneratedComponent) {
@@ -187,8 +180,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
     final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
-    final ComponentContext scopedContext =
-        Preconditions.checkNotNull(getComponentContext(mountItem));
+    final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {
       final int extraAccessibilityNodesCount =
@@ -223,8 +215,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
     final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
-    final ComponentContext scopedContext =
-        Preconditions.checkNotNull(getComponentContext(mountItem));
+    final ComponentContext scopedContext = getComponentContext(mountItem);
 
     node.setClassName(component.getClass().getName());
 
@@ -238,13 +229,16 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         return;
       }
 
-      component.onPopulateExtraAccessibilityNode(
-          scopedContext,
-          node,
-          virtualViewId,
-          bounds.left,
-          bounds.top,
-          getInterStageProps(mountItem));
+      if (component instanceof SpecGeneratedComponent) {
+        ((SpecGeneratedComponent) component)
+            .onPopulateExtraAccessibilityNode(
+                scopedContext,
+                node,
+                virtualViewId,
+                bounds.left,
+                bounds.top,
+                getInterStageProps(mountItem));
+      }
     } catch (Exception e) {
       ComponentUtils.handle(scopedContext, e);
     }
@@ -266,8 +260,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
     final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
-    final ComponentContext scopedContext =
-        Preconditions.checkNotNull(getComponentContext(mountItem));
+    final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {
       if (component.getExtraAccessibilityNodesCount(scopedContext, getInterStageProps(mountItem))
@@ -406,8 +399,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
-    if (mountItem != null) {
-      getRenderUnit(mountItem);
+    if (mountItem != null && getRenderUnit(mountItem) != null) {
       final Component component = getRenderUnit(mountItem).getComponent();
       if ((component instanceof SpecGeneratedComponent
           && ((SpecGeneratedComponent) component).implementsExtraAccessibilityNodes())) {
@@ -492,7 +484,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   @Override
-  public boolean performAccessibilityAction(View host, int action, @Nullable Bundle args) {
+  public boolean performAccessibilityAction(View host, int action, Bundle args) {
     if (mNodeInfo != null && mNodeInfo.getPerformAccessibilityActionHandler() != null) {
       return EventDispatcherUtils.dispatchPerformAccessibilityActionEvent(
           mNodeInfo.getPerformAccessibilityActionHandler(), host, action, args, mSuperDelegate);
@@ -535,7 +527,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     @Override
-    public boolean performAccessibilityAction(View host, int action, @Nullable Bundle args) {
+    public boolean performAccessibilityAction(View host, int action, Bundle args) {
       return ComponentAccessibilityDelegate.super.performAccessibilityAction(host, action, args);
     }
 
