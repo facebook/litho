@@ -46,6 +46,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -198,6 +199,7 @@ import javax.annotation.Nullable;
       InputConnectionEvent.class,
     })
 class TextInputSpec {
+
   /**
    * Dummy drawable used for differentiating user-provided null background drawable from default
    * drawable of the spec
@@ -919,6 +921,7 @@ class TextInputSpec {
       editText.setInputType(inputType); // Set the input type back to default.
     }
     editText.setTextState(null);
+    editText.removeOnWindowFocusChangeListener();
     mountedView.set(null);
   }
 
@@ -1099,6 +1102,8 @@ class TextInputSpec {
 
     private boolean mDisableAutofill = false;
 
+    @Nullable private ViewTreeObserver.OnWindowFocusChangeListener mOnWindowFocusChangeListener;
+
     public EditTextWithEventHandlers(Context context) {
       super(context);
       // Unfortunately we can't just override `void onEditorAction(int actionCode)` as that only
@@ -1264,6 +1269,13 @@ class TextInputSpec {
       }
     }
 
+    void removeOnWindowFocusChangeListener() {
+      if (mOnWindowFocusChangeListener != null) {
+        getViewTreeObserver().removeOnWindowFocusChangeListener(mOnWindowFocusChangeListener);
+        mOnWindowFocusChangeListener = null;
+      }
+    }
+
     void setSoftInputVisibility(boolean visible) {
       final InputMethodManager imm =
           (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1272,30 +1284,62 @@ class TextInputSpec {
       }
 
       if (visible) {
-        if (imm.isActive(this)) {
-          imm.showSoftInput(this, 0);
-          mIsSoftInputRequested = false;
-        } else {
-          // Unfortunately, IMM and requesting focus has race conditions and there are cases where
-          // even though the focus request went through, IMM hasn't been updated yet (thus the
-          // isActive check). Posting a Runnable gives time for the Runnable the IMM Binder posts
-          // to run first and update the IMM.
-          post(
-              new Runnable() {
-                @Override
-                public void run() {
-                  if (mIsSoftInputRequested) {
-                    imm.showSoftInput(EditTextWithEventHandlers.this, 0);
-                  }
-                  mIsSoftInputRequested = false;
-                }
-              });
-          mIsSoftInputRequested = true;
-        }
+        showKeyboardWhenWindowIsFocused(imm);
       } else {
-        imm.hideSoftInputFromWindow(getWindowToken(), 0);
-        mIsSoftInputRequested = false;
+        hideKeyboard(imm);
       }
+    }
+
+    private void showKeyboardWhenWindowIsFocused(final InputMethodManager imm) {
+      if (hasWindowFocus()) {
+        showKeyboard(imm);
+      } else {
+        // We need to wait until the window gets focus.
+        // https://developer.android.com/develop/ui/views/touch-and-input/keyboard-input/visibility#ShowReliably
+        mOnWindowFocusChangeListener =
+            new ViewTreeObserver.OnWindowFocusChangeListener() {
+              @Override
+              public void onWindowFocusChanged(boolean hasFocus) {
+                if (hasFocus) {
+                  showKeyboard(imm);
+                  removeOnWindowFocusChangeListener();
+                }
+              }
+            };
+        getViewTreeObserver().addOnWindowFocusChangeListener(mOnWindowFocusChangeListener);
+      }
+    }
+
+    private void showKeyboard(final InputMethodManager imm) {
+      if (!isFocused()) {
+        return;
+      }
+
+      if (imm.isActive(this)) {
+        imm.showSoftInput(this, 0);
+        mIsSoftInputRequested = false;
+      } else {
+        // Unfortunately, IMM and requesting focus has race conditions and there are cases where
+        // even though the focus request went through, IMM hasn't been updated yet (thus the
+        // isActive check). Posting a Runnable gives time for the Runnable the IMM Binder posts
+        // to run first and update the IMM.
+        post(
+            new Runnable() {
+              @Override
+              public void run() {
+                if (mIsSoftInputRequested) {
+                  imm.showSoftInput(EditTextWithEventHandlers.this, 0);
+                }
+                mIsSoftInputRequested = false;
+              }
+            });
+        mIsSoftInputRequested = true;
+      }
+    }
+
+    private void hideKeyboard(final InputMethodManager imm) {
+      imm.hideSoftInputFromWindow(getWindowToken(), 0);
+      mIsSoftInputRequested = false;
     }
 
     void performAccessibilityFocus() {
@@ -1381,6 +1425,7 @@ class TextInputSpec {
   }
 
   private static class Api26Utils {
+
     private static void setAutoFillProps(
         EditText editText, int importantForAutofill, @Nullable String[] autofillHints) {
       if (SDK_INT >= Build.VERSION_CODES.O) {
