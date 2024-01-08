@@ -55,6 +55,8 @@ public interface ComponentLayout {
   @Px
   int getPaddingLeft();
 
+  /** @deprecated A non-zero value for padding indicates that padding is set. */
+  @Deprecated
   boolean isPaddingSet();
 
   @Nullable
