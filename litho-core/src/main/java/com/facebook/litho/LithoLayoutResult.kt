@@ -282,7 +282,16 @@ open class LithoLayoutResult(
           // for mount specs to avoid mutating the currently mount layout data.
           newLayoutData = (component as SpecGeneratedComponent).createInterStagePropsContainer()
           component.onMeasure(
-              componentScopedContext, this, widthSpec, heightSpec, size, newLayoutData)
+              componentScopedContext,
+              SpecGeneratedComponentLayout(
+                  yogaNode = yogaNode,
+                  paddingSet = node.isPaddingSet,
+                  background = node.background,
+              ),
+              widthSpec,
+              heightSpec,
+              size,
+              newLayoutData)
           delegate = null
           width = size.width
           height = size.height
@@ -448,7 +457,14 @@ open class LithoLayoutResult(
           layoutData = this.layoutData as InterStagePropsContainer?
         }
         try {
-          component.onBoundsDefined(context, this, layoutData)
+          component.onBoundsDefined(
+              context,
+              SpecGeneratedComponentLayout(
+                  yogaNode = yogaNode,
+                  paddingSet = node.isPaddingSet,
+                  background = node.background,
+              ),
+              layoutData)
         } catch (e: Exception) {
           ComponentUtils.handleWithHierarchy(context, component, e)
           measureHadExceptions = true
