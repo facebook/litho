@@ -5832,7 +5832,9 @@ public class RecyclerBinderTest {
             .build();
 
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().enableStableIds(true).build(parent.getContext());
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().enableStableIds(true).build())
+            .build(parent.getContext());
 
     assertThat(recyclerBinder.getInternalAdapter().hasStableIds()).isEqualTo(true);
 
@@ -5856,8 +5858,8 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .enableStableIds(true)
-            .recyclerBinderConfig(RecyclerBinderConfig.create().isCircular(true).build())
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().enableStableIds(true).isCircular(true).build())
             .build(parent.getContext());
 
     assertThat(recyclerBinder.getInternalAdapter().hasStableIds()).isEqualTo(false);

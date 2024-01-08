@@ -151,7 +151,6 @@ object CollectionRecyclerSpec {
             .apply {
               with(binderConfiguration) {
                 wrapContent(isWrapContent)
-                enableStableIds(enableStableIds)
                 incrementalMount(isIncrementalMountEnabled)
               }
             }

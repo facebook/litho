@@ -42,8 +42,12 @@ data class RecyclerBinderConfig(
     @JvmField val componentsConfiguration: ComponentsConfiguration? = null,
     /**
      * Whether the underlying RecyclerBinder will have a circular behaviour. Defaults to false.
+     *
      * Note: circular lists DO NOT support any operation that changes the size of items like insert,
-     * remove, insert range, remove range
+     * remove, insert range, remove range.
+     *
+     * If this configuration is set to `true`, it will disable stable ids in the RecyclerView,
+     * independently of the value set on [enableStableIds]
      */
     @JvmField val isCircular: Boolean = false,
     /**
@@ -153,7 +157,13 @@ data class RecyclerBinderConfig(
      * visible item to be computed = 5 * 10 = 50 total number of items after the last visible item
      * to be computed = 5 * 10 = 50
      */
-    @JvmField val rangeRatio: Float = DEFAULT_RANGE_RATIO
+    @JvmField val rangeRatio: Float = DEFAULT_RANGE_RATIO,
+    /**
+     * If set, the RecyclerView adapter will have stableId support turned on. Please note that this
+     * configuration will be disregarded in case [isCircular] is set to `true`.
+     */
+    @JvmField
+    val enableStableIds: Boolean = ComponentsConfiguration.defaultRecyclerBinderUseStableId
 ) {
 
   init {
@@ -212,6 +222,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var componentsConfiguration = configuration.componentsConfiguration
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
+  private var enableStableIds = configuration.enableStableIds
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -278,6 +289,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
       layoutHandlerFactory: LayoutHandlerFactory?
   ): RecyclerBinderConfigBuilder = also { this.layoutHandlerFactory = layoutHandlerFactory }
 
+  fun enableStableIds(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    this.enableStableIds = enableStableIds
+  }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -295,6 +310,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         preallocateMountContent = preallocateMountContent,
         preallocateMountContentHandler = preallocateMountContentHandler,
         rangeRatio = rangeRatio,
-        layoutHandlerFactory = layoutHandlerFactory)
+        layoutHandlerFactory = layoutHandlerFactory,
+        enableStableIds = enableStableIds)
   }
 }

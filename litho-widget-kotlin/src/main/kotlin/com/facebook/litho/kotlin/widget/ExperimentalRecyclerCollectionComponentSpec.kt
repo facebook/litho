@@ -295,7 +295,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .layoutInfo(newLayoutInfo)
             .wrapContent(binderConfiguration.isWrapContent)
-            .enableStableIds(binderConfiguration.enableStableIds)
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger)

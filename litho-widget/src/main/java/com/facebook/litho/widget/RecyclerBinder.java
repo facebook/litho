@@ -454,7 +454,6 @@ public class RecyclerBinder
     private boolean wrapContent;
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
-    private boolean enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId;
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
@@ -531,16 +530,6 @@ public class RecyclerBinder
      */
     public Builder enableCustomViewType(int componentViewType) {
       this.componentViewType = componentViewType;
-      return this;
-    }
-
-    /**
-     * If set, the RecyclerView adapter will have stableId support turned on. This is ideally what
-     * we want to do always but for now we need this as a parameter to make sure stable Ids are not
-     * breaking anything.
-     */
-    public Builder enableStableIds(boolean enableStableIds) {
-      this.enableStableIds = enableStableIds;
       return this;
     }
 
@@ -642,9 +631,6 @@ public class RecyclerBinder
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
       }
-
-      // we cannot enable circular list and stable id at the same time
-      enableStableIds = (!mRecyclerBinderConfig.isCircular && enableStableIds);
 
       return new RecyclerBinder(this);
     }
@@ -751,7 +737,8 @@ public class RecyclerBinder
     mParentLifecycle = builder.lifecycleProvider;
 
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
-    mEnableStableIds = builder.enableStableIds;
+    // we cannot enable circular list and stable id at the same time
+    mEnableStableIds = (!mRecyclerBinderConfig.isCircular && mRecyclerBinderConfig.enableStableIds);
     mRecyclerBinderAdapterDelegate =
         builder.adapterDelegate != null
             ? builder.adapterDelegate

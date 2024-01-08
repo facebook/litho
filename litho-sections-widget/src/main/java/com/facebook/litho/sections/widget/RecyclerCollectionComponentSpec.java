@@ -318,7 +318,6 @@ public class RecyclerCollectionComponentSpec {
             .recyclerBinderConfig(binderConfiguration.getRecyclerBinderConfig())
             .layoutInfo(newLayoutInfo)
             .wrapContent(binderConfiguration.isWrapContent())
-            .enableStableIds(binderConfiguration.getEnableStableIds())
             .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger);

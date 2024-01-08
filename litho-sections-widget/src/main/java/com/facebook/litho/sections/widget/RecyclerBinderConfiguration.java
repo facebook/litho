@@ -29,7 +29,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsWrapContent;
   // TODO T34627443 make all fields final after removing setters
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-  private boolean mEnableStableIds;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mIsIncrementalMountEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
@@ -48,13 +47,11 @@ public class RecyclerBinderConfiguration {
       RecyclerBinderConfig recyclerBinderConfig,
       boolean wrapContent,
       boolean useBackgroundChangeSets,
-      boolean enableStableIds,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isIncrementalMountEnabled,
       boolean postToFrontOfQueueForFirstChangeset) {
     mIsWrapContent = wrapContent;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
-    mEnableStableIds = enableStableIds;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
@@ -67,10 +64,6 @@ public class RecyclerBinderConfiguration {
 
   public boolean getUseBackgroundChangeSets() {
     return mUseBackgroundChangeSets;
-  }
-
-  public boolean getEnableStableIds() {
-    return mEnableStableIds;
   }
 
   public @Nullable RunnableHandler getChangeSetThreadHandler() {
@@ -93,8 +86,6 @@ public class RecyclerBinderConfiguration {
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private boolean mWrapContent = false;
-    private boolean mEnableStableIds =
-        ComponentsConfiguration.defaultRecyclerBinderConfigUseStableId;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsIncrementalMountEnabled =
@@ -106,7 +97,6 @@ public class RecyclerBinderConfiguration {
     private Builder(RecyclerBinderConfiguration configuration) {
       mRecyclerBinderConfig = configuration.mRecyclerBinderConfig;
       this.mWrapContent = configuration.mIsWrapContent;
-      this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       mIsIncrementalMountEnabled = configuration.mIsIncrementalMountEnabled;
@@ -143,11 +133,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder enableStableIds(boolean enableStableIds) {
-      mEnableStableIds = enableStableIds;
-      return this;
-    }
-
     public Builder changeSetThreadHandler(@Nullable RunnableHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
@@ -177,7 +162,6 @@ public class RecyclerBinderConfiguration {
               : new RecyclerBinderConfig(),
           mWrapContent,
           mUseBackgroundChangeSets,
-          mEnableStableIds,
           mChangeSetThreadHandler,
           mIsIncrementalMountEnabled,
           mPostToFrontOfQueueForFirstChangeset);
