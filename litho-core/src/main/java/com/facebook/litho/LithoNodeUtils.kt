@@ -464,12 +464,12 @@ object LithoNodeUtils {
       // because those will either be set on the content output or explicit outputs
       // will be created for backgrounds and foreground.
       if (disableBgFgOutputs || !attrs.isHostSpec) {
-        attrs.background = result.background
+        attrs.background = result.node.background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
           attrs.foreground = lithoNode.foreground
         }
       }
-      if (result.isPaddingSet) {
+      if (result.node.isPaddingSet) {
         attrs.padding =
             Rect(result.paddingLeft, result.paddingTop, result.paddingRight, result.paddingBottom)
       }
