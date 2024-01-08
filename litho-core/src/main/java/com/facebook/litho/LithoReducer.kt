@@ -530,8 +530,8 @@ object LithoReducer {
           result = child,
           layoutState = layoutState,
           lithoLayoutContext = lithoLayoutContext,
-          x = x + child.x,
-          y = y + child.y,
+          x = x + result.getXForChildAtIndex(i),
+          y = y + result.getYForChildAtIndex(i),
           parent = parentRenderTreeNode,
           parentDiffNode = diffNode,
           parentHierarchy = hierarchy)
