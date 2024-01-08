@@ -409,8 +409,8 @@ object LithoReducer {
           result = nestedTree,
           layoutState = layoutState,
           lithoLayoutContext = lithoLayoutContext,
-          x = x + nestedTree.x, // Account for position of the holder node.
-          y = y + nestedTree.y, // Account for position of the holder node.
+          x = x + result.getXForChildAtIndex(0), // Account for position of the holder node.
+          y = y + result.getYForChildAtIndex(0), // Account for position of the holder node.
           parent = parent,
           parentDiffNode = parentDiffNode,
           parentHierarchy = hierarchy)
