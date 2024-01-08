@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.Pair
+import android.view.View
 import androidx.annotation.Px
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.FastMath
@@ -32,7 +33,6 @@ import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
-import java.util.ArrayList
 
 /**
  * This is the default implementation of a [LayoutResult] for Litho. This holds a reference to the
@@ -155,6 +155,15 @@ open class LithoLayoutResult(
         null
       } else {
         Rect(left, top, right, bottom)
+      }
+    }
+
+  val layoutDirection: Int
+    get() {
+      return when (yogaNode.layoutDirection) {
+        YogaDirection.LTR -> View.LAYOUT_DIRECTION_LTR
+        YogaDirection.RTL -> View.LAYOUT_DIRECTION_RTL
+        else -> View.LAYOUT_DIRECTION_INHERIT
       }
     }
 

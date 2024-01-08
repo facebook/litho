@@ -926,19 +926,7 @@ public class LithoViewAttributesExtension
       return;
     }
 
-    final int viewLayoutDirection;
-    switch (attributes.getLayoutDirection()) {
-      case LTR:
-        viewLayoutDirection = View.LAYOUT_DIRECTION_LTR;
-        break;
-      case RTL:
-        viewLayoutDirection = View.LAYOUT_DIRECTION_RTL;
-        break;
-      default:
-        viewLayoutDirection = View.LAYOUT_DIRECTION_INHERIT;
-    }
-
-    view.setLayoutDirection(viewLayoutDirection);
+    view.setLayoutDirection(attributes.getLayoutDirection());
   }
 
   private static void unsetViewLayoutDirection(View view) {

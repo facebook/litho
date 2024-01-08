@@ -31,7 +31,6 @@ import androidx.annotation.DrawableRes
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.rendercore.utils.equals
 import com.facebook.rendercore.utils.isEquivalentTo
-import com.facebook.yoga.YogaDirection
 
 class ViewAttributes {
 
@@ -65,7 +64,7 @@ class ViewAttributes {
   var background: Drawable? = null
   var foreground: Drawable? = null
   var padding: Rect? = null
-  var layoutDirection: YogaDirection = YogaDirection.INHERIT
+  var layoutDirection: Int = View.LAYOUT_DIRECTION_INHERIT
   var stateListAnimator: StateListAnimator? = null
   @DrawableRes var stateListAnimatorRes: Int = 0
   @LayerType var layerType: Int = LayerType.LAYER_TYPE_NOT_SET

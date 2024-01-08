@@ -473,7 +473,7 @@ object LithoNodeUtils {
         attrs.padding =
             Rect(result.paddingLeft, result.paddingTop, result.paddingRight, result.paddingBottom)
       }
-      attrs.layoutDirection = result.resolvedLayoutDirection
+      attrs.layoutDirection = result.layoutDirection
       attrs.layerType = lithoNode.layerType
       attrs.layoutPaint = lithoNode.layerPaint
       if (lithoNode.hasStateListAnimatorResSet()) {

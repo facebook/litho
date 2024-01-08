@@ -26,6 +26,7 @@ import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.yoga.YogaConstants
+import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaNode
 
 internal object Layout {
@@ -387,7 +388,12 @@ internal object Layout {
 
       // If the resolved tree inherits the layout direction, then set it now.
       if (newNode.isLayoutDirectionInherit) {
-        newNode.layoutDirection(holderResult.resolvedLayoutDirection)
+        newNode.layoutDirection(
+            when (holderResult.layoutDirection) {
+              View.LAYOUT_DIRECTION_LTR -> YogaDirection.LTR
+              View.LAYOUT_DIRECTION_RTL -> YogaDirection.RTL
+              else -> YogaDirection.INHERIT
+            })
       }
 
       val layoutCache: LayoutCache =
@@ -474,7 +480,7 @@ internal object Layout {
       nestedTree: LithoLayoutResult
   ): Boolean =
       nestedTree.node.isLayoutDirectionInherit ||
-          nestedTree.resolvedLayoutDirection == holder.resolvedLayoutDirection
+          nestedTree.layoutDirection == holder.layoutDirection
 
   /** DiffNode state should be retrieved from the committed LayoutState. */
   private fun getDiffNodeScopedContext(diffNode: DiffNode): ComponentContext =
