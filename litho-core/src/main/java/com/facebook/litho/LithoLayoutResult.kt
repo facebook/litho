@@ -203,9 +203,9 @@ open class LithoLayoutResult(
 
   override fun getChildAt(i: Int): LithoLayoutResult = children[i]
 
-  override fun getXForChildAtIndex(index: Int): Int = children[index].x
+  override fun getXForChildAtIndex(index: Int): Int = children[index].yogaNode.layoutX.toInt()
 
-  override fun getYForChildAtIndex(index: Int): Int = children[index].y
+  override fun getYForChildAtIndex(index: Int): Int = children[index].yogaNode.layoutY.toInt()
 
   override fun getLayoutData(): Any? = layoutData
 
