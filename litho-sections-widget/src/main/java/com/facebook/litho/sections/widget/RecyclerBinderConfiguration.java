@@ -17,7 +17,6 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -30,7 +29,6 @@ public class RecyclerBinderConfiguration {
   // TODO T34627443 make all fields final after removing setters
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
-  private final boolean mIsIncrementalMountEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
 
   private final RecyclerBinderConfig mRecyclerBinderConfig;
@@ -48,12 +46,10 @@ public class RecyclerBinderConfiguration {
       boolean wrapContent,
       boolean useBackgroundChangeSets,
       @Nullable RunnableHandler changeSetThreadHandler,
-      boolean isIncrementalMountEnabled,
       boolean postToFrontOfQueueForFirstChangeset) {
     mIsWrapContent = wrapContent;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mChangeSetThreadHandler = changeSetThreadHandler;
-    mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mRecyclerBinderConfig = recyclerBinderConfig;
   }
@@ -70,10 +66,6 @@ public class RecyclerBinderConfiguration {
     return mChangeSetThreadHandler;
   }
 
-  public boolean isIncrementalMountEnabled() {
-    return mIsIncrementalMountEnabled;
-  }
-
   public boolean isPostToFrontOfQueueForFirstChangeset() {
     return mPostToFrontOfQueueForFirstChangeset;
   }
@@ -88,8 +80,6 @@ public class RecyclerBinderConfiguration {
     private boolean mWrapContent = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
-    private boolean mIsIncrementalMountEnabled =
-        !ComponentsConfiguration.isIncrementalMountGloballyDisabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
 
     Builder() {}
@@ -99,7 +89,6 @@ public class RecyclerBinderConfiguration {
       this.mWrapContent = configuration.mIsWrapContent;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
-      mIsIncrementalMountEnabled = configuration.mIsIncrementalMountEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
     }
@@ -138,15 +127,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder isIncrementalMountEnabled(boolean isEnabled) {
-      if (ComponentsConfiguration.isIncrementalMountGloballyDisabled) {
-        mIsIncrementalMountEnabled = false;
-      } else {
-        mIsIncrementalMountEnabled = isEnabled;
-      }
-      return this;
-    }
-
     public Builder postToFrontOfQueueForFirstChangeset(
         boolean postToFrontOfQueueForFirstChangeset) {
       mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
@@ -163,7 +143,6 @@ public class RecyclerBinderConfiguration {
           mWrapContent,
           mUseBackgroundChangeSets,
           mChangeSetThreadHandler,
-          mIsIncrementalMountEnabled,
           mPostToFrontOfQueueForFirstChangeset);
     }
   }

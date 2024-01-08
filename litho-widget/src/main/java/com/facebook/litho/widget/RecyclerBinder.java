@@ -455,7 +455,6 @@ public class RecyclerBinder
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private RecyclerRangeTraverser recyclerRangeTraverser;
-    private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean isSubAdapter;
     private @Nullable LithoStartupLogger startupLogger;
@@ -555,12 +554,6 @@ public class RecyclerBinder
       return this;
     }
 
-    /** Don't use this. If false, turns off incremental mount for all subviews of this Recycler. */
-    public Builder incrementalMount(boolean incrementalMount) {
-      this.incrementalMount = incrementalMount;
-      return this;
-    }
-
     /** Sets a factory to be used to create a custom controller for sticky section headers */
     public Builder stickyHeaderControllerFactory(
         @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory) {
@@ -620,10 +613,6 @@ public class RecyclerBinder
       if (lifecycleProvider == null) {
         lifecycleProvider = ComponentTree.getLifecycleProvider(c);
       }
-
-      // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
-      // off, so always disable it in that case
-      incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
 
       visibilityProcessing =
           visibilityProcessing && ComponentContext.isVisibilityProcessingEnabled(c);
@@ -807,7 +796,12 @@ public class RecyclerBinder
     }
 
     mHScrollAsyncMode = mRecyclerBinderConfig.hScrollAsyncMode;
-    mIncrementalMountEnabled = builder.incrementalMount;
+    // Incremental mount will not work if this ComponentTree is nested in
+    // a parent with it turned off, so always disable it in that case
+    mIncrementalMountEnabled =
+        mRecyclerBinderConfig.incrementalMountEnabled
+            && ComponentContext.isIncrementalMountEnabled(mComponentContext);
+
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mIsSubAdapter = builder.isSubAdapter;

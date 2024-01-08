@@ -59,6 +59,7 @@ abstract class CollectionLayout(
               RecyclerBinderConfiguration.create()
                   .recyclerBinderConfig(
                       RecyclerBinderConfig(
+                          incrementalMountEnabled = isIncrementalMountEnabled,
                           hasDynamicItemHeight = hasDynamicItemHeight,
                           preallocateMountContent = preallocationPerMountContentEnabled,
                           componentsConfiguration =
@@ -67,7 +68,6 @@ abstract class CollectionLayout(
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO))
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)
-                  .isIncrementalMountEnabled(isIncrementalMountEnabled)
                   .build())
           .build()
 

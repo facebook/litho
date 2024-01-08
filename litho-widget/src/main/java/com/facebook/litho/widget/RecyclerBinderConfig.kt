@@ -163,7 +163,14 @@ data class RecyclerBinderConfig(
      * configuration will be disregarded in case [isCircular] is set to `true`.
      */
     @JvmField
-    val enableStableIds: Boolean = ComponentsConfiguration.defaultRecyclerBinderUseStableId
+    val enableStableIds: Boolean = ComponentsConfiguration.defaultRecyclerBinderUseStableId,
+    /**
+     * Defines whether the [com.facebook.litho.ComponentTree] created by the [RecyclerBinder] will
+     * have incremental mount enabled.
+     */
+    @JvmField
+    val incrementalMountEnabled: Boolean =
+        !ComponentsConfiguration.isIncrementalMountGloballyDisabled
 ) {
 
   init {
@@ -223,6 +230,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
+  private var incrementalMountEnabled = configuration.incrementalMountEnabled
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -293,6 +301,11 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.enableStableIds = enableStableIds
   }
 
+  fun incrementalMountEnabled(incrementalMountEnabled: Boolean): RecyclerBinderConfigBuilder =
+      also {
+        this.incrementalMountEnabled = incrementalMountEnabled
+      }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -311,6 +324,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         preallocateMountContentHandler = preallocateMountContentHandler,
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
-        enableStableIds = enableStableIds)
+        enableStableIds = enableStableIds,
+        incrementalMountEnabled = incrementalMountEnabled)
   }
 }

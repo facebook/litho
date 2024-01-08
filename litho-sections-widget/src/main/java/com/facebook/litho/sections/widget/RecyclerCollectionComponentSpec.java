@@ -67,6 +67,7 @@ import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
+import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
@@ -313,12 +314,17 @@ public class RecyclerCollectionComponentSpec {
     final LayoutInfo newLayoutInfo = recyclerConfiguration.getLayoutInfo(c);
     layoutInfo.set(newLayoutInfo);
 
+    RecyclerBinderConfig recyclerBinderConfig = binderConfiguration.getRecyclerBinderConfig();
+
     RecyclerBinder.Builder recyclerBinderBuilder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(binderConfiguration.getRecyclerBinderConfig())
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create(recyclerBinderConfig)
+                    .incrementalMountEnabled(
+                        incrementalMount && recyclerBinderConfig.incrementalMountEnabled)
+                    .build())
             .layoutInfo(newLayoutInfo)
             .wrapContent(binderConfiguration.isWrapContent())
-            .incrementalMount(incrementalMount && binderConfiguration.isIncrementalMountEnabled())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger);
 

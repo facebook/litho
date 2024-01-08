@@ -283,19 +283,24 @@ object ExperimentalRecyclerCollectionComponentSpec {
       canMeasureRecycler:
           Boolean, // Don't use this. If false, off incremental mount for all subviews of this
       // Recycler.
-      @Prop(optional = true) incrementalMount: Boolean,
+      @Prop(optional = true) incrementalMount: Boolean, // TODO: Attempt to remove
       @Prop(optional = true) startupLogger: LithoStartupLogger?,
       @Prop(optional = true) stickyHeaderControllerFactory: StickyHeaderControllerFactory?
   ) {
     val binderConfiguration = recyclerConfiguration.recyclerBinderConfiguration
     val newLayoutInfo = recyclerConfiguration.getLayoutInfo(c)
     layoutInfo.set(newLayoutInfo)
+
+    val recyclerBinderConfig = binderConfiguration.recyclerBinderConfig
+
     val recyclerBinderBuilder =
         RecyclerBinder.Builder()
-            .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
+            .recyclerBinderConfig(
+                recyclerBinderConfig.copy(
+                    incrementalMountEnabled =
+                        incrementalMount && recyclerBinderConfig.incrementalMountEnabled))
             .layoutInfo(newLayoutInfo)
             .wrapContent(binderConfiguration.isWrapContent)
-            .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger)
     val recyclerBinder = recyclerBinderBuilder.build(c)
