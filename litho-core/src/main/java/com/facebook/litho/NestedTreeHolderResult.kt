@@ -38,6 +38,22 @@ class NestedTreeHolderResult(
   override val node: NestedTreeHolder
     get() = super.node as NestedTreeHolder
 
+  override fun getXForChildAtIndex(index: Int): Int {
+    if (index > 0) {
+      throw IllegalArgumentException("NestedTreeHolder Result has only one child")
+    }
+
+    return nestedResult?.yogaNode?.layoutX?.toInt() ?: 0
+  }
+
+  override fun getYForChildAtIndex(index: Int): Int {
+    if (index > 0) {
+      throw IllegalArgumentException("NestedTreeHolder Result has only one child")
+    }
+
+    return nestedResult?.yogaNode?.layoutY?.toInt() ?: 0
+  }
+
   override fun measureInternal(
       context: LayoutContext<LithoRenderContext>,
       widthSpec: Int,
