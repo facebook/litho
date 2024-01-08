@@ -151,7 +151,7 @@ public class RecyclerBinder
   private final boolean mRequestMountForPrefetchedItems;
   private final @RecyclingStrategy int mRecyclingStrategy;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
-  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
+  private final ComponentsConfiguration mComponentsConfiguration;
 
   private final AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -404,7 +404,7 @@ public class RecyclerBinder
         RenderInfo renderInfo,
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
-        @Nullable ComponentsConfiguration componentsConfiguration,
+        ComponentsConfiguration componentsConfiguration,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
         @Nullable RunnableHandler preallocateHandler,
@@ -420,7 +420,7 @@ public class RecyclerBinder
             RenderInfo renderInfo,
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
-            @Nullable ComponentsConfiguration componentsConfiguration,
+            ComponentsConfiguration componentsConfiguration,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
             @Nullable RunnableHandler preallocateHandler,
@@ -745,7 +745,18 @@ public class RecyclerBinder
     mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
     mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
-    mComponentsConfiguration = mRecyclerBinderConfig.componentsConfiguration;
+
+    /**
+     * If there is no configuration set, then we retrieve it from the owning
+     * [com.facebook.litho.ComponentContext]
+     */
+    ComponentsConfiguration recyclerBinderConfigComponentsConfiguration =
+        mRecyclerBinderConfig.componentsConfiguration;
+    if (recyclerBinderConfigComponentsConfiguration != null) {
+      mComponentsConfiguration = recyclerBinderConfigComponentsConfiguration;
+    } else {
+      mComponentsConfiguration = mComponentContext.getLithoConfiguration().componentsConfig;
+    }
 
     if (mLayoutHandlerFactory == null && mRecyclerBinderConfig.threadPoolConfig != null) {
       mThreadPoolConfig = mRecyclerBinderConfig.threadPoolConfig;
