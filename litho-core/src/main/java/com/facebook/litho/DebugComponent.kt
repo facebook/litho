@@ -38,6 +38,8 @@ private constructor(
     private val result: LithoLayoutResult,
     private val node: LithoNode,
     private val componentIndex: Int,
+    private val x: Int,
+    private val y: Int,
     private val xOffset: Int,
     private val yOffset: Int,
     val componentTreeTimeMachine: ComponentTreeTimeMachine?,
@@ -109,10 +111,10 @@ private constructor(
     get() = node.getComponentInfoAt(componentIndex).stateContainer
 
   private val xFromRoot: Int
-    get() = result.x + xOffset
+    get() = x + xOffset
 
   private val yFromRoot: Int
-    get() = result.y + yOffset
+    get() = y + yOffset
 
   private val isNotTailComponent: Boolean
     get() = componentIndex != 0
@@ -149,7 +151,15 @@ private constructor(
               }
             }
             val index = (nestedResult.node.componentCount - 2).coerceAtLeast(0)
-            val component = getInstance(nestedResult, index, xFromRoot, yFromRoot, null)
+            val component =
+                getInstance(
+                    nestedResult,
+                    index,
+                    result.getXForChildAtIndex(0),
+                    result.getYForChildAtIndex(0),
+                    xFromRoot,
+                    yFromRoot,
+                    null)
             listOfNotNull(component)
           }
           else -> getChildren(result, xFromRoot, yFromRoot)
@@ -162,7 +172,7 @@ private constructor(
     if (index < 0) {
       return emptyList()
     }
-    val component = getInstance(result, index, xOffset, yOffset, null)
+    val component = getInstance(result, index, x, y, xOffset, yOffset, null)
     return listOfNotNull(component)
   }
 
@@ -188,8 +198,6 @@ private constructor(
   /** @return The bounds of this component relative to its parent. */
   val bounds: Rect
     get() {
-      val x = result.x
-      val y = result.y
       return Rect(x, y, x + result.width, y + result.height)
     }
   /**
@@ -220,11 +228,17 @@ private constructor(
        * another DebugComponent instance.
        */
       val isHeadComponent = componentIndex == node.componentCount - 1
-      val nestedResult = (result as? NestedTreeHolderResult)?.nestedResult
-      val xFromNestedResult = nestedResult?.x ?: 0
-      val yFromNestedResult = nestedResult?.y ?: 0
-      val x = if (isHeadComponent) result.x + xFromNestedResult else 0
-      val y = if (isHeadComponent) result.y + yFromNestedResult else 0
+      val xFromNestedResult: Int
+      val yFromNestedResult: Int
+      if (result is NestedTreeHolderResult) {
+        xFromNestedResult = result.getXForChildAtIndex(0)
+        yFromNestedResult = result.getYForChildAtIndex(0)
+      } else {
+        xFromNestedResult = 0
+        yFromNestedResult = 0
+      }
+      val x = if (isHeadComponent) x + xFromNestedResult else 0
+      val y = if (isHeadComponent) y + yFromNestedResult else 0
       return Rect(x, y, x + result.width, y + result.height)
     }
 
@@ -327,6 +341,8 @@ private constructor(
     fun getInstance(
         result: LithoLayoutResult,
         componentIndex: Int,
+        x: Int,
+        y: Int,
         xOffset: Int,
         yOffset: Int,
         componentTree: ComponentTree?
@@ -343,6 +359,8 @@ private constructor(
               result = result,
               node = result.node,
               componentIndex = componentIndex,
+              x = x,
+              y = y,
               xOffset = xOffset,
               yOffset = yOffset,
           )
@@ -362,16 +380,16 @@ private constructor(
       check(root is LithoLayoutResult) { "Expected root to be a LithoLayoutResult" }
       val node = root.node
       val outerWrapperComponentIndex = (node.componentCount - 1).coerceAtLeast(0)
-      return getInstance(root, outerWrapperComponentIndex, 0, 0, componentTree)?.apply {
+      return getInstance(root, outerWrapperComponentIndex, 0, 0, 0, 0, componentTree)?.apply {
         isRoot = true
       }
     }
 
     @JvmStatic
-    fun getInstance(result: LithoLayoutResult): DebugComponent? {
+    fun getInstance(result: LithoLayoutResult, x: Int, y: Int): DebugComponent? {
       val rootNode = result.node
       val outerWrapperComponentIndex = (rootNode.componentCount - 1).coerceAtLeast(0)
-      return getInstance(result, outerWrapperComponentIndex, 0, 0, null)
+      return getInstance(result, outerWrapperComponentIndex, x, y, 0, 0, null)
     }
 
     @JvmStatic
@@ -446,11 +464,19 @@ private constructor(
       overrider?.applyLayoutOverrides(key, DebugLayoutNodeEditor(node))
     }
 
-    private fun getChildren(result: LithoLayoutResult, x: Int, y: Int) = buildList {
+    private fun getChildren(result: LithoLayoutResult, xOffset: Int, yOffset: Int) = buildList {
       for (i in 0 until result.childCount) {
         val childNode = result.getChildAt(i)
         val index = (childNode.node.componentCount - 1).coerceAtLeast(0)
-        getInstance(childNode, index, x, y, null)?.let { add(it) }
+        getInstance(
+                childNode,
+                index,
+                result.getXForChildAtIndex(i),
+                result.getYForChildAtIndex(i),
+                xOffset,
+                yOffset,
+                null)
+            ?.let { add(it) }
       }
     }
   }
