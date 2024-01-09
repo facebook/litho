@@ -58,7 +58,7 @@ public class ComponentTreeHolder {
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
-  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
+  private final ComponentsConfiguration mComponentsConfiguration;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -110,14 +110,14 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private int mLastRequestedHeightSpec = UNINITIALIZED;
 
-  public static Builder create() {
-    return new Builder();
+  public static Builder create(ComponentsConfiguration configuration) {
+    return new Builder(configuration);
   }
 
   public static class Builder {
 
     private RenderInfo renderInfo;
-    private @Nullable ComponentsConfiguration componentsConfiguration;
+    private final ComponentsConfiguration componentsConfiguration;
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable RunnableHandler preallocateMountContentHandler;
@@ -127,15 +127,12 @@ public class ComponentTreeHolder {
     private @Nullable LithoLifecycleProvider parentLifecycle;
     private @Nullable ErrorEventHandler errorEventHandler;
 
-    private Builder() {}
+    private Builder(ComponentsConfiguration configuration) {
+      componentsConfiguration = configuration;
+    }
 
     public Builder renderInfo(RenderInfo renderInfo) {
       this.renderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
-      return this;
-    }
-
-    public Builder componentsConfiguration(@Nullable ComponentsConfiguration config) {
-      this.componentsConfiguration = config;
       return this;
     }
 
@@ -437,6 +434,7 @@ public class ComponentTreeHolder {
       applyCustomAttributesIfProvided(builder);
 
       builder
+          .componentsConfiguration(mComponentsConfiguration)
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
           .preAllocateMountContentHandler(mPreallocateMountContentHandler)
@@ -448,10 +446,6 @@ public class ComponentTreeHolder {
           .incrementalMount(mIncrementalMount)
           .visibilityProcessing(mVisibilityProcessingEnabled)
           .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag());
-
-      if (mComponentsConfiguration != null) {
-        builder.componentsConfiguration(mComponentsConfiguration);
-      }
 
       mComponentTree = builder.build();
 

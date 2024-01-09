@@ -23,6 +23,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
 
 public class TestComponentTreeHolder extends ComponentTreeHolder {
@@ -42,13 +43,15 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   private int mLastRequestedHeightSpec;
 
   TestComponentTreeHolder(RenderInfo renderInfo) {
-    super(ComponentTreeHolder.create().renderInfo(renderInfo));
+    super(
+        ComponentTreeHolder.create(ComponentsConfiguration.defaultInstance).renderInfo(renderInfo));
     mRenderInfo = renderInfo;
     mEnableAsyncLayoutsDuringInitRange = false;
   }
 
   TestComponentTreeHolder(RenderInfo renderInfo, boolean enableAsyncLayoutsDuringInitRange) {
-    super(ComponentTreeHolder.create().renderInfo(renderInfo));
+    super(
+        ComponentTreeHolder.create(ComponentsConfiguration.defaultInstance).renderInfo(renderInfo));
     mRenderInfo = renderInfo;
     mEnableAsyncLayoutsDuringInitRange = enableAsyncLayoutsDuringInitRange;
   }

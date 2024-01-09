@@ -79,7 +79,9 @@ public class ComponentWarmer {
 
     @Override
     public ComponentTreeHolder create(ComponentRenderInfo renderInfo) {
-      return ComponentTreeHolder.create().renderInfo(renderInfo).build();
+      return ComponentTreeHolder.create(mComponentContext.getLithoConfiguration().componentsConfig)
+          .renderInfo(renderInfo)
+          .build();
     }
 
     @Override

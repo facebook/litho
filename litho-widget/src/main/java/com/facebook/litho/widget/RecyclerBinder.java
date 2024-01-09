@@ -427,11 +427,10 @@ public class RecyclerBinder
             boolean preallocatePerMountSpec,
             @Nullable LithoLifecycleProvider lifecycleProvider,
             @Nullable ErrorEventHandler errorEventHandler) {
-          return ComponentTreeHolder.create()
+          return ComponentTreeHolder.create(componentsConfiguration)
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
-              .componentsConfiguration(componentsConfiguration)
               .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .preallocateMountContentHandler(preallocateHandler)

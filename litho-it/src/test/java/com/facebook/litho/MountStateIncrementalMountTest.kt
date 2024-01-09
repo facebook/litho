@@ -180,7 +180,8 @@ class MountStateIncrementalMountTest {
             .build()
     legacyLithoViewRule.attachToWindow().setSizeSpecs(exactly(100), exactly(100)).measure()
     val info = ComponentRenderInfo.create().component(root).build()
-    val holder = ComponentTreeHolder.create().renderInfo(info).build()
+    val holder =
+        ComponentTreeHolder.create(ComponentsConfiguration.defaultInstance).renderInfo(info).build()
     holder.computeLayoutSync(context, exactly(100), exactly(100), Size())
     val lithoView = legacyLithoViewRule.lithoView
     lithoView.componentTree = holder.componentTree

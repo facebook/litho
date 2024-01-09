@@ -31,6 +31,7 @@ import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.TreeState;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -254,6 +255,8 @@ public class ComponentTreeHolderTest {
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo info) {
-    return ComponentTreeHolder.create().renderInfo(info).build();
+    return ComponentTreeHolder.create(ComponentsConfiguration.defaultInstance)
+        .renderInfo(info)
+        .build();
   }
 }
