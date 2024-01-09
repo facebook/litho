@@ -298,7 +298,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   ): RecyclerBinderConfigBuilder = also { this.layoutHandlerFactory = layoutHandlerFactory }
 
   fun enableStableIds(enabled: Boolean): RecyclerBinderConfigBuilder = also {
-    this.enableStableIds = enableStableIds
+    this.enableStableIds = enabled
   }
 
   fun incrementalMountEnabled(incrementalMountEnabled: Boolean): RecyclerBinderConfigBuilder =
