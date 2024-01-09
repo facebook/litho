@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-public enum LogLevel {
+enum class LogLevel {
   VERBOSE,
   DEBUG,
   WARNING,
   ERROR,
-  FATAL,
+  FATAL
 }
