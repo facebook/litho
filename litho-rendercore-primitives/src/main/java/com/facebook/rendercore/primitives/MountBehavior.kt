@@ -55,7 +55,7 @@ class MountBehavior<ContentType : Any>(
     renderUnit =
         object :
             PrimitiveRenderUnit<ContentType>(
-                contentAllocator.renderType,
+                contentAllocator.getRenderType(),
                 mountConfigurationScope.fixedBinders,
                 mountConfigurationScope.doesMountRenderTreeHosts) {
           override fun getContentAllocator(): ContentAllocator<ContentType> {

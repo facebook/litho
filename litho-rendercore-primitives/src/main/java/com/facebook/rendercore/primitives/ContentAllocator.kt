@@ -20,7 +20,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.ContentAllocator.DEFAULT_MAX_PREALLOCATION
+import com.facebook.rendercore.ContentAllocator.Companion.DEFAULT_MAX_PREALLOCATION
 import com.facebook.rendercore.RenderUnit
 
 /**

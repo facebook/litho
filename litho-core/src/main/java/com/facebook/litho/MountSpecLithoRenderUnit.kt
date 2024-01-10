@@ -98,9 +98,8 @@ private constructor(
     return renderContentType
   }
 
-  override fun isRecyclingDisabled(): Boolean {
-    return (component is SpecGeneratedComponent && component.isRecyclingDisabled)
-  }
+  override val isRecyclingDisabled: Boolean
+    get() = (component is SpecGeneratedComponent && component.isRecyclingDisabled)
 
   override fun getDescription(): String {
     return component.simpleName
