@@ -30,6 +30,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItem;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -38,16 +39,20 @@ import javax.annotation.Nullable;
  * Class that is used to set up accessibility for {@link ComponentHost}s. Virtual nodes are only
  * exposed if the component implements support for extra accessibility nodes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String TAG = "ComponentAccessibility";
 
   private final View mView;
-  private NodeInfo mNodeInfo;
+  private @Nullable NodeInfo mNodeInfo;
   private final AccessibilityDelegateCompat mSuperDelegate;
   private static final Rect sDefaultBounds = new Rect(0, 0, 1, 1);
 
   ComponentAccessibilityDelegate(
-      View view, NodeInfo nodeInfo, boolean originalFocus, int originalImportantForAccessibility) {
+      View view,
+      @Nullable NodeInfo nodeInfo,
+      boolean originalFocus,
+      int originalImportantForAccessibility) {
     super(view);
     mView = view;
     mNodeInfo = nodeInfo;
@@ -99,7 +104,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
                   scopedContext, host, node, getInterStageProps(mountItem));
         }
       } catch (Exception e) {
-        ComponentUtils.handle(scopedContext, e);
+        if (scopedContext != null) {
+          ComponentUtils.handle(scopedContext, e);
+        }
       }
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
@@ -193,7 +200,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         virtualViewIds.add(i);
       }
     } catch (Exception e) {
-      ComponentUtils.handle(scopedContext, e);
+      if (scopedContext != null) {
+        ComponentUtils.handle(scopedContext, e);
+      }
     }
   }
 
@@ -240,7 +249,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
                 getInterStageProps(mountItem));
       }
     } catch (Exception e) {
-      ComponentUtils.handle(scopedContext, e);
+      if (scopedContext != null) {
+        ComponentUtils.handle(scopedContext, e);
+      }
     }
   }
 
@@ -282,7 +293,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
       return (virtualViewId >= 0 ? virtualViewId : INVALID_ID);
     } catch (Exception e) {
-      ComponentUtils.handle(scopedContext, e);
+      if (scopedContext != null) {
+        ComponentUtils.handle(scopedContext, e);
+      }
       return INVALID_ID;
     }
   }

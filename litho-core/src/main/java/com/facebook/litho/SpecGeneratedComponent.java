@@ -441,7 +441,7 @@ public abstract class SpecGeneratedComponent extends Component
    * @param accessibilityNode node to populate
    */
   protected void onPopulateAccessibilityNode(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final View host,
       final AccessibilityNodeInfoCompat accessibilityNode,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
@@ -494,7 +494,7 @@ public abstract class SpecGeneratedComponent extends Component
    * @param interStagePropsContainer
    */
   protected void onPopulateExtraAccessibilityNode(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final AccessibilityNodeInfoCompat accessibilityNode,
       final int extraNodeIndex,
       final int componentBoundsX,
@@ -510,7 +510,7 @@ public abstract class SpecGeneratedComponent extends Component
    *     ExploreByTouchHelper#INVALID_ID}
    */
   protected int getExtraAccessibilityNodeAt(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final int x,
       final int y,
       final @Nullable InterStagePropsContainer InterStagePropsContainer) {
@@ -524,7 +524,8 @@ public abstract class SpecGeneratedComponent extends Component
    * @return the number of extra nodes
    */
   protected int getExtraAccessibilityNodesCount(
-      final ComponentContext c, final @Nullable InterStagePropsContainer interStagePropsContainer) {
+      final @Nullable ComponentContext c,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     return 0;
   }
 
