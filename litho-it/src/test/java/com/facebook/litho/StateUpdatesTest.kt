@@ -35,7 +35,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.spy
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -57,10 +56,6 @@ open class StateUpdatesTest {
 
   @Before
   fun setup() {
-    setup(false)
-  }
-
-  fun setup(enableComponentTreeSpy: Boolean) {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     widthSpec = exactly(39)
     heightSpec = exactly(41)
@@ -68,9 +63,6 @@ open class StateUpdatesTest {
     testComponentKey = testComponent.key
     legacyLithoViewRule.setRoot(testComponent)
     componentTree = legacyLithoViewRule.componentTree
-    if (enableComponentTreeSpy) {
-      componentTree = spy(componentTree)
-    }
     legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(widthSpec, heightSpec)
   }
 
@@ -222,7 +214,6 @@ open class StateUpdatesTest {
 
   @Test
   fun testLazyUpdateState_doesNotTriggerRelayout() {
-    setup(true)
     componentTree.addMeasureListener { _, _, _, _ ->
       throw RuntimeException("Should not have computed a new layout!")
     }
