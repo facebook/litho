@@ -78,6 +78,7 @@ inline fun ResourcesScope.LazyGrid(
   return LazyCollection(
       layout =
           CollectionLayouts.Grid(
+              componentContext = context,
               orientation = orientation,
               snapMode = snapMode,
               snapToStartOffset = snapToStartOffset.toPixels(resourceResolver),

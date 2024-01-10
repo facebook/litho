@@ -19,6 +19,7 @@ package com.facebook.litho.widget.collection
 import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
@@ -37,6 +38,7 @@ import com.facebook.litho.widget.SnapUtil
  *   order @see [LinearLayoutManager#setReverseLayout]
  */
 abstract class CollectionLayout(
+    componentContext: ComponentContext,
     @RecyclerView.Orientation orientation: Int,
     reverse: Boolean,
     rangeRatio: Float? = null,
@@ -63,7 +65,7 @@ abstract class CollectionLayout(
                           hasDynamicItemHeight = hasDynamicItemHeight,
                           preallocateMountContent = preallocationPerMountContentEnabled,
                           componentsConfiguration =
-                              ComponentsConfiguration.defaultInstance.copy(
+                              componentContext.lithoConfiguration.componentsConfig.copy(
                                   isReconciliationEnabled = isReconciliationEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO))
                   .wrapContent(mainAxisWrapContent)
@@ -115,6 +117,7 @@ internal object CollectionLayouts {
    *   a preallocation handler.
    */
   fun Linear(
+      componentContext: ComponentContext,
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
       @Px snapToStartOffset: Int = 0,
@@ -128,6 +131,7 @@ internal object CollectionLayouts {
   ): CollectionLayout =
       object :
           CollectionLayout(
+              componentContext = componentContext,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
@@ -155,6 +159,7 @@ internal object CollectionLayouts {
    *   a preallocation handler.
    */
   fun Grid(
+      componentContext: ComponentContext,
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
       @Px snapToStartOffset: Int = 0,
@@ -167,6 +172,7 @@ internal object CollectionLayouts {
   ): CollectionLayout =
       object :
           CollectionLayout(
+              componentContext = componentContext,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
@@ -193,6 +199,7 @@ internal object CollectionLayouts {
    *   a preallocation handler.
    */
   fun StaggeredGrid(
+      componentContext: ComponentContext,
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
@@ -205,6 +212,7 @@ internal object CollectionLayouts {
   ): CollectionLayout =
       object :
           CollectionLayout(
+              componentContext = componentContext,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,

@@ -80,6 +80,7 @@ inline fun ResourcesScope.LazyList(
   return LazyCollection(
       layout =
           CollectionLayouts.Linear(
+              componentContext = context,
               orientation = orientation,
               snapMode = snapMode,
               snapToStartOffset = snapToStartOffset.toPixels(resourceResolver),

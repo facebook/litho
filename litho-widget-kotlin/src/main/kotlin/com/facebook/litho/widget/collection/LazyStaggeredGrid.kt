@@ -79,6 +79,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
   return LazyCollection(
       layout =
           CollectionLayouts.StaggeredGrid(
+              componentContext = context,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
