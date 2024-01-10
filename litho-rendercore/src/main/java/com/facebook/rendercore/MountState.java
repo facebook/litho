@@ -958,7 +958,7 @@ public class MountState implements MountDelegateTarget {
     mountItem.releaseMountContent(mContext);
   }
 
-  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+  public void setRenderTreeUpdateListener(@Nullable RenderTreeUpdateListener listener) {
     if (mMountDelegate == null) {
       mMountDelegate = new MountDelegate(this, mTracer);
     }

@@ -683,7 +683,7 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   @Override
-  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+  public void setRenderTreeUpdateListener(@Nullable RenderTreeUpdateListener listener) {
     mMountState.setRenderTreeUpdateListener(listener);
   }
 

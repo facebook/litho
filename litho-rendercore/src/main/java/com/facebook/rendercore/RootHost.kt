@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-public interface RootHost extends RenderCoreExtensionHost {
-
-  void setRenderState(RenderState renderState);
+interface RootHost : RenderCoreExtensionHost {
+  fun setRenderState(renderState: RenderState<*, *, *>?)
 }

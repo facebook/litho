@@ -119,7 +119,7 @@ class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExten
     RenderCoreExtension.onUnregisterForPremount(mountState)
   }
 
-  override fun setRenderTreeUpdateListener(listener: RenderTreeUpdateListener) {
+  override fun setRenderTreeUpdateListener(listener: RenderTreeUpdateListener?) {
     mountState.setRenderTreeUpdateListener(listener)
   }
 

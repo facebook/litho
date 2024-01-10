@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import androidx.annotation.Nullable;
-import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.extensions.RenderCoreExtension
 
 /**
- * This interface collates the APIs which maybe used by a {@link RenderCoreExtension}. This allow
- * both {@link RootHost} and {@link RenderTreeHost} remain distinct while sharing APIs common to
- * between them.
+ * This interface collates the APIs which maybe used by a [RenderCoreExtension]. This allow both
+ * [RootHost] and [RenderTreeHost] remain distinct while sharing APIs common to between them.
  */
-public interface RenderCoreExtensionHost {
-
+interface RenderCoreExtensionHost {
   /** Notifies the host the its visible bounds may have potentially changed. */
-  void notifyVisibleBoundsChanged();
+  fun notifyVisibleBoundsChanged()
 
   /**
    * Notifies the host when its parent wants to start pre-mounting content.
    *
    * @param frameTimeMs the latest frame time
    */
-  void onRegisterForPremount(@Nullable Long frameTimeMs);
+  fun onRegisterForPremount(frameTimeMs: Long?)
 
   /** Notifies the host when its parent wants to stop pre-mounting content. */
-  void onUnregisterForPremount();
+  fun onUnregisterForPremount()
 
-  /** Sets a {@link RenderTreeUpdateListener} on the {@link RootHost}'s {@link MountState} */
-  void setRenderTreeUpdateListener(RenderTreeUpdateListener listener);
+  /** Sets a [RenderTreeUpdateListener] on the [RootHost]'s [MountState] */
+  fun setRenderTreeUpdateListener(listener: RenderTreeUpdateListener?)
 }

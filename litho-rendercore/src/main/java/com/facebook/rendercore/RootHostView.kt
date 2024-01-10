@@ -41,7 +41,7 @@ open class RootHostView @JvmOverloads constructor(context: Context, attrs: Attri
     rootHostDelegate.onUnregisterForPremount()
   }
 
-  override fun setRenderTreeUpdateListener(listener: RenderTreeUpdateListener) {
+  override fun setRenderTreeUpdateListener(listener: RenderTreeUpdateListener?) {
     rootHostDelegate.setRenderTreeUpdateListener(listener)
   }
 
