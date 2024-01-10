@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import com.facebook.infer.annotation.Nullsafe;
+fun interface StateUpdateReceiver<StateUpdateType : StateUpdateReceiver.StateUpdate<*>> {
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public interface StateUpdateReceiver<StateUpdateType extends StateUpdateReceiver.StateUpdate> {
-  interface StateUpdate<State> {
-    State update(State state);
+  fun interface StateUpdate<State> {
+    fun update(state: State): State
   }
 
-  void enqueueStateUpdate(StateUpdateType stateUpdate);
+  fun enqueueStateUpdate(stateUpdate: StateUpdateType)
 }

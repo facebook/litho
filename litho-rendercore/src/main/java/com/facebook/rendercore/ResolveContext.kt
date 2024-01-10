@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore
 
-class ResolveContext<RenderContext, StateUpdateType : StateUpdateReceiver.StateUpdate<*>?>(
+class ResolveContext<RenderContext, StateUpdateType : StateUpdateReceiver.StateUpdate<*>>(
     val renderContext: RenderContext?,
     val stateUpdateReceiver: StateUpdateReceiver<StateUpdateType>
 )
