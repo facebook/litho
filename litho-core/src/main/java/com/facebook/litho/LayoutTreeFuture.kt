@@ -104,7 +104,7 @@ class LayoutTreeFuture(
 
       val treeState = resolveResult.treeState
 
-      return try {
+      try {
 
         if (isTracing) {
           beginSectionWithArgs("layoutTree:" + resolveResult.component.simpleName)
