@@ -40,86 +40,8 @@ object ErrorReporter {
     }
 
   @JvmStatic
-  fun provide(instance: ErrorReporterDelegate?) {
+  fun provide(instance: ErrorReporterDelegate) {
     INSTANCE = instance
-  }
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   */
-  @JvmStatic
-  fun report(level: LogLevel, categoryKey: String, message: String) {
-    instance.report(level, categoryKey, message, null, 0, null)
-  }
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   * @param cause Cause to log.
-   */
-  @JvmStatic
-  fun report(level: LogLevel, categoryKey: String, message: String, cause: Throwable?) {
-    instance.report(level, categoryKey, message, cause, 0, null)
-  }
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   * @param samplingFrequency Sampling frequency to override default one.
-   */
-  @JvmStatic
-  fun report(level: LogLevel, categoryKey: String, message: String, samplingFrequency: Int) {
-    instance.report(level, categoryKey, message, null, samplingFrequency, null)
-  }
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   * @param cause Cause to log.
-   * @param samplingFrequency Sampling frequency to override default one.
-   */
-  @JvmStatic
-  fun report(
-      level: LogLevel,
-      categoryKey: String,
-      message: String,
-      cause: Throwable?,
-      samplingFrequency: Int
-  ) {
-    instance.report(level, categoryKey, message, cause, samplingFrequency, null)
-  }
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log
-   * @param samplingFrequency sampling frequency to override default one
-   * @param metadata map of metadata associated with the message
-   */
-  @JvmStatic
-  fun report(
-      level: LogLevel,
-      categoryKey: String,
-      message: String,
-      samplingFrequency: Int,
-      metadata: Map<String?, Any?>?
-  ) {
-    instance.report(level, categoryKey, message, null, samplingFrequency, metadata)
   }
 
   /**
@@ -132,14 +54,15 @@ object ErrorReporter {
    * @param samplingFrequency sampling frequency to override default one.
    * @param metadata map of metadata associated with the message.
    */
+  @JvmOverloads
   @JvmStatic
   fun report(
       level: LogLevel,
       categoryKey: String,
       message: String,
-      cause: Throwable?,
-      samplingFrequency: Int,
-      metadata: Map<String?, Any?>?
+      cause: Throwable? = null,
+      samplingFrequency: Int = 0,
+      metadata: Map<String?, Any?>? = null
   ) {
     instance.report(level, categoryKey, message, cause, samplingFrequency, metadata)
   }

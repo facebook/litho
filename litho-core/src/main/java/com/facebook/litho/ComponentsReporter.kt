@@ -28,7 +28,7 @@ import com.facebook.rendercore.ErrorReporterDelegate
 object ComponentsReporter {
 
   @JvmStatic
-  fun provide(instance: ErrorReporterDelegate?) {
+  fun provide(instance: ErrorReporterDelegate) {
     ErrorReporter.provide(instance)
   }
 

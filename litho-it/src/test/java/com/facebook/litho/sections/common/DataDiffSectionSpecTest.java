@@ -43,6 +43,7 @@ import com.facebook.litho.testing.sections.TestGroupSection;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.sections.TestTarget.Operation;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.DefaultErrorReporter;
 import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
 import java.util.ArrayList;
@@ -100,7 +101,7 @@ public class DataDiffSectionSpecTest {
     final TestDataDiffSectionNull section =
         TestDataDiffSectionNull.create(mSectionContext).data(data).build();
     mSectionTree.setRoot(section);
-    ComponentsReporter.provide(null);
+    ComponentsReporter.provide(new DefaultErrorReporter());
     assertThat(reporter.containsMessage(DataDiffSectionSpec.RENDER_INFO_RETURNS_NULL_MSG)).isTrue();
   }
 
@@ -465,7 +466,7 @@ public class DataDiffSectionSpecTest {
     RecordingComponentsReporter reporter = new RecordingComponentsReporter();
     ComponentsReporter.provide(reporter);
     mSectionTree.setRoot(TestDataDiffSection.create(mSectionContext).data(oldData).build());
-    ComponentsReporter.provide(null);
+    ComponentsReporter.provide(new DefaultErrorReporter());
     assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG))
         .isEqualTo(ComponentsConfiguration.isDebugModeEnabled);
   }
@@ -480,7 +481,7 @@ public class DataDiffSectionSpecTest {
             .data(oldData)
             .alwaysDetectDuplicates(false)
             .build());
-    ComponentsReporter.provide(null);
+    ComponentsReporter.provide(new DefaultErrorReporter());
     assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG)).isFalse();
   }
 
@@ -494,7 +495,7 @@ public class DataDiffSectionSpecTest {
             .data(oldData)
             .alwaysDetectDuplicates(true)
             .build());
-    ComponentsReporter.provide(null);
+    ComponentsReporter.provide(new DefaultErrorReporter());
     assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG)).isTrue();
   }
 
@@ -509,7 +510,7 @@ public class DataDiffSectionSpecTest {
             .skipCheckIsSameHandler(true)
             .alwaysDetectDuplicates(true)
             .build());
-    ComponentsReporter.provide(null);
+    ComponentsReporter.provide(new DefaultErrorReporter());
     assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG)).isTrue();
   }
 
