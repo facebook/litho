@@ -91,7 +91,7 @@ object CanvasInverseTransform : CanvasTransformChildModel {
     if (!matrix.invert(matrix)) {
       ErrorReporter.report(
           LogLevel.ERROR,
-          CanvasInverseTransform::class.qualifiedName,
+          "com.facebook.primitive.canvas.model.CanvasInverseTransform",
           "The matrix supplied cannot be inverted")
     }
   }

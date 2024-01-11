@@ -14,27 +14,34 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
-
-import androidx.annotation.Nullable;
-import java.util.Map;
+package com.facebook.rendercore
 
 /**
- * This is intended as a hook into {@code android.util.Log}, but allows you to provide your own
+ * This is intended as a hook into `android.util.Log`, but allows you to provide your own
  * functionality. Use it as
  *
- * <p>{@code ErrorReporter.emitMessage(level, message);} As a default, it simply calls {@code
- * android.util.Log} (see {@link DefaultErrorReporter}). You may supply your own with {@link
- * ErrorReporter#provide(ErrorReporterDelegate)}.
+ * `ErrorReporter.emitMessage(level, message);` As a default, it simply calls `android.util.Log`
+ * (see [DefaultErrorReporter]). You may supply your own with [ErrorReporter.provide].
  */
-public class ErrorReporter {
+object ErrorReporter {
+  @Volatile private var INSTANCE: ErrorReporterDelegate? = null
 
-  private static volatile ErrorReporterDelegate sInstance = null;
+  @get:JvmStatic
+  val instance: ErrorReporterDelegate
+    get() {
+      if (INSTANCE == null) {
+        synchronized(ErrorReporter::class.java) {
+          if (INSTANCE == null) {
+            INSTANCE = DefaultErrorReporter()
+          }
+        }
+      }
+      return checkNotNull(INSTANCE)
+    }
 
-  private ErrorReporter() {}
-
-  public static void provide(ErrorReporterDelegate instance) {
-    sInstance = instance;
+  @JvmStatic
+  fun provide(instance: ErrorReporterDelegate?) {
+    INSTANCE = instance
   }
 
   /**
@@ -44,8 +51,9 @@ public class ErrorReporter {
    * @param categoryKey Unique key for aggregation.
    * @param message Message to log.
    */
-  public static void report(final LogLevel level, final String categoryKey, final String message) {
-    getInstance().report(level, categoryKey, message, null, 0, null);
+  @JvmStatic
+  fun report(level: LogLevel, categoryKey: String, message: String) {
+    instance.report(level, categoryKey, message, null, 0, null)
   }
 
   /**
@@ -56,9 +64,9 @@ public class ErrorReporter {
    * @param message Message to log.
    * @param cause Cause to log.
    */
-  public static void report(
-      final LogLevel level, final String categoryKey, final String message, final Throwable cause) {
-    getInstance().report(level, categoryKey, message, cause, 0, null);
+  @JvmStatic
+  fun report(level: LogLevel, categoryKey: String, message: String, cause: Throwable?) {
+    instance.report(level, categoryKey, message, cause, 0, null)
   }
 
   /**
@@ -69,12 +77,9 @@ public class ErrorReporter {
    * @param message Message to log.
    * @param samplingFrequency Sampling frequency to override default one.
    */
-  public static void report(
-      final LogLevel level,
-      final String categoryKey,
-      final String message,
-      final int samplingFrequency) {
-    getInstance().report(level, categoryKey, message, null, samplingFrequency, null);
+  @JvmStatic
+  fun report(level: LogLevel, categoryKey: String, message: String, samplingFrequency: Int) {
+    instance.report(level, categoryKey, message, null, samplingFrequency, null)
   }
 
   /**
@@ -86,13 +91,15 @@ public class ErrorReporter {
    * @param cause Cause to log.
    * @param samplingFrequency Sampling frequency to override default one.
    */
-  public static void report(
-      final LogLevel level,
-      final String categoryKey,
-      final String message,
-      final Throwable cause,
-      final int samplingFrequency) {
-    getInstance().report(level, categoryKey, message, cause, samplingFrequency, null);
+  @JvmStatic
+  fun report(
+      level: LogLevel,
+      categoryKey: String,
+      message: String,
+      cause: Throwable?,
+      samplingFrequency: Int
+  ) {
+    instance.report(level, categoryKey, message, cause, samplingFrequency, null)
   }
 
   /**
@@ -104,13 +111,15 @@ public class ErrorReporter {
    * @param samplingFrequency sampling frequency to override default one
    * @param metadata map of metadata associated with the message
    */
-  public static void report(
-      final LogLevel level,
-      final String categoryKey,
-      final String message,
-      final int samplingFrequency,
-      final @Nullable Map<String, Object> metadata) {
-    getInstance().report(level, categoryKey, message, null, samplingFrequency, metadata);
+  @JvmStatic
+  fun report(
+      level: LogLevel,
+      categoryKey: String,
+      message: String,
+      samplingFrequency: Int,
+      metadata: Map<String?, Any?>?
+  ) {
+    instance.report(level, categoryKey, message, null, samplingFrequency, metadata)
   }
 
   /**
@@ -123,24 +132,15 @@ public class ErrorReporter {
    * @param samplingFrequency sampling frequency to override default one.
    * @param metadata map of metadata associated with the message.
    */
-  public static void report(
-      final LogLevel level,
-      final String categoryKey,
-      final String message,
-      final Throwable cause,
-      final int samplingFrequency,
-      final @Nullable Map<String, Object> metadata) {
-    getInstance().report(level, categoryKey, message, cause, samplingFrequency, metadata);
-  }
-
-  public static ErrorReporterDelegate getInstance() {
-    if (sInstance == null) {
-      synchronized (ErrorReporter.class) {
-        if (sInstance == null) {
-          sInstance = new DefaultErrorReporter();
-        }
-      }
-    }
-    return sInstance;
+  @JvmStatic
+  fun report(
+      level: LogLevel,
+      categoryKey: String,
+      message: String,
+      cause: Throwable?,
+      samplingFrequency: Int,
+      metadata: Map<String?, Any?>?
+  ) {
+    instance.report(level, categoryKey, message, cause, samplingFrequency, metadata)
   }
 }

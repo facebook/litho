@@ -238,9 +238,7 @@ data class CanvasFill(
           //
           // A CanvasFill with a CanvasLineShape should behave similarly.
           ErrorReporter.report(
-              LogLevel.ERROR,
-              CanvasFill::class.simpleName,
-              "A Line shape cannot be 'filled'. Ignoring.")
+              LogLevel.ERROR, "CanvasFill", "A Line shape cannot be 'filled'. Ignoring.")
         } else {
           shape.draw(canvas, fillPaint)
         }

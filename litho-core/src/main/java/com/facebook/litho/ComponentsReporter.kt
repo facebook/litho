@@ -51,8 +51,7 @@ object ComponentsReporter {
       samplingFrequency: Int = 0,
       metadata: Map<String?, Any?>? = null
   ) {
-    ErrorReporter.getInstance()
-        .report(map(level), categoryKey, message, null, samplingFrequency, metadata)
+    ErrorReporter.report(map(level), categoryKey, message, null, samplingFrequency, metadata)
   }
 
   @JvmStatic
