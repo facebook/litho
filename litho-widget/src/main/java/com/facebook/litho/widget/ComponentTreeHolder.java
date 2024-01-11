@@ -75,8 +75,6 @@ public class ComponentTreeHolder {
   private @Nullable final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
   private final int mId;
-  private final @Nullable RunnableHandler mPreallocateMountContentHandler;
-  private final boolean mShouldPreallocatePerMountSpec;
   private final boolean mIncrementalMount;
   private final boolean mVisibilityProcessingEnabled;
 
@@ -121,7 +119,6 @@ public class ComponentTreeHolder {
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable RunnableHandler preallocateMountContentHandler;
-    private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
     private boolean visibilityProcessingEnabled = true;
     private @Nullable LithoLifecycleProvider parentLifecycle;
@@ -144,17 +141,6 @@ public class ComponentTreeHolder {
     public Builder componentTreeMeasureListenerFactory(
         @Nullable ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
       this.componentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
-      return this;
-    }
-
-    public Builder preallocateMountContentHandler(
-        @Nullable RunnableHandler preallocateMountContentHandler) {
-      this.preallocateMountContentHandler = preallocateMountContentHandler;
-      return this;
-    }
-
-    public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
-      this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
       return this;
     }
 
@@ -195,8 +181,6 @@ public class ComponentTreeHolder {
   ComponentTreeHolder(Builder builder) {
     mRenderInfo = builder.renderInfo;
     mLayoutHandler = builder.layoutHandler;
-    mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
-    mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
@@ -437,8 +421,6 @@ public class ComponentTreeHolder {
           .componentsConfiguration(mComponentsConfiguration)
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
-          .preAllocateMountContentHandler(mPreallocateMountContentHandler)
-          .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
           .measureListener(
               mComponentTreeMeasureListenerFactory == null
                   ? null

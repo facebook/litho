@@ -217,8 +217,6 @@ public class RecyclerBinder
 
   private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private @Nullable ComponentWarmer mComponentWarmer;
-  private final @Nullable RunnableHandler mPreallocateMountContentHandler;
-  private final boolean mPreallocatePerMountSpec;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -407,8 +405,6 @@ public class RecyclerBinder
         ComponentsConfiguration componentsConfiguration,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
-        @Nullable RunnableHandler preallocateHandler,
-        boolean preallocatePerMountSpec,
         @Nullable LithoLifecycleProvider lifecycleProvider,
         @Nullable ErrorEventHandler errorEventHandler);
   }
@@ -423,8 +419,6 @@ public class RecyclerBinder
             ComponentsConfiguration componentsConfiguration,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
-            @Nullable RunnableHandler preallocateHandler,
-            boolean preallocatePerMountSpec,
             @Nullable LithoLifecycleProvider lifecycleProvider,
             @Nullable ErrorEventHandler errorEventHandler) {
           return ComponentTreeHolder.create(componentsConfiguration)
@@ -433,8 +427,6 @@ public class RecyclerBinder
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
-              .preallocateMountContentHandler(preallocateHandler)
-              .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
               .parentLifecycleProvider(lifecycleProvider)
               .errorEventHandler(errorEventHandler)
               .build();
@@ -745,17 +737,31 @@ public class RecyclerBinder
     mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
 
-    /**
+    /*
      * If there is no configuration set, then we retrieve it from the owning
      * [com.facebook.litho.ComponentContext]
      */
     ComponentsConfiguration recyclerBinderConfigComponentsConfiguration =
         mRecyclerBinderConfig.componentsConfiguration;
+
+    ComponentsConfiguration tempConfiguration;
     if (recyclerBinderConfigComponentsConfiguration != null) {
-      mComponentsConfiguration = recyclerBinderConfigComponentsConfiguration;
+      tempConfiguration = recyclerBinderConfigComponentsConfiguration;
     } else {
-      mComponentsConfiguration = mComponentContext.getLithoConfiguration().componentsConfig;
+      tempConfiguration = mComponentContext.getLithoConfiguration().componentsConfig;
     }
+
+    /*
+     If nested preallocation is disabled, we forcefully disable mount content preallocation.
+    */
+    if (!tempConfiguration.nestedPreallocationEnabled) {
+      tempConfiguration =
+          ComponentsConfiguration.create(tempConfiguration)
+              .mountContentPreallocationEnabled(false)
+              .build();
+    }
+
+    mComponentsConfiguration = tempConfiguration;
 
     if (mLayoutHandlerFactory == null && mRecyclerBinderConfig.threadPoolConfig != null) {
       mThreadPoolConfig = mRecyclerBinderConfig.threadPoolConfig;
@@ -815,17 +821,6 @@ public class RecyclerBinder
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mIsSubAdapter = builder.isSubAdapter;
-
-    if (builder.mRecyclerBinderConfig.preallocateMountContentHandler == null
-        && mComponentContext.mLithoConfiguration.componentsConfig.nestedPreallocationEnabled) {
-      mPreallocateMountContentHandler =
-          ComponentContext.getMountContentPreallocationHandler(mComponentContext);
-    } else {
-      mPreallocateMountContentHandler =
-          builder.mRecyclerBinderConfig.preallocateMountContentHandler;
-    }
-
-    mPreallocatePerMountSpec = mRecyclerBinderConfig.preallocateMountContent;
     mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
     mStartupLogger = builder.startupLogger;
     mErrorEventHandler = mRecyclerBinderConfig.errorEventHandler;
@@ -4025,8 +4020,6 @@ public class RecyclerBinder
         mComponentsConfiguration,
         mIncrementalMountEnabled,
         mVisibilityProcessingEnabled,
-        mPreallocateMountContentHandler,
-        mPreallocatePerMountSpec,
         mParentLifecycle,
         mErrorEventHandler);
   }

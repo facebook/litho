@@ -68,7 +68,7 @@ inline fun ResourcesScope.LazyList(
     isReconciliationEnabled: Boolean =
         context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     preallocationPerMountContentEnabled: Boolean =
-        context.lithoConfiguration.preallocationPerMountContentEnabled,
+        context.lithoConfiguration.componentsConfig.mountContentPreallocationEnabled,
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,

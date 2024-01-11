@@ -20,6 +20,7 @@ import android.os.Build
 import com.facebook.litho.BuildConfig
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
+import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
 
 /**
@@ -65,7 +66,9 @@ internal constructor(
     @JvmField
     val shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible: Boolean = false,
     /** Whether the [ComponentTree] should be using State Reconciliation. */
-    @JvmField val isReconciliationEnabled: Boolean = true
+    @JvmField val isReconciliationEnabled: Boolean = true,
+    @JvmField val mountContentPreallocationEnabled: Boolean = false,
+    @JvmField val mountContentPreallocationHandler: RunnableHandler? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -237,8 +240,8 @@ internal constructor(
         baseConfig.specsApiStateUpdateDuplicateDetectionEnabled
     private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
-
-    fun isReconciliationEnabled(enabled: Boolean) = also { isReconciliationEnabled = enabled }
+    private var mountContentPreallocationEnabled = baseConfig.mountContentPreallocationEnabled
+    private var mountContentPreallocationHandler = baseConfig.mountContentPreallocationHandler
 
     fun useCancellableLayoutFutures(enabled: Boolean) = also {
       useCancellableLayoutFutures = enabled
@@ -256,6 +259,18 @@ internal constructor(
       specsApiStateUpdateDuplicateDetectionEnabled = enabled
     }
 
+    fun isReconciliationEnabled(enabled: Boolean): Builder = also {
+      isReconciliationEnabled = enabled
+    }
+
+    fun mountContentPreallocationEnabled(enabled: Boolean): Builder = also {
+      mountContentPreallocationEnabled = enabled
+    }
+
+    fun mountContentPreallocationHandler(handler: RunnableHandler?): Builder = also {
+      mountContentPreallocationHandler = handler
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -264,7 +279,9 @@ internal constructor(
           shouldCacheLayouts = shouldCacheLayouts,
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
           useCancellableLayoutFutures = useCancellableLayoutFutures,
-          isReconciliationEnabled = isReconciliationEnabled)
+          isReconciliationEnabled = isReconciliationEnabled,
+          mountContentPreallocationEnabled = mountContentPreallocationEnabled,
+          mountContentPreallocationHandler = mountContentPreallocationHandler)
     }
   }
 }

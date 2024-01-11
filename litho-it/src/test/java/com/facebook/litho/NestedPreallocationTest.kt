@@ -76,9 +76,9 @@ class NestedPreallocationTest {
     val componentTree =
         ComponentTree.create(context, EmptyComponent())
             .componentsConfiguration(
-                ComponentsConfiguration.defaultInstance.copy(nestedPreallocationEnabled = true))
-            .shouldPreallocateMountContentPerMountSpec(preallocationEnabled)
-            .useDefaultHandlerForContentPreallocation()
+                ComponentsConfiguration.defaultInstance.copy(
+                    nestedPreallocationEnabled = true,
+                    mountContentPreallocationEnabled = preallocationEnabled))
             .build()
 
     return lithoRule.render(heightPx = 2040, componentTree = componentTree) { TestComponent() }

@@ -36,7 +36,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
-import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 
 /**
@@ -725,10 +724,6 @@ public class ComponentContext {
    */
   public static boolean isIncrementalMountEnabled(ComponentContext c) {
     return c.mLithoConfiguration.incrementalMountEnabled;
-  }
-
-  public static @Nullable RunnableHandler getMountContentPreallocationHandler(ComponentContext c) {
-    return c.mLithoConfiguration.mountContentPreallocationHandler;
   }
 
   public static boolean isVisibilityProcessingEnabled(ComponentContext c) {

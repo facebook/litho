@@ -73,7 +73,6 @@ import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
-import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.AttributionUtils;
 import com.facebook.litho.debug.DebugOverlay;
@@ -480,8 +479,14 @@ public class ComponentTree
     mMainThreadHandler = instrumentHandler(mMainThreadHandler);
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
 
-    mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
-    mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
+    mShouldPreallocatePerMountSpec = builder.config.mountContentPreallocationEnabled;
+    mPreAllocateMountContentHandler = builder.config.mountContentPreallocationHandler;
+
+    /** By default we delegate the mount content pre-allocation to the Layout Thread. */
+    if (mShouldPreallocatePerMountSpec && mPreAllocateMountContentHandler == null) {
+      mPreAllocateMountContentHandler = new DefaultHandler(getDefaultLayoutThreadLooper());
+    }
+
     if (mPreAllocateMountContentHandler != null) {
       mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
     }
@@ -493,8 +498,6 @@ public class ComponentTree
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
             builder.visibilityProcessingEnabled,
-            mShouldPreallocatePerMountSpec,
-            mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
             builder.logTag,
@@ -3069,11 +3072,9 @@ public class ComponentTree
     private ComponentsConfiguration config;
     private boolean incrementalMountEnabled = true;
     private RunnableHandler layoutThreadHandler;
-    private @Nullable RunnableHandler preAllocateMountContentHandler;
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
-    private boolean shouldPreallocatePerMountSpec;
     private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
@@ -3147,28 +3148,6 @@ public class ComponentTree
         layoutThreadHandler = new DefaultHandler(looper);
       }
 
-      return this;
-    }
-
-    /** Specify the handler for to preAllocateMountContent */
-    public Builder preAllocateMountContentHandler(@Nullable RunnableHandler handler) {
-      preAllocateMountContentHandler = handler;
-      return this;
-    }
-
-    /** Enable Mount Content preallocation using the same thread we use to compute layouts */
-    public Builder useDefaultHandlerForContentPreallocation() {
-      preAllocateMountContentHandler = new DefaultHandler(getDefaultLayoutThreadLooper());
-      return this;
-    }
-
-    /**
-     * If true, this ComponentTree will only preallocate mount specs that are enabled for
-     * preallocation with {@link MountSpec#canPreallocate()}. If false, it preallocates all mount
-     * content.
-     */
-    public Builder shouldPreallocateMountContentPerMountSpec(boolean preallocatePerMountSpec) {
-      shouldPreallocatePerMountSpec = preallocatePerMountSpec;
       return this;
     }
 

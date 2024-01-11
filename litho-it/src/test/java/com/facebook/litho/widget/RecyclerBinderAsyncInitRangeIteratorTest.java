@@ -84,8 +84,6 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               ComponentsConfiguration componentsConfiguration,
               boolean incrementalMountEnabled,
               boolean visibilityProcessing,
-              RunnableHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);

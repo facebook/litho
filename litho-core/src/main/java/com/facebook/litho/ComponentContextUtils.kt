@@ -37,8 +37,6 @@ object ComponentContextUtils {
         componentsConfig = ComponentsConfiguration.defaultInstance,
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
         isVisibilityProcessingEnabled = true,
-        preallocationPerMountContentEnabled = false,
-        mountContentPreallocationHandler = null,
         incrementalMountEnabled = !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
         errorEventHandler = DefaultErrorEventHandler.INSTANCE,
         logTag = logTagToUse,

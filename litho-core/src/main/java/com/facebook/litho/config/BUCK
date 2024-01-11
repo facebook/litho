@@ -31,6 +31,7 @@ litho_android_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
+        "//fbandroid/libraries/rendercore/rendercore:rendercore",
         "//fbandroid/libraries/rendercore/rendercore-incremental-mount:rendercore-incremental-mount",
     ],
 )

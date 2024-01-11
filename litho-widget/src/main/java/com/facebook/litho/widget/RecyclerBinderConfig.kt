@@ -21,7 +21,6 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LayoutThreadPoolConfiguration
-import com.facebook.rendercore.RunnableHandler
 
 /**
  * This configuration is meant to be used in the context of [RecyclerBinder]. It allows you to
@@ -135,20 +134,6 @@ data class RecyclerBinderConfig(
     @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null,
     @JvmField val errorEventHandler: ErrorEventHandler? = null,
     /**
-     * Whether the [Recycler] children should preallocate mount content after being generated. This
-     * will only work if the root [com.facebook.litho.ComponentTree] has set a preallocation
-     * handler, since it will try to use it to run the preallocation.
-     *
-     * @see [com.facebook.litho.ComponentTree.Builder.useDefaultHandlerForContentPreallocation]
-     * @see [com.facebook.litho.ComponentTree.Builder.shouldPreallocateMountContentPerMountSpec]
-     */
-    @JvmField val preallocateMountContent: Boolean = false,
-    /**
-     * Define a different [com.facebook.RunnableHandler] to run the preallocation process. This
-     * handler is only used if [RecyclerBinderConfig.preallocateMountContent] is enabled.
-     */
-    @JvmField val preallocateMountContentHandler: RunnableHandler? = null,
-    /**
      * Ratio to determine the number of components before and after the
      * [androidx.recyclerview.widget.RecyclerView]'s total number of currently visible items to have
      * their [com.facebook.litho.Component] layout computed ahead of time.
@@ -224,8 +209,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
   private var threadPoolConfig = configuration.threadPoolConfig
   private var errorEventHandler = configuration.errorEventHandler
-  private var preallocateMountContent = configuration.preallocateMountContent
-  private var preallocateMountContentHandler = configuration.preallocateMountContentHandler
   private var componentsConfiguration = configuration.componentsConfiguration
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
@@ -276,15 +259,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.errorEventHandler = errorEventHandler
   }
 
-  fun preallocateMountContent(enabled: Boolean): RecyclerBinderConfigBuilder = also {
-    preallocateMountContent = enabled
-  }
-
-  fun preallocateMountContentHandler(handler: RunnableHandler?): RecyclerBinderConfigBuilder =
-      also {
-        preallocateMountContentHandler = handler
-      }
-
   fun componentsConfiguration(
       componentsConfiguration: ComponentsConfiguration?
   ): RecyclerBinderConfigBuilder = also { this.componentsConfiguration = componentsConfiguration }
@@ -320,8 +294,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         hasDynamicItemHeight = hasDynamicItemHeight,
         threadPoolConfig = threadPoolConfig,
         errorEventHandler = errorEventHandler,
-        preallocateMountContent = preallocateMountContent,
-        preallocateMountContentHandler = preallocateMountContentHandler,
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
         enableStableIds = enableStableIds,

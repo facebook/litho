@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.exactly
@@ -322,8 +323,10 @@ class MountSpecLifecycleTest {
     val looper = ShadowLooper.getLooperForThread(Thread.currentThread())
     val tree =
         ComponentTree.create(legacyLithoViewRule.context)
-            .shouldPreallocateMountContentPerMountSpec(true)
-            .preAllocateMountContentHandler(RunnableHandler.DefaultHandler(looper))
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(
+                    mountContentPreallocationEnabled = true,
+                    mountContentPreallocationHandler = RunnableHandler.DefaultHandler(looper)))
             .build()
     legacyLithoViewRule.useComponentTree(tree)
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -347,8 +350,10 @@ class MountSpecLifecycleTest {
     val looper = ShadowLooper.getLooperForThread(Thread.currentThread())
     val tree =
         ComponentTree.create(legacyLithoViewRule.context)
-            .shouldPreallocateMountContentPerMountSpec(true)
-            .preAllocateMountContentHandler(RunnableHandler.DefaultHandler(looper))
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(
+                    mountContentPreallocationEnabled = true,
+                    mountContentPreallocationHandler = RunnableHandler.DefaultHandler(looper)))
             .build()
     legacyLithoViewRule.useComponentTree(tree)
     val info: List<StepInfo> = ArrayList<StepInfo>()

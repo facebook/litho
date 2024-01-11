@@ -180,8 +180,6 @@ public class RecyclerBinderTest {
               ComponentsConfiguration componentsConfiguration,
               boolean incrementalMountEnabled,
               boolean processVisibility,
-              RunnableHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
@@ -204,8 +202,6 @@ public class RecyclerBinderTest {
               ComponentsConfiguration componentsConfiguration,
               boolean incrementalMountEnabled,
               boolean processVisibility,
-              RunnableHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo, true);

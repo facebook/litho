@@ -70,7 +70,7 @@ inline fun ResourcesScope.LazyGrid(
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     preallocationPerMountContentEnabled: Boolean =
-        context.lithoConfiguration.preallocationPerMountContentEnabled,
+        context.lithoConfiguration.componentsConfig.mountContentPreallocationEnabled,
     shouldExcludeFromIncrementalMount: Boolean = false,
     init: LazyGridScope.() -> Unit
 ): Component {

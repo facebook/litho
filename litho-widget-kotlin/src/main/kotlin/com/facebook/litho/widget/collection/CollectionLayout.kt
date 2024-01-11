@@ -63,10 +63,11 @@ abstract class CollectionLayout(
                       RecyclerBinderConfig(
                           incrementalMountEnabled = isIncrementalMountEnabled,
                           hasDynamicItemHeight = hasDynamicItemHeight,
-                          preallocateMountContent = preallocationPerMountContentEnabled,
                           componentsConfiguration =
                               componentContext.lithoConfiguration.componentsConfig.copy(
-                                  isReconciliationEnabled = isReconciliationEnabled),
+                                  isReconciliationEnabled = isReconciliationEnabled,
+                                  mountContentPreallocationEnabled =
+                                      preallocationPerMountContentEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO))
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)

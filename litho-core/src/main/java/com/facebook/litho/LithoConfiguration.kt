@@ -19,7 +19,6 @@ package com.facebook.litho
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.OMIT)
@@ -27,8 +26,6 @@ data class LithoConfiguration(
     @JvmField val componentsConfig: ComponentsConfiguration,
     @JvmField val areTransitionsEnabled: Boolean,
     @JvmField val isVisibilityProcessingEnabled: Boolean,
-    @JvmField val preallocationPerMountContentEnabled: Boolean,
-    @JvmField val mountContentPreallocationHandler: RunnableHandler?,
     @JvmField val incrementalMountEnabled: Boolean,
     @JvmField val errorEventHandler: ErrorEventHandler,
     @JvmField val logTag: String? = null,
