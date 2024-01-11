@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import com.facebook.infer.annotation.Nullsafe;
-
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public interface LayoutContextExtraData<T> {
-
-  public T getExtraLayoutData();
+interface LayoutContextExtraData<out T> {
+  val extraLayoutData: T
 }

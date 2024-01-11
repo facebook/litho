@@ -24,7 +24,8 @@ import com.facebook.yoga.YogaNode
 class LithoLayoutContextExtraData(private val yogaNode: YogaNode) :
     LayoutContextExtraData<LithoLayoutExtraData?> {
 
-  override fun getExtraLayoutData(): LithoLayoutExtraData = LithoLayoutExtraData(yogaNode)
+  override val extraLayoutData: LithoLayoutExtraData
+    get() = LithoLayoutExtraData(yogaNode)
 
   class LithoLayoutExtraData(private val yogaNode: YogaNode) {
     val layoutDirection: YogaDirection = YogaDirection.RTL // yogaNode.getLayoutDirection();
