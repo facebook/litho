@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import com.facebook.rendercore.extensions.ExtensionState;
-import javax.annotation.Nullable;
+import com.facebook.rendercore.extensions.ExtensionState
 
-/** This delegate allows overriding a {@link MountItem}'s unmount responsibility. */
-public interface UnmountDelegateExtension<State> {
+/** This delegate allows overriding a [MountItem]'s unmount responsibility. */
+interface UnmountDelegateExtension<State> {
 
   /**
    * This method is called to check if this item's unmount needs to be delegated.
@@ -29,14 +28,14 @@ public interface UnmountDelegateExtension<State> {
    * @param mountItem
    * @return
    */
-  boolean shouldDelegateUnmount(ExtensionState<State> extensionState, MountItem mountItem);
+  fun shouldDelegateUnmount(extensionState: ExtensionState<State>, mountItem: MountItem): Boolean
 
   /**
-   * This method is responsible for unmounting the item from the {@link Host} and unbinding the item
-   * from the {@link MountDelegateTarget}.
+   * This method is responsible for unmounting the item from the [Host] and unbinding the item from
+   * the [MountDelegateTarget].
    *
    * @param mountItem
    * @param host
    */
-  void unmount(ExtensionState<State> extensionState, MountItem mountItem, @Nullable Host host);
+  fun unmount(extensionState: ExtensionState<State>, mountItem: MountItem, host: Host?)
 }
