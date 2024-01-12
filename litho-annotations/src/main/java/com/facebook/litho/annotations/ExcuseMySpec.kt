@@ -40,4 +40,7 @@ enum class Reason {
    * Litho Kotlin API.
    */
   USES_ON_UPDATE_STATE_WITH_TRANSITION,
+
+  /** Used only to mark Kotlin Specs that were created before the Spec API deprecation. */
+  @Deprecated("Don't add this manually!") LEGACY,
 }
