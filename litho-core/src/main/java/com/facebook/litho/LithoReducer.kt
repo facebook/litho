@@ -174,8 +174,7 @@ object LithoReducer {
         type = OutputUnitType.HOST)
   }
 
-  @JvmStatic
-  fun createAnimatableItem(
+  private fun createAnimatableItem(
       unit: LithoRenderUnit,
       absoluteBounds: Rect,
       @OutputUnitType outputType: Int,
@@ -183,8 +182,7 @@ object LithoReducer {
   ): AnimatableItem =
       LithoAnimtableItem(unit.id, absoluteBounds, outputType, unit.nodeInfo, transitionId)
 
-  @JvmStatic
-  fun createDiffNode(tail: ScopedComponentInfo, parent: DiffNode? = null): DiffNode {
+  private fun createDiffNode(tail: ScopedComponentInfo, parent: DiffNode? = null): DiffNode {
     val diffNode = DefaultDiffNode(tail.component, tail.context.globalKey, tail)
     parent?.addChild(diffNode)
     return diffNode
