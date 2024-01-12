@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.extensions;
+package com.facebook.rendercore.extensions
 
-import com.facebook.rendercore.RenderTreeHost;
-import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.RenderTreeHost
+import com.facebook.rendercore.RootHost
 
 /**
- * An interface client frameworks can use to provide the list of {@link RenderCoreExtension}s to be
- * used by the {@link RootHost} and {@link RenderTreeHost}s.
+ * An interface client frameworks can use to provide the list of [RenderCoreExtension]s to be used
+ * by the [RootHost] and [RenderTreeHost]s.
  */
-public interface ExtensionsCreator {
-  RenderCoreExtension<?, ?>[] create();
+fun interface ExtensionsCreator {
+  fun create(): Array<RenderCoreExtension<*, *>>
 }
