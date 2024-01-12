@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.MotionEvent
+import android.view.View
 
-/** Any interface for mounted items that need to capture motion events from its {@link HostView}. */
-public interface Touchable {
-  boolean onTouchEvent(MotionEvent event, View host);
+/** Any interface for mounted items that need to capture motion events from its [HostView]. */
+interface Touchable {
+  fun onTouchEvent(event: MotionEvent, host: View): Boolean
 
-  boolean shouldHandleTouchEvent(MotionEvent event);
+  fun shouldHandleTouchEvent(event: MotionEvent): Boolean
 }
