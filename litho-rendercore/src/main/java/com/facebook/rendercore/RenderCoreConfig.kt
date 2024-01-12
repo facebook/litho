@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
 /** Config class to enable or disable specific features. */
-public class RenderCoreConfig {
+object RenderCoreConfig {
 
   /**
    * Defaults to the presence of an
-   *
    * <pre>IS_TESTING</pre>
    *
    * system property at startup but can be overridden at runtime.
    */
-  public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
+  @JvmField var isEndToEndTestRun: Boolean = System.getProperty("IS_TESTING") != null
 
   /**
    * Enabling this config will set the root host view in layout before unmounting all items from it
    * so that layouts are not request when removing content from the hierarchy.
    */
-  public static boolean shouldSetInLayoutDuringUnmountAll = false;
+  @JvmField var shouldSetInLayoutDuringUnmountAll: Boolean = false
 
   /** Enabling this will clear the render tree from the MountState when unmount all is invoked. */
-  public static boolean shouldClearRenderTreeOnUnmountAll = false;
+  @JvmField var shouldClearRenderTreeOnUnmountAll: Boolean = false
 }
