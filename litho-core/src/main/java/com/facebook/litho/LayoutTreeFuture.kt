@@ -139,14 +139,6 @@ class LayoutTreeFuture(
                 layoutCache,
                 diffTreeRoot,
                 future)
-        val layoutState =
-            LayoutState(
-                resolveResult,
-                sizeConstraints,
-                treeId,
-                lsc.isAccessibilityEnabled,
-                currentLayoutState,
-            )
 
         if (perfEvent != null) {
           lsc.perfEvent = perfEvent
@@ -154,10 +146,24 @@ class LayoutTreeFuture(
 
         val prevContext = c.calculationStateContext
 
+        val layoutState: LayoutState
+
         try {
 
           c.setLithoLayoutContext(lsc)
           val root = measureTree(lsc, c.androidContext, node, sizeConstraints, perfEvent)
+
+          layoutState =
+              LayoutState(
+                  resolveResult,
+                  sizeConstraints,
+                  root?.x ?: 0,
+                  root?.y ?: 0,
+                  treeId,
+                  lsc.isAccessibilityEnabled,
+                  currentLayoutState,
+              )
+
           if (root != null) {
             measurePendingSubtrees(c, root, layoutState, lsc)
           }

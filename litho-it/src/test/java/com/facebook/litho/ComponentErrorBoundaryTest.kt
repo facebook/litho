@@ -417,20 +417,22 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnEventInvisibleCrashWithTestErrorBoundary() {
+    val c = lithoViewRule.context
     val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
-    val crashingComponent =
-        TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
-            .crashFromStep(LifecycleStep.ON_EVENT_INVISIBLE)
-            .caller(caller)
-            .widthPx(10)
-            .heightPx(5)
-            .marginPx(YogaEdge.TOP, 5)
-            .build()
+
     val errorOutput: List<Exception> = ArrayList()
     val component =
-        TestErrorBoundary.create(lithoViewRule.context)
-            .errorOutput(errorOutput)
-            .child(crashingComponent)
+        Column.create(c)
+            .child(
+                TestErrorBoundary.create(c)
+                    .errorOutput(errorOutput)
+                    .child(
+                        TestCrashFromEachLayoutLifecycleMethod.create(c)
+                            .crashFromStep(LifecycleStep.ON_EVENT_INVISIBLE)
+                            .caller(caller)
+                            .widthPx(10)
+                            .heightPx(5)
+                            .marginPx(YogaEdge.TOP, 5)))
             .build()
     lithoViewRule
         .setRoot(component)

@@ -103,8 +103,8 @@ object LithoReducer {
         result = root,
         layoutState = layoutState,
         lithoLayoutContext = lithoLayoutContext,
-        x = if (root is LithoLayoutResult) root.x else 0,
-        y = if (root is LithoLayoutResult) root.y else 0,
+        x = 0,
+        y = 0,
         parent = parent,
         parentHierarchy = hierarchy)
     if (isTracing) {
@@ -880,7 +880,21 @@ object LithoReducer {
       }
     }
 
-    val animatableItem = createAnimatableItem(unit, absoluteBounds, type, transitionId)
+    val animatableItem =
+        createAnimatableItem(
+            unit,
+            if (parent == null && (layoutState.mRootX != 0 || layoutState.mRootY != 0)) {
+              Rect(
+                  layoutState.mRootX,
+                  layoutState.mRootY,
+                  layoutState.mRootX + absoluteBounds.width(),
+                  layoutState.mRootY + absoluteBounds.height(),
+              )
+            } else {
+              absoluteBounds
+            },
+            type,
+            transitionId)
     layoutState.mAnimatableItems.put(node.renderUnit.id, animatableItem)
     addLayoutOutputIdToPositionsMap(layoutState.mOutputsIdToPositionMap, unit, position)
     maybeAddLayoutOutputToAffinityGroup(

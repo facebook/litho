@@ -103,7 +103,10 @@ public class LayoutState
 
   final ResolveResult mResolveResult;
 
-  SizeConstraints mSizeConstraints;
+  final SizeConstraints mSizeConstraints;
+
+  final int mRootX;
+  final int mRootY;
 
   final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   List<VisibilityOutput> mVisibilityOutputs;
@@ -161,12 +164,16 @@ public class LayoutState
   LayoutState(
       ResolveResult resolveResult,
       SizeConstraints sizeConstraints,
+      int rootX,
+      int rootY,
       int componentTreeId,
       boolean isAccessibilityEnabled,
       @Nullable LayoutState current) {
     mId = sIdGenerator.getAndIncrement();
     mResolveResult = resolveResult;
     mSizeConstraints = sizeConstraints;
+    mRootX = rootX;
+    mRootY = rootY;
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mLayoutCacheData = current != null ? current.mLayoutCacheData : null;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;

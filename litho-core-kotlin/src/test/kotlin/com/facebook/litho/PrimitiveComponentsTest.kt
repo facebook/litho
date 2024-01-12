@@ -759,14 +759,20 @@ class PrimitiveComponentsTest {
 
     val component =
         TestVerticalScrollPrimitiveComponent(
-            child =
-                TestViewPrimitiveComponent(
-                    view = TextView(lithoViewRule.context.androidContext),
-                    steps = steps,
-                    style =
-                        Style.width(100.px).height(100.px).margin(top = 50.px).onVisible {
-                          steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE))
-                        }),
+            child = {
+              Column {
+                child(
+                    TestViewPrimitiveComponent(
+                        view = TextView(lithoViewRule.context.androidContext),
+                        steps = steps,
+                        style =
+                            Style.width(100.px).height(100.px).margin(top = 50.px).onVisible {
+                              steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE))
+                            },
+                    ),
+                )
+              }
+            },
             style = Style.width(100.px).height(100.px),
         )
 
@@ -840,7 +846,7 @@ class PrimitiveComponentsTest {
     parent.addView(testView.lithoView)
     testView.lithoView
     // Render the component
-    lithoViewRule.render(testView.lithoView) { component }
+    lithoViewRule.render(testView.lithoView) { Column { child(component) } }
 
     // Since everything is in the view port everything should mount
     assertThat(LifecycleStep.getSteps(steps))
@@ -895,7 +901,7 @@ class PrimitiveComponentsTest {
     parent.addView(testView.lithoView)
     testView.lithoView
     // Render the component
-    lithoViewRule.render(testView.lithoView) { component }
+    lithoViewRule.render(testView.lithoView) { Column { child(component) } }
 
     // Since everything is in the view port everything should mount
     assertThat(LifecycleStep.getSteps(steps))
@@ -953,7 +959,7 @@ class PrimitiveComponentsTest {
     parent.addView(testView.lithoView)
     testView.lithoView
     // Render the component
-    lithoViewRule.render(testView.lithoView) { component }
+    lithoViewRule.render(testView.lithoView) { Column { child(component) } }
 
     // Since everything is in the view port everything should mount
     assertThat(LifecycleStep.getSteps(steps))
@@ -1261,13 +1267,15 @@ class TestDrawablePrimitiveComponent(val drawable: Drawable, val style: Style? =
 }
 
 class TestVerticalScrollPrimitiveComponent(
-    val child: Component,
+    val child: ComponentScope.() -> Component,
     val style: Style? = null,
 ) : PrimitiveComponent() {
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
 
-    val componentTree = useState { ComponentTree.createNestedComponentTree(context, child).build() }
+    val componentTree = useState {
+      ComponentTree.createNestedComponentTree(context, this@render.child()).build()
+    }
 
     return LithoPrimitive(
         layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
