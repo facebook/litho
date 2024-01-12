@@ -41,7 +41,6 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.testing.LegacyLithoViewRule;
@@ -83,7 +82,7 @@ public class RecyclerCollectionComponentSpecTest {
   public void assumeDebug() {
     assumeThat(
         "These tests can only be run in debug mode.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
   }
 

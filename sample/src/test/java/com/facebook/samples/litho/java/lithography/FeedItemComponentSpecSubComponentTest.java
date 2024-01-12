@@ -28,7 +28,7 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.hamcrest.core.IsNull;
@@ -49,7 +49,7 @@ public class FeedItemComponentSpecSubComponentTest {
   public void setUp() {
     assumeThat(
         "These tests can only be run in debug mode.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
   }
 

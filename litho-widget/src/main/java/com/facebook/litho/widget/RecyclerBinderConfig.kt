@@ -21,7 +21,6 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LayoutThreadPoolConfiguration
-import com.facebook.litho.config.LithoDebugConfigurations
 
 /**
  * This configuration is meant to be used in the context of [RecyclerBinder]. It allows you to
@@ -156,7 +155,7 @@ data class RecyclerBinderConfig(
      */
     @JvmField
     val incrementalMountEnabled: Boolean =
-        !LithoDebugConfigurations.isIncrementalMountGloballyDisabled
+        !ComponentsConfiguration.isIncrementalMountGloballyDisabled
 ) {
 
   init {

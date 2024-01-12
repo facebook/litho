@@ -31,7 +31,6 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
@@ -220,7 +219,7 @@ public class DataDiffSectionSpec<T> {
    */
   private static boolean isDetectDuplicatesEnabled(@Nullable Diff<Boolean> alwaysDetectDuplicates) {
     if (alwaysDetectDuplicates == null || alwaysDetectDuplicates.getNext() == null) {
-      return LithoDebugConfigurations.isDebugModeEnabled;
+      return ComponentsConfiguration.isDebugModeEnabled;
     }
     return alwaysDetectDuplicates.getNext();
   }
@@ -354,7 +353,7 @@ public class DataDiffSectionSpec<T> {
         renderInfo = ComponentRenderInfo.createEmpty();
       }
 
-      if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
+      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled) {
         renderInfo.addDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, mSectionContext.getSectionScope());
       }
 

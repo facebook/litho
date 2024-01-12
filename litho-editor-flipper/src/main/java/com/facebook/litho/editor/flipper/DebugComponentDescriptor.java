@@ -45,7 +45,7 @@ import com.facebook.litho.DebugLayoutNodeEditor;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderSource;
 import com.facebook.litho.StateContainer;
-import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -211,7 +211,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
       if (!revisions.isEmpty()) {
         final FlipperObject.Builder timeTravelDescriptionBuilder = new FlipperObject.Builder();
-        final String timelineDocsLink = LithoDebugConfigurations.timelineDocsLink;
+        final String timelineDocsLink = ComponentsConfiguration.timelineDocsLink;
 
         if (timelineDocsLink != null) {
           timeTravelDescriptionBuilder.put(

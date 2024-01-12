@@ -20,7 +20,7 @@ import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
@@ -45,7 +45,7 @@ abstract class CollectionLayout(
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
     isIncrementalMountEnabled: Boolean =
-        !LithoDebugConfigurations.isIncrementalMountGloballyDisabled,
+        !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
     hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,

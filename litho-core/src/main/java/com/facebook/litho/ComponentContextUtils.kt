@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
 object ComponentContextUtils {
@@ -38,7 +37,7 @@ object ComponentContextUtils {
         componentsConfig = ComponentsConfiguration.defaultInstance,
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
         isVisibilityProcessingEnabled = true,
-        incrementalMountEnabled = !LithoDebugConfigurations.isIncrementalMountGloballyDisabled,
+        incrementalMountEnabled = !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
         errorEventHandler = DefaultErrorEventHandler.INSTANCE,
         logTag = logTagToUse,
         logger = loggerToUse,

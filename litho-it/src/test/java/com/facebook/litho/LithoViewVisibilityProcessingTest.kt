@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -40,12 +40,12 @@ class LithoViewVisibilityProcessingTest {
 
   @Before
   fun setup() {
-    LithoDebugConfigurations.isIncrementalMountGloballyDisabled = true
+    ComponentsConfiguration.isIncrementalMountGloballyDisabled = true
   }
 
   @After
   fun teardown() {
-    LithoDebugConfigurations.isIncrementalMountGloballyDisabled = false
+    ComponentsConfiguration.isIncrementalMountGloballyDisabled = false
   }
 
   @Test

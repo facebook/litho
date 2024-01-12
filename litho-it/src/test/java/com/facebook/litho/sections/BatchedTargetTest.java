@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -282,7 +282,7 @@ public class BatchedTargetTest {
   public void testLoggerDelete() throws Exception {
     assumeThat(
         "Logging is only available in debug mode.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
 
     Change[] ops =
@@ -300,7 +300,7 @@ public class BatchedTargetTest {
   public void testLoggerDifferentTypes() throws Exception {
     assumeThat(
         "Logging is only available in debug mode.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
 
     Change[] ops =

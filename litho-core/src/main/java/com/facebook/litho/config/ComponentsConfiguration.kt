@@ -76,31 +76,14 @@ internal constructor(
 
   companion object {
 
-    /**
-     * This is just a proxy to [LithoDebugConfigurations.isDebugModeEnabled]. We have to keep it
-     * until we release a new oss version and we can refer to [LithoDebugConfigurations] directly on
-     * Flipper.
-     */
-    @Deprecated("Use the LithoDebugConfigurations instead")
-    var isDebugModeEnabled: Boolean
-      get() = LithoDebugConfigurations.isDebugModeEnabled
-      set(value) {
-        LithoDebugConfigurations.isDebugModeEnabled = value
-      }
-
-    /**
-     * This is just a proxy to [LithoDebugConfigurations.isDebugHierarchyEnabled]. We have to keep
-     * it until we release a new oss version and we can refer to [LithoDebugConfigurations] directly
-     * on Flipper.
-     */
-    @Deprecated("Use the LithoDebugConfigurations instead")
-    var isDebugHierarchyEnabled: Boolean
-      get() = LithoDebugConfigurations.isDebugHierarchyEnabled
-      set(value) {
-        LithoDebugConfigurations.isDebugHierarchyEnabled = value
-      }
-
     @JvmField var defaultInstance: ComponentsConfiguration = ComponentsConfiguration()
+
+    /**
+     * Indicates whether this is an internal build. Note that the implementation of `BuildConfig ` *
+     * that this class is compiled against may not be the one that is included in the APK. See:
+     * [android_build_config](http://facebook.github.io/buck/rule/android_build_config.html).
+     */
+    @JvmField val IS_INTERNAL_BUILD: Boolean = BuildConfig.IS_INTERNAL_BUILD
 
     /** Indicates that the incremental mount helper is required for this build. */
     @JvmField val USE_INCREMENTAL_MOUNT_HELPER: Boolean = BuildConfig.USE_INCREMENTAL_MOUNT_HELPER
@@ -121,6 +104,21 @@ internal constructor(
      * The default priority for threads that perform background sections change set calculations.
      */
     const val DEFAULT_CHANGE_SET_THREAD_PRIORITY: Int = 0
+
+    @JvmField var isDebugModeEnabled: Boolean = IS_INTERNAL_BUILD
+
+    /**
+     * Option to enabled debug mode. This will save extra data associated with each node and allow
+     * more info about the hierarchy to be retrieved. Used to enable stetho integration. It is
+     * highly discouraged to enable this in production builds. Due to how the Litho releases are
+     * distributed in open source IS_INTERNAL_BUILD will always be false. It is therefore required
+     * to override this value using your own application build configs. Recommended place for this
+     * is in a Application subclass onCreate() method.
+     */
+    @JvmField var isRenderInfoDebuggingEnabled: Boolean = isDebugModeEnabled
+
+    /** Lightweight tracking of component class hierarchy of MountItems. */
+    @JvmField var isDebugHierarchyEnabled: Boolean = false
 
     /**
      * Populates additional metadata to find mounted components at runtime. Defaults to the presence
@@ -160,6 +158,9 @@ internal constructor(
      */
     @JvmField var computeRangeOnSyncLayout: Boolean = false
 
+    /** When `true`, disables incremental mount globally. */
+    @JvmField var isIncrementalMountGloballyDisabled: Boolean = false
+
     /** Keeps the litho layout result tree in the LayoutState. This will increase memory use. */
     @JvmField var keepLayoutResults: Boolean = false
 
@@ -171,6 +172,10 @@ internal constructor(
     @JvmField var unsafeHostComponentRecyclingIsEnabled: Boolean = false
 
     @JvmField var hostComponentPoolSize: Int = 30
+
+    /** When `true` ComponentTree records state change snapshots */
+    @JvmField var isTimelineEnabled: Boolean = isRenderInfoDebuggingEnabled
+    @JvmField var timelineDocsLink: String? = null
 
     /** Skip checking for root component and tree-props while layout */
     @JvmField var isSkipRootCheckingEnabled: Boolean = false
@@ -201,7 +206,14 @@ internal constructor(
     @JvmField var bindOnSameComponentTree: Boolean = true
     @JvmField var enableStateUpdatesBatching: Boolean = true
     @JvmField var componentsLogger: ComponentsLogger? = null
+
+    /** Debug option to highlight interactive areas in mounted components. */
+    @JvmField var debugHighlightInteractiveBounds: Boolean = false
+
+    /** Debug option to highlight mount bounds of mounted components. */
+    @JvmField var debugHighlightMountBounds: Boolean = false
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
+    @JvmField var eventHandlerRebindLoggingSamplingRate: Int = 0
     @JvmField var isObjectTreePropEnabled: Boolean = false
 
     /**

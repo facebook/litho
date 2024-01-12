@@ -20,7 +20,6 @@ import android.graphics.Rect
 import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderTreeNode
@@ -131,7 +130,7 @@ object LithoReducer {
     layoutState.mLayoutResult = null
 
     // enabled for debugging and end to end tests
-    if (LithoDebugConfigurations.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun) {
+    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun) {
       layoutState.mRoot = nodeForSaving
       layoutState.mLayoutResult = layoutResultForSaving
       return
@@ -903,7 +902,7 @@ object LithoReducer {
   private fun LithoNode.getDebugHierarchy(
       parentHierarchy: DebugHierarchy.Node? = null,
   ): DebugHierarchy.Node? {
-    if (!LithoDebugConfigurations.isDebugHierarchyEnabled) {
+    if (!ComponentsConfiguration.isDebugHierarchyEnabled) {
       return null
     }
     val infos: List<ScopedComponentInfo> = scopedComponentInfos

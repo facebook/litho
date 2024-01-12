@@ -75,7 +75,6 @@ import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
-import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
@@ -1965,8 +1964,7 @@ public class RecyclerBinder
   }
 
   private void assertSingleThreadForChangeSet() {
-    if (!LithoDebugConfigurations.isDebugModeEnabled
-        && !ComponentsConfiguration.isEndToEndTestRun) {
+    if (!ComponentsConfiguration.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun) {
       return;
     }
 
@@ -1984,8 +1982,7 @@ public class RecyclerBinder
   }
 
   private void clearThreadForChangeSet() {
-    if (!LithoDebugConfigurations.isDebugModeEnabled
-        && !ComponentsConfiguration.isEndToEndTestRun) {
+    if (!ComponentsConfiguration.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun) {
       return;
     }
 
@@ -3837,7 +3834,7 @@ public class RecyclerBinder
         }
       }
 
-      if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
+      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled) {
         RenderInfoDebugInfoRegistry.setRenderInfoToViewMapping(
             holder.itemView,
             renderInfo.getDebugInfo(RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG));

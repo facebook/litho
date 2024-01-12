@@ -58,7 +58,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.Equivalence;
@@ -2305,7 +2304,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    */
   @Nullable
   private final AttributesHolder mDebugAttributesHolder =
-      LithoDebugConfigurations.isDebugModeEnabled ? new AttributesHolder() : null;
+      ComponentsConfiguration.isDebugModeEnabled ? new AttributesHolder() : null;
 
   @Override
   public <T> void setDebugAttributeKey(AttributeKey<T> attributeKey, T value) {

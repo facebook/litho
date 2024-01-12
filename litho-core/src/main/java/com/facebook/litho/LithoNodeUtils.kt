@@ -24,7 +24,7 @@ import androidx.core.view.ViewCompat
 import com.facebook.litho.Component.MountType
 import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
 import com.facebook.litho.annotations.ImportantForAccessibility
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
@@ -397,7 +397,7 @@ object LithoNodeUtils {
 
   @JvmStatic
   fun getDebugKey(componentKey: String?, @OutputUnitType outputUnitType: Int): String? =
-      if (LithoDebugConfigurations.isDebugModeEnabled) {
+      if (ComponentsConfiguration.isDebugModeEnabled) {
         null
       } else {
         when (outputUnitType) {

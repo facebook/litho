@@ -74,7 +74,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.debug.AttributionUtils;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
@@ -522,7 +521,7 @@ public class ComponentTree
             null,
             builder.parentTreeProps);
 
-    if (LithoDebugConfigurations.isTimelineEnabled) {
+    if (ComponentsConfiguration.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
     } else {
       mTimeMachine = null;
@@ -560,7 +559,7 @@ public class ComponentTree
   }
 
   private static boolean incrementalMountGloballyDisabled() {
-    return LithoDebugConfigurations.isIncrementalMountGloballyDisabled;
+    return ComponentsConfiguration.isIncrementalMountGloballyDisabled;
   }
 
   /**

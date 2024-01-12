@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
-import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
@@ -51,7 +51,7 @@ public class LegacyRecyclerCollectionComponentSpecTest {
   public void assumeDebug() {
     assumeThat(
         "These tests can only be run in debug mode.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
   }
 

@@ -22,7 +22,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 
 /** Draw operations used in developer options. */
 internal object DebugDraw {
@@ -56,10 +56,10 @@ internal object DebugDraw {
 
   @JvmStatic
   fun draw(host: ComponentHost, canvas: Canvas) {
-    if (LithoDebugConfigurations.debugHighlightInteractiveBounds) {
+    if (ComponentsConfiguration.debugHighlightInteractiveBounds) {
       highlightInteractiveBounds(host, canvas)
     }
-    if (LithoDebugConfigurations.debugHighlightMountBounds) {
+    if (ComponentsConfiguration.debugHighlightMountBounds) {
       highlightMountBounds(host, canvas)
     }
   }

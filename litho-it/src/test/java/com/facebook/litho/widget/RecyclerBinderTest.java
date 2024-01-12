@@ -67,7 +67,6 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -4887,10 +4886,10 @@ public class RecyclerBinderTest {
 
   @Test(expected = IllegalStateException.class)
   public void testAsyncOperationsFromMultipleThreadsCrashes() throws InterruptedException {
-    final boolean isDebugMode = LithoDebugConfigurations.isDebugModeEnabled;
+    final boolean isDebugMode = ComponentsConfiguration.isDebugModeEnabled;
 
     // Manually override this to cause change set thread checks
-    LithoDebugConfigurations.isDebugModeEnabled = true;
+    ComponentsConfiguration.isDebugModeEnabled = true;
 
     try {
       final RecyclerBinder recyclerBinder =
@@ -4928,7 +4927,7 @@ public class RecyclerBinderTest {
 
       recyclerBinder.insertItemAtAsync(0, renderInfo1);
     } finally {
-      LithoDebugConfigurations.isDebugModeEnabled = isDebugMode;
+      ComponentsConfiguration.isDebugModeEnabled = isDebugMode;
     }
   }
 

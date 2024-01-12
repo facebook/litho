@@ -36,7 +36,7 @@ import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.CommonProps.DefaultLayoutProps
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.annotations.ImportantForAccessibility
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
@@ -102,7 +102,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
   val debugLayoutEditor: LayoutProps?
     get() {
-      if (LithoDebugConfigurations.isDebugModeEnabled && debugLayoutProps == null) {
+      if (ComponentsConfiguration.isDebugModeEnabled && debugLayoutProps == null) {
         debugLayoutProps = DefaultLayoutProps()
       }
       return debugLayoutProps
@@ -1462,7 +1462,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
     }
 
     private fun applyOverridesRecursive(node: LithoNode) {
-      if (LithoDebugConfigurations.isDebugModeEnabled) {
+      if (ComponentsConfiguration.isDebugModeEnabled) {
         DebugComponent.applyOverrides(node.tailComponentContext, node)
         for (i in 0 until node.childCount) {
           applyOverridesRecursive(node.getChildAt(i))

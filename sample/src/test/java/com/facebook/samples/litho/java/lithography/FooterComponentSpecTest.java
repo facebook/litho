@@ -25,7 +25,7 @@ import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TestText;
@@ -42,7 +42,7 @@ public class FooterComponentSpecTest {
   public void setUp() {
     assumeThat(
         "These tests can only be run in debug mode.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
   }
 

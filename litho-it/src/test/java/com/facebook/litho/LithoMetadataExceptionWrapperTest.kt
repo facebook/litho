@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.TouchExpansionDelegateTest.Companion.emulateClickEvent
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
 import com.facebook.litho.testing.error.TestHasDelegateThatCrashesOnCreateLayout
@@ -99,7 +99,7 @@ class LithoMetadataExceptionWrapperTest {
   fun onCreateLayout_withReRaisedErrorFromErrorBoundary_showsRightComponentStack() {
     Assume.assumeThat(
         "Error boundary is enabled in debug builds.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         Is.`is`(true))
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage(
@@ -130,7 +130,7 @@ class LithoMetadataExceptionWrapperTest {
   fun onCreateLayout_withIndirectReRaisedErrorFromErrorBoundary_showsRightComponentStack() {
     Assume.assumeThat(
         "Error boundary is enabled in debug builds.",
-        LithoDebugConfigurations.isDebugModeEnabled,
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
         Is.`is`(true))
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage(

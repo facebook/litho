@@ -16,12 +16,12 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 
 /** Hosts API to debug state */
 val KStateContainer.state: List<Any?>
   get() =
-      if (LithoDebugConfigurations.isDebugModeEnabled) {
+      if (ComponentsConfiguration.isDebugModeEnabled) {
         states
       } else {
         error("State should only be read by debugging utilities.")

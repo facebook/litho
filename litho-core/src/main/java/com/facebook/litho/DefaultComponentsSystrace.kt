@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.os.Build
 import android.os.Trace
-import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.RenderCoreSystrace
 import com.facebook.rendercore.Systracer
 import com.facebook.rendercore.Systracer.ArgsBuilder
@@ -57,7 +57,7 @@ open class DefaultComponentsSystrace : Systracer {
   }
 
   override fun isTracing(): Boolean =
-      LithoDebugConfigurations.isDebugModeEnabled &&
+      ComponentsConfiguration.IS_INTERNAL_BUILD &&
           Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 &&
           (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled())
 
