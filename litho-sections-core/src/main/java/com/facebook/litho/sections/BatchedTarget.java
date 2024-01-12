@@ -17,7 +17,7 @@
 package com.facebook.litho.sections;
 
 import android.util.SparseArray;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RenderInfo;
@@ -37,7 +37,7 @@ import java.util.Locale;
 class BatchedTarget implements SectionTree.Target {
 
   private static final int TYPE_NONE = Integer.MAX_VALUE;
-  private static final boolean ENABLE_LOGGER = ComponentsConfiguration.isDebugModeEnabled;
+  private static final boolean ENABLE_LOGGER = LithoDebugConfigurations.isDebugModeEnabled;
 
   private final SectionTree.Target mTarget;
   private final SparseArray<RenderInfo> mComponentInfoSparseArray = new SparseArray<>();

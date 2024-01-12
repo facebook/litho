@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.rendercore.MeasureResult;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -88,7 +88,7 @@ public final class MeasureUtils {
       outputSize.width = 0;
       outputSize.height = 0;
 
-      if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      if (LithoDebugConfigurations.isDebugModeEnabled) {
         Log.d(TAG, "Default to size {0, 0} because both width and height are UNSPECIFIED");
       }
       return;
@@ -213,7 +213,7 @@ public final class MeasureUtils {
       outputSize.width = 0;
       outputSize.height = 0;
 
-      if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      if (LithoDebugConfigurations.isDebugModeEnabled) {
         Log.d(TAG, "Default to size {0, 0} because both width and height are UNSPECIFIED");
       }
       return;
@@ -238,7 +238,7 @@ public final class MeasureUtils {
         outputSize.height = widthBasedHeight;
       } else {
         outputSize.height = heightSize;
-        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+        if (LithoDebugConfigurations.isDebugModeEnabled) {
           Log.d(
               TAG,
               String.format(
@@ -256,7 +256,7 @@ public final class MeasureUtils {
         outputSize.width = heightBasedWidth;
       } else {
         outputSize.width = widthSize;
-        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+        if (LithoDebugConfigurations.isDebugModeEnabled) {
           Log.d(
               TAG,
               String.format(

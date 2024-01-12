@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
 import com.facebook.litho.testing.atMost
@@ -30,7 +29,6 @@ import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.SimpleMountSpecTester
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assumptions
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -64,11 +62,6 @@ class LithoViewTest {
         }
     lithoView = LithoView(getApplicationContext<Context>())
     lithoView.setComponent(initialComponent)
-  }
-
-  @After
-  fun tearDown() {
-    ComponentsConfiguration.isDebugModeEnabled = ComponentsConfiguration.IS_INTERNAL_BUILD
   }
 
   @Test

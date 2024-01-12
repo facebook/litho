@@ -38,6 +38,7 @@ import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.rendercore.MountItemsPool
@@ -79,7 +80,7 @@ constructor(
 ) : TestRule {
 
   init {
-    ComponentsConfiguration.isDebugModeEnabled = true
+    LithoDebugConfigurations.isDebugModeEnabled = true
   }
 
   val componentTree: ComponentTree

@@ -21,6 +21,7 @@ import android.os.Process
 import androidx.annotation.IntDef
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 
 /** Thread assertion utilities. */
 object ThreadUtils {
@@ -61,7 +62,7 @@ object ThreadUtils {
 
   @JvmStatic
   fun assertHoldsLock(lock: Any) {
-    if (!ComponentsConfiguration.IS_INTERNAL_BUILD) {
+    if (!LithoDebugConfigurations.isDebugModeEnabled) {
       return
     }
     check(Thread.holdsLock(lock)) { "This method should be called while holding the lock" }
@@ -69,7 +70,7 @@ object ThreadUtils {
 
   @JvmStatic
   fun assertDoesntHoldLock(lock: Any) {
-    if (!ComponentsConfiguration.IS_INTERNAL_BUILD) {
+    if (!LithoDebugConfigurations.isDebugModeEnabled) {
       return
     }
     check(!Thread.holdsLock(lock)) { "This method should be called outside the lock." }

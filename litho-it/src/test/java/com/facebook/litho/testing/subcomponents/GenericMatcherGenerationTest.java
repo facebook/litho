@@ -25,7 +25,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.HasEventDispatcher;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.specmodels.MyGeneric;
 import com.facebook.litho.testing.specmodels.TestMyGeneric;
@@ -48,7 +48,7 @@ public class GenericMatcherGenerationTest {
   public void setUp() {
     assumeThat(
         "These tests can only be run in debug mode.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        LithoDebugConfigurations.isDebugModeEnabled,
         is(true));
   }
 

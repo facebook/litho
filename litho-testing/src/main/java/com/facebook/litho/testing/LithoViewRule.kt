@@ -29,6 +29,7 @@ import com.facebook.litho.LithoLifecycleProvider
 import com.facebook.litho.LithoView
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import java.lang.Exception
@@ -69,7 +70,7 @@ constructor(
   private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
 
   init {
-    ComponentsConfiguration.isDebugModeEnabled = true
+    LithoDebugConfigurations.isDebugModeEnabled = true
   }
 
   override fun apply(base: Statement, description: Description): Statement {

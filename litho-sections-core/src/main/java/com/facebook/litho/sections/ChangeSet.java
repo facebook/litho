@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeProps;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
@@ -119,7 +119,7 @@ public final class ChangeSet {
   public void insert(
       int index, RenderInfo renderInfo, @Nullable TreeProps treeProps, @Nullable Object data) {
     // Null check for tests only. This should never be the case otherwise.
-    if (mSection != null && ComponentsConfiguration.isRenderInfoDebuggingEnabled) {
+    if (mSection != null && LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
       renderInfo.addDebugInfo(SectionsDebugParams.SECTION_GLOBAL_KEY, mSection.getGlobalKey());
     }
     addChange(Change.insert(index, new TreePropsWrappedRenderInfo(renderInfo, treeProps), data));
@@ -137,7 +137,7 @@ public final class ChangeSet {
       @Nullable TreeProps treeProps,
       @Nullable List<?> data) {
     // Null check for tests only. This should never be the case otherwise.
-    if (mSection != null && ComponentsConfiguration.isRenderInfoDebuggingEnabled) {
+    if (mSection != null && LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
         renderInfos
             .get(i)

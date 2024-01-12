@@ -33,7 +33,7 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.DefaultComponentsReporter;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -468,7 +468,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestDataDiffSection.create(mSectionContext).data(oldData).build());
     ComponentsReporter.provide(new DefaultErrorReporter());
     assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG))
-        .isEqualTo(ComponentsConfiguration.isDebugModeEnabled);
+        .isEqualTo(LithoDebugConfigurations.isDebugModeEnabled);
   }
 
   @Test

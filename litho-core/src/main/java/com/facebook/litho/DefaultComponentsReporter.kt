@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.util.Log
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.ErrorReporterDelegate
 import com.facebook.rendercore.LogLevel
 import java.lang.RuntimeException
@@ -59,7 +59,7 @@ open class DefaultComponentsReporter : ErrorReporterDelegate {
   }
 
   private fun applyOnInternalBuild(block: () -> Unit) {
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+    if (LithoDebugConfigurations.isDebugModeEnabled) {
       block()
     }
   }
