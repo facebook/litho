@@ -91,9 +91,9 @@ class MountItemTest {
 
   @Test
   fun testIsBound() {
-    mountItem.setIsBound(true)
+    mountItem.isBound = true
     assertThat(mountItem.isBound).isTrue
-    mountItem.setIsBound(false)
+    mountItem.isBound = false
     assertThat(mountItem.isBound).isFalse
   }
 
@@ -252,7 +252,7 @@ class MountItemTest {
     val node: RenderTreeNode = create(unit, Rect(0, 0, 0, 0), null, null)
     val view = View(getApplicationContext())
     val mountItem = MountItem(node, view)
-    mountItem.setMountData(LithoMountData(view))
+    mountItem.mountData = LithoMountData(view)
     assertThat(
             LithoMountData.isViewClickable(
                 LithoMountData.getMountData(mountItem).defaultAttributeValuesFlags))

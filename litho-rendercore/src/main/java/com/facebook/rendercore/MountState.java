@@ -1039,7 +1039,7 @@ public class MountState implements MountDelegateTarget {
     if (mountDelegate != null) {
       mountDelegate.onBindItem(renderUnit, content, layoutData, mTracer);
     }
-    item.setIsBound(true);
+    item.setBound(true);
   }
 
   private void unbindRenderUnitFromContent(MountItem item) {
@@ -1051,7 +1051,7 @@ public class MountState implements MountDelegateTarget {
       mountDelegate.onUnbindItem(renderUnit, content, layoutData, mTracer);
     }
     renderUnit.detachBinders(mContext, content, layoutData, item.getBindData(), mTracer);
-    item.setIsBound(false);
+    item.setBound(false);
   }
 
   private void updateMountItemIfNeeded(RenderTreeNode renderTreeNode, MountItem currentMountItem) {
@@ -1120,7 +1120,7 @@ public class MountState implements MountDelegateTarget {
       }
     }
 
-    currentMountItem.setIsBound(true);
+    currentMountItem.setBound(true);
 
     // Update the bounds of the mounted content. This needs to be done regardless of whether
     // the RenderUnit has been updated or not since the mounted item might might have the same

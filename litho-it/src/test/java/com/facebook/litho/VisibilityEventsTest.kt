@@ -2005,7 +2005,7 @@ class VisibilityEventsTest {
     assertThat(LifecycleStep.getSteps(stepsList[1]))
         .describedAs("Visible event should be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE)
-    val lScrollView = testLithoView.lithoView.getMountItemAt(0).getContent() as HorizontalScrollView
+    val lScrollView = testLithoView.lithoView.getMountItemAt(0).content as HorizontalScrollView
     ReflectionHelpers.setField(lScrollView, "mScrollX", 10)
     ReflectionHelpers.setField(lScrollView, "mScrollY", 0)
     lScrollView.scrollBy(10, 0)
