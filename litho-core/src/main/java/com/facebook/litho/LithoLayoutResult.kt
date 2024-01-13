@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.util.Pair
 import android.view.View
 import androidx.annotation.Px
@@ -44,7 +43,7 @@ open class LithoLayoutResult(
     val yogaNode: YogaNode,
     widthFromStyle: Float = YogaConstants.UNDEFINED,
     heightFromStyle: Float = YogaConstants.UNDEFINED,
-) : ComponentLayout, LayoutResult {
+) : LayoutResult {
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
   private val _layoutData: Any? by
@@ -182,10 +181,6 @@ open class LithoLayoutResult(
   var borderRenderUnit: LithoRenderUnit? = null
     private set
 
-  @Px override fun getX(): Int = yogaNode.layoutX.toInt()
-
-  @Px override fun getY(): Int = yogaNode.layoutY.toInt()
-
   @Px override fun getWidth(): Int = yogaNode.layoutWidth.toInt()
 
   @Px override fun getHeight(): Int = yogaNode.layoutHeight.toInt()
@@ -199,12 +194,6 @@ open class LithoLayoutResult(
   override fun getPaddingBottom(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
 
   @Px override fun getPaddingLeft(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
-
-  override fun isPaddingSet(): Boolean = node.isPaddingSet
-
-  override fun getBackground(): Drawable? = node.background
-
-  override fun getResolvedLayoutDirection(): YogaDirection = yogaNode.layoutDirection
 
   override fun getRenderUnit(): LithoRenderUnit? = null // Unimplemented.
 

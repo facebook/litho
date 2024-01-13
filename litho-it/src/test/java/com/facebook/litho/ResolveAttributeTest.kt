@@ -61,7 +61,7 @@ class ResolveAttributeTest {
         .measure()
         .layout()
     val d = c.resources.getDrawable(test_bg)
-    val drawable = legacyLithoViewRule.currentRootNode?.background
+    val drawable = legacyLithoViewRule.currentRootNode?.node?.background
     assertThat(Shadows.shadowOf(drawable).createdFromResId)
         .isEqualTo(Shadows.shadowOf(d).createdFromResId)
   }
@@ -89,9 +89,9 @@ class ResolveAttributeTest {
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout()
-    val node = legacyLithoViewRule.currentRootNode
+    val result = legacyLithoViewRule.currentRootNode
     val d = c.resources.getDrawable(test_bg)
-    val drawable = node?.background
+    val drawable = result?.node?.background
     assertThat(Shadows.shadowOf(drawable).createdFromResId)
         .isEqualTo(Shadows.shadowOf(d).createdFromResId)
   }
