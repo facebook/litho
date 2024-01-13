@@ -22,6 +22,7 @@ import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PathEffect
+import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.Pair
@@ -353,6 +354,12 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
     yogaRoot.calculateLayout(width, height)
 
     layoutResult.setSizeSpec(widthSpec, heightSpec)
+
+    context.renderContext?.lithoLayoutContext?.rootOffset =
+        Point(
+            yogaRoot.layoutX.toInt(),
+            yogaRoot.layoutY.toInt(),
+        )
 
     if (isTracing) {
       ComponentsSystrace.endSection()
@@ -1020,6 +1027,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
   companion object {
     private val idGenerator = AtomicInteger(1)
+
     // Flags used to indicate that a certain attribute was explicitly set on the node.
     private const val PFLAG_LAYOUT_DIRECTION_IS_SET: Long = 1L
     private const val PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET: Long = 1L shl 7

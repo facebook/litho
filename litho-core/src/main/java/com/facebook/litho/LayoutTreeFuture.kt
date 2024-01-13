@@ -157,8 +157,8 @@ class LayoutTreeFuture(
               LayoutState(
                   resolveResult,
                   sizeConstraints,
-                  root?.x ?: 0,
-                  root?.y ?: 0,
+                  lsc.rootOffset.x,
+                  lsc.rootOffset.y,
                   treeId,
                   lsc.isAccessibilityEnabled,
                   currentLayoutState,

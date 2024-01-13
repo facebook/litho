@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Point
 import android.util.Pair
 import com.facebook.rendercore.LayoutCache
 
@@ -47,6 +48,8 @@ constructor(
 
   private var _eventHandlers: MutableList<Pair<String, EventHandler<*>>>? = null
   private var _currentNestedTreeDiffNode: DiffNode? = null
+
+  var rootOffset: Point = Point(0, 0)
 
   override val treeFuture: TreeFuture<*>?
     get() {
