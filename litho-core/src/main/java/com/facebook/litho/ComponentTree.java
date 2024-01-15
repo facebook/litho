@@ -1322,13 +1322,19 @@ public class ComponentTree
       }
 
       if (mTreeState != null) {
-        isStateEnqueued =
-            mTreeState.queueStateUpdate(
-                componentKey,
-                stateUpdate,
-                false,
-                isLayoutState,
-                !isSpecsDuplicateStateUpdateDetectionEnabled());
+        try {
+          isStateEnqueued =
+              mTreeState.queueStateUpdate(
+                  componentKey,
+                  stateUpdate,
+                  false,
+                  isLayoutState,
+                  !isSpecsDuplicateStateUpdateDetectionEnabled());
+        } catch (Exception e) {
+          if (mContext.mLithoConfiguration.errorEventHandler != null) {
+            mContext.mLithoConfiguration.errorEventHandler.onError(mContext, e);
+          }
+        }
       }
     }
 
