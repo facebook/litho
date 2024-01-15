@@ -43,11 +43,7 @@ constructor(
 
   constructor(
       context: ComponentContext
-  ) : this(
-      context.androidContext,
-      ComponentContextUtils.buildDefaultLithoConfiguration(
-          context = context.androidContext, logTag = context.logTag, logger = context.logger),
-      context.treePropsCopy)
+  ) : this(context.androidContext, context.lithoConfiguration, context.treePropsCopy)
 
   val keyHandler: KeyHandler = KeyHandler()
 
