@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -41,10 +41,10 @@ class LithoViewTestHelperTest {
   @get:Rule val lithoViewRule = LithoViewRule()
 
   @Before
-  fun skipIfRelease() {
+  fun skipIfNonDebug() {
     Assume.assumeTrue(
-        "These tests cover debug functionality and can only be run " + "for internal builds.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD)
+        "These tests cover debug functionality and can only be run for debug builds.",
+        LithoDebugConfigurations.isDebugModeEnabled)
   }
 
   @Test

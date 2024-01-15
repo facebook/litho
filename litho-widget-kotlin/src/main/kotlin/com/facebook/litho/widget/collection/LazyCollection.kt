@@ -23,7 +23,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.ChangesInfo
@@ -240,7 +240,7 @@ class LazyCollection(
                     }
                   }
                   .component(
-                      if (ComponentsConfiguration.isDebugModeEnabled && overlayRenderCount)
+                      if (LithoDebugConfigurations.isDebugModeEnabled && overlayRenderCount)
                           component.overlayRenderCount
                       else component)
                   .build()

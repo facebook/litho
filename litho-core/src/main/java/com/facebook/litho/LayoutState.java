@@ -33,6 +33,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MountItemsPool;
@@ -679,7 +680,8 @@ public class LayoutState
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
   String dumpAsString() {
-    if (!ComponentsConfiguration.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun) {
+    if (!LithoDebugConfigurations.isDebugModeEnabled
+        && !ComponentsConfiguration.isEndToEndTestRun) {
       throw new RuntimeException(
           "LayoutState#dumpAsString() should only be called in debug mode or from e2e tests!");
     }
