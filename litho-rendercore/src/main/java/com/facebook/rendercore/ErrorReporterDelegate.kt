@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import androidx.annotation.Nullable;
-import java.util.Map;
-
-public interface ErrorReporterDelegate {
-
+fun interface ErrorReporterDelegate {
   /**
    * Emit a message that can be logged or escalated by the logger implementation.
    *
@@ -31,11 +27,12 @@ public interface ErrorReporterDelegate {
    * @param samplingFrequency sampling frequency to override default one. default value = 0
    * @param metadata map of metadata associated with the message. default value = null
    */
-  void report(
-      LogLevel level,
-      String categoryKey,
-      String message,
-      @Nullable Throwable cause,
-      int samplingFrequency,
-      @Nullable Map<String, Object> metadata);
+  fun report(
+      level: LogLevel,
+      categoryKey: String,
+      message: String,
+      cause: Throwable?,
+      samplingFrequency: Int,
+      metadata: Map<String, Any?>?
+  )
 }

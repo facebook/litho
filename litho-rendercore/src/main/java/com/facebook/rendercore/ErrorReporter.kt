@@ -62,7 +62,7 @@ object ErrorReporter {
       message: String,
       cause: Throwable? = null,
       samplingFrequency: Int = 0,
-      metadata: Map<String?, Any?>? = null
+      metadata: Map<String, Any?>? = null
   ) {
     instance.report(level, categoryKey, message, cause, samplingFrequency, metadata)
   }

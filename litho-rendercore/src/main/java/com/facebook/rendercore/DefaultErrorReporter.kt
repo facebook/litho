@@ -25,7 +25,7 @@ class DefaultErrorReporter : ErrorReporterDelegate {
       message: String,
       cause: Throwable?,
       samplingFrequency: Int,
-      metadata: Map<String, Any>?
+      metadata: Map<String, Any?>?
   ) {
     when (level) {
       LogLevel.WARNING ->

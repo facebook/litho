@@ -625,7 +625,7 @@ public class DataDiffSectionSpecTest {
         String message,
         @Nullable Throwable cause,
         int samplingFrequency,
-        @Nullable Map<String, Object> metadata) {
+        @Nullable Map metadata) {
       mDefaultComponentsReporter.report(
           level, categoryKey, message, cause, samplingFrequency, metadata);
       mMessages.offer(message);

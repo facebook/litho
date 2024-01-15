@@ -49,7 +49,7 @@ object ComponentsReporter {
       categoryKey: String,
       message: String,
       samplingFrequency: Int = 0,
-      metadata: Map<String?, Any?>? = null
+      metadata: Map<String, Any>? = null
   ) {
     ErrorReporter.report(map(level), categoryKey, message, null, samplingFrequency, metadata)
   }
