@@ -63,7 +63,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /** [LithoNode] is the [Node] implementation of Litho. */
 @ThreadConfined(ThreadConfined.ANY)
-open class LithoNode : Node<LithoRenderContext>, Cloneable {
+open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   // region private properties
   private var _transitionId: TransitionId? = null
@@ -296,13 +296,13 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
   // endregion
 
   override fun calculateLayout(
-      context: LayoutContext<LithoRenderContext>,
+      context: LayoutContext<LithoLayoutContext>,
       sizeConstraints: SizeConstraints,
   ): LithoLayoutResult {
 
-    val renderContext: LithoRenderContext? = context.renderContext
+    val renderContext: LithoLayoutContext? = context.renderContext
     checkNotNull(renderContext) { "Cannot calculate a layout without RenderContext." }
-    check(!renderContext.lithoLayoutContext.isReleased) {
+    check(!renderContext.isReleased) {
       "Cannot calculate a layout with a released LayoutStateContext."
     }
 
@@ -355,7 +355,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
     layoutResult.setSizeSpec(widthSpec, heightSpec)
 
-    context.renderContext?.lithoLayoutContext?.rootOffset =
+    context.renderContext?.rootOffset =
         Point(
             yogaRoot.layoutX.toInt(),
             yogaRoot.layoutY.toInt(),
@@ -1053,7 +1053,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
      * LayoutResult tree and sets it in the data of the corresponding YogaNodes.
      */
     private fun buildYogaTree(
-        context: LayoutContext<LithoRenderContext>,
+        context: LayoutContext<LithoLayoutContext>,
         currentNode: LithoNode,
         parentNode: YogaNode? = null,
     ): LithoLayoutResult {
@@ -1118,11 +1118,11 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
       }
 
       checkNotNull(yogaNode) { "YogaNode cannot be null when building YogaTree." }
-      val renderContext: LithoRenderContext? = context.renderContext
+      val renderContext: LithoLayoutContext? = context.renderContext
       checkNotNull(renderContext) { "RenderContext cannot be null when building YogaTree." }
 
       yogaNode.data = Pair(context, layoutResult)
-      applyDiffNode(renderContext.lithoLayoutContext, currentNode, yogaNode, parentNode)
+      applyDiffNode(renderContext, currentNode, yogaNode, parentNode)
       saveLithoLayoutResultIntoCache(context, currentNode, layoutResult)
 
       for (i in 0 until currentNode.childCount) {
@@ -1138,7 +1138,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
     }
 
     private fun buildYogaTreeFromCache(
-        context: LayoutContext<LithoRenderContext>,
+        context: LayoutContext<LithoLayoutContext>,
         cachedLayoutResult: LithoLayoutResult,
         isTracing: Boolean
     ): LithoLayoutResult {
@@ -1154,7 +1154,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
     }
 
     private fun cloneLayoutResultsRecursively(
-        context: LayoutContext<LithoRenderContext>,
+        context: LayoutContext<LithoLayoutContext>,
         cachedLayoutResult: LithoLayoutResult,
         clonedYogaNode: YogaNode,
         isTracing: Boolean
@@ -1498,7 +1498,7 @@ open class LithoNode : Node<LithoRenderContext>, Cloneable {
 
     /** Save LithoLayoutResult into LayoutCache, using node itself and id as keys. */
     private fun saveLithoLayoutResultIntoCache(
-        context: LayoutContext<LithoRenderContext>,
+        context: LayoutContext<LithoLayoutContext>,
         node: LithoNode,
         result: LithoLayoutResult
     ) {

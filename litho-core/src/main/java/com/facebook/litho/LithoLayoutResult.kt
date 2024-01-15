@@ -232,7 +232,7 @@ open class LithoLayoutResult(
   }
 
   protected open fun measureInternal(
-      context: LayoutContext<LithoRenderContext>,
+      context: LayoutContext<LithoLayoutContext>,
       widthSpec: Int,
       heightSpec: Int
   ): MeasureResult {
@@ -314,7 +314,7 @@ open class LithoLayoutResult(
   }
 
   fun measure(
-      context: LayoutContext<LithoRenderContext>,
+      context: LayoutContext<LithoLayoutContext>,
       widthSpec: Int,
       heightSpec: Int
   ): MeasureResult {
@@ -324,7 +324,7 @@ open class LithoLayoutResult(
     val isTracing = ComponentsSystrace.isTracing
     var size: MeasureResult
     wasMeasured = true
-    if (renderContext.lithoLayoutContext.isFutureReleased) {
+    if (renderContext.isFutureReleased) {
 
       // If layout is released then skip measurement
       size = MeasureResult.error()
@@ -494,7 +494,7 @@ open class LithoLayoutResult(
         val layoutContext = getLayoutContextFromYogaNode(yogaNode)
         @Suppress("UNCHECKED_CAST")
         measure(
-            layoutContext as LayoutContext<LithoRenderContext>,
+            layoutContext as LayoutContext<LithoLayoutContext>,
             MeasureSpecUtils.exactly(newContentWidth),
             MeasureSpecUtils.exactly(newContentHeight))
       }
@@ -563,8 +563,8 @@ open class LithoLayoutResult(
   companion object {
 
     @JvmStatic
-    fun getLayoutContextFromYogaNode(yogaNode: YogaNode): LayoutContext<*> =
-        (yogaNode.data as Pair<*, *>).first as LayoutContext<*>
+    fun getLayoutContextFromYogaNode(yogaNode: YogaNode): LayoutContext<LithoLayoutContext> =
+        (yogaNode.data as Pair<*, *>).first as LayoutContext<LithoLayoutContext>
 
     @JvmStatic
     fun getLayoutResultFromYogaNode(yogaNode: YogaNode): LithoLayoutResult =

@@ -68,9 +68,7 @@ class LithoNodeTouchExpansionTest {
   }
 
   private fun calculateLayout(): LithoLayoutResult? {
-    val context =
-        LayoutContext(
-            context.androidContext, LithoRenderContext(lithoLayoutContext), 0, LayoutCache(), null)
+    val context = LayoutContext(context.androidContext, lithoLayoutContext, 0, LayoutCache(), null)
     return node.calculateLayout(
         context,
         SizeConstraints.fromMeasureSpecs(

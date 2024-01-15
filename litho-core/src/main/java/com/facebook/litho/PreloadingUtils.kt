@@ -88,7 +88,6 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 LithoLayoutResult::class.java,
                 ComponentLayout::class.java,
                 NodeConfig::class.java,
-                LithoRenderContext::class.java,
                 DefaultDiffNode::class.java,
                 LithoRenderUnit::class.java,
                 LithoLayoutData::class.java,

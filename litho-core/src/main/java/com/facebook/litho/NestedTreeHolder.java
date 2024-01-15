@@ -22,7 +22,7 @@ import com.facebook.yoga.YogaNode;
 
 /**
  * This class is a placeholder for the unresolved layout and result of a {@link Component}s which
- * implement the {@link OnCreateLayoutWithSizeSpec}.The {@link TreeProps}, padding and border width
+ * implement the {@link @OnCreateLayoutWithSizeSpec}.The {@link TreeProps}, padding and border width
  * properties and held separately so that they can be copied into the actual nested tree layout
  * before measuring it.
  */

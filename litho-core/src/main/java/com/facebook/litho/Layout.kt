@@ -65,13 +65,8 @@ internal object Layout {
 
     layoutStatePerfEvent?.markerPoint("start_measure")
 
-    val context: LayoutContext<LithoRenderContext> =
-        LayoutContext(
-            androidContext,
-            LithoRenderContext(lithoLayoutContext),
-            0,
-            lithoLayoutContext.layoutCache,
-            null)
+    val context: LayoutContext<LithoLayoutContext> =
+        LayoutContext(androidContext, lithoLayoutContext, 0, lithoLayoutContext.layoutCache, null)
 
     val result: LithoLayoutResult = node.calculateLayout(context, sizeConstraints)
 

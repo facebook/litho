@@ -55,7 +55,7 @@ class NestedTreeHolderResult(
   }
 
   override fun measureInternal(
-      context: LayoutContext<LithoRenderContext>,
+      context: LayoutContext<LithoLayoutContext>,
       widthSpec: Int,
       heightSpec: Int
   ): MeasureResult {
@@ -64,7 +64,7 @@ class NestedTreeHolderResult(
     val component = node.tailComponent
     val renderContext = checkNotNull(context.renderContext)
 
-    check(!renderContext.lithoLayoutContext.isReleased) {
+    check(!renderContext.isReleased) {
       (component.simpleName +
           ": To measure a component outside of a layout calculation use" +
           " Component#measureMightNotCacheInternalNode.")
@@ -74,7 +74,7 @@ class NestedTreeHolderResult(
     val parentContext: ComponentContext? =
         if (count == 1) {
           val parentFromNode = node.mParentContext
-          parentFromNode ?: renderContext.lithoLayoutContext.rootComponentContext
+          parentFromNode ?: renderContext.rootComponentContext
         } else {
           node.getComponentContextAt(1)
         }
@@ -88,7 +88,7 @@ class NestedTreeHolderResult(
     return try {
       val nestedTree =
           measure(
-              renderContext.lithoLayoutContext,
+              renderContext,
               parentContext,
               this,
               widthSpec,
