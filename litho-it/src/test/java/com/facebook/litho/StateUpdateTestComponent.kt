@@ -46,6 +46,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
 
   class TestStateContainer : StateContainer() {
     @JvmField var count = 0
+    @JvmField var dummy = Any()
 
     override fun applyStateUpdate(stateUpdate: StateUpdate) {
       when (stateUpdate.type) {
@@ -53,6 +54,7 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
         STATE_UPDATE_TYPE_INCREMENT -> count += 1
         STATE_UPDATE_TYPE_MULTIPLY -> count *= 2
         STATE_UPDATE_TYPE_VALUE -> count = (stateUpdate.params.first() as Int)
+        STATE_UPDATE_DUMMY -> dummy = Any()
       }
       finalCounterValue.set(count)
     }
@@ -63,11 +65,13 @@ class StateUpdateTestComponent : SpecGeneratedComponent("StateUpdateTest") {
     private const val STATE_UPDATE_TYPE_INCREMENT = 1
     private const val STATE_UPDATE_TYPE_MULTIPLY = 2
     private const val STATE_UPDATE_TYPE_VALUE = 3
+    private const val STATE_UPDATE_DUMMY = 4
+
     const val INITIAL_COUNT_STATE_VALUE = 4
 
     @JvmStatic
     fun createNoopStateUpdate(): StateContainer.StateUpdate =
-        StateContainer.StateUpdate(STATE_UPDATE_TYPE_NOOP)
+        StateContainer.StateUpdate(STATE_UPDATE_DUMMY)
 
     @JvmStatic
     fun createIncrementStateUpdate(): StateContainer.StateUpdate =
