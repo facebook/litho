@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>com.facebook.litho.testing.assertj</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,298 +32,309 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-testing:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-testing::com.facebook.litho.testing.assertj////PointingToDeclaration//1342111716">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="litho-testing::com.facebook.litho.testing.assertj////PointingToDeclaration//1342111716">
   <div class="breadcrumbs"><a href="../index.html">litho-testing</a><span class="delimiter">/</span><span class="current">com.facebook.litho.testing.assertj</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Types</h2>
-      <div class="table" data-togglable="Types"><a data-name="1570949159%2FClasslikes%2F1342111716" anchor-label="CharSequenceContains" id="1570949159%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-char-sequence-contains/index.html"><span>Char</span><wbr><span>Sequence</span><wbr><span><span>Contains</span></span></a></div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="1570949159%2FClasslikes%2F1342111716" anchor-label="CharSequenceContains" id="1570949159%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-char-sequence-contains/index.html"><span>Char</span><wbr><span>Sequence</span><wbr><span><span>Contains</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1570949159%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-char-sequence-contains/index.html">CharSequenceContains</a> : <a href="-sub-char-sequence-matcher/index.html">SubCharSequenceMatcher</a></div><div class="brief ">Tests if the argument is a string that contains a substring.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-char-sequence-contains/index.html">CharSequenceContains</a> : <a href="-sub-char-sequence-matcher/index.html">SubCharSequenceMatcher</a></div><div class="brief ">Tests if the argument is a string that contains a substring.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-431910974%2FClasslikes%2F1342111716" anchor-label="ComponentAssert" id="-431910974%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-component-assert/index.html"><span>Component</span><wbr><span><span>Assert</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-component-assert/index.html"><span>Component</span><wbr><span><span>Assert</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-431910974%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-component-assert/index.html"><strike>ComponentAssert</strike></a> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(0)/">SELF</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(1)/">ACTUAL</span><span class="token operator">&gt; </span></div><div class="brief ">Assertion methods for <a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a>s.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-component-assert/index.html"><strike>ComponentAssert</strike></a> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(0)/">SELF</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(1)/">ACTUAL</span><span class="token operator">&gt; </span></div><div class="brief ">Assertion methods for <a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a>s.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-9351920%2FClasslikes%2F1342111716" anchor-label="ComponentConditions" id="-9351920%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-component-conditions/index.html"><span>Component</span><wbr><span><span>Conditions</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-component-conditions/index.html"><span>Component</span><wbr><span><span>Conditions</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-9351920%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-component-conditions/index.html">ComponentConditions</a></div><div class="brief ">Various helpers to match against <a href="../com.facebook.litho.testing.subcomponents/-inspectable-component/index.html">InspectableComponent</a>s.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-component-conditions/index.html">ComponentConditions</a></div><div class="brief ">Various helpers to match against <a href="../com.facebook.litho.testing.subcomponents/-inspectable-component/index.html">InspectableComponent</a>s.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1816358107%2FClasslikes%2F1342111716" anchor-label="Conditions" id="-1816358107%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-conditions/index.html"><span><span>Conditions</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-conditions/index.html"><span><span>Conditions</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1816358107%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-conditions/index.html">Conditions</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-conditions/index.html">Conditions</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="779275230%2FClasslikes%2F1342111716" anchor-label="ErrorMessage" id="779275230%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-error-message/index.html"><span>Error</span><wbr><span><span>Message</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-error-message/index.html"><span>Error</span><wbr><span><span>Message</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="779275230%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-error-message/index.html">ErrorMessage</a></div><div class="brief ">Utility class for error messages related to the testing api assertions</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-error-message/index.html">ErrorMessage</a></div><div class="brief ">Utility class for error messages related to the testing api assertions</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1293479757%2FClasslikes%2F1342111716" anchor-label="HamcrestCondition" id="1293479757%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-hamcrest-condition/index.html"><span>Hamcrest</span><wbr><span><span>Condition</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-hamcrest-condition/index.html"><span>Hamcrest</span><wbr><span><span>Condition</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1293479757%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-hamcrest-condition/index.html">HamcrestCondition</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-hamcrest-condition/index.html">T</a><span class="token operator">&gt;</span> : <span data-unresolved-link="org.assertj.core.api/Condition///PointingToDeclaration/">Condition</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api/Condition///PointingToGenericParameters(0)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">Wraps a Hamcrest &lt; in an AssertJ Condition.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-hamcrest-condition/index.html">HamcrestCondition</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-hamcrest-condition/index.html">T</a><span class="token operator">&gt;</span> : <span data-unresolved-link="org.assertj.core.api/Condition///PointingToDeclaration/">Condition</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api/Condition///PointingToGenericParameters(0)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">Wraps a Hamcrest &lt; in an AssertJ Condition.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1645989279%2FClasslikes%2F1342111716" anchor-label="LegacyLithoAssertions" id="1645989279%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-legacy-litho-assertions/index.html"><span>Legacy</span><wbr><span>Litho</span><wbr><span><span>Assertions</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-legacy-litho-assertions/index.html"><span>Legacy</span><wbr><span>Litho</span><wbr><span><span>Assertions</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1645989279%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-legacy-litho-assertions/index.html"><strike>LegacyLithoAssertions</strike></a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-legacy-litho-assertions/index.html"><strike>LegacyLithoAssertions</strike></a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-277110346%2FClasslikes%2F1342111716" anchor-label="LithoAssertions" id="-277110346%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-litho-assertions/index.html"><span>Litho</span><wbr><span><span>Assertions</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-litho-assertions/index.html"><span>Litho</span><wbr><span><span>Assertions</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-277110346%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-litho-assertions/index.html">LithoAssertions</a></div><div class="brief ">Common entry point for Litho assertions.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-litho-assertions/index.html">LithoAssertions</a></div><div class="brief ">Common entry point for Litho assertions.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="957484826%2FClasslikes%2F1342111716" anchor-label="LithoRepresentation" id="957484826%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-litho-representation/index.html"><span>Litho</span><wbr><span><span>Representation</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-litho-representation/index.html"><span>Litho</span><wbr><span><span>Representation</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="957484826%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-litho-representation/index.html">LithoRepresentation</a> : <span data-unresolved-link="org.assertj.core.presentation/StandardRepresentation///PointingToDeclaration/">StandardRepresentation</span></div><div class="brief ">Inheritance sucks.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-litho-representation/index.html">LithoRepresentation</a> : <span data-unresolved-link="org.assertj.core.presentation/StandardRepresentation///PointingToDeclaration/">StandardRepresentation</span></div><div class="brief ">Inheritance sucks.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-931847588%2FClasslikes%2F1342111716" anchor-label="LithoViewAssert" id="-931847588%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-litho-view-assert/index.html"><span>Litho</span><wbr><span>View</span><wbr><span><span>Assert</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-litho-view-assert/index.html"><span>Litho</span><wbr><span>View</span><wbr><span><span>Assert</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-931847588%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-litho-view-assert/index.html">LithoViewAssert</a> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-litho-view-assert/index.html">LithoViewAssert</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Assertion methods for <a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a>s.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-litho-view-assert/index.html">LithoViewAssert</a> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-litho-view-assert/index.html">LithoViewAssert</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Assertion methods for <a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a>s.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1150082885%2FClasslikes%2F1342111716" anchor-label="LithoViewSubComponentDeepExtractor" id="1150082885%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-litho-view-sub-component-deep-extractor/index.html"><span>Litho</span><wbr><span>View</span><wbr><span>Sub</span><wbr><span>Component</span><wbr><span>Deep</span><wbr><span><span>Extractor</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-litho-view-sub-component-deep-extractor/index.html"><span>Litho</span><wbr><span>View</span><wbr><span>Sub</span><wbr><span>Component</span><wbr><span>Deep</span><wbr><span><span>Extractor</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1150082885%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-litho-view-sub-component-deep-extractor/index.html"><strike>LithoViewSubComponentDeepExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">Recursively extracts sub components from a LithoView holding one or more Components, wrapping them in an <a href="../com.facebook.litho.testing.subcomponents/-inspectable-component/index.html">InspectableComponent</a>.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-litho-view-sub-component-deep-extractor/index.html"><strike>LithoViewSubComponentDeepExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">Recursively extracts sub components from a LithoView holding one or more Components, wrapping them in an <a href="../com.facebook.litho.testing.subcomponents/-inspectable-component/index.html">InspectableComponent</a>.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1793840953%2FClasslikes%2F1342111716" anchor-label="LithoViewSubComponentExtractor" id="1793840953%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-litho-view-sub-component-extractor/index.html"><span>Litho</span><wbr><span>View</span><wbr><span>Sub</span><wbr><span>Component</span><wbr><span><span>Extractor</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-litho-view-sub-component-extractor/index.html"><span>Litho</span><wbr><span>View</span><wbr><span>Sub</span><wbr><span>Component</span><wbr><span><span>Extractor</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1793840953%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-litho-view-sub-component-extractor/index.html"><strike>LithoViewSubComponentExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-litho-view-sub-component-extractor/index.html"><strike>LithoViewSubComponentExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-638206505%2FClasslikes%2F1342111716" anchor-label="StateValueAssert" id="-638206505%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-state-value-assert/index.html"><span>State</span><wbr><span>Value</span><wbr><span><span>Assert</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-state-value-assert/index.html"><span>State</span><wbr><span>Value</span><wbr><span><span>Assert</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-638206505%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-state-value-assert/index.html">StateValueAssert</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-state-value-assert/index.html">T</a><span class="token operator">&gt;</span> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(0)/">SELF</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(1)/">ACTUAL</span><span class="token operator">&gt; </span></div><div class="brief ">Assertion methods for &lt;.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-state-value-assert/index.html">StateValueAssert</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-state-value-assert/index.html">T</a><span class="token operator">&gt;</span> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(0)/">SELF</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToGenericParameters(1)/">ACTUAL</span><span class="token operator">&gt; </span></div><div class="brief ">Assertion methods for &lt;.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1422930014%2FClasslikes%2F1342111716" anchor-label="SubCharSequenceMatcher" id="-1422930014%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-sub-char-sequence-matcher/index.html"><span>Sub</span><wbr><span>Char</span><wbr><span>Sequence</span><wbr><span><span>Matcher</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-sub-char-sequence-matcher/index.html"><span>Sub</span><wbr><span>Char</span><wbr><span>Sequence</span><wbr><span><span>Matcher</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1422930014%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-sub-char-sequence-matcher/index.html">SubCharSequenceMatcher</a> : <span data-unresolved-link="org.hamcrest/TypeSafeMatcher///PointingToDeclaration/">TypeSafeMatcher</span><span class="token operator">&lt;</span><span data-unresolved-link="org.hamcrest/TypeSafeMatcher///PointingToGenericParameters(0)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">An implementation like <span data-unresolved-link="org.hamcrest.core/SubstringMatcher///PointingToDeclaration/">SubstringMatcher</span> but generalized to <a href="https://developer.android.com/reference/kotlin/java/lang/CharSequence.html">CharSequence</a> instead of <a href="https://developer.android.com/reference/kotlin/java/lang/CharSequence.html">CharSequence</a>.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-sub-char-sequence-matcher/index.html">SubCharSequenceMatcher</a> : <span data-unresolved-link="org.hamcrest/TypeSafeMatcher///PointingToDeclaration/">TypeSafeMatcher</span><span class="token operator">&lt;</span><span data-unresolved-link="org.hamcrest/TypeSafeMatcher///PointingToGenericParameters(0)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">An implementation like <span data-unresolved-link="org.hamcrest.core/SubstringMatcher///PointingToDeclaration/">SubstringMatcher</span> but generalized to <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html">CharSequence</a> instead of <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/CharSequence.html">CharSequence</a>.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1576659306%2FClasslikes%2F1342111716" anchor-label="SubComponentDeepExtractor" id="1576659306%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-sub-component-deep-extractor/index.html"><span>Sub</span><wbr><span>Component</span><wbr><span>Deep</span><wbr><span><span>Extractor</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-sub-component-deep-extractor/index.html"><span>Sub</span><wbr><span>Component</span><wbr><span>Deep</span><wbr><span><span>Extractor</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1576659306%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-sub-component-deep-extractor/index.html"><strike>SubComponentDeepExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">An extractor to be used with assertThat.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-sub-component-deep-extractor/index.html"><strike>SubComponentDeepExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">An extractor to be used with assertThat.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="181779422%2FClasslikes%2F1342111716" anchor-label="SubComponentExtractor" id="181779422%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-sub-component-extractor/index.html"><span>Sub</span><wbr><span>Component</span><wbr><span><span>Extractor</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-sub-component-extractor/index.html"><span>Sub</span><wbr><span>Component</span><wbr><span><span>Extractor</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="181779422%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-sub-component-extractor/index.html"><strike>SubComponentExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">An extractor to be used with assertThat.</div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-sub-component-extractor/index.html"><strike>SubComponentExtractor</strike></a> : <span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToDeclaration/">Extractor</span><span class="token operator">&lt;</span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(0)/">F</span><span class="token punctuation">, </span><span data-unresolved-link="org.assertj.core.api.iterable/Extractor///PointingToGenericParameters(1)/">T</span><span class="token operator">&gt; </span></div><div class="brief ">An extractor to be used with assertThat.</div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="203106407%2FClasslikes%2F1342111716" anchor-label="TestCollectionAssert" id="203106407%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-test-collection-assert/index.html"><span>Test</span><wbr><span>Collection</span><wbr><span><span>Assert</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-test-collection-assert/index.html"><span>Test</span><wbr><span>Collection</span><wbr><span><span>Assert</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="203106407%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-test-collection-assert/index.html">TestCollectionAssert</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">testCollection<span class="token operator">: </span><a href="../com.facebook.litho.testing/-test-collection/index.html">TestCollection</a></span></span><span class="token punctuation">)</span> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-test-collection-assert/index.html">TestCollectionAssert</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../com.facebook.litho.testing/-test-collection/index.html">TestCollection</a><span class="token operator">&gt; </span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-test-collection-assert/index.html">TestCollectionAssert</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">testCollection<span class="token operator">: </span><a href="../com.facebook.litho.testing/-test-collection/index.html">TestCollection</a></span></span><span class="token punctuation">)</span> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-test-collection-assert/index.html">TestCollectionAssert</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../com.facebook.litho.testing/-test-collection/index.html">TestCollection</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-961919788%2FClasslikes%2F1342111716" anchor-label="TestCollectionItemAssert" id="-961919788%2FClasslikes%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-test-collection-item-assert/index.html"><span>Test</span><wbr><span>Collection</span><wbr><span>Item</span><wbr><span><span>Assert</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-test-collection-item-assert/index.html"><span>Test</span><wbr><span>Collection</span><wbr><span>Item</span><wbr><span><span>Assert</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-961919788%2FClasslikes%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-test-collection-item-assert/index.html">TestCollectionItemAssert</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">testCollectionItem<span class="token operator">: </span><a href="../com.facebook.litho.testing/-test-collection-item/index.html">TestCollectionItem</a></span></span><span class="token punctuation">)</span> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-test-collection-item-assert/index.html">TestCollectionItemAssert</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../com.facebook.litho.testing/-test-collection-item/index.html">TestCollectionItem</a><span class="token operator">&gt; </span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-test-collection-item-assert/index.html">TestCollectionItemAssert</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">testCollectionItem<span class="token operator">: </span><a href="../com.facebook.litho.testing/-test-collection-item/index.html">TestCollectionItem</a></span></span><span class="token punctuation">)</span> : <span data-unresolved-link="org.assertj.core.api/AbstractAssert///PointingToDeclaration/">AbstractAssert</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-test-collection-item-assert/index.html">TestCollectionItemAssert</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="../com.facebook.litho.testing/-test-collection-item/index.html">TestCollectionItem</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -330,10 +344,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

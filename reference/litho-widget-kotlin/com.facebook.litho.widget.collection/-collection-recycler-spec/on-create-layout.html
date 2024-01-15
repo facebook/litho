@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>onCreateLayout</title>
-<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
-<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
@@ -29,24 +32,33 @@
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-widget-kotlin:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-widget-kotlin::com.facebook.litho.widget.collection/CollectionRecyclerSpec/onCreateLayout/#com.facebook.litho.ComponentContext#com.facebook.litho.sections.Section?#kotlin.collections.List[androidx.recyclerview.widget.RecyclerView.OnScrollListener?]?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Int?#androidx.recyclerview.widget.RecyclerView.ItemDecoration?#androidx.recyclerview.widget.RecyclerView.ItemAnimator?#kotlin.Int?#kotlin.Int?#kotlin.Int#kotlin.Int#kotlin.Int#kotlin.Int#com.facebook.litho.EventHandler[com.facebook.litho.TouchEvent?]?#kotlin.Boolean#kotlin.Boolean#kotlin.Int#kotlin.Int?#kotlin.Int?#com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor?#androidx.recyclerview.widget.RecyclerView.OnItemTouchListener?#kotlin.Boolean#com.facebook.litho.sections.widget.RecyclerConfiguration#com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger?#kotlin.Boolean#com.facebook.litho.widget.RecyclerEventsController?#com.facebook.litho.widget.Binder[androidx.recyclerview.widget.RecyclerView]#com.facebook.litho.sections.SectionTree/PointingToDeclaration//868337418">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageids="litho-widget-kotlin::com.facebook.litho.widget.collection/CollectionRecyclerSpec/onCreateLayout/#com.facebook.litho.ComponentContext#com.facebook.litho.sections.Section?#kotlin.collections.List[androidx.recyclerview.widget.RecyclerView.OnScrollListener?]?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Boolean?#kotlin.Int?#androidx.recyclerview.widget.RecyclerView.ItemDecoration?#androidx.recyclerview.widget.RecyclerView.ItemAnimator?#kotlin.Int?#kotlin.Int?#kotlin.Int#kotlin.Int#kotlin.Int#kotlin.Int#com.facebook.litho.EventHandler[com.facebook.litho.TouchEvent?]?#kotlin.Boolean#kotlin.Boolean#kotlin.Int#kotlin.Int?#kotlin.Int?#com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor?#androidx.recyclerview.widget.RecyclerView.OnItemTouchListener?#kotlin.Boolean#com.facebook.litho.sections.widget.RecyclerConfiguration#com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger?#kotlin.Boolean#com.facebook.litho.widget.RecyclerEventsController?#com.facebook.litho.widget.Binder[androidx.recyclerview.widget.RecyclerView]#com.facebook.litho.sections.SectionTree/PointingToDeclaration//868337418">
   <div class="breadcrumbs"><a href="../../index.html">litho-widget-kotlin</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.widget.collection</a><span class="delimiter">/</span><a href="index.html">CollectionRecyclerSpec</a><span class="delimiter">/</span><span class="current">onCreateLayout</span></div>
   <div class="cover ">
     <h1 class="cover"><span>on</span><wbr><span>Create</span><wbr><span><span>Layout</span></span></h1>
@@ -54,10 +66,11 @@
   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-static/index.html"><span class="token annotation builtin">JvmStatic</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-create-layout.html"><span class="token function">onCreateLayout</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">c<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component-context/index.html">ComponentContext</a><span class="token punctuation">, </span></span><span class="parameter ">section<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.sections/Section///PointingToDeclaration/">Section</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">onScrollListeners<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.OnScrollListener.html">RecyclerView.OnScrollListener</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">clipToPadding<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">clipChildren<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">nestedScrollingEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">scrollBarStyle<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">itemDecoration<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.ItemDecoration.html">RecyclerView.ItemDecoration</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">itemAnimator<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.ItemAnimator.html">RecyclerView.ItemAnimator</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/IdRes.html"><span class="token annotation builtin">IdRes</span></a>&nbsp;</span>recyclerViewId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">overScrollMode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">startPadding<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">endPadding<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">topPadding<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">bottomPadding<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">recyclerTouchEventHandler<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-event-handler/index.html">EventHandler</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../litho-core/com.facebook.litho/-touch-event/index.html">TouchEvent</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">horizontalFadingEdgeEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">verticalFadingEdgeEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">fadingEdgeLength<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">refreshProgressBarBackgroundColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">refreshProgressBarColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">touchInterceptor<span class="token operator">: </span><a href="../../../litho-testing/com.facebook.litho.widget/-litho-recycler-view/-touch-interceptor/index.html">LithoRecyclerView.TouchInterceptor</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">itemTouchListener<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.OnItemTouchListener.html">RecyclerView.OnItemTouchListener</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">pullToRefreshEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">recyclerConfiguration<span class="token operator">: </span><a href="../../../litho-widget-kotlin/com.facebook.litho.sections.widget/-recycler-configuration/index.html">RecyclerConfiguration</a><span class="token punctuation">, </span></span><span class="parameter ">sectionsViewLogger<span class="token operator">: </span><a href="../../../litho-testing/com.facebook.litho.widget/-sections-recycler-view/-sections-recycler-view-logger/index.html">SectionsRecyclerView.SectionsRecyclerViewLogger</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">shouldExcludeFromIncrementalMount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">internalRecyclerEventsController<span class="token operator">: </span><a href="../../../litho-testing/com.facebook.litho.widget/-recycler-events-controller/index.html">RecyclerEventsController</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">binder<span class="token operator">: </span><a href="../../../litho-testing/com.facebook.litho.widget/-binder/index.html">Binder</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.html">RecyclerView</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">sectionTree<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.sections/SectionTree///PointingToDeclaration/">SectionTree</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component/index.html">Component</a></div></div></div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

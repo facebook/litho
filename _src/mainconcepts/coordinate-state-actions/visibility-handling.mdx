@@ -121,7 +121,9 @@ Use `AOSPLithoLifecycleProvider` to associate a LithoView's visibility status wi
 
 * Adding a Fragment on top of another Fragment doesn't move the first Fragment to a **Paused** state, and there's no indication that it's no longer visible to the user.
 
-When state changes need to be handled manually, use `LithoLifecycleProviderDelegate`, a generic `LithoLifecycleProvider` implementation, to change state when appropriate.
+When state changes need to be handled manually, use `AOSPLithoLifecycleProvider.moveToLifecycle(LithoLifecycle)` to change state when appropriate.
+
+The following examples uses `LithoLifecycleProviderDelegate`, a generic `LithoLifecycleProvider` implementation, to change state, but the idea also works for `AOSPLithoLifecycleProvider`.
 
 #### ViewPager example
 

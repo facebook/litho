@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>CanvasScope</title>
-<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
-<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
@@ -29,183 +32,198 @@
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-widget-kotlin:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-widget-kotlin::com.facebook.litho.widget.canvas/CanvasScope///PointingToDeclaration//868337418">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-widget-kotlin::com.facebook.litho.widget.canvas/CanvasScope///PointingToDeclaration//868337418">
   <div class="breadcrumbs"><a href="../../index.html">litho-widget-kotlin</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.widget.canvas</a><span class="delimiter">/</span><span class="current">CanvasScope</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Canvas</span><wbr><span><span>Scope</span></span></h1>
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">CanvasScope</a></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
-      <h2 class="tabbedcontent">Constructors</h2>
-      <div class="table" data-togglable="Constructors"><a data-name="-1922598228%2FConstructors%2F868337418" anchor-label="CanvasScope" id="-1922598228%2FConstructors%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue TabbedContent">
-            <div class=""><span class="inline-flex">
-                <div><a href="-canvas-scope.html"><span>Canvas</span><wbr><span><span>Scope</span></span></a></div>
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1922598228%2FConstructors%2F868337418" anchor-label="CanvasScope" id="-1922598228%2FConstructors%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-canvas-scope.html"><span>Canvas</span><wbr><span><span>Scope</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1922598228%2FConstructors%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-canvas-scope.html"><span class="token function">CanvasScope</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="-474790613%2FFunctions%2F868337418" anchor-label="createModel" id="-474790613%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="create-model.html"><span>create</span><wbr><span><span>Model</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-474790613%2FFunctions%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="create-model.html"><span class="token function">createModel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token punctuation">, </span></span><span class="parameter ">canvasState<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.canvas/CanvasState///PointingToDeclaration/">CanvasState</span><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.canvas.model/CanvasModel///PointingToDeclaration/">CanvasModel</span></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="424768407%2FFunctions%2F868337418" anchor-label="draw" id="424768407%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="draw.html"><span><span>draw</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="424768407%2FFunctions%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="draw.html"><span class="token function">draw</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">canvas<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a><span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token punctuation">, </span></span><span class="parameter ">canvasState<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.canvas/CanvasState///PointingToDeclaration/">CanvasState</span><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Draws into the provided <a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a> with the commands specified in the lambda with this <a href="index.html">CanvasScope</a> as a receiver.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-804108767%2FFunctions%2F868337418" anchor-label="drawIntoCanvas" id="-804108767%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="draw-into-canvas.html"><span>draw</span><wbr><span>Into</span><wbr><span><span>Canvas</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-804108767%2FFunctions%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="draw-into-canvas.html"><span class="token function">drawIntoCanvas</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>block<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Provides access to draw directly with the underlying <a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a>. This is helpful for situations to re-use the existing <a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a> drawing logic.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-900662795%2FFunctions%2F868337418" anchor-label="fill" id="-900662795%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="fill.html"><span><span>fill</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-900662795%2FFunctions%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="fill.html"><span class="token function">fill</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">shape<span class="token operator">: </span><a href="../-shape/index.html">Shape</a><span class="token punctuation">, </span></span><span class="parameter ">shading<span class="token operator">: </span><a href="../-shading/index.html">Shading</a><span class="token punctuation">, </span></span><span class="parameter ">blendingMode<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/BlendingMode///PointingToDeclaration/">BlendingMode</span><span class="token operator"> = </span>DEFAULT_BLENDING_MODE<span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="../-shadow/index.html">Shadow</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Fills the given Shape.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1511696146%2FFunctions%2F868337418" anchor-label="group" id="1511696146%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="group.html"><span><span>group</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1511696146%2FFunctions%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="group.html"><span class="token function">group</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transform<span class="token operator">: </span><a href="../-transform/index.html">Transform</a><span class="token operator"> = </span>Transform.IDENTITY<span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">clip<span class="token operator">: </span><a href="../-path/index.html">Path</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">clipToBounds<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a group. Groups can be used to treat multiple drawing commands as a single one and applying transforms or clips to all of them at the same time. For a group, first the transform is applied, then the content is drawn inside the transformed coordinates and then the clip is applied to the drawn content.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="380617689%2FFunctions%2F868337418" anchor-label="layer" id="380617689%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="layer.html"><span><span>layer</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="380617689%2FFunctions%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="layer.html"><span class="token function">layer</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transform<span class="token operator">: </span><a href="../-transform/index.html">Transform</a><span class="token operator"> = </span>Transform.IDENTITY<span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">clip<span class="token operator">: </span><a href="../-path/index.html">Path</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">0.0</span></span><span class="token punctuation">, </span></span><wbr><span>to<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr><span class="token punctuation">)</span>&nbsp;</span>alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">1.0f</span><span class="token punctuation">, </span></span><span class="parameter ">blendingMode<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/BlendingMode///PointingToDeclaration/">BlendingMode</span><span class="token operator"> = </span>DEFAULT_BLENDING_MODE<span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a layer which allocates and redirects drawing to an offscreen buffer. It may be useful in cases like applying transparency or blending modes to multiple drawing commands at once. Layers should be as small as possible and should be used only when necessary because they may cause performance issues if used incorrectly.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1584432448%2FFunctions%2F868337418" anchor-label="stroke" id="-1584432448%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="stroke.html"><span><span>stroke</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1584432448%2FFunctions%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="stroke.html"><span class="token function">stroke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">shape<span class="token operator">: </span><a href="../-shape/index.html">Shape</a><span class="token punctuation">, </span></span><span class="parameter ">shading<span class="token operator">: </span><a href="../-shading/index.html">Shading</a><span class="token punctuation">, </span></span><span class="parameter ">blendingMode<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/BlendingMode///PointingToDeclaration/">BlendingMode</span><span class="token operator"> = </span>DEFAULT_BLENDING_MODE<span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="../-shadow/index.html">Shadow</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">lineWidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span>CanvasStroke.DEFAULT_LINE_WIDTH<span class="token punctuation">, </span></span><span class="parameter ">lineCap<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/LineCap///PointingToDeclaration/">LineCap</span><span class="token operator"> = </span>DEFAULT_LINE_CAP<span class="token punctuation">, </span></span><span class="parameter ">lineJoin<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/LineJoin///PointingToDeclaration/">LineJoin</span><span class="token operator"> = </span>DEFAULT_LINE_JOIN<span class="token punctuation">, </span></span><span class="parameter ">miterLimit<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span>CanvasStroke.DEFAULT_MITER_LIMIT<span class="token punctuation">, </span></span><span class="parameter ">dashLengths<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html">FloatArray</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">dashPhase<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">0.0f</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Strokes the given Shape.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <h2 class="">Properties</h2>
-      <div class="table" data-togglable="Properties"><a data-name="1308647165%2FProperties%2F868337418" anchor-label="center" id="1308647165%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="center.html"><span><span>center</span></span></a></div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1308647165%2FProperties%2F868337418" anchor-label="center" id="1308647165%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="center.html"><span><span>center</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1308647165%2FProperties%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><a data-name="1308647165%2FProperties%2F868337418" anchor-label="center" id="1308647165%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="center.html">center</a><span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Point///PointingToDeclaration/">Point</span></div><div class="brief "><a data-name="1308647165%2FProperties%2F868337418" anchor-label="center" id="1308647165%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a><p class="paragraph">The center of the current bounds of the drawing scope (group, layer or whole canvas)</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="center.html">center</a><span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Point///PointingToDeclaration/">Point</span></div><div class="brief "><p class="paragraph">The center of the current bounds of the drawing scope (group, layer or whole canvas)</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-938901999%2FProperties%2F868337418" anchor-label="size" id="-938901999%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="size.html"><span><span>size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-938901999%2FProperties%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="size.html">size</a><span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span></div><div class="brief "><p class="paragraph">The size of the current drawing scope (group, layer or whole canvas)</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="-938901999%2FProperties%2F868337418" anchor-label="size" id="-938901999%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="size.html"><span><span>size</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-938901999%2FProperties%2F868337418"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><a data-name="-938901999%2FProperties%2F868337418" anchor-label="size" id="-938901999%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="size.html">size</a><span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span></div><div class="brief "><a data-name="-938901999%2FProperties%2F868337418" anchor-label="size" id="-938901999%2FProperties%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a><p class="paragraph">The size of the current drawing scope (group, layer or whole canvas)</p></div></div></div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-474790613%2FFunctions%2F868337418" anchor-label="createModel" id="-474790613%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-model.html"><span>create</span><wbr><span><span>Model</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-474790613%2FFunctions%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="create-model.html"><span class="token function">createModel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token punctuation">, </span></span><span class="parameter ">canvasState<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.canvas/CanvasState///PointingToDeclaration/">CanvasState</span><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.canvas.model/CanvasModel///PointingToDeclaration/">CanvasModel</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="424768407%2FFunctions%2F868337418" anchor-label="draw" id="424768407%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw.html"><span><span>draw</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="424768407%2FFunctions%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="draw.html"><span class="token function">draw</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">canvas<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a><span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token punctuation">, </span></span><span class="parameter ">canvasState<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.canvas/CanvasState///PointingToDeclaration/">CanvasState</span><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Draws into the provided <a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a> with the commands specified in the lambda with this <a href="index.html">CanvasScope</a> as a receiver.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-804108767%2FFunctions%2F868337418" anchor-label="drawIntoCanvas" id="-804108767%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-into-canvas.html"><span>draw</span><wbr><span>Into</span><wbr><span><span>Canvas</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-804108767%2FFunctions%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="draw-into-canvas.html"><span class="token function">drawIntoCanvas</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>block<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Provides access to draw directly with the underlying <a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a>. This is helpful for situations to re-use the existing <a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a> drawing logic.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-900662795%2FFunctions%2F868337418" anchor-label="fill" id="-900662795%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="fill.html"><span><span>fill</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-900662795%2FFunctions%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="fill.html"><span class="token function">fill</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">shape<span class="token operator">: </span><a href="../-shape/index.html">Shape</a><span class="token punctuation">, </span></span><span class="parameter ">shading<span class="token operator">: </span><a href="../-shading/index.html">Shading</a><span class="token punctuation">, </span></span><span class="parameter ">blendingMode<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/BlendingMode///PointingToDeclaration/">BlendingMode</span><span class="token operator"> = </span>DEFAULT_BLENDING_MODE<span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="../-shadow/index.html">Shadow</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Fills the given Shape.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1511696146%2FFunctions%2F868337418" anchor-label="group" id="1511696146%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="group.html"><span><span>group</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1511696146%2FFunctions%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="group.html"><span class="token function">group</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transform<span class="token operator">: </span><a href="../-transform/index.html">Transform</a><span class="token operator"> = </span>Transform.IDENTITY<span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">clip<span class="token operator">: </span><a href="../-path/index.html">Path</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">clipToBounds<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a group. Groups can be used to treat multiple drawing commands as a single one and applying transforms or clips to all of them at the same time. For a group, first the transform is applied, then the content is drawn inside the transformed coordinates and then the clip is applied to the drawn content.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="380617689%2FFunctions%2F868337418" anchor-label="layer" id="380617689%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="layer.html"><span><span>layer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="380617689%2FFunctions%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="layer.html"><span class="token function">layer</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transform<span class="token operator">: </span><a href="../-transform/index.html">Transform</a><span class="token operator"> = </span>Transform.IDENTITY<span class="token punctuation">, </span></span><span class="parameter ">size<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/Size///PointingToDeclaration/">Size</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">clip<span class="token operator">: </span><a href="../-path/index.html">Path</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">0.0</span></span><span class="token punctuation">, </span></span><wbr><span>to<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr><span class="token punctuation">)</span>&nbsp;</span>alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">1.0f</span><span class="token punctuation">, </span></span><span class="parameter ">blendingMode<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/BlendingMode///PointingToDeclaration/">BlendingMode</span><span class="token operator"> = </span>DEFAULT_BLENDING_MODE<span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><span class="token keyword"></span><a href="index.html">CanvasScope</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Creates a layer which allocates and redirects drawing to an offscreen buffer. It may be useful in cases like applying transparency or blending modes to multiple drawing commands at once. Layers should be as small as possible and should be used only when necessary because they may cause performance issues if used incorrectly.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1584432448%2FFunctions%2F868337418" anchor-label="stroke" id="-1584432448%2FFunctions%2F868337418" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-widget-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-widget-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="stroke.html"><span><span>stroke</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1584432448%2FFunctions%2F868337418"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="stroke.html"><span class="token function">stroke</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">shape<span class="token operator">: </span><a href="../-shape/index.html">Shape</a><span class="token punctuation">, </span></span><span class="parameter ">shading<span class="token operator">: </span><a href="../-shading/index.html">Shading</a><span class="token punctuation">, </span></span><span class="parameter ">blendingMode<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/BlendingMode///PointingToDeclaration/">BlendingMode</span><span class="token operator"> = </span>DEFAULT_BLENDING_MODE<span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="../-shadow/index.html">Shadow</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">lineWidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span>CanvasStroke.DEFAULT_LINE_WIDTH<span class="token punctuation">, </span></span><span class="parameter ">lineCap<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/LineCap///PointingToDeclaration/">LineCap</span><span class="token operator"> = </span>DEFAULT_LINE_CAP<span class="token punctuation">, </span></span><span class="parameter ">lineJoin<span class="token operator">: </span><span data-unresolved-link="com.facebook.primitive.utils.types/LineJoin///PointingToDeclaration/">LineJoin</span><span class="token operator"> = </span>DEFAULT_LINE_JOIN<span class="token punctuation">, </span></span><span class="parameter ">miterLimit<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span>CanvasStroke.DEFAULT_MITER_LIMIT<span class="token punctuation">, </span></span><span class="parameter ">dashLengths<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float-array/index.html">FloatArray</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">dashPhase<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">0.0f</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Strokes the given Shape.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -215,10 +233,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

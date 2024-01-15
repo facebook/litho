@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>Animated</title>
-<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
-<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
@@ -29,134 +32,145 @@
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core-kotlin:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-core-kotlin::com.facebook.litho.animated/Animated///PointingToDeclaration//912954277">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-core-kotlin::com.facebook.litho.animated/Animated///PointingToDeclaration//912954277">
   <div class="breadcrumbs"><a href="../../index.html">litho-core-kotlin</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.animated</a><span class="delimiter">/</span><span class="current">Animated</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Animated</span></span></h1>
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">Animated</a></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="-22808042%2FFunctions%2F912954277" anchor-label="delay" id="-22808042%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="delay.html"><span><span>delay</span></span></a></div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-22808042%2FFunctions%2F912954277" anchor-label="delay" id="-22808042%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delay.html"><span><span>delay</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-22808042%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="delay.html"><span class="token function">delay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">startDelay<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">animation<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running single or a collection of animations after given delay in milliseconds</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="delay.html"><span class="token function">delay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">startDelay<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">animation<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running single or a collection of animations after given delay in milliseconds</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="897573866%2FFunctions%2F912954277" anchor-label="loop" id="897573866%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="loop.html"><span><span>loop</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="loop.html"><span><span>loop</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="897573866%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="loop.html"><span class="token function">loop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">animation<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a><span class="token punctuation">, </span></span><span class="parameter ">repeatCount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>-1</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-loop-animation/index.html">LoopAnimation</a> ready for running <a href="../-animated-animation/index.html">AnimatedAnimation</a> object repeated @repeatCount times. By default it runs infinite number of times.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="loop.html"><span class="token function">loop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">animation<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a><span class="token punctuation">, </span></span><span class="parameter ">repeatCount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>-1</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-loop-animation/index.html">LoopAnimation</a> ready for running <a href="../-animated-animation/index.html">AnimatedAnimation</a> object repeated @repeatCount times. By default it runs infinite number of times.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1656849556%2FFunctions%2F912954277" anchor-label="parallel" id="-1656849556%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="parallel.html"><span><span>parallel</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="parallel.html"><span><span>parallel</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1656849556%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="parallel.html"><span class="token function">parallel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>animations<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-parallel-animation/index.html">ParallelAnimation</a> ready for running collection of animations in parallel</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="parallel.html"><span class="token function">parallel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>animations<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-parallel-animation/index.html">ParallelAnimation</a> ready for running collection of animations in parallel</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1239274534%2FFunctions%2F912954277" anchor-label="sequence" id="1239274534%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="sequence.html"><span><span>sequence</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="sequence.html"><span><span>sequence</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1239274534%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="sequence.html"><span class="token function">sequence</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>animations<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-sequence-animation/index.html">SequenceAnimation</a> ready for running collection of animations in sequence one after another. The order of arguments is the order of the sequence</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="sequence.html"><span class="token function">sequence</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>animations<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-sequence-animation/index.html">SequenceAnimation</a> ready for running collection of animations in sequence one after another. The order of arguments is the order of the sequence</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1540607868%2FFunctions%2F912954277" anchor-label="spring" id="1540607868%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="spring.html"><span><span>spring</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spring.html"><span><span>spring</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1540607868%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="spring.html"><span class="token function">spring</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">target<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-dynamic-value/index.html">DynamicValue</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">springConfig<span class="token operator">: </span><a href="../-spring-config/index.html">SpringConfig</a><span class="token operator"> = </span>SpringConfig()<span class="token punctuation">, </span></span><span class="parameter ">animationFinishListener<span class="token operator">: </span><a href="../-animation-finish-listener/index.html">AnimationFinishListener</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">onUpdate<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns an <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running spring animation based on the <a href="../-spring-config/index.html">SpringConfig</a> params</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="spring.html"><span class="token function">spring</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">target<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-dynamic-value/index.html">DynamicValue</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">springConfig<span class="token operator">: </span><a href="../-spring-config/index.html">SpringConfig</a><span class="token operator"> = </span>SpringConfig()<span class="token punctuation">, </span></span><span class="parameter ">animationFinishListener<span class="token operator">: </span><a href="../-animation-finish-listener/index.html">AnimationFinishListener</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">onUpdate<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns an <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running spring animation based on the <a href="../-spring-config/index.html">SpringConfig</a> params</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="704022326%2FFunctions%2F912954277" anchor-label="stagger" id="704022326%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="stagger.html"><span><span>stagger</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="stagger.html"><span><span>stagger</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="704022326%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="stagger.html"><span class="token function">stagger</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">staggerMs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>animations<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running collection of animations in stagger with given value in milliseconds</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="stagger.html"><span class="token function">stagger</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">staggerMs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>animations<span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running collection of animations in stagger with given value in milliseconds</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1751700031%2FFunctions%2F912954277" anchor-label="timing" id="-1751700031%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="timing.html"><span><span>timing</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="timing.html"><span><span>timing</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1751700031%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="timing.html"><span class="token function">timing</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">target<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-dynamic-value/index.html">DynamicValue</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">duration<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token operator"> = </span><span class="token constant">300</span><span class="token punctuation">, </span></span><span class="parameter ">easing<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/animation/Interpolator.html">Interpolator</a><span class="token operator"> = </span>Easing.accelerateDecelerate()<span class="token punctuation">, </span></span><span class="parameter ">animationFinishListener<span class="token operator">: </span><a href="../-animation-finish-listener/index.html">AnimationFinishListener</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">onUpdate<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns an <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running timing animation that calculate animated values and set them on target param.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="timing.html"><span class="token function">timing</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">target<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-dynamic-value/index.html">DynamicValue</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">to<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">duration<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token operator"> = </span><span class="token constant">300</span><span class="token punctuation">, </span></span><span class="parameter ">easing<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/animation/Interpolator.html">Interpolator</a><span class="token operator"> = </span>Easing.accelerateDecelerate()<span class="token punctuation">, </span></span><span class="parameter ">animationFinishListener<span class="token operator">: </span><a href="../-animation-finish-listener/index.html">AnimationFinishListener</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">onUpdate<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-animated-animation/index.html">AnimatedAnimation</a></div><div class="brief "><p class="paragraph">Returns an <a href="../-animated-animation/index.html">AnimatedAnimation</a> ready for running timing animation that calculate animated values and set them on target param.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -166,10 +180,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

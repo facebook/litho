@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>Builder</title>
-<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../../styles/style.css" rel="Stylesheet">
-<link href="../../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../../styles/main.css" rel="Stylesheet">
 <link href="../../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
@@ -29,779 +32,809 @@
 <script type="text/javascript" src="../../../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-testing:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-testing::com.facebook.litho.testing.specmodels/MockSpecModel.Builder///PointingToDeclaration//1342111716">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-testing::com.facebook.litho.testing.specmodels/MockSpecModel.Builder///PointingToDeclaration//1342111716">
   <div class="breadcrumbs"><a href="../../../index.html">litho-testing</a><span class="delimiter">/</span><a href="../../index.html">com.facebook.litho.testing.specmodels</a><span class="delimiter">/</span><a href="../index.html">MockSpecModel</a><span class="delimiter">/</span><span class="current">Builder</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Builder</span></span></h1>
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">Builder</a></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="533302670%2FFunctions%2F1342111716" anchor-label="build" id="533302670%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="build.html"><span><span>build</span></span></a></div>
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-726597279%2FConstructors%2F1342111716" anchor-label="Builder" id="-726597279%2FConstructors%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-726597279%2FConstructors%2F1342111716"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="533302670%2FFunctions%2F1342111716" anchor-label="build" id="533302670%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="build.html"><span><span>build</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="533302670%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">MockSpecModel</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">MockSpecModel</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1209332163%2FFunctions%2F1342111716" anchor-label="cachedValues" id="1209332163%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="cached-values.html"><span>cached</span><wbr><span><span>Values</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="cached-values.html"><span>cached</span><wbr><span><span>Values</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1209332163%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="cached-values.html"><span class="token function">cachedValues</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cachedValues<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/CachedValueParamModel///PointingToDeclaration/">CachedValueParamModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="cached-values.html"><span class="token function">cachedValues</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cachedValues<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/CachedValueParamModel///PointingToDeclaration/">CachedValueParamModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1649081054%2FFunctions%2F1342111716" anchor-label="classAnnotations" id="-1649081054%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="class-annotations.html"><span>class</span><wbr><span><span>Annotations</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="class-annotations.html"><span>class</span><wbr><span><span>Annotations</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1649081054%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="class-annotations.html"><span class="token function">classAnnotations</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">classAnnotations<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.javapoet/AnnotationSpec///PointingToDeclaration/">AnnotationSpec</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="class-annotations.html"><span class="token function">classAnnotations</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">classAnnotations<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.javapoet/AnnotationSpec///PointingToDeclaration/">AnnotationSpec</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-17386789%2FFunctions%2F1342111716" anchor-label="classJavadoc" id="-17386789%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="class-javadoc.html"><span>class</span><wbr><span><span>Javadoc</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="class-javadoc.html"><span>class</span><wbr><span><span>Javadoc</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-17386789%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="class-javadoc.html"><span class="token function">classJavadoc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">classJavadoc<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="class-javadoc.html"><span class="token function">classJavadoc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">classJavadoc<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-595554255%2FFunctions%2F1342111716" anchor-label="componentClass" id="-595554255%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="component-class.html"><span>component</span><wbr><span><span>Class</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="component-class.html"><span>component</span><wbr><span><span>Class</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-595554255%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="component-class.html"><span class="token function">componentClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">componentClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="component-class.html"><span class="token function">componentClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">componentClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1159939855%2FFunctions%2F1342111716" anchor-label="componentName" id="1159939855%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="component-name.html"><span>component</span><wbr><span><span>Name</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="component-name.html"><span>component</span><wbr><span><span>Name</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1159939855%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="component-name.html"><span class="token function">componentName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">componentName<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="component-name.html"><span class="token function">componentName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">componentName<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="2034650688%2FFunctions%2F1342111716" anchor-label="componentTypeName" id="2034650688%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="component-type-name.html"><span>component</span><wbr><span>Type</span><wbr><span><span>Name</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="component-type-name.html"><span>component</span><wbr><span>Type</span><wbr><span><span>Name</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2034650688%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="component-type-name.html"><span class="token function">componentTypeName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">componentTypeName<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeName///PointingToDeclaration/">TypeName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="component-type-name.html"><span class="token function">componentTypeName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">componentTypeName<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeName///PointingToDeclaration/">TypeName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="2083285119%2FFunctions%2F1342111716" anchor-label="contextClass" id="2083285119%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="context-class.html"><span>context</span><wbr><span><span>Class</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="context-class.html"><span>context</span><wbr><span><span>Class</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2083285119%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="context-class.html"><span class="token function">contextClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">contextClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="context-class.html"><span class="token function">contextClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">contextClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="730978149%2FFunctions%2F1342111716" anchor-label="delegateMethods" id="730978149%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="delegate-methods.html"><span>delegate</span><wbr><span><span>Methods</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delegate-methods.html"><span>delegate</span><wbr><span><span>Methods</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="730978149%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="delegate-methods.html"><span class="token function">delegateMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">delegateMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/DelegateMethod///PointingToDeclaration/">DelegateMethod</span><span class="token punctuation">, </span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="delegate-methods.html"><span class="token function">delegateMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">delegateMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/DelegateMethod///PointingToDeclaration/">DelegateMethod</span><span class="token punctuation">, </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html">Void</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-583269239%2FFunctions%2F1342111716" anchor-label="dependencyInjectionHelper" id="-583269239%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="dependency-injection-helper.html"><span>dependency</span><wbr><span>Injection</span><wbr><span><span>Helper</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="dependency-injection-helper.html"><span>dependency</span><wbr><span>Injection</span><wbr><span><span>Helper</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-583269239%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dependency-injection-helper.html"><span class="token function">dependencyInjectionHelper</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dependencyInjectionHelper<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/DependencyInjectionHelper///PointingToDeclaration/">DependencyInjectionHelper</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dependency-injection-helper.html"><span class="token function">dependencyInjectionHelper</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dependencyInjectionHelper<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/DependencyInjectionHelper///PointingToDeclaration/">DependencyInjectionHelper</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1436283336%2FFunctions%2F1342111716" anchor-label="diffs" id="1436283336%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="diffs.html"><span><span>diffs</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="diffs.html"><span><span>diffs</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1436283336%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="diffs.html"><span class="token function">diffs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">diffs<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/RenderDataDiffModel///PointingToDeclaration/">RenderDataDiffModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="diffs.html"><span class="token function">diffs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">diffs<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/RenderDataDiffModel///PointingToDeclaration/">RenderDataDiffModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1253403660%2FFunctions%2F1342111716" anchor-label="enclosedSpecModel" id="-1253403660%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enclosed-spec-model.html"><span>enclosed</span><wbr><span>Spec</span><wbr><span><span>Model</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enclosed-spec-model.html"><span>enclosed</span><wbr><span>Spec</span><wbr><span><span>Model</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1253403660%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="enclosed-spec-model.html"><span class="token function">enclosedSpecModel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enclosedSpecModel<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecModel///PointingToDeclaration/">SpecModel</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="enclosed-spec-model.html"><span class="token function">enclosedSpecModel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enclosedSpecModel<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecModel///PointingToDeclaration/">SpecModel</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="699413836%2FFunctions%2F1342111716" anchor-label="equals" id="699413836%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="equals.html"><span><span>equals</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="equals.html"><span><span>equals</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="699413836%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="equals.html"><span class="token function">equals</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">o<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="equals.html"><span class="token function">equals</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">o<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1906684370%2FFunctions%2F1342111716" anchor-label="eventDeclarations" id="1906684370%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="event-declarations.html"><span>event</span><wbr><span><span>Declarations</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="event-declarations.html"><span>event</span><wbr><span><span>Declarations</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1906684370%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="event-declarations.html"><span class="token function">eventDeclarations</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">eventDeclarations<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventDeclarationModel///PointingToDeclaration/">EventDeclarationModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="event-declarations.html"><span class="token function">eventDeclarations</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">eventDeclarations<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventDeclarationModel///PointingToDeclaration/">EventDeclarationModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="348014645%2FFunctions%2F1342111716" anchor-label="eventMethods" id="348014645%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="event-methods.html"><span>event</span><wbr><span><span>Methods</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="event-methods.html"><span>event</span><wbr><span><span>Methods</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="348014645%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="event-methods.html"><span class="token function">eventMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">eventMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventMethod///PointingToDeclaration/">EventMethod</span><span class="token punctuation">, </span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventDeclarationModel///PointingToDeclaration/">EventDeclarationModel</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="event-methods.html"><span class="token function">eventMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">eventMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventMethod///PointingToDeclaration/">EventMethod</span><span class="token punctuation">, </span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventDeclarationModel///PointingToDeclaration/">EventDeclarationModel</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1203740942%2FFunctions%2F1342111716" anchor-label="generatedTypeSpec" id="1203740942%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="generated-type-spec.html"><span>generated</span><wbr><span>Type</span><wbr><span><span>Spec</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="generated-type-spec.html"><span>generated</span><wbr><span>Type</span><wbr><span><span>Spec</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1203740942%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="generated-type-spec.html"><span class="token function">generatedTypeSpec</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">generatedTypeSpec<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeSpec///PointingToDeclaration/">TypeSpec</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="generated-type-spec.html"><span class="token function">generatedTypeSpec</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">generatedTypeSpec<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeSpec///PointingToDeclaration/">TypeSpec</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1969478951%2FFunctions%2F1342111716" anchor-label="hasDeepCopy" id="-1969478951%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="has-deep-copy.html"><span>has</span><wbr><span>Deep</span><wbr><span><span>Copy</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-deep-copy.html"><span>has</span><wbr><span>Deep</span><wbr><span><span>Copy</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1969478951%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="has-deep-copy.html"><span class="token function">hasDeepCopy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hasDeepCopy<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="has-deep-copy.html"><span class="token function">hasDeepCopy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hasDeepCopy<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-805519581%2FFunctions%2F1342111716" anchor-label="hashCode" id="-805519581%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="hash-code.html"><span>hash</span><wbr><span><span>Code</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="hash-code.html"><span>hash</span><wbr><span><span>Code</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-805519581%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="hash-code.html"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="hash-code.html"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="888661777%2FFunctions%2F1342111716" anchor-label="hasInjectedDependencies" id="888661777%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="has-injected-dependencies.html"><span>has</span><wbr><span>Injected</span><wbr><span><span>Dependencies</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-injected-dependencies.html"><span>has</span><wbr><span>Injected</span><wbr><span><span>Dependencies</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="888661777%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="has-injected-dependencies.html"><span class="token function">hasInjectedDependencies</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hasInjectedDependencies<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="has-injected-dependencies.html"><span class="token function">hasInjectedDependencies</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hasInjectedDependencies<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1919713309%2FFunctions%2F1342111716" anchor-label="implicitBuilderMethods" id="-1919713309%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="implicit-builder-methods.html"><span>implicit</span><wbr><span>Builder</span><wbr><span><span>Methods</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="implicit-builder-methods.html"><span>implicit</span><wbr><span>Builder</span><wbr><span><span>Methods</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1919713309%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="implicit-builder-methods.html"><span class="token function">implicitBuilderMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">implicitBuilderMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/BuilderMethodModel///PointingToDeclaration/">BuilderMethodModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="implicit-builder-methods.html"><span class="token function">implicitBuilderMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">implicitBuilderMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/BuilderMethodModel///PointingToDeclaration/">BuilderMethodModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-351470870%2FFunctions%2F1342111716" anchor-label="injectProps" id="-351470870%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="inject-props.html"><span>inject</span><wbr><span><span>Props</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="inject-props.html"><span>inject</span><wbr><span><span>Props</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-351470870%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="inject-props.html"><span class="token function">injectProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">injectProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/InjectPropModel///PointingToDeclaration/">InjectPropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="inject-props.html"><span class="token function">injectProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">injectProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/InjectPropModel///PointingToDeclaration/">InjectPropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-568648157%2FFunctions%2F1342111716" anchor-label="interStageInputs" id="-568648157%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="inter-stage-inputs.html"><span>inter</span><wbr><span>Stage</span><wbr><span><span>Inputs</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="inter-stage-inputs.html"><span>inter</span><wbr><span>Stage</span><wbr><span><span>Inputs</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-568648157%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="inter-stage-inputs.html"><span class="token function">interStageInputs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">interStageInputs<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/InterStageInputParamModel///PointingToDeclaration/">InterStageInputParamModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="inter-stage-inputs.html"><span class="token function">interStageInputs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">interStageInputs<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/InterStageInputParamModel///PointingToDeclaration/">InterStageInputParamModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="350255023%2FFunctions%2F1342111716" anchor-label="isPublic" id="350255023%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-public.html"><span>is</span><wbr><span><span>Public</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-public.html"><span>is</span><wbr><span><span>Public</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="350255023%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-public.html"><span class="token function">isPublic</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isPublic<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-public.html"><span class="token function">isPublic</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isPublic<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-2137569420%2FFunctions%2F1342111716" anchor-label="isPureRender" id="-2137569420%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-pure-render.html"><span>is</span><wbr><span>Pure</span><wbr><span><span>Render</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-pure-render.html"><span>is</span><wbr><span>Pure</span><wbr><span><span>Render</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2137569420%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-pure-render.html"><span class="token function">isPureRender</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isPureRender<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-pure-render.html"><span class="token function">isPureRender</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isPureRender<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1996290010%2FFunctions%2F1342111716" anchor-label="isStylingSupported" id="-1996290010%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="is-styling-supported.html"><span>is</span><wbr><span>Styling</span><wbr><span><span>Supported</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-styling-supported.html"><span>is</span><wbr><span>Styling</span><wbr><span><span>Supported</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1996290010%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-styling-supported.html"><span class="token function">isStylingSupported</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isStylingSupported<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-styling-supported.html"><span class="token function">isStylingSupported</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isStylingSupported<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="802385800%2FFunctions%2F1342111716" anchor-label="propDefaults" id="802385800%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="prop-defaults.html"><span>prop</span><wbr><span><span>Defaults</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="prop-defaults.html"><span>prop</span><wbr><span><span>Defaults</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="802385800%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="prop-defaults.html"><span class="token function">propDefaults</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">propDefaults<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropDefaultModel///PointingToDeclaration/">PropDefaultModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="prop-defaults.html"><span class="token function">propDefaults</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">propDefaults<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropDefaultModel///PointingToDeclaration/">PropDefaultModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="445829416%2FFunctions%2F1342111716" anchor-label="propJavadocs" id="445829416%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="prop-javadocs.html"><span>prop</span><wbr><span><span>Javadocs</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="prop-javadocs.html"><span>prop</span><wbr><span><span>Javadocs</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="445829416%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="prop-javadocs.html"><span class="token function">propJavadocs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">propJavadocs<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropJavadocModel///PointingToDeclaration/">PropJavadocModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="prop-javadocs.html"><span class="token function">propJavadocs</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">propJavadocs<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropJavadocModel///PointingToDeclaration/">PropJavadocModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1893844044%2FFunctions%2F1342111716" anchor-label="props" id="1893844044%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="props.html"><span><span>props</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="props.html"><span><span>props</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1893844044%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="props.html"><span class="token function">props</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">props<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropModel///PointingToDeclaration/">PropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="props.html"><span class="token function">props</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">props<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropModel///PointingToDeclaration/">PropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1931843392%2FFunctions%2F1342111716" anchor-label="rawInjectProps" id="-1931843392%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="raw-inject-props.html"><span>raw</span><wbr><span>Inject</span><wbr><span><span>Props</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="raw-inject-props.html"><span>raw</span><wbr><span>Inject</span><wbr><span><span>Props</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1931843392%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="raw-inject-props.html"><span class="token function">rawInjectProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rawInjectProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/InjectPropModel///PointingToDeclaration/">InjectPropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="raw-inject-props.html"><span class="token function">rawInjectProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rawInjectProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/InjectPropModel///PointingToDeclaration/">InjectPropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1538573090%2FFunctions%2F1342111716" anchor-label="rawProps" id="1538573090%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="raw-props.html"><span>raw</span><wbr><span><span>Props</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="raw-props.html"><span>raw</span><wbr><span><span>Props</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1538573090%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="raw-props.html"><span class="token function">rawProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rawProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropModel///PointingToDeclaration/">PropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="raw-props.html"><span class="token function">rawProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rawProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/PropModel///PointingToDeclaration/">PropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1313640355%2FFunctions%2F1342111716" anchor-label="representedObject" id="1313640355%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="represented-object.html"><span>represented</span><wbr><span><span>Object</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="represented-object.html"><span>represented</span><wbr><span><span>Object</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1313640355%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="represented-object.html"><span class="token function">representedObject</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">representedObject<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="represented-object.html"><span class="token function">representedObject</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">representedObject<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1773118199%2FFunctions%2F1342111716" anchor-label="scopeMethodName" id="1773118199%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="scope-method-name.html"><span>scope</span><wbr><span>Method</span><wbr><span><span>Name</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scope-method-name.html"><span>scope</span><wbr><span>Method</span><wbr><span><span>Name</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1773118199%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="scope-method-name.html"><span class="token function">scopeMethodName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scopeMethodName<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="scope-method-name.html"><span class="token function">scopeMethodName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scopeMethodName<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-19435741%2FFunctions%2F1342111716" anchor-label="shouldCheckIdInIsEquivalentToMethod" id="-19435741%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="should-check-id-in-is-equivalent-to-method.html"><span>should</span><wbr><span>Check</span><wbr><span>Id</span><wbr><span>In</span><wbr><span>Is</span><wbr><span>Equivalent</span><wbr><span>To</span><wbr><span><span>Method</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="should-check-id-in-is-equivalent-to-method.html"><span>should</span><wbr><span>Check</span><wbr><span>Id</span><wbr><span>In</span><wbr><span>Is</span><wbr><span>Equivalent</span><wbr><span>To</span><wbr><span><span>Method</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-19435741%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="should-check-id-in-is-equivalent-to-method.html"><span class="token function">shouldCheckIdInIsEquivalentToMethod</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">shouldCheckIdInIsEquivalentToMethod<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="should-check-id-in-is-equivalent-to-method.html"><span class="token function">shouldCheckIdInIsEquivalentToMethod</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">shouldCheckIdInIsEquivalentToMethod<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-758319703%2FFunctions%2F1342111716" anchor-label="specElementType" id="-758319703%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="spec-element-type.html"><span>spec</span><wbr><span>Element</span><wbr><span><span>Type</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spec-element-type.html"><span>spec</span><wbr><span>Element</span><wbr><span><span>Type</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-758319703%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-element-type.html"><span class="token function">specElementType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specElementType<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecElementType///PointingToDeclaration/">SpecElementType</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-element-type.html"><span class="token function">specElementType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specElementType<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecElementType///PointingToDeclaration/">SpecElementType</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1108481166%2FFunctions%2F1342111716" anchor-label="specModelValidationErrors" id="1108481166%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="spec-model-validation-errors.html"><span>spec</span><wbr><span>Model</span><wbr><span>Validation</span><wbr><span><span>Errors</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spec-model-validation-errors.html"><span>spec</span><wbr><span>Model</span><wbr><span>Validation</span><wbr><span><span>Errors</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1108481166%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-model-validation-errors.html"><span class="token function">specModelValidationErrors</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specModelValidationErrors<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecModelValidationError///PointingToDeclaration/">SpecModelValidationError</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-model-validation-errors.html"><span class="token function">specModelValidationErrors</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specModelValidationErrors<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecModelValidationError///PointingToDeclaration/">SpecModelValidationError</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-2041610573%2FFunctions%2F1342111716" anchor-label="specName" id="-2041610573%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="spec-name.html"><span>spec</span><wbr><span><span>Name</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spec-name.html"><span>spec</span><wbr><span><span>Name</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2041610573%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-name.html"><span class="token function">specName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specName<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-name.html"><span class="token function">specName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specName<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="722853942%2FFunctions%2F1342111716" anchor-label="specTypeName" id="722853942%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="spec-type-name.html"><span>spec</span><wbr><span>Type</span><wbr><span><span>Name</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spec-type-name.html"><span>spec</span><wbr><span>Type</span><wbr><span><span>Name</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="722853942%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-type-name.html"><span class="token function">specTypeName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specTypeName<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="spec-type-name.html"><span class="token function">specTypeName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">specTypeName<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-846920832%2FFunctions%2F1342111716" anchor-label="stateContainerClass" id="-846920832%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="state-container-class.html"><span>state</span><wbr><span>Container</span><wbr><span><span>Class</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="state-container-class.html"><span>state</span><wbr><span>Container</span><wbr><span><span>Class</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-846920832%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="state-container-class.html"><span class="token function">stateContainerClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateContainerClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="state-container-class.html"><span class="token function">stateContainerClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateContainerClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="740219830%2FFunctions%2F1342111716" anchor-label="stateValues" id="740219830%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="state-values.html"><span>state</span><wbr><span><span>Values</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="state-values.html"><span>state</span><wbr><span><span>Values</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="740219830%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="state-values.html"><span class="token function">stateValues</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateValues<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/StateParamModel///PointingToDeclaration/">StateParamModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="state-values.html"><span class="token function">stateValues</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateValues<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/StateParamModel///PointingToDeclaration/">StateParamModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-425901560%2FFunctions%2F1342111716" anchor-label="tags" id="-425901560%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="tags.html"><span><span>tags</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="tags.html"><span><span>tags</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-425901560%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="tags.html"><span class="token function">tags</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tags<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/TagModel///PointingToDeclaration/">TagModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="tags.html"><span class="token function">tags</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tags<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/TagModel///PointingToDeclaration/">TagModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-926862405%2FFunctions%2F1342111716" anchor-label="transitionClass" id="-926862405%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="transition-class.html"><span>transition</span><wbr><span><span>Class</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="transition-class.html"><span>transition</span><wbr><span><span>Class</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-926862405%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="transition-class.html"><span class="token function">transitionClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transitionClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="transition-class.html"><span class="token function">transitionClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transitionClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1716856286%2FFunctions%2F1342111716" anchor-label="transitionContainerClass" id="-1716856286%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="transition-container-class.html"><span>transition</span><wbr><span>Container</span><wbr><span><span>Class</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="transition-container-class.html"><span>transition</span><wbr><span>Container</span><wbr><span><span>Class</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1716856286%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="transition-container-class.html"><span class="token function">transitionContainerClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transitionContainerClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="transition-container-class.html"><span class="token function">transitionContainerClass</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transitionContainerClass<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/ClassName///PointingToDeclaration/">ClassName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="2016969040%2FFunctions%2F1342111716" anchor-label="treeProps" id="2016969040%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="tree-props.html"><span>tree</span><wbr><span><span>Props</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="tree-props.html"><span>tree</span><wbr><span><span>Props</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2016969040%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="tree-props.html"><span class="token function">treeProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">treeProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/TreePropModel///PointingToDeclaration/">TreePropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="tree-props.html"><span class="token function">treeProps</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">treeProps<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/TreePropModel///PointingToDeclaration/">TreePropModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1112220691%2FFunctions%2F1342111716" anchor-label="triggerMethods" id="1112220691%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="trigger-methods.html"><span>trigger</span><wbr><span><span>Methods</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="trigger-methods.html"><span>trigger</span><wbr><span><span>Methods</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1112220691%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="trigger-methods.html"><span class="token function">triggerMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">triggerMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventMethod///PointingToDeclaration/">EventMethod</span><span class="token punctuation">, </span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventDeclarationModel///PointingToDeclaration/">EventDeclarationModel</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="trigger-methods.html"><span class="token function">triggerMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">triggerMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventMethod///PointingToDeclaration/">EventMethod</span><span class="token punctuation">, </span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventDeclarationModel///PointingToDeclaration/">EventDeclarationModel</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1493696774%2FFunctions%2F1342111716" anchor-label="typeVariables" id="1493696774%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="type-variables.html"><span>type</span><wbr><span><span>Variables</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="type-variables.html"><span>type</span><wbr><span><span>Variables</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1493696774%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="type-variables.html"><span class="token function">typeVariables</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">typeVariables<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.javapoet/TypeVariableName///PointingToDeclaration/">TypeVariableName</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="type-variables.html"><span class="token function">typeVariables</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">typeVariables<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.squareup.javapoet/TypeVariableName///PointingToDeclaration/">TypeVariableName</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1296435635%2FFunctions%2F1342111716" anchor-label="updateStateInterface" id="1296435635%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="update-state-interface.html"><span>update</span><wbr><span>State</span><wbr><span><span>Interface</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-state-interface.html"><span>update</span><wbr><span>State</span><wbr><span><span>Interface</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1296435635%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="update-state-interface.html"><span class="token function">updateStateInterface</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateStateInterface<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeName///PointingToDeclaration/">TypeName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="update-state-interface.html"><span class="token function">updateStateInterface</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateStateInterface<span class="token operator">: </span><span data-unresolved-link="com.squareup.javapoet/TypeName///PointingToDeclaration/">TypeName</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-937598881%2FFunctions%2F1342111716" anchor-label="updateStateMethods" id="-937598881%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="update-state-methods.html"><span>update</span><wbr><span>State</span><wbr><span><span>Methods</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-state-methods.html"><span>update</span><wbr><span>State</span><wbr><span><span>Methods</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-937598881%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="update-state-methods.html"><span class="token function">updateStateMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateStateMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/UpdateStateMethod///PointingToDeclaration/">UpdateStateMethod</span><span class="token punctuation">, </span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="update-state-methods.html"><span class="token function">updateStateMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateStateMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/UpdateStateMethod///PointingToDeclaration/">UpdateStateMethod</span><span class="token punctuation">, </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html">Void</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-380656668%2FFunctions%2F1342111716" anchor-label="updateStateWithTransitionMethods" id="-380656668%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="update-state-with-transition-methods.html"><span>update</span><wbr><span>State</span><wbr><span>With</span><wbr><span>Transition</span><wbr><span><span>Methods</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-state-with-transition-methods.html"><span>update</span><wbr><span>State</span><wbr><span>With</span><wbr><span>Transition</span><wbr><span><span>Methods</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-380656668%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="update-state-with-transition-methods.html"><span class="token function">updateStateWithTransitionMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateStateWithTransitionMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/UpdateStateMethod///PointingToDeclaration/">UpdateStateMethod</span><span class="token punctuation">, </span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="update-state-with-transition-methods.html"><span class="token function">updateStateWithTransitionMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">updateStateWithTransitionMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/UpdateStateMethod///PointingToDeclaration/">UpdateStateMethod</span><span class="token punctuation">, </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html">Void</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="692261112%2FFunctions%2F1342111716" anchor-label="workingRangeMethods" id="692261112%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="working-range-methods.html"><span>working</span><wbr><span>Range</span><wbr><span><span>Methods</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="working-range-methods.html"><span>working</span><wbr><span>Range</span><wbr><span><span>Methods</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="692261112%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="working-range-methods.html"><span class="token function">workingRangeMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">workingRangeMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/WorkingRangeMethodModel///PointingToDeclaration/">WorkingRangeMethodModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="working-range-methods.html"><span class="token function">workingRangeMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">workingRangeMethods<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.internal/ImmutableList///PointingToDeclaration/">ImmutableList</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/WorkingRangeMethodModel///PointingToDeclaration/">WorkingRangeMethodModel</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1447977820%2FFunctions%2F1342111716" anchor-label="workingRangeRegisterMethod" id="-1447977820%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="working-range-register-method.html"><span>working</span><wbr><span>Range</span><wbr><span>Register</span><wbr><span><span>Method</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="working-range-register-method.html"><span>working</span><wbr><span>Range</span><wbr><span>Register</span><wbr><span><span>Method</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1447977820%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="working-range-register-method.html"><span class="token function">workingRangeRegisterMethod</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">workingRangeRegisterMethod<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventMethod///PointingToDeclaration/">EventMethod</span><span class="token punctuation">, </span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="working-range-register-method.html"><span class="token function">workingRangeRegisterMethod</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">workingRangeRegisterMethod<span class="token operator">: </span><span data-unresolved-link="com.facebook.litho.specmodels.model/SpecMethodModel///PointingToDeclaration/">SpecMethodModel</span><span class="token operator">&lt;</span><span data-unresolved-link="com.facebook.litho.specmodels.model/EventMethod///PointingToDeclaration/">EventMethod</span><span class="token punctuation">, </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html">Void</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">MockSpecModel.Builder</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -811,10 +844,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

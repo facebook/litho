@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>com.facebook.litho.view</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,540 +32,583 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core-kotlin:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-core-kotlin::com.facebook.litho.view////PointingToDeclaration//912954277">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="litho-core-kotlin::com.facebook.litho.view////PointingToDeclaration//912954277">
   <div class="breadcrumbs"><a href="../index.html">litho-core-kotlin</a><span class="delimiter">/</span><span class="current">com.facebook.litho.view</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Types</h2>
-      <div class="table" data-togglable="Types"><a data-name="1760288969%2FClasslikes%2F912954277" anchor-label="ShadowStyleField" id="1760288969%2FClasslikes%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-shadow-style-field/index.html"><span>Shadow</span><wbr><span>Style</span><wbr><span><span>Field</span></span></a></div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="1760288969%2FClasslikes%2F912954277" anchor-label="ShadowStyleField" id="1760288969%2FClasslikes%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shadow-style-field/index.html"><span>Shadow</span><wbr><span>Style</span><wbr><span><span>Field</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1760288969%2FClasslikes%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-shadow-style-field/index.html">ShadowStyleField</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-shadow-style-field/index.html">ShadowStyleField</a><span class="token operator">&gt; </span>, <a href="../com.facebook.litho/-style-item-field/index.html">StyleItemField</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-shadow-style-field/index.html">ShadowStyleField</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-shadow-style-field/index.html">ShadowStyleField</a><span class="token operator">&gt; </span>, <a href="../com.facebook.litho/-style-item-field/index.html">StyleItemField</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1863254330%2FClasslikes%2F912954277" anchor-label="ShadowStyleItemParams" id="-1863254330%2FClasslikes%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-shadow-style-item-params/index.html"><span>Shadow</span><wbr><span>Style</span><wbr><span>Item</span><wbr><span><span>Params</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shadow-style-item-params/index.html"><span>Shadow</span><wbr><span>Style</span><wbr><span>Item</span><wbr><span><span>Params</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1863254330%2FClasslikes%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-shadow-style-item-params/index.html">ShadowStyleItemParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>elevation<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>outlineProvider<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span><span class="token keyword">val </span>ambientShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span><span class="token keyword">val </span>spotShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-shadow-style-item-params/index.html">ShadowStyleItemParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>elevation<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>outlineProvider<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span><span class="token keyword">val </span>ambientShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span><span class="token keyword">val </span>spotShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="-1541846874%2FFunctions%2F912954277" anchor-label="alpha" id="-1541846874%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="alpha.html"><span><span>alpha</span></span></a></div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1541846874%2FFunctions%2F912954277" anchor-label="alpha" id="-1541846874%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="alpha.html"><span><span>alpha</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1541846874%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="alpha.html"><span class="token function">alpha</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets an alpha on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="alpha.html"><span class="token function">alpha</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets an alpha on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-397653080%2FFunctions%2F912954277" anchor-label="background" id="-397653080%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="background.html"><span><span>background</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="background.html"><span><span>background</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-397653080%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="background.html"><span class="token function">background</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">background<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a background on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="background.html"><span class="token function">background</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">background<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a background on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="572148491%2FFunctions%2F912954277" anchor-label="backgroundColor" id="572148491%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="background-color.html"><span>background</span><wbr><span><span>Color</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="background-color.html"><span>background</span><wbr><span><span>Color</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="572148491%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="background-color.html"><span class="token function">backgroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>backgroundColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets ColorDrawable of the given color as a background on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="background-color.html"><span class="token function">backgroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>backgroundColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="background-color.html"><span class="token function">backgroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>backgroundColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets ColorDrawable of the given color as a background on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="background-color.html"><span class="token function">backgroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>backgroundColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1646218474%2FFunctions%2F912954277" anchor-label="clickable" id="-1646218474%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="clickable.html"><span><span>clickable</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clickable.html"><span><span>clickable</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1646218474%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="clickable.html"><span class="token function">clickable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isClickable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets if the View this Component mounts to should be clickable. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="clickable.html"><span class="token function">clickable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isClickable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets if the View this Component mounts to should be clickable. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-2144776375%2FFunctions%2F912954277" anchor-label="clipChildren" id="-2144776375%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="clip-children.html"><span>clip</span><wbr><span><span>Children</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clip-children.html"><span>clip</span><wbr><span><span>Children</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2144776375%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="clip-children.html"><span class="token function">clipChildren</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clipChildren<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Setting this to false allows child views of this view to draw outside its bounds, overriding the default behavior. It only applies to direct children. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="clip-children.html"><span class="token function">clipChildren</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clipChildren<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Setting this to false allows child views of this view to draw outside its bounds, overriding the default behavior. It only applies to direct children. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="2138652545%2FFunctions%2F912954277" anchor-label="clipToOutline" id="2138652545%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="clip-to-outline.html"><span>clip</span><wbr><span>To</span><wbr><span><span>Outline</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clip-to-outline.html"><span>clip</span><wbr><span>To</span><wbr><span><span>Outline</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2138652545%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="clip-to-outline.html"><span class="token function">clipToOutline</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clipToOutline<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets whether the View's Outline should be used to clip the contents of the View. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="clip-to-outline.html"><span class="token function">clipToOutline</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">clipToOutline<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets whether the View's Outline should be used to clip the contents of the View. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1083948564%2FFunctions%2F912954277" anchor-label="duplicateChildrenStates" id="-1083948564%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="duplicate-children-states.html"><span>duplicate</span><wbr><span>Children</span><wbr><span><span>States</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="duplicate-children-states.html"><span>duplicate</span><wbr><span>Children</span><wbr><span><span>States</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1083948564%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="duplicate-children-states.html"><span class="token function">duplicateChildrenStates</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">duplicateChildrenStates<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets whether this ViewGroup's drawable states also include its children's drawable states. This is used, for example, to make a group appear to be focused when its child EditText or button is focused. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="duplicate-children-states.html"><span class="token function">duplicateChildrenStates</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">duplicateChildrenStates<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets whether this ViewGroup's drawable states also include its children's drawable states. This is used, for example, to make a group appear to be focused when its child EditText or button is focused. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="750099228%2FFunctions%2F912954277" anchor-label="duplicateParentState" id="750099228%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="duplicate-parent-state.html"><span>duplicate</span><wbr><span>Parent</span><wbr><span><span>State</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="duplicate-parent-state.html"><span>duplicate</span><wbr><span>Parent</span><wbr><span><span>State</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="750099228%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="duplicate-parent-state.html"><span class="token function">duplicateParentState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">duplicateParentState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets whether the View gets its drawable state (focused, pressed, etc.) from its direct parent rather than from itself. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="duplicate-parent-state.html"><span class="token function">duplicateParentState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">duplicateParentState<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets whether the View gets its drawable state (focused, pressed, etc.) from its direct parent rather than from itself. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="489558873%2FFunctions%2F912954277" anchor-label="elevation" id="489558873%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="elevation.html"><span><span>elevation</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="elevation.html"><span><span>elevation</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="489558873%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="elevation.html"><span class="token function">elevation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">elevation<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets an elevation on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="elevation.html"><span class="token function">elevation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">elevation<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets an elevation on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="181199575%2FFunctions%2F912954277" anchor-label="enabled" id="181199575%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="enabled.html"><span><span>enabled</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enabled.html"><span><span>enabled</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="181199575%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="enabled.html"><span class="token function">enabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets if the View this Component mounts to should be enabled. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="enabled.html"><span class="token function">enabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets if the View this Component mounts to should be enabled. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1412276678%2FFunctions%2F912954277" anchor-label="focusable" id="1412276678%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="focusable.html"><span><span>focusable</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="focusable.html"><span><span>focusable</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1412276678%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="focusable.html"><span class="token function">focusable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isFocusable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Setting this property will cause the Component to be focusable. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="focusable.html"><span class="token function">focusable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isFocusable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Setting this property will cause the Component to be focusable. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="82795325%2FFunctions%2F912954277" anchor-label="foreground" id="82795325%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="foreground.html"><span><span>foreground</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="foreground.html"><span><span>foreground</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="82795325%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="foreground.html"><span class="token function">foreground</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">foreground<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a foreground on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="foreground.html"><span class="token function">foreground</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">foreground<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a foreground on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1251282383%2FFunctions%2F912954277" anchor-label="foregroundColor" id="-1251282383%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="foreground-color.html"><span>foreground</span><wbr><span><span>Color</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="foreground-color.html"><span>foreground</span><wbr><span><span>Color</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1251282383%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="foreground-color.html"><span class="token function">foregroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>foregroundColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets ColorDrawable of the given color as a background on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="foreground-color.html"><span class="token function">foregroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>foregroundColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets ColorDrawable of the given color as a background on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+<a data-name="-198894023%2FFunctions%2F912954277" anchor-label="keyboardNavigationCluster" id="-198894023%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="keyboard-navigation-cluster.html"><span>keyboard</span><wbr><span>Navigation</span><wbr><span><span>Cluster</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-198894023%2FFunctions%2F912954277"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="keyboard-navigation-cluster.html"><span class="token function">keyboardNavigationCluster</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isKeyboardNavigationCluster<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Setting this property will cause the Component to be a keyboard navigation cluster. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="-1004078712%2FFunctions%2F912954277" anchor-label="onClick" id="-1004078712%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-click.html"><span>on</span><wbr><span><span>Click</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-click.html"><span>on</span><wbr><span><span>Click</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1004078712%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-click.html"><span class="token function">onClick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-click-event/index.html">ClickEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will invoke the given lambda when this Component is clicked but only if <a href="on-click.html">enabled</a> is true. If enabled, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-click.html"><span class="token function">onClick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-click-event/index.html">ClickEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will invoke the given lambda when this Component is clicked but only if <a href="on-click.html">enabled</a> is true. If enabled, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+<a data-name="-1660410963%2FFunctions%2F912954277" anchor-label="onFocusedChanged" id="-1660410963%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-focused-changed.html"><span>on</span><wbr><span>Focused</span><wbr><span><span>Changed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1660410963%2FFunctions%2F912954277"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-focused-changed.html"><span class="token function">onFocusedChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-focus-changed-event/index.html">FocusChangedEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will invoke the given lambda when this Component's focus changes but only if <a href="on-focused-changed.html">enabled</a> is true. If enabled, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="-392809336%2FFunctions%2F912954277" anchor-label="onInterceptTouch" id="-392809336%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-intercept-touch.html"><span>on</span><wbr><span>Intercept</span><wbr><span><span>Touch</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-intercept-touch.html"><span>on</span><wbr><span>Intercept</span><wbr><span><span>Touch</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-392809336%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-intercept-touch.html"><span class="token function">onInterceptTouch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-intercept-touch-event/index.html">InterceptTouchEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will intercept all touch screen motion events but only if <a href="on-intercept-touch.html">enabled</a> is true. This allows you to watch events as they are dispatched to your children, and take ownership of the current gesture at any point. Implementations should return true if they intercepted the event and wish to receive subsequent events, and false otherwise. If <a href="on-intercept-touch.html">enabled</a> is true, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-intercept-touch.html"><span class="token function">onInterceptTouch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-intercept-touch-event/index.html">InterceptTouchEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will intercept all touch screen motion events but only if <a href="on-intercept-touch.html">enabled</a> is true. This allows you to watch events as they are dispatched to your children, and take ownership of the current gesture at any point. Implementations should return true if they intercepted the event and wish to receive subsequent events, and false otherwise. If <a href="on-intercept-touch.html">enabled</a> is true, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1421916908%2FFunctions%2F912954277" anchor-label="onLongClick" id="-1421916908%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-long-click.html"><span>on</span><wbr><span>Long</span><wbr><span><span>Click</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-long-click.html"><span>on</span><wbr><span>Long</span><wbr><span><span>Click</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1421916908%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-long-click.html"><span class="token function">onLongClick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-long-click-event/index.html">LongClickEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will invoke the given lambda when this Component is long clicked but only if <a href="on-long-click.html">enabled</a> is true. If enabled, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-long-click.html"><span class="token function">onLongClick</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-long-click-event/index.html">LongClickEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will invoke the given lambda when this Component is long clicked but only if <a href="on-long-click.html">enabled</a> is true. If enabled, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="854568698%2FFunctions%2F912954277" anchor-label="onTouch" id="854568698%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-touch.html"><span>on</span><wbr><span><span>Touch</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-touch.html"><span>on</span><wbr><span><span>Touch</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="854568698%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-touch.html"><span class="token function">onTouch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-touch-event/index.html">TouchEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will invoke the given lambda when this Component is touched but only if <a href="on-touch.html">enabled</a> is true. If enabled, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-touch.html"><span class="token function">onTouch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>action<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-touch-event/index.html">TouchEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a listener that will invoke the given lambda when this Component is touched but only if <a href="on-touch.html">enabled</a> is true. If enabled, setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1776636089%2FFunctions%2F912954277" anchor-label="outlineProvider" id="-1776636089%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="outline-provider.html"><span>outline</span><wbr><span><span>Provider</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="outline-provider.html"><span>outline</span><wbr><span><span>Provider</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1776636089%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="outline-provider.html"><span class="token function">outlineProvider</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outlineProvider<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a <a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a> on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="outline-provider.html"><span class="token function">outlineProvider</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outlineProvider<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a <a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a> on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-400204058%2FFunctions%2F912954277" anchor-label="rotation" id="-400204058%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="rotation.html"><span><span>rotation</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rotation.html"><span><span>rotation</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-400204058%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="rotation.html"><span class="token function">rotation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rotation<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the degree that this component is rotated around the pivot point. Increasing the value results in clockwise rotation. By default, the pivot point is centered on the component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="rotation.html"><span class="token function">rotation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rotation<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the degree that this component is rotated around the pivot point. Increasing the value results in clockwise rotation. By default, the pivot point is centered on the component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1885685014%2FFunctions%2F912954277" anchor-label="rotationX" id="-1885685014%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="rotation-x.html"><span>rotation</span><wbr><span><span>X</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rotation-x.html"><span>rotation</span><wbr><span><span>X</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1885685014%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="rotation-x.html"><span class="token function">rotationX</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rotationX<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the degree that this component is rotated around the horizontal axis through the pivot point. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="rotation-x.html"><span class="token function">rotationX</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rotationX<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the degree that this component is rotated around the horizontal axis through the pivot point. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="601434761%2FFunctions%2F912954277" anchor-label="rotationY" id="601434761%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="rotation-y.html"><span>rotation</span><wbr><span><span>Y</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rotation-y.html"><span>rotation</span><wbr><span><span>Y</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="601434761%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="rotation-y.html"><span class="token function">rotationY</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rotationY<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the degree that this component is rotated around the vertical axis through the pivot point. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="rotation-y.html"><span class="token function">rotationY</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">rotationY<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the degree that this component is rotated around the vertical axis through the pivot point. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="389953594%2FFunctions%2F912954277" anchor-label="scale" id="389953594%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="scale.html"><span><span>scale</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scale.html"><span><span>scale</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="389953594%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="scale.html"><span class="token function">scale</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the scale (scaleX and scaleY) on this component. This is mostly relevant for animations and being able to animate size changes. Otherwise for non-animation usecases, you should use the standard layout properties to control the size of your component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="scale.html"><span class="token function">scale</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets the scale (scaleX and scaleY) on this component. This is mostly relevant for animations and being able to animate size changes. Otherwise for non-animation usecases, you should use the standard layout properties to control the size of your component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1553765533%2FFunctions%2F912954277" anchor-label="selected" id="1553765533%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="selected.html"><span><span>selected</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="selected.html"><span><span>selected</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1553765533%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="selected.html"><span class="token function">selected</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isSelected<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Changes the selection state of this Component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="selected.html"><span class="token function">selected</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isSelected<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Changes the selection state of this Component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="906514175%2FFunctions%2F912954277" anchor-label="shadow" id="906514175%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="shadow.html"><span><span>shadow</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="shadow.html"><span><span>shadow</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="906514175%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="shadow.html"><span class="token function">shadow</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">elevation<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token punctuation">, </span></span><span class="parameter ">outlineProvider<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a><span class="token operator"> = </span>ViewOutlineProvider.BOUNDS<span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>ambientShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>Color.BLACK<span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>spotShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>Color.BLACK</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Style for attaching a standard Material Design shadow to a component. Refer to https://material.io/design/environment/light-shadows.html for more information.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="shadow.html"><span class="token function">shadow</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">elevation<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token punctuation">, </span></span><span class="parameter ">outlineProvider<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewOutlineProvider.html">ViewOutlineProvider</a><span class="token operator"> = </span>ViewOutlineProvider.BOUNDS<span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>ambientShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>Color.BLACK<span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a>&nbsp;</span>spotShadowColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>Color.BLACK</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Style for attaching a standard Material Design shadow to a component. Refer to https://material.io/design/environment/light-shadows.html for more information.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="2098747339%2FFunctions%2F912954277" anchor-label="stateListAnimator" id="2098747339%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="state-list-animator.html"><span>state</span><wbr><span>List</span><wbr><span><span>Animator</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="state-list-animator.html"><span>state</span><wbr><span>List</span><wbr><span><span>Animator</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2098747339%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="state-list-animator.html"><span class="token function">stateListAnimator</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateListAnimator<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/animation/StateListAnimator.html">StateListAnimator</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Attaches the provided StateListAnimator to this Component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="state-list-animator.html"><span class="token function">stateListAnimator</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateListAnimator<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/animation/StateListAnimator.html">StateListAnimator</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Attaches the provided StateListAnimator to this Component. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-347932859%2FFunctions%2F912954277" anchor-label="testKey" id="-347932859%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="test-key.html"><span>test</span><wbr><span><span>Key</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="test-key.html"><span>test</span><wbr><span><span>Key</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-347932859%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="test-key.html"><span class="token function">testKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">testKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets testKey on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="test-key.html"><span class="token function">testKey</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">testKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets testKey on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="787875911%2FFunctions%2F912954277" anchor-label="touchExpansion" id="787875911%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="touch-expansion.html"><span>touch</span><wbr><span><span>Expansion</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="touch-expansion.html"><span>touch</span><wbr><span><span>Expansion</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="787875911%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="touch-expansion.html"><span class="token function">touchExpansion</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines touch Expansion area around the component on a per-edge basis.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="touch-expansion.html"><span class="token function">touchExpansion</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines touch Expansion area around the component on a per-edge basis.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-760041422%2FFunctions%2F912954277" anchor-label="transitionName" id="-760041422%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="transition-name.html"><span>transition</span><wbr><span><span>Name</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="transition-name.html"><span>transition</span><wbr><span><span>Name</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-760041422%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="transition-name.html"><span class="token function">transitionName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transitionName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets Activity transition name on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="transition-name.html"><span class="token function">transitionName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transitionName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets Activity transition name on the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1895717841%2FFunctions%2F912954277" anchor-label="viewId" id="1895717841%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="view-id.html"><span>view</span><wbr><span><span>Id</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="view-id.html"><span>view</span><wbr><span><span>Id</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1895717841%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="view-id.html"><span class="token function">viewId</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/IdRes.html"><span class="token annotation builtin">IdRes</span></a>&nbsp;</span>viewId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Adds a View tag to the View this <a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a> mounts to. Setting this property will cause the <a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a> to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="view-id.html"><span class="token function">viewId</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/IdRes.html"><span class="token annotation builtin">IdRes</span></a>&nbsp;</span>viewId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Adds a View tag to the View this <a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a> mounts to. Setting this property will cause the <a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a> to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1563673503%2FFunctions%2F912954277" anchor-label="viewTag" id="1563673503%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="view-tag.html"><span>view</span><wbr><span><span>Tag</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="view-tag.html"><span>view</span><wbr><span><span>Tag</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1563673503%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="view-tag.html"><span class="token function">viewTag</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">viewTag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Adds a View tag to the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="view-tag.html"><span class="token function">viewTag</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">viewTag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Adds a View tag to the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1266772026%2FFunctions%2F912954277" anchor-label="viewTags" id="-1266772026%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="view-tags.html"><span>view</span><wbr><span><span>Tags</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="view-tags.html"><span>view</span><wbr><span><span>Tags</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1266772026%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="view-tags.html"><span class="token function">viewTags</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">viewTags<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/SparseArray.html">SparseArray</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Adds a set of View tags to the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="view-tags.html"><span class="token function">viewTags</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">viewTags<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/SparseArray.html">SparseArray</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Adds a set of View tags to the View this Component mounts to. Setting this property will cause the Component to be represented as a View at mount time if it wasn't going to already.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-687981377%2FFunctions%2F912954277" anchor-label="wrapInView" id="-687981377%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="wrap-in-view.html"><span>wrap</span><wbr><span>In</span><wbr><span><span>View</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="wrap-in-view.html"><span>wrap</span><wbr><span>In</span><wbr><span><span>View</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-687981377%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="wrap-in-view.html"><span class="token function">wrapInView</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Specifies that this Component should be represented as a View when this hierarchy is mounted.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="wrap-in-view.html"><span class="token function">wrapInView</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Specifies that this Component should be represented as a View when this hierarchy is mounted.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -572,10 +618,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

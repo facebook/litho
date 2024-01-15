@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>com.facebook.litho.core</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,268 +32,279 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core-kotlin:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-core-kotlin::com.facebook.litho.core////PointingToDeclaration//912954277">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="litho-core-kotlin::com.facebook.litho.core////PointingToDeclaration//912954277">
   <div class="breadcrumbs"><a href="../index.html">litho-core-kotlin</a><span class="delimiter">/</span><span class="current">com.facebook.litho.core</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="1418879421%2FFunctions%2F912954277" anchor-label="height" id="1418879421%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="height.html"><span><span>height</span></span></a></div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1418879421%2FFunctions%2F912954277" anchor-label="height" id="1418879421%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="height.html"><span><span>height</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1418879421%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="height.html"><span class="token function">height</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">height<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred height for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="height.html"><span class="token function">height</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">height<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred height for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1252073184%2FFunctions%2F912954277" anchor-label="heightPercent" id="1252073184%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="height-percent.html"><span>height</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="height-percent.html"><span>height</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1252073184%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="height-percent.html"><span class="token function">heightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">heightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred percent height for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="height-percent.html"><span class="token function">heightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">heightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred percent height for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1536988895%2FFunctions%2F912954277" anchor-label="margin" id="1536988895%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="margin.html"><span><span>margin</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="margin.html"><span><span>margin</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1536988895%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="margin.html"><span class="token function">margin</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines margin around the component on a per-edge basis.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="margin.html"><span class="token function">margin</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines margin around the component on a per-edge basis.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1465994380%2FFunctions%2F912954277" anchor-label="marginPercent" id="-1465994380%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="margin-percent.html"><span>margin</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="margin-percent.html"><span>margin</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1465994380%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="margin-percent.html"><span class="token function">marginPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines margin around the component on a per-edge basis, with a percent value of container's size. See <a href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a> for more information.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="margin-percent.html"><span class="token function">marginPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines margin around the component on a per-edge basis, with a percent value of container's size. See <a href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a> for more information.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1328915565%2FFunctions%2F912954277" anchor-label="maxHeight" id="1328915565%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="max-height.html"><span>max</span><wbr><span><span>Height</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="max-height.html"><span>max</span><wbr><span><span>Height</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1328915565%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-height.html"><span class="token function">maxHeight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxHeight<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred maximum height for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-height.html"><span class="token function">maxHeight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxHeight<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred maximum height for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1598487952%2FFunctions%2F912954277" anchor-label="maxHeightPercent" id="1598487952%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="max-height-percent.html"><span>max</span><wbr><span>Height</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="max-height-percent.html"><span>max</span><wbr><span>Height</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1598487952%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-height-percent.html"><span class="token function">maxHeightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxHeightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific maximum percent height for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-height-percent.html"><span class="token function">maxHeightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxHeightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific maximum percent height for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1480296040%2FFunctions%2F912954277" anchor-label="maxWidth" id="-1480296040%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="max-width.html"><span>max</span><wbr><span><span>Width</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="max-width.html"><span>max</span><wbr><span><span>Width</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1480296040%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-width.html"><span class="token function">maxWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxWidth<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred maximum width for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-width.html"><span class="token function">maxWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxWidth<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred maximum width for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-6603653%2FFunctions%2F912954277" anchor-label="maxWidthPercent" id="-6603653%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="max-width-percent.html"><span>max</span><wbr><span>Width</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="max-width-percent.html"><span>max</span><wbr><span>Width</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-6603653%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-width-percent.html"><span class="token function">maxWidthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxWidthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific maximum percent width for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="max-width-percent.html"><span class="token function">maxWidthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">maxWidthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific maximum percent width for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1292071515%2FFunctions%2F912954277" anchor-label="minHeight" id="1292071515%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="min-height.html"><span>min</span><wbr><span><span>Height</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="min-height.html"><span>min</span><wbr><span><span>Height</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1292071515%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-height.html"><span class="token function">minHeight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minHeight<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred minimum height for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-height.html"><span class="token function">minHeight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minHeight<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred minimum height for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1798487294%2FFunctions%2F912954277" anchor-label="minHeightPercent" id="1798487294%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="min-height-percent.html"><span>min</span><wbr><span>Height</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="min-height-percent.html"><span>min</span><wbr><span>Height</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1798487294%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-height-percent.html"><span class="token function">minHeightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minHeightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific minimum percent height for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-height-percent.html"><span class="token function">minHeightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minHeightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific minimum percent height for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1758579222%2FFunctions%2F912954277" anchor-label="minWidth" id="-1758579222%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="min-width.html"><span>min</span><wbr><span><span>Width</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="min-width.html"><span>min</span><wbr><span><span>Width</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1758579222%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-width.html"><span class="token function">minWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minWidth<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred minimum width for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-width.html"><span class="token function">minWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minWidth<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a preferred minimum width for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1801267379%2FFunctions%2F912954277" anchor-label="minWidthPercent" id="-1801267379%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="min-width-percent.html"><span>min</span><wbr><span>Width</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="min-width-percent.html"><span>min</span><wbr><span>Width</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1801267379%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-width-percent.html"><span class="token function">minWidthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minWidthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific minimum percent width for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="min-width-percent.html"><span class="token function">minWidthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minWidthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific minimum percent width for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1292342256%2FFunctions%2F912954277" anchor-label="padding" id="1292342256%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="padding.html"><span><span>padding</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="padding.html"><span><span>padding</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1292342256%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="padding.html"><span class="token function">padding</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines padding on the component on a per-edge basis.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="padding.html"><span class="token function">padding</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines padding on the component on a per-edge basis.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1868337861%2FFunctions%2F912954277" anchor-label="paddingPercent" id="1868337861%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="padding-percent.html"><span>padding</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="padding-percent.html"><span>padding</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1868337861%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="padding-percent.html"><span class="token function">paddingPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines padding on the component on a per-edge basis, with a percent value of container's size. See <a href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a> for more information.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="padding-percent.html"><span class="token function">paddingPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">all<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">horizontal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">vertical<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">start<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">end<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines padding on the component on a per-edge basis, with a percent value of container's size. See <a href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a> for more information.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1338846648%2FFunctions%2F912954277" anchor-label="width" id="-1338846648%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="width.html"><span><span>width</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="width.html"><span><span>width</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1338846648%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="width.html"><span class="token function">width</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">width<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred width for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="width.html"><span class="token function">width</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">width<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred width for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="2060431659%2FFunctions%2F912954277" anchor-label="widthPercent" id="2060431659%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="width-percent.html"><span>width</span><wbr><span><span>Percent</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="width-percent.html"><span>width</span><wbr><span><span>Percent</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2060431659%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="width-percent.html"><span class="token function">widthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">widthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred percent width for this component when its parent lays it out.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="width-percent.html"><span class="token function">widthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">widthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Sets a specific preferred percent width for this component when its parent lays it out.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -300,10 +314,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>findTestItems</title>
-<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
-<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
@@ -29,52 +32,45 @@
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-core::com.facebook.litho/LithoViewTestHelper/findTestItems/#com.facebook.litho.LithoView#java.lang.String/PointingToDeclaration//947585829">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageids="litho-core::com.facebook.litho/LithoViewTestHelper/findTestItems/#com.facebook.litho.LithoView#kotlin.String/PointingToDeclaration//947585829">
   <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho</a><span class="delimiter">/</span><a href="index.html">LithoViewTestHelper</a><span class="delimiter">/</span><span class="current">findTestItems</span></div>
   <div class="cover ">
     <h1 class="cover"><span>find</span><wbr><span>Test</span><wbr><span><span>Items</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-test-items.html"><span class="token function">findTestItems</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">testKey<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Deque.html">Deque</a><span class="token operator">&lt;</span><a href="../-test-item/index.html">TestItem</a><span class="token operator">&gt;</span></div><p class="paragraph">Finds a <a href="../-test-item/index.html">TestItem</a> given a <a href="../-litho-view/index.html">LithoView</a> based on the test key it was assigned during construction. </p><p class="paragraph">Example use:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">
-final LithoView lithoView = ComponentTestHelper.mountComponent(
-    mContext,
-    new InlineLayoutSpec() {
-      
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-            .child(
-                Column.create(c)
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c))
-                    .testKey("mytestkey"))
-            .build();
-      }
-    });
-final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, "mytestkey");
-
-</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">Queue of mounted items in order by mount time.</p></span><h4 class="">Parameters</h4><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>litho</span><wbr><span><span>View</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">The component view the component is mounted to.</p></div></div></div></div></div><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>test</span><wbr><span><span>Key</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">The unique identifier the component was constructed with.</p></div></div></div></div></div></div></div><h4 class="">Throws</h4><div class="table" data-togglable="Throws"><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://developer.android.com/reference/kotlin/java/lang/UnsupportedOperationException.html"><span>Unsupported</span><wbr><span>Operation</span><wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">If the e2e flag is not enabled in the configuration.</p></div></div></div></div></div></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-static/index.html"><span class="token annotation builtin">JvmStatic</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-test-items.html"><span class="token function">findTestItems</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">testKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html">Deque</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-test-item/index.html">TestItem</a><span class="token operator">&gt;</span></div><p class="paragraph">Finds a <a href="../-test-item/index.html">TestItem</a> given a <a href="../-litho-view/index.html">LithoView</a> based on the test key it was assigned during construction.</p><p class="paragraph"><strong>Example use:</strong></p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">final LithoView lithoView = ComponentTestHelper.mountComponent(<br>    mContext,<br>    new InlineLayoutSpec() {<br>      protected ComponentLayout onCreateLayout(ComponentContext c) {<br>        return Column.create(c)<br>          .child(<br>            Column.create(c)<br>              .child(SimpleMountSpecTester.create(c))<br>              .child(SimpleMountSpecTester.create(c))<br>              .testKey("mytestkey"))<br>          .build();<br>     }<br>});<br>final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, "mytestkey");</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">Queue of mounted items in order by mount time.</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>litho</span><wbr><span><span>View</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The component view the component is mounted to.</p></div></div></div></div><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>test</span><wbr><span><span>Key</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The unique identifier the component was constructed with.</p></div></div></div></div></div><h4 class="">Throws</h4><div class="table"><div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unsupported-operation-exception/index.html"><span>Unsupported</span><wbr><span>Operation</span><wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">If the e2e flag is not enabled in the configuration.</p></div></div></div></div></div></div></div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

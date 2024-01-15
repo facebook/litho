@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>com.facebook.litho.visibility</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,163 +32,174 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core-kotlin:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-core-kotlin::com.facebook.litho.visibility////PointingToDeclaration//912954277">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="litho-core-kotlin::com.facebook.litho.visibility////PointingToDeclaration//912954277">
   <div class="breadcrumbs"><a href="../index.html">litho-core-kotlin</a><span class="delimiter">/</span><span class="current">com.facebook.litho.visibility</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="-638496713%2FFunctions%2F912954277" anchor-label="onFocusedVisible" id="-638496713%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-focused-visible.html"><span>on</span><wbr><span>Focused</span><wbr><span><span>Visible</span></span></a></div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-638496713%2FFunctions%2F912954277" anchor-label="onFocusedVisible" id="-638496713%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-focused-visible.html"><span>on</span><wbr><span>Focused</span><wbr><span><span>Visible</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-638496713%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-focused-visible.html"><span class="token function">onFocusedVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onFocused<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-focused-visible-event/index.html">FocusedVisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-focused-visible.html"><span class="token function">onFocusedVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onFocused<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-focused-visible-event/index.html">FocusedVisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1139543639%2FFunctions%2F912954277" anchor-label="onFullImpression" id="1139543639%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-full-impression.html"><span>on</span><wbr><span>Full</span><wbr><span><span>Impression</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-full-impression.html"><span>on</span><wbr><span>Full</span><wbr><span><span>Impression</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1139543639%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-full-impression.html"><span class="token function">onFullImpression</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onFullImpression<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-full-impression-visible-event/index.html">FullImpressionVisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when all parts of a Component have been made visible at some point, termed a "full impression". A full impression is defined as:</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-full-impression.html"><span class="token function">onFullImpression</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onFullImpression<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-full-impression-visible-event/index.html">FullImpressionVisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when all parts of a Component have been made visible at some point, termed a "full impression". A full impression is defined as:</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1800506463%2FFunctions%2F912954277" anchor-label="onInvisible" id="-1800506463%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-invisible.html"><span>on</span><wbr><span><span>Invisible</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-invisible.html"><span>on</span><wbr><span><span>Invisible</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1800506463%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-invisible.html"><span class="token function">onInvisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onInvisible<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-invisible-event/index.html">InvisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when a Component becomes fully invisible (e.g. scrolled off or unmounted)</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-invisible.html"><span class="token function">onInvisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onInvisible<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-invisible-event/index.html">InvisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when a Component becomes fully invisible (e.g. scrolled off or unmounted)</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="507866565%2FFunctions%2F912954277" anchor-label="onUnfocusedVisible" id="507866565%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-unfocused-visible.html"><span>on</span><wbr><span>Unfocused</span><wbr><span><span>Visible</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-unfocused-visible.html"><span>on</span><wbr><span>Unfocused</span><wbr><span><span>Visible</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="507866565%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-unfocused-visible.html"><span class="token function">onUnfocusedVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onUnfocused<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-unfocused-visible-event/index.html">UnfocusedVisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-unfocused-visible.html"><span class="token function">onUnfocusedVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onUnfocused<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-unfocused-visible-event/index.html">UnfocusedVisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="117343553%2FFunctions%2F912954277" anchor-label="onVisibilityChanged" id="117343553%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-visibility-changed.html"><span>on</span><wbr><span>Visibility</span><wbr><span><span>Changed</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-visibility-changed.html"><span>on</span><wbr><span>Visibility</span><wbr><span><span>Changed</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="117343553%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-visibility-changed.html"><span class="token function">onVisibilityChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onVisibilityChanged<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-visibility-changed-event/index.html">VisibilityChangedEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when the visible rect of a Component changes.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-visibility-changed.html"><span class="token function">onVisibilityChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onVisibilityChanged<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-visibility-changed-event/index.html">VisibilityChangedEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when the visible rect of a Component changes.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1829120065%2FFunctions%2F912954277" anchor-label="onVisible" id="1829120065%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-visible.html"><span>on</span><wbr><span><span>Visible</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-visible.html"><span>on</span><wbr><span><span>Visible</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1829120065%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-visible.html"><span class="token function">onVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onVisible<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-visible-event/index.html">VisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when any part of the Component becomes visible on screen.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-visible.html"><span class="token function">onVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>onVisible<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-visible-event/index.html">VisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Registers a callback to be called when any part of the Component becomes visible on screen.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1480557869%2FFunctions%2F912954277" anchor-label="onVisibleWithTag" id="-1480557869%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="on-visible-with-tag.html"><span>on</span><wbr><span>Visible</span><wbr><span>With</span><wbr><span><span>Tag</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-visible-with-tag.html"><span>on</span><wbr><span>Visible</span><wbr><span>With</span><wbr><span><span>Tag</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1480557869%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-visible-with-tag.html"><span class="token function"><strike>onVisibleWithTag</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>onVisible<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-visible-event/index.html">VisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="on-visible-with-tag.html"><span class="token function"><strike>onVisibleWithTag</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">noinline </span>onVisible<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-visible-event/index.html">VisibleEvent</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="23190277%2FFunctions%2F912954277" anchor-label="visibleHeightRatio" id="23190277%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="visible-height-ratio.html"><span>visible</span><wbr><span>Height</span><wbr><span><span>Ratio</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="visible-height-ratio.html"><span>visible</span><wbr><span>Height</span><wbr><span><span>Ratio</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="23190277%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="visible-height-ratio.html"><span class="token function">visibleHeightRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">visibleHeightRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines a ratio of the Component height for the visibility callback to be dispatched use together with <a href="on-visible.html">onVisible</a> and/or with <a href="on-invisible.html">onInvisible</a>.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="visible-height-ratio.html"><span class="token function">visibleHeightRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">visibleHeightRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines a ratio of the Component height for the visibility callback to be dispatched use together with <a href="on-visible.html">onVisible</a> and/or with <a href="on-invisible.html">onInvisible</a>.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="505485018%2FFunctions%2F912954277" anchor-label="visibleWidthRatio" id="505485018%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="visible-width-ratio.html"><span>visible</span><wbr><span>Width</span><wbr><span><span>Ratio</span></span></a></div>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="visible-width-ratio.html"><span>visible</span><wbr><span>Width</span><wbr><span><span>Ratio</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="505485018%2FFunctions%2F912954277"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="visible-width-ratio.html"><span class="token function">visibleWidthRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">visibleWidthRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines a ratio of the Component width for the visibility callback to be dispatched use together with <a href="on-visible.html">onVisible</a> and/or with <a href="on-invisible.html">onInvisible</a>.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="visible-width-ratio.html"><span class="token function">visibleWidthRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">visibleWidthRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><div class="brief "><p class="paragraph">Defines a ratio of the Component width for the visibility callback to be dispatched use together with <a href="on-visible.html">onVisible</a> and/or with <a href="on-invisible.html">onInvisible</a>.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -195,10 +209,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

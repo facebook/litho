@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>flex</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,24 +32,33 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core-kotlin:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-core-kotlin::com.facebook.litho.flexbox//flex/com.facebook.litho.Style#kotlin.Float?#kotlin.Float?#com.facebook.rendercore.Dimen?#kotlin.Float?/PointingToDeclaration//912954277">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageids="litho-core-kotlin::com.facebook.litho.flexbox//flex/com.facebook.litho.Style#kotlin.Float?#kotlin.Float?#com.facebook.rendercore.Dimen?#kotlin.Float?/PointingToDeclaration//912954277">
   <div class="breadcrumbs"><a href="../index.html">litho-core-kotlin</a><span class="delimiter">/</span><a href="index.html">com.facebook.litho.flexbox</a><span class="delimiter">/</span><span class="current">flex</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>flex</span></span></h1>
@@ -54,10 +66,11 @@
   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="../com.facebook.litho/-style/index.html">Style</a><span class="token punctuation">.</span><a href="flex.html"><span class="token function">flex</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">grow<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">shrink<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">basis<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Dimen///PointingToDeclaration/">Dimen</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">basisPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.facebook.litho/-style/index.html">Style</a></div><p class="paragraph">Flex allows you to define how this component should take up space within its parent. It's comprised of the following properties:</p><p class="paragraph"><strong>flex-grow</strong>: This component should take up remaining space in its parent. If multiple children of the parent have a flex-grow set, the extra space is divided up based on proportions of flex-grow values, i.e. a child with flex-grow of 2 will get twice as much of the space as its sibling with flex-grow of 1.</p><p class="paragraph"><strong>flex-shrink</strong>: This component should shrink if necessary. Similar to flex-grow, the value determines the proportion of space <i>taken</i> from each child. Setting a flex-shink of 0 means the child won't shrink.</p><p class="paragraph"><strong>flex-basis</strong>: Defines the default size of the component before extra space is distributed. If omitted, the measured size of the content (or the width/height styles) will be used instead.</p><p class="paragraph"><strong>flex-basis-percent</strong>: see <strong>flex-basis</strong>. Defines the default size as a percentage of its parent's size. Values should be from 0 to 100.</p><ul><li><p class="paragraph">See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox properties.</p></li><li><p class="paragraph">See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.</p></li></ul><p class="paragraph">Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null, flex-basis-percent = null</p></div></div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 

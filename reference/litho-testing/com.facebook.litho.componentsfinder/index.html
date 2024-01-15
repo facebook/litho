@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>com.facebook.litho.componentsfinder</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,103 +32,114 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>Litho</span>            </a>    </div>
-    <div>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-testing:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
     </div>
-    <div class="pull-right d-flex">
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
-    </div>
-    <div id="main">
-<div class="main-content" id="content" pageids="litho-testing::com.facebook.litho.componentsfinder////PointingToDeclaration//1342111716">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="litho-testing::com.facebook.litho.componentsfinder////PointingToDeclaration//1342111716">
   <div class="breadcrumbs"><a href="../index.html">litho-testing</a><span class="delimiter">/</span><span class="current">com.facebook.litho.componentsfinder</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="446543262%2FFunctions%2F1342111716" anchor-label="findAllComponentsInLithoView" id="446543262%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="find-all-components-in-litho-view.html"><span>find</span><wbr><span>All</span><wbr><span>Components</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="446543262%2FFunctions%2F1342111716" anchor-label="findAllComponentsInLithoView" id="446543262%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="find-all-components-in-litho-view.html"><span>find</span><wbr><span>All</span><wbr><span>Components</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="446543262%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-components-in-litho-view.html"><span class="token function">findAllComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>clazz<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-components-in-litho-view.html"><span class="token function">findAllComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Returns a list of all components of the given classes from the ComponentTree or an empty list if not found</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-components-in-litho-view.html"><span class="token function">findAllComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>clazz<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-components-in-litho-view.html"><span class="token function">findAllComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Returns a list of all components of the given classes from the ComponentTree or an empty list if not found</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1768148391%2FFunctions%2F1342111716" anchor-label="findAllDirectComponentsInLithoView" id="-1768148391%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="find-all-direct-components-in-litho-view.html"><span>find</span><wbr><span>All</span><wbr><span>Direct</span><wbr><span>Components</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="find-all-direct-components-in-litho-view.html"><span>find</span><wbr><span>All</span><wbr><span>Direct</span><wbr><span>Components</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1768148391%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-direct-components-in-litho-view.html"><span class="token function">findAllDirectComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-direct-components-in-litho-view.html"><span class="token function">findAllDirectComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-direct-components-in-litho-view.html"><span class="token function">findAllDirectComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-all-direct-components-in-litho-view.html"><span class="token function">findAllDirectComponentsInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1723992436%2FFunctions%2F1342111716" anchor-label="findComponentInLithoView" id="1723992436%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="find-component-in-litho-view.html"><span>find</span><wbr><span>Component</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="find-component-in-litho-view.html"><span>find</span><wbr><span>Component</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1723992436%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-component-in-litho-view.html"><span class="token function">findComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-component-in-litho-view.html"><span class="token function">findComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a component of the given class from the ComponentTree or null if not found</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-component-in-litho-view.html"><span class="token function">findComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-component-in-litho-view.html"><span class="token function">findComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a component of the given class from the ComponentTree or null if not found</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="882798932%2FFunctions%2F1342111716" anchor-label="findDirectComponentInLithoView" id="882798932%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="find-direct-component-in-litho-view.html"><span>find</span><wbr><span>Direct</span><wbr><span>Component</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="find-direct-component-in-litho-view.html"><span>find</span><wbr><span>Direct</span><wbr><span>Component</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="882798932%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-direct-component-in-litho-view.html"><span class="token function">findDirectComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a component of the given class only if the component renders directly to the root component of the LithoView</p></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-direct-component-in-litho-view.html"><span class="token function">findDirectComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a component of the given class only if the component renders directly to the root component of the LithoView (for details see: <a href="find-direct-component-in-litho-view.html">findDirectComponentInLithoView</a>)</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-direct-component-in-litho-view.html"><span class="token function">findDirectComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a component of the given class only if the component renders directly to the root component of the LithoView</p></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="find-direct-component-in-litho-view.html"><span class="token function">findDirectComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns a component of the given class only if the component renders directly to the root component of the LithoView (for details see: <a href="find-direct-component-in-litho-view.html">findDirectComponentInLithoView</a>)</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1462286003%2FFunctions%2F1342111716" anchor-label="getRootComponentInLithoView" id="1462286003%2FFunctions%2F1342111716" data-filterable-set=":litho-testing:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="get-root-component-in-litho-view.html"><span>get</span><wbr><span>Root</span><wbr><span>Component</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
+          <div class="table-row" data-filterable-current=":litho-testing:dokkaHtmlPartial/release" data-filterable-set=":litho-testing:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-root-component-in-litho-view.html"><span>get</span><wbr><span>Root</span><wbr><span>Component</span><wbr><span>In</span><wbr><span>Litho</span><wbr><span><span>View</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1462286003%2FFunctions%2F1342111716"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-root-component-in-litho-view.html"><span class="token function">getRootComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns the root component of the LithoView.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-root-component-in-litho-view.html"><span class="token function">getRootComponentInLithoView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Returns the root component of the LithoView.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -135,10 +149,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
-
-</body></html>
+</body>
+</html>
 
