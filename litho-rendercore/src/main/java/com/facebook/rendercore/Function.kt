@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
-
-import androidx.annotation.Nullable;
+package com.facebook.rendercore
 
 /** A general purpose function interface */
-public interface Function<ReturnType> {
-
+fun interface Function<ReturnType> {
   /** Executes the function. */
-  @Nullable
-  ReturnType call(@Nullable Object... arguments);
+  fun call(vararg arguments: Any?): ReturnType
 }

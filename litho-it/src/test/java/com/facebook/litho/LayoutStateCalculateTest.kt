@@ -2351,12 +2351,8 @@ class LayoutStateCalculateTest {
       assertThat(arguments).isNotNull
       assertThat(arguments).isNotEmpty
       view.set(arguments[0] as View)
-      null
     }
-    props.onCardActionsTouched = Function {
-      clicked.set(true)
-      null
-    }
+    props.onCardActionsTouched = Function { clicked.set(true) }
     props.areCardToolsDisabled = true
     val root = ItemCardComponent.create(c).body(Text.create(c).text("hello").build()).id(1).build()
     legacyLithoViewRule

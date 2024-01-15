@@ -36,9 +36,9 @@ object ItemCardComponentSpec {
           .build()
 
   class TreeProps {
-    @JvmField var onCardActionsTouched: Function<Void>? = null
+    @JvmField var onCardActionsTouched: Function<Unit>? = null
 
-    @JvmField var onCardActionViewVisible: Function<Void>? = null
+    @JvmField var onCardActionViewVisible: Function<Unit>? = null
 
     @JvmField var areCardToolsDisabled: Boolean = false
   }
