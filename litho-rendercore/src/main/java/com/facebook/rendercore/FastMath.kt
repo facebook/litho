@@ -14,30 +14,26 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.rendercore
 
 /**
  * Implements some math functions in a faster way than the java Math package. This will always have
  * the downside of not supporting all the edge cases which the java Math package does support so
  * please read up on those edge cases before using these methods.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class FastMath {
-
+object FastMath {
   /**
    * This stack overflow post has more context around what cases this implementation won't handle.
    * http://stackoverflow.com/questions/1750739/faster-implementation-of-math-round
    *
-   * @param val The value to round
+   * @param value The value to round
    * @return The rounded value
    */
-  public static int round(float val) {
-    if (val > 0) {
-      return (int) (val + 0.5);
-    } else {
-      return (int) (val - 0.5);
-    }
-  }
+  @JvmStatic
+  fun round(value: Float): Int =
+      if (value > 0) {
+        (value + 0.5).toInt()
+      } else {
+        (value - 0.5).toInt()
+      }
 }
