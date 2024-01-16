@@ -74,7 +74,6 @@ public class LithoTestRunner extends RobolectricTestRunner {
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getGlobalConfigs() {
     return Arrays.asList(
-        LayoutCachingTestRunConfiguration.class,
         SkipRootCheckingTestRunConfiguration.class,
         CustomBindersTestRunConfiguration.class,
         SpecsStateUpdateDetectionConfiguration.class);
