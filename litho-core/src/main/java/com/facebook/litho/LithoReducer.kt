@@ -34,17 +34,6 @@ import kotlin.math.min
 object LithoReducer {
 
   private const val DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds"
-  private val rootHost: LithoRenderUnit =
-      MountSpecLithoRenderUnit.create(
-          id = MountState.ROOT_HOST_ID,
-          component = HostComponent.create(),
-          commonDynamicProps = null,
-          context = null,
-          nodeInfo = null,
-          flags = 0,
-          importantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-          updateState = MountSpecLithoRenderUnit.STATE_DIRTY,
-          debugKey = LithoNodeUtils.getDebugKey("root-host", OutputUnitType.HOST))
 
   // region public methods
   @JvmStatic
@@ -152,10 +141,11 @@ object LithoReducer {
     val width: Int = result?.width ?: 0
     val height: Int = result?.height ?: 0
     val debugNode: DebugHierarchy.Node? = hierarchy?.mutateType(OutputUnitType.HOST)
+    val rootHostRenderUnit = createRootHostRenderUnit(layoutState.componentContext)
 
     val node: RenderTreeNode =
         create(
-            unit = rootHost,
+            unit = rootHostRenderUnit,
             bounds = Rect(0, 0, width, height),
             layoutData =
                 LithoLayoutData(
@@ -167,13 +157,26 @@ object LithoReducer {
                     layoutData = null,
                     isSizeDependant = true,
                     debugHierarchy = debugNode))
+
     addRenderTreeNode(
         layoutState = layoutState,
         node = node,
         result = result,
-        unit = rootHost,
+        unit = rootHostRenderUnit,
         type = OutputUnitType.HOST)
   }
+
+  private fun createRootHostRenderUnit(context: ComponentContext) =
+      MountSpecLithoRenderUnit.create(
+          id = MountState.ROOT_HOST_ID,
+          component = HostComponent.create(context),
+          commonDynamicProps = null,
+          context = null,
+          nodeInfo = null,
+          flags = 0,
+          importantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+          updateState = MountSpecLithoRenderUnit.STATE_DIRTY,
+          debugKey = LithoNodeUtils.getDebugKey("root-host", OutputUnitType.HOST))
 
   private fun createAnimatableItem(
       unit: LithoRenderUnit,

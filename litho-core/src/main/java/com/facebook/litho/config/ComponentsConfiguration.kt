@@ -70,7 +70,12 @@ internal constructor(
     @JvmField val mountContentPreallocationEnabled: Boolean = false,
     @JvmField val mountContentPreallocationHandler: RunnableHandler? = null,
     /** Whether the [com.facebook.rendercore.MountState] can be mounted using incremental mount. */
-    @JvmField val incrementalMountEnabled: Boolean = true
+    @JvmField val incrementalMountEnabled: Boolean = true,
+    /**
+     * If enabled, this will enable the recycling of [com.facebook.litho.ComponentHost] using
+     * [MountItemsPool]
+     */
+    @JvmField val componentHostRecyclingEnabled: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -170,7 +175,6 @@ internal constructor(
 
     /** Initialize sticky header during layout when its component tree is null */
     @JvmField var initStickyHeaderInLayoutWhenComponentTreeIsNull: Boolean = false
-    @JvmField var unsafeHostComponentRecyclingIsEnabled: Boolean = false
 
     @JvmField var hostComponentPoolSize: Int = 30
 
@@ -233,6 +237,7 @@ internal constructor(
     private var mountContentPreallocationEnabled = baseConfig.mountContentPreallocationEnabled
     private var mountContentPreallocationHandler = baseConfig.mountContentPreallocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
+    private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
 
     fun useCancellableLayoutFutures(enabled: Boolean) = also {
       useCancellableLayoutFutures = enabled
@@ -266,6 +271,10 @@ internal constructor(
       incrementalMountEnabled = enabled
     }
 
+    fun componentHostRecyclingEnabled(enabled: Boolean): Builder = also {
+      componentHostRecyclingEnabled = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -277,7 +286,8 @@ internal constructor(
           isReconciliationEnabled = isReconciliationEnabled,
           mountContentPreallocationEnabled = mountContentPreallocationEnabled,
           mountContentPreallocationHandler = mountContentPreallocationHandler,
-          incrementalMountEnabled = incrementalMountEnabled)
+          incrementalMountEnabled = incrementalMountEnabled,
+          componentHostRecyclingEnabled = componentHostRecyclingEnabled)
     }
   }
 }

@@ -102,7 +102,7 @@ object LithoNodeUtils {
       return null
     }
 
-    val hostComponent: HostComponent = HostComponent.create()
+    val hostComponent: HostComponent = HostComponent.create(node.tailComponentContext)
 
     // We need to pass common dynamic props to the host component, as they only could be applied to
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
@@ -136,7 +136,7 @@ object LithoNodeUtils {
   /** Creates a [LithoRenderUnit] for the root host */
   @JvmStatic
   fun createRootHostRenderUnit(node: LithoNode): LithoRenderUnit {
-    val hostComponent: HostComponent = HostComponent.create()
+    val hostComponent: HostComponent = HostComponent.create(node.tailComponentContext)
 
     // We need to pass common dynamic props to the host component, as they only could be applied to
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same

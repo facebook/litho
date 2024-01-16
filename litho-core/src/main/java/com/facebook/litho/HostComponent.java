@@ -35,26 +35,27 @@ class HostComponent extends SpecGeneratedComponent {
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   private boolean mImplementsVirtualViews = false;
+  private boolean mRecyclingEnabled;
 
-  protected HostComponent() {
+  protected HostComponent(boolean recyclingEnabled) {
     super("HostComponent");
+    mRecyclingEnabled = recyclingEnabled;
   }
 
   @Override
   public MountItemsPool.ItemPool onCreateMountContentPool() {
     return new HostMountContentPool(
-        ComponentsConfiguration.hostComponentPoolSize,
-        ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled);
+        ComponentsConfiguration.hostComponentPoolSize, mRecyclingEnabled);
   }
 
   @Override
   public boolean isRecyclingDisabled() {
-    return !ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled;
+    return !mRecyclingEnabled;
   }
 
   @Override
   public boolean canPreallocate() {
-    return ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled;
+    return mRecyclingEnabled;
   }
 
   @Override
@@ -111,8 +112,9 @@ class HostComponent extends SpecGeneratedComponent {
     return MountType.VIEW;
   }
 
-  static HostComponent create() {
-    return new HostComponent();
+  static HostComponent create(ComponentContext context) {
+    return new HostComponent(
+        context.getLithoConfiguration().componentsConfig.componentHostRecyclingEnabled);
   }
 
   @Override

@@ -70,7 +70,7 @@ class ComponentHostTest {
     viewComponent = TestViewComponent.create(context).key(viewComponentKey).build()
     drawableComponent = SimpleMountSpecTester.create(context).key(drawableComponentKey).build()
     host = TestableComponentHost(context)
-    viewGroupHost = HostComponent.create()
+    viewGroupHost = HostComponent.create(context)
   }
 
   private val dummyMotionEvent =
