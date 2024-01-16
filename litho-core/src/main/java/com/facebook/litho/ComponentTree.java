@@ -499,7 +499,6 @@ public class ComponentTree
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
             builder.visibilityProcessingEnabled,
-            builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
             builder.logTag,
             builder.logger,
@@ -557,10 +556,6 @@ public class ComponentTree
 
     mAccessibilityManager =
         (AccessibilityManager) mContext.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-  }
-
-  private static boolean incrementalMountGloballyDisabled() {
-    return LithoDebugConfigurations.isIncrementalMountGloballyDisabled;
   }
 
   /**
@@ -1156,7 +1151,7 @@ public class ComponentTree
 
   /** Returns whether incremental mount is enabled or not in this component. */
   public boolean isIncrementalMountEnabled() {
-    return mContext.mLithoConfiguration.incrementalMountEnabled;
+    return ComponentContext.isIncrementalMountEnabled(mContext);
   }
 
   boolean isVisibilityProcessingEnabled() {
@@ -3077,7 +3072,7 @@ public class ComponentTree
 
     // optional
     private ComponentsConfiguration config;
-    private boolean incrementalMountEnabled = true;
+    @Nullable private Boolean incrementalMountEnabled = null;
     private RunnableHandler layoutThreadHandler;
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
@@ -3103,6 +3098,14 @@ public class ComponentTree
       mAndroidContext = context.getAndroidContext();
     }
 
+    /**
+     * Configures the tree with the specified configuration.
+     *
+     * <p>Use this method to set all configurations for components, including incremental mount,
+     * using the ComponentsConfiguration object.
+     *
+     * @param config the {@link ComponentsConfiguration} object containing the configs to be used..
+     */
     public Builder componentsConfiguration(ComponentsConfiguration config) {
       this.config = config;
       return this;
@@ -3134,7 +3137,15 @@ public class ComponentTree
       return this;
     }
 
-    /** Whether or not to enable the incremental mount optimization. True by default. */
+    /**
+     * @deprecated This method usage is to be replaced by the {@link
+     *     #componentsConfiguration(ComponentsConfiguration)} method.
+     *     <p>This method is deprecated because the configuration of the tree should now be handled
+     *     through the {@link ComponentsConfiguration} object, allowing for more centralized and
+     *     flexible configuration.
+     * @param isEnabled a boolean value to enable or disable incremental mount.
+     */
+    @Deprecated
     public Builder incrementalMount(boolean isEnabled) {
       incrementalMountEnabled = isEnabled;
       return this;
@@ -3238,6 +3249,26 @@ public class ComponentTree
       if (logTag == null) {
         logTag = root.getSimpleName();
       }
+
+      /*
+       * If the client has defined an incremental mount property - then we need to override the components
+       * configuration to take it into account.
+       */
+      boolean incrementalMountToUse =
+          incrementalMountEnabled != null
+              ? incrementalMountEnabled
+              : config.incrementalMountEnabled;
+
+      config =
+          ComponentsConfiguration.create(config)
+              /**
+               * We disable incremental mount if the {@link
+               * LithoDebugConfigurations#isIncrementalMountGloballyDisabled} is enabled.
+               */
+              .incrementalMountEnabled(
+                  incrementalMountToUse
+                      && !LithoDebugConfigurations.isIncrementalMountGloballyDisabled)
+              .build();
 
       return new ComponentTree(this);
     }

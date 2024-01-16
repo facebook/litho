@@ -21,7 +21,6 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LayoutThreadPoolConfiguration
-import com.facebook.litho.config.LithoDebugConfigurations
 
 /**
  * This configuration is meant to be used in the context of [RecyclerBinder]. It allows you to
@@ -150,13 +149,6 @@ data class RecyclerBinderConfig(
      */
     @JvmField
     val enableStableIds: Boolean = ComponentsConfiguration.defaultRecyclerBinderUseStableId,
-    /**
-     * Defines whether the [com.facebook.litho.ComponentTree] created by the [RecyclerBinder] will
-     * have incremental mount enabled.
-     */
-    @JvmField
-    val incrementalMountEnabled: Boolean =
-        !LithoDebugConfigurations.isIncrementalMountGloballyDisabled
 ) {
 
   init {
@@ -214,7 +206,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
-  private var incrementalMountEnabled = configuration.incrementalMountEnabled
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -276,11 +267,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.enableStableIds = enabled
   }
 
-  fun incrementalMountEnabled(incrementalMountEnabled: Boolean): RecyclerBinderConfigBuilder =
-      also {
-        this.incrementalMountEnabled = incrementalMountEnabled
-      }
-
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -297,7 +283,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         errorEventHandler = errorEventHandler,
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
-        enableStableIds = enableStableIds,
-        incrementalMountEnabled = incrementalMountEnabled)
+        enableStableIds = enableStableIds)
   }
 }

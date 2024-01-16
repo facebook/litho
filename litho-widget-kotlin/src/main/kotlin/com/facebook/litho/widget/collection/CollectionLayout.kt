@@ -20,7 +20,6 @@ import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
@@ -45,7 +44,7 @@ abstract class CollectionLayout(
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
     isIncrementalMountEnabled: Boolean =
-        !LithoDebugConfigurations.isIncrementalMountGloballyDisabled,
+        componentContext.lithoConfiguration.componentsConfig.incrementalMountEnabled,
     hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
@@ -61,13 +60,13 @@ abstract class CollectionLayout(
               RecyclerBinderConfiguration.create()
                   .recyclerBinderConfig(
                       RecyclerBinderConfig(
-                          incrementalMountEnabled = isIncrementalMountEnabled,
                           hasDynamicItemHeight = hasDynamicItemHeight,
                           componentsConfiguration =
                               componentContext.lithoConfiguration.componentsConfig.copy(
                                   isReconciliationEnabled = isReconciliationEnabled,
                                   mountContentPreallocationEnabled =
-                                      preallocationPerMountContentEnabled),
+                                      preallocationPerMountContentEnabled,
+                                  incrementalMountEnabled = isIncrementalMountEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO))
                   .wrapContent(mainAxisWrapContent)
                   .useBackgroundChangeSets(useBackgroundChangeSets)

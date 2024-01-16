@@ -53,6 +53,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
@@ -315,13 +316,20 @@ public class RecyclerCollectionComponentSpec {
     layoutInfo.set(newLayoutInfo);
 
     RecyclerBinderConfig recyclerBinderConfig = binderConfiguration.getRecyclerBinderConfig();
+    ComponentsConfiguration componentsConfiguration =
+        (recyclerBinderConfig.componentsConfiguration != null)
+            ? recyclerBinderConfig.componentsConfiguration
+            : c.getLithoConfiguration().componentsConfig;
 
     RecyclerBinder.Builder recyclerBinderBuilder =
         new RecyclerBinder.Builder()
             .recyclerBinderConfig(
                 RecyclerBinderConfig.create(recyclerBinderConfig)
-                    .incrementalMountEnabled(
-                        incrementalMount && recyclerBinderConfig.incrementalMountEnabled)
+                    .componentsConfiguration(
+                        ComponentsConfiguration.create(componentsConfiguration)
+                            .incrementalMountEnabled(
+                                incrementalMount && componentsConfiguration.incrementalMountEnabled)
+                            .build())
                     .build())
             .layoutInfo(newLayoutInfo)
             .wrapContent(binderConfiguration.isWrapContent())

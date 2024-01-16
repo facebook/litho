@@ -68,7 +68,9 @@ internal constructor(
     /** Whether the [ComponentTree] should be using State Reconciliation. */
     @JvmField val isReconciliationEnabled: Boolean = true,
     @JvmField val mountContentPreallocationEnabled: Boolean = false,
-    @JvmField val mountContentPreallocationHandler: RunnableHandler? = null
+    @JvmField val mountContentPreallocationHandler: RunnableHandler? = null,
+    /** Whether the [com.facebook.rendercore.MountState] can be mounted using incremental mount. */
+    @JvmField val incrementalMountEnabled: Boolean = true
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -230,6 +232,7 @@ internal constructor(
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
     private var mountContentPreallocationEnabled = baseConfig.mountContentPreallocationEnabled
     private var mountContentPreallocationHandler = baseConfig.mountContentPreallocationHandler
+    private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
 
     fun useCancellableLayoutFutures(enabled: Boolean) = also {
       useCancellableLayoutFutures = enabled
@@ -259,6 +262,10 @@ internal constructor(
       mountContentPreallocationHandler = handler
     }
 
+    fun incrementalMountEnabled(enabled: Boolean): Builder = also {
+      incrementalMountEnabled = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -269,7 +276,8 @@ internal constructor(
           useCancellableLayoutFutures = useCancellableLayoutFutures,
           isReconciliationEnabled = isReconciliationEnabled,
           mountContentPreallocationEnabled = mountContentPreallocationEnabled,
-          mountContentPreallocationHandler = mountContentPreallocationHandler)
+          mountContentPreallocationHandler = mountContentPreallocationHandler,
+          incrementalMountEnabled = incrementalMountEnabled)
     }
   }
 }

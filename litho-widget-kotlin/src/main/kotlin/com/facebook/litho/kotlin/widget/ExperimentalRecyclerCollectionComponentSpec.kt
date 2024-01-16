@@ -292,13 +292,18 @@ object ExperimentalRecyclerCollectionComponentSpec {
     layoutInfo.set(newLayoutInfo)
 
     val recyclerBinderConfig = binderConfiguration.recyclerBinderConfig
+    val componentsConfiguration =
+        recyclerBinderConfig.componentsConfiguration ?: c.lithoConfiguration.componentsConfig
 
     val recyclerBinderBuilder =
         RecyclerBinder.Builder()
             .recyclerBinderConfig(
                 recyclerBinderConfig.copy(
-                    incrementalMountEnabled =
-                        incrementalMount && recyclerBinderConfig.incrementalMountEnabled))
+                    componentsConfiguration =
+                        componentsConfiguration.copy(
+                            incrementalMountEnabled =
+                                incrementalMount &&
+                                    componentsConfiguration.incrementalMountEnabled)))
             .layoutInfo(newLayoutInfo)
             .wrapContent(binderConfiguration.isWrapContent)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)

@@ -723,7 +723,7 @@ public class ComponentContext {
    * static to avoid polluting the ComponentContext API.
    */
   public static boolean isIncrementalMountEnabled(ComponentContext c) {
-    return c.mLithoConfiguration.incrementalMountEnabled;
+    return c.mLithoConfiguration.componentsConfig.incrementalMountEnabled;
   }
 
   public static boolean isVisibilityProcessingEnabled(ComponentContext c) {

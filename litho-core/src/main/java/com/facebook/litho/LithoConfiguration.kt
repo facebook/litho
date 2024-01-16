@@ -26,7 +26,6 @@ data class LithoConfiguration(
     @JvmField val componentsConfig: ComponentsConfiguration,
     @JvmField val areTransitionsEnabled: Boolean,
     @JvmField val isVisibilityProcessingEnabled: Boolean,
-    @JvmField val incrementalMountEnabled: Boolean,
     @JvmField val errorEventHandler: ErrorEventHandler,
     @JvmField val logTag: String? = null,
     @JvmField val logger: ComponentsLogger? = null,

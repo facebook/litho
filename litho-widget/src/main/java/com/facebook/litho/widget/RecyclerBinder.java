@@ -144,7 +144,6 @@ public class RecyclerBinder
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
-  private final boolean mIncrementalMountEnabled;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mRecyclerViewItemPrefetch;
@@ -404,7 +403,6 @@ public class RecyclerBinder
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         ComponentsConfiguration componentsConfiguration,
-        boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
         @Nullable LithoLifecycleProvider lifecycleProvider,
         @Nullable ErrorEventHandler errorEventHandler);
@@ -418,7 +416,6 @@ public class RecyclerBinder
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             ComponentsConfiguration componentsConfiguration,
-            boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
             @Nullable LithoLifecycleProvider lifecycleProvider,
             @Nullable ErrorEventHandler errorEventHandler) {
@@ -426,7 +423,6 @@ public class RecyclerBinder
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
-              .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .parentLifecycleProvider(lifecycleProvider)
               .errorEventHandler(errorEventHandler)
@@ -752,15 +748,22 @@ public class RecyclerBinder
       tempConfiguration = mComponentContext.getLithoConfiguration().componentsConfig;
     }
 
-    /*
-     If nested preallocation is disabled, we forcefully disable mount content preallocation.
-    */
-    if (!tempConfiguration.nestedPreallocationEnabled) {
-      tempConfiguration =
-          ComponentsConfiguration.create(tempConfiguration)
-              .mountContentPreallocationEnabled(false)
-              .build();
-    }
+    tempConfiguration =
+        ComponentsConfiguration.create(tempConfiguration)
+            /*
+            Incremental mount will not work if this ComponentTree is nested in  a parent with it turned off,
+            so always disable it in that case
+             */
+            .incrementalMountEnabled(
+                ComponentContext.isIncrementalMountEnabled(mComponentContext)
+                    && tempConfiguration.incrementalMountEnabled)
+            /*
+             If nested preallocation is disabled, we forcefully disable mount content preallocation.
+            */
+            .mountContentPreallocationEnabled(
+                tempConfiguration.nestedPreallocationEnabled
+                    && tempConfiguration.mountContentPreallocationEnabled)
+            .build();
 
     mComponentsConfiguration = tempConfiguration;
 
@@ -813,11 +816,6 @@ public class RecyclerBinder
     }
 
     mHScrollAsyncMode = mRecyclerBinderConfig.hScrollAsyncMode;
-    // Incremental mount will not work if this ComponentTree is nested in
-    // a parent with it turned off, so always disable it in that case
-    mIncrementalMountEnabled =
-        mRecyclerBinderConfig.incrementalMountEnabled
-            && ComponentContext.isIncrementalMountEnabled(mComponentContext);
 
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
@@ -4021,7 +4019,6 @@ public class RecyclerBinder
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
         mComponentsConfiguration,
-        mIncrementalMountEnabled,
         mVisibilityProcessingEnabled,
         mParentLifecycle,
         mErrorEventHandler);

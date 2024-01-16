@@ -179,7 +179,6 @@ public class RecyclerBinderTest {
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              boolean incrementalMountEnabled,
               boolean processVisibility,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
@@ -201,7 +200,6 @@ public class RecyclerBinderTest {
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              boolean incrementalMountEnabled,
               boolean processVisibility,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
