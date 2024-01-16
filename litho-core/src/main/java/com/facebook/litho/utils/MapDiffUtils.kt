@@ -14,36 +14,23 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.utils;
+package com.facebook.litho.utils
 
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.utils.EquivalenceUtils;
-import java.util.Map;
+import com.facebook.rendercore.utils.equals
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public final class MapDiffUtils {
-
+object MapDiffUtils {
   /** Return whether the two maps have the same keys and values. */
-  public static <K, V> boolean areMapsEqual(@Nullable Map<K, V> prev, @Nullable Map<K, V> next) {
-    if (prev == next) {
-      return true;
+  @JvmStatic
+  fun <K, V> areMapsEqual(prev: Map<K, V>?, next: Map<K, V>?): Boolean {
+    if (prev === next) {
+      return true
     }
-
     if (prev == null || next == null) {
-      return false;
+      return false
     }
-
-    if (prev.size() != next.size()) {
-      return false;
+    if (prev.size != next.size) {
+      return false
     }
-
-    for (Map.Entry<K, V> entry : prev.entrySet()) {
-      if (!EquivalenceUtils.equals(entry.getValue(), next.get(entry.getKey()))) {
-        return false;
-      }
-    }
-
-    return true;
+    return prev.none { (key, value) -> !equals(value, next[key]) }
   }
 }
