@@ -14,39 +14,34 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.utils;
+package com.facebook.litho.utils
 
-import com.facebook.infer.annotation.Nullsafe;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import javax.annotation.Nullable;
+import java.io.IOException
+import java.io.PrintWriter
+import java.io.StringWriter
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public final class StacktraceHelper {
-
+object StacktraceHelper {
   /**
    * Format a stack trace in a human-readable format.
    *
    * @param throwable The exception/throwable whose stack trace to format.
    */
-  @Nullable
-  public static String formatStacktrace(Throwable throwable) {
-    final StringWriter stringWriter = new StringWriter();
-    final PrintWriter printWriter = new PrintWriter(stringWriter);
-    String output = null;
+  @JvmStatic
+  fun formatStacktrace(throwable: Throwable): String? {
+    val stringWriter = StringWriter()
+    val printWriter = PrintWriter(stringWriter)
+    var output: String? = null
     try {
-      throwable.printStackTrace(printWriter);
+      throwable.printStackTrace(printWriter)
     } finally {
-      printWriter.close();
+      printWriter.close()
       try {
-        output = stringWriter.toString();
-        stringWriter.close();
-      } catch (final IOException ignored) {
+        output = stringWriter.toString()
+        stringWriter.close()
+      } catch (ignored: IOException) {
         // This would mean that closing failed which doesn't concern us.
       }
     }
-
-    return output;
+    return output
   }
 }
