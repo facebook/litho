@@ -10,7 +10,6 @@ litho_android_library(
     name = "yoga",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    language = "JAVA",
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         LITHO_YOGA_TARGET,

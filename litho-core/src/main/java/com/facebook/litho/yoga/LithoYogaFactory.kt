@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.yoga;
+package com.facebook.litho.yoga
 
-import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaConfigFactory;
-import com.facebook.yoga.YogaErrata;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaNodeFactory;
+import com.facebook.yoga.YogaConfig
+import com.facebook.yoga.YogaConfigFactory
+import com.facebook.yoga.YogaErrata
+import com.facebook.yoga.YogaNode
+import com.facebook.yoga.YogaNodeFactory
 
-public abstract class LithoYogaFactory {
-  public static YogaConfig createYogaConfig() {
-    YogaConfig yogaConfig = YogaConfigFactory.create();
-    yogaConfig.setUseWebDefaults(true);
-    yogaConfig.setErrata(YogaErrata.CLASSIC);
-    return yogaConfig;
+object LithoYogaFactory {
+
+  @JvmStatic
+  fun createYogaConfig(): YogaConfig {
+    val yogaConfig = YogaConfigFactory.create()
+    yogaConfig.setUseWebDefaults(true)
+    yogaConfig.errata = YogaErrata.CLASSIC
+    return yogaConfig
   }
 
-  public static YogaNode createYogaNode(YogaConfig config) {
-    return YogaNodeFactory.create(config);
-  }
+  @JvmStatic fun createYogaNode(config: YogaConfig): YogaNode = YogaNodeFactory.create(config)
 }
