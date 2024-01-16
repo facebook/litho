@@ -21,9 +21,12 @@ package com.facebook.litho.annotations
  * there are certain cases when Specs in Kotlin should be allowed. This annotation is used to mark
  * such usecases and suppress the linter, an explicit [reason] is required.
  */
-@Retention(AnnotationRetention.SOURCE) annotation class ExcuseMySpec(val reason: Reason)
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.SOURCE)
+annotation class ExcuseMySpec(val reason: Reason)
 
 enum class Reason {
+
   /**
    * Used then Spec is an output of (auto)conversion from Java to Kotlin, landing such Spec should
    * be allowed to simplify the review process.
@@ -41,6 +44,19 @@ enum class Reason {
    */
   USES_ON_UPDATE_STATE_WITH_TRANSITION,
 
-  /** Used only to mark Kotlin Specs that were created before the Spec API deprecation. */
-  @Deprecated("Don't add this manually!") LEGACY,
+  /**
+   * Used when this Section has other child Sections or it is used inside an existing Section as a
+   * child itself. This doesn't include `SingleComponentSection`, which can be replaced by its
+   * wrapped Component, or a `DataDiffSection`, which already can be replaced by a Lazy Collection.
+   */
+  SECTION_USED_WITH_OTHER_SECTIONS,
+
+  /**
+   * Used only to mark Kotlin Specs that were created before the Spec API deprecation.
+   * [Convert this Spec](https://fblitho.com/docs/kotlin/kotlin-intro/) to the Litho Kotlin API or
+   * change [LEGACY] to other appropriate [Reason].
+   */
+  @Deprecated(
+      "Convert to Litho Kotlin API: https://fblitho.com/docs/kotlin/kotlin-intro/, or change it to other appropriate `reason`")
+  LEGACY,
 }
