@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.utils;
+package com.facebook.rendercore.utils
 
-public class CommonUtils {
-
-  private CommonUtils() {}
+object CommonUtils {
 
   /**
    * This API is used for tracing, and the section names have a char limit of 127. If the class name
    * exceeds that it will be replace by the simple name. In a release build the class name will be
    * minified, so it is unlikely to hit the limit.
    */
-  public static String getSectionNameForTracing(Class<?> kclass) {
-    final String name = kclass.getName();
-    final String simpleName = kclass.getSimpleName();
-    return simpleName.length() < 5 ? "<cls>" + name + "</cls>" : kclass.getSimpleName();
+  @JvmStatic
+  fun getSectionNameForTracing(kclass: Class<*>): String {
+    val name = kclass.name
+    val simpleName = kclass.simpleName
+    return if (simpleName.length < 5) "<cls>$name</cls>" else kclass.simpleName
   }
 
   /** Utility to re-throw exceptions. */
-  public static void rethrow(Exception e) {
-    if (e instanceof RuntimeException) {
-      throw (RuntimeException) e;
+  @JvmStatic
+  fun rethrow(e: Exception) {
+    if (e is RuntimeException) {
+      throw e
     } else {
-      throw new RuntimeException(e);
+      throw RuntimeException(e)
     }
   }
 }
