@@ -18,7 +18,7 @@ litho_android_library(
     name = "utils",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    language = "JAVA",
+    pure_kotlin = False,
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho:litho"),
     ],
