@@ -34,7 +34,6 @@ import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.SpecGeneratedComponent;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -152,8 +151,6 @@ public class ComponentWarmerTest {
             .recyclerBinderConfig(
                 RecyclerBinderConfig.create()
                     .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
-                    .componentsConfiguration(
-                        ComponentsConfiguration.create().useCancellableLayoutFutures(true).build())
                     .build())
             .build(mContext);
 
@@ -220,14 +217,7 @@ public class ComponentWarmerTest {
 
   @Test
   public void testCancelDuringPrepare() {
-    final RecyclerBinder binder =
-        new RecyclerBinder.Builder()
-            .recyclerBinderConfig(
-                RecyclerBinderConfig.create()
-                    .componentsConfiguration(
-                        ComponentsConfiguration.create().useCancellableLayoutFutures(true).build())
-                    .build())
-            .build(mContext);
+    final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     binder.measure(
         new Size(),

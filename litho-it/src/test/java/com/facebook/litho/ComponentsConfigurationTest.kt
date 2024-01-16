@@ -47,30 +47,27 @@ class ComponentsConfigurationTest {
 
   @Test
   fun testSetFlagThroughComponentConfigToComponentTree() {
-    ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(useCancellableLayoutFutures = true)
+    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = true)
     val componentTree =
         ComponentTree.create(componentContext)
             .componentsConfiguration(ComponentsConfiguration.defaultInstance)
             .build()
     val componentsConfiguration = componentTree.context.mLithoConfiguration.componentsConfig
 
-    assertThat(componentsConfiguration.useCancellableLayoutFutures).isTrue
+    assertThat(componentsConfiguration.shouldCacheLayouts).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testSetFlagThroughComponentConfigToComponentTreeWithRecyclerCollectionComponent() {
-    ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(useCancellableLayoutFutures = false)
+    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = false)
 
     val recyclerBinderConfiguration =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
                 RecyclerBinderConfig(
                     componentsConfiguration =
-                        ComponentsConfiguration.defaultInstance.copy(
-                            useCancellableLayoutFutures = true)))
+                        ComponentsConfiguration.defaultInstance.copy(shouldCacheLayouts = true)))
             .build()
 
     legacyLithoViewRule
@@ -95,19 +92,17 @@ class ComponentsConfigurationTest {
     assertThat(childView).isNotNull
     val componentsConfiguration =
         childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig
-    assertThat(componentsConfiguration?.useCancellableLayoutFutures).isTrue
+    assertThat(componentsConfiguration?.shouldCacheLayouts).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testOverrideDefaultBuilder() {
-    ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(useCancellableLayoutFutures = true)
-    assertThat(ComponentsConfiguration.defaultInstance.useCancellableLayoutFutures).isTrue
+    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = true)
+    assertThat(ComponentsConfiguration.defaultInstance.shouldCacheLayouts).isTrue
 
-    ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(useCancellableLayoutFutures = false)
-    assertThat(ComponentsConfiguration.defaultInstance.useCancellableLayoutFutures).isFalse
+    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = false)
+    assertThat(ComponentsConfiguration.defaultInstance.shouldCacheLayouts).isFalse
 
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }

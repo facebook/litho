@@ -53,8 +53,6 @@ class LayoutStateFutureReleaseTest {
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    ComponentsConfiguration.defaultInstance = defaultConfig.copy(useCancellableLayoutFutures = true)
-
     widthSpec = makeSizeSpec(40, EXACTLY)
     heightSpec = makeSizeSpec(40, EXACTLY)
     layoutThreadShadowLooper =
@@ -165,11 +163,7 @@ class LayoutStateFutureReleaseTest {
     val column_0 = Column.create(context).child(TestChildComponent()).build()
     val column = Column.create(context).child(child1).build()
     val handler = ThreadPoolLayoutHandler.getNewInstance(LayoutThreadPoolConfigurationImpl(1, 1, 5))
-    componentTree =
-        ComponentTree.create(context, column_0)
-            .componentsConfiguration(defaultConfig.copy(useCancellableLayoutFutures = true))
-            .layoutThreadHandler(handler)
-            .build()
+    componentTree = ComponentTree.create(context, column_0).layoutThreadHandler(handler).build()
     componentTree.setLithoView(LithoView(context))
 
     componentTree.setRootAndSizeSpecAsync(column, widthSpec, heightSpec)

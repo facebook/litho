@@ -43,7 +43,6 @@ internal constructor(
      * and ignore duplicate state updates coming from usages in the Specs API.
      */
     @JvmField val specsApiStateUpdateDuplicateDetectionEnabled: Boolean = false,
-    val useCancellableLayoutFutures: Boolean = true,
     val useInterruptibleResolution: Boolean = true,
     val shouldCacheLayouts: Boolean = true,
     val disableNestedTreeCaching: Boolean = true,
@@ -227,7 +226,6 @@ internal constructor(
    */
   class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
 
-    private var useCancellableLayoutFutures = baseConfig.useCancellableLayoutFutures
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
     private var nestedPreallocationEnabled = baseConfig.nestedPreallocationEnabled
     private var specsApiStateUpdateDuplicateDetectionEnabled =
@@ -238,10 +236,6 @@ internal constructor(
     private var mountContentPreallocationHandler = baseConfig.mountContentPreallocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
-
-    fun useCancellableLayoutFutures(enabled: Boolean) = also {
-      useCancellableLayoutFutures = enabled
-    }
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean) = also {
       shouldAddHostViewForRootComponent = enabled
@@ -282,7 +276,6 @@ internal constructor(
           nestedPreallocationEnabled = nestedPreallocationEnabled,
           shouldCacheLayouts = shouldCacheLayouts,
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
-          useCancellableLayoutFutures = useCancellableLayoutFutures,
           isReconciliationEnabled = isReconciliationEnabled,
           mountContentPreallocationEnabled = mountContentPreallocationEnabled,
           mountContentPreallocationHandler = mountContentPreallocationHandler,

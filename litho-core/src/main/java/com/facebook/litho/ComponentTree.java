@@ -2239,10 +2239,7 @@ public class ComponentTree
     // If sync operations are interruptible and happen on background thread, which could end
     // up being moved to UI thread with null result and causing crash later. To prevent that
     // we mark it as Non-Interruptible.
-    final boolean isInterruptible =
-        !LayoutState.isFromSyncLayout(source)
-            && (mContext.mLithoConfiguration.componentsConfig.getUseInterruptibleResolution()
-                || mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures());
+    final boolean isInterruptible = !LayoutState.isFromSyncLayout(source);
 
     ResolveTreeFuture treeFuture =
         new ResolveTreeFuture(
@@ -2274,21 +2271,6 @@ public class ComponentTree
     final @Nullable ResolveResult resolveResult = resolveResultHolder.result;
 
     if (resolveResult == null) {
-      if (!isReleased()
-          && isFromSyncLayout(source)
-          && !mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures()) {
-        final String errorMessage =
-            "ResolveResult is null, but only async operations can return a null ResolveResult. Source: "
-                + layoutSourceToString(source)
-                + ", message: "
-                + resolveResultHolder.message
-                + ", current thread: "
-                + Thread.currentThread().getName()
-                + ". Root: "
-                + (root == null ? "null" : root.getSimpleName());
-        throw new IllegalStateException(errorMessage);
-      }
-
       return;
     }
 
@@ -2470,22 +2452,6 @@ public class ComponentTree
     final @Nullable LayoutState layoutState = layoutStateHolder.result;
 
     if (layoutState == null) {
-      if (!isReleased()
-          && isSync
-          && !mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures()) {
-        final String errorMessage =
-            "LayoutState is null, but only async operations can return a null LayoutState. Source: "
-                + layoutSourceToString(source)
-                + ", message: "
-                + layoutStateHolder.message
-                + ", current thread: "
-                + Thread.currentThread().getName()
-                + ". Root: "
-                + (resolveResult.component.getSimpleName());
-
-        throw new IllegalStateException(errorMessage);
-      }
-
       return;
     }
 
@@ -2879,14 +2845,6 @@ public class ComponentTree
    * after that because it's in an incomplete state, so it needs to be released.
    */
   public void cancelLayoutAndReleaseTree() {
-    if (!mContext.mLithoConfiguration.componentsConfig.getUseCancellableLayoutFutures()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          TAG,
-          "Cancelling layouts for a ComponentTree with useCancelableLayoutFutures set to false is a no-op.");
-      return;
-    }
-
     if (ThreadUtils.isMainThread()) {
       release();
     } else {
