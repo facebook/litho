@@ -45,7 +45,7 @@ private constructor(
     latestFrameTimeNs = frameTimeNanos // update the frame time
 
     if (delegates.isNotEmpty()) {
-      val isTracing = tracer.isTracing
+      val isTracing = tracer.isTracing()
       if (isTracing) {
         tracer.beginSection("IncrementalMountGapWorker::doFrame")
       }
@@ -65,7 +65,7 @@ private constructor(
   }
 
   private fun premount(deadlineNs: Long) {
-    val isTracing = tracer.isTracing
+    val isTracing = tracer.isTracing()
     if (isTracing) {
       tracer.beginSection("premount")
     }
@@ -88,7 +88,7 @@ private constructor(
       delegate: MountDelegate,
       deadlineNs: Long,
   ): Boolean {
-    val isTracing = tracer.isTracing
+    val isTracing = tracer.isTracing()
     if (isTracing) {
       tracer.beginSection("premount-item")
     }

@@ -62,7 +62,7 @@ open class DefaultComponentsSystrace : Systracer {
           (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled())
 
   private fun applyIfTracing(block: () -> Unit) {
-    if (isTracing) {
+    if (isTracing()) {
       block()
     }
   }
