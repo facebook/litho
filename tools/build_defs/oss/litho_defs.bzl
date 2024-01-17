@@ -166,8 +166,6 @@ LITHO_COMPILE_TESTING_TARGET = make_dep_path("lib/compile-testing:compile-testin
 
 LITHO_TRUTH_TARGET = make_dep_path("lib/truth:truth")
 
-LITHO_MOCKITO_TARGET = make_dep_path("lib/mockito:mockito")
-
 LITHO_MOCKITO_V2_TARGET = make_dep_path("lib/mockito2:mockito2")
 
 LITHO_POWERMOCK_MOCKITO_V2_TARGET = make_dep_path("lib/powermock2:powermock-mockito2")
