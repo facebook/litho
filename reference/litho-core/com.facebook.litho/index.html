@@ -1338,7 +1338,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-hook-updater/index.html">HookUpdater</a></div><div class="brief "><p class="paragraph">EXPERIMENTAL - fun interface for a block of code that will update state created with useState. See KState.kt for more details.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-hook-updater/index.html">HookUpdater</a> : <a href="-state-update-applier/index.html">StateUpdateApplier</a></div><div class="brief "><p class="paragraph">EXPERIMENTAL - fun interface for a block of code that will update state created with useState. See KState.kt for more details.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -1848,7 +1848,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-litho-tree/index.html">LithoTree</a></div><div class="brief "><p class="paragraph">Represents a pointer to the Tree that a ComponentContext is attached to</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-litho-tree/index.html">LithoTree</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>stateUpdater<span class="token operator">: </span><a href="-state-updater/index.html">StateUpdater</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>mountedViewReference<span class="token operator">: </span><a href="-mounted-view-reference/index.html">MountedViewReference</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>errorComponentReceiver<span class="token operator">: </span><a href="-error-component-receiver/index.html">ErrorComponentReceiver</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>lithoTreeLifecycleProvider<span class="token operator">: </span><a href="-litho-tree-lifecycle-provider/index.html">LithoTreeLifecycleProvider</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>id<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Represents a pointer to the Tree that a ComponentContext is attached to</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -2059,6 +2059,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-mount-spec-litho-render-unit/index.html">MountSpecLithoRenderUnit</a> : <a href="-litho-render-unit/index.html">LithoRenderUnit</a>, <span data-unresolved-link="com.facebook.rendercore/ContentAllocator///PointingToDeclaration/">ContentAllocator</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">This <span data-unresolved-link="com.facebook.rendercore/RenderUnit///PointingToDeclaration/">RenderUnit</span> encapsulates a Litho output to be mounted using Render Core.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-855922088%2FClasslikes%2F947585829" anchor-label="NestedLithoTree" id="-855922088%2FClasslikes%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-nested-litho-tree/index.html"><span>Nested</span><wbr><span>Litho</span><wbr><span><span>Tree</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-855922088%2FClasslikes%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-nested-litho-tree/index.html">NestedLithoTree</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="-component-context/index.html">ComponentContext</a><span class="token punctuation">, </span></span><span class="parameter ">config<span class="token operator">: </span><a href="../com.facebook.litho.config/-components-configuration/index.html">ComponentsConfiguration</a><span class="token operator"> = </span>context.lithoConfiguration.componentsConfig<span class="token punctuation">, </span></span><span class="parameter ">requestUpdate<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span>isAsync<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span> : <a href="-state-updater/index.html">StateUpdater</a>, <a href="-mounted-view-reference/index.html">MountedViewReference</a>, <a href="-error-component-receiver/index.html">ErrorComponentReceiver</a>, <a href="-litho-tree-lifecycle-provider/index.html">LithoTreeLifecycleProvider</a></div><div class="brief "><p class="paragraph">The <a href="-nested-litho-tree/index.html">NestedLithoTree</a> should be used to render Litho components in a container, say a Primitive like a ScrollView or when embedded Litho hierarchies in other RC framework hierarchies.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -2734,6 +2749,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-state-handler/index.html">StateHandler</a>&nbsp;<span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stateHandler<span class="token operator">: </span><a href="-state-handler/index.html">StateHandler</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Holds information about the current State of the components in a Component Tree.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-778073740%2FClasslikes%2F947585829" anchor-label="StateUpdateApplier" id="-778073740%2FClasslikes%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-state-update-applier/index.html"><span>State</span><wbr><span>Update</span><wbr><span><span>Applier</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-778073740%2FClasslikes%2F947585829"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-state-update-applier/index.html">StateUpdateApplier</a></div></div></div>
                 </div>
               </div>
             </div>
