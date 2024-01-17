@@ -370,7 +370,7 @@ open class LithoLayoutResult(
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
-    measureHadExceptions = size.mHadExceptions
+    measureHadExceptions = size.hadExceptions
     return size
   }
 
