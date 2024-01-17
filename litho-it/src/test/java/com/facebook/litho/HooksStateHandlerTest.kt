@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.util.Lists
@@ -26,6 +28,8 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class HooksStateHandlerTest {
 
+  private val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+
   @Test
   fun copyHandler_copyingEmptyStateHandler_createsEmptyStateHandler() {
     val first = StateHandler()
@@ -35,7 +39,7 @@ class HooksStateHandlerTest {
   }
 
   @Test
-  fun commit_copyingHandlerWithPendingStateUpdateAndCommittingIt_copiesAllOldStateValuesAndAppliesStateUpdate() {
+  fun `when copying StateHandler and applying updates on new StateHandler then state updates should be applied`() {
     val bazState = Any()
     var kStateContainer = KStateContainer.withNewState(null, "test")
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4)
@@ -50,6 +54,7 @@ class HooksStateHandlerTest {
         })
     assertThat(first.hasUncommittedUpdates()).isTrue
     val second = StateHandler(first)
+    second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     assertThat(first.hasUncommittedUpdates()).isTrue
     assertThat(second.hasUncommittedUpdates()).isTrue
     val secondKstate = second.getStateContainer(GLOBAL_KEY) as KStateContainer?
@@ -66,7 +71,7 @@ class HooksStateHandlerTest {
   }
 
   @Test
-  fun commit_copyingHandlerWithMultiplePendingStateUpdatesAndCommittingIt_copiesAllOldStateValuesAndAppliesAllStateUpdates() {
+  fun `when copying StateHandler and applying multiple updates on new StateHandler then all state updates should be applied`() {
     val bazState = Any()
     val first = StateHandler()
     var kStateContainer = KStateContainer.withNewState(null, "test")
@@ -87,6 +92,7 @@ class HooksStateHandlerTest {
         })
     assertThat(first.hasUncommittedUpdates()).isTrue
     val second = StateHandler(first)
+    second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     assertThat(first.hasUncommittedUpdates()).isTrue
     assertThat(second.hasUncommittedUpdates()).isTrue
     assertThat(second.stateContainers).hasSize(1)
@@ -104,7 +110,7 @@ class HooksStateHandlerTest {
   }
 
   @Test
-  fun commit_committingHandlerFirstWithPartOfStateUpdatesAndSecondTimeWithAllStateUpdates_atFirstAppliesOnlyStateUpdatesFromFirstCommitAndKeepOthersPendingAndThenAppliesAllStateUpdates() {
+  fun `when copying StateHandler multiple times with multiple updates then all state updates should be applied`() {
     val bazState = Any()
     val first = StateHandler()
     var kStateContainer = KStateContainer.withNewState(null, "test")
@@ -124,6 +130,7 @@ class HooksStateHandlerTest {
               currentState.copyAndMutate(1, currentState.states[1] as Int + 1)
         })
     val second = StateHandler(first)
+    second.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
@@ -131,6 +138,7 @@ class HooksStateHandlerTest {
               currentState.copyAndMutate(1, currentState.states[1] as Int + 1)
         })
     val third = StateHandler(first)
+    third.applyStateUpdatesEarly(context = c, component = null, prevTreeRootNode = null)
     third.keepStateContainerForGlobalKey(GLOBAL_KEY)
     val secondKstate = second.getStateContainer(GLOBAL_KEY) as KStateContainer?
     second.keepStateContainerForGlobalKey(GLOBAL_KEY)

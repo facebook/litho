@@ -67,10 +67,29 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
   // of the component the update applies to
   @GuardedBy("this")
   private val pendingHookUpdates: MutableMap<String, MutableList<HookUpdater>> = HashMap()
-  private var appliedHookUpdates: Map<String, List<HookUpdater>> = HashMap()
+  private var appliedHookUpdates: MutableMap<String, List<HookUpdater>> = HashMap()
 
   var initialStateContainer: InitialStateContainer
     private set
+
+  init {
+    if (stateHandler == null) {
+      initialStateContainer = InitialStateContainer()
+    } else {
+      synchronized(this) {
+        initialStateContainer = stateHandler.initialStateContainer
+        copyStateUpdatesMap(
+            stateHandler.pendingStateUpdates,
+            stateHandler.pendingHookUpdates,
+            stateHandler.pendingLazyStateUpdates,
+            stateHandler.appliedStateUpdates,
+            stateHandler.pendingHookUpdates,
+        )
+        copyCurrentStateContainers(stateHandler.stateContainers)
+        copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
+      }
+    }
+  }
 
   @get:Synchronized
   val isEmpty: Boolean
@@ -203,6 +222,8 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
       }
     }
     _pendingStateUpdates.clear()
+
+    runHooks()
   }
 
   @Synchronized
@@ -340,20 +361,35 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
    */
   private fun copyStateUpdatesMap(
       pendingStateUpdates: Map<String, MutableList<StateUpdate>>,
+      pendingHookStateUpdates: Map<String, MutableList<HookUpdater>>,
       pendingLazyStateUpdates: Map<String, MutableList<StateUpdate>>,
-      appliedStateUpdates: Map<String, List<StateUpdate>>
+      appliedStateUpdates: Map<String, List<StateUpdate>>,
+      appliedHookStateUpdates: Map<String, List<HookUpdater>>,
   ) {
-    if (pendingStateUpdates.isEmpty() && appliedStateUpdates.isEmpty()) {
+    if (pendingStateUpdates.isEmpty() &&
+        appliedStateUpdates.isEmpty() &&
+        pendingHookStateUpdates.isEmpty() &&
+        appliedHookStateUpdates.isEmpty()) {
       return
     }
     synchronized(this) {
       for (key in pendingStateUpdates.keys) {
         _pendingStateUpdates[key] = createStateUpdatesList(pendingStateUpdates[key])
       }
-      copyPendingLazyStateUpdates(pendingLazyStateUpdates)
+
       for ((key, value) in appliedStateUpdates) {
         _appliedStateUpdates[key] = createStateUpdatesList(value)
       }
+
+      for ((key, value) in pendingHookStateUpdates) {
+        pendingHookUpdates[key] = createHookStateUpdatesList(value)
+      }
+
+      for ((key, value) in appliedHookStateUpdates) {
+        appliedHookUpdates[key] = createHookStateUpdatesList(value)
+      }
+
+      copyPendingLazyStateUpdates(pendingLazyStateUpdates)
     }
   }
 
@@ -412,23 +448,6 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
   val pendingHookUpdatesCount: Int
     get() = pendingHookUpdates.asSequence().sumOf { it.value.size }
 
-  init {
-    if (stateHandler == null) {
-      initialStateContainer = InitialStateContainer()
-    } else {
-      synchronized(this) {
-        initialStateContainer = stateHandler.initialStateContainer
-        copyStateUpdatesMap(
-            stateHandler.pendingStateUpdates,
-            stateHandler.pendingLazyStateUpdates,
-            stateHandler.appliedStateUpdates)
-        copyCurrentStateContainers(stateHandler.stateContainers)
-        copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
-        runHooks(stateHandler)
-      }
-    }
-  }
-
   /**
    * Called when creating a new StateHandler for a layout calculation. It copies the source of truth
    * state, and then the current list of HookUpdater blocks that need to be applied. Unlike normal
@@ -438,9 +457,8 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
    * @param other the ComponentTree's source-of-truth StateHandler where pending state updates are
    *   collected
    */
-  private fun runHooks(other: StateHandler) {
-    val updates = getHookUpdatesCopy(other.pendingHookUpdates)
-    for ((key, value) in updates) {
+  private fun runHooks() {
+    for ((key, value) in pendingHookUpdates) {
       val stateContainer = _stateContainers[key]
       /* currentState could be null if the state is removed from the StateHandler before the update runs */
       if (stateContainer is KStateContainer) {
@@ -452,7 +470,8 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
         _stateContainers[key] = kStateContainer
       }
     }
-    appliedHookUpdates = updates
+    appliedHookUpdates.putAll(pendingHookUpdates)
+    pendingHookUpdates.clear()
   }
 
   /**
@@ -547,6 +566,17 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
         copyFrom: List<StateUpdate>? = null
     ): MutableList<StateUpdate> {
       val list: MutableList<StateUpdate> =
+          ArrayList(copyFrom?.size ?: INITIAL_STATE_UPDATE_LIST_CAPACITY)
+      if (copyFrom != null) {
+        list.addAll(copyFrom)
+      }
+      return list
+    }
+
+    private fun createHookStateUpdatesList(
+        copyFrom: List<HookUpdater>? = null
+    ): MutableList<HookUpdater> {
+      val list: MutableList<HookUpdater> =
           ArrayList(copyFrom?.size ?: INITIAL_STATE_UPDATE_LIST_CAPACITY)
       if (copyFrom != null) {
         list.addAll(copyFrom)
