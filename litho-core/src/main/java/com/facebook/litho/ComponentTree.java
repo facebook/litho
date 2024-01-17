@@ -1838,6 +1838,10 @@ public class ComponentTree
     return mLifecycleProvider;
   }
 
+  boolean shouldEnableDefaultAOSPLithoLifecycleProvider() {
+    return mContext.shouldEnableDefaultAOSPLithoLifecycleProvider();
+  }
+
   public @Nullable LithoLifecycleProvider getLifecycleProvider() {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       return mLithoView != null ? mLithoView.getLithoLifecycleProvider() : null;

@@ -32,6 +32,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleOwner;
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -468,12 +470,9 @@ public class LithoView extends BaseMountingView {
                 + mComponentTree.getReleasedComponent());
       }
       mComponentTree.setLithoView(this);
+
       if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-        if (mComponentTree.getLifecycleProviderForLithoView() != null) {
-          setLifecycleProvider(mComponentTree.getLifecycleProviderForLithoView());
-        }
-        mLithoLifecycleProviderHolder.addListener(mComponentTree);
-        mComponentTree.setLifecycleOwner(mLithoLifecycleProviderHolder.getHeldLifecycleProvider());
+        subscribeComponentTreeToLifecycleProvider();
       }
       if (isAttached()) {
         mComponentTree.attach();
@@ -563,6 +562,34 @@ public class LithoView extends BaseMountingView {
     }
   }
 
+  private void subscribeComponentTreeToLifecycleProvider() {
+    if (mComponentTree != null) {
+      LithoLifecycleProvider lifecycleProvider = mComponentTree.getLifecycleProviderForLithoView();
+      if (lifecycleProvider != null) {
+        setLifecycleProvider(lifecycleProvider);
+      } else {
+        if (mComponentTree.shouldEnableDefaultAOSPLithoLifecycleProvider() && isAttached()) {
+          enableDefaultAOSPLithoLifecycleProvider();
+        }
+      }
+      mLithoLifecycleProviderHolder.addListener(mComponentTree);
+    }
+  }
+
+  private void enableDefaultAOSPLithoLifecycleProvider() {
+    if (!componentTreeHasLifecycleProvider()) {
+      try {
+        setLifecycleProvider(new AOSPLithoLifecycleProvider(FragmentManager.findFragment(this)));
+      } catch (IllegalStateException e) {
+        LifecycleOwner lifecycleOwner =
+            LithoLifecycleProviderHelperKt.getLifecycleOwnerFromContext(this.getContext());
+        if (lifecycleOwner != null) {
+          setLifecycleProvider(new AOSPLithoLifecycleProvider(lifecycleOwner));
+        }
+      }
+    }
+  }
+
   private void subscribeToParentLifecycleProvider() {
     LithoView parentLithoView = getParentLithoView();
     if (parentLithoView != null) {
@@ -582,6 +609,9 @@ public class LithoView extends BaseMountingView {
 
   private synchronized void setLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
     mLithoLifecycleProviderHolder.setHeldLifecycleProvider(lifecycleProvider);
+    if (mComponentTree != null) {
+      mComponentTree.setLifecycleOwner(mLithoLifecycleProviderHolder.getHeldLifecycleProvider());
+    }
   }
 
   public @Nullable LithoView getParentLithoView() {
@@ -635,6 +665,10 @@ public class LithoView extends BaseMountingView {
         mAccessibilityManager, mAccessibilityStateChangeListener);
 
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      if (mComponentTree != null
+          && mComponentTree.shouldEnableDefaultAOSPLithoLifecycleProvider()) {
+        enableDefaultAOSPLithoLifecycleProvider();
+      }
       subscribeToParentLifecycleProvider();
     }
   }

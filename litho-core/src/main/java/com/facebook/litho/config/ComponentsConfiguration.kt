@@ -73,7 +73,8 @@ internal constructor(
      * If enabled, this will enable the recycling of [com.facebook.litho.ComponentHost] using
      * [MountItemsPool]
      */
-    @JvmField val componentHostRecyclingEnabled: Boolean = false
+    @JvmField val componentHostRecyclingEnabled: Boolean = false,
+    val shouldEnableDefaultAOSPLithoLifecycleProvider: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -198,6 +199,7 @@ internal constructor(
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var enableFixForNestedComponentTree: Boolean = false
     @JvmField var enableRefactorLithoLifecycleProvider: Boolean = false
+    @JvmField var enableDefaultAOSPLithoLifecycleProviderAPI: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
@@ -235,6 +237,8 @@ internal constructor(
     private var mountContentPreallocationHandler = baseConfig.mountContentPreallocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
+    private var shouldEnableDefaultAOSPLithoLifecycleProvider =
+        baseConfig.shouldEnableDefaultAOSPLithoLifecycleProvider
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean) = also {
       shouldAddHostViewForRootComponent = enabled
@@ -268,6 +272,12 @@ internal constructor(
       componentHostRecyclingEnabled = enabled
     }
 
+    fun shouldEnableDefaultAOSPLithoLifecycleProvider(enabled: Boolean): Builder = also {
+      if (enableDefaultAOSPLithoLifecycleProviderAPI) {
+        shouldEnableDefaultAOSPLithoLifecycleProvider = enabled
+      }
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -279,7 +289,9 @@ internal constructor(
           mountContentPreallocationEnabled = mountContentPreallocationEnabled,
           mountContentPreallocationHandler = mountContentPreallocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
-          componentHostRecyclingEnabled = componentHostRecyclingEnabled)
+          componentHostRecyclingEnabled = componentHostRecyclingEnabled,
+          shouldEnableDefaultAOSPLithoLifecycleProvider =
+              shouldEnableDefaultAOSPLithoLifecycleProvider)
     }
   }
 }

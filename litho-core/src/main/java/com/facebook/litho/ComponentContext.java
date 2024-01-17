@@ -763,6 +763,10 @@ public class ComponentContext {
         && mLithoConfiguration.componentsConfig.getShouldCacheLayouts();
   }
 
+  public boolean shouldEnableDefaultAOSPLithoLifecycleProvider() {
+    return mLithoConfiguration.componentsConfig.getShouldEnableDefaultAOSPLithoLifecycleProvider();
+  }
+
   public final boolean shouldUseNonRebindingEventHandlers() {
     return mLithoConfiguration.componentsConfig.getUseNonRebindingEventHandlers();
   }
