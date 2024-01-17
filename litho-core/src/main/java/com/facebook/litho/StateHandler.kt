@@ -611,6 +611,8 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
   }
 }
 
+sealed interface StateUpdateApplier
+
 @DataClassGenerate
 private data class CachedValueKey(
     val globalKey: String,

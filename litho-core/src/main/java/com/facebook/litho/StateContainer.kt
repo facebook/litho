@@ -33,7 +33,7 @@ abstract class StateContainer : Cloneable {
         throw RuntimeException(ex)
       }
 
-  class StateUpdate(@JvmField val type: Int, vararg params: Any) {
+  class StateUpdate(@JvmField val type: Int, vararg params: Any) : StateUpdateApplier {
     @JvmField val params: Array<Any>
 
     init {

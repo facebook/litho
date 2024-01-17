@@ -16,6 +16,9 @@
 
 package com.facebook.litho
 
+import android.view.ViewGroup
+import com.facebook.litho.annotations.Hook
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.primitives.MountBehavior as PrimitiveMountBehavior
 import com.facebook.rendercore.primitives.MountConfigurationScope
@@ -193,6 +196,49 @@ internal constructor(context: ComponentContext, resolveContext: ResolveContext) 
  */
 fun interface UnbindDynamicFunc {
   fun onUnbindDynamic()
+}
+
+fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderTreeView(
+    tree: NestedLithoTree,
+    getRenderTreeView: ContentType.() -> LithoRenderTreeView,
+) {
+  bindWithLayoutData<LayoutState>(tree) { content, layoutState ->
+    tree.commit(newLayoutState = layoutState)
+    content.getRenderTreeView().setLayoutState(layoutState, tree.state)
+    onUnbind {}
+  }
+
+  bind(Unit) { onUnbind { it.getRenderTreeView().resetLayoutState() } }
+}
+
+@Hook
+fun PrimitiveComponentScope.useNestedTree(
+    config: ComponentsConfiguration = context.lithoConfiguration.componentsConfig,
+    root: Component,
+    treeProps: TreeProps? = null,
+    vararg deps: Any? = emptyArray(),
+): Pair<NestedLithoTree, ResolveResult> {
+
+  // Any() is used ensure state updates are always
+  // requested, and not skipped due to duplicate checks.
+  val stateForSync = useState { Any() }
+
+  val tree =
+      useCached(config, *deps) {
+        NestedLithoTree(
+            context = context,
+            config = config,
+        ) { isAsync ->
+          if (isAsync) {
+            stateForSync.update(Any())
+          } else {
+            stateForSync.updateSync(Any())
+          }
+        }
+      }
+
+  val result = tree.resolve(root = root, treeProps = treeProps)
+  return Pair(tree, result)
 }
 
 class BindDynamicScope {

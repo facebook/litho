@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 /** Represents a pointer to the Tree that a ComponentContext is attached to */
 class LithoTree
-private constructor(
+constructor(
     @field:ThreadConfined(ThreadConfined.ANY) val stateUpdater: StateUpdater,
     @field:ThreadConfined(ThreadConfined.UI) val mountedViewReference: MountedViewReference,
     val errorComponentReceiver: ErrorComponentReceiver,

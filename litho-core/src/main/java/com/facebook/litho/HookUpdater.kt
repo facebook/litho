@@ -20,7 +20,7 @@ package com.facebook.litho
  * EXPERIMENTAL - fun interface for a block of code that will update state created with useState.
  * See KState.kt for more details.
  */
-interface HookUpdater {
+interface HookUpdater : StateUpdateApplier {
 
   /** Get a [KStateContainer] instance with updates applied. */
   fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer
