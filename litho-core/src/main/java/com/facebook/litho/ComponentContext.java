@@ -602,7 +602,6 @@ public class ComponentContext {
     mParentTreeProps = treeProps;
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public @Nullable TreeProps getTreeProps() {
     return mTreeProps;
   }
@@ -732,6 +731,10 @@ public class ComponentContext {
 
   public boolean isReconciliationEnabled() {
     return mLithoConfiguration.componentsConfig.isReconciliationEnabled;
+  }
+
+  public boolean isPrimitiveVerticalScrollEnabled() {
+    return false; // TODO: wire up with config
   }
 
   @Nullable

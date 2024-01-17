@@ -487,11 +487,11 @@ public class LayoutState
     return mDiffTreeRoot;
   }
 
-  int getWidth() {
+  public int getWidth() {
     return mWidth;
   }
 
-  int getHeight() {
+  public int getHeight() {
     return mHeight;
   }
 

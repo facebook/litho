@@ -28,10 +28,14 @@ import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
+import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoMetadataExceptionWrapper;
+import com.facebook.litho.LithoRenderTreeView;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.TreeState;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.utils.CommonUtils;
 import java.util.List;
 
 /**
@@ -74,6 +78,10 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     super(context, attrs, defStyleAttr);
     mLithoView = view;
     addView(mLithoView);
+  }
+
+  public BaseMountingView getRenderTreeView() {
+    return mLithoView;
   }
 
   @Override
@@ -163,6 +171,49 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     lithoViews.add(mLithoView);
   }
 
+  public void setScrollStateListener(final @Nullable ScrollStateListener scrollStateListener) {
+    if (scrollStateListener != null) {
+      if (mScrollStateDetector == null) {
+        mScrollStateDetector = new ScrollStateDetector(this);
+      }
+      mScrollStateDetector.setListener(scrollStateListener);
+    } else if (mScrollStateDetector != null) {
+      mScrollStateDetector.setListener(null);
+    }
+  }
+
+  public void setScrollPosition(final @Nullable ScrollPosition scrollPosition) {
+    if (scrollPosition != null) {
+      final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
+          new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+              setScrollY(scrollPosition.y);
+              ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
+              if (currentViewTreeObserver.isAlive()) {
+                currentViewTreeObserver.removeOnPreDrawListener(this);
+              }
+              return true;
+            }
+          };
+      getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
+
+      mOnPreDrawListener = onPreDrawListener;
+    } else {
+      setScrollY(0);
+      getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
+      mOnPreDrawListener = null;
+    }
+  }
+
+  public void mount(final @Nullable LayoutState layoutState, final @Nullable TreeState state) {
+    if (layoutState != null && state != null && mLithoView instanceof LithoRenderTreeView) {
+      mCurrentRootComponent = layoutState.getRootName();
+      mCurrentLogTag = layoutState.getComponentContext().getLogTag();
+      ((LithoRenderTreeView) mLithoView).setLayoutState(layoutState, state);
+    }
+  }
+
   public void mount(
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
@@ -217,6 +268,16 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     }
   }
 
+  public void release() {
+    if (mLithoView instanceof LithoRenderTreeView) {
+      ((LithoRenderTreeView) mLithoView).resetLayoutState();
+    } else {
+      throw new UnsupportedOperationException(
+          "This operation is only support for LithoRenderTreeView but it was : "
+              + CommonUtils.getSectionNameForTracing(mLithoView.getClass()));
+    }
+  }
+
   public static class ScrollPosition {
     public int y;
 
@@ -226,6 +287,19 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
     public ScrollPosition(int initialScrollOffsetPixels) {
       y = initialScrollOffsetPixels;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      ScrollPosition that = (ScrollPosition) o;
+      return y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+      return y;
     }
   }
 

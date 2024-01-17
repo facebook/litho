@@ -334,6 +334,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       Layout.setStyleHeightFromSpec(yogaRoot, heightSpec)
     }
 
+    if (tailComponentContext.isPrimitiveVerticalScrollEnabled) {
+      yogaRoot.setMinWidth(sizeConstraints.minWidth.toFloat())
+      yogaRoot.setMinHeight(sizeConstraints.minHeight.toFloat())
+    }
+
     val width: Float =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
           YogaConstants.UNDEFINED
