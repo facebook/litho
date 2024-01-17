@@ -43,7 +43,6 @@ internal constructor(
      * and ignore duplicate state updates coming from usages in the Specs API.
      */
     @JvmField val specsApiStateUpdateDuplicateDetectionEnabled: Boolean = false,
-    val useInterruptibleResolution: Boolean = true,
     val shouldCacheLayouts: Boolean = true,
     val disableNestedTreeCaching: Boolean = true,
     val shouldAddHostViewForRootComponent: Boolean = false,
