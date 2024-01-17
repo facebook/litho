@@ -71,6 +71,7 @@ dependencies {
 
     // Android Support Library
     compileOnly deps.supportAnnotations
+    implementation deps.supportFragment
     implementation deps.supportCore
     implementation deps.supportCustomView
     implementation deps.supportViewPager
