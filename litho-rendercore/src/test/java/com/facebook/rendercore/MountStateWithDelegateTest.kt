@@ -59,22 +59,22 @@ class MountStateWithDelegateTest {
     val mountState = createMountState(c)
     mountState.mount(renderTree)
     val id1 = testRenderUnitOne.id
-    mountState.mountDelegate?.extensionStates?.get(0)?.let { state ->
+    mountState.getMountDelegate()?.extensionStates?.get(0)?.let { state ->
       mountExtension.acquire(state, id1, 1)
       assertThat(state.ownsReference(id1)).isTrue
       mountState.unmountAllItems()
       assertThat(state.ownsReference(id1)).isFalse
-      assertThat(mountState.mountDelegate?.extensionStates).isNotNull
-      assertThat(mountState.mountDelegate?.extensionStates).isEmpty()
+      assertThat(mountState.getMountDelegate()?.extensionStates).isNotNull
+      assertThat(mountState.getMountDelegate()?.extensionStates).isEmpty()
       mountState.mount(renderTree)
     }
-    mountState.mountDelegate?.extensionStates?.get(0)?.let { state ->
+    mountState.getMountDelegate()?.extensionStates?.get(0)?.let { state ->
       mountExtension.acquire(state, id1, 1)
       assertThat(state.ownsReference(id1)).isTrue
       mountState.unmountAllItems()
       assertThat(state.ownsReference(id1)).isFalse
-      assertThat(mountState.mountDelegate?.extensionStates).isNotNull
-      assertThat(mountState.mountDelegate?.extensionStates).isEmpty()
+      assertThat(mountState.getMountDelegate()?.extensionStates).isNotNull
+      assertThat(mountState.getMountDelegate()?.extensionStates).isEmpty()
     }
   }
 

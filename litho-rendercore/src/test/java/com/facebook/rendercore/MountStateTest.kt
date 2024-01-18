@@ -432,7 +432,7 @@ class MountStateTest {
   fun onMountEmptyRenderTree_MountStateShouldHostExpectedState() {
     val c: Context = RuntimeEnvironment.application
     val mountState = createMountState(c)
-    assertThat(mountState.mountItemCount).describedAs("Number of mounted items").isEqualTo(0)
+    assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(0)
     assertThat(mountState.isRootItem(0)).describedAs("No item should not be root").isFalse
     assertThat(mountState.isRootItem(1)).describedAs("No item should not be root").isFalse
     assertThat(mountState.getMountItemAt(0)).describedAs("Root item").isNull()
@@ -440,12 +440,12 @@ class MountStateTest {
     assertThat(mountState.getContentAt(3)).describedAs("3rd item").isNull()
     assertThat(mountState.getContentById(1)).describedAs("1st item").isNull()
     assertThat(mountState.getContentById(3)).describedAs("3rd item").isNull()
-    assertThat(mountState.hosts).describedAs("Number of Hosts").hasSize(0)
+    assertThat(mountState.getHosts()).describedAs("Number of Hosts").hasSize(0)
     val tree =
         createRenderTree(
             c, LayoutResultWrappingNode(SimpleLayoutResult.create().width(100).height(100).build()))
     mountState.mount(tree)
-    assertThat(mountState.mountItemCount).describedAs("Number of mounted items").isEqualTo(1)
+    assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(1)
     assertThat(mountState.isRootItem(0)).describedAs("0th item should be root").isTrue
     assertThat(mountState.isRootItem(1)).describedAs("1st item should be root").isFalse
     assertThat(mountState.getMountItemAt(0)).describedAs("Root item").isNotNull
@@ -453,7 +453,7 @@ class MountStateTest {
     assertThat(mountState.getContentAt(3)).describedAs("3rd item").isNull()
     assertThat(mountState.getContentById(0)).describedAs("0th item").isNotNull
     assertThat(mountState.getContentById(3)).describedAs("3rd item").isNull()
-    assertThat(mountState.hosts).describedAs("Number of Hosts").hasSize(1)
+    assertThat(mountState.getHosts()).describedAs("Number of Hosts").hasSize(1)
   }
 
   @Test
@@ -526,7 +526,7 @@ class MountStateTest {
     val mountState = createMountState(c)
     mountState.mount(renderTree)
     assertThat(mountState.needsRemount()).describedAs("Needs Remount").isFalse
-    assertThat(mountState.mountItemCount).describedAs("Number of mounted items").isEqualTo(9)
+    assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(9)
     assertThat(mountState.isRootItem(0)).describedAs("0th item should be root").isTrue
     assertThat(mountState.isRootItem(1)).describedAs("1st item should not be root").isFalse
     assertThat(mountState.getMountItemAt(0)).describedAs("root item").isNotNull
@@ -538,10 +538,10 @@ class MountStateTest {
         .describedAs("1st item")
         .isInstanceOf(TextView::class.java)
     assertThat(mountState.getContentById(3)).describedAs("3rd item").isInstanceOf(Host::class.java)
-    assertThat(mountState.hosts).describedAs("Number of Hosts").hasSize(4)
+    assertThat(mountState.getHosts()).describedAs("Number of Hosts").hasSize(4)
     mountState.unmountAllItems()
     assertThat(mountState.needsRemount()).describedAs("Needs Remount").isTrue
-    assertThat(mountState.mountItemCount).describedAs("Number of mounted items").isEqualTo(0)
+    assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(0)
     assertThat(mountState.isRootItem(0)).describedAs("No item should not be root").isFalse
     assertThat(mountState.isRootItem(1)).describedAs("No item should not be root").isFalse
     assertThat(mountState.getMountItemAt(0)).describedAs("Root item").isNull()
@@ -549,7 +549,7 @@ class MountStateTest {
     assertThat(mountState.getContentAt(3)).describedAs("3rd item").isNull()
     assertThat(mountState.getContentById(1)).describedAs("1st item").isNull()
     assertThat(mountState.getContentById(3)).describedAs("3rd item").isNull()
-    assertThat(mountState.hosts).describedAs("Number of Hosts").hasSize(0)
+    assertThat(mountState.getHosts()).describedAs("Number of Hosts").hasSize(0)
   }
 
   @Suppress("UNCHECKED_CAST")
@@ -584,11 +584,11 @@ class MountStateTest {
     bindOrder.clear()
     mountState.attach()
     assertThat(bindOrder).containsExactly(bindBinder)
-    assertThat(mountState.mountItemCount).isEqualTo(2)
+    assertThat(mountState.getMountItemCount()).isEqualTo(2)
     val item = mountState.getMountItemAt(0)
     assertThat(item).isNotNull
     mountState.unbindMountItem(item!!)
-    assertThat(mountState.mountItemCount).isEqualTo(2)
+    assertThat(mountState.getMountItemCount()).isEqualTo(2)
     assertThat(bindOrder).containsExactly(bindBinder)
   }
 
@@ -725,7 +725,7 @@ class MountStateTest {
     val mountState = createMountState(c)
     mountState.mount(renderTree)
     assertThat(mountState.needsRemount()).describedAs("Needs Remount").isFalse
-    assertThat(mountState.mountItemCount).describedAs("Number of mounted items").isEqualTo(5)
+    assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(5)
     assertThat(mountState.getContentById(1))
         .describedAs("Item with id 1")
         .isInstanceOf(TextView::class.java)
@@ -736,18 +736,18 @@ class MountStateTest {
     assertThat(mountState.getMountItemAt(4)?.content)
         .describedAs("4th item")
         .isInstanceOf(TextView::class.java)
-    assertThat(mountState.renderUnitCount).describedAs("Number of RenderUnits").isEqualTo(5)
+    assertThat(mountState.getRenderUnitCount()).describedAs("Number of RenderUnits").isEqualTo(5)
     mountState.notifyUnmount(4)
-    assertThat(mountState.mountItemCount).describedAs("Number of mounted items").isEqualTo(4)
+    assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(4)
     assertThat(mountState.getMountItemAt(4)).describedAs("4th MountItem").isNull()
-    assertThat(mountState.renderUnitCount).describedAs("Number of RenderUnits").isEqualTo(5)
+    assertThat(mountState.getRenderUnitCount()).describedAs("Number of RenderUnits").isEqualTo(5)
     mountState.notifyMount(4)
-    assertThat(mountState.mountItemCount).describedAs("Number of mounted items").isEqualTo(5)
+    assertThat(mountState.getMountItemCount()).describedAs("Number of mounted items").isEqualTo(5)
     assertThat(mountState.getMountItemAt(4)).describedAs("4th MountItem").isNotNull
     assertThat(mountState.getMountItemAt(4)?.content)
         .describedAs("4th item")
         .isInstanceOf(TextView::class.java)
-    assertThat(mountState.renderUnitCount).describedAs("Number of RenderUnits").isEqualTo(5)
+    assertThat(mountState.getRenderUnitCount()).describedAs("Number of RenderUnits").isEqualTo(5)
   }
 
   @Test
@@ -805,7 +805,7 @@ class MountStateTest {
     mountState.mount(renderTree)
 
     // assert mount state is correct
-    assertThat(mountState.mountItemCount).isEqualTo(2)
+    assertThat(mountState.getMountItemCount()).isEqualTo(2)
 
     // assert that bind was called in correct order and correct bind data was returned
     assertThat(bindOrder).hasSize(2)
@@ -848,7 +848,7 @@ class MountStateTest {
       mountState.mount(renderTree)
 
       // assert mount state is correct
-      assertThat(mountState.mountItemCount).isEqualTo(2)
+      assertThat(mountState.getMountItemCount()).isEqualTo(2)
 
       // assert that bind was called in correct order and correct bind data was returned
       assertThat(bindOrder).hasSize(2)
@@ -881,7 +881,7 @@ class MountStateTest {
       mountState.mount(newRenderTree)
 
       // assert mount state is correct
-      assertThat(mountState.mountItemCount).isEqualTo(2)
+      assertThat(mountState.getMountItemCount()).isEqualTo(2)
 
       // assert that unbind was called in correct order and correct bind data was passed after
       // update

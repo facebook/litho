@@ -224,7 +224,7 @@ class MountStateTest {
         .measure()
         .layout()
     val lithoView = legacyLithoViewRule.lithoView
-    val mountDelegate = lithoView.mountDelegateTarget.mountDelegate
+    val mountDelegate = lithoView.mountDelegateTarget.getMountDelegate()
     var coordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
             lithoView, "mLithoHostListenerCoordinator")

@@ -332,7 +332,7 @@ class DynamicPropsTest {
     val mountDelegateTarget = legacyLithoViewRule.lithoView.mountDelegateTarget
     var text1HostId: Long = -1
     var text2HostId: Long = -1
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       if (mountItem != null) {
         val unit = LithoRenderUnit.getRenderUnit(mountItem)
@@ -350,7 +350,7 @@ class DynamicPropsTest {
     lateinit var text2HostComponent: HostComponent
     lateinit var text1Host: ComponentHost
     lateinit var text2Host: ComponentHost
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       if (mountItem != null) {
         val unit = LithoRenderUnit.getRenderUnit(mountItem)
@@ -373,7 +373,7 @@ class DynamicPropsTest {
     lateinit var stateUpdateText2HostComponent: HostComponent
     lateinit var stateUpdateText1Host: ComponentHost
     lateinit var stateUpdateText2Host: ComponentHost
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       if (mountItem != null) {
         val unit = LithoRenderUnit.getRenderUnit(mountItem)

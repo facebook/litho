@@ -20,7 +20,7 @@ internal fun LithoLayoutResult.getMountedContent(): Any? {
   val view = context.mountedView as? LithoView
   val mountDelegateTarget = view?.mountDelegateTarget
   if (mountDelegateTarget != null) {
-    val count = mountDelegateTarget.mountItemCount
+    val count = mountDelegateTarget.getMountItemCount()
     for (i in 0 until count) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       val component = mountItem?.let { LithoRenderUnit.getRenderUnit(it).component } ?: continue

@@ -306,7 +306,7 @@ class LithoViewTest {
 
   companion object {
     private fun getInternalMountItems(lithoView: LithoView): Int {
-      return lithoView.mountDelegateTarget.mountItemCount
+      return lithoView.mountDelegateTarget.getMountItemCount()
     }
   }
 }

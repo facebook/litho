@@ -97,7 +97,7 @@ class MountStateRemountTest {
     assertThat(component4.isMounted).isFalse
     val mountDelegateTarget = legacyLithoViewRule.lithoView.mountDelegateTarget
     val components: MutableList<Component> = ArrayList()
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       mountDelegateTarget.getMountItemAt(i)?.let { mountItem ->
         components.add(LithoRenderUnit.getRenderUnit(mountItem).component)
       }

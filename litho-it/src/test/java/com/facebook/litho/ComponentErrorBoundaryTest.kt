@@ -673,7 +673,7 @@ class ComponentErrorBoundaryTest {
     if (crashFromStep == LifecycleStep.ON_PREPARE ||
         crashFromStep == LifecycleStep.ON_MEASURE ||
         crashFromStep == LifecycleStep.ON_BOUNDS_DEFINED) {
-      val count = lithoViewRule.lithoView.mountDelegateTarget.renderUnitCount
+      val count = lithoViewRule.lithoView.mountDelegateTarget.getRenderUnitCount()
       for (i in 0 until count) {
         val item = lithoViewRule.lithoView.mountDelegateTarget.getMountItemAt(i)
         item?.renderTreeNode?.let {

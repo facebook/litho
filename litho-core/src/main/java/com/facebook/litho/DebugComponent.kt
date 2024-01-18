@@ -252,7 +252,7 @@ private constructor(
   val allTextContent: String?
     get() = buildString {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.mountItemCount) {
+      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
         val mountItem = mountDelegateTarget.getMountItemAt(i)
         val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
         if (mountItemComponent != null) {
@@ -273,7 +273,7 @@ private constructor(
   val textContent: String?
     get() {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.mountItemCount) {
+      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
         val mountItem = mountDelegateTarget.getMountItemAt(i)
         val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
         if (mountItemComponent?.id == component.id) {
@@ -296,7 +296,7 @@ private constructor(
   val componentHost: ComponentHost?
     get() {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.mountItemCount) {
+      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
         val mountItem = mountDelegateTarget.getMountItemAt(i)
         val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
         if (mountItemComponent?.isEquivalentTo(component) == true) {
@@ -322,7 +322,7 @@ private constructor(
       }
       val mountDelegateTarget = lithoView?.mountDelegateTarget
       if (mountDelegateTarget != null) {
-        for (i in 0 until mountDelegateTarget.mountItemCount) {
+        for (i in 0 until mountDelegateTarget.getMountItemCount()) {
           val mountItem = mountDelegateTarget.getMountItemAt(i)
           val component = mountItem?.let { getRenderUnit(it).component }
           if (component != null && component === node.tailComponent) {
