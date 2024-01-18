@@ -81,8 +81,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   // endregion
 
   // region Properties
+  var paddingFromBackground: Rect? = null
+
   protected val borderEdgeWidths: IntArray = IntArray(Border.EDGE_COUNT)
-  protected var paddingFromBackground: Rect? = null
   protected var layoutDirection: YogaDirection? = null
   protected var flexDirection: YogaFlexDirection? = null
   protected var justifyContent: YogaJustify? = null
@@ -1034,24 +1035,24 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     private val idGenerator = AtomicInteger(1)
 
     // Flags used to indicate that a certain attribute was explicitly set on the node.
-    private const val PFLAG_LAYOUT_DIRECTION_IS_SET: Long = 1L
-    private const val PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET: Long = 1L shl 7
-    protected const val PFLAG_BACKGROUND_IS_SET: Long = 1L shl 18
-    protected const val PFLAG_FOREGROUND_IS_SET: Long = 1L shl 19
-    protected const val PFLAG_VISIBLE_HANDLER_IS_SET: Long = 1L shl 20
-    protected const val PFLAG_FOCUSED_HANDLER_IS_SET: Long = 1L shl 21
-    protected const val PFLAG_FULL_IMPRESSION_HANDLER_IS_SET: Long = 1L shl 22
-    protected const val PFLAG_INVISIBLE_HANDLER_IS_SET: Long = 1L shl 23
-    protected const val PFLAG_UNFOCUSED_HANDLER_IS_SET: Long = 1L shl 24
-    private const val PFLAG_TOUCH_EXPANSION_IS_SET: Long = 1L shl 25
-    protected const val PFLAG_TRANSITION_KEY_IS_SET: Long = 1L shl 27
-    protected const val PFLAG_BORDER_IS_SET: Long = 1L shl 28
-    protected const val PFLAG_STATE_LIST_ANIMATOR_SET: Long = 1L shl 29
-    protected const val PFLAG_STATE_LIST_ANIMATOR_RES_SET: Long = 1L shl 30
-    protected const val PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET: Long = 1L shl 31
-    protected const val PFLAG_TRANSITION_KEY_TYPE_IS_SET: Long = 1L shl 32
-    protected const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
-    protected const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
+    internal const val PFLAG_LAYOUT_DIRECTION_IS_SET: Long = 1L
+    internal const val PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET: Long = 1L shl 7
+    internal const val PFLAG_BACKGROUND_IS_SET: Long = 1L shl 18
+    internal const val PFLAG_FOREGROUND_IS_SET: Long = 1L shl 19
+    internal const val PFLAG_VISIBLE_HANDLER_IS_SET: Long = 1L shl 20
+    internal const val PFLAG_FOCUSED_HANDLER_IS_SET: Long = 1L shl 21
+    internal const val PFLAG_FULL_IMPRESSION_HANDLER_IS_SET: Long = 1L shl 22
+    internal const val PFLAG_INVISIBLE_HANDLER_IS_SET: Long = 1L shl 23
+    internal const val PFLAG_UNFOCUSED_HANDLER_IS_SET: Long = 1L shl 24
+    internal const val PFLAG_TOUCH_EXPANSION_IS_SET: Long = 1L shl 25
+    internal const val PFLAG_TRANSITION_KEY_IS_SET: Long = 1L shl 27
+    internal const val PFLAG_BORDER_IS_SET: Long = 1L shl 28
+    internal const val PFLAG_STATE_LIST_ANIMATOR_SET: Long = 1L shl 29
+    internal const val PFLAG_STATE_LIST_ANIMATOR_RES_SET: Long = 1L shl 30
+    internal const val PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET: Long = 1L shl 31
+    internal const val PFLAG_TRANSITION_KEY_TYPE_IS_SET: Long = 1L shl 32
+    internal const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
+    internal const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
 
     /**
      * Builds the YogaNode tree from this tree of LithoNodes. At the same time, builds the

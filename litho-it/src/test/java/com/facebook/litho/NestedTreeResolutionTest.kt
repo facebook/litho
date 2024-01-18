@@ -63,7 +63,7 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat((holder.node as NestedTreeHolder).mNestedTreePadding?.get(YogaEdge.ALL))
+    assertThat((holder.node as NestedTreeHolder).nestedTreePadding?.get(YogaEdge.ALL))
         .isEqualTo(5.0f)
     assertThat(holder.nestedResult?.paddingTop).isEqualTo(5)
   }

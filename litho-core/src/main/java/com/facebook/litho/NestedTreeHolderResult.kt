@@ -73,7 +73,7 @@ class NestedTreeHolderResult(
     val count = node.componentCount
     val parentContext: ComponentContext? =
         if (count == 1) {
-          val parentFromNode = node.mParentContext
+          val parentFromNode = node.parentContext
           parentFromNode ?: renderContext.rootComponentContext
         } else {
           node.getComponentContextAt(1)
