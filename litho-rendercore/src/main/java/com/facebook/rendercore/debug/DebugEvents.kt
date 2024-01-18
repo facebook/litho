@@ -100,6 +100,8 @@ object DebugEventAttribute {
   const val VisibleRect = "visibleRect"
   const val BoundsVisible = "areBoundsVisible"
   const val NumMountableOutputs = "numMountableOutputs"
+  const val NumItemsMounted = "numItemsMounted"
+  const val NumItemsUnmounted = "numItemsUnmounted"
 }
 
 /** Base class for marker events */

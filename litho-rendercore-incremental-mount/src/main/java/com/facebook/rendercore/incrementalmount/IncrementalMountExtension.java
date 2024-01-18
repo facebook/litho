@@ -28,6 +28,9 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.debug.DebugEvent;
+import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.GapWorkerCallbacks;
 import com.facebook.rendercore.extensions.InformsMountCallback;
@@ -40,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import kotlin.Unit;
 
 /** Extension for performing incremental mount. */
 public class IncrementalMountExtension
@@ -239,6 +243,7 @@ public class IncrementalMountExtension
       if (isTracing) {
         extensionState.getTracer().endSection();
       }
+
       return;
     }
 
@@ -249,6 +254,7 @@ public class IncrementalMountExtension
       if (isTracing) {
         extensionState.getTracer().endSection();
       }
+
       return;
     }
 
@@ -459,6 +465,14 @@ public class IncrementalMountExtension
       extensionState.getTracer().beginSection("performIncrementalMount");
     }
 
+    DebugEventDispatcher.dispatch(
+        DebugEvent.IncrementalMountStart,
+        () -> String.valueOf(extensionState.getRenderStateId()),
+        attrs -> {
+          attrs.put(DebugEventAttribute.VisibleRect, localVisibleRect);
+          return Unit.INSTANCE;
+        });
+
     final List<IncrementalMountOutput> byTopBounds = state.mInput.getOutputsOrderedByTopBounds();
     final List<IncrementalMountOutput> byBottomBounds =
         state.mInput.getOutputsOrderedByBottomBounds();
@@ -579,6 +593,18 @@ public class IncrementalMountExtension
     if (isTracing) {
       extensionState.getTracer().endSection();
     }
+
+    int finalItemsMounted = itemsMounted;
+    int finalItemsUnmounted = itemsUnmounted;
+
+    DebugEventDispatcher.dispatch(
+        DebugEvent.IncrementalMountEnd,
+        () -> String.valueOf(extensionState.getRenderStateId()),
+        attrs -> {
+          attrs.put(DebugEventAttribute.NumItemsMounted, finalItemsMounted);
+          attrs.put(DebugEventAttribute.NumItemsUnmounted, finalItemsUnmounted);
+          return Unit.INSTANCE;
+        });
   }
 
   private static void setupPreviousMountableOutputData(
@@ -660,6 +686,7 @@ public class IncrementalMountExtension
 
   @VisibleForTesting
   public static class IncrementalMountExtensionState {
+
     private final Rect mPreviousLocalVisibleRect = new Rect();
     private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
     private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();

@@ -41,9 +41,6 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeUpdateListener;
-import com.facebook.rendercore.debug.DebugEvent;
-import com.facebook.rendercore.debug.DebugEventAttribute;
-import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
@@ -52,7 +49,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import kotlin.Unit;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class BaseMountingView extends ComponentHost
@@ -711,15 +707,6 @@ public abstract class BaseMountingView extends ComponentHost
     final Rect currentVisibleArea = new Rect();
     final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
 
-    DebugEventDispatcher.dispatch(
-        DebugEvent.IncrementalMountStart,
-        () -> String.valueOf(mMountState.getRenderStateId()),
-        attrs -> {
-          attrs.put(DebugEventAttribute.VisibleRect, currentVisibleArea);
-          attrs.put(DebugEventAttribute.BoundsVisible, areBoundsVisible);
-          return Unit.INSTANCE;
-        });
-
     if (areBoundsVisible
         || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
         // It might not be yet visible but animating from 0 height/width in which case we still
@@ -728,11 +715,6 @@ public abstract class BaseMountingView extends ComponentHost
         || hasBecomeInvisible()) {
       mountComponent(currentVisibleArea, true);
     }
-
-    DebugEventDispatcher.dispatch(
-        DebugEvent.IncrementalMountEnd,
-        () -> String.valueOf(mMountState.getRenderStateId()),
-        attrs -> Unit.INSTANCE);
   }
 
   /**
