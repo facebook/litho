@@ -17,8 +17,13 @@
 package com.facebook.litho
 
 import android.graphics.Point
+import android.graphics.Rect
 import android.util.Pair
+import android.view.View
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
@@ -27,6 +32,8 @@ import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
+import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
 
 /** Layout function for LithoNode that layout their children via Flexbox. */
@@ -355,5 +362,127 @@ object LithoYogaLayoutFunction {
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
+  }
+}
+
+/**
+ * A wrapper around [YogaNode] that implements [LithoLayoutOutput], which will be used internally by
+ * [LithoYogaLayoutFunction].
+ */
+@DataClassGenerate(toString = Mode.KEEP, equalsHashCode = Mode.KEEP)
+internal data class YogaLithoLayoutOutput(
+    val yogaNode: YogaNode,
+    var _widthSpec: Int = UNSPECIFIED,
+    var _heightSpec: Int = UNSPECIFIED,
+    var _lastMeasuredSize: Long = Long.MIN_VALUE,
+    var _isCachedLayout: Boolean = false,
+    var _layoutData: Any? = null,
+    var _wasMeasured: Boolean = false,
+    var _cachedMeasuresValid: Boolean = false,
+    var _measureHadExceptions: Boolean = false,
+    var _contentRenderUnit: LithoRenderUnit? = null,
+    var _hostRenderUnit: LithoRenderUnit? = null,
+    var _backgroundRenderUnit: LithoRenderUnit? = null,
+    var _foregroundRenderUnit: LithoRenderUnit? = null,
+    var _borderRenderUnit: LithoRenderUnit? = null,
+    var _diffNode: DiffNode? = null,
+    var _nestedResult: LithoLayoutResult? = null,
+    var _adjustedBounds: Rect = Rect(),
+) : LithoLayoutOutput {
+
+  override val x: Int
+    get() = yogaNode.layoutX.toInt()
+
+  override val y: Int
+    get() = yogaNode.layoutY.toInt()
+
+  override val width: Int
+    get() = yogaNode.layoutWidth.toInt()
+
+  override val height: Int
+    get() = yogaNode.layoutHeight.toInt()
+
+  override val contentWidth: Int
+    get() = YogaMeasureOutput.getWidth(lastMeasuredSize).toInt()
+
+  override val contentHeight: Int
+    get() = YogaMeasureOutput.getHeight(lastMeasuredSize).toInt()
+
+  override val paddingLeft: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
+
+  override val paddingTop: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.TOP))
+
+  override val paddingRight: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.RIGHT))
+
+  override val paddingBottom: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+
+  override val layoutDirection: Int
+    get() =
+        when (yogaNode.layoutDirection) {
+          YogaDirection.LTR -> View.LAYOUT_DIRECTION_LTR
+          YogaDirection.RTL -> View.LAYOUT_DIRECTION_RTL
+          else -> View.LAYOUT_DIRECTION_INHERIT
+        }
+
+  override val widthSpec: Int
+    get() = _widthSpec
+
+  override val heightSpec: Int
+    get() = _heightSpec
+
+  override val lastMeasuredSize: Long
+    get() = _lastMeasuredSize
+
+  override val layoutData: Any?
+    get() = _layoutData
+
+  override val wasMeasured: Boolean
+    get() = _wasMeasured
+
+  override val cachedMeasuresValid: Boolean
+    get() = _cachedMeasuresValid
+
+  override val measureHadExceptions: Boolean
+    get() = _measureHadExceptions
+
+  override val contentRenderUnit: LithoRenderUnit?
+    get() = _contentRenderUnit
+
+  override val hostRenderUnit: LithoRenderUnit?
+    get() = _hostRenderUnit
+
+  override val backgroundRenderUnit: LithoRenderUnit?
+    get() = _backgroundRenderUnit
+
+  override val foregroundRenderUnit: LithoRenderUnit?
+    get() = _foregroundRenderUnit
+
+  override val borderRenderUnit: LithoRenderUnit?
+    get() = _borderRenderUnit
+
+  override val isCachedLayout: Boolean
+    get() = _isCachedLayout
+
+  override val diffNode: DiffNode?
+    get() = _diffNode
+
+  override val nestedResult: LithoLayoutResult?
+    get() = _nestedResult
+
+  override val adjustedBounds: Rect
+    get() = _adjustedBounds
+
+  /**
+   * Returns a copy of this output that has the same values except for the YogaNode. This is used
+   * when we need to create a new output but keep the old one around for layout caching.
+   */
+  fun cloneWithYogaNode(yogaNode: YogaNode): YogaLithoLayoutOutput = copy(yogaNode = yogaNode)
+
+  companion object {
+    private const val UNSPECIFIED: Int = -1
   }
 }
