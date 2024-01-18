@@ -751,18 +751,12 @@ public class RecyclerBinder
     tempConfiguration =
         ComponentsConfiguration.create(tempConfiguration)
             /*
-            Incremental mount will not work if this ComponentTree is nested in  a parent with it turned off,
+            Incremental mount will not work if this ComponentTree is nested in a parent with it turned off,
             so always disable it in that case
              */
             .incrementalMountEnabled(
                 ComponentContext.isIncrementalMountEnabled(mComponentContext)
                     && tempConfiguration.incrementalMountEnabled)
-            /*
-             If nested preallocation is disabled, we forcefully disable mount content preallocation.
-            */
-            .mountContentPreallocationEnabled(
-                tempConfiguration.nestedPreallocationEnabled
-                    && tempConfiguration.mountContentPreallocationEnabled)
             .build();
 
     mComponentsConfiguration = tempConfiguration;

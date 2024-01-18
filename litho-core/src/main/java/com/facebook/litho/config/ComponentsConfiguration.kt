@@ -48,7 +48,6 @@ internal constructor(
     val shouldAddHostViewForRootComponent: Boolean = false,
     @JvmField
     val useIncrementalMountGapWorker: Boolean = IncrementalMountExtensionConfigs.useGapWorker,
-    @JvmField val nestedPreallocationEnabled: Boolean = false,
     val useNonRebindingEventHandlers: Boolean = false,
     internal val shouldDisableBgFgOutputs: Boolean = false,
     /**
@@ -228,7 +227,6 @@ internal constructor(
   class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
 
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
-    private var nestedPreallocationEnabled = baseConfig.nestedPreallocationEnabled
     private var specsApiStateUpdateDuplicateDetectionEnabled =
         baseConfig.specsApiStateUpdateDuplicateDetectionEnabled
     private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
@@ -243,8 +241,6 @@ internal constructor(
     fun shouldAddHostViewForRootComponent(enabled: Boolean) = also {
       shouldAddHostViewForRootComponent = enabled
     }
-
-    fun nestedPreallocationEnabled(enabled: Boolean) = also { nestedPreallocationEnabled = enabled }
 
     fun shouldCacheLayouts(enabled: Boolean) = also { shouldCacheLayouts = enabled }
 
@@ -282,7 +278,6 @@ internal constructor(
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
               specsApiStateUpdateDuplicateDetectionEnabled,
-          nestedPreallocationEnabled = nestedPreallocationEnabled,
           shouldCacheLayouts = shouldCacheLayouts,
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
           isReconciliationEnabled = isReconciliationEnabled,

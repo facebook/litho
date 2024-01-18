@@ -77,7 +77,6 @@ class NestedPreallocationTest {
         ComponentTree.create(context, EmptyComponent())
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    nestedPreallocationEnabled = true,
                     mountContentPreallocationEnabled = preallocationEnabled))
             .build()
 
