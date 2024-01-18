@@ -50,7 +50,7 @@ public class DynamicPropsExtension
   public void beforeMount(
       ExtensionState<DynamicPropsExtensionState> extensionState,
       @Nullable DynamicPropsExtensionInput dynamicPropsExtensionInput,
-      Rect localVisibleRect) {
+      @Nullable Rect localVisibleRect) {
     final DynamicPropsExtensionState state = extensionState.getState();
 
     state.mPreviousInput = state.mCurrentInput;

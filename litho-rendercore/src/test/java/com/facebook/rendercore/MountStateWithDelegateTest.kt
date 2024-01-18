@@ -276,7 +276,7 @@ class MountStateWithDelegateTest {
         index: Int
     ) = Unit
 
-    override fun beforeMount(state: ExtensionState<Any>?, o: Any?, localVisibleRect: Rect?) = Unit
+    override fun beforeMount(state: ExtensionState<Any>, o: Any?, localVisibleRect: Rect?) = Unit
   }
 
   companion object {

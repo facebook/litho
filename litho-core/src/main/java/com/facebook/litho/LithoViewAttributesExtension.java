@@ -111,7 +111,7 @@ public class LithoViewAttributesExtension
   public void beforeMount(
       final ExtensionState<LithoViewAttributesState> extensionState,
       final @Nullable ViewAttributesInput viewAttributesInput,
-      final Rect localVisibleRect) {
+      final @Nullable Rect localVisibleRect) {
     if (viewAttributesInput != null) {
       extensionState.getState().mNewUnits = viewAttributesInput.getViewAttributes();
     }
