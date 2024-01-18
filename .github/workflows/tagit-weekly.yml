@@ -14,7 +14,7 @@ jobs:
 
       - name: Get tag for the current date
         id: tag_info
-        run: echo "::set-output name=TAG_NAME::$(date +'v%Y.%m.%d')"
+        run: echo "TAG_NAME=$(date +'v%Y.%m.%d')" >> $GITHUB_OUTPUT
 
       - name: Tag the latest commit
         uses: weareyipyip/walking-tag-action@v2
