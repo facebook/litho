@@ -309,7 +309,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
-    if (c.getComponentScope() == null) {
+    if (c.getComponentScope() == null || c.getStateUpdater() == null) {
       return null;
     }
 

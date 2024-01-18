@@ -30,6 +30,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -42,6 +43,7 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
  * information used internally in the library.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentContext {
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
@@ -53,6 +55,7 @@ public class ComponentContext {
   private @Nullable String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
+  @Nullable
   @ThreadConfined(ThreadConfined.ANY)
   private Component mComponentScope;
 
@@ -283,7 +286,7 @@ public class ComponentContext {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setRenderStateContext(ResolveContext renderStateContext) {
+  public void setRenderStateContext(@Nullable ResolveContext renderStateContext) {
     mCalculationStateContextThreadLocal.set(renderStateContext);
   }
 
@@ -349,6 +352,7 @@ public class ComponentContext {
     return mResourceResolver.resolveColorRes(id);
   }
 
+  @Nullable
   public Component getComponentScope() {
     return mComponentScope;
   }
@@ -359,6 +363,9 @@ public class ComponentContext {
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
     }
 
+    if (mGlobalKey == null) {
+      return "undefined";
+    }
     return mGlobalKey;
   }
 
@@ -566,6 +573,9 @@ public class ComponentContext {
   }
 
   public @Nullable ErrorComponentReceiver getErrorComponentReceiver() {
+    if (mLithoTree == null) {
+      return null;
+    }
     return mLithoTree.getErrorComponentReceiver();
   }
 
@@ -687,7 +697,7 @@ public class ComponentContext {
   }
 
   public void putCachedValue(
-      String globalKey, int index, Object cachedValueInputs, Object cachedValue) {
+      String globalKey, int index, Object cachedValueInputs, @Nullable Object cachedValue) {
     if (mLithoTree == null) {
       return;
     }
@@ -696,6 +706,7 @@ public class ComponentContext {
         .putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isNestedTreeContext());
   }
 
+  @Nullable
   StateUpdater getStateUpdater() {
     return mLithoTree != null ? mLithoTree.getStateUpdater() : null;
   }

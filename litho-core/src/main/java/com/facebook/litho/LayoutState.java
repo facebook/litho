@@ -741,12 +741,16 @@ public class LayoutState
 
   @Override
   public boolean needsToRerunTransitions() {
-    return mResolveResult.context.getStateUpdater().isFirstMount();
+    StateUpdater stateUpdater = mResolveResult.context.getStateUpdater();
+    return stateUpdater != null && stateUpdater.isFirstMount();
   }
 
   @Override
   public void setNeedsToRerunTransitions(boolean needsToRerunTransitions) {
-    mResolveResult.context.getStateUpdater().setFirstMount(needsToRerunTransitions);
+    StateUpdater stateUpdater = mResolveResult.context.getStateUpdater();
+    if (stateUpdater != null) {
+      stateUpdater.setFirstMount(needsToRerunTransitions);
+    }
   }
 
   boolean isCommitted() {

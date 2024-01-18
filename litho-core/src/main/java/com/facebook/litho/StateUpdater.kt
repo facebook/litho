@@ -85,7 +85,7 @@ interface StateUpdater {
       globalKey: String,
       container: StateContainer,
       isLayoutState: Boolean
-  ): StateContainer?
+  ): StateContainer
 
   /** Returns a Cached value that is accessible across all re-render operations. */
   fun getCachedValue(

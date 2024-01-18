@@ -83,7 +83,7 @@ internal constructor(
       val cause = deepestCause
       if (componentContext != null && componentContext.componentScope != null) {
         msg.append(" at <cls>")
-            .append(componentContext.componentScope.javaClass.name)
+            .append(componentContext.componentScope?.javaClass?.name)
             .append("</cls>")
       }
       msg.append(" => ")
