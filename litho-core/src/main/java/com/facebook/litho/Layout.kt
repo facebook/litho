@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.graphics.Rect
 import android.view.View
 import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
@@ -480,4 +481,35 @@ internal object Layout {
   /** DiffNode state should be retrieved from the committed LayoutState. */
   private fun getDiffNodeScopedContext(diffNode: DiffNode): ComponentContext =
       diffNode.scopedComponentInfo.context
+}
+
+/** A data structure that holds the result of Litho layout phase. */
+sealed interface LithoLayoutOutput {
+  val isCachedLayout: Boolean
+  val diffNode: DiffNode?
+  val x: Int
+  val y: Int
+  val width: Int
+  val height: Int
+  val contentWidth: Int
+  val contentHeight: Int
+  val widthSpec: Int
+  val heightSpec: Int
+  val lastMeasuredSize: Long
+  val layoutData: Any?
+  val wasMeasured: Boolean
+  val cachedMeasuresValid: Boolean
+  val measureHadExceptions: Boolean
+  val paddingLeft: Int
+  val paddingTop: Int
+  val paddingRight: Int
+  val paddingBottom: Int
+  val contentRenderUnit: LithoRenderUnit?
+  val hostRenderUnit: LithoRenderUnit?
+  val backgroundRenderUnit: LithoRenderUnit?
+  val foregroundRenderUnit: LithoRenderUnit?
+  val borderRenderUnit: LithoRenderUnit?
+  val nestedResult: LithoLayoutResult?
+  val adjustedBounds: Rect
+  val layoutDirection: Int
 }
