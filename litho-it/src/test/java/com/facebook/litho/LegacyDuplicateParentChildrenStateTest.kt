@@ -76,7 +76,7 @@ class LegacyDuplicateParentChildrenStateTest {
         }
     val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
-    Assertions.assertThat(layoutState.mountableOutputCount).isEqualTo(12)
+    Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(12)
     Assert.assertTrue(
         "Clickable root output has duplicate state",
         LithoRenderUnit.isDuplicateParentState(

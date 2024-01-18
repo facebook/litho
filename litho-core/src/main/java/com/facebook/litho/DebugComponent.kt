@@ -399,7 +399,7 @@ private constructor(
     ): RenderUnit<*>? {
       val component = debugComponent.component
       val layoutState = componentTree.mainThreadLayoutState ?: return null
-      for (i in 0 until layoutState.mountableOutputCount) {
+      for (i in 0 until layoutState.getMountableOutputCount()) {
         val renderTreeNode = layoutState.getMountableOutputAt(i)
         val lithoRenderUnit = renderTreeNode.renderUnit as LithoRenderUnit
         if (lithoRenderUnit.componentContext?.componentScope === component) {

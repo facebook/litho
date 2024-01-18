@@ -57,7 +57,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(false).build())
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state.mountableOutputCount).isEqualTo(7)
+    assertThat(state.getMountableOutputCount()).isEqualTo(7)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(0)) // root host view
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1)) // background 1
@@ -88,7 +88,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state.mountableOutputCount).isEqualTo(9)
+    assertThat(state.getMountableOutputCount()).isEqualTo(9)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(0)) // root host view
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1)) // host view 1
@@ -124,7 +124,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state.mountableOutputCount).isEqualTo(5) // 2 bg and fg lesser.
+    assertThat(state.getMountableOutputCount()).isEqualTo(5) // 2 bg and fg lesser.
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1))
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2))
@@ -150,7 +150,7 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state.mountableOutputCount).isEqualTo(5) // 2 bg and fg lesser.
+    assertThat(state.getMountableOutputCount()).isEqualTo(5) // 2 bg and fg lesser.
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1))
     assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2))

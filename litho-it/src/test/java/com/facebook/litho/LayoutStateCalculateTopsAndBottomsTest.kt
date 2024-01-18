@@ -56,7 +56,7 @@ class LayoutStateCalculateTopsAndBottomsTest {
         }
     val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 50 + 20) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
-    Assertions.assertThat(layoutState.mountableOutputCount).isEqualTo(5)
+    Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(5)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[0].bounds.top).isEqualTo(0)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[1].bounds.top).isEqualTo(0)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[2].bounds.top).isEqualTo(0)
@@ -95,7 +95,7 @@ class LayoutStateCalculateTopsAndBottomsTest {
         }
     val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 50) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
-    Assertions.assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[0].bounds.top).isEqualTo(0)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[1].bounds.top).isEqualTo(0)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[2].bounds.top).isEqualTo(0)

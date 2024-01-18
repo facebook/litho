@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho
 
 import com.facebook.litho.SizeSpec.makeSizeSpec
@@ -55,7 +56,7 @@ class LayoutStateTest {
             null,
             null)
     layoutState.toRenderTree()
-    assertThat(layoutState.mountableOutputCount).isEqualTo(1)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(1)
     val renderTreeNode = layoutState.getMountableOutputAt(0)
     val id = renderTreeNode.renderUnit.id
     assertThat(layoutState.getPositionForId(id)).isEqualTo(0)

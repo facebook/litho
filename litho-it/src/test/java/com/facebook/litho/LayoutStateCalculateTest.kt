@@ -109,7 +109,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
   }
 
   @Test
@@ -126,7 +126,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
   }
 
   @Test
@@ -156,7 +156,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(6)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(6)
     val layoutData = layoutState.getMountableOutputAt(4).layoutData as LithoLayoutData
     assertThat(layoutData.expandedTouchBounds).isEqualTo(Rect(5, 5, 5, 5))
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4)).nodeInfo
@@ -186,7 +186,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNotNull
@@ -214,7 +214,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNull()
@@ -243,7 +243,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNull()
@@ -272,7 +272,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNull()
@@ -300,7 +300,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.touchHandler).isNotNull
@@ -366,11 +366,11 @@ class LayoutStateCalculateTest {
     // 7) Text view component
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(8)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(8)
 
     // Check quantity of HostComponents.
     var totalHosts = 0
-    for (i in 0 until layoutState.mountableOutputCount) {
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       val mountedComponent = getComponentAt(layoutState, i)
       if (isHostComponent(mountedComponent)) {
         totalHosts++
@@ -490,11 +490,11 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(8)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(8)
 
     // Check quantity of HostComponents.
     var totalHosts = 0
-    for (i in 0 until layoutState.mountableOutputCount) {
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       val mountedComponent = getComponentAt(layoutState, i)
       if (isHostComponent(mountedComponent)) {
         totalHosts++
@@ -565,11 +565,11 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(18)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(18)
 
     // Check quantity of HostComponents.
     var totalHosts = 0
-    for (i in 0 until layoutState.mountableOutputCount) {
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       val mountedComponent = getComponentAt(layoutState, i)
       if (isHostComponent(mountedComponent)) {
         totalHosts++
@@ -664,9 +664,9 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
-    assertThat(sameComponentLayoutState.mountableOutputCount)
-        .isEqualTo(layoutState.mountableOutputCount)
-    for (i in 0 until layoutState.mountableOutputCount) {
+    assertThat(sameComponentLayoutState.getMountableOutputCount())
+        .isEqualTo(layoutState.getMountableOutputCount())
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       assertThat(sameComponentLayoutState.getMountableOutputAt(i).renderUnit.id)
           .isEqualTo(layoutState.getMountableOutputAt(i).renderUnit.id)
     }
@@ -763,9 +763,9 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
-    assertThat(sameComponentLayoutState.mountableOutputCount)
-        .isEqualTo(layoutState.mountableOutputCount)
-    for (i in 0 until layoutState.mountableOutputCount) {
+    assertThat(sameComponentLayoutState.getMountableOutputCount())
+        .isEqualTo(layoutState.getMountableOutputCount())
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       assertThat(sameComponentLayoutState.getMountableOutputAt(i).renderUnit.id)
           .isEqualTo(layoutState.getMountableOutputAt(i).renderUnit.id)
     }
@@ -813,8 +813,8 @@ class LayoutStateCalculateTest {
         .isEqualTo(layoutState1.getMountableOutputAt(0).renderUnit.id)
     assertThat(layoutState2.getMountableOutputAt(1).renderUnit.id)
         .isEqualTo(layoutState1.getMountableOutputAt(1).renderUnit.id)
-    assertThat(layoutState1.mountableOutputCount).isEqualTo(3)
-    assertThat(layoutState2.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState1.getMountableOutputCount()).isEqualTo(3)
+    assertThat(layoutState2.getMountableOutputCount()).isEqualTo(4)
   }
 
   @Test
@@ -879,7 +879,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent::class.java)
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue
@@ -1057,7 +1057,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(5)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(5)
     val hostMarkerRoot = layoutState.getMountableOutputAt(0).renderUnit.id
     val hostMarkerOne = layoutState.getMountableOutputAt(1).renderUnit.id
 
@@ -1090,7 +1090,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
 
     // Host generated
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue
@@ -1122,7 +1122,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(9)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(9)
     val hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(0))
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(1))
     val hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(4))
@@ -1173,7 +1173,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(9)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(9)
     val hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(0))
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(1))
     val hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(4))
@@ -1208,7 +1208,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val rootOutput = layoutState.getMountableOutputAt(0)
     val hostOutput = layoutState.getMountableOutputAt(1)
     val drawableOutput = layoutState.getMountableOutputAt(2)
@@ -1238,7 +1238,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(
             LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo?.focusState)
@@ -1259,7 +1259,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0))
     assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1291,7 +1291,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(
             LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1))
@@ -1316,7 +1316,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(
             LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component.simpleName)
@@ -1353,7 +1353,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY))
 
     // Because the TestDrawableComponent is disabled, we don't wrap it in a host.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component)
         .isInstanceOf(HostComponent::class.java)
@@ -1381,7 +1381,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component)
         .isInstanceOf(HostComponent::class.java)
@@ -1421,7 +1421,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(6)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(6)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component)
         .isInstanceOf(HostComponent::class.java)
@@ -1511,7 +1511,7 @@ class LayoutStateCalculateTest {
     // 7) Drawable 3
     // 8) Host for drawable 4
     // 9) Drawable 4
-    assertThat(layoutState.mountableOutputCount).isEqualTo(10)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(10)
     val rootOutput = layoutState.getMountableOutputAt(0)
     val rowOneOutput = layoutState.getMountableOutputAt(1)
     val drawableOnetOutput = layoutState.getMountableOutputAt(2)
@@ -1584,7 +1584,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(8)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(8)
 
     // Breakdown of mountable output:
     // getMountableOutputAt(0) = inlineLayout
@@ -1655,7 +1655,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0))
     assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1685,7 +1685,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0))
     assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1711,7 +1711,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(getComponentAt(layoutState, 0)).isInstanceOf(HostComponent::class.java)
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent::class.java)
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent::class.java)
@@ -1732,7 +1732,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1774,7 +1774,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1812,7 +1812,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1847,7 +1847,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1888,7 +1888,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1921,7 +1921,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(200, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(0)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(0)
   }
 
   @Test
@@ -1941,7 +1941,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(200, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(1)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(1)
     var mountBounds = Rect()
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
     mountBounds = layoutState.getMountableOutputAt(0).bounds
@@ -2098,7 +2098,7 @@ class LayoutStateCalculateTest {
 
     // No layout output generated related with borders
     // if borderColor is supplied but not borderWidth.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
   }
 
   @Test
@@ -2121,7 +2121,7 @@ class LayoutStateCalculateTest {
 
     // No layout output generated related with borders
     // if borderWidth supplied but not borderColor.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
   }
 
   @Test
@@ -2145,7 +2145,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
 
     // Output at index 1 is BorderColorDrawable component.
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(DrawableComponent::class.java)
@@ -2172,7 +2172,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
 
     // Output at index 1 is BorderColorDrawable component.
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(DrawableComponent::class.java)

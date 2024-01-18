@@ -186,9 +186,10 @@ class TreeDiffingTest {
             exactly(350),
             exactly(200),
             prevLayoutState)
-    assertThat(layoutState.mountableOutputCount).isEqualTo(prevLayoutState.mountableOutputCount)
+    assertThat(layoutState.getMountableOutputCount())
+        .isEqualTo(prevLayoutState.getMountableOutputCount())
     var i = 0
-    val count = prevLayoutState.mountableOutputCount
+    val count = prevLayoutState.getMountableOutputCount()
     while (i < count) {
       assertThat(layoutState.getMountableOutputAt(i).renderUnit.id)
           .isEqualTo(prevLayoutState.getMountableOutputAt(i).renderUnit.id)
@@ -231,9 +232,10 @@ class TreeDiffingTest {
             exactly(200),
             prevLayoutState)
     Assert.assertNotEquals(
-        prevLayoutState.mountableOutputCount.toLong(), layoutState.mountableOutputCount.toLong())
+        prevLayoutState.getMountableOutputCount().toLong(),
+        layoutState.getMountableOutputCount().toLong())
     var i = 0
-    val count = prevLayoutState.mountableOutputCount
+    val count = prevLayoutState.getMountableOutputCount()
     while (i < count) {
       assertThat(layoutState.getMountableOutputAt(i).renderUnit.id)
           .describedAs("Output $i")
@@ -341,10 +343,10 @@ class TreeDiffingTest {
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
     legacyLithoViewRule.setRoot(component2)
     val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
-    assertThat(secondState?.mountableOutputCount).isEqualTo(4)
+    assertThat(secondState?.getMountableOutputCount()).isEqualTo(4)
     legacyLithoViewRule.setRoot(component3)
     val thirdState = legacyLithoViewRule.componentTree.mainThreadLayoutState
-    assertThat(thirdState?.mountableOutputCount).isEqualTo(4)
+    assertThat(thirdState?.getMountableOutputCount()).isEqualTo(4)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState?.getMountableOutputAt(2))))
@@ -399,7 +401,7 @@ class TreeDiffingTest {
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
     legacyLithoViewRule.setRoot(component2)
     val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
-    assertThat(6).isEqualTo(secondState?.mountableOutputCount)
+    assertThat(6).isEqualTo(secondState?.getMountableOutputCount())
     assertThat(MountSpecLithoRenderUnit.STATE_DIRTY)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
@@ -674,7 +676,7 @@ class TreeDiffingTest {
           .isEqualTo(
               MountSpecLithoRenderUnit.getUpdateState(
                   requireNotNull(layoutState?.getMountableOutputAt(0))))
-      for (i in 1 until (layoutState?.mountableOutputCount ?: 0)) {
+      for (i in 1 until (layoutState?.getMountableOutputCount() ?: 0)) {
         assertThat(state)
             .isEqualTo(
                 MountSpecLithoRenderUnit.getUpdateState(

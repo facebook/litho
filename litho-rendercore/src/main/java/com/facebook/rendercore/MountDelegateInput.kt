@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-/** @deprecated Marked for removal; check out D4182567 for context. */
-@Deprecated
-public interface MountDelegateInput {
+@Deprecated("Marked for removal; check out D4182567 for context. ")
+interface MountDelegateInput {
 
-  /** Returns the position of {@link RenderUnit} given its id. */
-  int getPositionForId(long id);
+  /** Returns the position of [RenderUnit] given its id. */
+  fun getPositionForId(id: Long): Int
 
-  /** Returns the {@link RenderTreeNode} given its absolute position. */
-  RenderTreeNode getMountableOutputAt(int position);
+  /** Returns the [RenderTreeNode] given its absolute position. */
+  fun getMountableOutputAt(position: Int): RenderTreeNode?
 
-  int getMountableOutputCount();
+  fun getMountableOutputCount(): Int
 }
