@@ -1294,7 +1294,9 @@ public class RecyclerBinder
     mInternalAdapter.notifyDataSetChanged();
     mViewportManager.setShouldUpdate(true);
 
-    if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+    if (ComponentsConfiguration.disableReleaseComponentTreeInRecyclerBinder) {
+      // do nothing
+    } else if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
       // When items are removed, the corresponding views might want to disappear with animations,
       // but posting a runnable to release the ComponentTrees later may not work because the
       // animation is not started yet. Therefore, we may need to wait until the view is detached.
@@ -1669,7 +1671,9 @@ public class RecyclerBinder
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, 1));
 
     if (holder != null) {
-      if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      if (ComponentsConfiguration.disableReleaseComponentTreeInRecyclerBinder) {
+        // do nothing
+      } else if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
         // When item is removed, the corresponding view might want to disappear with animations,
         // but posting a runnable to release the ComponentTrees later may not work because the
         // animation is not started yet. Therefore, we may need to wait until the view is
@@ -1706,7 +1710,9 @@ public class RecyclerBinder
 
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, count));
 
-    if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+    if (ComponentsConfiguration.disableReleaseComponentTreeInRecyclerBinder) {
+      // do nothing
+    } else if (ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
       // When items are removed, the corresponding views might want to disappear with animations,
       // but posting a runnable to release the ComponentTrees later may not work because the
       // animation is not started yet. Therefore, we may need to wait until the view is detached.

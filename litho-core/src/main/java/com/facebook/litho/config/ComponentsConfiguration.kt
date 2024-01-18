@@ -200,6 +200,7 @@ internal constructor(
     @JvmField var enableRefactorLithoLifecycleProvider: Boolean = false
     @JvmField var enableDefaultAOSPLithoLifecycleProviderAPI: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
+    @JvmField var disableReleaseComponentTreeInRecyclerBinder: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
     @JvmField var reduceMemorySpikeGetUri: Boolean = false
