@@ -71,23 +71,24 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   private var _needsHostView: Boolean = false
   private var frozen: Boolean = false
   private var nodeInfoWasWritten: Boolean = false
+  private var flexDirection: YogaFlexDirection? = null
+  private var yogaWrap: YogaWrap? = null
+  private var yogaMeasureFunction: YogaMeasureFunction? = null
   // endregion
 
   // region Properties
   var paddingFromBackground: Rect? = null
+  var primitive: Primitive? = null
 
   internal var id: Int = idGenerator.getAndIncrement()
+  internal var children: MutableList<LithoNode> = ArrayList(4)
+  internal var layoutDirection: YogaDirection? = null
+  internal var justifyContent: YogaJustify? = null
+  internal var alignContent: YogaAlign? = null
+  internal var alignItems: YogaAlign? = null
+  internal var privateFlags: Long = 0
 
-  protected val borderEdgeWidths: IntArray = IntArray(Border.EDGE_COUNT)
-  protected var layoutDirection: YogaDirection? = null
-  protected var flexDirection: YogaFlexDirection? = null
-  protected var justifyContent: YogaJustify? = null
-  protected var alignContent: YogaAlign? = null
-  protected var alignItems: YogaAlign? = null
-  protected var yogaWrap: YogaWrap? = null
-  protected var yogaMeasureFunction: YogaMeasureFunction? = null
-  protected var privateFlags: Long = 0
-
+  private val borderEdgeWidths: IntArray = IntArray(Border.EDGE_COUNT)
   val borderColors: IntArray = IntArray(Border.EDGE_COUNT)
   val borderRadius: FloatArray = FloatArray(Border.RADIUS_COUNT)
 
@@ -127,87 +128,84 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   val isLayoutDirectionInherit: Boolean
     get() = layoutDirection == null || layoutDirection == YogaDirection.INHERIT
 
-  var primitive: Primitive? = null
-  var children: MutableList<LithoNode> = ArrayList(4)
-
   var nodeInfo: NodeInfo? = null
-    protected set
+    internal set
 
   var visibleHandler: EventHandler<VisibleEvent>? = null
-    protected set
+    internal set
 
   var focusedHandler: EventHandler<FocusedVisibleEvent>? = null
-    protected set
+    internal set
 
   var unfocusedHandler: EventHandler<UnfocusedVisibleEvent>? = null
-    protected set
+    internal set
 
   var fullImpressionHandler: EventHandler<FullImpressionVisibleEvent>? = null
-    protected set
+    internal set
 
   var invisibleHandler: EventHandler<InvisibleEvent>? = null
-    protected set
+    internal set
 
   var visibilityChangedHandler: EventHandler<VisibilityChangedEvent>? = null
-    protected set
+    internal set
 
   var background: Drawable? = null
-    protected set
+    internal set
 
   var foreground: Drawable? = null
-    protected set
+    internal set
 
   var borderPathEffect: PathEffect? = null
-    protected set
+    internal set
 
   var stateListAnimator: StateListAnimator? = null
-    protected set
+    internal set
 
   var transitionKey: String? = null
-    protected set
+    internal set
 
   var transitionOwnerKey: String? = null
-    protected set
+    internal set
 
   var transitionKeyType: TransitionKeyType? = null
-    protected set
+    internal set
 
   var layerPaint: Paint? = null
-    protected set
+    internal set
 
   var isPaddingSet: Boolean = false
-    protected set
+    internal set
 
   var isDuplicateParentStateEnabled: Boolean = false
-    protected set
+    internal set
 
   var isHostDuplicateParentStateEnabled: Boolean = false
-    protected set
+    internal set
 
   var isDuplicateChildrenStatesEnabled: Boolean = false
-    protected set
+    internal set
 
   var isForceViewWrapping: Boolean = false
-    protected set
+    internal set
 
   var layerType: Int = LayerType.LAYER_TYPE_NOT_SET
-    protected set
+    internal set
 
   var visibilityOutputTag: String? = null
-    protected set
+    internal set
 
   var importantForAccessibility: Int = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-    protected set
+    internal set
 
   @DrawableRes
   var stateListAnimatorRes: Int = 0
-    protected set
+    internal set
 
   var visibleHeightRatio: Float = 0f
-    protected set
+    internal set
 
   var visibleWidthRatio: Float = 0f
-    protected set
+    internal set
 
   /**
    * Returns a nullable map of [RenderUnit.Binder] that is aimed to be used to set the optional
@@ -215,7 +213,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * used only with [MountSpecLithoRenderUnit].
    */
   var customBindersForMountSpec: MutableMap<Class<*>, RenderUnit.Binder<Any, Any, Any>>? = null
-    protected set
+    internal set
 
   /**
    * Returns a nullable map of [RenderUnit.DelegateBinder] that is aimed to be used to set the
@@ -223,13 +221,13 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    */
   var customDelegateBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any?, Any>>? =
       null
-    protected set
+    internal set
 
   /**
    * A unique identifier which may be set for retrieving a component and its bounds when testing.
    */
   var testKey: String? = null
-    protected set
+    internal set
 
   var willMountView: Boolean = false
     private set
@@ -908,8 +906,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     internal const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
     internal const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
 
-    @JvmStatic
-    protected fun applyLayoutStyleAttributes(props: YogaLayoutProps, a: TypedArray) {
+    private fun applyLayoutStyleAttributes(props: YogaLayoutProps, a: TypedArray) {
       for (i in 0 until a.indexCount) {
         when (val attr = a.getIndex(i)) {
           R.styleable.ComponentLayout_android_layout_width -> {
@@ -992,8 +989,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       }
     }
 
-    @JvmStatic
-    protected fun setPaddingFromDrawable(target: YogaLayoutProps, padding: Rect) {
+    private fun setPaddingFromDrawable(target: YogaLayoutProps, padding: Rect) {
       target.paddingPx(YogaEdge.LEFT, padding.left)
       target.paddingPx(YogaEdge.TOP, padding.top)
       target.paddingPx(YogaEdge.RIGHT, padding.right)
@@ -1001,22 +997,21 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     }
 
     /**
-     * This utility method checks if the {@param result} will mount a [View]. It returns true if and
-     * only if the {@param result} will mount a [View]. If it returns `false` then the result will
-     * either mount a [Drawable] or it is [NestedTreeHolderResult], which will not mount anything.
+     * This utility method checks if the {@param result} will mount a [android.view.View]. It
+     * returns true if and only if the {@param result} will mount a [android.view.View]. If it
+     * returns `false` then the result will either mount a [Drawable] or it is
+     * [NestedTreeHolderResult], which will not mount anything.
      *
      * @return `true` iff the result will mount a view.
      */
-    @JvmStatic
-    fun willMountView(node: LithoNode): Boolean =
+    private fun willMountView(node: LithoNode): Boolean =
         if (node.primitive?.renderUnit?.renderType == RenderUnit.RenderType.VIEW) {
           true
         } else {
           node.tailComponent.mountType == Component.MountType.VIEW
         }
 
-    @JvmStatic
-    fun willMountDrawable(node: LithoNode): Boolean =
+    private fun willMountDrawable(node: LithoNode): Boolean =
         if (node.primitive?.renderUnit?.renderType == RenderUnit.RenderType.DRAWABLE) {
           true
         } else {
@@ -1030,8 +1025,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
      *
      * @param node The LithoNode to check
      */
-    @JvmStatic
-    fun needsHostView(node: LithoNode): Boolean {
+    internal fun needsHostView(node: LithoNode): Boolean {
       if (node.willMountView) {
         // Component already represents a View.
         return false
@@ -1060,8 +1054,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       return willMountDrawable(node) && node.hasCustomBindersForMountSpec()
     }
 
-    @JvmStatic
-    fun hasViewAttributes(nodeInfo: NodeInfo?): Boolean {
+    private fun hasViewAttributes(nodeInfo: NodeInfo?): Boolean {
       if (nodeInfo == null) {
         return false
       }
@@ -1113,7 +1106,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
      * does not consider root component, but this approximation is good enough for debugging
      * purposes.
      */
-    @JvmStatic
     fun hasViewOutput(node: LithoNode): Boolean =
         node.isForceViewWrapping ||
             node.willMountView ||
@@ -1121,8 +1113,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
             needsHostViewForCommonDynamicProps(node) ||
             needsHostViewForTransition(node)
 
-    @JvmStatic
-    fun needsHostViewForCommonDynamicProps(node: LithoNode): Boolean {
+    private fun needsHostViewForCommonDynamicProps(node: LithoNode): Boolean {
       val infos: List<ScopedComponentInfo> = node.scopedComponentInfos
       for (info in infos) {
         if (info.commonProps?.hasCommonDynamicProps() == true) {
@@ -1133,8 +1124,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       return false
     }
 
-    @JvmStatic
-    fun needsHostViewForTransition(node: LithoNode): Boolean =
+    private fun needsHostViewForTransition(node: LithoNode): Boolean =
         !node.transitionKey.isNullOrEmpty() && !node.willMountView
 
     /**
