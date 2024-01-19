@@ -96,7 +96,7 @@ public interface ClassNames {
   ClassName COMPARABLE_DRAWABLE =
       ClassName.bestGuess("com.facebook.litho.drawable.ComparableDrawable");
 
-  ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.litho.TreeProps");
+  ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.litho.TreePropContainer");
 
   ClassName STATE_VALUE = ClassName.bestGuess("com.facebook.litho.StateValue");
   ClassName COMPONENT_STATE_UPDATE =

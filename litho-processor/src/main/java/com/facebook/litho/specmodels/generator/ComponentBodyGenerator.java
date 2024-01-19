@@ -566,7 +566,7 @@ public class ComponentBodyGenerator {
   static MethodSpec generateIsEqualivalentTreePropsMethod(
       SpecModel specModel, EnumSet<RunMode> runMode) {
     MethodSpec.Builder isEquivalentBuilder =
-        MethodSpec.methodBuilder("isEqualivalentTreeProps")
+        MethodSpec.methodBuilder("isEqualivalentTreePropContainer")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PROTECTED)
             .returns(TypeName.BOOLEAN)
@@ -575,7 +575,7 @@ public class ComponentBodyGenerator {
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       isEquivalentBuilder.addCode(
           getCompareStatement(
-              "isEqualivalentTreeProps",
+              "isEqualivalentTreePropContainer",
               treeProp,
               "current.getParentTreeProp("
                   + TreePropGenerator.findTypeByTypeName(treeProp.getTypeName())

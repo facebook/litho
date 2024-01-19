@@ -30,7 +30,7 @@ import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
 import com.facebook.litho.NoOpEventHandler;
 import com.facebook.litho.StateContainer;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
@@ -302,11 +302,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * Retrieves all of the tree props used by this Section from the TreeProps map and sets the tree
    * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
+  protected void populateTreePropContainer(@Nullable TreePropContainer parentTreePropContainer) {}
 
   /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
-  protected TreeProps getTreePropsForChildren(
-      SectionContext c, @Nullable TreeProps previousTreeProps) {
+  protected TreePropContainer getTreePropContainerForChildren(
+      SectionContext c, @Nullable TreePropContainer previousTreeProps) {
     return previousTreeProps;
   }
 

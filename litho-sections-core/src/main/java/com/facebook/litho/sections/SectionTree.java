@@ -50,7 +50,7 @@ import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugInfo;
@@ -1287,9 +1287,9 @@ public class SectionTree {
       }
 
       final LithoStartupLogger startupLogger =
-          mContext.getTreeProps() == null
+          mContext.getTreePropContainer() == null
               ? null
-              : mContext.getTreeProps().get(LithoStartupLogger.class);
+              : mContext.getTreePropContainer().get(LithoStartupLogger.class);
       if (LithoStartupLogger.isEnabled(startupLogger)) {
         startupLogger.markPoint(LithoStartupLogger.CHANGESET_CALCULATION, LithoStartupLogger.END);
       }
@@ -1776,7 +1776,7 @@ public class SectionTree {
 
       final boolean isNextRootDiffSection = nextRoot.isDiffSectionSpec();
       if (!isNextRootDiffSection) {
-        nextRoot.populateTreeProps(context.getTreeProps());
+        nextRoot.populateTreePropContainer(context.getTreePropContainer());
       }
 
       final boolean shouldTransferState =
@@ -1827,8 +1827,9 @@ public class SectionTree {
                 ? null
                 : Section.acquireChildrenMap(currentRoot);
 
-        final TreeProps parentTreeProps = context.getTreeProps();
-        context.setTreeProps(nextRoot.getTreePropsForChildren(context, parentTreeProps));
+        final TreePropContainer parentTreePropContainer = context.getTreePropContainer();
+        context.setTreePropContainer(
+            nextRoot.getTreePropContainerForChildren(context, parentTreePropContainer));
 
         nextRoot.setChildren(nextRoot.createChildren(nextRoot.getScopedContext()));
 
@@ -1864,9 +1865,9 @@ public class SectionTree {
               sectionTreeTag);
         }
 
-        final TreeProps contextTreeProps = context.getTreeProps();
-        if (contextTreeProps != parentTreeProps) {
-          context.setTreeProps(parentTreeProps);
+        final TreePropContainer contextTreeProps = context.getTreePropContainer();
+        if (contextTreeProps != parentTreePropContainer) {
+          context.setTreePropContainer(parentTreePropContainer);
         }
       }
     } finally {

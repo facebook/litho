@@ -26,7 +26,7 @@ interface ComponentTreeTimeMachine {
   fun storeRevision(
       root: Component,
       treeState: TreeState,
-      treeProps: TreeProps?,
+      treePropContainer: TreePropContainer?,
       source: Int,
       attribution: String?
   )
@@ -44,7 +44,7 @@ interface ComponentTreeTimeMachine {
       val version: Int,
       val root: Component,
       val treeState: TreeState,
-      val treeProps: TreeProps?,
+      val treePropContainer: TreePropContainer?,
       val timestamp: Long,
       val source: Int,
       val attribution: String?
@@ -73,7 +73,7 @@ internal class DebugComponentTreeTimeMachine(private val componentTree: Componen
   override fun storeRevision(
       root: Component,
       treeState: TreeState,
-      treeProps: TreeProps?,
+      treePropContainer: TreePropContainer?,
       source: Int,
       attribution: String?
   ) {
@@ -84,7 +84,7 @@ internal class DebugComponentTreeTimeMachine(private val componentTree: Componen
               version = revisions.size,
               root = root,
               treeState = treeState,
-              treeProps = treeProps,
+              treePropContainer = treePropContainer,
               timestamp = System.currentTimeMillis(),
               source = source,
               attribution = attribution)

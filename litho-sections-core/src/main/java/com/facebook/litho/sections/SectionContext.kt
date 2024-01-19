@@ -27,7 +27,7 @@ import com.facebook.litho.EventTrigger
 import com.facebook.litho.Handle
 import com.facebook.litho.LithoConfiguration
 import com.facebook.litho.StateContainer
-import com.facebook.litho.TreeProps
+import com.facebook.litho.TreePropContainer
 import com.facebook.litho.allNotNull
 import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.widget.SectionsDebug
@@ -38,12 +38,12 @@ class SectionContext
 constructor(
     context: Context,
     config: LithoConfiguration? = ComponentContextUtils.buildDefaultLithoConfiguration(context),
-    treeProps: TreeProps? = null
+    treeProps: TreePropContainer? = null
 ) : ComponentContext(context, config, treeProps) {
 
   constructor(
       context: ComponentContext
-  ) : this(context.androidContext, context.lithoConfiguration, context.treePropsCopy)
+  ) : this(context.androidContext, context.lithoConfiguration, context.treePropContainerCopy)
 
   val keyHandler: KeyHandler = KeyHandler()
 
@@ -122,7 +122,7 @@ constructor(
     get() = scope?.get()
 
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-  override fun getTreeProps(): TreeProps? = super.getTreeProps()
+  override fun getTreePropContainer(): TreePropContainer? = super.getTreePropContainer()
 
   companion object {
     const val NO_SCOPE_EVENT_HANDLER: String = "SectionContext:NoScopeEventHandler"

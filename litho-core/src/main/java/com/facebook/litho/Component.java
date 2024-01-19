@@ -242,7 +242,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
             + getSimpleName());
   }
 
-  protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
+  protected boolean isEqualivalentTreePropContainer(
+      ComponentContext current, ComponentContext next) {
     return true;
   }
 
@@ -267,7 +268,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
           || (previousScopedContext != null
               && nextScopedContext != null
               && currentComponent != null
-              && !currentComponent.isEqualivalentTreeProps(
+              && !currentComponent.isEqualivalentTreePropContainer(
                   previousScopedContext, nextScopedContext));
     }
 
@@ -610,13 +611,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         c =
             new ComponentContext(
                 c.getAndroidContext(),
-                c.getTreeProps(),
+                c.getTreePropContainer(),
                 ct.getLithoConfiguration(),
                 LithoTree.Companion.create(ct),
                 c.mGlobalKey,
                 c.getLifecycleProvider(),
                 null,
-                c.getParentTreeProps());
+                c.getParentTreePropContainer());
       } else {
         componentTreeId = lithoTree.getId();
       }
@@ -2279,8 +2280,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   @Nullable
-  public static <T> T getTreePropFromParent(TreeProps parentTreeProps, Class<T> key) {
-    return parentTreeProps == null ? null : parentTreeProps.get(key);
+  public static <T> T getTreePropFromParent(
+      TreePropContainer parentTreePropContainer, Class<T> key) {
+    return parentTreePropContainer == null ? null : parentTreePropContainer.get(key);
   }
 
   static LinkedList<String> generateHierarchy(String globalKey) {

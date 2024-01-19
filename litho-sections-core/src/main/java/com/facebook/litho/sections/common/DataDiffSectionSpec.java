@@ -247,7 +247,7 @@ public class DataDiffSectionSpec<T> {
               mChangeSet.insert(
                   operation.getIndex(),
                   components.get(0).getRenderInfo(),
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   dataHolders.get(0).getNext());
             } else {
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
@@ -255,7 +255,7 @@ public class DataDiffSectionSpec<T> {
                   operation.getIndex(),
                   opSize,
                   renderInfos,
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   extractNextData(dataHolders));
             }
             break;
@@ -280,7 +280,7 @@ public class DataDiffSectionSpec<T> {
               mChangeSet.update(
                   operation.getIndex(),
                   components.get(0).getRenderInfo(),
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   dataHolders.get(0).getPrevious(),
                   dataHolders.get(0).getNext());
             } else {
@@ -289,7 +289,7 @@ public class DataDiffSectionSpec<T> {
                   operation.getIndex(),
                   opSize,
                   renderInfos,
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   extractPrevData(dataHolders),
                   extractNextData(dataHolders));
             }

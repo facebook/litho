@@ -332,13 +332,13 @@ internal object Layout {
     // during measure API call and for that we are using the cached node and accessing the global
     // key from it since NestedTreeHolder will have incorrect global key for it.
     val globalKeyToReuse: String
-    val treePropsToReuse: TreeProps?
+    val treePropsToReuse: TreePropContainer?
     if (Component.isLayoutSpecWithSizeSpec(component)) {
       globalKeyToReuse = node.tailComponentKey
-      treePropsToReuse = node.tailComponentContext.treeProps
+      treePropsToReuse = node.tailComponentContext.treePropContainer
     } else {
       globalKeyToReuse = checkNotNull(node.cachedNode).tailComponentKey
-      treePropsToReuse = checkNotNull(node.cachedNode).tailComponentContext.treeProps
+      treePropsToReuse = checkNotNull(node.cachedNode).tailComponentContext.treePropContainer
     }
 
     // 4.a Apply state updates early for layout phase

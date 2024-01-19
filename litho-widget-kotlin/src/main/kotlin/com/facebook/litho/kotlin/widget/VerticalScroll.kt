@@ -130,7 +130,7 @@ internal class VerticalScrollComponent(
     val (
         tree: NestedLithoTree,
         resolveResult: ResolveResult,
-    ) = useNestedTree(root = child, treeProps = context.treeProps)
+    ) = useNestedTree(root = child, treePropContainer = context.treePropContainer)
 
     val scrollPosition = useState {
       LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())

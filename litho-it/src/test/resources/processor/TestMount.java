@@ -43,7 +43,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Prop;
@@ -173,7 +173,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
+  protected boolean isEqualivalentTreePropContainer(
+      ComponentContext current, ComponentContext next) {
     if (current.getParentTreeProp(
                 com.facebook.litho.processor.integration.resources.TestTreeProp.class)
             != null
@@ -212,20 +213,24 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected void populateTreeProps(TreeProps treeProps) {
-    if (treeProps == null) {
+  protected void populateTreePropContainer(TreePropContainer treePropContainer) {
+    if (treePropContainer == null) {
       return;
     }
-    treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
+    treeProp =
+        treePropContainer.get(
+            com.facebook.litho.processor.integration.resources.TestTreeProp.class);
   }
 
   @Override
-  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
-    final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
-    childTreeProps.put(
+  protected TreePropContainer getTreePropContainerForChildren(
+      ComponentContext c, TreePropContainer parentTreePropContainer) {
+    final TreePropContainer childTreePropContainer =
+        TreePropContainer.acquire(parentTreePropContainer);
+    childTreePropContainer.put(
         com.facebook.litho.processor.integration.resources.TestTreeProp.class,
         TestMountSpec.onCreateFeedPrefetcherProp((ComponentContext) c, prop6));
-    return childTreeProps;
+    return childTreePropContainer;
   }
 
   @SuppressWarnings("unchecked")

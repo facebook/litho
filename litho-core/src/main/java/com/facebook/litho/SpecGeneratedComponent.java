@@ -541,9 +541,9 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
-  protected @Nullable TreeProps getTreePropsForChildren(
-      ComponentContext c, @Nullable TreeProps treeProps) {
-    return treeProps;
+  protected @Nullable TreePropContainer getTreePropContainerForChildren(
+      ComponentContext c, @Nullable TreePropContainer treePropContainer) {
+    return treePropContainer;
   }
 
   /**
@@ -749,7 +749,7 @@ public abstract class SpecGeneratedComponent extends Component
    * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
    * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
+  protected void populateTreePropContainer(@Nullable TreePropContainer parentTreePropContainer) {}
 
   protected @Nullable RenderData recordRenderData(
       ComponentContext c, @Nullable RenderData toRecycle) {

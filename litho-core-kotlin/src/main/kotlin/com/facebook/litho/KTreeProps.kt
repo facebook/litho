@@ -67,11 +67,11 @@ class TreePropProviderImpl(
 }
 
 private fun <T> ComponentScope.createTreeProp(clazz: Class<out T>, value: T) {
-  if (!context.isParentTreePropsCloned) {
-    context.treeProps = TreeProps.acquire(context.treeProps)
-    context.isParentTreePropsCloned = true
+  if (!context.isParentTreePropContainerCloned) {
+    context.treePropContainer = TreePropContainer.acquire(context.treePropContainer)
+    context.isParentTreePropContainerCloned = true
   }
-  context.treeProps?.put(clazz, value)
+  context.treePropContainer?.put(clazz, value)
 }
 
 /**

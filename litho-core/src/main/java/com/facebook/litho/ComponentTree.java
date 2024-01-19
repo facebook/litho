@@ -365,7 +365,7 @@ public class ComponentTree
   private int mCommittedLayoutVersion = INVALID_LAYOUT_VERSION;
 
   @GuardedBy("this")
-  private @Nullable TreeProps mRootTreeProps;
+  private @Nullable TreePropContainer mRootTreePropContainer;
 
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
@@ -509,7 +509,7 @@ public class ComponentTree
     mContext =
         new ComponentContext(
             androidContext,
-            builder.treeProps,
+            builder.treePropContainer,
             config,
             LithoTree.Companion.create(this),
             "root",
@@ -519,7 +519,7 @@ public class ComponentTree
                     ? builder.mLifecycleProvider
                     : getLifecycleProvider(),
             null,
-            builder.parentTreeProps);
+            builder.parentTreePropContainer);
 
     if (LithoDebugConfigurations.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
@@ -1494,14 +1494,14 @@ public class ComponentTree
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
-    final @Nullable TreeProps rootTreeProps;
+    final @Nullable TreePropContainer rootTreePropContainer;
 
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      rootTreeProps = TreeProps.copy(mRootTreeProps);
+      rootTreePropContainer = TreePropContainer.copy(mRootTreePropContainer);
 
       if (isCreateLayoutInProgress) {
         logStateUpdatesFromCreateLayout(attribution);
@@ -1521,7 +1521,7 @@ public class ComponentTree
         isAsync ? RenderSource.UPDATE_STATE_ASYNC : RenderSource.UPDATE_STATE_SYNC,
         INVALID_LAYOUT_VERSION,
         attribution,
-        rootTreeProps,
+        rootTreePropContainer,
         isCreateLayoutInProgress,
         false);
   }
@@ -1555,14 +1555,14 @@ public class ComponentTree
    * <p>It will make sure that the tree properties are properly cloned and stored.
    */
   private void setInternalTreeProp(Class key, @Nullable Object value) {
-    if (!mContext.isParentTreePropsCloned()) {
-      mContext.setTreeProps(TreeProps.acquire(mContext.getTreeProps()));
-      mContext.setParentTreePropsCloned(true);
+    if (!mContext.isParentTreePropContainerCloned()) {
+      mContext.setTreePropContainer(TreePropContainer.acquire(mContext.getTreePropContainer()));
+      mContext.setParentTreePropContainerCloned(true);
     }
 
-    TreeProps treeProps = mContext.getTreeProps();
-    if (treeProps != null) {
-      treeProps.put(key, value);
+    TreePropContainer treePropContainer = mContext.getTreePropContainer();
+    if (treePropContainer != null) {
+      treePropContainer.put(key, value);
     }
   }
 
@@ -1705,10 +1705,14 @@ public class ComponentTree
   }
 
   /**
-   * Compute asynchronously a new layout with the given component root, sizes and stored TreeProps.
+   * Compute asynchronously a new layout with the given component root, sizes and stored
+   * TreePropContainer.
    */
   public void setRootAndSizeSpecAsync(
-      @Nullable Component root, int widthSpec, int heightSpec, @Nullable TreeProps treeProps) {
+      @Nullable Component root,
+      int widthSpec,
+      int heightSpec,
+      @Nullable TreePropContainer treePropContainer) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1718,7 +1722,7 @@ public class ComponentTree
         RenderSource.SET_ROOT_ASYNC,
         INVALID_LAYOUT_VERSION,
         null,
-        treeProps);
+        treePropContainer);
   }
 
   /** Compute a new layout with the given component root and sizes */
@@ -1754,7 +1758,7 @@ public class ComponentTree
       int widthSpec,
       int heightSpec,
       @Nullable Size output,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreePropContainer treePropContainer) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1764,7 +1768,7 @@ public class ComponentTree
         RenderSource.SET_ROOT_SYNC,
         INVALID_LAYOUT_VERSION,
         null,
-        treeProps);
+        treePropContainer);
   }
 
   public void setVersionedRootAndSizeSpec(
@@ -1772,7 +1776,7 @@ public class ComponentTree
       int widthSpec,
       int heightSpec,
       @Nullable Size output,
-      @Nullable TreeProps treeProps,
+      @Nullable TreePropContainer treePropContainer,
       int externalRootVersion) {
     setRootAndSizeSpecAndWrapper(
         root,
@@ -1783,7 +1787,7 @@ public class ComponentTree
         RenderSource.SET_ROOT_SYNC,
         externalRootVersion,
         null,
-        treeProps);
+        treePropContainer);
   }
 
   public void setVersionedRootAndSizeSpecAsync(
@@ -1791,7 +1795,7 @@ public class ComponentTree
       int widthSpec,
       int heightSpec,
       @Nullable Size output,
-      @Nullable TreeProps treeProps,
+      @Nullable TreePropContainer treePropContainer,
       int externalRootVersion) {
     setRootAndSizeSpecAndWrapper(
         root,
@@ -1802,7 +1806,7 @@ public class ComponentTree
         RenderSource.SET_ROOT_ASYNC,
         externalRootVersion,
         null,
-        treeProps);
+        treePropContainer);
   }
 
   /**
@@ -1893,7 +1897,7 @@ public class ComponentTree
       @RenderSource int source,
       int externalRootVersion,
       @Nullable String extraAttribution,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreePropContainer treePropContainer) {
     if (root == null) {
       root = new EmptyComponent();
     }
@@ -1907,7 +1911,7 @@ public class ComponentTree
         source,
         externalRootVersion,
         extraAttribution,
-        treeProps,
+        treePropContainer,
         false,
         false);
   }
@@ -1921,14 +1925,14 @@ public class ComponentTree
       @RenderSource int source,
       int externalRootVersion,
       @Nullable String extraAttribution,
-      @Nullable TreeProps treeProps,
+      @Nullable TreePropContainer treePropContainer,
       boolean isCreateLayoutInProgress,
       boolean forceLayout) {
 
     final int requestedWidthSpec;
     final int requestedHeightSpec;
     final Component requestedRoot;
-    final TreeProps requestedTreeProps;
+    final TreePropContainer requestedTreePropContainer;
 
     synchronized (this) {
 
@@ -1967,7 +1971,7 @@ public class ComponentTree
       }
 
       final boolean rootInitialized = root != null;
-      final boolean treePropsInitialized = treeProps != null;
+      final boolean treePropContainerInitialized = treePropContainer != null;
       final boolean widthSpecInitialized = widthSpec != SIZE_UNINITIALIZED;
       final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;
       final Component resolvedRoot = root != null ? root : mRoot;
@@ -2032,16 +2036,16 @@ public class ComponentTree
         mRoot = mRoot.makeShallowCopyWithNewId();
       }
 
-      if (treePropsInitialized) {
-        mRootTreeProps = treeProps;
+      if (treePropContainerInitialized) {
+        mRootTreePropContainer = treePropContainer;
       } else {
-        treeProps = mRootTreeProps;
+        treePropContainer = mRootTreePropContainer;
       }
 
       requestedWidthSpec = mWidthSpec;
       requestedHeightSpec = mHeightSpec;
       requestedRoot = mRoot;
-      requestedTreeProps = mRootTreeProps;
+      requestedTreePropContainer = mRootTreePropContainer;
 
       mLastLayoutSource = source;
     }
@@ -2060,7 +2064,7 @@ public class ComponentTree
         requestedWidthSpec,
         requestedHeightSpec,
         requestedRoot,
-        requestedTreeProps);
+        requestedTreePropContainer);
   }
 
   private void logRenderRequest(
@@ -2099,7 +2103,7 @@ public class ComponentTree
       final int widthSpec,
       final int heightSpec,
       final Component root,
-      final TreeProps treeProps) {
+      final TreePropContainer treePropContainer) {
     final ResolveResult currentResolveResult;
     synchronized (this) {
       currentResolveResult = mCommittedResolveResult;
@@ -2128,7 +2132,7 @@ public class ComponentTree
                   // we cannot skip resolve phase if there's async resolve task running
                   && (mCurrentDoResolveRunnable == null))
               || (currentResolveResult.component == root
-                  && currentResolveResult.context.getTreeProps() == treeProps);
+                  && currentResolveResult.context.getTreePropContainer() == treePropContainer);
       if (canLayoutWithoutResolve) {
         requestLayoutWithSplitFutures(
             currentResolveResult,
@@ -2152,7 +2156,7 @@ public class ComponentTree
             new DoResolveRunnable(
                 source,
                 root,
-                treeProps,
+                treePropContainer,
                 widthSpec,
                 heightSpec,
                 extraAttribution,
@@ -2174,7 +2178,7 @@ public class ComponentTree
           extraAttribution,
           isCreateLayoutInProgress,
           root,
-          treeProps,
+          treePropContainer,
           widthSpec,
           heightSpec);
     }
@@ -2186,7 +2190,7 @@ public class ComponentTree
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
       final Component root,
-      final @Nullable TreeProps treeProps,
+      final @Nullable TreePropContainer treePropContainer,
       final int widthSpec,
       final int heightSpec) {
 
@@ -2210,7 +2214,7 @@ public class ComponentTree
       localResolveVersion = mNextResolveVersion++;
       treeState = acquireTreeState();
       currentNode = mCommittedResolveResult != null ? mCommittedResolveResult.node : null;
-      context = new ComponentContext(mContext, treeProps);
+      context = new ComponentContext(mContext, treePropContainer);
     }
 
     PerfEvent resolvePerfEvent =
@@ -2411,7 +2415,7 @@ public class ComponentTree
     final int layoutVersion;
     final @Nullable LayoutState currentLayoutState;
     final @Nullable DiffNode currentDiffNode;
-    final @Nullable TreeProps treeProps;
+    final @Nullable TreePropContainer treePropContainer;
 
     final boolean isSync = isFromSyncLayout(source);
 
@@ -2419,7 +2423,8 @@ public class ComponentTree
       currentLayoutState = mCommittedLayoutState;
       currentDiffNode = currentLayoutState != null ? currentLayoutState.getDiffTree() : null;
       layoutVersion = mNextLayoutVersion++;
-      treeProps = resolveResult != null ? resolveResult.context.getTreeProps() : null;
+      treePropContainer =
+          resolveResult != null ? resolveResult.context.getTreePropContainer() : null;
     }
 
     // No width / height spec, no point proceeding.
@@ -2475,7 +2480,7 @@ public class ComponentTree
         source,
         extraAttribution,
         isCreateLayoutInProgress,
-        treeProps,
+        treePropContainer,
         resolveResult.component);
   }
 
@@ -2491,7 +2496,7 @@ public class ComponentTree
       final @RenderSource int source,
       final @Nullable String extraAttribution,
       final boolean isCreateLayoutInProgress,
-      final @Nullable TreeProps treeProps,
+      final @Nullable TreePropContainer treePropContainer,
       final Component rootComponent) {
     List<ScopedComponentInfo> scopedSpecComponentInfos = null;
     List<MeasureListener> measureListeners = null;
@@ -2536,7 +2541,7 @@ public class ComponentTree
         if (localTreeState != null) {
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
-            saveRevision(rootComponent, treeState, treeProps, source, extraAttribution);
+            saveRevision(rootComponent, treeState, treePropContainer, source, extraAttribution);
             treeState.commitLayoutState(localTreeState);
             treeState.bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
           }
@@ -2970,7 +2975,7 @@ public class ComponentTree
 
     private final @RenderSource int mSource;
     private final Component mRoot;
-    private final TreeProps mTreeProps;
+    private final TreePropContainer mTreePropContainer;
     private final int mWidthSpec;
     private final int mHeightSpec;
     private final @Nullable String mAttribution;
@@ -2979,14 +2984,14 @@ public class ComponentTree
     public DoResolveRunnable(
         @RenderSource int source,
         Component root,
-        TreeProps treeProps,
+        TreePropContainer treePropContainer,
         int widthSpec,
         int heightSpec,
         @Nullable String attribution,
         boolean isCreateLayoutInProgress) {
       mSource = source;
       mRoot = root;
-      mTreeProps = treeProps;
+      mTreePropContainer = treePropContainer;
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
       mAttribution = attribution;
@@ -3001,7 +3006,7 @@ public class ComponentTree
           mAttribution,
           mIsCreateLayoutInProgress,
           mRoot,
-          mTreeProps,
+          mTreePropContainer,
           mWidthSpec,
           mHeightSpec);
     }
@@ -3047,16 +3052,16 @@ public class ComponentTree
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
     private @Nullable ComponentTreeDebugEventListener componentTreeDebugEventListener;
 
-    private @Nullable final TreeProps treeProps;
-    private @Nullable final TreeProps parentTreeProps;
+    private @Nullable final TreePropContainer treePropContainer;
+    private @Nullable final TreePropContainer parentTreePropContainer;
 
     protected Builder(ComponentContext context) {
       logger = context.getLogger();
       logTag = context.getLogTag();
       config = context.mLithoConfiguration.componentsConfig;
       visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
-      treeProps = context.getTreeProps();
-      parentTreeProps = context.getParentTreeProps();
+      treePropContainer = context.getTreePropContainer();
+      parentTreePropContainer = context.getParentTreePropContainer();
       mAndroidContext = context.getAndroidContext();
     }
 
@@ -3369,18 +3374,18 @@ public class ComponentTree
   private void saveRevision(
       Component root,
       TreeState treeState,
-      @Nullable TreeProps treeProps,
+      @Nullable TreePropContainer treePropContainer,
       @RenderSource int source,
       @Nullable String attribution) {
     if (mTimeMachine != null) {
       final TreeState frozenTreeState = new TreeState(treeState);
-      mTimeMachine.storeRevision(root, frozenTreeState, treeProps, source, attribution);
+      mTimeMachine.storeRevision(root, frozenTreeState, treePropContainer, source, attribution);
     }
   }
 
   /**
    * Similar to {@link ComponentTree#setRoot(Component)}. This method allows setting a new root with
-   * cached {@link TreeProps} and {@link StateHandler}.
+   * cached {@link TreePropContainer} and {@link StateHandler}.
    *
    * <p>It is used to enable time-travelling through external editors such as Flipper.
    */
@@ -3389,7 +3394,7 @@ public class ComponentTree
     ThreadUtils.assertMainThread();
 
     mTreeState = revision.getTreeState();
-    mRootTreeProps = revision.getTreeProps();
+    mRootTreePropContainer = revision.getTreePropContainer();
 
     setRootAndSizeSpecInternal(
         revision.getRoot(),

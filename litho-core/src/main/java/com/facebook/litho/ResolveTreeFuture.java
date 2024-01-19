@@ -195,7 +195,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       return false;
     }
 
-    if (mComponentContext.getTreeProps() != thatRtf.mComponentContext.getTreeProps()) {
+    if (mComponentContext.getTreePropContainer()
+        != thatRtf.mComponentContext.getTreePropContainer()) {
       return false;
     }
 

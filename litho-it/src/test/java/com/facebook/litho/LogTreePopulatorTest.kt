@@ -55,7 +55,7 @@ class LogTreePopulatorTest {
           }
         }
     val event: PerfEvent = mock()
-    context.treeProps = TreeProps().apply { put(MyKey::class.java, 1_337) }
+    context.treePropContainer = TreePropContainer().apply { put(MyKey::class.java, 1_337) }
     LogTreePopulator.populatePerfEventFromLogger(context, logger, event)
     verify(event).markerAnnotate("my_key", "1337")
   }
@@ -71,7 +71,7 @@ class LogTreePopulatorTest {
           }
         }
     val event: PerfEvent = mock()
-    context.treeProps = TreeProps().apply { put(MyKey::class.java, 1_337) }
+    context.treePropContainer = TreePropContainer().apply { put(MyKey::class.java, 1_337) }
     val noLogTagContext = ComponentContext(getApplicationContext<Context>())
     val perfEvent = LogTreePopulator.populatePerfEventFromLogger(noLogTagContext, logger, event)
     assertThat(perfEvent).isNull()
@@ -88,7 +88,7 @@ class LogTreePopulatorTest {
           ): Map<String, String>? = null
         }
     val event: PerfEvent = mock()
-    context.treeProps = TreeProps().apply { put(MyKey::class.java, 1_337) }
+    context.treePropContainer = TreePropContainer().apply { put(MyKey::class.java, 1_337) }
     LogTreePopulator.populatePerfEventFromLogger(context, logger, event)
     verify(event).markerAnnotate("log_tag", "test")
     verifyNoMoreInteractions(event)

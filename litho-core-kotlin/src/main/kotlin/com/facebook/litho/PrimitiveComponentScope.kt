@@ -215,7 +215,7 @@ fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderT
 fun PrimitiveComponentScope.useNestedTree(
     config: ComponentsConfiguration = context.lithoConfiguration.componentsConfig,
     root: Component,
-    treeProps: TreeProps? = null,
+    treePropContainer: TreePropContainer? = null,
     vararg deps: Any? = emptyArray(),
 ): Pair<NestedLithoTree, ResolveResult> {
 
@@ -237,7 +237,7 @@ fun PrimitiveComponentScope.useNestedTree(
         }
       }
 
-  val result = tree.resolve(root = root, treeProps = treeProps)
+  val result = tree.resolve(root = root, treePropContainer = treePropContainer)
   return Pair(tree, result)
 }
 

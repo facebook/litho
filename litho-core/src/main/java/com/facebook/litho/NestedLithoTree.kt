@@ -44,13 +44,13 @@ class NestedLithoTree(
   val context: ComponentContext =
       ComponentContext(
           context.androidContext,
-          context.treeProps,
+          context.treePropContainer,
           context.lithoConfiguration.copy(componentsConfig = config),
           LithoTree(this, this, this, this, id),
           "nested-tree-root",
           context.lifecycleProvider,
           null,
-          context.parentTreeProps,
+          context.parentTreePropContainer,
       )
 
   val state: TreeState = TreeState()
@@ -61,7 +61,7 @@ class NestedLithoTree(
 
   private val pendingUpdates: MutableMap<String, PendingStateUpdate> = LinkedHashMap()
 
-  fun resolve(root: Component, treeProps: TreeProps?): ResolveResult {
+  fun resolve(root: Component, treePropContainer: TreePropContainer?): ResolveResult {
 
     val shouldResolve: Boolean
     val currentResult: ResolveResult?
@@ -74,7 +74,7 @@ class NestedLithoTree(
       shouldResolve =
           currentResult == null ||
               pendingUpdates.isNotEmpty() ||
-              treeProps != currentResult.context.treeProps
+              treePropContainer != currentResult.context.treePropContainer
 
       pendingUpdatesSnapShot = HashMap(pendingUpdates)
 
@@ -88,7 +88,7 @@ class NestedLithoTree(
 
     return if (currentResult == null || shouldResolve) {
       ResolveTreeFuture.resolve(
-          ComponentContext(context, treeProps),
+          ComponentContext(context, treePropContainer),
           root,
           newState,
           -1,

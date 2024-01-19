@@ -142,7 +142,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 LithoLayoutContext::class.java,
                 AccessibilityUtils::class.java,
                 Layout::class.java,
-                TreeProps::class.java,
+                TreePropContainer::class.java,
                 ThreadUtils::class.java,
                 RenderResult::class.java,
                 ComponentKeyUtils::class.java,

@@ -400,16 +400,16 @@ class ComponentTreeTest {
   fun testSetRootAndSizeSpecWithTreeProps() {
     val componentTree = ComponentTree.create(context, component).build()
     val size = Size()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         size,
-        treeProps)
+        treePropContainer)
     val c = componentTree.mainThreadLayoutState!!.componentContext
-    assertThat(c.treeProps).isSameAs(treeProps)
+    assertThat(c.treePropContainer).isSameAs(treePropContainer)
   }
 
   @Test
@@ -427,20 +427,21 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.measure(
         makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), IntArray(2), false)
     val c = componentTree.mainThreadLayoutState!!.componentContext
 
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test
@@ -448,18 +449,19 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.setSizeSpec(makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY))
     val c = componentTree.mainThreadLayoutState!!.componentContext
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test
@@ -467,21 +469,22 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(200, EXACTLY),
         makeSizeSpec(200, EXACTLY))
     val c = componentTree.mainThreadLayoutState!!.componentContext
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test
@@ -498,18 +501,19 @@ class ComponentTreeTest {
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         Size())
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleStateUpdateEmulator.create(context).caller(caller).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     caller.increment()
     ShadowLooper.runUiThreadTasks()
     val c = componentTree.mainThreadLayoutState!!.componentContext
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test

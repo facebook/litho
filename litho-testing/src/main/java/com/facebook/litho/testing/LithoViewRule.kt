@@ -27,7 +27,7 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.LithoLifecycleProvider
 import com.facebook.litho.LithoView
-import com.facebook.litho.TreeProps
+import com.facebook.litho.TreePropContainer
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.MountItemsPool
@@ -104,9 +104,9 @@ constructor(
 
   /** Sets a new [TreeProp] for the next layout pass. */
   fun setTreeProp(klass: Class<*>, instance: Any?): LithoViewRule {
-    val props = context.treeProps ?: TreeProps()
+    val props = context.treePropContainer ?: TreePropContainer()
     props.put(klass, instance)
-    context.treeProps = props
+    context.treePropContainer = props
     return this
   }
 

@@ -22,7 +22,7 @@ import com.facebook.litho.ComponentTreeDebugEventListener;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 
@@ -31,12 +31,12 @@ import com.facebook.litho.viewcompat.ViewCreator;
  */
 public class TreePropsWrappedRenderInfo implements RenderInfo {
   private final RenderInfo mRenderInfo;
-  private final TreeProps mTreeProps;
+  private final TreePropContainer mTreePropContainer;
 
   public TreePropsWrappedRenderInfo(
-      @Nullable RenderInfo renderInfo, @Nullable TreeProps treeProps) {
+      @Nullable RenderInfo renderInfo, @Nullable TreePropContainer treePropContainer) {
     mRenderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
-    mTreeProps = treeProps;
+    mTreePropContainer = treePropContainer;
   }
 
   @Override
@@ -188,7 +188,7 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
   }
 
   @Nullable
-  public TreeProps getTreeProps() {
-    return mTreeProps;
+  public TreePropContainer getTreePropContainer() {
+    return mTreePropContainer;
   }
 }

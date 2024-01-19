@@ -208,8 +208,10 @@ public class TestLayoutState {
     }
 
     if (component instanceof SpecGeneratedComponent) {
-      final TreeProps treeProps = c.getTreeProps();
-      c.setTreeProps(((SpecGeneratedComponent) component).getTreePropsForChildren(c, treeProps));
+      final TreePropContainer treePropContainer = c.getTreePropContainer();
+      c.setTreePropContainer(
+          ((SpecGeneratedComponent) component)
+              .getTreePropContainerForChildren(c, treePropContainer));
     }
 
     if (component instanceof Wrapper) {
@@ -221,7 +223,7 @@ public class TestLayoutState {
       }
     } else if (component instanceof SpecGeneratedComponent
         && canResolve((SpecGeneratedComponent) component)) {
-      c.setTreeProps(c.getTreePropsCopy());
+      c.setTreePropContainer(c.getTreePropContainerCopy());
       if (component instanceof Column || component instanceof Row) {
         node = resolve(resolveContext, c, widthSpec, heightSpec, component);
       } else {
@@ -313,8 +315,8 @@ public class TestLayoutState {
     return new LithoNode();
   }
 
-  private static LithoNode createNestedTreeHolder(@Nullable TreeProps treeProps) {
-    return new NestedTreeHolder(treeProps);
+  private static LithoNode createNestedTreeHolder(@Nullable TreePropContainer treePropContainer) {
+    return new NestedTreeHolder(treePropContainer);
   }
 
   // Mimicks implementation of Layout.create but uses a custom InternalNode for shallow child
@@ -358,7 +360,7 @@ public class TestLayoutState {
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
-        node = createNestedTreeHolder(c.getTreeProps());
+        node = createNestedTreeHolder(c.getTreePropContainer());
       }
 
       // If the component can resolve itself resolve it.

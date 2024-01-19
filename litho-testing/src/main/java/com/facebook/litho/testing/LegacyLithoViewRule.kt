@@ -33,7 +33,7 @@ import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.StateHandler
-import com.facebook.litho.TreeProps
+import com.facebook.litho.TreePropContainer
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
@@ -232,9 +232,9 @@ constructor(
 
   /** Sets a new [TreeProp] for the next layout pass. */
   fun setTreeProp(klass: Class<*>, instance: Any?): LegacyLithoViewRule {
-    val props = context.treeProps ?: TreeProps()
+    val props = context.treePropContainer ?: TreePropContainer()
     props.put(klass, instance)
-    context.treeProps = props
+    context.treePropContainer = props
     return this
   }
 

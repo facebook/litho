@@ -112,7 +112,7 @@ public class SingleComponentSectionSpec {
               .isFullSpan(isNextFullSpan)
               .logTag(logTag != null ? logTag.getNext() : null)
               .build(),
-          context.getTreePropsCopy(),
+          context.getTreePropContainerCopy(),
           nextData);
       return;
     }
@@ -160,7 +160,7 @@ public class SingleComponentSectionSpec {
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
               .build(),
-          context.getTreePropsCopy(),
+          context.getTreePropContainerCopy(),
           prevData,
           nextData);
     }

@@ -874,9 +874,9 @@ class SplitFuturesTest {
     val output = Size()
 
     // Define tree-props on the CT
-    val treeProps = TreeProps()
+    val treePropContainer = TreePropContainer()
     legacyLithoViewRule.componentTree.setRootAndSizeSpecSync(
-        component, exactly(100), exactly(100), output, treeProps) // Set new tree props.
+        component, exactly(100), exactly(100), output, treePropContainer) // Set new tree props.
 
     // Ensure render and measure happened once, and the output is set correctly
     assertThat(counter.renderCount).isEqualTo(1)
@@ -888,7 +888,7 @@ class SplitFuturesTest {
 
     // Set the same root again, with the same tree-props, but different size-specs
     legacyLithoViewRule.componentTree.setRootAndSizeSpecSync(
-        component, exactly(150), exactly(150), output, treeProps) // Use the same tree props
+        component, exactly(150), exactly(150), output, treePropContainer) // Use the same tree props
 
     // Same component, so render count should still be 1.
     // Measure should increment, and the output should be equal to the new values.

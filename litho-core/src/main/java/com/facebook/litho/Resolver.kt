@@ -120,7 +120,7 @@ object Resolver {
       component: Component,
       resolveNestedTree: Boolean = false,
       globalKeyToReuse: String? = null,
-      treePropsToReuse: TreeProps? = null,
+      treePropsToReuse: TreePropContainer? = null,
   ): LithoNode? {
 
     val isTracing = ComponentsSystrace.isTracing
@@ -188,7 +188,9 @@ object Resolver {
 
       // If nested tree resolution is deferred, then create a nested tree holder.
       if (shouldDeferNestedTreeResolution) {
-        node = NestedTreeHolder(c.treeProps, resolveContext.cache.getCachedNode(component), parent)
+        node =
+            NestedTreeHolder(
+                c.treePropContainer, resolveContext.cache.getCachedNode(component), parent)
       } else {
         // Resolve the component into an InternalNode.
         val resolveResult: ComponentResolveResult =
@@ -355,7 +357,7 @@ object Resolver {
       parent: ComponentContext,
       component: Component,
       globalKeyToReuse: String? = null,
-      treePropsToReuse: TreeProps? = null,
+      treePropsToReuse: TreePropContainer? = null,
   ): ComponentContext {
 
     val globalKey: String =
@@ -372,10 +374,10 @@ object Resolver {
 
       // Note: state must be set (via ScopedComponentInfo.setStateContainer) before invoking
       // getTreePropsForChildren as @OnCreateTreeProps can depend on @State
-      val ancestor: TreeProps? = parent.treeProps
-      c.parentTreeProps = ancestor
-      val descendants = treePropsToReuse ?: component.getTreePropsForChildren(c, ancestor)
-      c.treeProps = descendants
+      val ancestor: TreePropContainer? = parent.treePropContainer
+      c.parentTreePropContainer = ancestor
+      val descendants = treePropsToReuse ?: component.getTreePropContainerForChildren(c, ancestor)
+      c.treePropContainer = descendants
     }
 
     if (LithoDebugConfigurations.isDebugModeEnabled) {

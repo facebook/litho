@@ -85,12 +85,12 @@ class ComponentShallowCopyTest {
     val c = componentTree.context
     return ComponentContext(
         c.androidContext,
-        c.treeProps,
+        c.treePropContainer,
         componentTree.lithoConfiguration,
         create(componentTree),
         c.mGlobalKey,
         c.lifecycleProvider,
         null,
-        c.parentTreeProps)
+        c.parentTreePropContainer)
   }
 }

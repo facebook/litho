@@ -34,7 +34,7 @@ import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.Size;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
@@ -213,7 +213,7 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
-    final TreeProps treeProps;
+    final TreePropContainer treePropContainer;
 
     synchronized (this) {
       if (mRenderInfo.rendersView()) {
@@ -228,13 +228,13 @@ public class ComponentTreeHolder {
 
       componentTree = mComponentTree;
       component = mRenderInfo.getComponent();
-      treeProps =
+      treePropContainer =
           mRenderInfo instanceof TreePropsWrappedRenderInfo
-              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreeProps()
+              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreePropContainer()
               : null;
     }
 
-    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec, size, treeProps);
+    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec, size, treePropContainer);
 
     synchronized (this) {
       if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {
@@ -258,7 +258,7 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
-    final TreeProps treeProps;
+    final TreePropContainer treePropContainer;
 
     synchronized (this) {
       if (mRenderInfo.rendersView()) {
@@ -274,9 +274,9 @@ public class ComponentTreeHolder {
       componentTree = mComponentTree;
       component = mRenderInfo.getComponent();
 
-      treeProps =
+      treePropContainer =
           mRenderInfo instanceof TreePropsWrappedRenderInfo
-              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreeProps()
+              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreePropContainer()
               : null;
     }
 
@@ -284,7 +284,7 @@ public class ComponentTreeHolder {
       componentTree.addMeasureListener(measureListener);
     }
 
-    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treeProps);
+    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treePropContainer);
 
     synchronized (this) {
       if (mComponentTree == componentTree && component == mRenderInfo.getComponent()) {

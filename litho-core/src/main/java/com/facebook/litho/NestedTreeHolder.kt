@@ -22,14 +22,14 @@ import kotlin.jvm.JvmField
 
 /**
  * This class is a placeholder for the unresolved layout and result of a [Component]s which
- * implement the [com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec].The [TreeProps],
- * padding and border width properties and held separately so that they can be copied into the
- * actual nested tree layout before measuring it.
+ * implement the [com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec].The
+ * [TreePropContainer], padding and border width properties and held separately so that they can be
+ * copied into the actual nested tree layout before measuring it.
  */
 class NestedTreeHolder
 @JvmOverloads
 constructor(
-    props: TreeProps? = null,
+    propContainer: TreePropContainer? = null,
     /**
      * When a node is measured during Component.measure and a layout-result is cached, it is cached
      * using that node as the key. Later, this layout may resolve a nested-tree-holder node, and so
@@ -39,7 +39,7 @@ constructor(
     @JvmField var parentContext: ComponentContext? = null
 ) : LithoNode() {
 
-  val pendingTreeProps: TreeProps? = TreeProps.copy(props)
+  val pendingTreePropContainer: TreePropContainer? = TreePropContainer.copy(propContainer)
 
   @JvmField var nestedBorderEdges: IntArray? = null
   @JvmField var nestedTreePadding: Edges? = null

@@ -166,11 +166,11 @@ abstract class PrimitiveComponent : Component() {
     return super.render(resolveContext, c, widthSpec, heightSpec)
   }
 
-  final override fun isEqualivalentTreeProps(
+  final override fun isEqualivalentTreePropContainer(
       current: ComponentContext,
       next: ComponentContext
   ): Boolean {
-    return super.isEqualivalentTreeProps(current, next)
+    return super.isEqualivalentTreePropContainer(current, next)
   }
 }
 

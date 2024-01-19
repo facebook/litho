@@ -24,8 +24,8 @@ import javax.annotation.CheckReturnValue
  */
 object LogTreePopulator {
   /**
-   * Annotate a log event with the log tag set in the context, and extract the [TreeProps] from a
-   * given [ComponentContext] and convert them into perf event annotations using a
+   * Annotate a log event with the log tag set in the context, and extract the [TreePropContainer]
+   * from a given [ComponentContext] and convert them into perf event annotations using a
    * [ComponentsLogger] implementation.
    *
    * @return Annotated perf event, or `null` if the resulting event isn't deemed worthy of
@@ -38,12 +38,12 @@ object LogTreePopulator {
       logger: ComponentsLogger,
       perfEvent: PerfEvent?
   ): PerfEvent? {
-    return populatePerfEventFromLogger(logger, c.logTag, perfEvent, c.treeProps)
+    return populatePerfEventFromLogger(logger, c.logTag, perfEvent, c.treePropContainer)
   }
 
   /**
-   * Annotate a log event with the log tag set in the context, and extract the [TreeProps] from a
-   * given [ComponentContext] and convert them into perf event annotations using a
+   * Annotate a log event with the log tag set in the context, and extract the [TreePropContainer]
+   * from a given [ComponentContext] and convert them into perf event annotations using a
    * [ComponentsLogger] implementation.
    *
    * @return Annotated perf event, or `null` if the resulting event isn't deemed worthy of
@@ -57,12 +57,12 @@ object LogTreePopulator {
       logTag: String?,
       perfEvent: PerfEvent?
   ): PerfEvent? {
-    return populatePerfEventFromLogger(logger, logTag, perfEvent, c.treeProps)
+    return populatePerfEventFromLogger(logger, logTag, perfEvent, c.treePropContainer)
   }
 
   /**
-   * Annotate a log event with the log tag set in the context, and convert the [TreeProps] into perf
-   * event annotations using a [ComponentsLogger] implementation.
+   * Annotate a log event with the log tag set in the context, and convert the [TreePropContainer]
+   * into perf event annotations using a [ComponentsLogger] implementation.
    *
    * @return Annotated perf event, or `null` if the resulting event isn't deemed worthy of
    *   reporting.
@@ -72,7 +72,7 @@ object LogTreePopulator {
       logger: ComponentsLogger,
       logTag: String?,
       perfEvent: PerfEvent?,
-      treeProps: TreeProps?
+      treePropContainer: TreePropContainer?
   ): PerfEvent? {
     if (perfEvent == null) {
       return null
@@ -82,11 +82,12 @@ object LogTreePopulator {
       return null
     }
     perfEvent.markerAnnotate(FrameworkLogEvents.PARAM_LOG_TAG, logTag)
-    if (treeProps == null) {
+    if (treePropContainer == null) {
       return perfEvent
     }
 
-    val extraAnnotations = logger.getExtraAnnotations { key -> treeProps[key] } ?: return perfEvent
+    val extraAnnotations =
+        logger.getExtraAnnotations { key -> treePropContainer[key] } ?: return perfEvent
     for ((key, value) in extraAnnotations) {
       perfEvent.markerAnnotate(key, value)
     }

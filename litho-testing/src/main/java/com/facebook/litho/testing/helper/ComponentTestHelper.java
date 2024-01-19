@@ -41,7 +41,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.ResolveContext;
 import com.facebook.litho.TestComponent;
 import com.facebook.litho.TestLayoutState;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.testing.Whitebox;
@@ -593,17 +593,17 @@ public final class ComponentTestHelper {
    * (unless a child overwrites its).
    */
   public static void setTreeProp(ComponentContext context, Class propClass, Object prop) {
-    TreeProps treeProps;
+    TreePropContainer treePropContainer;
     try {
-      treeProps = Whitebox.invokeMethod(context, "getTreeProps");
-      if (treeProps == null) {
-        treeProps = new TreeProps();
-        Whitebox.invokeMethod(context, "setTreeProps", treeProps);
+      treePropContainer = Whitebox.invokeMethod(context, "getTreePropContainer");
+      if (treePropContainer == null) {
+        treePropContainer = new TreePropContainer();
+        Whitebox.invokeMethod(context, "setTreePropContainer", treePropContainer);
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    treeProps.put(propClass, prop);
+    treePropContainer.put(propClass, prop);
   }
 
   /**
@@ -611,17 +611,17 @@ public final class ComponentTestHelper {
    * (unless a child overwrites its).
    */
   public static void setParentTreeProp(ComponentContext context, Class propClass, Object prop) {
-    TreeProps treeProps;
+    TreePropContainer treePropContainer;
     try {
-      treeProps = Whitebox.invokeMethod(context, "getParentTreeProps");
-      if (treeProps == null) {
-        treeProps = new TreeProps();
-        Whitebox.invokeMethod(context, "setParentTreeProps", treeProps);
+      treePropContainer = Whitebox.invokeMethod(context, "getParentTreePropContainer");
+      if (treePropContainer == null) {
+        treePropContainer = new TreePropContainer();
+        Whitebox.invokeMethod(context, "setParentTreePropContainer", treePropContainer);
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    treeProps.put(propClass, prop);
+    treePropContainer.put(propClass, prop);
   }
 
   /**

@@ -67,10 +67,10 @@ public class ComponentContext {
   private final ResourceResolver mResourceResolver;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable TreeProps mTreeProps;
+  private @Nullable TreePropContainer mTreePropContainer;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable TreeProps mParentTreeProps;
+  private @Nullable TreePropContainer mParentTreePropContainer;
 
   @ThreadConfined(ThreadConfined.ANY)
   private boolean mIsParentTreePropsCloned;
@@ -106,19 +106,19 @@ public class ComponentContext {
   public ComponentContext(
       Context context,
       @Nullable LithoConfiguration lithoConfiguration,
-      @Nullable TreeProps treeProps) {
-    this(context, treeProps, lithoConfiguration, null, null, null, null, null);
+      @Nullable TreePropContainer treePropContainer) {
+    this(context, treePropContainer, lithoConfiguration, null, null, null, null, null);
   }
 
   protected ComponentContext(
       Context androidContext,
-      @Nullable TreeProps treeProps,
+      @Nullable TreePropContainer treePropContainer,
       @Nullable LithoConfiguration lithoConfiguration,
       @Nullable LithoTree lithoTree,
       @Nullable String globalKey,
       @Nullable LithoLifecycleProvider lifecycleProvider,
       @Nullable Component componentScope,
-      @Nullable TreeProps parentTreeProps) {
+      @Nullable TreePropContainer parentTreePropContainer) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
     mContext =
         Preconditions.checkNotNull(
@@ -127,7 +127,7 @@ public class ComponentContext {
         new ResourceResolver(
             androidContext,
             ResourceCache.getLatest(androidContext.getResources().getConfiguration()));
-    mTreeProps = treeProps;
+    mTreePropContainer = treePropContainer;
     mLithoConfiguration =
         lithoConfiguration != null
             ? lithoConfiguration
@@ -141,21 +141,22 @@ public class ComponentContext {
     mGlobalKey = globalKey;
     mLifecycleProvider = lifecycleProvider;
     mComponentScope = componentScope;
-    mParentTreeProps = parentTreeProps;
+    mParentTreePropContainer = parentTreePropContainer;
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mTreeProps);
+    this(context, context.mTreePropContainer);
   }
 
-  protected ComponentContext(ComponentContext context, @Nullable TreeProps treeProps) {
+  protected ComponentContext(
+      ComponentContext context, @Nullable TreePropContainer treePropContainer) {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
     mLifecycleProvider = context.mLifecycleProvider;
     mLithoTree = context.mLithoTree;
-    mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
-    mParentTreeProps = context.mParentTreeProps;
+    mTreePropContainer = treePropContainer != null ? treePropContainer : context.mTreePropContainer;
+    mParentTreePropContainer = context.mParentTreePropContainer;
     mGlobalKey = context.mGlobalKey;
     mCalculationStateContextThreadLocal = context.mCalculationStateContextThreadLocal;
     mLithoConfiguration = context.mLithoConfiguration;
@@ -180,7 +181,7 @@ public class ComponentContext {
     ComponentContext componentContext = parentContext.makeNewCopy();
     componentContext.mComponentScope = scope;
     componentContext.mGlobalKey = globalKey;
-    componentContext.mParentTreeProps = parentContext.mTreeProps;
+    componentContext.mParentTreePropContainer = parentContext.mTreePropContainer;
     // TODO: T124275447 make these Component Context fields final
     // Either this component is nested tree or descendant of nested tree component
     componentContext.isNestedTreeContext =
@@ -220,7 +221,7 @@ public class ComponentContext {
   public static ComponentContext makeCopyForNestedTree(ComponentContext parentTreeContext) {
     return new ComponentContext(
         parentTreeContext.getAndroidContext(),
-        parentTreeContext.getTreePropsCopy(),
+        parentTreeContext.getTreePropContainerCopy(),
         parentTreeContext.mLithoConfiguration,
         null,
         null,
@@ -604,48 +605,48 @@ public class ComponentContext {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-  public void setTreeProps(@Nullable TreeProps treeProps) {
-    mTreeProps = treeProps;
+  public void setTreePropContainer(@Nullable TreePropContainer treePropContainer) {
+    mTreePropContainer = treePropContainer;
   }
 
-  public void setParentTreeProps(@Nullable TreeProps treeProps) {
-    mParentTreeProps = treeProps;
+  public void setParentTreePropContainer(@Nullable TreePropContainer treePropContainer) {
+    mParentTreePropContainer = treePropContainer;
   }
 
-  public @Nullable TreeProps getTreeProps() {
-    return mTreeProps;
+  public @Nullable TreePropContainer getTreePropContainer() {
+    return mTreePropContainer;
   }
 
-  public @Nullable TreeProps getParentTreeProps() {
-    return mParentTreeProps;
+  public @Nullable TreePropContainer getParentTreePropContainer() {
+    return mParentTreePropContainer;
   }
 
   /**
    * @return true if parent's TreeProps are cloned and assigned to mTreeProps. Notice this method
    *     should be accessed by Kotlin API only.
    */
-  protected boolean isParentTreePropsCloned() {
+  protected boolean isParentTreePropContainerCloned() {
     return mIsParentTreePropsCloned;
   }
 
-  protected void setParentTreePropsCloned(boolean isParentTreePropsCloned) {
+  protected void setParentTreePropContainerCloned(boolean isParentTreePropsCloned) {
     mIsParentTreePropsCloned = isParentTreePropsCloned;
   }
 
   @Nullable
   public <T> T getTreeProp(Class<T> key) {
-    return mTreeProps == null ? null : mTreeProps.get(key);
+    return mTreePropContainer == null ? null : mTreePropContainer.get(key);
   }
 
   @Nullable
   public <T> T getParentTreeProp(Class<T> key) {
-    return mParentTreeProps == null ? null : mParentTreeProps.get(key);
+    return mParentTreePropContainer == null ? null : mParentTreePropContainer.get(key);
   }
 
   /** Obtain a copy of the tree props currently held by this context. */
   @Nullable
-  public TreeProps getTreePropsCopy() {
-    return TreeProps.copy(mTreeProps);
+  public TreePropContainer getTreePropContainerCopy() {
+    return TreePropContainer.copy(mTreePropContainer);
   }
 
   public int getLayoutVersion() {
