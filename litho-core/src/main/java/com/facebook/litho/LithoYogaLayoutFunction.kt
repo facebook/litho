@@ -27,9 +27,11 @@ import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
+import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
+import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -362,6 +364,70 @@ object LithoYogaLayoutFunction {
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
+  }
+
+  fun measure(
+      context: LayoutContext<LithoLayoutContext>,
+      layoutResult: LithoLayoutResult,
+      widthSpec: Int,
+      heightSpec: Int
+  ): MeasureResult {
+    val renderContext =
+        requireNotNull(context.renderContext) { "render context should not be null" }
+
+    val isTracing = ComponentsSystrace.isTracing
+    var size: MeasureResult
+    layoutResult.wasMeasured = true
+    if (renderContext.isFutureReleased) {
+
+      // If layout is released then skip measurement
+      size = MeasureResult.error()
+    } else {
+      val component = layoutResult.node.tailComponent
+      if (isTracing) {
+        ComponentsSystrace.beginSectionWithArgs("measure:${component.simpleName}")
+            .arg("widthSpec", SizeSpec.toString(widthSpec))
+            .arg("heightSpec", SizeSpec.toString(heightSpec))
+            .arg("componentId", component.id)
+            .flush()
+      }
+      try {
+        size = layoutResult.measureInternal(context, widthSpec, heightSpec)
+        check(!(size.width < 0 || size.height < 0)) {
+          ("MeasureOutput not set, Component is: $component " +
+              "WidthSpec: ${MeasureSpecUtils.getMeasureSpecDescription(widthSpec)} " +
+              "HeightSpec: ${MeasureSpecUtils.getMeasureSpecDescription(heightSpec)} " +
+              "Measured width : ${size.width} " +
+              "Measured Height: ${size.height}")
+        }
+      } catch (e: Exception) {
+
+        // Handle then exception
+        ComponentUtils.handle(layoutResult.node.tailComponentContext, e)
+
+        // If the exception is handled then return 0 size to continue layout.
+        size = MeasureResult.error()
+      }
+    }
+
+    // Record the last measured width, and height spec
+    layoutResult.widthSpec = widthSpec
+    layoutResult.heightSpec = heightSpec
+
+    // If the size of a cached layout has changed then clear size dependant render units
+    if (layoutResult.isCachedLayout &&
+        (layoutResult.contentWidth != size.width || layoutResult.contentHeight != size.height)) {
+      layoutResult.backgroundRenderUnit = null
+      layoutResult.foregroundRenderUnit = null
+      layoutResult.borderRenderUnit = null
+    }
+    layoutResult.lastMeasuredSize = YogaMeasureOutput.make(size.width, size.height)
+
+    if (isTracing) {
+      ComponentsSystrace.endSection()
+    }
+    layoutResult.measureHadExceptions = size.hadExceptions
+    return size
   }
 }
 

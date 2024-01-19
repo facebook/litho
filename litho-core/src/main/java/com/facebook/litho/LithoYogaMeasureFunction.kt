@@ -32,13 +32,13 @@ class LithoYogaMeasureFunction : YogaMeasureFunction {
       height: Float,
       heightMode: YogaMeasureMode
   ): Long {
-    @Suppress("UNCHECKED_CAST")
     val context: LayoutContext<LithoLayoutContext> =
         LithoLayoutResult.getLayoutContextFromYogaNode(cssNode)
     val result: LithoLayoutResult = LithoLayoutResult.getLayoutResultFromYogaNode(cssNode)
     val widthSpec: Int = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode)
     val heightSpec: Int = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode)
-    val size: MeasureResult = result.measure(context, widthSpec, heightSpec)
+    val size: MeasureResult =
+        LithoYogaLayoutFunction.measure(context, result, widthSpec, heightSpec)
     return YogaMeasureOutput.make(size.width, size.height)
   }
 }
