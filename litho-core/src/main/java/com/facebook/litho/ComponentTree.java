@@ -460,7 +460,7 @@ public class ComponentTree
       renderUnitIdGenerator = new RenderUnitIdGenerator(mId);
     }
 
-    if (ComponentsConfiguration.enableStateUpdatesBatching) {
+    if (builder.config.enableStateUpdatesBatching) {
       mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
     } else {
       mBatchedStateUpdatesStrategy = null;

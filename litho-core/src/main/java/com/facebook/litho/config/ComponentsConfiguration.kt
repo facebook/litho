@@ -24,10 +24,6 @@ import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
 
 /**
- * Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It
- * contains mainly flags for features that are either under active development and not ready for
- * public consumption, or for use in experiments.
- *
  * These values are safe defaults and should not require manual changes.
  *
  * This class hosts all the config parameters that the ComponentTree configures it self .... enable
@@ -73,7 +69,13 @@ internal constructor(
      * [MountItemsPool]
      */
     @JvmField val componentHostRecyclingEnabled: Boolean = false,
-    val shouldEnableDefaultAOSPLithoLifecycleProvider: Boolean = false
+    val shouldEnableDefaultAOSPLithoLifecycleProvider: Boolean = false,
+    /**
+     * Controls whether we attempt to batch state updates to avoid running the render process for
+     * every state update in a small time window. This has been proven to be an overall improvement
+     * for performance so it's highly advised to not disable it.
+     */
+    @JvmField val enableStateUpdatesBatching: Boolean = true
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -205,7 +207,6 @@ internal constructor(
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
     @JvmField var reduceMemorySpikeGetUri: Boolean = false
     @JvmField var bindOnSameComponentTree: Boolean = true
-    @JvmField var enableStateUpdatesBatching: Boolean = true
     @JvmField var componentsLogger: ComponentsLogger? = null
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
     @JvmField var isObjectTreePropEnabled: Boolean = false
@@ -238,6 +239,7 @@ internal constructor(
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
     private var shouldEnableDefaultAOSPLithoLifecycleProvider =
         baseConfig.shouldEnableDefaultAOSPLithoLifecycleProvider
+    private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean) = also {
       shouldAddHostViewForRootComponent = enabled
@@ -275,6 +277,10 @@ internal constructor(
       }
     }
 
+    fun enableStateUpdatesBatching(enabled: Boolean): Builder = also {
+      enableStateUpdatesBatching = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -287,7 +293,8 @@ internal constructor(
           incrementalMountEnabled = incrementalMountEnabled,
           componentHostRecyclingEnabled = componentHostRecyclingEnabled,
           shouldEnableDefaultAOSPLithoLifecycleProvider =
-              shouldEnableDefaultAOSPLithoLifecycleProvider)
+              shouldEnableDefaultAOSPLithoLifecycleProvider,
+          enableStateUpdatesBatching = enableStateUpdatesBatching)
     }
   }
 }
