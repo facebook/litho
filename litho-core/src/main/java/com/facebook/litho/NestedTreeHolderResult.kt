@@ -16,12 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.ComponentsSystrace.beginSection
-import com.facebook.litho.ComponentsSystrace.endSection
-import com.facebook.litho.ComponentsSystrace.isTracing
-import com.facebook.litho.Layout.measure
-import com.facebook.rendercore.LayoutContext
-import com.facebook.rendercore.MeasureResult
 import com.facebook.yoga.YogaNode
 
 /** This is an output only [NestedTreeHolderResult]; this is created by a [NestedTreeHolder]. */
@@ -52,59 +46,6 @@ class NestedTreeHolderResult(
     }
 
     return nestedResult?.yogaNode?.layoutY?.toInt() ?: 0
-  }
-
-  override fun measureInternal(
-      context: LayoutContext<LithoLayoutContext>,
-      widthSpec: Int,
-      heightSpec: Int
-  ): MeasureResult {
-
-    val isTracing = isTracing
-    val component = node.tailComponent
-    val renderContext = checkNotNull(context.renderContext)
-
-    check(!renderContext.isReleased) {
-      (component.simpleName +
-          ": To measure a component outside of a layout calculation use" +
-          " Component#measureMightNotCacheInternalNode.")
-    }
-
-    val count = node.componentCount
-    val parentContext: ComponentContext? =
-        if (count == 1) {
-          val parentFromNode = node.parentContext
-          parentFromNode ?: renderContext.rootComponentContext
-        } else {
-          node.getComponentContextAt(1)
-        }
-
-    checkNotNull(parentContext) { component.simpleName + ": Null component context during measure" }
-
-    if (isTracing) {
-      beginSection("resolveNestedTree:" + component.simpleName)
-    }
-
-    return try {
-      val nestedTree =
-          measure(
-              renderContext,
-              parentContext,
-              this,
-              widthSpec,
-              heightSpec,
-          )
-
-      if (nestedTree != null) {
-        MeasureResult(nestedTree.width, nestedTree.height, nestedTree.layoutData)
-      } else {
-        MeasureResult(0, 0)
-      }
-    } finally {
-      if (isTracing) {
-        endSection()
-      }
-    }
   }
 
   override fun releaseLayoutPhaseData() {

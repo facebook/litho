@@ -25,8 +25,6 @@ import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
-import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.utils.hasEquivalentFields
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -90,7 +88,7 @@ open class LithoLayoutResult(
     private set
 
   var delegate: LayoutResult? = null
-    private set
+    internal set
 
   var diffNode: DiffNode? = null
 
@@ -231,88 +229,6 @@ open class LithoLayoutResult(
     }
   }
 
-  internal open fun measureInternal(
-      context: LayoutContext<LithoLayoutContext>,
-      widthSpec: Int,
-      heightSpec: Int
-  ): MeasureResult {
-    val isTracing: Boolean = ComponentsSystrace.isTracing
-    val node: LithoNode = node
-    val component: Component = node.tailComponent
-    val componentScopedContext: ComponentContext = node.tailComponentContext
-    val diffNode: DiffNode? = if (cachedMeasuresValid) diffNode else null
-    val width: Int
-    val height: Int
-    val delegate: LayoutResult?
-    val layoutData: Any?
-
-    // If diff node is set check if measurements from the previous pass can be reused
-    if (diffNode?.lastWidthSpec == widthSpec &&
-        diffNode.lastHeightSpec == heightSpec &&
-        !shouldAlwaysRemeasure(component)) {
-      width = diffNode.lastMeasuredWidth
-      height = diffNode.lastMeasuredHeight
-      layoutData = diffNode.layoutData
-      delegate = diffNode.delegate
-
-      // Measure the component
-    } else {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("onMeasure:${component.simpleName}")
-      }
-      try {
-        val primitive = node.primitive
-        val newLayoutData: Any?
-        // measure Primitive
-        if (primitive != null) {
-          context.setPreviousLayoutDataForCurrentNode(this.layoutData)
-          context.layoutContextExtraData = LithoLayoutContextExtraData(yogaNode)
-          @Suppress("UNCHECKED_CAST")
-          delegate =
-              primitive.calculateLayout(context as LayoutContext<Any?>, widthSpec, heightSpec)
-          width = delegate.width
-          height = delegate.height
-          newLayoutData = delegate.layoutData
-        } else {
-          val size = Size(Int.MIN_VALUE, Int.MIN_VALUE)
-          // If the Layout Result was cached, but the size specs changed, then layout data
-          // will be mutated. To avoid that create new (layout data) interstage props container
-          // for mount specs to avoid mutating the currently mount layout data.
-          newLayoutData = (component as SpecGeneratedComponent).createInterStagePropsContainer()
-          component.onMeasure(
-              componentScopedContext,
-              SpecGeneratedComponentLayout(
-                  yogaNode = yogaNode,
-                  paddingSet = node.isPaddingSet,
-                  background = node.background,
-              ),
-              widthSpec,
-              heightSpec,
-              size,
-              newLayoutData)
-          delegate = null
-          width = size.width
-          height = size.height
-        }
-
-        // If layout data has changed then content render unit should be recreated
-        if (!hasEquivalentFields(this.layoutData, newLayoutData)) {
-          layoutData = newLayoutData
-          contentRenderUnit = null
-        } else {
-          layoutData = this.layoutData
-        }
-      } finally {
-        if (isTracing) {
-          ComponentsSystrace.endSection()
-        }
-      }
-    }
-    this.delegate = delegate
-    this.layoutData = layoutData
-    return MeasureResult(width, height, layoutData)
-  }
-
   fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
@@ -436,7 +352,7 @@ open class LithoLayoutResult(
     fun LithoLayoutResult.getLayoutBorder(edge: YogaEdge?): Int =
         FastMath.round(yogaNode.getLayoutBorder(edge))
 
-    private fun shouldAlwaysRemeasure(component: Component): Boolean =
+    internal fun shouldAlwaysRemeasure(component: Component): Boolean =
         if (component is SpecGeneratedComponent) {
           component.shouldAlwaysRemeasure()
         } else {

@@ -396,7 +396,13 @@ object LithoYogaLayoutFunction {
             .flush()
       }
       try {
-        size = layoutResult.measureInternal(context, widthSpec, heightSpec)
+        size =
+            if (layoutResult is NestedTreeHolderResult) {
+              measureNestedTreeHolder(context, widthSpec, heightSpec, layoutResult)
+            } else {
+              measureLithoNode(context, widthSpec, heightSpec, layoutResult)
+            }
+
         check(!(size.width < 0 || size.height < 0)) {
           ("MeasureOutput not set, Component is: $component " +
               "WidthSpec: ${MeasureSpecUtils.getMeasureSpecDescription(widthSpec)} " +
@@ -577,6 +583,143 @@ object LithoYogaLayoutFunction {
               layoutResult.width,
               layoutResult.height,
               layoutResult.diffNode)
+    }
+  }
+
+  private fun measureLithoNode(
+      context: LayoutContext<LithoLayoutContext>,
+      widthSpec: Int,
+      heightSpec: Int,
+      lithoLayoutResult: LithoLayoutResult
+  ): MeasureResult {
+    val isTracing: Boolean = ComponentsSystrace.isTracing
+    val node: LithoNode = lithoLayoutResult.node
+    val component: Component = node.tailComponent
+    val componentScopedContext: ComponentContext = node.tailComponentContext
+    val diffNode: DiffNode? =
+        if (lithoLayoutResult.cachedMeasuresValid) lithoLayoutResult.diffNode else null
+    val width: Int
+    val height: Int
+    val delegate: LayoutResult?
+    val layoutData: Any?
+
+    // If diff node is set check if measurements from the previous pass can be reused
+    if (diffNode?.lastWidthSpec == widthSpec &&
+        diffNode.lastHeightSpec == heightSpec &&
+        !LithoLayoutResult.shouldAlwaysRemeasure(component)) {
+      width = diffNode.lastMeasuredWidth
+      height = diffNode.lastMeasuredHeight
+      layoutData = diffNode.layoutData
+      delegate = diffNode.delegate
+
+      // Measure the component
+    } else {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("onMeasure:${component.simpleName}")
+      }
+      try {
+        val primitive = node.primitive
+        val newLayoutData: Any?
+        // measure Primitive
+        if (primitive != null) {
+          context.setPreviousLayoutDataForCurrentNode(lithoLayoutResult.layoutData)
+          context.layoutContextExtraData = LithoLayoutContextExtraData(lithoLayoutResult.yogaNode)
+          @Suppress("UNCHECKED_CAST")
+          delegate =
+              primitive.calculateLayout(context as LayoutContext<Any?>, widthSpec, heightSpec)
+          width = delegate.width
+          height = delegate.height
+          newLayoutData = delegate.layoutData
+        } else {
+          val size = Size(Int.MIN_VALUE, Int.MIN_VALUE)
+          // If the Layout Result was cached, but the size specs changed, then layout data
+          // will be mutated. To avoid that create new (layout data) interstage props container
+          // for mount specs to avoid mutating the currently mount layout data.
+          newLayoutData = (component as SpecGeneratedComponent).createInterStagePropsContainer()
+          component.onMeasure(
+              componentScopedContext,
+              SpecGeneratedComponentLayout(
+                  yogaNode = lithoLayoutResult.yogaNode,
+                  paddingSet = node.isPaddingSet,
+                  background = node.background,
+              ),
+              widthSpec,
+              heightSpec,
+              size,
+              newLayoutData)
+          delegate = null
+          width = size.width
+          height = size.height
+        }
+
+        // If layout data has changed then content render unit should be recreated
+        if (!hasEquivalentFields(lithoLayoutResult.layoutData, newLayoutData)) {
+          layoutData = newLayoutData
+          lithoLayoutResult.contentRenderUnit = null
+        } else {
+          layoutData = lithoLayoutResult.layoutData
+        }
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection()
+        }
+      }
+    }
+    lithoLayoutResult.delegate = delegate
+    lithoLayoutResult.layoutData = layoutData
+    return MeasureResult(width, height, layoutData)
+  }
+
+  private fun measureNestedTreeHolder(
+      context: LayoutContext<LithoLayoutContext>,
+      widthSpec: Int,
+      heightSpec: Int,
+      lithoLayoutResult: NestedTreeHolderResult
+  ): MeasureResult {
+    val isTracing = ComponentsSystrace.isTracing
+    val component = lithoLayoutResult.node.tailComponent
+    val renderContext = checkNotNull(context.renderContext)
+
+    check(!renderContext.isReleased) {
+      (component.simpleName +
+          ": To measure a component outside of a layout calculation use" +
+          " Component#measureMightNotCacheInternalNode.")
+    }
+
+    val count = lithoLayoutResult.node.componentCount
+    val parentContext: ComponentContext? =
+        if (count == 1) {
+          val parentFromNode = lithoLayoutResult.node.parentContext
+          parentFromNode ?: renderContext.rootComponentContext
+        } else {
+          lithoLayoutResult.node.getComponentContextAt(1)
+        }
+
+    checkNotNull(parentContext) { component.simpleName + ": Null component context during measure" }
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("resolveNestedTree:" + component.simpleName)
+    }
+
+    return try {
+      val nestedTree =
+          Layout.measure(
+              renderContext,
+              parentContext,
+              lithoLayoutResult,
+              widthSpec,
+              heightSpec,
+          )
+
+      if (nestedTree != null) {
+        MeasureResult(nestedTree.width, nestedTree.height, nestedTree.layoutData)
+      } else {
+        MeasureResult(0, 0)
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection()
+      }
     }
   }
 }
