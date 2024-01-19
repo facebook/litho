@@ -20,12 +20,12 @@ import android.graphics.Rect
 import android.util.Pair
 import android.view.View
 import androidx.annotation.Px
+import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.rendercore.utils.hasEquivalentFields
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
@@ -340,165 +340,6 @@ open class LithoLayoutResult(
     children.add(child)
   }
 
-  fun onBoundsDefined() {
-    val context = node.tailComponentContext
-    val component = node.tailComponent
-    val hasLayoutSizeChanged: Boolean
-
-    // Since `measure` would be called without padding and border size, in order to align with this
-    // behavior for layout diffing(DiffNode) which relies on the last measured size directly, we're
-    // going to save the size without padding and border.
-    val newContentWidth =
-        (width -
-            paddingRight -
-            paddingLeft -
-            getLayoutBorder(YogaEdge.RIGHT) -
-            getLayoutBorder(YogaEdge.LEFT))
-    val newContentHeight =
-        (height -
-            paddingTop -
-            paddingBottom -
-            getLayoutBorder(YogaEdge.TOP) -
-            getLayoutBorder(YogaEdge.BOTTOM))
-    if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
-
-      hasLayoutSizeChanged =
-          if ((lastMeasuredSize != Long.MIN_VALUE) && !wasMeasured && isCachedLayout) {
-            // Two scenarios would skip measurement and fall into this case:
-            // 1. cached result from Yoga (may also contain fixed size)
-            // 2. fixed size without measurement which size might change
-            (newContentWidth != contentWidth) || (newContentHeight != contentHeight)
-          } else {
-            true
-          }
-
-      if (hasLayoutSizeChanged) {
-
-        // We should only invoke `onBoundsDefined` if layout is non cached or size has changed.
-        // Note: MountSpec is always treated as size changed once `onMeasure` is invoked no matter
-        // if the size changed or not.
-        val isTracing = ComponentsSystrace.isTracing
-        if (isTracing) {
-          ComponentsSystrace.beginSection("onBoundsDefined:${component.getSimpleName()}")
-        }
-        val layoutData: InterStagePropsContainer?
-        // If the Layout Result was cached, but the size has changed, then interstage props
-        // container (layout data) could be mutated when @OnBoundsDefined is invoked. To avoid that
-        // create new interstage props container (layout data), and copy over the current values.
-        if (isCachedLayout) {
-          layoutData = component.createInterStagePropsContainer()
-          if (layoutData != null && this.layoutData != null) {
-            component.copyInterStageImpl(layoutData, this.layoutData as InterStagePropsContainer?)
-          }
-        } else {
-          layoutData = this.layoutData as InterStagePropsContainer?
-        }
-        try {
-          component.onBoundsDefined(
-              context,
-              SpecGeneratedComponentLayout(
-                  yogaNode = yogaNode,
-                  paddingSet = node.isPaddingSet,
-                  background = node.background,
-              ),
-              layoutData)
-        } catch (e: Exception) {
-          ComponentUtils.handleWithHierarchy(context, component, e)
-          measureHadExceptions = true
-        } finally {
-          if (isTracing) {
-            ComponentsSystrace.endSection()
-          }
-        }
-
-        // If layout data has changed then content render unit should be recreated
-        if (!hasEquivalentFields(this.layoutData, layoutData)) {
-          contentRenderUnit = null
-          this.layoutData = layoutData
-        }
-      }
-      if (!wasMeasured) {
-        widthSpec = MeasureSpecUtils.exactly(newContentWidth)
-        heightSpec = MeasureSpecUtils.exactly(newContentHeight)
-        lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
-      }
-    } else if (Component.isPrimitive(component)) {
-
-      hasLayoutSizeChanged =
-          (isCachedLayout && (newContentWidth != contentWidth || newContentHeight != contentHeight))
-
-      if (delegate == null || hasLayoutSizeChanged) {
-
-        // Check if we need to run measure for Primitive that was skipped due to with fixed size
-        val layoutContext = getLayoutContextFromYogaNode(yogaNode)
-        LithoYogaLayoutFunction.measure(
-            layoutContext,
-            this,
-            MeasureSpecUtils.exactly(newContentWidth),
-            MeasureSpecUtils.exactly(newContentHeight))
-      }
-    } else {
-      hasLayoutSizeChanged =
-          (lastMeasuredSize == Long.MIN_VALUE) ||
-              (isCachedLayout &&
-                  (contentWidth != newContentWidth || contentHeight != newContentHeight))
-      if (hasLayoutSizeChanged) {
-        lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
-      }
-    }
-
-    // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
-    if (contentRenderUnit == null) {
-      contentRenderUnit =
-          LithoNodeUtils.createContentRenderUnit(node, cachedMeasuresValid, diffNode)
-      adjustRenderUnitBounds()
-    }
-    if (hostRenderUnit == null) {
-      hostRenderUnit = LithoNodeUtils.createHostRenderUnit(node)
-    }
-    if (backgroundRenderUnit == null || hasLayoutSizeChanged) {
-      backgroundRenderUnit =
-          LithoNodeUtils.createBackgroundRenderUnit(node, width, height, diffNode)
-    }
-    if (foregroundRenderUnit == null || hasLayoutSizeChanged) {
-      foregroundRenderUnit =
-          LithoNodeUtils.createForegroundRenderUnit(node, width, height, diffNode)
-    }
-    if (shouldDrawBorders() && (borderRenderUnit == null || hasLayoutSizeChanged)) {
-      borderRenderUnit =
-          LithoNodeUtils.createBorderRenderUnit(
-              node, createBorderColorDrawable(this), width, height, diffNode)
-    }
-  }
-
-  private fun adjustRenderUnitBounds() {
-    val renderUnit: LithoRenderUnit = contentRenderUnit ?: return
-    val bounds = Rect()
-    if (Component.isPrimitive(renderUnit.component)) {
-      if (!LithoRenderUnit.isMountableView(renderUnit)) {
-        if (wasMeasured) {
-          bounds.left += (paddingLeft + getLayoutBorder(YogaEdge.LEFT))
-          bounds.top += (paddingTop + getLayoutBorder(YogaEdge.TOP))
-          bounds.right -= (paddingRight + getLayoutBorder(YogaEdge.RIGHT))
-          bounds.bottom -= (paddingBottom + getLayoutBorder(YogaEdge.BOTTOM))
-        } else {
-          // for exact size the border doesn't need to be adjusted since it's inside the bounds of
-          // the content
-          bounds.left += paddingLeft
-          bounds.top += paddingTop
-          bounds.right -= paddingRight
-          bounds.bottom -= paddingBottom
-        }
-      }
-    } else if (!LithoRenderUnit.isMountableView(renderUnit)) {
-      bounds.left += paddingLeft
-      bounds.top += paddingTop
-      bounds.right -= paddingRight
-      bounds.bottom -= paddingBottom
-    }
-    adjustedBounds = bounds
-  }
-
   companion object {
 
     @Suppress("UNCHECKED_CAST")
@@ -510,7 +351,35 @@ open class LithoLayoutResult(
     fun getLayoutResultFromYogaNode(yogaNode: YogaNode): LithoLayoutResult =
         (yogaNode.data as Pair<*, *>).second as LithoLayoutResult
 
-    private fun createBorderColorDrawable(result: LithoLayoutResult): BorderColorDrawable {
+    internal fun LithoLayoutResult.adjustRenderUnitBounds() {
+      val renderUnit: LithoRenderUnit = contentRenderUnit ?: return
+      val bounds = Rect()
+      if (Component.isPrimitive(renderUnit.component)) {
+        if (!LithoRenderUnit.isMountableView(renderUnit)) {
+          if (wasMeasured) {
+            bounds.left += (paddingLeft + getLayoutBorder(YogaEdge.LEFT))
+            bounds.top += (paddingTop + getLayoutBorder(YogaEdge.TOP))
+            bounds.right -= (paddingRight + getLayoutBorder(YogaEdge.RIGHT))
+            bounds.bottom -= (paddingBottom + getLayoutBorder(YogaEdge.BOTTOM))
+          } else {
+            // for exact size the border doesn't need to be adjusted since it's inside the bounds of
+            // the content
+            bounds.left += paddingLeft
+            bounds.top += paddingTop
+            bounds.right -= paddingRight
+            bounds.bottom -= paddingBottom
+          }
+        }
+      } else if (!LithoRenderUnit.isMountableView(renderUnit)) {
+        bounds.left += paddingLeft
+        bounds.top += paddingTop
+        bounds.right -= paddingRight
+        bounds.bottom -= paddingBottom
+      }
+      adjustedBounds = bounds
+    }
+
+    internal fun createBorderColorDrawable(result: LithoLayoutResult): BorderColorDrawable {
       val node = result.node
       val isRtl = result.recursivelyResolveLayoutDirection() == YogaDirection.RTL
       val borderRadius = node.borderRadius
@@ -531,7 +400,7 @@ open class LithoLayoutResult(
           .build()
     }
 
-    private fun LithoLayoutResult.shouldDrawBorders(): Boolean =
+    internal fun LithoLayoutResult.shouldDrawBorders(): Boolean =
         node.hasBorderColor() &&
             (yogaNode.getLayoutBorder(YogaEdge.LEFT) != 0f ||
                 yogaNode.getLayoutBorder(YogaEdge.TOP) != 0f ||

@@ -22,6 +22,9 @@ import android.util.Pair
 import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.LithoLayoutResult.Companion.adjustRenderUnitBounds
+import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
+import com.facebook.litho.LithoLayoutResult.Companion.shouldDrawBorders
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutCache
@@ -32,6 +35,7 @@ import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import com.facebook.rendercore.utils.MeasureSpecUtils
+import com.facebook.rendercore.utils.hasEquivalentFields
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -428,6 +432,152 @@ object LithoYogaLayoutFunction {
     }
     layoutResult.measureHadExceptions = size.hadExceptions
     return size
+  }
+
+  fun onBoundsDefined(layoutResult: LithoLayoutResult) {
+    val context = layoutResult.node.tailComponentContext
+    val component = layoutResult.node.tailComponent
+    val hasLayoutSizeChanged: Boolean
+
+    // Since `measure` would be called without padding and border size, in order to align with this
+    // behavior for layout diffing(DiffNode) which relies on the last measured size directly, we're
+    // going to save the size without padding and border.
+    val newContentWidth =
+        (layoutResult.width -
+            layoutResult.paddingRight -
+            layoutResult.paddingLeft -
+            layoutResult.getLayoutBorder(YogaEdge.RIGHT) -
+            layoutResult.getLayoutBorder(YogaEdge.LEFT))
+    val newContentHeight =
+        (layoutResult.height -
+            layoutResult.paddingTop -
+            layoutResult.paddingBottom -
+            layoutResult.getLayoutBorder(YogaEdge.TOP) -
+            layoutResult.getLayoutBorder(YogaEdge.BOTTOM))
+    if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
+
+      hasLayoutSizeChanged =
+          if ((layoutResult.lastMeasuredSize != Long.MIN_VALUE) &&
+              !layoutResult.wasMeasured &&
+              layoutResult.isCachedLayout) {
+            // Two scenarios would skip measurement and fall into this case:
+            // 1. cached result from Yoga (may also contain fixed size)
+            // 2. fixed size without measurement which size might change
+            (newContentWidth != layoutResult.contentWidth) ||
+                (newContentHeight != layoutResult.contentHeight)
+          } else {
+            true
+          }
+
+      if (hasLayoutSizeChanged) {
+
+        // We should only invoke `onBoundsDefined` if layout is non cached or size has changed.
+        // Note: MountSpec is always treated as size changed once `onMeasure` is invoked no matter
+        // if the size changed or not.
+        val isTracing = ComponentsSystrace.isTracing
+        if (isTracing) {
+          ComponentsSystrace.beginSection("onBoundsDefined:${component.getSimpleName()}")
+        }
+        val layoutData: InterStagePropsContainer?
+        // If the Layout Result was cached, but the size has changed, then interstage props
+        // container (layout data) could be mutated when @OnBoundsDefined is invoked. To avoid that
+        // create new interstage props container (layout data), and copy over the current values.
+        if (layoutResult.isCachedLayout) {
+          layoutData = component.createInterStagePropsContainer()
+          if (layoutData != null && layoutResult.layoutData != null) {
+            component.copyInterStageImpl(
+                layoutData, layoutResult.layoutData as InterStagePropsContainer?)
+          }
+        } else {
+          layoutData = layoutResult.layoutData as InterStagePropsContainer?
+        }
+        try {
+          component.onBoundsDefined(
+              context,
+              SpecGeneratedComponentLayout(
+                  yogaNode = layoutResult.yogaNode,
+                  paddingSet = layoutResult.node.isPaddingSet,
+                  background = layoutResult.node.background,
+              ),
+              layoutData)
+        } catch (e: Exception) {
+          ComponentUtils.handleWithHierarchy(context, component, e)
+          layoutResult.measureHadExceptions = true
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection()
+          }
+        }
+
+        // If layout data has changed then content render unit should be recreated
+        if (!hasEquivalentFields(layoutResult.layoutData, layoutData)) {
+          layoutResult.contentRenderUnit = null
+          layoutResult.layoutData = layoutData
+        }
+      }
+      if (!layoutResult.wasMeasured) {
+        layoutResult.widthSpec = MeasureSpecUtils.exactly(newContentWidth)
+        layoutResult.heightSpec = MeasureSpecUtils.exactly(newContentHeight)
+        layoutResult.lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
+      }
+    } else if (Component.isPrimitive(component)) {
+
+      hasLayoutSizeChanged =
+          (layoutResult.isCachedLayout &&
+              (newContentWidth != layoutResult.contentWidth ||
+                  newContentHeight != layoutResult.contentHeight))
+
+      if (layoutResult.delegate == null || hasLayoutSizeChanged) {
+
+        // Check if we need to run measure for Primitive that was skipped due to with fixed size
+        val layoutContext = LithoLayoutResult.getLayoutContextFromYogaNode(layoutResult.yogaNode)
+        measure(
+            layoutContext,
+            layoutResult,
+            MeasureSpecUtils.exactly(newContentWidth),
+            MeasureSpecUtils.exactly(newContentHeight))
+      }
+    } else {
+      hasLayoutSizeChanged =
+          (layoutResult.lastMeasuredSize == Long.MIN_VALUE) ||
+              (layoutResult.isCachedLayout &&
+                  (layoutResult.contentWidth != newContentWidth ||
+                      layoutResult.contentHeight != newContentHeight))
+      if (hasLayoutSizeChanged) {
+        layoutResult.lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
+      }
+    }
+
+    // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
+    if (layoutResult.contentRenderUnit == null) {
+      layoutResult.contentRenderUnit =
+          LithoNodeUtils.createContentRenderUnit(
+              layoutResult.node, layoutResult.cachedMeasuresValid, layoutResult.diffNode)
+      layoutResult.adjustRenderUnitBounds()
+    }
+    if (layoutResult.hostRenderUnit == null) {
+      layoutResult.hostRenderUnit = LithoNodeUtils.createHostRenderUnit(layoutResult.node)
+    }
+    if (layoutResult.backgroundRenderUnit == null || hasLayoutSizeChanged) {
+      layoutResult.backgroundRenderUnit =
+          LithoNodeUtils.createBackgroundRenderUnit(
+              layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
+    }
+    if (layoutResult.foregroundRenderUnit == null || hasLayoutSizeChanged) {
+      layoutResult.foregroundRenderUnit =
+          LithoNodeUtils.createForegroundRenderUnit(
+              layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
+    }
+    if (layoutResult.shouldDrawBorders() &&
+        (layoutResult.borderRenderUnit == null || hasLayoutSizeChanged)) {
+      layoutResult.borderRenderUnit =
+          LithoNodeUtils.createBorderRenderUnit(
+              layoutResult.node,
+              LithoLayoutResult.createBorderColorDrawable(layoutResult),
+              layoutResult.width,
+              layoutResult.height,
+              layoutResult.diffNode)
+    }
   }
 }
 

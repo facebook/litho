@@ -192,7 +192,7 @@ internal object Layout {
       }
     }
 
-    result.onBoundsDefined()
+    LithoYogaLayoutFunction.onBoundsDefined(result)
 
     registerWorkingRange(layoutState, result)
   }
