@@ -64,7 +64,6 @@ litho_robolectric4_test(
     source = "8",
     target = "8",
     deps = [
-        "//fbandroid/java/com/facebook/testing/automock/fbktx:fbktx",
         "//fbandroid/third-party/java/guava:guava",
         "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
