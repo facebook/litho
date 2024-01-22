@@ -14,60 +14,57 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import android.graphics.drawable.Drawable;
-import android.view.View;
+import android.graphics.drawable.Drawable
+import android.view.View
 
-class MountUtils {
-
+internal object MountUtils {
   /**
    * Moves an item from oldIndex to newIndex. The item is taken from scrapitems if an item exists in
    * scrapItems at oldPosition. Otherwise the item is taken from items. This assumes that there is
-   * no item at newIndex for the items array. If that's the case {@link MountUtils#scrapItemAt(int,
-   * T[], T[])} has to be called before invoking this.
+   * no item at newIndex for the items array. If that's the case [MountUtils#scrapItemAt(int, T[],
+   * T[])] has to be called before invoking this.
    */
-  static <T> void moveItem(int oldIndex, int newIndex, T[] items, T[] scrapItems) {
-    T itemToMove;
-
-    if (existsScrapItemAt(oldIndex, scrapItems)) {
+  @JvmStatic
+  fun <T> moveItem(oldIndex: Int, newIndex: Int, items: Array<T?>, scrapItems: Array<T?>?) {
+    val itemToMove: T?
+    if (existsScrapItemAt<T?>(oldIndex, scrapItems)) {
       // Before moving the item from items we need to check whether an old item has been put in
       // the scrapItems array. If there is an item at oldIndex there, it means that in
       // items at position oldIndex there's now something else and the correct item to move to
       // newIndex is instead in the scrapItems SparseArray.
-      itemToMove = scrapItems[oldIndex];
-      scrapItems[oldIndex] = null;
+      itemToMove = scrapItems?.get(oldIndex)
+      scrapItems?.set(oldIndex, null)
     } else {
-      itemToMove = items[oldIndex];
-      items[oldIndex] = null;
+      itemToMove = items.get(oldIndex)
+      items[oldIndex]= null
     }
-
-    items[newIndex] = itemToMove;
+    items[newIndex] = itemToMove
   }
 
   /**
    * Takes the item at position index from items and puts it into scrapItems. If no such item exists
    * the invocation of this method will have no effect.
    */
-  static <T> void scrapItemAt(int index, T[] items, T[] scrapItems) {
-    if (items == null || scrapItems == null) {
-      return;
+  @JvmStatic
+  fun <T> scrapItemAt(index: Int, items: Array<T?>, scrapItems: Array<T?>?) {
+    if (scrapItems == null) {
+      return
     }
-    final T value = items[index];
-    if (value != null) {
-      scrapItems[index] = value;
-    }
+    items[index]?.let { scrapItems[index] = it }
   }
 
   /** Returns true if scrapItems is not null and contains an item with key index. */
-  static <T> boolean existsScrapItemAt(int index, T[] scrapItems) {
-    return scrapItems != null && scrapItems[index] != null;
-  }
+  @JvmStatic
+  fun <T> existsScrapItemAt(index: Int, scrapItems: Array<T?>?): Boolean =
+      scrapItems != null && scrapItems[index] != null
 
   /** Sets the state on a drawable if it is clickable or should duplicate its parent's state. */
-  static void maybeSetDrawableState(View view, Drawable drawable) {
-    if (drawable.isStateful()) {
-      drawable.setState(view.getDrawableState());
+  @JvmStatic
+  fun maybeSetDrawableState(view: View, drawable: Drawable) {
+    if (drawable.isStateful) {
+      drawable.state = view.drawableState
     }
   }
 
@@ -75,11 +72,12 @@ class MountUtils {
    * Remove the item at given {@param index}. The item is removed from {@param scrapItems} if the
    * item exists there at given index, otherwise it is removed from {@param items}.
    */
-  static <T> void removeItem(int index, T[] items, T[] scrapItems) {
-    if (existsScrapItemAt(index, scrapItems)) {
-      scrapItems[index] = null;
+  @JvmStatic
+  fun <T> removeItem(index: Int, items: Array<T?>, scrapItems: Array<T?>?) {
+    if (existsScrapItemAt<T?>(index, scrapItems)) {
+      scrapItems?.set(index, null)
     } else {
-      items[index] = null;
+      items[index] = null
     }
   }
 
@@ -89,9 +87,10 @@ class MountUtils {
    * @param view view into which the drawable should be mounted
    * @param drawable drawable to be mounted
    */
-  static void mountDrawable(View view, Drawable drawable) {
-    drawable.setVisible(view.getVisibility() == View.VISIBLE, false);
-    drawable.setCallback(view);
-    maybeSetDrawableState(view, drawable);
+  @JvmStatic
+  fun mountDrawable(view: View, drawable: Drawable) {
+    drawable.setVisible(view.visibility == View.VISIBLE, false)
+    drawable.callback = view
+    maybeSetDrawableState(view, drawable)
   }
 }
