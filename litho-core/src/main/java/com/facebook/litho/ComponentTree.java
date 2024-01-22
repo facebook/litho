@@ -127,12 +127,7 @@ public class ComponentTree
   private static final String EMPTY_STRING = "";
   private static final String CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT =
       "ComponentTree:CTContextIsDifferentFromRootBuilderContext";
-  private static final String M_LITHO_VIEW_IS_NULL =
-      "ComponentTree:mountComponentInternal_mLithoView_Null";
-
   public static final int STATE_UPDATES_IN_LOOP_THRESHOLD = 50;
-  private static final String STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD =
-      "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold:";
   private static boolean sBoostPerfLayoutStateFuture = false;
 
   // In the new LifecycleProvider system,`mLifecycleProvider` will become the way to support the
@@ -312,9 +307,6 @@ public class ComponentTree
 
   @ThreadConfined(ThreadConfined.UI)
   private RunnableHandler mLayoutThreadHandler;
-
-  @ThreadConfined(ThreadConfined.UI)
-  private RunnableHandler mResolveThreadHandler;
 
   private RunnableHandler mMainThreadHandler = new DefaultHandler(Looper.getMainLooper());
   private final Runnable mBackgroundLayoutStateUpdateRunnable =
