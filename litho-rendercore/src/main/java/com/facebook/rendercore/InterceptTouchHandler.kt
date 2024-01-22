@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.MotionEvent
+import android.view.View
 
-public interface InterceptTouchHandler {
-
-  boolean onInterceptTouchEvent(View view, MotionEvent ev);
+interface InterceptTouchHandler {
+  fun onInterceptTouchEvent(view: View, ev: MotionEvent): Boolean
 }
