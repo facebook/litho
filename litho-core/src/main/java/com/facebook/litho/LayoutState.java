@@ -125,8 +125,6 @@ public class LayoutState
   @Nullable LithoNode mRoot;
   @Nullable LayoutResult mLayoutResult;
   @Nullable TransitionId mRootTransitionId;
-  @Nullable LayoutCache.CachedData mLayoutCacheData;
-
   @Nullable DiffNode mDiffTreeRoot;
 
   int mWidth;
@@ -139,18 +137,18 @@ public class LayoutState
 
   private final boolean mIsAccessibilityEnabled;
 
-  @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   @Nullable TransitionId mCurrentTransitionId;
   @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
   final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
       new LinkedHashMap<>();
   final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
-  @Nullable List<Transition> mTransitions;
   private @Nullable RenderTree mCachedRenderTree = null;
 
-  @Nullable WorkingRangeContainer mWorkingRangeContainer;
-
-  @Nullable List<Attachable> mAttachables;
+  private final @Nullable List<Attachable> mAttachables;
+  private final @Nullable List<Transition> mTransitions;
+  private final @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
+  private final @Nullable WorkingRangeContainer mWorkingRangeContainer;
+  final @Nullable LayoutCache.CachedData mLayoutCacheData;
 
   // If there is any component marked with 'ExcludeFromIncrementalMountComponent'
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -169,26 +167,25 @@ public class LayoutState
       int rootY,
       int componentTreeId,
       boolean isAccessibilityEnabled,
-      @Nullable LayoutState current) {
+      @Nullable LayoutState current,
+      @Nullable LayoutCache.CachedData layoutCacheData,
+      ReductionState reductionState) {
     mId = sIdGenerator.getAndIncrement();
     mResolveResult = resolveResult;
     mSizeConstraints = sizeConstraints;
     mRootX = rootX;
     mRootY = rootY;
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
-    mLayoutCacheData = current != null ? current.mLayoutCacheData : null;
+    mLayoutCacheData = layoutCacheData;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedSpecComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
 
-    mAttachables =
-        resolveResult.outputs != null ? new ArrayList<>(resolveResult.outputs.attachables) : null;
-    mTransitions =
-        resolveResult.outputs != null ? new ArrayList<>(resolveResult.outputs.transitions) : null;
+    mAttachables = reductionState.getAttachables();
+    mTransitions = reductionState.getTransitions();
     mScopedComponentInfosNeedingPreviousRenderData =
-        resolveResult.outputs != null
-            ? new ArrayList<>(resolveResult.outputs.componentsThatNeedPreviousRenderData)
-            : null;
+        reductionState.getScopedComponentInfosNeedingPreviousRenderData();
+    mWorkingRangeContainer = reductionState.getWorkingRangeContainer();
     mComponentTreeId = componentTreeId;
     mRootTransitionId = LithoNodeUtils.createTransitionId(resolveResult.node);
     mIsAccessibilityEnabled = isAccessibilityEnabled;

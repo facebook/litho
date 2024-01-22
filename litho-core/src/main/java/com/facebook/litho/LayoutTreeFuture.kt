@@ -153,23 +153,34 @@ class LayoutTreeFuture(
           c.setLithoLayoutContext(lsc)
           val root = measureTree(lsc, c.androidContext, node, sizeConstraints, perfEvent)
 
-          layoutState =
-              LayoutState(
-                  resolveResult,
-                  sizeConstraints,
-                  lsc.rootOffset.x,
-                  lsc.rootOffset.y,
-                  treeId,
-                  lsc.isAccessibilityEnabled,
-                  currentLayoutState,
-              )
-
+          val reductionState =
+              ReductionState(
+                  attachables = resolveResult.outputs?.let { ArrayList(it.attachables) },
+                  transitions = resolveResult.outputs?.let { ArrayList(it.transitions) },
+                  scopedComponentInfosNeedingPreviousRenderData =
+                      resolveResult.outputs?.let {
+                        ArrayList(it.componentsThatNeedPreviousRenderData)
+                      })
           if (root != null) {
-            measurePendingSubtrees(c, root, layoutState, lsc)
+            measurePendingSubtrees(
+                parentContext = c,
+                lithoLayoutContext = lsc,
+                reductionState = reductionState,
+                result = root)
           }
 
-          layoutState.mLayoutResult = root
-          layoutState.mLayoutCacheData = layoutCache.writeCacheData
+          layoutState =
+              LayoutState(
+                      resolveResult,
+                      sizeConstraints,
+                      lsc.rootOffset.x,
+                      lsc.rootOffset.y,
+                      treeId,
+                      lsc.isAccessibilityEnabled,
+                      currentLayoutState,
+                      layoutCache.writeCacheData,
+                      reductionState)
+                  .apply { mLayoutResult = root }
 
           perfEvent?.markerPoint("start_collect_results")
           setSizeAfterMeasureAndCollectResults(c, lsc, layoutState)
@@ -179,22 +190,22 @@ class LayoutTreeFuture(
 
           layoutState.setCreatedEventHandlers(
               mergeLists(resolveResult.eventHandlers, lsc.eventHandlers))
+
+          return layoutState
         } finally {
           c.calculationStateContext = prevContext
           lsc.release()
+
+          LithoStats.incrementComponentCalculateLayoutCount()
+
+          if (ThreadUtils.isMainThread) {
+            LithoStats.incrementComponentCalculateLayoutOnUICount()
+          }
+
+          if (DebugOverlay.isEnabled) {
+            updateLayoutHistory(treeId)
+          }
         }
-
-        LithoStats.incrementComponentCalculateLayoutCount()
-
-        if (ThreadUtils.isMainThread) {
-          LithoStats.incrementComponentCalculateLayoutOnUICount()
-        }
-
-        if (DebugOverlay.isEnabled) {
-          updateLayoutHistory(treeId)
-        }
-
-        return layoutState
       } finally {
 
         treeState.unregisterLayoutInitialState()

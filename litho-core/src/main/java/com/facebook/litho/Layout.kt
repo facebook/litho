@@ -108,9 +108,9 @@ internal object Layout {
   @JvmStatic
   fun measurePendingSubtrees(
       parentContext: ComponentContext,
+      lithoLayoutContext: LithoLayoutContext,
+      reductionState: ReductionState,
       result: LithoLayoutResult,
-      layoutState: LayoutState,
-      lithoLayoutContext: LithoLayoutContext
   ) {
     if (lithoLayoutContext.isFutureReleased || result.measureHadExceptions) {
       // Exit early if the layout future as been released or if this result had exceptions.
@@ -154,31 +154,35 @@ internal object Layout {
       }
 
       Resolver.collectOutputs(nestedTree.node)?.let { outputs ->
-        layoutState.mAttachables
+        reductionState.attachables
             .getOrCreate {
-              ArrayList<Attachable>(outputs.attachables.size).also { layoutState.mAttachables = it }
+              ArrayList<Attachable>(outputs.attachables.size).also {
+                reductionState.attachables = it
+              }
             }
             .addAll(outputs.attachables)
 
-        layoutState.mTransitions
+        reductionState.transitions
             .getOrCreate {
-              ArrayList<Transition>(outputs.transitions.size).also { layoutState.mTransitions = it }
+              ArrayList<Transition>(outputs.transitions.size).also {
+                reductionState.transitions = it
+              }
             }
             .addAll(outputs.transitions)
 
-        layoutState.mScopedComponentInfosNeedingPreviousRenderData
+        reductionState.scopedComponentInfosNeedingPreviousRenderData
             .getOrCreate {
               ArrayList<ScopedComponentInfo>(outputs.componentsThatNeedPreviousRenderData.size)
-                  .also { layoutState.mScopedComponentInfosNeedingPreviousRenderData = it }
+                  .also { reductionState.scopedComponentInfosNeedingPreviousRenderData = it }
             }
             .addAll(outputs.componentsThatNeedPreviousRenderData)
       }
 
       measurePendingSubtrees(
           parentContext = parentContext,
-          result = nestedTree,
-          layoutState = layoutState,
-          lithoLayoutContext = lithoLayoutContext)
+          lithoLayoutContext = lithoLayoutContext,
+          reductionState = reductionState,
+          result = nestedTree)
       return
     } else if (result.childrenCount > 0) {
       val context: ComponentContext = result.node.tailComponentContext
@@ -186,20 +190,20 @@ internal object Layout {
         val child: LithoLayoutResult = result.getChildAt(i)
         measurePendingSubtrees(
             parentContext = context,
-            result = child,
-            layoutState = layoutState,
-            lithoLayoutContext = lithoLayoutContext)
+            lithoLayoutContext = lithoLayoutContext,
+            reductionState = reductionState,
+            result = child)
       }
     }
 
     LithoYogaLayoutFunction.onBoundsDefined(result)
 
-    registerWorkingRange(layoutState, result)
+    registerWorkingRange(reductionState, result)
   }
 
   /** Register working range for each node */
   @JvmStatic
-  fun registerWorkingRange(layoutState: LayoutState, result: LithoLayoutResult) {
+  fun registerWorkingRange(reductionState: ReductionState, result: LithoLayoutResult) {
     val registrations: List<WorkingRangeContainer.Registration> =
         result.node.workingRangeRegistrations ?: return
     if (CollectionsUtils.isEmpty(registrations)) {
@@ -207,8 +211,8 @@ internal object Layout {
     }
 
     val workingRange: WorkingRangeContainer =
-        layoutState.mWorkingRangeContainer.getOrCreate {
-          WorkingRangeContainer().also { layoutState.mWorkingRangeContainer = it }
+        reductionState.workingRangeContainer.getOrCreate {
+          WorkingRangeContainer().also { reductionState.workingRangeContainer = it }
         }
     val component: Component = result.node.tailComponent
     for (registration in registrations) {
