@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
 /**
- * An implementation of this interface should contain a {@link RenderTree} without relying on {@link
- * RenderState} to prepare it.
+ * An implementation of this interface should contain a [RenderTree] without relying on
+ * [RenderState] to prepare it.
  */
-public interface RenderTreeHost extends RenderCoreExtensionHost {
-  void setRenderTree(RenderTree tree);
+interface RenderTreeHost : RenderCoreExtensionHost {
+  fun setRenderTree(tree: RenderTree)
 }
