@@ -133,11 +133,7 @@ class HostComponent extends SpecGeneratedComponent {
       final @Nullable StateContainer previousStateContainer,
       final Component next,
       final @Nullable StateContainer nextStateContainer) {
-    if (ComponentsConfiguration.hostComponentAlwaysShouldUpdate) {
-      return true;
-    }
-    return ((HostComponent) previous).mImplementsVirtualViews
-        != ((HostComponent) next).mImplementsVirtualViews;
+    return true;
   }
 
   @Nullable

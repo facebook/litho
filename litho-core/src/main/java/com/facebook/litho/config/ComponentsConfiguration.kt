@@ -196,7 +196,6 @@ internal constructor(
     @JvmField var enableMountableTwoBindersRecycler: Boolean = false
     @JvmField var enableSeparateAnimatorBinder: Boolean = false
     @JvmField var enableMountableRecyclerInGroups: Boolean = false
-    @JvmField var hostComponentAlwaysShouldUpdate: Boolean = true
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var enableFixForNestedComponentTree: Boolean = false
     @JvmField var enableRefactorLithoLifecycleProvider: Boolean = false
