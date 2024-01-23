@@ -74,12 +74,6 @@ open class LithoLayoutResult(
   var heightSpec: Int = DiffNode.UNSPECIFIED
     internal set
 
-  var widthFromStyle: Float = lithoLayoutOutput.widthFromStyle
-    private set
-
-  var heightFromStyle: Float = lithoLayoutOutput.heightFromStyle
-    private set
-
   var delegate: LayoutResult? = null
     internal set
 

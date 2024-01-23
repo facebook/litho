@@ -272,10 +272,10 @@ internal object LithoYogaLayoutFunction {
       return
     }
     val yogaNode: YogaNode = layoutResult.lithoLayoutOutput.yogaNode
-    if (layoutResult.widthFromStyle.compareTo(yogaNode.width.value) != 0) {
+    if (layoutResult.lithoLayoutOutput.widthFromStyle.compareTo(yogaNode.width.value) != 0) {
       yogaNode.setWidthAuto()
     }
-    if (layoutResult.heightFromStyle.compareTo(yogaNode.height.value) != 0) {
+    if (layoutResult.lithoLayoutOutput.heightFromStyle.compareTo(yogaNode.height.value) != 0) {
       yogaNode.setHeightAuto()
     }
   }
