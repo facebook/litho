@@ -40,13 +40,6 @@ open class LithoLayoutResult(
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
 
-  /**
-   * In order to avoid redundant calculation that are happening in [adjustRenderUnitBounds], we save
-   * the adjustments in a Rect that is initialised during layout, which is specifically inside
-   * [onBoundsDefined].
-   */
-  internal val adjustedBounds: Rect = Rect()
-
   var widthSpec: Int = DiffNode.UNSPECIFIED
     internal set
 
@@ -169,13 +162,13 @@ open class LithoLayoutResult(
 
   override fun getLayoutData(): Any? = lithoLayoutOutput.layoutData
 
-  fun adjustedLeft(): Int = adjustedBounds.left
+  fun adjustedLeft(): Int = lithoLayoutOutput.adjustedBounds.left
 
-  fun adjustedTop(): Int = adjustedBounds.top
+  fun adjustedTop(): Int = lithoLayoutOutput.adjustedBounds.top
 
-  fun adjustedRight(): Int = adjustedBounds.right
+  fun adjustedRight(): Int = lithoLayoutOutput.adjustedBounds.right
 
-  fun adjustedBottom(): Int = adjustedBounds.bottom
+  fun adjustedBottom(): Int = lithoLayoutOutput.adjustedBounds.bottom
 
   /**
    * Since layout data like the layout context and the diff node are not required after layout

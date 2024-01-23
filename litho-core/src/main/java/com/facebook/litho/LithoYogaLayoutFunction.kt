@@ -778,7 +778,7 @@ internal object LithoYogaLayoutFunction {
       bounds.right -= lithoLayoutResult.paddingRight
       bounds.bottom -= lithoLayoutResult.paddingBottom
     }
-    lithoLayoutResult.adjustedBounds.set(bounds)
+    lithoLayoutResult.lithoLayoutOutput._adjustedBounds.set(bounds)
   }
 
   // This is used when we need to create a new output except YogaNode for layout caching.
@@ -800,7 +800,6 @@ internal object LithoYogaLayoutFunction {
     copiedResult.backgroundRenderUnit = layoutResult.backgroundRenderUnit
     copiedResult.foregroundRenderUnit = layoutResult.foregroundRenderUnit
     copiedResult.borderRenderUnit = layoutResult.borderRenderUnit
-    copiedResult.adjustedBounds.set(layoutResult.adjustedBounds)
     return copiedResult
   }
 }
@@ -829,7 +828,7 @@ data class YogaLithoLayoutOutput(
     var _borderRenderUnit: LithoRenderUnit? = null,
     var _diffNode: DiffNode? = null,
     var _nestedResult: LithoLayoutResult? = null,
-    var _adjustedBounds: Rect = Rect(),
+    internal val _adjustedBounds: Rect = Rect(),
 ) : LithoLayoutOutput {
 
   override val x: Int
@@ -915,6 +914,12 @@ data class YogaLithoLayoutOutput(
   override val nestedResult: LithoLayoutResult?
     get() = _nestedResult
 
+  /**
+   * In order to avoid redundant calculation that are happening in
+   * [LithoYogaLayoutFunction.adjustRenderUnitBounds], we save the adjustments in a Rect that is
+   * initialised during layout, which is specifically inside
+   * [LithoYogaLayoutFunction.onBoundsDefined].
+   */
   override val adjustedBounds: Rect
     get() = _adjustedBounds
 
