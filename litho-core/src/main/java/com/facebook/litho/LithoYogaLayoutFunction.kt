@@ -688,7 +688,7 @@ internal object LithoYogaLayoutFunction {
         }
       }
     }
-    lithoLayoutResult.delegate = delegate
+    lithoLayoutResult.lithoLayoutOutput._delegate = delegate
     lithoLayoutResult.lithoLayoutOutput._layoutData = layoutData
     return MeasureResult(width, height, layoutData)
   }
@@ -784,19 +784,15 @@ internal object LithoYogaLayoutFunction {
       layoutResult: LithoLayoutResult,
       lithoNode: LithoNode,
       yogaNode: YogaNode
-  ): LithoLayoutResult {
-    val copiedResult =
-        lithoNode.createLayoutResult(
-            lithoLayoutOutput =
-                layoutResult.lithoLayoutOutput.copy(
-                    yogaNode = yogaNode,
-                    _isCachedLayout = true,
-                    _cachedMeasuresValid = true,
-                    _wasMeasured = false,
-                    _measureHadExceptions = false))
-    copiedResult.delegate = layoutResult.delegate
-    return copiedResult
-  }
+  ): LithoLayoutResult =
+      lithoNode.createLayoutResult(
+          lithoLayoutOutput =
+              layoutResult.lithoLayoutOutput.copy(
+                  yogaNode = yogaNode,
+                  _isCachedLayout = true,
+                  _cachedMeasuresValid = true,
+                  _wasMeasured = false,
+                  _measureHadExceptions = false))
 
   private fun shouldDrawBorders(lithoLayoutResult: LithoLayoutResult): Boolean {
     val yogaNode = lithoLayoutResult.lithoLayoutOutput.yogaNode
@@ -892,6 +888,7 @@ data class YogaLithoLayoutOutput(
     internal var _foregroundRenderUnit: LithoRenderUnit? = null,
     internal var _borderRenderUnit: LithoRenderUnit? = null,
     internal var _diffNode: DiffNode? = null,
+    internal var _delegate: LayoutResult? = null,
     internal var _nestedResult: LithoLayoutResult? = null,
     internal val _adjustedBounds: Rect = Rect(),
 ) : LithoLayoutOutput {
@@ -978,6 +975,9 @@ data class YogaLithoLayoutOutput(
 
   override val nestedResult: LithoLayoutResult?
     get() = _nestedResult
+
+  override val delegate: LayoutResult?
+    get() = _delegate
 
   /**
    * In order to avoid redundant calculation that are happening in

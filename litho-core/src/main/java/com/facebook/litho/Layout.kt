@@ -24,6 +24,7 @@ import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.yoga.YogaConstants
@@ -513,6 +514,7 @@ sealed interface LithoLayoutOutput {
   val backgroundRenderUnit: LithoRenderUnit?
   val foregroundRenderUnit: LithoRenderUnit?
   val borderRenderUnit: LithoRenderUnit?
+  val delegate: LayoutResult?
   val nestedResult: LithoLayoutResult?
   val adjustedBounds: Rect
   val layoutDirection: Int

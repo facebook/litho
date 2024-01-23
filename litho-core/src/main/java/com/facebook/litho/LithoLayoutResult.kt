@@ -42,8 +42,8 @@ open class LithoLayoutResult(
   val heightSpec: Int
     get() = lithoLayoutOutput.heightSpec
 
-  var delegate: LayoutResult? = null
-    internal set
+  val delegate: LayoutResult?
+    get() = lithoLayoutOutput.delegate
 
   val diffNode: DiffNode?
     get() = lithoLayoutOutput.diffNode
