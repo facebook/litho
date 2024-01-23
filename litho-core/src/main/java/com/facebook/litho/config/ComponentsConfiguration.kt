@@ -75,7 +75,12 @@ internal constructor(
      * every state update in a small time window. This has been proven to be an overall improvement
      * for performance so it's highly advised to not disable it.
      */
-    @JvmField val enableStateUpdatesBatching: Boolean = true
+    @JvmField val enableStateUpdatesBatching: Boolean = true,
+    /**
+     * By default, we do not allow preallocation of [Drawable]. By turning this option on, you can
+     * also preallocate [Drawable] mount content, when [mountContentPreallocation] is enabled.
+     */
+    @JvmField val enableDrawablePreAllocation: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -151,7 +156,6 @@ internal constructor(
     @JvmField var enableThreadTracingStacktrace: Boolean = false
 
     @JvmField var runLooperPrepareForLayoutThreadFactory: Boolean = true
-    @JvmField var enableDrawablePreAllocation: Boolean = false
 
     @JvmField var perfBoosterFactory: LithoPerfBoosterFactory? = null
 
@@ -239,6 +243,7 @@ internal constructor(
     private var shouldEnableDefaultAOSPLithoLifecycleProvider =
         baseConfig.shouldEnableDefaultAOSPLithoLifecycleProvider
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
+    private var enableDrawablePreAllocation = baseConfig.enableDrawablePreAllocation
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean) = also {
       shouldAddHostViewForRootComponent = enabled
@@ -280,6 +285,10 @@ internal constructor(
       enableStateUpdatesBatching = enabled
     }
 
+    fun enableDrawablePreAllocation(enabled: Boolean): Builder = also {
+      enableDrawablePreAllocation = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -293,7 +302,8 @@ internal constructor(
           componentHostRecyclingEnabled = componentHostRecyclingEnabled,
           shouldEnableDefaultAOSPLithoLifecycleProvider =
               shouldEnableDefaultAOSPLithoLifecycleProvider,
-          enableStateUpdatesBatching = enableStateUpdatesBatching)
+          enableStateUpdatesBatching = enableStateUpdatesBatching,
+          enableDrawablePreAllocation = enableDrawablePreAllocation)
     }
   }
 }

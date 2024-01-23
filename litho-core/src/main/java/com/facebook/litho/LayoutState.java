@@ -159,6 +159,7 @@ public class LayoutState
   private boolean mIsCommitted;
 
   private boolean mShouldProcessVisibilityOutputs;
+  private boolean mEnableDrawablePreallocation;
 
   LayoutState(
       int id,
@@ -173,6 +174,8 @@ public class LayoutState
       ReductionState reductionState) {
     mId = id;
     mResolveResult = resolveResult;
+    mEnableDrawablePreallocation =
+        mResolveResult.context.mLithoConfiguration.componentsConfig.enableDrawablePreAllocation;
     mSizeConstraints = sizeConstraints;
     mRootX = rootX;
     mRootY = rootY;
@@ -339,8 +342,7 @@ public class LayoutState
           continue;
         }
 
-        if (ComponentsConfiguration.enableDrawablePreAllocation
-            || isMountableView(treeNode.getRenderUnit())) {
+        if (mEnableDrawablePreallocation || isMountableView(treeNode.getRenderUnit())) {
 
           boolean preallocated =
               MountItemsPool.maybePreallocateContent(
@@ -349,7 +351,7 @@ public class LayoutState
 
           Log.d(
               "LayoutState",
-              "Preallocation of"
+              "Preallocation of "
                   + component.getSimpleName()
                   + (preallocated ? " succeeded" : " failed"));
         }
