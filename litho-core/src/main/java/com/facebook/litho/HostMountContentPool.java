@@ -69,10 +69,6 @@ public class HostMountContentPool implements MountItemsPool.ItemPool {
       return false;
     }
 
-    if (contentAllocator.canPreallocate()) {
-      return mPool.maybePreallocateContent(c, contentAllocator);
-    } else {
-      return false;
-    }
+    return mPool.maybePreallocateContent(c, contentAllocator);
   }
 }
