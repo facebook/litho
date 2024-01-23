@@ -47,7 +47,7 @@ class LazyMeasureHostView(context: Context) : HostView(context), RenderCoreExten
     currentRenderResult = renderResult
   }
 
-  override fun performLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+  public override fun performLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     val renderTreeProvider = lazyRenderTreeProvider
     if (renderTreeProvider != null) {
       var lazyRenderTreeProvider: LazyRenderTreeProvider<Any?> = renderTreeProvider
