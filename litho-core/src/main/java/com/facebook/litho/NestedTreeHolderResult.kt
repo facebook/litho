@@ -16,16 +16,12 @@
 
 package com.facebook.litho
 
-import com.facebook.yoga.YogaNode
-
 /** This is an output only [NestedTreeHolderResult]; this is created by a [NestedTreeHolder]. */
 class NestedTreeHolderResult(
     c: ComponentContext,
     internalNode: NestedTreeHolder,
-    yogaNode: YogaNode,
-    widthFromStyle: Float,
-    heightFromStyle: Float,
-) : LithoLayoutResult(c, internalNode, yogaNode, widthFromStyle, heightFromStyle) {
+    lithoLayoutOutput: YogaLithoLayoutOutput,
+) : LithoLayoutResult(c, internalNode, lithoLayoutOutput) {
 
   var nestedResult: LithoLayoutResult? = null
 
@@ -37,7 +33,7 @@ class NestedTreeHolderResult(
       throw IllegalArgumentException("NestedTreeHolder Result has only one child")
     }
 
-    return nestedResult?.yogaNode?.layoutX?.toInt() ?: 0
+    return nestedResult?.lithoLayoutOutput?.yogaNode?.layoutX?.toInt() ?: 0
   }
 
   override fun getYForChildAtIndex(index: Int): Int {
@@ -45,7 +41,7 @@ class NestedTreeHolderResult(
       throw IllegalArgumentException("NestedTreeHolder Result has only one child")
     }
 
-    return nestedResult?.yogaNode?.layoutY?.toInt() ?: 0
+    return nestedResult?.lithoLayoutOutput?.yogaNode?.layoutY?.toInt() ?: 0
   }
 
   override fun releaseLayoutPhaseData() {

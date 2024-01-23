@@ -70,7 +70,11 @@ constructor(
       widthFromStyle: Float,
       heightFromStyle: Float
   ): NestedTreeHolderResult =
-      NestedTreeHolderResult(tailComponentContext, this, node, widthFromStyle, heightFromStyle)
+      NestedTreeHolderResult(
+          tailComponentContext,
+          this,
+          YogaLithoLayoutOutput(
+              yogaNode = node, widthFromStyle = widthFromStyle, heightFromStyle = heightFromStyle))
 
   fun copyInto(target: LithoNode) {
     // Defer copying, and set this NestedTreeHolder on the target. The props will be

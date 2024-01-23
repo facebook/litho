@@ -75,7 +75,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(dimen)
+    assertThat(result?.lithoLayoutOutput?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(dimen)
   }
 
   @Test
@@ -88,7 +88,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
+    assertThat(result?.lithoLayoutOutput?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
   }
 
   @Test
@@ -110,7 +110,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
+    assertThat(result?.lithoLayoutOutput?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
   }
 
   @Test
@@ -123,7 +123,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
+    assertThat(result?.lithoLayoutOutput?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
   }
 
   @Test
@@ -138,6 +138,6 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
+    assertThat(result?.lithoLayoutOutput?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
   }
 }

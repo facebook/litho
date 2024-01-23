@@ -108,8 +108,9 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat(holder.yogaNode.layoutDirection).isEqualTo(YogaDirection.LTR)
-    assertThat(holder.nestedResult?.yogaNode?.layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.lithoLayoutOutput.yogaNode.layoutDirection).isEqualTo(YogaDirection.LTR)
+    assertThat(holder.nestedResult?.lithoLayoutOutput?.yogaNode?.layoutDirection)
+        .isEqualTo(YogaDirection.RTL)
   }
 
   @Test
@@ -133,8 +134,9 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat(holder.yogaNode.layoutDirection).isEqualTo(YogaDirection.RTL)
-    assertThat(holder.nestedResult?.yogaNode?.layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.lithoLayoutOutput.yogaNode.layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.nestedResult?.lithoLayoutOutput?.yogaNode?.layoutDirection)
+        .isEqualTo(YogaDirection.RTL)
   }
 
   @Test

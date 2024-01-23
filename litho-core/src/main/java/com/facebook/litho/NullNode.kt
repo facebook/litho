@@ -42,13 +42,23 @@ class NullNode : LithoNode() {
       widthFromStyle: Float,
       heightFromStyle: Float,
   ): LithoLayoutResult {
-    return NullLithoLayoutResult(c = tailComponentContext, node = this, yogaNode = node)
+    return NullLithoLayoutResult(
+        c = tailComponentContext,
+        node = this,
+        lithoLayoutOutput =
+            YogaLithoLayoutOutput(
+                yogaNode = node,
+                widthFromStyle = widthFromStyle,
+                heightFromStyle = heightFromStyle))
   }
 }
 
 class NullLithoLayoutResult
-internal constructor(c: ComponentContext, node: NullNode, yogaNode: YogaNode) :
-    LithoLayoutResult(context = c, node = node, yogaNode = yogaNode)
+internal constructor(
+    c: ComponentContext,
+    node: NullNode,
+    lithoLayoutOutput: YogaLithoLayoutOutput
+) : LithoLayoutResult(context = c, node = node, lithoLayoutOutput = lithoLayoutOutput)
 
 class NullWriter internal constructor() : YogaLayoutProps(node = NodeConfig.createYogaNode()) {
 

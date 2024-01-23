@@ -395,9 +395,11 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       LithoLayoutResult(
           context = tailComponentContext,
           node = this,
-          yogaNode = node,
-          widthFromStyle = widthFromStyle,
-          heightFromStyle = heightFromStyle)
+          lithoLayoutOutput =
+              YogaLithoLayoutOutput(
+                  yogaNode = node,
+                  widthFromStyle = widthFromStyle,
+                  heightFromStyle = heightFromStyle))
 
   open fun border(widths: IntArray, colors: IntArray, radii: FloatArray, effect: PathEffect?) {
     privateFlags = privateFlags or PFLAG_BORDER_IS_SET

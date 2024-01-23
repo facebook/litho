@@ -43,7 +43,7 @@ import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
 
 /** Layout function for LithoNode that layout their children via Flexbox. */
-object LithoYogaLayoutFunction {
+internal object LithoYogaLayoutFunction {
 
   /** Calculate the layout for a component using Yoga. */
   fun calculateLayout(
@@ -61,7 +61,7 @@ object LithoYogaLayoutFunction {
     }
 
     val layoutResult: LithoLayoutResult = buildYogaTree(context = context, currentNode = lithoNode)
-    val yogaRoot: YogaNode = layoutResult.yogaNode
+    val yogaRoot: YogaNode = layoutResult.lithoLayoutOutput.yogaNode
 
     if (isTracing) {
       ComponentsSystrace.endSection()
@@ -123,7 +123,7 @@ object LithoYogaLayoutFunction {
       ComponentsSystrace.beginSection(
           "cloneYogaNodeTree:${cachedLayoutResult.node.headComponent.simpleName}")
     }
-    val clonedNode: YogaNode = cachedLayoutResult.yogaNode.cloneWithChildren()
+    val clonedNode: YogaNode = cachedLayoutResult.lithoLayoutOutput.yogaNode.cloneWithChildren()
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
@@ -211,7 +211,10 @@ object LithoYogaLayoutFunction {
 
         // The situation that we can partially reuse the yoga tree
         val clonedNode: YogaNode =
-            (cachedLayoutResult as LithoLayoutResult).yogaNode.cloneWithoutChildren()
+            (cachedLayoutResult as LithoLayoutResult)
+                .lithoLayoutOutput
+                .yogaNode
+                .cloneWithoutChildren()
         yogaNode = clonedNode
         layoutResult = cachedLayoutResult.copyLayoutResult(currentNode, clonedNode)
         resetSizeIfNecessary(parentNode, layoutResult)
@@ -253,7 +256,7 @@ object LithoYogaLayoutFunction {
           buildYogaTree(
               context = context, currentNode = currentNode.getChildAt(i), parentNode = yogaNode)
 
-      yogaNode.addChildAt(childLayoutResult.yogaNode, yogaNode.childCount)
+      yogaNode.addChildAt(childLayoutResult.lithoLayoutOutput.yogaNode, yogaNode.childCount)
       layoutResult.addChild(childLayoutResult)
     }
 
@@ -267,7 +270,7 @@ object LithoYogaLayoutFunction {
     if (parent != null) {
       return
     }
-    val yogaNode: YogaNode = layoutResult.yogaNode
+    val yogaNode: YogaNode = layoutResult.lithoLayoutOutput.yogaNode
     if (layoutResult.widthFromStyle.compareTo(yogaNode.width.value) != 0) {
       yogaNode.setWidthAuto()
     }
@@ -501,7 +504,7 @@ object LithoYogaLayoutFunction {
           component.onBoundsDefined(
               context,
               SpecGeneratedComponentLayout(
-                  yogaNode = layoutResult.yogaNode,
+                  yogaNode = layoutResult.lithoLayoutOutput.yogaNode,
                   paddingSet = layoutResult.node.isPaddingSet,
                   background = layoutResult.node.background,
               ),
@@ -536,7 +539,8 @@ object LithoYogaLayoutFunction {
       if (layoutResult.delegate == null || hasLayoutSizeChanged) {
 
         // Check if we need to run measure for Primitive that was skipped due to with fixed size
-        val layoutContext = LithoLayoutResult.getLayoutContextFromYogaNode(layoutResult.yogaNode)
+        val layoutContext =
+            LithoLayoutResult.getLayoutContextFromYogaNode(layoutResult.lithoLayoutOutput.yogaNode)
         measure(
             layoutContext,
             layoutResult,
@@ -623,7 +627,8 @@ object LithoYogaLayoutFunction {
         // measure Primitive
         if (primitive != null) {
           context.setPreviousLayoutDataForCurrentNode(lithoLayoutResult.layoutData)
-          context.layoutContextExtraData = LithoLayoutContextExtraData(lithoLayoutResult.yogaNode)
+          context.layoutContextExtraData =
+              LithoLayoutContextExtraData(lithoLayoutResult.lithoLayoutOutput.yogaNode)
           @Suppress("UNCHECKED_CAST")
           delegate =
               primitive.calculateLayout(context as LayoutContext<Any?>, widthSpec, heightSpec)
@@ -639,7 +644,7 @@ object LithoYogaLayoutFunction {
           component.onMeasure(
               componentScopedContext,
               SpecGeneratedComponentLayout(
-                  yogaNode = lithoLayoutResult.yogaNode,
+                  yogaNode = lithoLayoutResult.lithoLayoutOutput.yogaNode,
                   paddingSet = node.isPaddingSet,
                   background = node.background,
               ),
@@ -729,8 +734,10 @@ object LithoYogaLayoutFunction {
  * [LithoYogaLayoutFunction].
  */
 @DataClassGenerate(toString = Mode.KEEP, equalsHashCode = Mode.KEEP)
-internal data class YogaLithoLayoutOutput(
+data class YogaLithoLayoutOutput(
     val yogaNode: YogaNode,
+    val widthFromStyle: Float = YogaConstants.UNDEFINED,
+    val heightFromStyle: Float = YogaConstants.UNDEFINED,
     var _widthSpec: Int = UNSPECIFIED,
     var _heightSpec: Int = UNSPECIFIED,
     var _lastMeasuredSize: Long = Long.MIN_VALUE,

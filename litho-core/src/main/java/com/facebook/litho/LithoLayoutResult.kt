@@ -20,7 +20,6 @@ import android.graphics.Rect
 import android.util.Pair
 import android.view.View
 import androidx.annotation.Px
-import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
@@ -38,9 +37,7 @@ import com.facebook.yoga.YogaNode
 open class LithoLayoutResult(
     val context: ComponentContext,
     open val node: LithoNode,
-    val yogaNode: YogaNode,
-    widthFromStyle: Float = YogaConstants.UNDEFINED,
-    heightFromStyle: Float = YogaConstants.UNDEFINED,
+    val lithoLayoutOutput: YogaLithoLayoutOutput
 ) : LayoutResult {
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
@@ -81,10 +78,10 @@ open class LithoLayoutResult(
   var heightSpec: Int = DiffNode.UNSPECIFIED
     internal set
 
-  var widthFromStyle: Float = widthFromStyle
+  var widthFromStyle: Float = lithoLayoutOutput.widthFromStyle
     private set
 
-  var heightFromStyle: Float = heightFromStyle
+  var heightFromStyle: Float = lithoLayoutOutput.heightFromStyle
     private set
 
   var delegate: LayoutResult? = null
@@ -157,7 +154,7 @@ open class LithoLayoutResult(
 
   val layoutDirection: Int
     get() {
-      return when (yogaNode.layoutDirection) {
+      return when (lithoLayoutOutput.yogaNode.layoutDirection) {
         YogaDirection.LTR -> View.LAYOUT_DIRECTION_LTR
         YogaDirection.RTL -> View.LAYOUT_DIRECTION_RTL
         else -> View.LAYOUT_DIRECTION_INHERIT
@@ -179,19 +176,25 @@ open class LithoLayoutResult(
   var borderRenderUnit: LithoRenderUnit? = null
     internal set
 
-  @Px override fun getWidth(): Int = yogaNode.layoutWidth.toInt()
+  @Px override fun getWidth(): Int = lithoLayoutOutput.yogaNode.layoutWidth.toInt()
 
-  @Px override fun getHeight(): Int = yogaNode.layoutHeight.toInt()
-
-  @Px override fun getPaddingTop(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.TOP))
+  @Px override fun getHeight(): Int = lithoLayoutOutput.yogaNode.layoutHeight.toInt()
 
   @Px
-  override fun getPaddingRight(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.RIGHT))
+  override fun getPaddingTop(): Int =
+      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.TOP))
 
   @Px
-  override fun getPaddingBottom(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+  override fun getPaddingRight(): Int =
+      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.RIGHT))
 
-  @Px override fun getPaddingLeft(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
+  @Px
+  override fun getPaddingBottom(): Int =
+      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+
+  @Px
+  override fun getPaddingLeft(): Int =
+      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.LEFT))
 
   override fun getRenderUnit(): LithoRenderUnit? = null // Unimplemented.
 
@@ -199,9 +202,11 @@ open class LithoLayoutResult(
 
   override fun getChildAt(i: Int): LithoLayoutResult = children[i]
 
-  override fun getXForChildAtIndex(index: Int): Int = children[index].yogaNode.layoutX.toInt()
+  override fun getXForChildAtIndex(index: Int): Int =
+      children[index].lithoLayoutOutput.yogaNode.layoutX.toInt()
 
-  override fun getYForChildAtIndex(index: Int): Int = children[index].yogaNode.layoutY.toInt()
+  override fun getYForChildAtIndex(index: Int): Int =
+      children[index].lithoLayoutOutput.yogaNode.layoutY.toInt()
 
   override fun getLayoutData(): Any? = layoutData
 
@@ -223,7 +228,7 @@ open class LithoLayoutResult(
    */
   open fun releaseLayoutPhaseData() {
     diffNode = null
-    yogaNode.data = null
+    lithoLayoutOutput.yogaNode.data = null
     for (i in 0 until childCount) {
       getChildAt(i).releaseLayoutPhaseData()
     }
@@ -318,16 +323,16 @@ open class LithoLayoutResult(
 
     internal fun LithoLayoutResult.shouldDrawBorders(): Boolean =
         node.hasBorderColor() &&
-            (yogaNode.getLayoutBorder(YogaEdge.LEFT) != 0f ||
-                yogaNode.getLayoutBorder(YogaEdge.TOP) != 0f ||
-                yogaNode.getLayoutBorder(YogaEdge.RIGHT) != 0f ||
-                yogaNode.getLayoutBorder(YogaEdge.BOTTOM) != 0f)
+            (lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.LEFT) != 0f ||
+                lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.TOP) != 0f ||
+                lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.RIGHT) != 0f ||
+                lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.BOTTOM) != 0f)
 
     private fun LithoLayoutResult.shouldApplyTouchExpansion(): Boolean =
         node.touchExpansion != null && (node.nodeInfo?.hasTouchEventHandlers() == true)
 
     private fun LithoLayoutResult.resolveHorizontalEdges(spacing: Edges, edge: YogaEdge): Float {
-      val isRtl = yogaNode.layoutDirection == YogaDirection.RTL
+      val isRtl = lithoLayoutOutput.yogaNode.layoutDirection == YogaDirection.RTL
       val resolvedEdge =
           when (edge) {
             YogaEdge.LEFT -> (if (isRtl) YogaEdge.END else YogaEdge.START)
@@ -342,7 +347,7 @@ open class LithoLayoutResult(
     }
 
     private fun LithoLayoutResult.recursivelyResolveLayoutDirection(): YogaDirection {
-      val direction = yogaNode.layoutDirection
+      val direction = lithoLayoutOutput.yogaNode.layoutDirection
       check(direction != YogaDirection.INHERIT) {
         "Direction cannot be resolved before layout calculation"
       }
@@ -350,7 +355,7 @@ open class LithoLayoutResult(
     }
 
     fun LithoLayoutResult.getLayoutBorder(edge: YogaEdge?): Int =
-        FastMath.round(yogaNode.getLayoutBorder(edge))
+        FastMath.round(lithoLayoutOutput.yogaNode.getLayoutBorder(edge))
 
     internal fun shouldAlwaysRemeasure(component: Component): Boolean =
         if (component is SpecGeneratedComponent) {
