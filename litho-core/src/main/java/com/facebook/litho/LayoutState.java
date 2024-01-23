@@ -161,6 +161,7 @@ public class LayoutState
   private boolean mShouldProcessVisibilityOutputs;
 
   LayoutState(
+      int id,
       ResolveResult resolveResult,
       SizeConstraints sizeConstraints,
       int rootX,
@@ -170,7 +171,7 @@ public class LayoutState
       @Nullable LayoutState current,
       @Nullable LayoutCache.CachedData layoutCacheData,
       ReductionState reductionState) {
-    mId = sIdGenerator.getAndIncrement();
+    mId = id;
     mResolveResult = resolveResult;
     mSizeConstraints = sizeConstraints;
     mRootX = rootX;
@@ -311,6 +312,10 @@ public class LayoutState
       default:
         throw new RuntimeException("Unknown calculate layout source: " + source);
     }
+  }
+
+  static AtomicInteger getIdGenerator() {
+    return sIdGenerator;
   }
 
   @ThreadSafe(enableChecks = false)

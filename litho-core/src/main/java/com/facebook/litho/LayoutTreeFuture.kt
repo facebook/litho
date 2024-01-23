@@ -157,7 +157,14 @@ class LayoutTreeFuture(
                   scopedComponentInfosNeedingPreviousRenderData =
                       resolveResult.outputs?.let {
                         ArrayList(it.componentsThatNeedPreviousRenderData)
-                      })
+                      },
+                  c = c,
+                  sizeConstraints = sizeConstraints,
+                  currentLayoutState = currentLayoutState,
+                  root = root,
+                  offsetRootX = lsc.rootOffset.x,
+                  offsetRootY = lsc.rootOffset.y,
+              )
           if (root != null) {
             measurePendingSubtrees(
                 parentContext = c,
@@ -168,16 +175,7 @@ class LayoutTreeFuture(
 
           perfEvent?.markerPoint("start_collect_results")
           val layoutState =
-              LithoReducer.reduce(
-                  lsc,
-                  c,
-                  resolveResult,
-                  sizeConstraints,
-                  treeId,
-                  currentLayoutState,
-                  layoutCache,
-                  root,
-                  reductionState)
+              LithoReducer.reduce(lsc, resolveResult, treeId, layoutCache, reductionState)
           perfEvent?.markerPoint("end_collect_results")
 
           root?.releaseLayoutPhaseData()

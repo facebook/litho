@@ -25,7 +25,6 @@ import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderTreeNode
-import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension
@@ -41,69 +40,74 @@ object LithoReducer {
   @JvmStatic
   fun reduce(
       lsc: LithoLayoutContext,
-      c: ComponentContext,
       resolveResult: ResolveResult,
-      sizeConstraints: SizeConstraints,
       treeId: Int,
-      currentLayoutState: LayoutState?,
       layoutCache: LayoutCache,
-      root: LithoLayoutResult?,
       reductionState: ReductionState,
   ): LayoutState {
-    val layoutState =
-        LayoutState(
-                resolveResult,
-                sizeConstraints,
-                lsc.rootOffset.x,
-                lsc.rootOffset.y,
-                treeId,
-                lsc.isAccessibilityEnabled,
-                currentLayoutState,
-                layoutCache.writeCacheData,
-                reductionState)
-            .apply { mLayoutResult = root }
+    setSizeAfterMeasureAndCollectResults(reductionState.c, lsc, reductionState)
+    return reductionState.createLayoutStateFromReductionState(
+        lsc, resolveResult, treeId, layoutCache)
+  }
 
-    setSizeAfterMeasureAndCollectResults(c, lsc, layoutState)
+  @JvmStatic
+  fun addRootHostRenderTreeNode(
+      layoutState: LayoutState,
+      result: LayoutResult? = null,
+      hierarchy: DebugHierarchy.Node? = null,
+  ) {
+    val reductionState = createReductionStateFromLayoutState(layoutState)
+    addRootHostRenderTreeNode(reductionState, result, hierarchy)
+    reductionState.mergeReductionStateIntoLayoutState(layoutState)
+  }
 
-    layoutState.setCreatedEventHandlers(mergeLists(resolveResult.eventHandlers, lsc.eventHandlers))
-
-    return layoutState
+  private fun createReductionStateFromLayoutState(layoutState: LayoutState): ReductionState {
+    if (layoutState?.resolveResult == null) {
+      throw IllegalArgumentException("Both layoutState and resolveResult cannot be null here.")
+    }
+    return ReductionState(
+        c = layoutState.mResolveResult.context,
+        sizeConstraints = layoutState.sizeConstraints,
+        currentLayoutState = layoutState,
+        root = layoutState.mLayoutResult,
+        offsetRootX = layoutState.mRootX,
+        offsetRootY = layoutState.mRootY)
   }
 
   private fun setSizeAfterMeasureAndCollectResults(
       c: ComponentContext,
       lithoLayoutContext: LithoLayoutContext,
-      layoutState: LayoutState,
+      reductionState: ReductionState,
   ) {
     if (lithoLayoutContext.isFutureReleased) {
       return
     }
-    check(layoutState.mMountableOutputs.isEmpty()) {
-      """Attempting to collect results on an already populated LayoutState.
-        | Root: ${layoutState.rootName}"""
+    check(reductionState.mountableOutputs.isEmpty()) {
+      """Attempting to collect results on an already populated ReductionState.
+        | Root: ${reductionState.componentRootName}"""
           .trimIndent()
     }
 
     val isTracing: Boolean = ComponentsSystrace.isTracing
-    val widthSpec: Int = layoutState.widthSpec
-    val heightSpec: Int = layoutState.heightSpec
-    val root: LayoutResult? = layoutState.mLayoutResult
+    val widthSpec: Int = reductionState.widthSpec
+    val heightSpec: Int = reductionState.heightSpec
+    val root: LayoutResult? = reductionState.layoutResult
     val rootWidth: Int = root?.width ?: 0
     val rootHeight: Int = root?.height ?: 0
 
-    layoutState.mWidth =
+    reductionState.width =
         when (SizeSpec.getMode(widthSpec)) {
           SizeSpec.EXACTLY -> SizeSpec.getSize(widthSpec)
           SizeSpec.AT_MOST -> max(0, min(rootWidth, SizeSpec.getSize(widthSpec)))
           SizeSpec.UNSPECIFIED -> rootWidth
-          else -> layoutState.mWidth
+          else -> reductionState.width
         }
-    layoutState.mHeight =
+    reductionState.height =
         when (SizeSpec.getMode(heightSpec)) {
           SizeSpec.EXACTLY -> SizeSpec.getSize(heightSpec)
           SizeSpec.AT_MOST -> max(0, min(rootHeight, SizeSpec.getSize(heightSpec)))
           SizeSpec.UNSPECIFIED -> rootHeight
-          else -> layoutState.mHeight
+          else -> reductionState.height
         }
 
     if (root == null) {
@@ -114,8 +118,8 @@ object LithoReducer {
     var hierarchy: DebugHierarchy.Node? = null
     if (c.mLithoConfiguration.componentsConfig.shouldAddHostViewForRootComponent) {
       hierarchy = if (root is LithoLayoutResult) root.node.getDebugHierarchy() else null
-      addRootHostRenderTreeNode(layoutState, root, hierarchy)
-      parent = layoutState.mMountableOutputs[0]
+      addRootHostRenderTreeNode(reductionState, root, hierarchy)
+      parent = reductionState.mountableOutputs[0]
     }
 
     if (isTracing) {
@@ -124,7 +128,7 @@ object LithoReducer {
     collectResults(
         parentContext = c,
         result = root,
-        layoutState = layoutState,
+        reductionState = reductionState,
         lithoLayoutContext = lithoLayoutContext,
         x = 0,
         y = 0,
@@ -138,43 +142,42 @@ object LithoReducer {
       ComponentsSystrace.beginSection("sortMountableOutputs")
     }
 
-    sortTops(layoutState)
-    sortBottoms(layoutState)
+    sortTops(reductionState)
+    sortBottoms(reductionState)
 
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
 
-    val nodeForSaving: LithoNode? = layoutState.mRoot
-    val layoutResultForSaving: LayoutResult? = layoutState.mLayoutResult
+    val nodeForSaving: LithoNode? = reductionState.rootNode
+    val layoutResultForSaving: LayoutResult? = reductionState.layoutResult
 
     // clean it up for sanity
-    layoutState.mRoot = null
-    layoutState.mLayoutResult = null
+    reductionState.rootNode = null
+    reductionState.layoutResult = null
 
     // enabled for debugging and end to end tests
-    if (LithoDebugConfigurations.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun) {
-      layoutState.mRoot = nodeForSaving
-      layoutState.mLayoutResult = layoutResultForSaving
+    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun) {
+      reductionState.rootNode = nodeForSaving
+      reductionState.layoutResult = layoutResultForSaving
       return
     }
 
     // override used by analytics teams
     if (ComponentsConfiguration.keepLayoutResults) {
-      layoutState.mLayoutResult = layoutResultForSaving
+      reductionState.layoutResult = layoutResultForSaving
     }
   }
 
-  @JvmStatic
-  fun addRootHostRenderTreeNode(
-      layoutState: LayoutState,
+  private fun addRootHostRenderTreeNode(
+      reductionState: ReductionState,
       result: LayoutResult? = null,
       hierarchy: DebugHierarchy.Node? = null,
   ) {
     val width: Int = result?.width ?: 0
     val height: Int = result?.height ?: 0
     val debugNode: DebugHierarchy.Node? = hierarchy?.mutateType(OutputUnitType.HOST)
-    val rootHostRenderUnit = createRootHostRenderUnit(layoutState.componentContext)
+    val rootHostRenderUnit = createRootHostRenderUnit(reductionState.componentContext)
 
     val node: RenderTreeNode =
         create(
@@ -184,15 +187,15 @@ object LithoReducer {
                 LithoLayoutData(
                     width = width,
                     height = height,
-                    currentLayoutStateId = layoutState.mId,
-                    previousLayoutStateId = layoutState.mPreviousLayoutStateId,
+                    currentLayoutStateId = reductionState.id,
+                    previousLayoutStateId = reductionState.previousLayoutStateId,
                     expandedTouchBounds = null,
                     layoutData = null,
                     isSizeDependant = true,
                     debugHierarchy = debugNode))
 
     addRenderTreeNode(
-        layoutState = layoutState,
+        reductionState = reductionState,
         node = node,
         result = result,
         unit = rootHostRenderUnit,
@@ -235,7 +238,7 @@ object LithoReducer {
       result: LayoutResult,
       node: LithoNode,
       bounds: Rect,
-      layoutState: LayoutState,
+      reductionState: ReductionState,
       expandedTouchBounds: Rect?,
       parent: RenderTreeNode? = null,
       debugHierarchyNode: DebugHierarchy.Node? = null,
@@ -259,7 +262,7 @@ object LithoReducer {
                 bounds.top + result.adjustedTop(),
                 bounds.right + result.adjustedRight(),
                 bounds.bottom + result.adjustedBottom()),
-        layoutState = layoutState,
+        reductionState = reductionState,
         isSizeDependant =
             if (node.tailComponent is SpecGeneratedComponent) {
               (node.tailComponent as SpecGeneratedComponent).isMountSizeDependent
@@ -275,7 +278,7 @@ object LithoReducer {
   private fun createHostRenderTreeNode(
       unit: LithoRenderUnit,
       bounds: Rect,
-      layoutState: LayoutState,
+      reductionState: ReductionState,
       expandedTouchBounds: Rect?,
       parent: RenderTreeNode? = null,
       hierarchy: DebugHierarchy.Node? = null,
@@ -283,7 +286,7 @@ object LithoReducer {
       createRenderTreeNode(
           unit = unit,
           bounds = bounds,
-          layoutState = layoutState,
+          reductionState = reductionState,
           isSizeDependant = true,
           parent = parent,
           expandedTouchBounds = expandedTouchBounds,
@@ -292,7 +295,7 @@ object LithoReducer {
   private fun createRenderTreeNode(
       unit: LithoRenderUnit,
       bounds: Rect,
-      layoutState: LayoutState,
+      reductionState: ReductionState,
       isSizeDependant: Boolean,
       expandedTouchBounds: Rect?,
       layoutData: Any? = null,
@@ -315,8 +318,8 @@ object LithoReducer {
             LithoLayoutData(
                 width = resolvedBounds.width(),
                 height = resolvedBounds.height(),
-                currentLayoutStateId = layoutState.mId,
-                previousLayoutStateId = layoutState.mPreviousLayoutStateId,
+                currentLayoutStateId = reductionState.id,
+                previousLayoutStateId = reductionState.previousLayoutStateId,
                 expandedTouchBounds = expandedTouchBounds,
                 isSizeDependant = isSizeDependant,
                 layoutData = layoutData,
@@ -402,7 +405,7 @@ object LithoReducer {
    *
    * @param parentContext the parent component context
    * @param result InternalNode to process.
-   * @param layoutState the LayoutState currently operating.
+   * @param reductionState the ReductionState currently operating.
    * @param parent the parent render tree node.
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
    * @param parentHierarchy The parent hierarchy linked list or null.
@@ -410,7 +413,7 @@ object LithoReducer {
   private fun collectResults(
       parentContext: ComponentContext,
       result: LayoutResult,
-      layoutState: LayoutState,
+      reductionState: ReductionState,
       lithoLayoutContext: LithoLayoutContext,
       x: Int,
       y: Int,
@@ -442,7 +445,7 @@ object LithoReducer {
       collectResults(
           parentContext = immediateParentContext,
           result = nestedTree,
-          layoutState = layoutState,
+          reductionState = reductionState,
           lithoLayoutContext = lithoLayoutContext,
           x = x + result.getXForChildAtIndex(0), // Account for position of the holder node.
           y = y + result.getYForChildAtIndex(0), // Account for position of the holder node.
@@ -456,7 +459,7 @@ object LithoReducer {
     val context: ComponentContext = tail.context
     val diffNode = createDiffNode(tail, parentDiffNode)
     if (parentDiffNode == null) {
-      layoutState.mDiffTreeRoot = diffNode
+      reductionState.diffTreeRoot = diffNode
     }
 
     var parentRenderTreeNode: RenderTreeNode? = parent
@@ -467,14 +470,14 @@ object LithoReducer {
           result.hostRenderUnit
         }
     val needsHostView: Boolean = (hostRenderUnit != null)
-    val currentTransitionId: TransitionId? = layoutState.mCurrentTransitionId
+    val currentTransitionId: TransitionId? = reductionState.currentTransitionId
     val currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? =
-        layoutState.mCurrentLayoutOutputAffinityGroup
+        reductionState.currentLayoutOutputAffinityGroup
 
-    layoutState.mCurrentTransitionId = node.transitionId
+    reductionState.currentTransitionId = node.transitionId
 
-    layoutState.mCurrentLayoutOutputAffinityGroup =
-        if (layoutState.mCurrentTransitionId != null) OutputUnitsAffinityGroup() else null
+    reductionState.currentLayoutOutputAffinityGroup =
+        if (reductionState.currentTransitionId != null) OutputUnitsAffinityGroup() else null
 
     // create bounds
     val l: Int = x
@@ -492,12 +495,12 @@ object LithoReducer {
               parent = parentRenderTreeNode,
               result = result,
               node = node,
-              layoutState = layoutState,
+              reductionState = reductionState,
               diffNode = diffNode,
               hierarchy = hierarchy)
-      addCurrentAffinityGroupToTransitionMapping(layoutState)
+      addCurrentAffinityGroupToTransitionMapping(reductionState)
 
-      parentRenderTreeNode = layoutState.mMountableOutputs[hostLayoutPosition]
+      parentRenderTreeNode = reductionState.mountableOutputs[hostLayoutPosition]
     }
 
     // 2. Add background if defined.
@@ -509,7 +512,7 @@ object LithoReducer {
                 bounds = bounds,
                 parent = parentRenderTreeNode,
                 result = result,
-                layoutState = layoutState,
+                reductionState = reductionState,
                 expandedTouchBounds = result.expandedTouchBounds,
                 hierarchy = hierarchy,
                 type = OutputUnitType.BACKGROUND,
@@ -525,7 +528,7 @@ object LithoReducer {
             result = result,
             node = node,
             bounds = bounds,
-            layoutState = layoutState,
+            reductionState = reductionState,
             expandedTouchBounds = result.expandedTouchBounds,
             parent = parentRenderTreeNode,
             debugHierarchyNode = hierarchy)
@@ -535,12 +538,12 @@ object LithoReducer {
       val contentRenderUnit: LithoRenderUnit = treeNode.renderUnit as LithoRenderUnit
 
       addRenderTreeNode(
-          layoutState = layoutState,
+          reductionState = reductionState,
           node = treeNode,
           result = result,
           unit = contentRenderUnit,
           type = OutputUnitType.CONTENT,
-          transitionId = if (!needsHostView) layoutState.mCurrentTransitionId else null,
+          transitionId = if (!needsHostView) reductionState.currentTransitionId else null,
           parent = parentRenderTreeNode)
 
       diffNode?.contentOutput = contentRenderUnit
@@ -563,7 +566,7 @@ object LithoReducer {
       collectResults(
           parentContext = context,
           result = child,
-          layoutState = layoutState,
+          reductionState = reductionState,
           lithoLayoutContext = lithoLayoutContext,
           x = x + result.getXForChildAtIndex(i),
           y = y + result.getYForChildAtIndex(i),
@@ -580,7 +583,7 @@ object LithoReducer {
               bounds = bounds,
               parent = parentRenderTreeNode,
               result = result,
-              layoutState = layoutState,
+              reductionState = reductionState,
               expandedTouchBounds = result.expandedTouchBounds,
               hierarchy = hierarchy,
               type = OutputUnitType.BORDER,
@@ -598,7 +601,7 @@ object LithoReducer {
                 bounds = bounds,
                 parent = parentRenderTreeNode,
                 result = result,
-                layoutState = layoutState,
+                reductionState = reductionState,
                 expandedTouchBounds = result.expandedTouchBounds,
                 hierarchy = hierarchy,
                 type = OutputUnitType.FOREGROUND,
@@ -617,19 +620,19 @@ object LithoReducer {
               renderTreeNode =
                   contentRenderTreeNode ?: if (needsHostView) parentRenderTreeNode else null)
 
-      layoutState.mVisibilityOutputs.add(visibilityOutput)
+      reductionState.visibilityOutputs.add(visibilityOutput)
       diffNode?.visibilityOutput = visibilityOutput
     }
 
     // 8. If we're in a testing environment, maintain an additional data structure with
     // information about nodes that we can query later.
-    if (layoutState.mTestOutputs != null && !node.testKey.isNullOrEmpty()) {
+    if (reductionState.testOutputs != null && !node.testKey.isNullOrEmpty()) {
       val testOutput: TestOutput =
           createTestOutput(
               node = node,
               bounds = bounds,
               renderUnit = contentRenderTreeNode?.renderUnit as? LithoRenderUnit)
-      layoutState.mTestOutputs.add(testOutput)
+      reductionState.testOutputs.add(testOutput)
     }
 
     // collect the adjusted bounds of the content render node if it exists
@@ -646,23 +649,26 @@ object LithoReducer {
       // calculation.
       node.getComponentContextAt(i).let { delegateScopedContext ->
         if (delegate is SpecGeneratedComponent) {
-          layoutState.mScopedSpecComponentInfos?.add(delegateScopedContext.scopedComponentInfo)
+          reductionState.scopedSpecComponentInfos?.add(delegateScopedContext.scopedComponentInfo)
         }
       }
       if (delegateKey != null || delegate.hasHandle()) {
         val copyRect = Rect(rect)
         if (delegateKey != null) {
-          layoutState.mComponentKeyToBounds[delegateKey] = copyRect
+          reductionState.componentKeyToBounds[delegateKey] = copyRect
         }
         if (delegate.hasHandle()) {
-          layoutState.mComponentHandleToBounds[delegate.handle] = copyRect
+          val handle: Handle? = delegate.handle
+          if (handle != null) {
+            reductionState.componentHandleToBounds[handle] = copyRect
+          }
         }
       }
     }
 
-    addCurrentAffinityGroupToTransitionMapping(layoutState)
-    layoutState.mCurrentTransitionId = currentTransitionId
-    layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup
+    addCurrentAffinityGroupToTransitionMapping(reductionState)
+    reductionState.currentTransitionId = currentTransitionId
+    reductionState.currentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup
   }
 
   private fun addDrawableRenderTreeNode(
@@ -670,7 +676,7 @@ object LithoReducer {
       bounds: Rect,
       parent: RenderTreeNode? = null,
       result: LayoutResult,
-      layoutState: LayoutState,
+      reductionState: ReductionState,
       expandedTouchBounds: Rect?,
       hierarchy: DebugHierarchy.Node? = null,
       @OutputUnitType type: Int,
@@ -682,7 +688,7 @@ object LithoReducer {
         createRenderTreeNode(
             unit = unit,
             bounds = bounds,
-            layoutState = layoutState,
+            reductionState = reductionState,
             isSizeDependant = true,
             expandedTouchBounds = expandedTouchBounds,
             parent = parent,
@@ -690,12 +696,13 @@ object LithoReducer {
     val drawableRenderUnit: LithoRenderUnit = renderTreeNode.renderUnit as LithoRenderUnit
 
     addRenderTreeNode(
-        layoutState = layoutState,
+        reductionState = reductionState,
         node = renderTreeNode,
         result = result,
         unit = drawableRenderUnit,
         type = type,
-        transitionId = if (!matchHostBoundsTransitions) layoutState.mCurrentTransitionId else null,
+        transitionId =
+            if (!matchHostBoundsTransitions) reductionState.currentTransitionId else null,
         parent = parent)
 
     return renderTreeNode
@@ -713,40 +720,40 @@ object LithoReducer {
       animatableItem: AnimatableItem
   ) = group?.add(outputType, animatableItem)
 
-  private fun addCurrentAffinityGroupToTransitionMapping(layoutState: LayoutState) {
+  private fun addCurrentAffinityGroupToTransitionMapping(reductionState: ReductionState) {
     val group: OutputUnitsAffinityGroup<AnimatableItem>? =
-        layoutState.mCurrentLayoutOutputAffinityGroup
+        reductionState.currentLayoutOutputAffinityGroup
     if (group == null || group.isEmpty) {
       return
     }
 
-    val transitionId = layoutState.mCurrentTransitionId ?: return
+    val transitionId = reductionState.currentTransitionId ?: return
 
     if (transitionId.mType == TransitionId.Type.AUTOGENERATED) {
       // Check if the duplications of this key has been found before, if so, just ignore it
-      if (!layoutState.mDuplicatedTransitionIds.contains(transitionId)) {
-        if (layoutState.mTransitionIdMapping.put(transitionId, group) != null) {
+      if (!reductionState.duplicatedTransitionIds.contains(transitionId)) {
+        if (reductionState.transitionIdMapping.put(transitionId, group) != null) {
           // Already seen component with the same generated transition key, remove it from the
           // mapping and ignore in the future
-          layoutState.mTransitionIdMapping.remove(transitionId)
-          layoutState.mDuplicatedTransitionIds.add(transitionId)
+          reductionState.transitionIdMapping.remove(transitionId)
+          reductionState.duplicatedTransitionIds.add(transitionId)
         }
       }
     } else {
-      if (layoutState.mTransitionIdMapping.put(transitionId, group) != null) {
+      if (reductionState.transitionIdMapping.put(transitionId, group) != null) {
         // Already seen component with the same manually set transition key
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.FATAL,
             DUPLICATE_TRANSITION_IDS,
             """The transitionId '$transitionId' is defined multiple times in the same layout. TransitionIDs must be unique.
                   Tree:
-                  ${ComponentUtils.treeToString(layoutState.mRoot)}
+                  ${ComponentUtils.treeToString(reductionState.rootNode)}
                   """
                 .trimIndent())
       }
     }
-    layoutState.mCurrentLayoutOutputAffinityGroup = null
-    layoutState.mCurrentTransitionId = null
+    reductionState.currentLayoutOutputAffinityGroup = null
+    reductionState.currentTransitionId = null
   }
 
   /**
@@ -762,21 +769,21 @@ object LithoReducer {
       parent: RenderTreeNode? = null,
       result: LithoLayoutResult,
       node: LithoNode,
-      layoutState: LayoutState,
+      reductionState: ReductionState,
       diffNode: DiffNode? = null,
       hierarchy: DebugHierarchy.Node? = null,
   ): Int {
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
-    require(!(node.willMountView && !layoutState.isLayoutRoot(result))) {
+    require(!(node.willMountView && !reductionState.isLayoutRoot(result))) {
       "We shouldn't insert a host as a parent of a View"
     }
     val hostRenderTreeNode: RenderTreeNode =
         createHostRenderTreeNode(
             unit = hostRenderUnit,
             bounds = bounds,
-            layoutState = layoutState,
+            reductionState = reductionState,
             expandedTouchBounds = result.expandedTouchBounds,
             parent = parent,
             hierarchy = hierarchy)
@@ -786,48 +793,49 @@ object LithoReducer {
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
     addRenderTreeNode(
-        layoutState = layoutState,
+        reductionState = reductionState,
         node = hostRenderTreeNode,
         result = result,
         unit = hostRenderUnit,
         type = OutputUnitType.HOST,
-        transitionId = layoutState.mCurrentTransitionId,
+        transitionId = reductionState.currentTransitionId,
         parent = parent)
 
-    return layoutState.mMountableOutputs.size - 1
+    return reductionState.mountableOutputs.size - 1
   }
 
-  private fun sortTops(layoutState: LayoutState) {
-    val unsorted: List<IncrementalMountOutput> = ArrayList(layoutState.mMountableOutputTops)
+  private fun sortTops(reductionState: ReductionState) {
+    val unsorted: List<IncrementalMountOutput> = ArrayList(reductionState.mountableOutputTops)
     try {
-      layoutState.mMountableOutputTops.sortWith(IncrementalMountRenderCoreExtension.sTopsComparator)
+      reductionState.mountableOutputTops.sortWith(
+          IncrementalMountRenderCoreExtension.sTopsComparator)
     } catch (e: IllegalArgumentException) {
       val errorMessage = StringBuilder()
       errorMessage.append(e.message).append("\n")
       val size = unsorted.size
-      errorMessage.append("Error while sorting LayoutState tops. Size: $size").append("\n")
+      errorMessage.append("Error while sorting ReductionState tops. Size: $size").append("\n")
       val rect = Rect()
       for (i in 0 until size) {
-        val node: RenderTreeNode = layoutState.getMountableOutputAt(i)
+        val node: RenderTreeNode = reductionState.mountableOutputs.get(i)
         errorMessage.append("   Index $i top: ${node.getAbsoluteBounds(rect).top}").append("\n")
       }
       throw IllegalStateException(errorMessage.toString())
     }
   }
 
-  private fun sortBottoms(layoutState: LayoutState) {
-    val unsorted: List<IncrementalMountOutput> = ArrayList(layoutState.mMountableOutputBottoms)
+  private fun sortBottoms(reductionState: ReductionState) {
+    val unsorted: List<IncrementalMountOutput> = ArrayList(reductionState.mountableOutputBottoms)
     try {
-      layoutState.mMountableOutputBottoms.sortWith(
+      reductionState.mountableOutputBottoms.sortWith(
           IncrementalMountRenderCoreExtension.sBottomsComparator)
     } catch (e: IllegalArgumentException) {
       val errorMessage = StringBuilder()
       errorMessage.append(e.message).append("\n")
       val size = unsorted.size
-      errorMessage.append("Error while sorting LayoutState bottoms. Size: $size").append("\n")
+      errorMessage.append("Error while sorting ReductionState bottoms. Size: $size").append("\n")
       val rect = Rect()
       for (i in 0 until size) {
-        val node: RenderTreeNode = layoutState.getMountableOutputAt(i)
+        val node: RenderTreeNode = reductionState.mountableOutputs.get(i)
         errorMessage
             .append("   Index $i bottom: ${node.getAbsoluteBounds(rect).bottom}")
             .append("\n")
@@ -837,7 +845,7 @@ object LithoReducer {
   }
 
   private fun addRenderTreeNode(
-      layoutState: LayoutState,
+      reductionState: ReductionState,
       node: RenderTreeNode,
       result: LayoutResult? = null,
       unit: LithoRenderUnit,
@@ -857,7 +865,7 @@ object LithoReducer {
       (parentUnit.component as HostComponent).setImplementsVirtualViews()
     }
 
-    val position: Int = layoutState.mMountableOutputs.size
+    val position: Int = reductionState.mountableOutputs.size
     val absoluteBounds: Rect = node.getAbsoluteBounds(Rect())
     val shouldExcludePrimitiveFromIncrementalMount: Boolean =
         unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder::class.java) != null
@@ -871,22 +879,22 @@ object LithoReducer {
             absoluteBounds,
             shouldExcludeSpecGeneratedComponentFromIncrementalMount ||
                 shouldExcludePrimitiveFromIncrementalMount,
-            if (parent != null) layoutState.mIncrementalMountOutputs[parent.renderUnit.id]
+            if (parent != null) reductionState.incrementalMountOutputs[parent.renderUnit.id]
             else null)
     if (shouldExcludeSpecGeneratedComponentFromIncrementalMount ||
         shouldExcludePrimitiveFromIncrementalMount) {
-      layoutState.mHasComponentsExcludedFromIncrementalMount = true
+      reductionState.hasComponentsExcludedFromIncrementalMount = true
     }
 
     val id: Long = node.renderUnit.id
-    layoutState.mMountableOutputs.add(node)
-    layoutState.mIncrementalMountOutputs[id] = incrementalMountOutput
-    layoutState.mMountableOutputTops.add(incrementalMountOutput)
-    layoutState.mMountableOutputBottoms.add(incrementalMountOutput)
+    reductionState.mountableOutputs.add(node)
+    reductionState.incrementalMountOutputs[id] = incrementalMountOutput
+    reductionState.mountableOutputTops.add(incrementalMountOutput)
+    reductionState.mountableOutputBottoms.add(incrementalMountOutput)
 
     if ((component is SpecGeneratedComponent && component.hasChildLithoViews()) ||
         node.renderUnit.doesMountRenderTreeHosts()) {
-      layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id)
+      reductionState.renderUnitIdsWhichHostRenderTrees.add(id)
     }
 
     val attrs: ViewAttributes? =
@@ -896,17 +904,17 @@ object LithoReducer {
             result,
             type,
             unit.importantForAccessibility,
-            layoutState.resolveResult.context.lithoConfiguration.componentsConfig
+            reductionState.componentContext.lithoConfiguration.componentsConfig
                 .shouldAddRootHostViewOrDisableBgFgOutputs)
 
     if (attrs != null) {
-      layoutState.mRenderUnitsWithViewAttributes[id] = attrs
+      reductionState.renderUnitsWithViewAttributes[id] = attrs
     }
 
     if (node.renderUnit is LithoRenderUnit) {
       val lithoRenderUnit: LithoRenderUnit = node.renderUnit as LithoRenderUnit
       lithoRenderUnit.commonDynamicProps?.let { commonDynamicProps ->
-        layoutState.mDynamicValueOutputs.put(
+        reductionState.dynamicValueOutputs.put(
             lithoRenderUnit.id,
             DynamicValueOutput(
                 component = lithoRenderUnit.component,
@@ -918,22 +926,22 @@ object LithoReducer {
     val animatableItem =
         createAnimatableItem(
             unit,
-            if (parent == null && (layoutState.mRootX != 0 || layoutState.mRootY != 0)) {
+            if (parent == null && (reductionState.rootX != 0 || reductionState.rootY != 0)) {
               Rect(
-                  layoutState.mRootX,
-                  layoutState.mRootY,
-                  layoutState.mRootX + absoluteBounds.width(),
-                  layoutState.mRootY + absoluteBounds.height(),
+                  reductionState.rootX,
+                  reductionState.rootY,
+                  reductionState.rootX + absoluteBounds.width(),
+                  reductionState.rootY + absoluteBounds.height(),
               )
             } else {
               absoluteBounds
             },
             type,
             transitionId)
-    layoutState.mAnimatableItems.put(node.renderUnit.id, animatableItem)
-    addLayoutOutputIdToPositionsMap(layoutState.mOutputsIdToPositionMap, unit, position)
+    reductionState.animatableItems.put(node.renderUnit.id, animatableItem)
+    addLayoutOutputIdToPositionsMap(reductionState.outputsIdToPositionMap, unit, position)
     maybeAddLayoutOutputToAffinityGroup(
-        layoutState.mCurrentLayoutOutputAffinityGroup, type, animatableItem)
+        reductionState.currentLayoutOutputAffinityGroup, type, animatableItem)
   }
 
   private fun LithoNode.getDebugHierarchy(
