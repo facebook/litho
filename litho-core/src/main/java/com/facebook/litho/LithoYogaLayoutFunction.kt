@@ -448,9 +448,9 @@ internal object LithoYogaLayoutFunction {
     // If the size of a cached layout has changed then clear size dependant render units
     if (layoutResult.isCachedLayout &&
         (layoutResult.contentWidth != size.width || layoutResult.contentHeight != size.height)) {
-      layoutResult.backgroundRenderUnit = null
-      layoutResult.foregroundRenderUnit = null
-      layoutResult.borderRenderUnit = null
+      layoutResult.lithoLayoutOutput._backgroundRenderUnit = null
+      layoutResult.lithoLayoutOutput._foregroundRenderUnit = null
+      layoutResult.lithoLayoutOutput._borderRenderUnit = null
     }
     layoutResult.lithoLayoutOutput._lastMeasuredSize =
         YogaMeasureOutput.make(size.width, size.height)
@@ -539,7 +539,7 @@ internal object LithoYogaLayoutFunction {
 
         // If layout data has changed then content render unit should be recreated
         if (!hasEquivalentFields(layoutResult.layoutData, layoutData)) {
-          layoutResult.contentRenderUnit = null
+          layoutResult.lithoLayoutOutput._contentRenderUnit = null
           layoutResult.lithoLayoutOutput._layoutData = layoutData
         }
       }
@@ -581,27 +581,28 @@ internal object LithoYogaLayoutFunction {
 
     // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
     if (layoutResult.contentRenderUnit == null) {
-      layoutResult.contentRenderUnit =
+      layoutResult.lithoLayoutOutput._contentRenderUnit =
           LithoNodeUtils.createContentRenderUnit(
               layoutResult.node, layoutResult.cachedMeasuresValid, layoutResult.diffNode)
       adjustRenderUnitBounds(layoutResult)
     }
     if (layoutResult.hostRenderUnit == null) {
-      layoutResult.hostRenderUnit = LithoNodeUtils.createHostRenderUnit(layoutResult.node)
+      layoutResult.lithoLayoutOutput._hostRenderUnit =
+          LithoNodeUtils.createHostRenderUnit(layoutResult.node)
     }
     if (layoutResult.backgroundRenderUnit == null || hasLayoutSizeChanged) {
-      layoutResult.backgroundRenderUnit =
+      layoutResult.lithoLayoutOutput._backgroundRenderUnit =
           LithoNodeUtils.createBackgroundRenderUnit(
               layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
     }
     if (layoutResult.foregroundRenderUnit == null || hasLayoutSizeChanged) {
-      layoutResult.foregroundRenderUnit =
+      layoutResult.lithoLayoutOutput._foregroundRenderUnit =
           LithoNodeUtils.createForegroundRenderUnit(
               layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
     }
     if (layoutResult.shouldDrawBorders() &&
         (layoutResult.borderRenderUnit == null || hasLayoutSizeChanged)) {
-      layoutResult.borderRenderUnit =
+      layoutResult.lithoLayoutOutput._borderRenderUnit =
           LithoNodeUtils.createBorderRenderUnit(
               layoutResult.node,
               LithoLayoutResult.createBorderColorDrawable(layoutResult),
@@ -681,7 +682,7 @@ internal object LithoYogaLayoutFunction {
         // If layout data has changed then content render unit should be recreated
         if (!hasEquivalentFields(lithoLayoutResult.layoutData, newLayoutData)) {
           layoutData = newLayoutData
-          lithoLayoutResult.contentRenderUnit = null
+          lithoLayoutResult.lithoLayoutOutput._contentRenderUnit = null
         } else {
           layoutData = lithoLayoutResult.layoutData
         }
@@ -799,11 +800,6 @@ internal object LithoYogaLayoutFunction {
     copiedResult.widthSpec = layoutResult.widthSpec
     copiedResult.heightSpec = layoutResult.heightSpec
     copiedResult.delegate = layoutResult.delegate
-    copiedResult.contentRenderUnit = layoutResult.contentRenderUnit
-    copiedResult.hostRenderUnit = layoutResult.hostRenderUnit
-    copiedResult.backgroundRenderUnit = layoutResult.backgroundRenderUnit
-    copiedResult.foregroundRenderUnit = layoutResult.foregroundRenderUnit
-    copiedResult.borderRenderUnit = layoutResult.borderRenderUnit
     return copiedResult
   }
 }
@@ -825,11 +821,11 @@ data class YogaLithoLayoutOutput(
     internal var _wasMeasured: Boolean = false,
     internal var _cachedMeasuresValid: Boolean = false,
     internal var _measureHadExceptions: Boolean = false,
-    var _contentRenderUnit: LithoRenderUnit? = null,
-    var _hostRenderUnit: LithoRenderUnit? = null,
-    var _backgroundRenderUnit: LithoRenderUnit? = null,
-    var _foregroundRenderUnit: LithoRenderUnit? = null,
-    var _borderRenderUnit: LithoRenderUnit? = null,
+    internal var _contentRenderUnit: LithoRenderUnit? = null,
+    internal var _hostRenderUnit: LithoRenderUnit? = null,
+    internal var _backgroundRenderUnit: LithoRenderUnit? = null,
+    internal var _foregroundRenderUnit: LithoRenderUnit? = null,
+    internal var _borderRenderUnit: LithoRenderUnit? = null,
     internal var _diffNode: DiffNode? = null,
     var _nestedResult: LithoLayoutResult? = null,
     internal val _adjustedBounds: Rect = Rect(),

@@ -123,20 +123,20 @@ open class LithoLayoutResult(
   val layoutDirection: Int
     get() = lithoLayoutOutput.layoutDirection
 
-  var contentRenderUnit: LithoRenderUnit? = null
-    internal set
+  val contentRenderUnit: LithoRenderUnit?
+    get() = lithoLayoutOutput.contentRenderUnit
 
-  var hostRenderUnit: LithoRenderUnit? = null
-    internal set
+  val hostRenderUnit: LithoRenderUnit?
+    get() = lithoLayoutOutput.hostRenderUnit
 
-  var backgroundRenderUnit: LithoRenderUnit? = null
-    internal set
+  val backgroundRenderUnit: LithoRenderUnit?
+    get() = lithoLayoutOutput.backgroundRenderUnit
 
-  var foregroundRenderUnit: LithoRenderUnit? = null
-    internal set
+  val foregroundRenderUnit: LithoRenderUnit?
+    get() = lithoLayoutOutput.foregroundRenderUnit
 
-  var borderRenderUnit: LithoRenderUnit? = null
-    internal set
+  val borderRenderUnit: LithoRenderUnit?
+    get() = lithoLayoutOutput.borderRenderUnit
 
   @Px override fun getWidth(): Int = lithoLayoutOutput.width
 
