@@ -49,7 +49,8 @@ open class LithoLayoutResult(
   var delegate: LayoutResult? = null
     internal set
 
-  var diffNode: DiffNode? = null
+  val diffNode: DiffNode?
+    get() = lithoLayoutOutput.diffNode
 
   val measureHadExceptions: Boolean
     get() = lithoLayoutOutput.measureHadExceptions
@@ -174,7 +175,7 @@ open class LithoLayoutResult(
    * calculation they can be released to free up memory.
    */
   open fun releaseLayoutPhaseData() {
-    diffNode = null
+    lithoLayoutOutput._diffNode = null
     lithoLayoutOutput.yogaNode.data = null
     for (i in 0 until childCount) {
       getChildAt(i).releaseLayoutPhaseData()

@@ -354,7 +354,7 @@ internal object LithoYogaLayoutFunction {
       return
     }
 
-    result.diffNode = diff
+    result.lithoLayoutOutput._diffNode = diff
 
     val isTracing: Boolean = ComponentsSystrace.isTracing
 
@@ -830,7 +830,7 @@ data class YogaLithoLayoutOutput(
     var _backgroundRenderUnit: LithoRenderUnit? = null,
     var _foregroundRenderUnit: LithoRenderUnit? = null,
     var _borderRenderUnit: LithoRenderUnit? = null,
-    var _diffNode: DiffNode? = null,
+    internal var _diffNode: DiffNode? = null,
     var _nestedResult: LithoLayoutResult? = null,
     internal val _adjustedBounds: Rect = Rect(),
 ) : LithoLayoutOutput {
