@@ -42,7 +42,8 @@ abstract class CollectionLayout(
     reverse: Boolean,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean = false,
+    isReconciliationEnabled: Boolean =
+        componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     isIncrementalMountEnabled: Boolean =
         componentContext.lithoConfiguration.componentsConfig.incrementalMountEnabled,
     hasDynamicItemHeight: Boolean = false,
@@ -124,7 +125,8 @@ internal object CollectionLayouts {
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean = false,
+      isReconciliationEnabled: Boolean =
+          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
       preallocationPerMountContentEnabled: Boolean,
@@ -166,7 +168,8 @@ internal object CollectionLayouts {
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean = false,
+      isReconciliationEnabled: Boolean =
+          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       columns: Int = 2,
       preallocationPerMountContentEnabled: Boolean,
   ): CollectionLayout =
@@ -204,7 +207,8 @@ internal object CollectionLayouts {
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean = false,
+      isReconciliationEnabled: Boolean =
+          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       isIncrementalMountEnabled: Boolean = true,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
