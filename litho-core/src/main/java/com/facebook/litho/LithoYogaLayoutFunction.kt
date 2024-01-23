@@ -892,7 +892,7 @@ data class YogaLithoLayoutOutput(
     internal var _foregroundRenderUnit: LithoRenderUnit? = null,
     internal var _borderRenderUnit: LithoRenderUnit? = null,
     internal var _diffNode: DiffNode? = null,
-    var _nestedResult: LithoLayoutResult? = null,
+    internal var _nestedResult: LithoLayoutResult? = null,
     internal val _adjustedBounds: Rect = Rect(),
 ) : LithoLayoutOutput {
 

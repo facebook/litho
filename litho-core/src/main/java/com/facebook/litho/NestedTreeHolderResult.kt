@@ -23,7 +23,8 @@ class NestedTreeHolderResult(
     lithoLayoutOutput: YogaLithoLayoutOutput,
 ) : LithoLayoutResult(c, internalNode, lithoLayoutOutput) {
 
-  var nestedResult: LithoLayoutResult? = null
+  val nestedResult: LithoLayoutResult?
+    get() = lithoLayoutOutput.nestedResult
 
   override val node: NestedTreeHolder
     get() = super.node as NestedTreeHolder
@@ -33,7 +34,7 @@ class NestedTreeHolderResult(
       throw IllegalArgumentException("NestedTreeHolder Result has only one child")
     }
 
-    return nestedResult?.lithoLayoutOutput?.yogaNode?.layoutX?.toInt() ?: 0
+    return nestedResult?.lithoLayoutOutput?.x ?: 0
   }
 
   override fun getYForChildAtIndex(index: Int): Int {
@@ -41,7 +42,7 @@ class NestedTreeHolderResult(
       throw IllegalArgumentException("NestedTreeHolder Result has only one child")
     }
 
-    return nestedResult?.lithoLayoutOutput?.yogaNode?.layoutY?.toInt() ?: 0
+    return nestedResult?.lithoLayoutOutput?.y ?: 0
   }
 
   override fun releaseLayoutPhaseData() {
