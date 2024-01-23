@@ -219,24 +219,6 @@ open class LithoLayoutResult(
     this.heightSpec = heightSpec
   }
 
-  fun copyLayoutResult(node: LithoNode, yogaNode: YogaNode): LithoLayoutResult {
-    val copiedResult =
-        node.createLayoutResult(
-            lithoLayoutOutput.copy(
-                yogaNode = yogaNode, _isCachedLayout = true, _cachedMeasuresValid = true))
-    copiedResult.widthSpec = widthSpec
-    copiedResult.heightSpec = heightSpec
-    copiedResult.delegate = delegate
-    copiedResult.layoutData = layoutData
-    copiedResult.contentRenderUnit = contentRenderUnit
-    copiedResult.hostRenderUnit = hostRenderUnit
-    copiedResult.backgroundRenderUnit = backgroundRenderUnit
-    copiedResult.foregroundRenderUnit = foregroundRenderUnit
-    copiedResult.borderRenderUnit = borderRenderUnit
-    copiedResult.adjustedBounds.set(adjustedBounds)
-    return copiedResult
-  }
-
   fun addChild(child: LithoLayoutResult) {
     children.add(child)
   }

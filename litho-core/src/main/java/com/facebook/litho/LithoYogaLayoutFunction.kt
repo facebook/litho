@@ -139,7 +139,7 @@ internal object LithoYogaLayoutFunction {
       ComponentsSystrace.beginSection("copyLayoutResult")
     }
     val node: LithoNode = cachedLayoutResult.node
-    val result: LithoLayoutResult = cachedLayoutResult.copyLayoutResult(node, clonedYogaNode)
+    val result: LithoLayoutResult = copyLayoutResult(cachedLayoutResult, node, clonedYogaNode)
     clonedYogaNode.data = Pair<Any, Any>(context, result)
     saveLithoLayoutResultIntoCache(context, node, result)
     if (isTracing) {
@@ -215,7 +215,7 @@ internal object LithoYogaLayoutFunction {
                 .yogaNode
                 .cloneWithoutChildren()
         yogaNode = clonedNode
-        layoutResult = cachedLayoutResult.copyLayoutResult(currentNode, clonedNode)
+        layoutResult = copyLayoutResult(cachedLayoutResult, currentNode, clonedNode)
         resetSizeIfNecessary(parentNode, layoutResult)
       }
     }
@@ -763,6 +763,30 @@ internal object LithoYogaLayoutFunction {
     }
     lithoLayoutResult.adjustedBounds.set(bounds)
   }
+
+  // This is used when we need to create a new output except YogaNode for layout caching.
+  private fun copyLayoutResult(
+      layoutResult: LithoLayoutResult,
+      lithoNode: LithoNode,
+      yogaNode: YogaNode
+  ): LithoLayoutResult {
+    val copiedResult =
+        lithoNode.createLayoutResult(
+            lithoLayoutOutput =
+                layoutResult.lithoLayoutOutput.copy(
+                    yogaNode = yogaNode, _isCachedLayout = true, _cachedMeasuresValid = true))
+    copiedResult.widthSpec = layoutResult.widthSpec
+    copiedResult.heightSpec = layoutResult.heightSpec
+    copiedResult.delegate = layoutResult.delegate
+    copiedResult.layoutData = layoutResult.layoutData
+    copiedResult.contentRenderUnit = layoutResult.contentRenderUnit
+    copiedResult.hostRenderUnit = layoutResult.hostRenderUnit
+    copiedResult.backgroundRenderUnit = layoutResult.backgroundRenderUnit
+    copiedResult.foregroundRenderUnit = layoutResult.foregroundRenderUnit
+    copiedResult.borderRenderUnit = layoutResult.borderRenderUnit
+    copiedResult.adjustedBounds.set(layoutResult.adjustedBounds)
+    return copiedResult
+  }
 }
 
 /**
@@ -777,10 +801,10 @@ data class YogaLithoLayoutOutput(
     var _widthSpec: Int = UNSPECIFIED,
     var _heightSpec: Int = UNSPECIFIED,
     internal var _lastMeasuredSize: Long = Long.MIN_VALUE,
-    var _isCachedLayout: Boolean = false,
+    internal var _isCachedLayout: Boolean = false,
     var _layoutData: Any? = null,
     var _wasMeasured: Boolean = false,
-    var _cachedMeasuresValid: Boolean = false,
+    internal var _cachedMeasuresValid: Boolean = false,
     var _measureHadExceptions: Boolean = false,
     var _contentRenderUnit: LithoRenderUnit? = null,
     var _hostRenderUnit: LithoRenderUnit? = null,
@@ -877,12 +901,6 @@ data class YogaLithoLayoutOutput(
 
   override val adjustedBounds: Rect
     get() = _adjustedBounds
-
-  /**
-   * Returns a copy of this output that has the same values except for the YogaNode. This is used
-   * when we need to create a new output but keep the old one around for layout caching.
-   */
-  fun cloneWithYogaNode(yogaNode: YogaNode): YogaLithoLayoutOutput = copy(yogaNode = yogaNode)
 
   companion object {
     private const val UNSPECIFIED: Int = -1
