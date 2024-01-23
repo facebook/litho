@@ -38,7 +38,7 @@ internal object MountUtils {
       scrapItems?.set(oldIndex, null)
     } else {
       itemToMove = items.get(oldIndex)
-      items[oldIndex]= null
+      items[oldIndex] = null
     }
     items[newIndex] = itemToMove
   }
