@@ -67,7 +67,7 @@ open class LithoLayoutResult(
    * the adjustments in a Rect that is initialised during layout, which is specifically inside
    * [onBoundsDefined].
    */
-  private var adjustedBounds: Rect = Rect()
+  internal val adjustedBounds: Rect = Rect()
   private var layoutData: Any? = _layoutData
   internal var isCachedLayout: Boolean = false
   internal var lastMeasuredSize: Long = Long.MIN_VALUE
@@ -253,7 +253,7 @@ open class LithoLayoutResult(
     copiedResult.backgroundRenderUnit = backgroundRenderUnit
     copiedResult.foregroundRenderUnit = foregroundRenderUnit
     copiedResult.borderRenderUnit = borderRenderUnit
-    copiedResult.adjustedBounds = adjustedBounds
+    copiedResult.adjustedBounds.set(adjustedBounds)
     return copiedResult
   }
 
@@ -271,34 +271,6 @@ open class LithoLayoutResult(
     @JvmStatic
     fun getLayoutResultFromYogaNode(yogaNode: YogaNode): LithoLayoutResult =
         (yogaNode.data as Pair<*, *>).second as LithoLayoutResult
-
-    internal fun LithoLayoutResult.adjustRenderUnitBounds() {
-      val renderUnit: LithoRenderUnit = contentRenderUnit ?: return
-      val bounds = Rect()
-      if (Component.isPrimitive(renderUnit.component)) {
-        if (!LithoRenderUnit.isMountableView(renderUnit)) {
-          if (wasMeasured) {
-            bounds.left += (paddingLeft + getLayoutBorder(YogaEdge.LEFT))
-            bounds.top += (paddingTop + getLayoutBorder(YogaEdge.TOP))
-            bounds.right -= (paddingRight + getLayoutBorder(YogaEdge.RIGHT))
-            bounds.bottom -= (paddingBottom + getLayoutBorder(YogaEdge.BOTTOM))
-          } else {
-            // for exact size the border doesn't need to be adjusted since it's inside the bounds of
-            // the content
-            bounds.left += paddingLeft
-            bounds.top += paddingTop
-            bounds.right -= paddingRight
-            bounds.bottom -= paddingBottom
-          }
-        }
-      } else if (!LithoRenderUnit.isMountableView(renderUnit)) {
-        bounds.left += paddingLeft
-        bounds.top += paddingTop
-        bounds.right -= paddingRight
-        bounds.bottom -= paddingBottom
-      }
-      adjustedBounds = bounds
-    }
 
     internal fun createBorderColorDrawable(result: LithoLayoutResult): BorderColorDrawable {
       val node = result.node

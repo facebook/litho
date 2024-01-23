@@ -22,7 +22,6 @@ import android.util.Pair
 import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
-import com.facebook.litho.LithoLayoutResult.Companion.adjustRenderUnitBounds
 import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
 import com.facebook.litho.LithoLayoutResult.Companion.shouldDrawBorders
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -563,7 +562,7 @@ internal object LithoYogaLayoutFunction {
       layoutResult.contentRenderUnit =
           LithoNodeUtils.createContentRenderUnit(
               layoutResult.node, layoutResult.cachedMeasuresValid, layoutResult.diffNode)
-      layoutResult.adjustRenderUnitBounds()
+      adjustRenderUnitBounds(layoutResult)
     }
     if (layoutResult.hostRenderUnit == null) {
       layoutResult.hostRenderUnit = LithoNodeUtils.createHostRenderUnit(layoutResult.node)
@@ -726,6 +725,38 @@ internal object LithoYogaLayoutFunction {
         ComponentsSystrace.endSection()
       }
     }
+  }
+
+  private fun adjustRenderUnitBounds(lithoLayoutResult: LithoLayoutResult) {
+    val renderUnit: LithoRenderUnit = lithoLayoutResult.contentRenderUnit ?: return
+    val bounds = Rect()
+    if (Component.isPrimitive(renderUnit.component)) {
+      if (!LithoRenderUnit.isMountableView(renderUnit)) {
+        if (lithoLayoutResult.wasMeasured) {
+          bounds.left +=
+              (lithoLayoutResult.paddingLeft + lithoLayoutResult.getLayoutBorder(YogaEdge.LEFT))
+          bounds.top +=
+              (lithoLayoutResult.paddingTop + lithoLayoutResult.getLayoutBorder(YogaEdge.TOP))
+          bounds.right -=
+              (lithoLayoutResult.paddingRight + lithoLayoutResult.getLayoutBorder(YogaEdge.RIGHT))
+          bounds.bottom -=
+              (lithoLayoutResult.paddingBottom + lithoLayoutResult.getLayoutBorder(YogaEdge.BOTTOM))
+        } else {
+          // for exact size the border doesn't need to be adjusted since it's inside the bounds of
+          // the content
+          bounds.left += lithoLayoutResult.paddingLeft
+          bounds.top += lithoLayoutResult.paddingTop
+          bounds.right -= lithoLayoutResult.paddingRight
+          bounds.bottom -= lithoLayoutResult.paddingBottom
+        }
+      }
+    } else if (!LithoRenderUnit.isMountableView(renderUnit)) {
+      bounds.left += lithoLayoutResult.paddingLeft
+      bounds.top += lithoLayoutResult.paddingTop
+      bounds.right -= lithoLayoutResult.paddingRight
+      bounds.bottom -= lithoLayoutResult.paddingBottom
+    }
+    lithoLayoutResult.adjustedBounds.set(bounds)
   }
 }
 
