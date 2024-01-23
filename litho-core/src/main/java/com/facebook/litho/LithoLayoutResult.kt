@@ -218,13 +218,6 @@ open class LithoLayoutResult(
           .build()
     }
 
-    internal fun LithoLayoutResult.shouldDrawBorders(): Boolean =
-        node.hasBorderColor() &&
-            (lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.LEFT) != 0f ||
-                lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.TOP) != 0f ||
-                lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.RIGHT) != 0f ||
-                lithoLayoutOutput.yogaNode.getLayoutBorder(YogaEdge.BOTTOM) != 0f)
-
     private fun LithoLayoutResult.shouldApplyTouchExpansion(): Boolean =
         node.touchExpansion != null && (node.nodeInfo?.hasTouchEventHandlers() == true)
 

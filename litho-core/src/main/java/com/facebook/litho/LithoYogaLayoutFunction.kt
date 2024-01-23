@@ -23,7 +23,6 @@ import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
-import com.facebook.litho.LithoLayoutResult.Companion.shouldDrawBorders
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutCache
@@ -599,7 +598,7 @@ internal object LithoYogaLayoutFunction {
           LithoNodeUtils.createForegroundRenderUnit(
               layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
     }
-    if (layoutResult.shouldDrawBorders() &&
+    if (shouldDrawBorders(layoutResult) &&
         (layoutResult.borderRenderUnit == null || hasLayoutSizeChanged)) {
       layoutResult.lithoLayoutOutput._borderRenderUnit =
           LithoNodeUtils.createBorderRenderUnit(
@@ -798,6 +797,15 @@ internal object LithoYogaLayoutFunction {
                     _measureHadExceptions = false))
     copiedResult.delegate = layoutResult.delegate
     return copiedResult
+  }
+
+  private fun shouldDrawBorders(lithoLayoutResult: LithoLayoutResult): Boolean {
+    val yogaNode = lithoLayoutResult.lithoLayoutOutput.yogaNode
+    return lithoLayoutResult.node.hasBorderColor() &&
+        (yogaNode.getLayoutBorder(YogaEdge.LEFT) != 0f ||
+            yogaNode.getLayoutBorder(YogaEdge.TOP) != 0f ||
+            yogaNode.getLayoutBorder(YogaEdge.RIGHT) != 0f ||
+            yogaNode.getLayoutBorder(YogaEdge.BOTTOM) != 0f)
   }
 }
 
