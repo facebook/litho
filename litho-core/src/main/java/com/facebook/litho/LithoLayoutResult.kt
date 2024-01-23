@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import android.util.Pair
-import android.view.View
 import androidx.annotation.Px
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.FastMath
@@ -153,13 +152,7 @@ open class LithoLayoutResult(
     }
 
   val layoutDirection: Int
-    get() {
-      return when (lithoLayoutOutput.yogaNode.layoutDirection) {
-        YogaDirection.LTR -> View.LAYOUT_DIRECTION_LTR
-        YogaDirection.RTL -> View.LAYOUT_DIRECTION_RTL
-        else -> View.LAYOUT_DIRECTION_INHERIT
-      }
-    }
+    get() = lithoLayoutOutput.layoutDirection
 
   var contentRenderUnit: LithoRenderUnit? = null
     internal set
@@ -176,25 +169,17 @@ open class LithoLayoutResult(
   var borderRenderUnit: LithoRenderUnit? = null
     internal set
 
-  @Px override fun getWidth(): Int = lithoLayoutOutput.yogaNode.layoutWidth.toInt()
+  @Px override fun getWidth(): Int = lithoLayoutOutput.width
 
-  @Px override fun getHeight(): Int = lithoLayoutOutput.yogaNode.layoutHeight.toInt()
+  @Px override fun getHeight(): Int = lithoLayoutOutput.height
 
-  @Px
-  override fun getPaddingTop(): Int =
-      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.TOP))
+  @Px override fun getPaddingTop(): Int = lithoLayoutOutput.paddingTop
 
-  @Px
-  override fun getPaddingRight(): Int =
-      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.RIGHT))
+  @Px override fun getPaddingRight(): Int = lithoLayoutOutput.paddingRight
 
-  @Px
-  override fun getPaddingBottom(): Int =
-      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+  @Px override fun getPaddingBottom(): Int = lithoLayoutOutput.paddingBottom
 
-  @Px
-  override fun getPaddingLeft(): Int =
-      FastMath.round(lithoLayoutOutput.yogaNode.getLayoutPadding(YogaEdge.LEFT))
+  @Px override fun getPaddingLeft(): Int = lithoLayoutOutput.paddingLeft
 
   override fun getRenderUnit(): LithoRenderUnit? = null // Unimplemented.
 
@@ -202,11 +187,9 @@ open class LithoLayoutResult(
 
   override fun getChildAt(i: Int): LithoLayoutResult = children[i]
 
-  override fun getXForChildAtIndex(index: Int): Int =
-      children[index].lithoLayoutOutput.yogaNode.layoutX.toInt()
+  override fun getXForChildAtIndex(index: Int): Int = children[index].lithoLayoutOutput.x
 
-  override fun getYForChildAtIndex(index: Int): Int =
-      children[index].lithoLayoutOutput.yogaNode.layoutY.toInt()
+  override fun getYForChildAtIndex(index: Int): Int = children[index].lithoLayoutOutput.y
 
   override fun getLayoutData(): Any? = layoutData
 
