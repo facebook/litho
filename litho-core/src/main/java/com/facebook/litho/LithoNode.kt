@@ -387,19 +387,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     isPaddingSet = writer.isPaddingSet
   }
 
-  open fun createLayoutResult(
-      node: YogaNode,
-      widthFromStyle: Float,
-      heightFromStyle: Float,
-  ): LithoLayoutResult =
+  open fun createLayoutResult(lithoLayoutOutput: YogaLithoLayoutOutput): LithoLayoutResult =
       LithoLayoutResult(
-          context = tailComponentContext,
-          node = this,
-          lithoLayoutOutput =
-              YogaLithoLayoutOutput(
-                  yogaNode = node,
-                  widthFromStyle = widthFromStyle,
-                  heightFromStyle = heightFromStyle))
+          context = tailComponentContext, node = this, lithoLayoutOutput = lithoLayoutOutput)
 
   open fun border(widths: IntArray, colors: IntArray, radii: FloatArray, effect: PathEffect?) {
     privateFlags = privateFlags or PFLAG_BORDER_IS_SET

@@ -233,9 +233,11 @@ internal object LithoYogaLayoutFunction {
       yogaNode = writer.node
       layoutResult =
           currentNode.createLayoutResult(
-              node = yogaNode,
-              widthFromStyle = writer.widthFromStyle,
-              heightFromStyle = writer.heightFromStyle)
+              lithoLayoutOutput =
+                  YogaLithoLayoutOutput(
+                      yogaNode = yogaNode,
+                      widthFromStyle = writer.widthFromStyle,
+                      heightFromStyle = writer.heightFromStyle))
 
       if (isTracing) {
         ComponentsSystrace.endSection()
@@ -352,7 +354,7 @@ internal object LithoYogaLayoutFunction {
 
     if (isPrimitiveBehaviorEquivalent) {
       result.layoutData = diff.layoutData
-      result.cachedMeasuresValid = true
+      result.lithoLayoutOutput._cachedMeasuresValid = true
     } else if (!Layout.shouldComponentUpdate(currentNode, diff)) {
       val scopedComponentInfo = currentNode.tailScopedComponentInfo
       val diffNodeScopedComponentInfo = checkNotNull(diff.scopedComponentInfo)
@@ -364,7 +366,7 @@ internal object LithoYogaLayoutFunction {
             scopedComponentInfo.prepareInterStagePropsContainer,
             diffNodeScopedComponentInfo.prepareInterStagePropsContainer)
       }
-      result.cachedMeasuresValid = true
+      result.lithoLayoutOutput._cachedMeasuresValid = true
     }
 
     if (isTracing) {

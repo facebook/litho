@@ -23,7 +23,6 @@ import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
 import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaJustify
-import com.facebook.yoga.YogaNode
 import com.facebook.yoga.YogaPositionType
 import com.facebook.yoga.YogaWrap
 
@@ -37,19 +36,9 @@ class NullNode : LithoNode() {
     return NullWriter().apply { node.display = YogaDisplay.NONE }
   }
 
-  override fun createLayoutResult(
-      node: YogaNode,
-      widthFromStyle: Float,
-      heightFromStyle: Float,
-  ): LithoLayoutResult {
+  override fun createLayoutResult(lithoLayoutOutput: YogaLithoLayoutOutput): LithoLayoutResult {
     return NullLithoLayoutResult(
-        c = tailComponentContext,
-        node = this,
-        lithoLayoutOutput =
-            YogaLithoLayoutOutput(
-                yogaNode = node,
-                widthFromStyle = widthFromStyle,
-                heightFromStyle = heightFromStyle))
+        c = tailComponentContext, node = this, lithoLayoutOutput = lithoLayoutOutput)
   }
 }
 

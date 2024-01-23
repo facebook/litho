@@ -68,7 +68,6 @@ open class LithoLayoutResult(
    */
   internal val adjustedBounds: Rect = Rect()
   private var layoutData: Any? = _layoutData
-  internal var isCachedLayout: Boolean = false
   internal var lastMeasuredSize: Long = Long.MIN_VALUE
 
   var widthSpec: Int = DiffNode.UNSPECIFIED
@@ -88,9 +87,6 @@ open class LithoLayoutResult(
 
   var diffNode: DiffNode? = null
 
-  var cachedMeasuresValid: Boolean = false
-    @JvmName("areCachedMeasuresValid") get
-
   var measureHadExceptions: Boolean = false
     @JvmName("measureHadExceptions") get
 
@@ -103,6 +99,12 @@ open class LithoLayoutResult(
 
   val contentHeight: Int
     get() = YogaMeasureOutput.getHeight(lastMeasuredSize).toInt()
+
+  val isCachedLayout: Boolean
+    get() = lithoLayoutOutput.isCachedLayout
+
+  val cachedMeasuresValid: Boolean
+    get() = lithoLayoutOutput.cachedMeasuresValid
 
   val childCount: Int
     get() = children.size
@@ -223,9 +225,10 @@ open class LithoLayoutResult(
   }
 
   fun copyLayoutResult(node: LithoNode, yogaNode: YogaNode): LithoLayoutResult {
-    val copiedResult = node.createLayoutResult(yogaNode, widthFromStyle, heightFromStyle)
-    copiedResult.isCachedLayout = true
-    copiedResult.cachedMeasuresValid = true
+    val copiedResult =
+        node.createLayoutResult(
+            lithoLayoutOutput.copy(
+                yogaNode = yogaNode, _isCachedLayout = true, _cachedMeasuresValid = true))
     copiedResult.widthSpec = widthSpec
     copiedResult.heightSpec = heightSpec
     copiedResult.lastMeasuredSize = lastMeasuredSize

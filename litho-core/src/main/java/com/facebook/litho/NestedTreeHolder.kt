@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.graphics.PathEffect
-import com.facebook.yoga.YogaNode
 import kotlin.jvm.JvmField
 
 /**
@@ -66,15 +65,10 @@ constructor(
   }
 
   override fun createLayoutResult(
-      node: YogaNode,
-      widthFromStyle: Float,
-      heightFromStyle: Float
+      lithoLayoutOutput: YogaLithoLayoutOutput
   ): NestedTreeHolderResult =
       NestedTreeHolderResult(
-          tailComponentContext,
-          this,
-          YogaLithoLayoutOutput(
-              yogaNode = node, widthFromStyle = widthFromStyle, heightFromStyle = heightFromStyle))
+          c = tailComponentContext, internalNode = this, lithoLayoutOutput = lithoLayoutOutput)
 
   fun copyInto(target: LithoNode) {
     // Defer copying, and set this NestedTreeHolder on the target. The props will be
