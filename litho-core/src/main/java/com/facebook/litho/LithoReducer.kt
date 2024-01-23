@@ -21,9 +21,11 @@ import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension
@@ -37,10 +39,41 @@ object LithoReducer {
 
   // region public methods
   @JvmStatic
-  fun setSizeAfterMeasureAndCollectResults(
+  fun reduce(
+      lsc: LithoLayoutContext,
+      c: ComponentContext,
+      resolveResult: ResolveResult,
+      sizeConstraints: SizeConstraints,
+      treeId: Int,
+      currentLayoutState: LayoutState?,
+      layoutCache: LayoutCache,
+      root: LithoLayoutResult?,
+      reductionState: ReductionState,
+  ): LayoutState {
+    val layoutState =
+        LayoutState(
+                resolveResult,
+                sizeConstraints,
+                lsc.rootOffset.x,
+                lsc.rootOffset.y,
+                treeId,
+                lsc.isAccessibilityEnabled,
+                currentLayoutState,
+                layoutCache.writeCacheData,
+                reductionState)
+            .apply { mLayoutResult = root }
+
+    setSizeAfterMeasureAndCollectResults(c, lsc, layoutState)
+
+    layoutState.setCreatedEventHandlers(mergeLists(resolveResult.eventHandlers, lsc.eventHandlers))
+
+    return layoutState
+  }
+
+  private fun setSizeAfterMeasureAndCollectResults(
       c: ComponentContext,
       lithoLayoutContext: LithoLayoutContext,
-      layoutState: LayoutState
+      layoutState: LayoutState,
   ) {
     if (lithoLayoutContext.isFutureReleased) {
       return

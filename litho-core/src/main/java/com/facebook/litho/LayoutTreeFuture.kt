@@ -23,7 +23,6 @@ import com.facebook.litho.ComponentsSystrace.beginSectionWithArgs
 import com.facebook.litho.ComponentsSystrace.endSection
 import com.facebook.litho.Layout.measurePendingSubtrees
 import com.facebook.litho.Layout.measureTree
-import com.facebook.litho.LithoReducer.setSizeAfterMeasureAndCollectResults
 import com.facebook.litho.debug.DebugOverlay
 import com.facebook.litho.debug.DebugOverlay.Companion.updateLayoutHistory
 import com.facebook.litho.debug.LithoDebugEvent
@@ -146,8 +145,6 @@ class LayoutTreeFuture(
 
         val prevContext = c.calculationStateContext
 
-        val layoutState: LayoutState
-
         try {
 
           c.setLithoLayoutContext(lsc)
@@ -169,27 +166,21 @@ class LayoutTreeFuture(
                 result = root)
           }
 
-          layoutState =
-              LayoutState(
-                      resolveResult,
-                      sizeConstraints,
-                      lsc.rootOffset.x,
-                      lsc.rootOffset.y,
-                      treeId,
-                      lsc.isAccessibilityEnabled,
-                      currentLayoutState,
-                      layoutCache.writeCacheData,
-                      reductionState)
-                  .apply { mLayoutResult = root }
-
           perfEvent?.markerPoint("start_collect_results")
-          setSizeAfterMeasureAndCollectResults(c, lsc, layoutState)
+          val layoutState =
+              LithoReducer.reduce(
+                  lsc,
+                  c,
+                  resolveResult,
+                  sizeConstraints,
+                  treeId,
+                  currentLayoutState,
+                  layoutCache,
+                  root,
+                  reductionState)
           perfEvent?.markerPoint("end_collect_results")
 
           root?.releaseLayoutPhaseData()
-
-          layoutState.setCreatedEventHandlers(
-              mergeLists(resolveResult.eventHandlers, lsc.eventHandlers))
 
           return layoutState
         } finally {
