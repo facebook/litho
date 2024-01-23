@@ -49,7 +49,7 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   }
 
   @Override
-  void performLayout(boolean changed, int l, int t, int r, int b) {
+  public void performLayout(boolean changed, int l, int t, int r, int b) {
     if (mCurrentRenderTree != null) {
       RenderTree renderTree = mCurrentRenderTree;
       mMountState.mount(renderTree);
