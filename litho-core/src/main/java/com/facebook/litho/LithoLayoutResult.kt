@@ -74,13 +74,13 @@ open class LithoLayoutResult(
 
   val touchExpansionBottom: Int
     get() =
-        if (shouldApplyTouchExpansion()) {
+        if (node.shouldApplyTouchExpansion()) {
           node.touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.BOTTOM]) } ?: 0
         } else 0
 
   val touchExpansionLeft: Int
     get() =
-        if (shouldApplyTouchExpansion()) {
+        if (node.shouldApplyTouchExpansion()) {
           node.touchExpansion?.let { edges ->
             FastMath.round(resolveHorizontalEdges(edges, YogaEdge.LEFT))
           } ?: 0
@@ -88,7 +88,7 @@ open class LithoLayoutResult(
 
   val touchExpansionRight: Int
     get() =
-        if (shouldApplyTouchExpansion()) {
+        if (node.shouldApplyTouchExpansion()) {
           node.touchExpansion?.let { edges ->
             FastMath.round(resolveHorizontalEdges(edges, YogaEdge.RIGHT))
           } ?: 0
@@ -96,7 +96,7 @@ open class LithoLayoutResult(
 
   val touchExpansionTop: Int
     get() =
-        if (shouldApplyTouchExpansion()) {
+        if (node.shouldApplyTouchExpansion()) {
           node.touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.TOP]) } ?: 0
         } else 0
 
@@ -180,11 +180,5 @@ open class LithoLayoutResult(
 
   fun addChild(child: LithoLayoutResult) {
     children.add(child)
-  }
-
-  companion object {
-
-    private fun LithoLayoutResult.shouldApplyTouchExpansion(): Boolean =
-        node.touchExpansion != null && (node.nodeInfo?.hasTouchEventHandlers() == true)
   }
 }

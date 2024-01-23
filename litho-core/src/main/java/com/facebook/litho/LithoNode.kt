@@ -871,6 +871,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     debugComponents = null
   }
 
+  fun shouldApplyTouchExpansion(): Boolean =
+      touchExpansion != null && (nodeInfo?.hasTouchEventHandlers() == true)
+
   private fun hasCustomBindersForMountSpec(): Boolean =
       (customBindersForMountSpec?.isNotEmpty() == true) ||
           (customDelegateBindersForMountSpec?.isNotEmpty() == true)
