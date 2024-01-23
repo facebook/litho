@@ -22,8 +22,8 @@ import android.util.Pair
 import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
-import com.facebook.litho.LithoLayoutResult.Companion.getLayoutBorder
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
@@ -319,9 +319,8 @@ internal object LithoYogaLayoutFunction {
       return // Cannot apply diff nodes with a released LayoutStateContext
     }
 
-    val parent: LithoLayoutResult? =
-        parentYogaNode?.let { LithoLayoutResult.getLayoutResultFromYogaNode(it) }
-    val result: LithoLayoutResult = LithoLayoutResult.getLayoutResultFromYogaNode(currentYogaNode)
+    val parent: LithoLayoutResult? = parentYogaNode?.let { getLayoutResultFromYogaNode(it) }
+    val result: LithoLayoutResult = getLayoutResultFromYogaNode(currentYogaNode)
 
     val diff: DiffNode =
         when {
@@ -472,14 +471,14 @@ internal object LithoYogaLayoutFunction {
         (layoutResult.width -
             layoutResult.paddingRight -
             layoutResult.paddingLeft -
-            layoutResult.getLayoutBorder(YogaEdge.RIGHT) -
-            layoutResult.getLayoutBorder(YogaEdge.LEFT))
+            getLayoutBorder(layoutResult, YogaEdge.RIGHT) -
+            getLayoutBorder(layoutResult, YogaEdge.LEFT))
     val newContentHeight =
         (layoutResult.height -
             layoutResult.paddingTop -
             layoutResult.paddingBottom -
-            layoutResult.getLayoutBorder(YogaEdge.TOP) -
-            layoutResult.getLayoutBorder(YogaEdge.BOTTOM))
+            getLayoutBorder(layoutResult, YogaEdge.TOP) -
+            getLayoutBorder(layoutResult, YogaEdge.BOTTOM))
     if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
 
       hasLayoutSizeChanged =
@@ -557,8 +556,7 @@ internal object LithoYogaLayoutFunction {
       if (layoutResult.delegate == null || hasLayoutSizeChanged) {
 
         // Check if we need to run measure for Primitive that was skipped due to with fixed size
-        val layoutContext =
-            LithoLayoutResult.getLayoutContextFromYogaNode(layoutResult.lithoLayoutOutput.yogaNode)
+        val layoutContext = getLayoutContextFromYogaNode(layoutResult.lithoLayoutOutput.yogaNode)
         measure(
             layoutContext,
             layoutResult,
@@ -603,7 +601,7 @@ internal object LithoYogaLayoutFunction {
       layoutResult.lithoLayoutOutput._borderRenderUnit =
           LithoNodeUtils.createBorderRenderUnit(
               layoutResult.node,
-              LithoLayoutResult.createBorderColorDrawable(layoutResult),
+              createBorderColorDrawable(layoutResult),
               layoutResult.width,
               layoutResult.height,
               layoutResult.diffNode)
@@ -630,7 +628,7 @@ internal object LithoYogaLayoutFunction {
     // If diff node is set check if measurements from the previous pass can be reused
     if (diffNode?.lastWidthSpec == widthSpec &&
         diffNode.lastHeightSpec == heightSpec &&
-        !LithoLayoutResult.shouldAlwaysRemeasure(component)) {
+        !shouldAlwaysRemeasure(component)) {
       width = diffNode.lastMeasuredWidth
       height = diffNode.lastMeasuredHeight
       layoutData = diffNode.layoutData
@@ -755,13 +753,14 @@ internal object LithoYogaLayoutFunction {
       if (!LithoRenderUnit.isMountableView(renderUnit)) {
         if (lithoLayoutResult.wasMeasured) {
           bounds.left +=
-              (lithoLayoutResult.paddingLeft + lithoLayoutResult.getLayoutBorder(YogaEdge.LEFT))
+              (lithoLayoutResult.paddingLeft + getLayoutBorder(lithoLayoutResult, YogaEdge.LEFT))
           bounds.top +=
-              (lithoLayoutResult.paddingTop + lithoLayoutResult.getLayoutBorder(YogaEdge.TOP))
+              (lithoLayoutResult.paddingTop + getLayoutBorder(lithoLayoutResult, YogaEdge.TOP))
           bounds.right -=
-              (lithoLayoutResult.paddingRight + lithoLayoutResult.getLayoutBorder(YogaEdge.RIGHT))
+              (lithoLayoutResult.paddingRight + getLayoutBorder(lithoLayoutResult, YogaEdge.RIGHT))
           bounds.bottom -=
-              (lithoLayoutResult.paddingBottom + lithoLayoutResult.getLayoutBorder(YogaEdge.BOTTOM))
+              (lithoLayoutResult.paddingBottom +
+                  getLayoutBorder(lithoLayoutResult, YogaEdge.BOTTOM))
         } else {
           // for exact size the border doesn't need to be adjusted since it's inside the bounds of
           // the content
@@ -807,6 +806,67 @@ internal object LithoYogaLayoutFunction {
             yogaNode.getLayoutBorder(YogaEdge.RIGHT) != 0f ||
             yogaNode.getLayoutBorder(YogaEdge.BOTTOM) != 0f)
   }
+
+  private fun createBorderColorDrawable(result: LithoLayoutResult): BorderColorDrawable {
+    val node = result.node
+    val isRtl = recursivelyResolveLayoutDirection(result) == YogaDirection.RTL
+    val borderRadius = node.borderRadius
+    val borderColors = node.borderColors
+    val leftEdge = if (isRtl) YogaEdge.RIGHT else YogaEdge.LEFT
+    val rightEdge = if (isRtl) YogaEdge.LEFT else YogaEdge.RIGHT
+    return BorderColorDrawable.Builder()
+        .pathEffect(node.borderPathEffect)
+        .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
+        .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
+        .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
+        .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
+        .borderLeftWidth(getLayoutBorder(result, leftEdge))
+        .borderTopWidth(getLayoutBorder(result, YogaEdge.TOP))
+        .borderRightWidth(getLayoutBorder(result, rightEdge))
+        .borderBottomWidth(getLayoutBorder(result, YogaEdge.BOTTOM))
+        .borderRadius(borderRadius)
+        .build()
+  }
+
+  private fun recursivelyResolveLayoutDirection(result: LithoLayoutResult): YogaDirection {
+    val direction = result.lithoLayoutOutput.yogaNode.layoutDirection
+    check(direction != YogaDirection.INHERIT) {
+      "Direction cannot be resolved before layout calculation"
+    }
+    return direction
+  }
+
+  private fun getLayoutBorder(result: LithoLayoutResult, edge: YogaEdge?): Int =
+      FastMath.round(result.lithoLayoutOutput.yogaNode.getLayoutBorder(edge))
+
+  internal fun LithoLayoutResult.resolveHorizontalEdges(spacing: Edges, edge: YogaEdge): Float {
+    val isRtl = lithoLayoutOutput.yogaNode.layoutDirection == YogaDirection.RTL
+    val resolvedEdge =
+        when (edge) {
+          YogaEdge.LEFT -> (if (isRtl) YogaEdge.END else YogaEdge.START)
+          YogaEdge.RIGHT -> (if (isRtl) YogaEdge.START else YogaEdge.END)
+          else -> throw IllegalArgumentException("Not an horizontal padding edge: $edge")
+        }
+    var result = spacing.getRaw(resolvedEdge)
+    if (YogaConstants.isUndefined(result)) {
+      result = spacing[edge]
+    }
+    return result
+  }
+
+  private fun shouldAlwaysRemeasure(component: Component): Boolean =
+      if (component is SpecGeneratedComponent) {
+        component.shouldAlwaysRemeasure()
+      } else {
+        false
+      }
+
+  @Suppress("UNCHECKED_CAST")
+  internal fun getLayoutContextFromYogaNode(yogaNode: YogaNode): LayoutContext<LithoLayoutContext> =
+      (yogaNode.data as Pair<*, *>).first as LayoutContext<LithoLayoutContext>
+
+  internal fun getLayoutResultFromYogaNode(yogaNode: YogaNode): LithoLayoutResult =
+      (yogaNode.data as Pair<*, *>).second as LithoLayoutResult
 }
 
 /**

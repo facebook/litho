@@ -33,8 +33,8 @@ class LithoYogaMeasureFunction : YogaMeasureFunction {
       heightMode: YogaMeasureMode
   ): Long {
     val context: LayoutContext<LithoLayoutContext> =
-        LithoLayoutResult.getLayoutContextFromYogaNode(cssNode)
-    val result: LithoLayoutResult = LithoLayoutResult.getLayoutResultFromYogaNode(cssNode)
+        LithoYogaLayoutFunction.getLayoutContextFromYogaNode(cssNode)
+    val result: LithoLayoutResult = LithoYogaLayoutFunction.getLayoutResultFromYogaNode(cssNode)
     val widthSpec: Int = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode)
     val heightSpec: Int = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode)
     val size: MeasureResult =

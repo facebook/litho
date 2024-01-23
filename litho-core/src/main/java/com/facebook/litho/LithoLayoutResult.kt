@@ -17,14 +17,10 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import android.util.Pair
 import androidx.annotation.Px
-import com.facebook.litho.drawable.BorderColorDrawable
+import com.facebook.litho.LithoYogaLayoutFunction.resolveHorizontalEdges
 import com.facebook.rendercore.FastMath
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
-import com.facebook.yoga.YogaConstants
-import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaNode
 
@@ -188,70 +184,7 @@ open class LithoLayoutResult(
 
   companion object {
 
-    @Suppress("UNCHECKED_CAST")
-    @JvmStatic
-    fun getLayoutContextFromYogaNode(yogaNode: YogaNode): LayoutContext<LithoLayoutContext> =
-        (yogaNode.data as Pair<*, *>).first as LayoutContext<LithoLayoutContext>
-
-    @JvmStatic
-    fun getLayoutResultFromYogaNode(yogaNode: YogaNode): LithoLayoutResult =
-        (yogaNode.data as Pair<*, *>).second as LithoLayoutResult
-
-    internal fun createBorderColorDrawable(result: LithoLayoutResult): BorderColorDrawable {
-      val node = result.node
-      val isRtl = result.recursivelyResolveLayoutDirection() == YogaDirection.RTL
-      val borderRadius = node.borderRadius
-      val borderColors = node.borderColors
-      val leftEdge = if (isRtl) YogaEdge.RIGHT else YogaEdge.LEFT
-      val rightEdge = if (isRtl) YogaEdge.LEFT else YogaEdge.RIGHT
-      return BorderColorDrawable.Builder()
-          .pathEffect(node.borderPathEffect)
-          .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
-          .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
-          .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
-          .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
-          .borderLeftWidth(result.getLayoutBorder(leftEdge))
-          .borderTopWidth(result.getLayoutBorder(YogaEdge.TOP))
-          .borderRightWidth(result.getLayoutBorder(rightEdge))
-          .borderBottomWidth(result.getLayoutBorder(YogaEdge.BOTTOM))
-          .borderRadius(borderRadius)
-          .build()
-    }
-
     private fun LithoLayoutResult.shouldApplyTouchExpansion(): Boolean =
         node.touchExpansion != null && (node.nodeInfo?.hasTouchEventHandlers() == true)
-
-    private fun LithoLayoutResult.resolveHorizontalEdges(spacing: Edges, edge: YogaEdge): Float {
-      val isRtl = lithoLayoutOutput.yogaNode.layoutDirection == YogaDirection.RTL
-      val resolvedEdge =
-          when (edge) {
-            YogaEdge.LEFT -> (if (isRtl) YogaEdge.END else YogaEdge.START)
-            YogaEdge.RIGHT -> (if (isRtl) YogaEdge.START else YogaEdge.END)
-            else -> throw IllegalArgumentException("Not an horizontal padding edge: $edge")
-          }
-      var result = spacing.getRaw(resolvedEdge)
-      if (YogaConstants.isUndefined(result)) {
-        result = spacing[edge]
-      }
-      return result
-    }
-
-    private fun LithoLayoutResult.recursivelyResolveLayoutDirection(): YogaDirection {
-      val direction = lithoLayoutOutput.yogaNode.layoutDirection
-      check(direction != YogaDirection.INHERIT) {
-        "Direction cannot be resolved before layout calculation"
-      }
-      return direction
-    }
-
-    fun LithoLayoutResult.getLayoutBorder(edge: YogaEdge?): Int =
-        FastMath.round(lithoLayoutOutput.yogaNode.getLayoutBorder(edge))
-
-    internal fun shouldAlwaysRemeasure(component: Component): Boolean =
-        if (component is SpecGeneratedComponent) {
-          component.shouldAlwaysRemeasure()
-        } else {
-          false
-        }
   }
 }
