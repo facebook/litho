@@ -40,11 +40,11 @@ open class LithoLayoutResult(
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
 
-  var widthSpec: Int = DiffNode.UNSPECIFIED
-    internal set
+  val widthSpec: Int
+    get() = lithoLayoutOutput.widthSpec
 
-  var heightSpec: Int = DiffNode.UNSPECIFIED
-    internal set
+  val heightSpec: Int
+    get() = lithoLayoutOutput.heightSpec
 
   var delegate: LayoutResult? = null
     internal set
@@ -180,11 +180,6 @@ open class LithoLayoutResult(
     for (i in 0 until childCount) {
       getChildAt(i).releaseLayoutPhaseData()
     }
-  }
-
-  fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
-    this.widthSpec = widthSpec
-    this.heightSpec = heightSpec
   }
 
   fun addChild(child: LithoLayoutResult) {

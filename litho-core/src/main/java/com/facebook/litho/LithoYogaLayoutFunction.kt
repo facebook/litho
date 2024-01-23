@@ -98,7 +98,7 @@ internal object LithoYogaLayoutFunction {
 
     yogaRoot.calculateLayout(width, height)
 
-    layoutResult.setSizeSpec(widthSpec, heightSpec)
+    layoutResult.lithoLayoutOutput.setSizeSpec(widthSpec, heightSpec)
 
     context.renderContext?.rootOffset =
         Point(
@@ -442,8 +442,7 @@ internal object LithoYogaLayoutFunction {
     }
 
     // Record the last measured width, and height spec
-    layoutResult.widthSpec = widthSpec
-    layoutResult.heightSpec = heightSpec
+    layoutResult.lithoLayoutOutput.setSizeSpec(widthSpec, heightSpec)
 
     // If the size of a cached layout has changed then clear size dependant render units
     if (layoutResult.isCachedLayout &&
@@ -544,8 +543,8 @@ internal object LithoYogaLayoutFunction {
         }
       }
       if (!layoutResult.wasMeasured) {
-        layoutResult.widthSpec = MeasureSpecUtils.exactly(newContentWidth)
-        layoutResult.heightSpec = MeasureSpecUtils.exactly(newContentHeight)
+        layoutResult.lithoLayoutOutput.setSizeSpec(
+            MeasureSpecUtils.exactly(newContentWidth), MeasureSpecUtils.exactly(newContentHeight))
         layoutResult.lithoLayoutOutput._lastMeasuredSize =
             YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
@@ -797,8 +796,6 @@ internal object LithoYogaLayoutFunction {
                     _cachedMeasuresValid = true,
                     _wasMeasured = false,
                     _measureHadExceptions = false))
-    copiedResult.widthSpec = layoutResult.widthSpec
-    copiedResult.heightSpec = layoutResult.heightSpec
     copiedResult.delegate = layoutResult.delegate
     return copiedResult
   }
@@ -813,8 +810,8 @@ data class YogaLithoLayoutOutput(
     val yogaNode: YogaNode,
     val widthFromStyle: Float = YogaConstants.UNDEFINED,
     val heightFromStyle: Float = YogaConstants.UNDEFINED,
-    var _widthSpec: Int = UNSPECIFIED,
-    var _heightSpec: Int = UNSPECIFIED,
+    internal var _widthSpec: Int = UNSPECIFIED,
+    internal var _heightSpec: Int = UNSPECIFIED,
     internal var _lastMeasuredSize: Long = Long.MIN_VALUE,
     internal var _isCachedLayout: Boolean = false,
     internal var _layoutData: Any? = null,
@@ -922,6 +919,11 @@ data class YogaLithoLayoutOutput(
    */
   override val adjustedBounds: Rect
     get() = _adjustedBounds
+
+  fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
+    _widthSpec = widthSpec
+    _heightSpec = heightSpec
+  }
 
   companion object {
     private const val UNSPECIFIED: Int = -1
