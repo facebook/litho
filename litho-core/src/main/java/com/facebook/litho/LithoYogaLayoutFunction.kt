@@ -435,7 +435,8 @@ internal object LithoYogaLayoutFunction {
       layoutResult.foregroundRenderUnit = null
       layoutResult.borderRenderUnit = null
     }
-    layoutResult.lastMeasuredSize = YogaMeasureOutput.make(size.width, size.height)
+    layoutResult.lithoLayoutOutput._lastMeasuredSize =
+        YogaMeasureOutput.make(size.width, size.height)
 
     if (isTracing) {
       ComponentsSystrace.endSection()
@@ -528,7 +529,8 @@ internal object LithoYogaLayoutFunction {
       if (!layoutResult.wasMeasured) {
         layoutResult.widthSpec = MeasureSpecUtils.exactly(newContentWidth)
         layoutResult.heightSpec = MeasureSpecUtils.exactly(newContentHeight)
-        layoutResult.lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
+        layoutResult.lithoLayoutOutput._lastMeasuredSize =
+            YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
     } else if (Component.isPrimitive(component)) {
 
@@ -555,7 +557,8 @@ internal object LithoYogaLayoutFunction {
                   (layoutResult.contentWidth != newContentWidth ||
                       layoutResult.contentHeight != newContentHeight))
       if (hasLayoutSizeChanged) {
-        layoutResult.lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
+        layoutResult.lithoLayoutOutput._lastMeasuredSize =
+            YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
     }
 
@@ -773,7 +776,7 @@ data class YogaLithoLayoutOutput(
     val heightFromStyle: Float = YogaConstants.UNDEFINED,
     var _widthSpec: Int = UNSPECIFIED,
     var _heightSpec: Int = UNSPECIFIED,
-    var _lastMeasuredSize: Long = Long.MIN_VALUE,
+    internal var _lastMeasuredSize: Long = Long.MIN_VALUE,
     var _isCachedLayout: Boolean = false,
     var _layoutData: Any? = null,
     var _wasMeasured: Boolean = false,
@@ -802,10 +805,10 @@ data class YogaLithoLayoutOutput(
     get() = yogaNode.layoutHeight.toInt()
 
   override val contentWidth: Int
-    get() = YogaMeasureOutput.getWidth(lastMeasuredSize).toInt()
+    get() = YogaMeasureOutput.getWidth(_lastMeasuredSize).toInt()
 
   override val contentHeight: Int
-    get() = YogaMeasureOutput.getHeight(lastMeasuredSize).toInt()
+    get() = YogaMeasureOutput.getHeight(_lastMeasuredSize).toInt()
 
   override val paddingLeft: Int
     get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))

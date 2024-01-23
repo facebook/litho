@@ -26,7 +26,6 @@ import com.facebook.rendercore.LayoutResult
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
-import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
 
 /**
@@ -68,7 +67,6 @@ open class LithoLayoutResult(
    */
   internal val adjustedBounds: Rect = Rect()
   private var layoutData: Any? = _layoutData
-  internal var lastMeasuredSize: Long = Long.MIN_VALUE
 
   var widthSpec: Int = DiffNode.UNSPECIFIED
     internal set
@@ -95,10 +93,13 @@ open class LithoLayoutResult(
     internal set
 
   val contentWidth: Int
-    get() = YogaMeasureOutput.getWidth(lastMeasuredSize).toInt()
+    get() = lithoLayoutOutput.contentWidth
 
   val contentHeight: Int
-    get() = YogaMeasureOutput.getHeight(lastMeasuredSize).toInt()
+    get() = lithoLayoutOutput.contentHeight
+
+  val lastMeasuredSize: Long
+    get() = lithoLayoutOutput.lastMeasuredSize
 
   val isCachedLayout: Boolean
     get() = lithoLayoutOutput.isCachedLayout
@@ -231,7 +232,6 @@ open class LithoLayoutResult(
                 yogaNode = yogaNode, _isCachedLayout = true, _cachedMeasuresValid = true))
     copiedResult.widthSpec = widthSpec
     copiedResult.heightSpec = heightSpec
-    copiedResult.lastMeasuredSize = lastMeasuredSize
     copiedResult.delegate = delegate
     copiedResult.layoutData = layoutData
     copiedResult.contentRenderUnit = contentRenderUnit
