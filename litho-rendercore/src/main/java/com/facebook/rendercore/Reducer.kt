@@ -182,7 +182,7 @@ object Reducer {
     if (extensions != null) {
       for (entry in extensions) {
         val e = entry.first
-        val visitor = e.layoutVisitor as LayoutResultVisitor<Any?>?
+        val visitor = e.getLayoutVisitor() as LayoutResultVisitor<Any?>?
         if (visitor != null) {
           val input = entry.second
           visitor.visit(parent, result, bounds, absoluteX, absoluteY, size, input)
