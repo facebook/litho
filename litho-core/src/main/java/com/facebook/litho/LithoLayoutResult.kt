@@ -17,11 +17,9 @@
 package com.facebook.litho
 
 import android.graphics.Rect
+import android.view.View
 import androidx.annotation.Px
-import com.facebook.litho.LithoYogaLayoutFunction.resolveHorizontalEdges
-import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutResult
-import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaNode
 
 /**
@@ -72,33 +70,17 @@ open class LithoLayoutResult(
   val childCount: Int
     get() = children.size
 
+  val touchExpansionTop: Int
+    get() = node.touchExpansionTop()
+
   val touchExpansionBottom: Int
-    get() =
-        if (node.shouldApplyTouchExpansion()) {
-          node.touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.BOTTOM]) } ?: 0
-        } else 0
+    get() = node.touchExpansionBottom()
 
   val touchExpansionLeft: Int
-    get() =
-        if (node.shouldApplyTouchExpansion()) {
-          node.touchExpansion?.let { edges ->
-            FastMath.round(resolveHorizontalEdges(edges, YogaEdge.LEFT))
-          } ?: 0
-        } else 0
+    get() = node.touchExpansionLeft(isDirectionRtl())
 
   val touchExpansionRight: Int
-    get() =
-        if (node.shouldApplyTouchExpansion()) {
-          node.touchExpansion?.let { edges ->
-            FastMath.round(resolveHorizontalEdges(edges, YogaEdge.RIGHT))
-          } ?: 0
-        } else 0
-
-  val touchExpansionTop: Int
-    get() =
-        if (node.shouldApplyTouchExpansion()) {
-          node.touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.TOP]) } ?: 0
-        } else 0
+    get() = node.touchExpansionRight(isDirectionRtl())
 
   val expandedTouchBounds: Rect?
     get() {
@@ -181,4 +163,7 @@ open class LithoLayoutResult(
   fun addChild(child: LithoLayoutResult) {
     children.add(child)
   }
+
+  private fun isDirectionRtl(): Boolean =
+      (lithoLayoutOutput.layoutDirection == View.LAYOUT_DIRECTION_RTL)
 }

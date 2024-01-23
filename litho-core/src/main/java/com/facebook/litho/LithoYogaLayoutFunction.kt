@@ -835,21 +835,6 @@ internal object LithoYogaLayoutFunction {
   private fun getLayoutBorder(result: LithoLayoutResult, edge: YogaEdge?): Int =
       FastMath.round(result.lithoLayoutOutput.yogaNode.getLayoutBorder(edge))
 
-  internal fun LithoLayoutResult.resolveHorizontalEdges(spacing: Edges, edge: YogaEdge): Float {
-    val isRtl = lithoLayoutOutput.yogaNode.layoutDirection == YogaDirection.RTL
-    val resolvedEdge =
-        when (edge) {
-          YogaEdge.LEFT -> (if (isRtl) YogaEdge.END else YogaEdge.START)
-          YogaEdge.RIGHT -> (if (isRtl) YogaEdge.START else YogaEdge.END)
-          else -> throw IllegalArgumentException("Not an horizontal padding edge: $edge")
-        }
-    var result = spacing.getRaw(resolvedEdge)
-    if (YogaConstants.isUndefined(result)) {
-      result = spacing[edge]
-    }
-    return result
-  }
-
   private fun shouldAlwaysRemeasure(component: Component): Boolean =
       if (component is SpecGeneratedComponent) {
         component.shouldAlwaysRemeasure()

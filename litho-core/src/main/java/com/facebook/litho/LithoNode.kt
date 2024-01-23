@@ -37,6 +37,7 @@ import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
+import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.Node
 import com.facebook.rendercore.RenderUnit
@@ -871,8 +872,32 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     debugComponents = null
   }
 
-  fun shouldApplyTouchExpansion(): Boolean =
+  private fun shouldApplyTouchExpansion(): Boolean =
       touchExpansion != null && (nodeInfo?.hasTouchEventHandlers() == true)
+
+  internal fun touchExpansionLeft(isRtl: Boolean): Int =
+      if (shouldApplyTouchExpansion()) {
+        touchExpansion?.let { edges ->
+          FastMath.round(resolveHorizontalEdges(edges, YogaEdge.LEFT, isRtl))
+        } ?: 0
+      } else 0
+
+  internal fun touchExpansionTop(): Int =
+      if (shouldApplyTouchExpansion()) {
+        touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.TOP]) } ?: 0
+      } else 0
+
+  internal fun touchExpansionRight(isRtl: Boolean): Int =
+      if (shouldApplyTouchExpansion()) {
+        touchExpansion?.let { edges ->
+          FastMath.round(resolveHorizontalEdges(edges, YogaEdge.RIGHT, isRtl))
+        } ?: 0
+      } else 0
+
+  internal fun touchExpansionBottom(): Int =
+      if (shouldApplyTouchExpansion()) {
+        touchExpansion?.let { edges -> FastMath.round(edges[YogaEdge.BOTTOM]) } ?: 0
+      } else 0
 
   private fun hasCustomBindersForMountSpec(): Boolean =
       (customBindersForMountSpec?.isNotEmpty() == true) ||
@@ -1183,6 +1208,20 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       } else {
         DelegatingEventHandler(currentHandler, newHandler)
       }
+    }
+
+    private fun resolveHorizontalEdges(spacing: Edges, edge: YogaEdge, isRtl: Boolean): Float {
+      val resolvedEdge =
+          when (edge) {
+            YogaEdge.LEFT -> (if (isRtl) YogaEdge.END else YogaEdge.START)
+            YogaEdge.RIGHT -> (if (isRtl) YogaEdge.START else YogaEdge.END)
+            else -> throw IllegalArgumentException("Not an horizontal padding edge: $edge")
+          }
+      var result = spacing.getRaw(resolvedEdge)
+      if (YogaConstants.isUndefined(result)) {
+        result = spacing[edge]
+      }
+      return result
     }
   }
 }
