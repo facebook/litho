@@ -402,7 +402,7 @@ internal object LithoYogaLayoutFunction {
 
     val isTracing = ComponentsSystrace.isTracing
     var size: MeasureResult
-    layoutResult.wasMeasured = true
+    layoutResult.lithoLayoutOutput._wasMeasured = true
     if (renderContext.isFutureReleased) {
 
       // If layout is released then skip measurement
@@ -458,7 +458,7 @@ internal object LithoYogaLayoutFunction {
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
-    layoutResult.measureHadExceptions = size.hadExceptions
+    layoutResult.lithoLayoutOutput._measureHadExceptions = size.hadExceptions
     return size
   }
 
@@ -530,7 +530,7 @@ internal object LithoYogaLayoutFunction {
               layoutData)
         } catch (e: Exception) {
           ComponentUtils.handleWithHierarchy(context, component, e)
-          layoutResult.measureHadExceptions = true
+          layoutResult.lithoLayoutOutput._measureHadExceptions = true
         } finally {
           if (isTracing) {
             ComponentsSystrace.endSection()
@@ -791,7 +791,11 @@ internal object LithoYogaLayoutFunction {
         lithoNode.createLayoutResult(
             lithoLayoutOutput =
                 layoutResult.lithoLayoutOutput.copy(
-                    yogaNode = yogaNode, _isCachedLayout = true, _cachedMeasuresValid = true))
+                    yogaNode = yogaNode,
+                    _isCachedLayout = true,
+                    _cachedMeasuresValid = true,
+                    _wasMeasured = false,
+                    _measureHadExceptions = false))
     copiedResult.widthSpec = layoutResult.widthSpec
     copiedResult.heightSpec = layoutResult.heightSpec
     copiedResult.delegate = layoutResult.delegate
@@ -818,9 +822,9 @@ data class YogaLithoLayoutOutput(
     internal var _lastMeasuredSize: Long = Long.MIN_VALUE,
     internal var _isCachedLayout: Boolean = false,
     internal var _layoutData: Any? = null,
-    var _wasMeasured: Boolean = false,
+    internal var _wasMeasured: Boolean = false,
     internal var _cachedMeasuresValid: Boolean = false,
-    var _measureHadExceptions: Boolean = false,
+    internal var _measureHadExceptions: Boolean = false,
     var _contentRenderUnit: LithoRenderUnit? = null,
     var _hostRenderUnit: LithoRenderUnit? = null,
     var _backgroundRenderUnit: LithoRenderUnit? = null,

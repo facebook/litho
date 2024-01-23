@@ -378,7 +378,7 @@ internal object Layout {
 
       if (newNode == null) {
         // mark as error to prevent from resolving it again.
-        holderResult.measureHadExceptions = true
+        holderResult.lithoLayoutOutput._measureHadExceptions = true
         return null
       }
 

@@ -51,12 +51,11 @@ open class LithoLayoutResult(
 
   var diffNode: DiffNode? = null
 
-  var measureHadExceptions: Boolean = false
-    @JvmName("measureHadExceptions") get
+  val measureHadExceptions: Boolean
+    get() = lithoLayoutOutput.measureHadExceptions
 
-  var wasMeasured: Boolean = false
-    @JvmName("wasMeasured") get
-    internal set
+  val wasMeasured: Boolean
+    get() = lithoLayoutOutput.wasMeasured
 
   val contentWidth: Int
     get() = lithoLayoutOutput.contentWidth
