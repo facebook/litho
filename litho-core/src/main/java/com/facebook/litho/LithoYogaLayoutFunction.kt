@@ -231,13 +231,30 @@ internal object LithoYogaLayoutFunction {
       // Transfer the layout props to YogaNode
       currentNode.writeToYogaNode(writer)
       yogaNode = writer.node
+
+      // Ideally the layout data should be created when measure is called on the mount spec or
+      // primitive component, but because of the current implementation of mount specs, and the way
+      // Yoga works it a possibility that measure may not be called, and a MountSpec [may] require
+      // inter stage props, then it is necessary to have a non-null InterStagePropsContainer even if
+      // the values are uninitialised. Otherwise it will lead to NPEs.
+      //
+      // This should get cleaned up once the implementation is general enough for
+      // PrimitiveComponents.
+      val layoutData =
+          if (currentNode.tailComponent is SpecGeneratedComponent) {
+            (currentNode.tailComponent as SpecGeneratedComponent).createInterStagePropsContainer()
+          } else {
+            null
+          }
+
       layoutResult =
           currentNode.createLayoutResult(
               lithoLayoutOutput =
                   YogaLithoLayoutOutput(
                       yogaNode = yogaNode,
                       widthFromStyle = writer.widthFromStyle,
-                      heightFromStyle = writer.heightFromStyle))
+                      heightFromStyle = writer.heightFromStyle,
+                      _layoutData = layoutData))
 
       if (isTracing) {
         ComponentsSystrace.endSection()
@@ -353,7 +370,7 @@ internal object LithoYogaLayoutFunction {
         } == true
 
     if (isPrimitiveBehaviorEquivalent) {
-      result.layoutData = diff.layoutData
+      result.lithoLayoutOutput._layoutData = diff.layoutData
       result.lithoLayoutOutput._cachedMeasuresValid = true
     } else if (!Layout.shouldComponentUpdate(currentNode, diff)) {
       val scopedComponentInfo = currentNode.tailScopedComponentInfo
@@ -523,7 +540,7 @@ internal object LithoYogaLayoutFunction {
         // If layout data has changed then content render unit should be recreated
         if (!hasEquivalentFields(layoutResult.layoutData, layoutData)) {
           layoutResult.contentRenderUnit = null
-          layoutResult.layoutData = layoutData
+          layoutResult.lithoLayoutOutput._layoutData = layoutData
         }
       }
       if (!layoutResult.wasMeasured) {
@@ -675,7 +692,7 @@ internal object LithoYogaLayoutFunction {
       }
     }
     lithoLayoutResult.delegate = delegate
-    lithoLayoutResult.layoutData = layoutData
+    lithoLayoutResult.lithoLayoutOutput._layoutData = layoutData
     return MeasureResult(width, height, layoutData)
   }
 
@@ -778,7 +795,6 @@ internal object LithoYogaLayoutFunction {
     copiedResult.widthSpec = layoutResult.widthSpec
     copiedResult.heightSpec = layoutResult.heightSpec
     copiedResult.delegate = layoutResult.delegate
-    copiedResult.layoutData = layoutResult.layoutData
     copiedResult.contentRenderUnit = layoutResult.contentRenderUnit
     copiedResult.hostRenderUnit = layoutResult.hostRenderUnit
     copiedResult.backgroundRenderUnit = layoutResult.backgroundRenderUnit
@@ -802,7 +818,7 @@ data class YogaLithoLayoutOutput(
     var _heightSpec: Int = UNSPECIFIED,
     internal var _lastMeasuredSize: Long = Long.MIN_VALUE,
     internal var _isCachedLayout: Boolean = false,
-    var _layoutData: Any? = null,
+    internal var _layoutData: Any? = null,
     var _wasMeasured: Boolean = false,
     internal var _cachedMeasuresValid: Boolean = false,
     var _measureHadExceptions: Boolean = false,

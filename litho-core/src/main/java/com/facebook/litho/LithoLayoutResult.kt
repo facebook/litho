@@ -39,26 +39,6 @@ open class LithoLayoutResult(
 ) : LayoutResult {
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
-  private val _layoutData: Any? by
-      lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        /*
-
-         Ideally the layout data should be created when measure is called on the mount spec or
-         primitive component, but because of the current implementation of mount specs, and the way
-         Yoga works it a possibility that measure may not be called, and a MountSpec [may] require
-         inter stage props, then it is necessary to have a non-null InterStagePropsContainer even if
-         the values are uninitialised. Otherwise it will lead to NPEs.
-
-         This should get cleaned up once the implementation is general enough for PrimitiveComponents.
-
-        */
-        val component = node.tailComponent
-        return@lazy if (component is SpecGeneratedComponent) {
-          component.createInterStagePropsContainer()
-        } else {
-          null
-        }
-      }
 
   /**
    * In order to avoid redundant calculation that are happening in [adjustRenderUnitBounds], we save
@@ -66,7 +46,6 @@ open class LithoLayoutResult(
    * [onBoundsDefined].
    */
   internal val adjustedBounds: Rect = Rect()
-  private var layoutData: Any? = _layoutData
 
   var widthSpec: Int = DiffNode.UNSPECIFIED
     internal set
@@ -188,7 +167,7 @@ open class LithoLayoutResult(
 
   override fun getYForChildAtIndex(index: Int): Int = children[index].lithoLayoutOutput.y
 
-  override fun getLayoutData(): Any? = layoutData
+  override fun getLayoutData(): Any? = lithoLayoutOutput.layoutData
 
   fun adjustedLeft(): Int = adjustedBounds.left
 
@@ -197,10 +176,6 @@ open class LithoLayoutResult(
   fun adjustedRight(): Int = adjustedBounds.right
 
   fun adjustedBottom(): Int = adjustedBounds.bottom
-
-  fun setLayoutData(data: Any?) {
-    layoutData = data
-  }
 
   /**
    * Since layout data like the layout context and the diff node are not required after layout
