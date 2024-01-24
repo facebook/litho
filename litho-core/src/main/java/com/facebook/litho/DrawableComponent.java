@@ -109,6 +109,11 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
     return DrawableUtils.isEquivalentTo(mDrawable, drawableComponent.mDrawable);
   }
 
+  @Override
+  public boolean canPreallocate() {
+    return true;
+  }
+
   private int getDrawableWidth() {
     return mDrawableWidth;
   }
