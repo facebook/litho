@@ -94,7 +94,7 @@ internal object Layout {
     val currentLayout: LithoLayoutResult? = holder.nestedResult
     // Set new created LayoutResult for future access
     if (layout != null && layout !== currentLayout) {
-      holder.lithoLayoutOutput._nestedResult = layout
+      holder.layoutOutput._nestedResult = layout
     }
     return layout
   }
@@ -379,7 +379,7 @@ internal object Layout {
 
       if (newNode == null) {
         // mark as error to prevent from resolving it again.
-        holderResult.lithoLayoutOutput._measureHadExceptions = true
+        holderResult.layoutOutput._measureHadExceptions = true
         return null
       }
 

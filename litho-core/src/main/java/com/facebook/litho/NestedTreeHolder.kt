@@ -64,11 +64,9 @@ constructor(
     nestedIsPaddingPercentage = actual.isPaddingPercentage
   }
 
-  override fun createLayoutResult(
-      lithoLayoutOutput: YogaLithoLayoutOutput
-  ): NestedTreeHolderResult =
+  override fun createLayoutResult(layoutOutput: YogaLayoutOutput): NestedTreeHolderResult =
       NestedTreeHolderResult(
-          c = tailComponentContext, internalNode = this, lithoLayoutOutput = lithoLayoutOutput)
+          c = tailComponentContext, internalNode = this, layoutOutput = layoutOutput)
 
   fun copyInto(target: LithoNode) {
     // Defer copying, and set this NestedTreeHolder on the target. The props will be

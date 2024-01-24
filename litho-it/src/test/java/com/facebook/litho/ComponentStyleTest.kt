@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.YogaLithoLayoutOutput.Companion.getYogaNode
+import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.it.R
 import com.facebook.litho.it.R.attr.testAttrLargePadding
 import com.facebook.litho.it.R.attr.testAttrLargeText

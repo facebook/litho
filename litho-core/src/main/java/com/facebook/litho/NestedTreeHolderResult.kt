@@ -20,11 +20,11 @@ package com.facebook.litho
 class NestedTreeHolderResult(
     c: ComponentContext,
     internalNode: NestedTreeHolder,
-    lithoLayoutOutput: YogaLithoLayoutOutput,
-) : LithoLayoutResult(c, internalNode, lithoLayoutOutput) {
+    layoutOutput: YogaLayoutOutput,
+) : LithoLayoutResult(c, internalNode, layoutOutput) {
 
   val nestedResult: LithoLayoutResult?
-    get() = lithoLayoutOutput.nestedResult
+    get() = layoutOutput.nestedResult
 
   override val node: NestedTreeHolder
     get() = super.node as NestedTreeHolder
@@ -34,7 +34,7 @@ class NestedTreeHolderResult(
       throw IllegalArgumentException("NestedTreeHolder Result has only one child")
     }
 
-    return nestedResult?.lithoLayoutOutput?.x ?: 0
+    return nestedResult?.layoutOutput?.x ?: 0
   }
 
   override fun getYForChildAtIndex(index: Int): Int {
@@ -42,7 +42,7 @@ class NestedTreeHolderResult(
       throw IllegalArgumentException("NestedTreeHolder Result has only one child")
     }
 
-    return nestedResult?.lithoLayoutOutput?.y ?: 0
+    return nestedResult?.layoutOutput?.y ?: 0
   }
 
   override fun releaseLayoutPhaseData() {

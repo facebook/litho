@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.YogaLithoLayoutOutput.Companion.getYogaNode
+import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stateupdates.ComponentWithMeasureCall
 import com.facebook.litho.testing.LegacyLithoViewRule

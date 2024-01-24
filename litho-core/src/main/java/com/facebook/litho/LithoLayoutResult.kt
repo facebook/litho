@@ -25,43 +25,44 @@ import com.facebook.rendercore.LayoutResult
 open class LithoLayoutResult(
     val context: ComponentContext,
     open val node: LithoNode,
-    val lithoLayoutOutput: YogaLithoLayoutOutput
+    // Eventually, this will be replaced by LithoLayoutOutput.
+    val layoutOutput: YogaLayoutOutput
 ) : LayoutResult {
 
   private val children: MutableList<LithoLayoutResult> = ArrayList()
 
   val widthSpec: Int
-    get() = lithoLayoutOutput.widthSpec
+    get() = layoutOutput.widthSpec
 
   val heightSpec: Int
-    get() = lithoLayoutOutput.heightSpec
+    get() = layoutOutput.heightSpec
 
   val delegate: LayoutResult?
-    get() = lithoLayoutOutput.delegate
+    get() = layoutOutput.delegate
 
   val diffNode: DiffNode?
-    get() = lithoLayoutOutput.diffNode
+    get() = layoutOutput.diffNode
 
   val measureHadExceptions: Boolean
-    get() = lithoLayoutOutput.measureHadExceptions
+    get() = layoutOutput.measureHadExceptions
 
   val wasMeasured: Boolean
-    get() = lithoLayoutOutput.wasMeasured
+    get() = layoutOutput.wasMeasured
 
   val contentWidth: Int
-    get() = lithoLayoutOutput.contentWidth
+    get() = layoutOutput.contentWidth
 
   val contentHeight: Int
-    get() = lithoLayoutOutput.contentHeight
+    get() = layoutOutput.contentHeight
 
   val lastMeasuredSize: Long
-    get() = lithoLayoutOutput.lastMeasuredSize
+    get() = layoutOutput.lastMeasuredSize
 
   val isCachedLayout: Boolean
-    get() = lithoLayoutOutput.isCachedLayout
+    get() = layoutOutput.isCachedLayout
 
   val cachedMeasuresValid: Boolean
-    get() = lithoLayoutOutput.cachedMeasuresValid
+    get() = layoutOutput.cachedMeasuresValid
 
   val childCount: Int
     get() = children.size
@@ -95,34 +96,34 @@ open class LithoLayoutResult(
     }
 
   val layoutDirection: Int
-    get() = lithoLayoutOutput.layoutDirection
+    get() = layoutOutput.layoutDirection
 
   val contentRenderUnit: LithoRenderUnit?
-    get() = lithoLayoutOutput.contentRenderUnit
+    get() = layoutOutput.contentRenderUnit
 
   val hostRenderUnit: LithoRenderUnit?
-    get() = lithoLayoutOutput.hostRenderUnit
+    get() = layoutOutput.hostRenderUnit
 
   val backgroundRenderUnit: LithoRenderUnit?
-    get() = lithoLayoutOutput.backgroundRenderUnit
+    get() = layoutOutput.backgroundRenderUnit
 
   val foregroundRenderUnit: LithoRenderUnit?
-    get() = lithoLayoutOutput.foregroundRenderUnit
+    get() = layoutOutput.foregroundRenderUnit
 
   val borderRenderUnit: LithoRenderUnit?
-    get() = lithoLayoutOutput.borderRenderUnit
+    get() = layoutOutput.borderRenderUnit
 
-  @Px override fun getWidth(): Int = lithoLayoutOutput.width
+  @Px override fun getWidth(): Int = layoutOutput.width
 
-  @Px override fun getHeight(): Int = lithoLayoutOutput.height
+  @Px override fun getHeight(): Int = layoutOutput.height
 
-  @Px override fun getPaddingTop(): Int = lithoLayoutOutput.paddingTop
+  @Px override fun getPaddingTop(): Int = layoutOutput.paddingTop
 
-  @Px override fun getPaddingRight(): Int = lithoLayoutOutput.paddingRight
+  @Px override fun getPaddingRight(): Int = layoutOutput.paddingRight
 
-  @Px override fun getPaddingBottom(): Int = lithoLayoutOutput.paddingBottom
+  @Px override fun getPaddingBottom(): Int = layoutOutput.paddingBottom
 
-  @Px override fun getPaddingLeft(): Int = lithoLayoutOutput.paddingLeft
+  @Px override fun getPaddingLeft(): Int = layoutOutput.paddingLeft
 
   override fun getRenderUnit(): LithoRenderUnit? = null // Unimplemented.
 
@@ -130,26 +131,26 @@ open class LithoLayoutResult(
 
   override fun getChildAt(i: Int): LithoLayoutResult = children[i]
 
-  override fun getXForChildAtIndex(index: Int): Int = children[index].lithoLayoutOutput.x
+  override fun getXForChildAtIndex(index: Int): Int = children[index].layoutOutput.x
 
-  override fun getYForChildAtIndex(index: Int): Int = children[index].lithoLayoutOutput.y
+  override fun getYForChildAtIndex(index: Int): Int = children[index].layoutOutput.y
 
-  override fun getLayoutData(): Any? = lithoLayoutOutput.layoutData
+  override fun getLayoutData(): Any? = layoutOutput.layoutData
 
-  fun adjustedLeft(): Int = lithoLayoutOutput.adjustedBounds.left
+  fun adjustedLeft(): Int = layoutOutput.adjustedBounds.left
 
-  fun adjustedTop(): Int = lithoLayoutOutput.adjustedBounds.top
+  fun adjustedTop(): Int = layoutOutput.adjustedBounds.top
 
-  fun adjustedRight(): Int = lithoLayoutOutput.adjustedBounds.right
+  fun adjustedRight(): Int = layoutOutput.adjustedBounds.right
 
-  fun adjustedBottom(): Int = lithoLayoutOutput.adjustedBounds.bottom
+  fun adjustedBottom(): Int = layoutOutput.adjustedBounds.bottom
 
   /**
    * Since layout data like the layout context and the diff node are not required after layout
    * calculation they can be released to free up memory.
    */
   open fun releaseLayoutPhaseData() {
-    lithoLayoutOutput.clear()
+    layoutOutput.clear()
     for (i in 0 until childCount) {
       getChildAt(i).releaseLayoutPhaseData()
     }
@@ -160,5 +161,5 @@ open class LithoLayoutResult(
   }
 
   private fun isDirectionRtl(): Boolean =
-      (lithoLayoutOutput.layoutDirection == View.LAYOUT_DIRECTION_RTL)
+      (layoutOutput.layoutDirection == View.LAYOUT_DIRECTION_RTL)
 }

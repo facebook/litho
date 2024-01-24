@@ -36,18 +36,14 @@ class NullNode : LithoNode() {
     return NullWriter().apply { node.display = YogaDisplay.NONE }
   }
 
-  override fun createLayoutResult(lithoLayoutOutput: YogaLithoLayoutOutput): LithoLayoutResult {
-    return NullLithoLayoutResult(
-        c = tailComponentContext, node = this, lithoLayoutOutput = lithoLayoutOutput)
+  override fun createLayoutResult(layoutOutput: YogaLayoutOutput): LithoLayoutResult {
+    return NullLithoLayoutResult(c = tailComponentContext, node = this, layoutOutput = layoutOutput)
   }
 }
 
 class NullLithoLayoutResult
-internal constructor(
-    c: ComponentContext,
-    node: NullNode,
-    lithoLayoutOutput: YogaLithoLayoutOutput
-) : LithoLayoutResult(context = c, node = node, lithoLayoutOutput = lithoLayoutOutput)
+internal constructor(c: ComponentContext, node: NullNode, layoutOutput: YogaLayoutOutput) :
+    LithoLayoutResult(context = c, node = node, layoutOutput = layoutOutput)
 
 class NullWriter internal constructor() : YogaLayoutProps(node = NodeConfig.createYogaNode()) {
 
