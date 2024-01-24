@@ -20,16 +20,12 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.graphics.Rect
 import android.view.View
-import com.facebook.litho.SizeSpec.getMode
-import com.facebook.litho.SizeSpec.getSize
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.utils.MeasureSpecUtils
-import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
-import com.facebook.yoga.YogaNode
 
 internal object Layout {
 
@@ -265,26 +261,6 @@ internal object Layout {
 
   private fun getLayoutDirection(context: Context): Int =
       context.resources.configuration.layoutDirection
-
-  @JvmStatic
-  fun setStyleWidthFromSpec(node: YogaNode, widthSpec: Int) {
-    when (getMode(widthSpec)) {
-      SizeSpec.UNSPECIFIED -> node.setWidth(YogaConstants.UNDEFINED)
-      SizeSpec.AT_MOST -> node.setMaxWidth(getSize(widthSpec).toFloat())
-      SizeSpec.EXACTLY -> node.setWidth(getSize(widthSpec).toFloat())
-      else -> {}
-    }
-  }
-
-  @JvmStatic
-  fun setStyleHeightFromSpec(node: YogaNode, heightSpec: Int) {
-    when (getMode(heightSpec)) {
-      SizeSpec.UNSPECIFIED -> node.setHeight(YogaConstants.UNDEFINED)
-      SizeSpec.AT_MOST -> node.setMaxHeight(getSize(heightSpec).toFloat())
-      SizeSpec.EXACTLY -> node.setHeight(getSize(heightSpec).toFloat())
-      else -> {}
-    }
-  }
 
   private fun measureNestedTree(
       lithoLayoutContext: LithoLayoutContext,

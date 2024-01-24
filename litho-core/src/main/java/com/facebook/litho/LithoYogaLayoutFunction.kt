@@ -73,10 +73,10 @@ internal object LithoYogaLayoutFunction {
       yogaRoot.setDirection(YogaDirection.RTL)
     }
     if (YogaConstants.isUndefined(yogaRoot.width.value)) {
-      Layout.setStyleWidthFromSpec(yogaRoot, widthSpec)
+      setStyleWidthFromSpec(yogaRoot, widthSpec)
     }
     if (YogaConstants.isUndefined(yogaRoot.height.value)) {
-      Layout.setStyleHeightFromSpec(yogaRoot, heightSpec)
+      setStyleHeightFromSpec(yogaRoot, heightSpec)
     }
 
     val width: Float =
@@ -847,6 +847,24 @@ internal object LithoYogaLayoutFunction {
 
   internal fun getLayoutResultFromYogaNode(yogaNode: YogaNode): LithoLayoutResult =
       (yogaNode.data as Pair<*, *>).second as LithoLayoutResult
+
+  private fun setStyleWidthFromSpec(node: YogaNode, widthSpec: Int) {
+    when (SizeSpec.getMode(widthSpec)) {
+      SizeSpec.UNSPECIFIED -> node.setWidth(YogaConstants.UNDEFINED)
+      SizeSpec.AT_MOST -> node.setMaxWidth(SizeSpec.getSize(widthSpec).toFloat())
+      SizeSpec.EXACTLY -> node.setWidth(SizeSpec.getSize(widthSpec).toFloat())
+      else -> {}
+    }
+  }
+
+  private fun setStyleHeightFromSpec(node: YogaNode, heightSpec: Int) {
+    when (SizeSpec.getMode(heightSpec)) {
+      SizeSpec.UNSPECIFIED -> node.setHeight(YogaConstants.UNDEFINED)
+      SizeSpec.AT_MOST -> node.setMaxHeight(SizeSpec.getSize(heightSpec).toFloat())
+      SizeSpec.EXACTLY -> node.setHeight(SizeSpec.getSize(heightSpec).toFloat())
+      else -> {}
+    }
+  }
 }
 
 /**
