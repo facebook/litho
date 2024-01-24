@@ -45,7 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends BaseMountingView {
+public class LithoView extends BaseMountingView implements LithoLifecycleListener {
 
   private static final String LITHO_LIFECYCLE_FOUND = "lithoView:LithoLifecycleProviderFound";
 
@@ -161,6 +161,10 @@ public class LithoView extends BaseMountingView {
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      mLithoLifecycleProviderHolder.addListener(this);
+    }
   }
 
   protected void forceRelayout() {
@@ -453,9 +457,6 @@ public class LithoView extends BaseMountingView {
       }
 
       mComponentTree.clearLithoView();
-      if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-        mLithoLifecycleProviderHolder.removeListener(mComponentTree);
-      }
     }
 
     mComponentTree = componentTree;
@@ -472,7 +473,7 @@ public class LithoView extends BaseMountingView {
       mComponentTree.setLithoView(this);
 
       if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-        subscribeComponentTreeToLifecycleProvider();
+        subscribeToLifecycleProviderFromComponentTree();
       }
       if (isAttached()) {
         mComponentTree.attach();
@@ -562,17 +563,17 @@ public class LithoView extends BaseMountingView {
     }
   }
 
-  private void subscribeComponentTreeToLifecycleProvider() {
+  private void subscribeToLifecycleProviderFromComponentTree() {
     if (mComponentTree != null) {
       LithoLifecycleProvider lifecycleProvider = mComponentTree.getLifecycleProviderForLithoView();
       if (lifecycleProvider != null) {
         setLifecycleProvider(lifecycleProvider);
+        mComponentTree.clearLifecycleProvider();
       } else {
         if (mComponentTree.shouldEnableDefaultAOSPLithoLifecycleProvider() && isAttached()) {
           enableDefaultAOSPLithoLifecycleProvider();
         }
       }
-      mLithoLifecycleProviderHolder.addListener(mComponentTree);
     }
   }
 
@@ -623,6 +624,38 @@ public class LithoView extends BaseMountingView {
       parent = parent.getParent();
     }
     return null;
+  }
+
+  @Override
+  public void onMovedToState(LithoLifecycleProvider.LithoLifecycle state) {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      switch (state) {
+        case HINT_VISIBLE:
+          onMoveToStateHintVisible();
+          return;
+        case HINT_INVISIBLE:
+          onMoveToStateHintInvisible();
+          return;
+        case DESTROYED:
+          onMoveToStateDestroy();
+          return;
+        default:
+          throw new IllegalStateException("Illegal state: " + state);
+      }
+    }
+  }
+
+  private void onMoveToStateHintVisible() {
+    setVisibilityHintNonRecursive(true);
+  }
+
+  private void onMoveToStateHintInvisible() {
+    setVisibilityHintNonRecursive(false);
+  }
+
+  private void onMoveToStateDestroy() {
+    mLithoLifecycleProviderHolder.removeListener(this);
+    mLithoLifecycleProviderHolder.setHeldLifecycleProvider(null);
   }
 
   @Override

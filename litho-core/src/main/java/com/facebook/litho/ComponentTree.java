@@ -1834,6 +1834,10 @@ public class ComponentTree
     return mLifecycleProvider;
   }
 
+  synchronized void clearLifecycleProvider() {
+    mLifecycleProvider = null;
+  }
+
   boolean shouldEnableDefaultAOSPLithoLifecycleProvider() {
     return mContext.shouldEnableDefaultAOSPLithoLifecycleProvider();
   }
