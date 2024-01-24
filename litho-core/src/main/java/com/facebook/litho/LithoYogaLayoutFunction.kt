@@ -792,7 +792,8 @@ internal object LithoYogaLayoutFunction {
                   _isCachedLayout = true,
                   _cachedMeasuresValid = true,
                   _wasMeasured = false,
-                  _measureHadExceptions = false))
+                  _measureHadExceptions = false,
+                  _adjustedBounds = Rect(layoutResult.lithoLayoutOutput.adjustedBounds)))
 
   private fun shouldDrawBorders(lithoLayoutResult: LithoLayoutResult): Boolean {
     val yogaNode = lithoLayoutResult.lithoLayoutOutput.yogaNode
@@ -976,6 +977,11 @@ data class YogaLithoLayoutOutput(
   fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
     _widthSpec = widthSpec
     _heightSpec = heightSpec
+  }
+
+  fun clear() {
+    _diffNode = null
+    yogaNode.data = null
   }
 
   companion object {

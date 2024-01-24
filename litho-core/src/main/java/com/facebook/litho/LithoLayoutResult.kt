@@ -20,12 +20,8 @@ import android.graphics.Rect
 import android.view.View
 import androidx.annotation.Px
 import com.facebook.rendercore.LayoutResult
-import com.facebook.yoga.YogaNode
 
-/**
- * This is the default implementation of a [LayoutResult] for Litho. This holds a reference to the
- * [LithoNode] which created it, its [YogaNode], and a list of its children.
- */
+/** This is the default implementation of a [LayoutResult] for Litho. */
 open class LithoLayoutResult(
     val context: ComponentContext,
     open val node: LithoNode,
@@ -153,8 +149,7 @@ open class LithoLayoutResult(
    * calculation they can be released to free up memory.
    */
   open fun releaseLayoutPhaseData() {
-    lithoLayoutOutput._diffNode = null
-    lithoLayoutOutput.yogaNode.data = null
+    lithoLayoutOutput.clear()
     for (i in 0 until childCount) {
       getChildAt(i).releaseLayoutPhaseData()
     }
