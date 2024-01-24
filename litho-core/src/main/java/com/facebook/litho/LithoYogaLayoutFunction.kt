@@ -400,7 +400,8 @@ internal object LithoYogaLayoutFunction {
 
     val isTracing = ComponentsSystrace.isTracing
     var size: MeasureResult
-    layoutResult.lithoLayoutOutput._wasMeasured = true
+    val lithoLayoutOutput = layoutResult.lithoLayoutOutput
+    lithoLayoutOutput._wasMeasured = true
     if (renderContext.isFutureReleased) {
 
       // If layout is released then skip measurement
@@ -440,28 +441,28 @@ internal object LithoYogaLayoutFunction {
     }
 
     // Record the last measured width, and height spec
-    layoutResult.lithoLayoutOutput.setSizeSpec(widthSpec, heightSpec)
+    lithoLayoutOutput.setSizeSpec(widthSpec, heightSpec)
 
     // If the size of a cached layout has changed then clear size dependant render units
     if (layoutResult.isCachedLayout &&
         (layoutResult.contentWidth != size.width || layoutResult.contentHeight != size.height)) {
-      layoutResult.lithoLayoutOutput._backgroundRenderUnit = null
-      layoutResult.lithoLayoutOutput._foregroundRenderUnit = null
-      layoutResult.lithoLayoutOutput._borderRenderUnit = null
+      lithoLayoutOutput._backgroundRenderUnit = null
+      lithoLayoutOutput._foregroundRenderUnit = null
+      lithoLayoutOutput._borderRenderUnit = null
     }
-    layoutResult.lithoLayoutOutput._lastMeasuredSize =
-        YogaMeasureOutput.make(size.width, size.height)
+    lithoLayoutOutput._lastMeasuredSize = YogaMeasureOutput.make(size.width, size.height)
 
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
-    layoutResult.lithoLayoutOutput._measureHadExceptions = size.hadExceptions
+    lithoLayoutOutput._measureHadExceptions = size.hadExceptions
     return size
   }
 
   fun onBoundsDefined(layoutResult: LithoLayoutResult) {
     val context = layoutResult.node.tailComponentContext
     val component = layoutResult.node.tailComponent
+    val lithoLayoutOutput = layoutResult.lithoLayoutOutput
     val hasLayoutSizeChanged: Boolean
 
     // Since `measure` would be called without padding and border size, in order to align with this
@@ -520,14 +521,14 @@ internal object LithoYogaLayoutFunction {
           component.onBoundsDefined(
               context,
               SpecGeneratedComponentLayout(
-                  yogaNode = layoutResult.lithoLayoutOutput.yogaNode,
+                  yogaNode = lithoLayoutOutput.yogaNode,
                   paddingSet = layoutResult.node.isPaddingSet,
                   background = layoutResult.node.background,
               ),
               layoutData)
         } catch (e: Exception) {
           ComponentUtils.handleWithHierarchy(context, component, e)
-          layoutResult.lithoLayoutOutput._measureHadExceptions = true
+          lithoLayoutOutput._measureHadExceptions = true
         } finally {
           if (isTracing) {
             ComponentsSystrace.endSection()
@@ -536,14 +537,14 @@ internal object LithoYogaLayoutFunction {
 
         // If layout data has changed then content render unit should be recreated
         if (!hasEquivalentFields(layoutResult.layoutData, layoutData)) {
-          layoutResult.lithoLayoutOutput._contentRenderUnit = null
-          layoutResult.lithoLayoutOutput._layoutData = layoutData
+          lithoLayoutOutput._contentRenderUnit = null
+          lithoLayoutOutput._layoutData = layoutData
         }
       }
       if (!layoutResult.wasMeasured) {
-        layoutResult.lithoLayoutOutput.setSizeSpec(
+        lithoLayoutOutput.setSizeSpec(
             MeasureSpecUtils.exactly(newContentWidth), MeasureSpecUtils.exactly(newContentHeight))
-        layoutResult.lithoLayoutOutput._lastMeasuredSize =
+        lithoLayoutOutput._lastMeasuredSize =
             YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
     } else if (Component.isPrimitive(component)) {
@@ -556,7 +557,7 @@ internal object LithoYogaLayoutFunction {
       if (layoutResult.delegate == null || hasLayoutSizeChanged) {
 
         // Check if we need to run measure for Primitive that was skipped due to with fixed size
-        val layoutContext = getLayoutContextFromYogaNode(layoutResult.lithoLayoutOutput.yogaNode)
+        val layoutContext = getLayoutContextFromYogaNode(lithoLayoutOutput.yogaNode)
         measure(
             layoutContext,
             layoutResult,
@@ -570,35 +571,34 @@ internal object LithoYogaLayoutFunction {
                   (layoutResult.contentWidth != newContentWidth ||
                       layoutResult.contentHeight != newContentHeight))
       if (hasLayoutSizeChanged) {
-        layoutResult.lithoLayoutOutput._lastMeasuredSize =
+        lithoLayoutOutput._lastMeasuredSize =
             YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
     }
 
     // Reuse or recreate additional outputs. Outputs are recreated if the size has changed
     if (layoutResult.contentRenderUnit == null) {
-      layoutResult.lithoLayoutOutput._contentRenderUnit =
+      lithoLayoutOutput._contentRenderUnit =
           LithoNodeUtils.createContentRenderUnit(
               layoutResult.node, layoutResult.cachedMeasuresValid, layoutResult.diffNode)
       adjustRenderUnitBounds(layoutResult)
     }
     if (layoutResult.hostRenderUnit == null) {
-      layoutResult.lithoLayoutOutput._hostRenderUnit =
-          LithoNodeUtils.createHostRenderUnit(layoutResult.node)
+      lithoLayoutOutput._hostRenderUnit = LithoNodeUtils.createHostRenderUnit(layoutResult.node)
     }
     if (layoutResult.backgroundRenderUnit == null || hasLayoutSizeChanged) {
-      layoutResult.lithoLayoutOutput._backgroundRenderUnit =
+      lithoLayoutOutput._backgroundRenderUnit =
           LithoNodeUtils.createBackgroundRenderUnit(
               layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
     }
     if (layoutResult.foregroundRenderUnit == null || hasLayoutSizeChanged) {
-      layoutResult.lithoLayoutOutput._foregroundRenderUnit =
+      lithoLayoutOutput._foregroundRenderUnit =
           LithoNodeUtils.createForegroundRenderUnit(
               layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
     }
     if (shouldDrawBorders(layoutResult) &&
         (layoutResult.borderRenderUnit == null || hasLayoutSizeChanged)) {
-      layoutResult.lithoLayoutOutput._borderRenderUnit =
+      lithoLayoutOutput._borderRenderUnit =
           LithoNodeUtils.createBorderRenderUnit(
               layoutResult.node,
               createBorderColorDrawable(layoutResult),
@@ -618,6 +618,7 @@ internal object LithoYogaLayoutFunction {
     val node: LithoNode = lithoLayoutResult.node
     val component: Component = node.tailComponent
     val componentScopedContext: ComponentContext = node.tailComponentContext
+    val lithoLayoutOutput: YogaLithoLayoutOutput = lithoLayoutResult.lithoLayoutOutput
     val diffNode: DiffNode? =
         if (lithoLayoutResult.cachedMeasuresValid) lithoLayoutResult.diffNode else null
     val width: Int
@@ -645,8 +646,7 @@ internal object LithoYogaLayoutFunction {
         // measure Primitive
         if (primitive != null) {
           context.setPreviousLayoutDataForCurrentNode(lithoLayoutResult.layoutData)
-          context.layoutContextExtraData =
-              LithoLayoutContextExtraData(lithoLayoutResult.lithoLayoutOutput.yogaNode)
+          context.layoutContextExtraData = LithoLayoutContextExtraData(lithoLayoutOutput.yogaNode)
           @Suppress("UNCHECKED_CAST")
           delegate =
               primitive.calculateLayout(context as LayoutContext<Any?>, widthSpec, heightSpec)
@@ -662,7 +662,7 @@ internal object LithoYogaLayoutFunction {
           component.onMeasure(
               componentScopedContext,
               SpecGeneratedComponentLayout(
-                  yogaNode = lithoLayoutResult.lithoLayoutOutput.yogaNode,
+                  yogaNode = lithoLayoutOutput.yogaNode,
                   paddingSet = node.isPaddingSet,
                   background = node.background,
               ),
@@ -678,7 +678,7 @@ internal object LithoYogaLayoutFunction {
         // If layout data has changed then content render unit should be recreated
         if (!hasEquivalentFields(lithoLayoutResult.layoutData, newLayoutData)) {
           layoutData = newLayoutData
-          lithoLayoutResult.lithoLayoutOutput._contentRenderUnit = null
+          lithoLayoutOutput._contentRenderUnit = null
         } else {
           layoutData = lithoLayoutResult.layoutData
         }
