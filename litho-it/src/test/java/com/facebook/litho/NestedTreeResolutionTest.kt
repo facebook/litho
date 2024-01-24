@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.YogaLithoLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stateupdates.ComponentWithMeasureCall
 import com.facebook.litho.testing.LegacyLithoViewRule
@@ -108,9 +109,8 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat(holder.lithoLayoutOutput.yogaNode.layoutDirection).isEqualTo(YogaDirection.LTR)
-    assertThat(holder.nestedResult?.lithoLayoutOutput?.yogaNode?.layoutDirection)
-        .isEqualTo(YogaDirection.RTL)
+    assertThat(holder.getYogaNode().layoutDirection).isEqualTo(YogaDirection.LTR)
+    assertThat(holder.nestedResult?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
   }
 
   @Test
@@ -134,9 +134,8 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat(holder.lithoLayoutOutput.yogaNode.layoutDirection).isEqualTo(YogaDirection.RTL)
-    assertThat(holder.nestedResult?.lithoLayoutOutput?.yogaNode?.layoutDirection)
-        .isEqualTo(YogaDirection.RTL)
+    assertThat(holder.getYogaNode().layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.nestedResult?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
   }
 
   @Test

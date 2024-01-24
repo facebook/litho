@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
+import com.facebook.litho.YogaLithoLayoutOutput.Companion.getYogaNode
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -60,79 +61,76 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
     get() = node.nodeInfo?.contentDescription
 
   val layoutDirection: YogaDirection
-    get() = result.lithoLayoutOutput.yogaNode.styleDirection
+    get() = result.getYogaNode().styleDirection
 
   val flexDirection: YogaFlexDirection
-    get() = result.lithoLayoutOutput.yogaNode.flexDirection
+    get() = result.getYogaNode().flexDirection
 
   val justifyContent: YogaJustify
-    get() = result.lithoLayoutOutput.yogaNode.justifyContent
+    get() = result.getYogaNode().justifyContent
 
   val alignItems: YogaAlign
-    get() = result.lithoLayoutOutput.yogaNode.alignItems
+    get() = result.getYogaNode().alignItems
 
   val alignSelf: YogaAlign
-    get() = result.lithoLayoutOutput.yogaNode.alignSelf
+    get() = result.getYogaNode().alignSelf
 
   val alignContent: YogaAlign
-    get() = result.lithoLayoutOutput.yogaNode.alignContent
+    get() = result.getYogaNode().alignContent
 
   val positionType: YogaPositionType
-    get() = result.lithoLayoutOutput.yogaNode.positionType
+    get() = result.getYogaNode().positionType
 
   val flexGrow: Float
-    get() = result.lithoLayoutOutput.yogaNode.flexGrow
+    get() = result.getYogaNode().flexGrow
 
   val flexShrink: Float
-    get() = result.lithoLayoutOutput.yogaNode.flexShrink
+    get() = result.getYogaNode().flexShrink
 
   val flexBasis: YogaValue
-    get() = result.lithoLayoutOutput.yogaNode.flexBasis
+    get() = result.getYogaNode().flexBasis
 
   val width: YogaValue
-    get() = result.lithoLayoutOutput.yogaNode.width
+    get() = result.getYogaNode().width
 
   val minWidth: YogaValue
-    get() = result.lithoLayoutOutput.yogaNode.minWidth
+    get() = result.getYogaNode().minWidth
 
   val maxWidth: YogaValue
-    get() = result.lithoLayoutOutput.yogaNode.maxWidth
+    get() = result.getYogaNode().maxWidth
 
   val height: YogaValue
-    get() = result.lithoLayoutOutput.yogaNode.height
+    get() = result.getYogaNode().height
 
   val minHeight: YogaValue
-    get() = result.lithoLayoutOutput.yogaNode.minHeight
+    get() = result.getYogaNode().minHeight
 
   val maxHeight: YogaValue
-    get() = result.lithoLayoutOutput.yogaNode.maxHeight
+    get() = result.getYogaNode().maxHeight
 
   val aspectRatio: Float
-    get() = result.lithoLayoutOutput.yogaNode.aspectRatio
+    get() = result.getYogaNode().aspectRatio
 
-  fun getMargin(edge: YogaEdge): YogaValue = result.lithoLayoutOutput.yogaNode.getMargin(edge)
+  fun getMargin(edge: YogaEdge): YogaValue = result.getYogaNode().getMargin(edge)
 
-  fun getPadding(edge: YogaEdge): YogaValue = result.lithoLayoutOutput.yogaNode.getPadding(edge)
+  fun getPadding(edge: YogaEdge): YogaValue = result.getYogaNode().getPadding(edge)
 
-  fun getPosition(edge: YogaEdge): YogaValue = result.lithoLayoutOutput.yogaNode.getPosition(edge)
+  fun getPosition(edge: YogaEdge): YogaValue = result.getYogaNode().getPosition(edge)
 
-  fun getBorderWidth(edge: YogaEdge): Float = result.lithoLayoutOutput.yogaNode.getBorder(edge)
+  fun getBorderWidth(edge: YogaEdge): Float = result.getYogaNode().getBorder(edge)
 
   val clickHandler: EventHandler<ClickEvent>?
     get() = node.nodeInfo?.clickHandler
 
   val layoutWidth: Float
-    get() = result.lithoLayoutOutput.yogaNode.layoutWidth
+    get() = result.getYogaNode().layoutWidth
 
   val layoutHeight: Float
-    get() = result.lithoLayoutOutput.yogaNode.layoutHeight
+    get() = result.getYogaNode().layoutHeight
 
-  fun getLayoutMargin(edge: YogaEdge): Float =
-      result.lithoLayoutOutput.yogaNode.getLayoutMargin(edge)
+  fun getLayoutMargin(edge: YogaEdge): Float = result.getYogaNode().getLayoutMargin(edge)
 
-  fun getLayoutPadding(edge: YogaEdge): Float =
-      result.lithoLayoutOutput.yogaNode.getLayoutPadding(edge)
+  fun getLayoutPadding(edge: YogaEdge): Float = result.getYogaNode().getLayoutPadding(edge)
 
-  fun getLayoutBorderWidth(edge: YogaEdge): Float =
-      result.lithoLayoutOutput.yogaNode.getLayoutBorder(edge)
+  fun getLayoutBorderWidth(edge: YogaEdge): Float = result.getYogaNode().getLayoutBorder(edge)
 }

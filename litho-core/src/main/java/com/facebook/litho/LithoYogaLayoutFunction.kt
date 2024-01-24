@@ -22,6 +22,7 @@ import android.util.Pair
 import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.YogaLithoLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.rendercore.FastMath
@@ -59,7 +60,7 @@ internal object LithoYogaLayoutFunction {
     }
 
     val layoutResult: LithoLayoutResult = buildYogaTree(context = context, currentNode = lithoNode)
-    val yogaRoot: YogaNode = layoutResult.lithoLayoutOutput.yogaNode
+    val yogaRoot: YogaNode = layoutResult.getYogaNode()
 
     if (isTracing) {
       ComponentsSystrace.endSection()
@@ -121,7 +122,7 @@ internal object LithoYogaLayoutFunction {
       ComponentsSystrace.beginSection(
           "cloneYogaNodeTree:${cachedLayoutResult.node.headComponent.simpleName}")
     }
-    val clonedNode: YogaNode = cachedLayoutResult.lithoLayoutOutput.yogaNode.cloneWithChildren()
+    val clonedNode: YogaNode = cachedLayoutResult.getYogaNode().cloneWithChildren()
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
@@ -209,10 +210,7 @@ internal object LithoYogaLayoutFunction {
 
         // The situation that we can partially reuse the yoga tree
         val clonedNode: YogaNode =
-            (cachedLayoutResult as LithoLayoutResult)
-                .lithoLayoutOutput
-                .yogaNode
-                .cloneWithoutChildren()
+            (cachedLayoutResult as LithoLayoutResult).getYogaNode().cloneWithoutChildren()
         yogaNode = clonedNode
         layoutResult = copyLayoutResult(cachedLayoutResult, currentNode, clonedNode)
         resetSizeIfNecessary(parentNode, layoutResult)
@@ -273,7 +271,7 @@ internal object LithoYogaLayoutFunction {
           buildYogaTree(
               context = context, currentNode = currentNode.getChildAt(i), parentNode = yogaNode)
 
-      yogaNode.addChildAt(childLayoutResult.lithoLayoutOutput.yogaNode, yogaNode.childCount)
+      yogaNode.addChildAt(childLayoutResult.getYogaNode(), yogaNode.childCount)
       layoutResult.addChild(childLayoutResult)
     }
 
@@ -287,7 +285,7 @@ internal object LithoYogaLayoutFunction {
     if (parent != null) {
       return
     }
-    val yogaNode: YogaNode = layoutResult.lithoLayoutOutput.yogaNode
+    val yogaNode: YogaNode = layoutResult.getYogaNode()
     if (layoutResult.lithoLayoutOutput.widthFromStyle.compareTo(yogaNode.width.value) != 0) {
       yogaNode.setWidthAuto()
     }
@@ -521,7 +519,7 @@ internal object LithoYogaLayoutFunction {
           component.onBoundsDefined(
               context,
               SpecGeneratedComponentLayout(
-                  yogaNode = lithoLayoutOutput.yogaNode,
+                  yogaNode = layoutResult.getYogaNode(),
                   paddingSet = layoutResult.node.isPaddingSet,
                   background = layoutResult.node.background,
               ),
@@ -557,7 +555,7 @@ internal object LithoYogaLayoutFunction {
       if (layoutResult.delegate == null || hasLayoutSizeChanged) {
 
         // Check if we need to run measure for Primitive that was skipped due to with fixed size
-        val layoutContext = getLayoutContextFromYogaNode(lithoLayoutOutput.yogaNode)
+        val layoutContext = getLayoutContextFromYogaNode(layoutResult.getYogaNode())
         measure(
             layoutContext,
             layoutResult,
@@ -646,7 +644,8 @@ internal object LithoYogaLayoutFunction {
         // measure Primitive
         if (primitive != null) {
           context.setPreviousLayoutDataForCurrentNode(lithoLayoutResult.layoutData)
-          context.layoutContextExtraData = LithoLayoutContextExtraData(lithoLayoutOutput.yogaNode)
+          context.layoutContextExtraData =
+              LithoLayoutContextExtraData(lithoLayoutResult.getYogaNode())
           @Suppress("UNCHECKED_CAST")
           delegate =
               primitive.calculateLayout(context as LayoutContext<Any?>, widthSpec, heightSpec)
@@ -662,7 +661,7 @@ internal object LithoYogaLayoutFunction {
           component.onMeasure(
               componentScopedContext,
               SpecGeneratedComponentLayout(
-                  yogaNode = lithoLayoutOutput.yogaNode,
+                  yogaNode = lithoLayoutResult.getYogaNode(),
                   paddingSet = node.isPaddingSet,
                   background = node.background,
               ),
@@ -796,7 +795,7 @@ internal object LithoYogaLayoutFunction {
                   _adjustedBounds = Rect(layoutResult.lithoLayoutOutput.adjustedBounds)))
 
   private fun shouldDrawBorders(lithoLayoutResult: LithoLayoutResult): Boolean {
-    val yogaNode = lithoLayoutResult.lithoLayoutOutput.yogaNode
+    val yogaNode = lithoLayoutResult.getYogaNode()
     return lithoLayoutResult.node.hasBorderColor() &&
         (yogaNode.getLayoutBorder(YogaEdge.LEFT) != 0f ||
             yogaNode.getLayoutBorder(YogaEdge.TOP) != 0f ||
@@ -826,7 +825,7 @@ internal object LithoYogaLayoutFunction {
   }
 
   private fun recursivelyResolveLayoutDirection(result: LithoLayoutResult): YogaDirection {
-    val direction = result.lithoLayoutOutput.yogaNode.layoutDirection
+    val direction = result.getYogaNode().layoutDirection
     check(direction != YogaDirection.INHERIT) {
       "Direction cannot be resolved before layout calculation"
     }
@@ -834,7 +833,7 @@ internal object LithoYogaLayoutFunction {
   }
 
   private fun getLayoutBorder(result: LithoLayoutResult, edge: YogaEdge?): Int =
-      FastMath.round(result.lithoLayoutOutput.yogaNode.getLayoutBorder(edge))
+      FastMath.round(result.getYogaNode().getLayoutBorder(edge))
 
   private fun shouldAlwaysRemeasure(component: Component): Boolean =
       if (component is SpecGeneratedComponent) {
@@ -986,5 +985,7 @@ data class YogaLithoLayoutOutput(
 
   companion object {
     private const val UNSPECIFIED: Int = -1
+
+    fun LithoLayoutResult.getYogaNode(): YogaNode = lithoLayoutOutput.yogaNode
   }
 }

@@ -26,6 +26,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.YogaLithoLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.margin
@@ -867,7 +868,7 @@ class FlexboxStylesTest {
         .layout()
         .attachToWindow()
 
-    assertThat(lithoViewRule.currentRootNode?.lithoLayoutOutput?.yogaNode?.layoutDirection)
+    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.layoutDirection)
         .isEqualTo(YogaDirection.RTL)
   }
 
@@ -919,19 +920,9 @@ class FlexboxStylesTest {
         .layout()
         .attachToWindow()
 
-    assertThat(
-            lithoViewRule.currentRootNode
-                ?.lithoLayoutOutput
-                ?.yogaNode
-                ?.getMargin(YogaEdge.LEFT)
-                .toString())
+    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.getMargin(YogaEdge.LEFT).toString())
         .isEqualTo("auto")
-    assertThat(
-            lithoViewRule.currentRootNode
-                ?.lithoLayoutOutput
-                ?.yogaNode
-                ?.getMargin(YogaEdge.TOP)
-                .toString())
+    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.getMargin(YogaEdge.TOP).toString())
         .isEqualTo("auto")
   }
 
@@ -944,8 +935,7 @@ class FlexboxStylesTest {
         .layout()
         .attachToWindow()
 
-    assertThat(lithoViewRule.currentRootNode?.lithoLayoutOutput?.yogaNode?.isReferenceBaseline)
-        .isEqualTo(true)
+    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.isReferenceBaseline).isEqualTo(true)
   }
 
   @Test
@@ -957,7 +947,6 @@ class FlexboxStylesTest {
         .layout()
         .attachToWindow()
 
-    assertThat(lithoViewRule.currentRootNode?.lithoLayoutOutput?.yogaNode?.isBaselineDefined)
-        .isEqualTo(true)
+    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.isBaselineDefined).isEqualTo(true)
   }
 }
