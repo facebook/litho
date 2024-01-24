@@ -21,6 +21,8 @@ import android.app.Application
 import android.app.Service
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.pm.ApplicationInfo
+import android.view.View
 
 object ContextUtils {
 
@@ -67,4 +69,15 @@ object ContextUtils {
   @JvmStatic
   fun getTargetSdkVersion(context: Context): Int =
       context.applicationContext.applicationInfo.targetSdkVersion
+
+  internal fun Context.getLayoutDirection(): Int = resources.configuration.layoutDirection
+
+  internal fun Context.isLayoutDirectionRTL(): Boolean {
+    val applicationInfo = applicationInfo
+    if (applicationInfo.flags and ApplicationInfo.FLAG_SUPPORTS_RTL != 0) {
+      val layoutDirection = getLayoutDirection()
+      return layoutDirection == View.LAYOUT_DIRECTION_RTL
+    }
+    return false
+  }
 }

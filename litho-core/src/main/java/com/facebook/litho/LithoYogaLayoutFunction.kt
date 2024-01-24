@@ -22,6 +22,7 @@ import android.util.Pair
 import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
@@ -69,7 +70,7 @@ internal object LithoYogaLayoutFunction {
     val widthSpec = sizeConstraints.toWidthSpec()
     val heightSpec = sizeConstraints.toHeightSpec()
 
-    if (lithoNode.isLayoutDirectionInherit && Layout.isLayoutDirectionRTL(context.androidContext)) {
+    if (lithoNode.isLayoutDirectionInherit && context.androidContext.isLayoutDirectionRTL()) {
       yogaRoot.setDirection(YogaDirection.RTL)
     }
     if (YogaConstants.isUndefined(yogaRoot.width.value)) {

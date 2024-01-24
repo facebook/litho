@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.graphics.Rect
 import android.view.View
 import com.facebook.rendercore.LayoutCache
@@ -248,19 +247,6 @@ internal object Layout {
     }
     return true
   }
-
-  @JvmStatic
-  fun isLayoutDirectionRTL(context: Context): Boolean {
-    val applicationInfo = context.applicationInfo
-    if (applicationInfo.flags and ApplicationInfo.FLAG_SUPPORTS_RTL != 0) {
-      val layoutDirection = getLayoutDirection(context)
-      return layoutDirection == View.LAYOUT_DIRECTION_RTL
-    }
-    return false
-  }
-
-  private fun getLayoutDirection(context: Context): Int =
-      context.resources.configuration.layoutDirection
 
   private fun measureNestedTree(
       lithoLayoutContext: LithoLayoutContext,
