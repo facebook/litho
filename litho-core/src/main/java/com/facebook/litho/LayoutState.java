@@ -344,6 +344,10 @@ public class LayoutState
 
         if (mEnableDrawablePreallocation || isMountableView(treeNode.getRenderUnit())) {
 
+          if (isTracing) {
+            ComponentsSystrace.beginSection("preallocateMount: " + component.getSimpleName());
+          }
+
           boolean preallocated =
               MountItemsPool.maybePreallocateContent(
                   mResolveResult.context.getAndroidContext(),
@@ -354,6 +358,10 @@ public class LayoutState
               "Preallocation of "
                   + component.getSimpleName()
                   + (preallocated ? " succeeded" : " failed"));
+
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
         }
       }
     }
