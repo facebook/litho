@@ -21,14 +21,22 @@ package com.facebook.litho
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 
 interface TreeProp<T> {
-  val defaultValue: T?
+  val defaultValue: T
 }
 
 @DataClassGenerate
-private data class ClassBasedTreeProp<T>(val clazz: Class<T>) : TreeProp<T> {
+private data class ClassBasedTreeProp<T : Any>(val clazz: Class<T>) : TreeProp<T?> {
   override val defaultValue: T? = null
 }
 
-fun <T> createLegacyTreeProp(clazz: Class<T>): TreeProp<T> {
+private class ObjectBasedTreeProp<T>(private val defaultValueProducer: () -> T) : TreeProp<T> {
+  override val defaultValue: T by lazy { defaultValueProducer() }
+}
+
+fun <T : Any> legacyTreePropOf(clazz: Class<T>): TreeProp<T?> {
   return ClassBasedTreeProp(clazz)
+}
+
+fun <T> treePropOf(defaultValueProducer: () -> T): TreeProp<T> {
+  return ObjectBasedTreeProp(defaultValueProducer)
 }

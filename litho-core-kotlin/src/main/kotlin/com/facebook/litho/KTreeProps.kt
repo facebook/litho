@@ -25,6 +25,17 @@ package com.facebook.litho
 typealias ClassValuePair<T> = Pair<Class<T>, T>
 
 /**
+ * Defines a single tree prop override. Unlike [ClassValuePair] there can be multiple
+ * [TreePropValuePair] with the same corresponding class.
+ *
+ * [TreeProp]'s should be declared separately and then overridden in [TreePropProvider]. If there
+ * are no overrides available, then the default value will be used (if any).
+ *
+ * You can create a Pair with the `to` infix function, e.g. `StringTreeProp to "Hello World!"`.
+ */
+typealias TreePropValuePair<T> = Pair<TreeProp<T>, T>
+
+/**
  * A component which provides one or more tree props to the given child hierarchy. A tree prop is a
  * mapping from a type to an instance of that type which is accessible throughout the entire subtree
  * where it's defined.
@@ -33,35 +44,59 @@ typealias ClassValuePair<T> = Pair<Class<T>, T>
  * to be available throughout a hierarchy, without having to manual thread them through as
  * individual props. Tree props can be accessed in children via [getTreeProp].
  */
-@Suppress("FunctionNaming")
+@Suppress("FunctionName")
+@Deprecated(
+    "Please, use the new [TreePropProvider] with [TreePropValuePair] args. You can use " +
+        "[createLegacyTreeProp] for interoperability with old API")
 inline fun TreePropProvider(
     vararg props: ClassValuePair<*>,
     component: () -> Component
 ): TreePropProviderImpl {
   val resolvedComponent = component()
-  return TreePropProviderImpl(props, child = resolvedComponent)
+  return TreePropProviderImpl(classProps = props, child = resolvedComponent)
+}
+
+/**
+ * A component which provides one or more TreeProp values to the given child hierarchy. A tree prop
+ * is a mapping from a [TreeProp] key object to an value of a corresponding type which is accessible
+ * throughout the entire subtree where it's defined.
+ *
+ * Tree props are useful for providing theme info, logging tags, or other things that generally need
+ * to be available throughout a hierarchy, without having to manual thread them through as
+ * individual props. Tree prop value of a specific [TreeProp] can be accessed in children via
+ * [TreeProp.value] property in [ComponentScope].
+ */
+@Suppress("FunctionName")
+inline fun TreePropProvider(
+    vararg props: TreePropValuePair<*>,
+    component: () -> Component
+): Component {
+  val resolvedComponent = component()
+  return TreePropProviderImpl(treeProps = props, child = resolvedComponent)
 }
 
 /**
  * Same as [TreePropProvider], but accepts a lambda that may return a nullable component, in which
  * case it'll return null itself.
  */
-@Suppress("FunctionNaming")
+@Suppress("FunctionName")
 inline fun NullableTreePropProvider(
     vararg props: ClassValuePair<*>,
     component: () -> Component?
 ): TreePropProviderImpl? {
   val resolvedComponent = component() ?: return null
-  return TreePropProviderImpl(props, child = resolvedComponent)
+  return TreePropProviderImpl(classProps = props, child = resolvedComponent)
 }
 
 /** See [TreePropProvider]. */
 class TreePropProviderImpl(
-    private val props: Array<out ClassValuePair<*>>,
+    private val classProps: Array<out ClassValuePair<*>>? = null,
+    private val treeProps: Array<out TreePropValuePair<*>>? = null,
     private val child: Component
 ) : KComponent() {
   override fun ComponentScope.render(): Component {
-    props.forEach { createTreeProp(it.first, it.second) }
+    classProps?.forEach { createTreeProp(it.first, it.second) }
+    treeProps?.forEach { createTreeProp(it.first, it.second) }
     return child
   }
 }
@@ -72,6 +107,14 @@ private fun <T> ComponentScope.createTreeProp(clazz: Class<out T>, value: T) {
     context.isParentTreePropContainerCloned = true
   }
   context.treePropContainer?.put(clazz, value)
+}
+
+private fun <T> ComponentScope.createTreeProp(prop: TreeProp<out T>, value: T) {
+  if (!context.isParentTreePropContainerCloned) {
+    context.treePropContainer = TreePropContainer.acquire(context.treePropContainer)
+    context.isParentTreePropContainerCloned = true
+  }
+  context.treePropContainer?.put(prop, value)
 }
 
 /**

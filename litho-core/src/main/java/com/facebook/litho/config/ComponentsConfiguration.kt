@@ -209,7 +209,6 @@ internal constructor(
     @JvmField var bindOnSameComponentTree: Boolean = true
     @JvmField var componentsLogger: ComponentsLogger? = null
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
-    @JvmField var isObjectTreePropEnabled: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a

@@ -51,4 +51,7 @@ interface ResourcesScope : BaseResourcesScope {
     typedArray.recycle()
     return defaultValue
   }
+
+  val <T> TreeProp<T>.value: T
+    get() = context.getTreeProp(this)
 }

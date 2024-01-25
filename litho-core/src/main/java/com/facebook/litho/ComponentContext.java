@@ -638,6 +638,10 @@ public class ComponentContext {
     return mTreePropContainer == null ? null : mTreePropContainer.get(key);
   }
 
+  <T> T getTreeProp(TreeProp<T> key) {
+    return mTreePropContainer == null ? key.getDefaultValue() : mTreePropContainer.get(key);
+  }
+
   @Nullable
   public <T> T getParentTreeProp(Class<T> key) {
     return mParentTreePropContainer == null ? null : mParentTreePropContainer.get(key);

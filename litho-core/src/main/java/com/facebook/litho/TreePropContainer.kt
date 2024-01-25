@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.infer.annotation.ThreadSafe
-import com.facebook.litho.config.ComponentsConfiguration
 import java.util.Collections
 import java.util.HashMap
 import java.util.Objects
@@ -31,26 +30,27 @@ import java.util.Objects
 @ThreadConfined(ThreadConfined.ANY)
 class TreePropContainer {
 
-  private val map = Collections.synchronizedMap(HashMap<Class<*>, Any?>())
-  private val objectMap = Collections.synchronizedMap(HashMap<TreeProp<*>, Any?>())
-  private val isObjectTreePropEnabled: Boolean = ComponentsConfiguration.isObjectTreePropEnabled
+  private val map = Collections.synchronizedMap(HashMap<TreeProp<*>, Any?>())
 
   fun put(key: Class<*>, value: Any?) {
-    if (isObjectTreePropEnabled) {
-      val treeProp = createLegacyTreeProp(key)
-      objectMap[treeProp] = value
-    } else {
-      map[key] = value
-    }
+    val treeProp = legacyTreePropOf(key)
+    map[treeProp] = value
   }
 
-  operator fun <T> get(key: Class<T>): T? {
-    return if (isObjectTreePropEnabled) {
-      val treeProp = createLegacyTreeProp(key)
-      objectMap[treeProp] as T?
-    } else {
-      map[key] as T?
+  fun <T> put(treeProp: TreeProp<out T>, value: T) {
+    map[treeProp] = value
+  }
+
+  operator fun <T : Any> get(key: Class<T>): T? {
+    val treeProp = legacyTreePropOf(key)
+    return map[treeProp] as T?
+  }
+
+  operator fun <T> get(prop: TreeProp<T>): T {
+    if (map.containsKey(prop)) {
+      return map[prop] as T
     }
+    return prop.defaultValue
   }
 
   operator fun set(key: Class<*>, value: Any?) = put(key, value)
@@ -70,14 +70,6 @@ class TreePropContainer {
   }
 
   override fun hashCode(): Int = Objects.hash(map)
-
-  /**
-   * This returns a copy of the content stored by the [TreePropContainer] in the raw format to which
-   * it is stored.
-   *
-   * This is only meant to be used by the internal APIs.
-   */
-  @JvmName("asRawMap") internal fun asRawMap(): Map<Class<*>, Any?> = map.toMap()
 
   companion object {
     /** @return a copy of the provided TreeProps instance; returns null if source is null */
