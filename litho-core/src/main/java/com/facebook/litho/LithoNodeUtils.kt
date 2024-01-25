@@ -86,12 +86,6 @@ object LithoNodeUtils {
             } else {
               node.customDelegateBindersForMountSpec
             },
-        customBindersForMountSpec =
-            if (node.needsHostView() || node.primitive != null) {
-              null
-            } else {
-              node.customBindersForMountSpec
-            },
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.CONTENT))
   }
 
@@ -128,8 +122,6 @@ object LithoNodeUtils {
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
             if (node.needsHostView()) node.customDelegateBindersForMountSpec else null,
-        customBindersForMountSpec =
-            if (node.needsHostView()) node.customBindersForMountSpec else null,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST))
   }
 
@@ -159,8 +151,6 @@ object LithoNodeUtils {
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
             if (node.willMountView) null else node.customDelegateBindersForMountSpec,
-        customBindersForMountSpec =
-            if (node.willMountView) null else node.customBindersForMountSpec,
         debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST))
   }
 
@@ -294,7 +284,6 @@ object LithoNodeUtils {
       isMountViewSpec: Boolean = false,
       customDelegateBindersForMountSpec: Map<Class<*>, RenderUnit.DelegateBinder<Any, Any?, Any>>? =
           null,
-      customBindersForMountSpec: Map<Class<*>, RenderUnit.Binder<Any, Any, Any>>? = null,
       debugKey: String? = null,
   ): LithoRenderUnit {
     var flags = 0
@@ -357,13 +346,6 @@ object LithoNodeUtils {
             importantForAccessibility,
             updateState,
             debugKey)
-
-    if (customBindersForMountSpec != null) {
-      for (binder in customBindersForMountSpec.values) {
-        renderUnit.addOptionalMountBinder(
-            RenderUnit.DelegateBinder.createDelegateBinder(renderUnit, binder))
-      }
-    }
 
     if (customDelegateBindersForMountSpec != null) {
       for (binder in customDelegateBindersForMountSpec.values) {

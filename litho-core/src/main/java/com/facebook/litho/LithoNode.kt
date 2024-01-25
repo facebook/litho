@@ -209,14 +209,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     internal set
 
   /**
-   * Returns a nullable map of [RenderUnit.Binder] that is aimed to be used to set the optional
-   * mount binders right after creating a [MountSpecLithoRenderUnit]. These binders are meant to be
-   * used only with [MountSpecLithoRenderUnit].
-   */
-  var customBindersForMountSpec: MutableMap<Class<*>, RenderUnit.Binder<Any, Any, Any>>? = null
-    internal set
-
-  /**
    * Returns a nullable map of [RenderUnit.DelegateBinder] that is aimed to be used to set the
    * optional mount binders right after creating a [MountSpecLithoRenderUnit].
    */
@@ -574,23 +566,14 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * view binders), the addition of the optional mount binders is delayed until the moment of its
    * creation. For that, we store these binders in the [LithoNode] and use them later.
    */
-  fun addCustomBinders(
-      bindersMap: Map<Class<*>, RenderUnit.Binder<Any, Any, Any>>? = null,
-      delegateBindersMap: Map<Class<*>, DelegateBinder<Any, Any?, Any>>? = null
-  ) {
-    if (bindersMap.isNullOrEmpty() && delegateBindersMap.isNullOrEmpty()) {
+  fun addCustomBinders(delegateBindersMap: Map<Class<*>, DelegateBinder<Any, Any?, Any>>? = null) {
+    if (delegateBindersMap.isNullOrEmpty()) {
       return
     }
 
     privateFlags = privateFlags or PFLAG_BINDER_IS_SET
 
     if (!willMountDrawable(this)) {
-      allNotNull(primitive, bindersMap) { primitive, map ->
-        for (binder in map.values) {
-          primitive.renderUnit.addOptionalMountBinder(
-              DelegateBinder.createDelegateBinder(primitive.renderUnit, binder))
-        }
-      }
       allNotNull(primitive, delegateBindersMap) { primitive, map ->
         for (binder in map.values) {
           primitive.renderUnit.addOptionalMountBinder(binder)
@@ -598,24 +581,13 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       }
     }
 
-    if (bindersMap != null) {
-      customBindersForMountSpec
-          .getOrCreate {
-            LinkedHashMap<Class<*>, RenderUnit.Binder<Any, Any, Any>>().also {
-              customBindersForMountSpec = it
-            }
+    customDelegateBindersForMountSpec
+        .getOrCreate {
+          LinkedHashMap<Class<*>, DelegateBinder<Any, Any?, Any>>().also {
+            customDelegateBindersForMountSpec = it
           }
-          .putAll(bindersMap)
-    }
-    if (delegateBindersMap != null) {
-      customDelegateBindersForMountSpec
-          .getOrCreate {
-            LinkedHashMap<Class<*>, DelegateBinder<Any, Any?, Any>>().also {
-              customDelegateBindersForMountSpec = it
-            }
-          }
-          .putAll(delegateBindersMap)
-    }
+        }
+        .putAll(delegateBindersMap)
   }
 
   fun child(resolveContext: ResolveContext, c: ComponentContext, child: Component?) {
@@ -899,8 +871,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       } else 0
 
   private fun hasCustomBindersForMountSpec(): Boolean =
-      (customBindersForMountSpec?.isNotEmpty() == true) ||
-          (customDelegateBindersForMountSpec?.isNotEmpty() == true)
+      customDelegateBindersForMountSpec?.isNotEmpty() == true
 
   companion object {
     private val idGenerator = AtomicInteger(1)

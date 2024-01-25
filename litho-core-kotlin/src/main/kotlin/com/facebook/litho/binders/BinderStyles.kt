@@ -23,9 +23,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.RenderUnit.Binder
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 
 /**
@@ -44,20 +42,17 @@ import com.facebook.rendercore.RenderUnit.DelegateBinder
  * the last time it is unmounted before going offscreen, you should set the
  * [RenderUnit.Binder.shouldUpdate] to `false`.
  */
-fun Style.viewBinder(binder: Binder<Any?, View, Any?>): Style {
-  return if (ComponentsConfiguration.forceDelegateViewBinder) {
-    delegateViewBinder(DelegateBinder.createDelegateBinder(Unit, binder))
-  } else {
-    this + ObjectStyleItem(BinderObjectField.MOUNT_VIEW_BINDER, binder)
-  }
-}
-
-fun Style.delegateViewBinder(binder: DelegateBinder<*, View, Any?>): Style =
+fun Style.viewBinder(binder: DelegateBinder<*, View, Any?>): Style =
     this + ObjectStyleItem(BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER, binder)
+
+fun Style.viewBinder(binder: RenderUnit.Binder<Any?, View, Any?>): Style =
+    this +
+        ObjectStyleItem(
+            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
+            DelegateBinder.createDelegateBinder(Unit, binder))
 
 @PublishedApi
 internal enum class BinderObjectField : StyleItemField {
-  MOUNT_VIEW_BINDER,
   DELEGATE_MOUNT_VIEW_BINDER
 }
 
@@ -69,8 +64,6 @@ internal data class ObjectStyleItem(
 ) : StyleItem<Any?> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
     when (field) {
-      BinderObjectField.MOUNT_VIEW_BINDER ->
-          commonProps.mountViewBinder(value as Binder<Any?, Any, Any?>)
       BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER ->
           commonProps.delegateMountViewBinder(value as DelegateBinder<Any, Any, Any>)
     }

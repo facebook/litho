@@ -677,17 +677,8 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     getOrCreateOtherProps().transitionKey(key, ownerKey);
   }
 
-  public void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
-    getOrCreateOtherProps().mountViewBinder(binder);
-  }
-
   public void delegateMountViewBinder(RenderUnit.DelegateBinder<Object, Object, Object> binder) {
     getOrCreateOtherProps().delegateMountViewBinder(binder);
-  }
-
-  @Nullable
-  public Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> getViewBinders() {
-    return getOrCreateOtherProps().mTypeToViewBinder;
   }
 
   @Nullable
@@ -825,7 +816,6 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
     @Nullable private EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
 
-    private @Nullable Map<Class<?>, RenderUnit.Binder<Object, Object, Object>> mTypeToViewBinder;
     private @Nullable Map<Class<?>, RenderUnit.DelegateBinder<Object, Object, Object>>
         mTypeToDelegateViewBinder;
 
@@ -843,14 +833,6 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     private int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
     private @Nullable Paint mLayerPaint;
     private @Nullable String mVisibilityOutputTag;
-
-    private void mountViewBinder(RenderUnit.Binder<Object, Object, Object> binder) {
-      if (mTypeToViewBinder == null) {
-        mTypeToViewBinder = new LinkedHashMap<>();
-      }
-
-      mTypeToViewBinder.put(binder.getClass(), binder);
-    }
 
     private void delegateMountViewBinder(RenderUnit.DelegateBinder<Object, Object, Object> binder) {
       if (mTypeToDelegateViewBinder == null) {
