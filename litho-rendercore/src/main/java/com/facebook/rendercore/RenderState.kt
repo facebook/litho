@@ -320,7 +320,7 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
   }
 
   private fun schedulePromoteCommittedTreeToUI() {
-    if (ThreadUtils.isMainThread()) {
+    if (ThreadUtils.isMainThread) {
       maybePromoteCommittedTreeToUI()
     } else {
       if (!uIHandler.hasMessages(PROMOTION_MESSAGE)) {
