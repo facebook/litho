@@ -62,6 +62,7 @@ internal constructor(
     @JvmField val isReconciliationEnabled: Boolean = true,
     @JvmField val mountContentPreallocationEnabled: Boolean = false,
     @JvmField val mountContentPreallocationHandler: RunnableHandler? = null,
+    @JvmField val preAllocationHandler: PreAllocationHandler? = null,
     /** Whether the [com.facebook.rendercore.MountState] can be mounted using incremental mount. */
     @JvmField val incrementalMountEnabled: Boolean = true,
     /**
@@ -237,6 +238,7 @@ internal constructor(
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
     private var mountContentPreallocationEnabled = baseConfig.mountContentPreallocationEnabled
     private var mountContentPreallocationHandler = baseConfig.mountContentPreallocationHandler
+    private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
     private var shouldEnableDefaultAOSPLithoLifecycleProvider =
@@ -244,13 +246,13 @@ internal constructor(
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
     private var enableDrawablePreAllocation = baseConfig.enableDrawablePreAllocation
 
-    fun shouldAddHostViewForRootComponent(enabled: Boolean) = also {
+    fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
     }
 
-    fun shouldCacheLayouts(enabled: Boolean) = also { shouldCacheLayouts = enabled }
+    fun shouldCacheLayouts(enabled: Boolean): Builder = also { shouldCacheLayouts = enabled }
 
-    fun specsApiStateUpdateDetectionEnabled(enabled: Boolean) = also {
+    fun specsApiStateUpdateDetectionEnabled(enabled: Boolean): Builder = also {
       specsApiStateUpdateDuplicateDetectionEnabled = enabled
     }
 
@@ -264,6 +266,10 @@ internal constructor(
 
     fun mountContentPreallocationHandler(handler: RunnableHandler?): Builder = also {
       mountContentPreallocationHandler = handler
+    }
+
+    fun withPreAllocationHandler(handler: PreAllocationHandler): Builder = also {
+      preAllocationHandler = handler
     }
 
     fun incrementalMountEnabled(enabled: Boolean): Builder = also {
@@ -297,6 +303,7 @@ internal constructor(
           isReconciliationEnabled = isReconciliationEnabled,
           mountContentPreallocationEnabled = mountContentPreallocationEnabled,
           mountContentPreallocationHandler = mountContentPreallocationHandler,
+          preAllocationHandler = preAllocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
           componentHostRecyclingEnabled = componentHostRecyclingEnabled,
           shouldEnableDefaultAOSPLithoLifecycleProvider =
