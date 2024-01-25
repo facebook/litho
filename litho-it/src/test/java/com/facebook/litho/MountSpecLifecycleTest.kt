@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.exactly
@@ -325,8 +326,8 @@ class MountSpecLifecycleTest {
         ComponentTree.create(legacyLithoViewRule.context)
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    mountContentPreallocationEnabled = true,
-                    mountContentPreallocationHandler = RunnableHandler.DefaultHandler(looper)))
+                    preAllocationHandler =
+                        PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
             .build()
     legacyLithoViewRule.useComponentTree(tree)
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -352,8 +353,8 @@ class MountSpecLifecycleTest {
         ComponentTree.create(legacyLithoViewRule.context)
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    mountContentPreallocationEnabled = true,
-                    mountContentPreallocationHandler = RunnableHandler.DefaultHandler(looper)))
+                    preAllocationHandler =
+                        PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
             .build()
     legacyLithoViewRule.useComponentTree(tree)
     val info: List<StepInfo> = ArrayList<StepInfo>()

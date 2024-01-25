@@ -20,7 +20,6 @@ import android.os.Build
 import com.facebook.litho.BuildConfig
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
-import com.facebook.rendercore.RunnableHandler
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
 
 /**
@@ -60,8 +59,7 @@ internal constructor(
     val shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible: Boolean = false,
     /** Whether the [ComponentTree] should be using State Reconciliation. */
     @JvmField val isReconciliationEnabled: Boolean = true,
-    @JvmField val mountContentPreallocationEnabled: Boolean = false,
-    @JvmField val mountContentPreallocationHandler: RunnableHandler? = null,
+    /** The handler [ComponentTree] will be used to run the pre-allocation process */
     @JvmField val preAllocationHandler: PreAllocationHandler? = null,
     /** Whether the [com.facebook.rendercore.MountState] can be mounted using incremental mount. */
     @JvmField val incrementalMountEnabled: Boolean = true,
@@ -236,8 +234,6 @@ internal constructor(
         baseConfig.specsApiStateUpdateDuplicateDetectionEnabled
     private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
-    private var mountContentPreallocationEnabled = baseConfig.mountContentPreallocationEnabled
-    private var mountContentPreallocationHandler = baseConfig.mountContentPreallocationHandler
     private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
@@ -260,15 +256,7 @@ internal constructor(
       isReconciliationEnabled = enabled
     }
 
-    fun mountContentPreallocationEnabled(enabled: Boolean): Builder = also {
-      mountContentPreallocationEnabled = enabled
-    }
-
-    fun mountContentPreallocationHandler(handler: RunnableHandler?): Builder = also {
-      mountContentPreallocationHandler = handler
-    }
-
-    fun withPreAllocationHandler(handler: PreAllocationHandler): Builder = also {
+    fun withPreAllocationHandler(handler: PreAllocationHandler?): Builder = also {
       preAllocationHandler = handler
     }
 
@@ -301,8 +289,6 @@ internal constructor(
           shouldCacheLayouts = shouldCacheLayouts,
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
           isReconciliationEnabled = isReconciliationEnabled,
-          mountContentPreallocationEnabled = mountContentPreallocationEnabled,
-          mountContentPreallocationHandler = mountContentPreallocationHandler,
           preAllocationHandler = preAllocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
           componentHostRecyclingEnabled = componentHostRecyclingEnabled,

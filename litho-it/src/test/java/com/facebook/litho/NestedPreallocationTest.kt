@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.widget.TextView
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
@@ -77,7 +78,8 @@ class NestedPreallocationTest {
         ComponentTree.create(context, EmptyComponent())
             .componentsConfiguration(
                 ComponentsConfiguration.defaultInstance.copy(
-                    mountContentPreallocationEnabled = preallocationEnabled))
+                    preAllocationHandler =
+                        if (preallocationEnabled) PreAllocationHandler.LayoutThread else null))
             .build()
 
     return lithoRule.render(heightPx = 2040, componentTree = componentTree) { TestComponent() }

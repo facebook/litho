@@ -75,6 +75,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.config.PreAllocationHandler;
 import com.facebook.litho.debug.AttributionUtils;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
@@ -472,16 +473,18 @@ public class ComponentTree
     mMainThreadHandler = instrumentHandler(mMainThreadHandler);
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
 
-    mShouldPreallocatePerMountSpec = builder.config.mountContentPreallocationEnabled;
-    mPreAllocateMountContentHandler = builder.config.mountContentPreallocationHandler;
+    PreAllocationHandler preAllocationHandler = builder.config.preAllocationHandler;
+    mShouldPreallocatePerMountSpec = preAllocationHandler != null;
+    if (preAllocationHandler != null) {
+      if (preAllocationHandler instanceof PreAllocationHandler.LayoutThread) {
+        mPreAllocateMountContentHandler = new DefaultHandler(getDefaultLayoutThreadLooper());
+      }
 
-    /** By default we delegate the mount content pre-allocation to the Layout Thread. */
-    if (mShouldPreallocatePerMountSpec && mPreAllocateMountContentHandler == null) {
-      mPreAllocateMountContentHandler = new DefaultHandler(getDefaultLayoutThreadLooper());
-    }
-
-    if (mPreAllocateMountContentHandler != null) {
-      mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
+      if (preAllocationHandler instanceof PreAllocationHandler.Custom) {
+        PreAllocationHandler.Custom customHandler =
+            (PreAllocationHandler.Custom) preAllocationHandler;
+        mPreAllocateMountContentHandler = instrumentHandler(customHandler.getHandler());
+      }
     }
 
     Context androidContext = builder.mAndroidContext;

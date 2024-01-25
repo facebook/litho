@@ -23,6 +23,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
@@ -71,8 +72,8 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
-    preallocationPerMountContentEnabled: Boolean =
-        context.lithoConfiguration.componentsConfig.mountContentPreallocationEnabled,
+    preAllocationHandler: PreAllocationHandler? =
+        context.lithoConfiguration.componentsConfig.preAllocationHandler,
     shouldExcludeFromIncrementalMount: Boolean = false,
     init: LazyGridScope.() -> Unit
 ): Component {
@@ -87,7 +88,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
               isIncrementalMountEnabled = isIncrementalMountEnabled,
-              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              preAllocationHandler = preAllocationHandler,
               spans = spans,
               gapStrategy = gapStrategy),
       itemAnimator,
