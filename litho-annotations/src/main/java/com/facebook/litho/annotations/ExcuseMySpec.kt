@@ -52,6 +52,13 @@ enum class Reason {
   SECTION_USED_WITH_OTHER_SECTIONS,
 
   /**
+   * Used when creating new react native component bridges. currently the implementation only
+   * supports LithoSpec, integrating with KComponents ends up with a lot of rendering issues such as
+   * https://fb.workplace.com/groups/rn.support/permalink/25722856564002949/.
+   */
+  REACT_NATIVE_BRIDGING,
+
+  /**
    * Used only to mark Kotlin Specs that were created before the Spec API deprecation.
    * [Convert this Spec](https://fblitho.com/docs/kotlin/kotlin-intro/) to the Litho Kotlin API or
    * change [LEGACY] to other appropriate [Reason].
