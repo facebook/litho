@@ -70,11 +70,7 @@ public class ComponentUtils {
       return true;
     }
 
-    if (stateContainer1 == null && stateContainer2 != null) {
-      return false;
-    }
-
-    if (stateContainer1 != null && stateContainer2 == null) {
+    if (stateContainer1 == null || stateContainer2 == null) {
       return false;
     }
 
@@ -115,7 +111,7 @@ public class ComponentUtils {
 
       boolean intermediateResult = isEquivalentUtil(field, classType, val1, val2);
       if (!intermediateResult) {
-        return intermediateResult;
+        return false;
       }
     }
 
@@ -128,7 +124,7 @@ public class ComponentUtils {
     try {
       comparableType = field.getAnnotation(Comparable.class).type();
     } catch (IncompatibleClassChangeError | NullPointerException ignore) {
-      /**
+      /*
        * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
        * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
        *
@@ -250,42 +246,22 @@ public class ComponentUtils {
   static boolean areArraysEquals(Class<?> classType, Object val1, Object val2) {
     final Class<?> innerClassType = classType.getComponentType();
     if (Byte.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((byte[]) val1, (byte[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((byte[]) val1, (byte[]) val2);
     } else if (Short.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((short[]) val1, (short[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((short[]) val1, (short[]) val2);
     } else if (Character.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((char[]) val1, (char[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((char[]) val1, (char[]) val2);
     } else if (Integer.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((int[]) val1, (int[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((int[]) val1, (int[]) val2);
     } else if (Long.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((long[]) val1, (long[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((long[]) val1, (long[]) val2);
     } else if (Float.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((float[]) val1, (float[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((float[]) val1, (float[]) val2);
     } else if (Double.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((double[]) val1, (double[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((double[]) val1, (double[]) val2);
     } else if (Boolean.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((boolean[]) val1, (boolean[]) val2)) {
-        return false;
-      }
-    } else if (!Arrays.equals((Object[]) val1, (Object[]) val2)) {
-      return false;
-    }
-
-    return true;
+      return Arrays.equals((boolean[]) val1, (boolean[]) val2);
+    } else return Arrays.equals((Object[]) val1, (Object[]) val2);
   }
 
   static boolean areCollectionsEquals(Type type, @Nullable Collection c1, @Nullable Collection c2) {
