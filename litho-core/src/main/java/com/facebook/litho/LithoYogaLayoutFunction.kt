@@ -523,7 +523,7 @@ internal object LithoYogaLayoutFunction {
               SpecGeneratedComponentLayout(
                   yogaNode = layoutResult.getYogaNode(),
                   paddingSet = layoutResult.node.isPaddingSet,
-                  background = layoutResult.node.background,
+                  backgroundDrawable = layoutResult.node.background,
               ),
               layoutData)
         } catch (e: Exception) {
@@ -663,7 +663,7 @@ internal object LithoYogaLayoutFunction {
               SpecGeneratedComponentLayout(
                   yogaNode = lithoLayoutResult.getYogaNode(),
                   paddingSet = node.isPaddingSet,
-                  background = node.background,
+                  backgroundDrawable = node.background,
               ),
               widthSpec,
               heightSpec,

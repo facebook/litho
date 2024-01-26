@@ -25,27 +25,39 @@ import com.facebook.yoga.YogaNode
 class SpecGeneratedComponentLayout(
     private val yogaNode: YogaNode,
     private val paddingSet: Boolean,
-    private val background: Drawable?,
+    private val backgroundDrawable: Drawable?,
 ) : ComponentLayout {
-  override fun getX(): Int = yogaNode.layoutX.toInt()
 
-  override fun getY(): Int = yogaNode.layoutY.toInt()
+  override val x: Int
+    get() = yogaNode.layoutX.toInt()
 
-  override fun getWidth(): Int = yogaNode.layoutWidth.toInt()
+  override val y: Int
+    get() = yogaNode.layoutY.toInt()
 
-  override fun getHeight(): Int = yogaNode.layoutHeight.toInt()
+  override val width: Int
+    get() = yogaNode.layoutWidth.toInt()
 
-  override fun getPaddingTop(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.TOP))
+  override val height: Int
+    get() = yogaNode.layoutHeight.toInt()
 
-  override fun getPaddingRight(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.RIGHT))
+  override val paddingTop: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.TOP))
 
-  override fun getPaddingBottom(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+  override val paddingRight: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.RIGHT))
 
-  override fun getPaddingLeft(): Int = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
+  override val paddingBottom: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
 
-  @Deprecated("Deprecated in Java") override fun isPaddingSet(): Boolean = paddingSet
+  override val paddingLeft: Int
+    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
 
-  override fun getBackground(): Drawable? = background
+  override val isPaddingSet: Boolean
+    get() = paddingSet
 
-  override fun getResolvedLayoutDirection(): YogaDirection = yogaNode.layoutDirection
+  override val background: Drawable?
+    get() = backgroundDrawable
+
+  override val resolvedLayoutDirection: YogaDirection
+    get() = yogaNode.layoutDirection
 }
