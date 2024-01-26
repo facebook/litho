@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import javax.annotation.Nullable;
+package com.facebook.litho
 
 /**
- * A class implementing this interface will expose a method to dispatch an {@link
- * com.facebook.litho.annotations.Event} given an {@link EventHandler}.
+ * A class implementing this fun interface will expose a method to dispatch an
+ * [com.facebook.litho.annotations.Event] given an [EventHandler].
  */
-public interface EventDispatcher {
-  @Nullable
-  Object dispatchOnEvent(EventHandler eventHandler, Object eventState);
+fun interface EventDispatcher {
+
+  fun dispatchOnEvent(eventHandler: EventHandler<*>, eventState: Any): Any?
 }
