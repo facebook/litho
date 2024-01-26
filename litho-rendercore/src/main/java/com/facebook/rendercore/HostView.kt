@@ -136,17 +136,12 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   override fun getMountItemAt(index: Int): MountItem =
       mountItems[index] ?: throw IllegalArgumentException("No MountItem exists at position $index")
 
-  override fun moveItem(item: MountItem, oldIndex: Int, newIndex: Int) {
-    var item: MountItem? = item
-    if (item == null) {
-      item = scrapMountItemsArray?.get(oldIndex)
-    }
-    if (item == null) {
-      return
-    }
-    val content = item.content
+  override fun moveItem(item: MountItem?, oldIndex: Int, newIndex: Int) {
+    val mountItem: MountItem = item ?: scrapMountItemsArray?.get(oldIndex) ?: return
+
+    val content = mountItem.content
     invalidate()
-    if (item.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
+    if (mountItem.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
       isChildDrawingOrderDirty = true
       startTemporaryDetach(content as View)
     }
@@ -157,7 +152,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
     MountUtils.moveItem(oldIndex, newIndex, mountItems, scrapMountItemsArray)
     releaseScrapDataStructuresIfNeeded()
-    if (item.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
+    if (mountItem.renderUnit.renderType == RenderUnit.RenderType.VIEW) {
       finishTemporaryDetach(content as View)
     }
   }
@@ -381,7 +376,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
   }
 
   private fun releaseScrapDataStructuresIfNeeded() {
-    if (scrapMountItemsArray?.isEmpty() == true) {
+    if (isEmpty(scrapMountItemsArray)) {
       scrapMountItemsArray = null
     }
   }
@@ -566,7 +561,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
 
   companion object {
     private fun findItemIndexInArray(item: MountItem, array: Array<MountItem?>?): Int {
-      return array?.indices?.firstOrNull { i -> array[i] == item } ?: -1
+      return array?.indexOfFirst { it == item } ?: -1
     }
 
     private fun startTemporaryDetach(view: View) {
@@ -584,8 +579,8 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
       ViewCompat.dispatchFinishTemporaryDetach(view)
     }
 
-    private fun isEmpty(scrapMountItemsArray: Array<MountItem?>): Boolean {
-      return scrapMountItemsArray.indices.none { i -> scrapMountItemsArray[i] != null }
+    private fun isEmpty(scrapMountItemsArray: Array<MountItem?>?): Boolean {
+      return scrapMountItemsArray?.all { it == null } ?: true
     }
 
     @JvmStatic

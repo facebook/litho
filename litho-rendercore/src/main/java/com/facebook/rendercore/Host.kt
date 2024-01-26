@@ -70,7 +70,7 @@ abstract class Host(context: Context, attrs: AttributeSet?) : ViewGroup(context,
    * @param oldIndex The current index of the MountItem.
    * @param newIndex The new index of the MountItem.
    */
-  abstract fun moveItem(item: MountItem, oldIndex: Int, newIndex: Int)
+  abstract fun moveItem(item: MountItem?, oldIndex: Int, newIndex: Int)
 
   override fun getClipChildren(): Boolean {
     return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
