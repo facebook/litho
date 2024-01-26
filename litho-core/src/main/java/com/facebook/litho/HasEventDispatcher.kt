@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-/**
- * A class implementing this interface will expose a method to retrieve an {@link EventDispatcher}.
- */
-public interface HasEventDispatcher {
-  EventDispatcher getEventDispatcher();
+/** A class implementing this interface will expose a method to retrieve an [EventDispatcher]. */
+fun interface HasEventDispatcher {
+
+  fun getEventDispatcher(): EventDispatcher?
 }
