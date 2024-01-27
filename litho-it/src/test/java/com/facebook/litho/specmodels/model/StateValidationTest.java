@@ -58,6 +58,11 @@ public class StateValidationTest {
     when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
     when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.JAVA_CLASS);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.<StateParamModel>of());
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
   }
 
   @Test
@@ -70,11 +75,6 @@ public class StateValidationTest {
     when(stateValue2.getTypeName()).thenReturn(TypeName.INT);
     when(stateValue2.getRepresentedObject()).thenReturn(mRepresentedObject2);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -96,11 +96,6 @@ public class StateValidationTest {
     when(stateValue1.canUpdateLazily()).thenReturn(true);
     when(stateValue2.getRepresentedObject()).thenReturn(mRepresentedObject2);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -339,10 +334,6 @@ public class StateValidationTest {
 
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue));
     when(mSpecModel.getProps()).thenReturn(ImmutableList.of(prop));
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     final List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -371,11 +362,7 @@ public class StateValidationTest {
         .thenReturn(ImmutableList.<Annotation>of(injectPropAnnotation));
 
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue));
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
     when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.of(injectProp));
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     final List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -404,11 +391,7 @@ public class StateValidationTest {
     when(treeProp.getAnnotations()).thenReturn(ImmutableList.<Annotation>of(treePropAnnotation));
 
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue));
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(treeProp));
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     final List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -445,11 +428,6 @@ public class StateValidationTest {
                 .build(),
             false /* canUpdateLazily */);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -487,11 +465,6 @@ public class StateValidationTest {
                 .build(),
             true /* canUpdateLazily */);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -528,11 +501,6 @@ public class StateValidationTest {
                 .build(),
             false /* canUpdateLazily */);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -565,11 +533,6 @@ public class StateValidationTest {
             false /* canUpdateLazily */);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
     when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -604,11 +567,6 @@ public class StateValidationTest {
             false /* canUpdateLazily */);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
     when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -643,11 +601,6 @@ public class StateValidationTest {
             false /* canUpdateLazily */);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
     when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
-    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
-    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
-    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
-    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
