@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.specmodels.generator;
+package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.specmodels.model.SpecElementType;
-import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 
 /** Helper functions to handle wildcard cases from Kotlin spec files */
-class KotlinSpecHelper {
-  static boolean isKotlinSpec(SpecModel specModel) {
+public class KotlinSpecHelper {
+  public static boolean isKotlinSpec(SpecModel specModel) {
     return specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON
         || specModel.getSpecElementType() == SpecElementType.KOTLIN_CLASS;
   }
@@ -33,7 +31,7 @@ class KotlinSpecHelper {
    * Given List&lt;? extends Color&gt; transforms it to List&lt;Color&gt;. Note that if Kotlin spec
    * specifies @JvmSuppressWildcards, then this step is unnecessary.
    */
-  static TypeName maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+  public static TypeName maybeRemoveWildcardFromVarArgsIfKotlinSpec(
       SpecModel specModel, TypeName typeName) {
     if (!isKotlinSpec(specModel)) {
       return typeName;
@@ -55,7 +53,7 @@ class KotlinSpecHelper {
   }
 
   /** Given List&lt;? extends Color&gt; returns Color. */
-  static TypeName getBaseTypeIfWildcard(TypeName typeName) {
+  public static TypeName getBaseTypeIfWildcard(TypeName typeName) {
     if (typeName instanceof WildcardTypeName) {
       return ((WildcardTypeName) typeName).upperBounds.get(0);
     }
