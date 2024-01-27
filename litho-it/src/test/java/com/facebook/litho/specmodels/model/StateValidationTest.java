@@ -43,6 +43,7 @@ import org.junit.runners.JUnit4;
 /** Tests {@link StateValidation} */
 @RunWith(JUnit4.class)
 public class StateValidationTest {
+
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final PropModel mPropModel = mock(PropModel.class);
   private final StateParamModel mStateParamModel = mock(StateParamModel.class);
@@ -415,5 +416,252 @@ public class StateValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo("The parameter name of @TreeProp \"sameName\" and @State \"sameName\" collide!");
+  }
+
+  @Test
+  public void testStateWithDifferentReturnTypes() {
+    StateParamModel stateValue1 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassNames.STATE_VALUE,
+                        TypeVariableName.get("S"),
+                        TypeVariableName.get("T")))
+                .name("name1")
+                .representedObject(mRepresentedObject1)
+                .build(),
+            false /* canUpdateLazily */);
+    StateParamModel stateValue2 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassNames.STATE_VALUE,
+                        TypeVariableName.get("Q"),
+                        TypeVariableName.get("R")))
+                .name("name1")
+                .representedObject(mRepresentedObject2)
+                .build(),
+            false /* canUpdateLazily */);
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
+
+    List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("State values with the same name must have the same type.");
+  }
+
+  @Test
+  public void testStateWithDifferentReturnTypesAndMismatchedLazy() {
+    StateParamModel stateValue1 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassNames.STATE_VALUE,
+                        TypeVariableName.get("S"),
+                        TypeVariableName.get("T")))
+                .name("name1")
+                .representedObject(mRepresentedObject1)
+                .build(),
+            false /* canUpdateLazily */);
+    StateParamModel stateValue2 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassNames.STATE_VALUE,
+                        TypeVariableName.get("Q"),
+                        TypeVariableName.get("R")))
+                .name("name1")
+                .representedObject(mRepresentedObject2)
+                .build(),
+            true /* canUpdateLazily */);
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
+
+    List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+
+    assertThat(validationErrors).hasSize(2);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("State values with the same name must have the same type.");
+    assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo(
+            "State values with the same name must have the same annotated value for "
+                + "canUpdateLazily().");
+  }
+
+  @Test
+  public void testStateWithCovariantDifferentReturnTypesForJavaSpec() {
+    StateParamModel stateValue1 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassName.get(List.class), WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                .name("name1")
+                .representedObject(mRepresentedObject1)
+                .build(),
+            false /* canUpdateLazily */);
+    StateParamModel stateValue2 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.OBJECT))
+                .name("name1")
+                .representedObject(mRepresentedObject2)
+                .build(),
+            false /* canUpdateLazily */);
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
+
+    List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("State values with the same name must have the same type.");
+  }
+
+  @Test
+  public void testStateWithCovariantDifferentReturnTypesForKotlinSpec() {
+    StateParamModel stateValue1 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassName.get(List.class), WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                .name("name1")
+                .representedObject(mRepresentedObject1)
+                .build(),
+            false /* canUpdateLazily */);
+    StateParamModel stateValue2 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.OBJECT))
+                .name("name1")
+                .representedObject(mRepresentedObject2)
+                .build(),
+            false /* canUpdateLazily */);
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
+
+    List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
+                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+  }
+
+  @Test
+  public void testStateWithCovariantDifferentReturnTypesForKotlinSpecFirstStateNotVariant() {
+    StateParamModel stateValue1 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.OBJECT))
+                .name("name1")
+                .representedObject(mRepresentedObject1)
+                .build(),
+            false /* canUpdateLazily */);
+    StateParamModel stateValue2 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassName.get(List.class), WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                .name("name1")
+                .representedObject(mRepresentedObject2)
+                .build(),
+            false /* canUpdateLazily */);
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
+
+    List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
+                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+  }
+
+  @Test
+  public void testStateWithCovariantDifferentReturnTypesForKotlinSpecAndMismatchLazy() {
+    StateParamModel stateValue1 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassName.get(List.class), WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                .name("name1")
+                .representedObject(mRepresentedObject1)
+                .build(),
+            true /* canUpdateLazily */);
+    StateParamModel stateValue2 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.OBJECT))
+                .name("name1")
+                .representedObject(mRepresentedObject2)
+                .build(),
+            false /* canUpdateLazily */);
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+    when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
+
+    List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+
+    assertThat(validationErrors).hasSize(2);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
+                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+    assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo(
+            "State values with the same name must have the same annotated value for "
+                + "canUpdateLazily().");
   }
 }

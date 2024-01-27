@@ -68,11 +68,16 @@ public class CachedValueValidation {
           .getTypeName()
           .box()
           .equals(onCalculateCachedValueMethod.returnType.box())) {
+        final String errorMessage =
+            SpecModelUtils.areTypesEqualIgnoringKotlinCovariance(
+                    specModel, cachedValue.getTypeName(), onCalculateCachedValueMethod.returnType)
+                ? "CachedValue params for collections in Kotlin Specs need to add @JvmSuppressWildCards such as "
+                    + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for @CachedValue params."
+                : "CachedValue param types and the return type of the corresponding "
+                    + "@OnCalculateCachedValue method must be the same.";
+
         validationErrors.add(
-            new SpecModelValidationError(
-                cachedValue.getRepresentedObject(),
-                "CachedValue param types and the return type of the corresponding "
-                    + "@OnCalculateCachedValue method must be the same."));
+            new SpecModelValidationError(cachedValue.getRepresentedObject(), errorMessage));
       }
     }
 

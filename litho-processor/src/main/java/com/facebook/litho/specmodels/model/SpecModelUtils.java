@@ -142,6 +142,26 @@ public class SpecModelUtils {
             .equals(stateValue.getTypeName().box());
   }
 
+  /**
+   * Checks equality against two types, ignoring Kotlin covariance ie. List<? extends T> would equal
+   * List<T>.
+   *
+   * @param specModel the specific specModel from where the types are coming from
+   * @param typeName1 the first type to compare
+   * @param typeName2 the second type to compare
+   * @return if the specModel is a Kotlin spec, and the two types are equal after ignoring Kotlin
+   *     covariance.
+   */
+  public static boolean areTypesEqualIgnoringKotlinCovariance(
+      SpecModel specModel, TypeName typeName1, TypeName typeName2) {
+    final TypeName typeName1WithoutWildcards =
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(specModel, typeName1);
+    final TypeName typeName2WithoutWildcards =
+        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(specModel, typeName2);
+
+    return typeName1WithoutWildcards.box().equals(typeName2WithoutWildcards.box());
+  }
+
   /** @return the model for state/prop that this Diff is refering to. */
   public static MethodParamModel getReferencedParamModelForDiff(
       SpecModel specModel, RenderDataDiffModel diffModel) {
