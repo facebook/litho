@@ -83,7 +83,7 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
             stateHandler.pendingHookUpdates,
             stateHandler.pendingLazyStateUpdates,
             stateHandler.appliedStateUpdates,
-            stateHandler.pendingHookUpdates,
+            stateHandler.appliedHookUpdates,
         )
         copyCurrentStateContainers(stateHandler.stateContainers)
         copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
