@@ -131,7 +131,8 @@ public class ComponentContext {
     mLithoConfiguration =
         lithoConfiguration != null
             ? lithoConfiguration
-            : buildDefaultLithoConfiguration(mContext, null, null, null);
+            : buildDefaultLithoConfiguration(
+                mContext, ComponentsConfiguration.defaultInstance, null, null, null, null);
 
     if (mLithoConfiguration.logger != null && mLithoConfiguration.logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");

@@ -24,6 +24,8 @@ object ComponentContextUtils {
   @JvmStatic
   fun buildDefaultLithoConfiguration(
       context: Context,
+      componentsConfig: ComponentsConfiguration = ComponentsConfiguration.defaultInstance,
+      renderUnitIdGenerator: RenderUnitIdGenerator? = null,
       transformer: VisibilityBoundsTransformer? = null,
       logTag: String? = null,
       logger: ComponentsLogger? = null,
@@ -34,13 +36,13 @@ object ComponentContextUtils {
       logTagToUse = "global-components-logger"
     }
     return LithoConfiguration(
-        componentsConfig = ComponentsConfiguration.defaultInstance,
+        componentsConfig = componentsConfig,
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
         isVisibilityProcessingEnabled = true,
         errorEventHandler = DefaultErrorEventHandler.INSTANCE,
         logTag = logTagToUse,
         logger = loggerToUse,
-        renderUnitIdGenerator = null,
+        renderUnitIdGenerator = renderUnitIdGenerator,
         visibilityBoundsTransformer = transformer,
         debugEventListener = null)
   }
