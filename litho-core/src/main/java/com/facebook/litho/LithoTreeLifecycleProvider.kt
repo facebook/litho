@@ -25,5 +25,5 @@ interface LithoTreeLifecycleProvider {
 
   val isReleased: Boolean
 
-  fun addOnReleaseListener(onReleaseListener: OnReleaseListener)
+  fun addOnReleaseListener(listener: OnReleaseListener)
 }

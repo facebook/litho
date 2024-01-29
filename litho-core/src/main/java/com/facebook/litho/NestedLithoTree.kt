@@ -295,10 +295,8 @@ class NestedLithoTree(
     return state.getEventTrigger(handle = handle, methodId = id)
   }
 
-  override fun addOnReleaseListener(
-      onReleaseListener: LithoTreeLifecycleProvider.OnReleaseListener
-  ) {
-    delegate.lithoTreeLifecycleProvider.addOnReleaseListener(onReleaseListener = onReleaseListener)
+  override fun addOnReleaseListener(listener: LithoTreeLifecycleProvider.OnReleaseListener) {
+    delegate.lithoTreeLifecycleProvider.addOnReleaseListener(listener = listener)
   }
 
   override fun onErrorComponent(component: Component?) {

@@ -2871,18 +2871,18 @@ public class ComponentTree
   }
 
   @Override
-  public void addOnReleaseListener(OnReleaseListener onReleaseListener) {
+  public void addOnReleaseListener(OnReleaseListener listener) {
     assertMainThread();
     if (mOnReleaseListeners == null) {
       mOnReleaseListeners = new ArrayList<>();
     }
-    mOnReleaseListeners.add(onReleaseListener);
+    mOnReleaseListeners.add(listener);
   }
 
-  public void removeOnReleaseListener(OnReleaseListener onReleaseListener) {
+  public void removeOnReleaseListener(OnReleaseListener listener) {
     assertMainThread();
     if (mOnReleaseListeners != null) {
-      mOnReleaseListeners.remove(onReleaseListener);
+      mOnReleaseListeners.remove(listener);
     }
   }
 
