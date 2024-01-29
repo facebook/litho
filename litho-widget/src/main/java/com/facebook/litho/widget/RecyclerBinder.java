@@ -432,14 +432,11 @@ public class RecyclerBinder
 
   public static class Builder {
 
-    public static final float DEFAULT_RANGE_RATIO = 2f;
-
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private LayoutInfo layoutInfo;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
-    private boolean wrapContent;
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private RecyclerRangeTraverser recyclerRangeTraverser;
@@ -482,16 +479,6 @@ public class RecyclerBinder
      */
     public Builder layoutInfo(LayoutInfo layoutInfo) {
       this.layoutInfo = layoutInfo;
-      return this;
-    }
-
-    /**
-     * If true, the underlying RecyclerBinder will measure the parent height by the height of
-     * children if the orientation is vertical, or measure the parent width by the width of children
-     * if the orientation is horizontal.
-     */
-    public Builder wrapContent(boolean wrapContent) {
-      this.wrapContent = wrapContent;
       return this;
     }
 
@@ -787,7 +774,7 @@ public class RecyclerBinder
               }
             };
 
-    mWrapContent = builder.wrapContent;
+    mWrapContent = mRecyclerBinderConfig.wrapContent;
     mTraverseLayoutBackwards = getStackFromEnd();
 
     if (builder.recyclerRangeTraverser != null) {

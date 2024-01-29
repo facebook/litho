@@ -68,8 +68,8 @@ abstract class CollectionLayout(
                                   isReconciliationEnabled = isReconciliationEnabled,
                                   preAllocationHandler = preAllocationHandler,
                                   incrementalMountEnabled = isIncrementalMountEnabled),
-                          rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO))
-                  .wrapContent(mainAxisWrapContent)
+                          rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO,
+                          wrapContent = mainAxisWrapContent))
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .build())
           .build()

@@ -148,7 +148,6 @@ object CollectionRecyclerSpec {
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
             .startupLogger(startupLogger)
             .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
-            .apply { with(binderConfiguration) { wrapContent(isWrapContent) } }
             .build(c)
 
     val targetBinder =

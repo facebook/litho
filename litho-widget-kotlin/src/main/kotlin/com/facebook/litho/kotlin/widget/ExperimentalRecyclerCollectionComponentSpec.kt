@@ -188,7 +188,7 @@ object ExperimentalRecyclerCollectionComponentSpec {
         else null
     val positionStyle =
         if (!binder.canMeasure() &&
-            !recyclerConfiguration.recyclerBinderConfiguration.isWrapContent) {
+            !recyclerConfiguration.recyclerBinderConfiguration.recyclerBinderConfig.wrapContent) {
           Style.positionType(YogaPositionType.ABSOLUTE).position(all = 0.dp)
         } else null
     val recycler =
@@ -305,7 +305,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
                                 incrementalMount &&
                                     componentsConfiguration.incrementalMountEnabled)))
             .layoutInfo(newLayoutInfo)
-            .wrapContent(binderConfiguration.isWrapContent)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger)
     val recyclerBinder = recyclerBinderBuilder.build(c)

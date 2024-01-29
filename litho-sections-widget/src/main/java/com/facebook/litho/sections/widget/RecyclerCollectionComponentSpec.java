@@ -246,7 +246,10 @@ public class RecyclerCollectionComponentSpec {
             .contentDescription(recyclerContentDescription);
 
     if (!binder.canMeasure()
-        && !recyclerConfiguration.getRecyclerBinderConfiguration().isWrapContent()) {
+        && !recyclerConfiguration
+            .getRecyclerBinderConfiguration()
+            .getRecyclerBinderConfig()
+            .wrapContent) {
       recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
     }
 
@@ -332,7 +335,6 @@ public class RecyclerCollectionComponentSpec {
                             .build())
                     .build())
             .layoutInfo(newLayoutInfo)
-            .wrapContent(binderConfiguration.isWrapContent())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger);
 

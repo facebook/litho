@@ -87,8 +87,8 @@ public class RecyclerBinderWrapContentTest {
   public void testWrapContentWithInsertOnVertical() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
     recyclerBinder.mount(mRecyclerView);
 
@@ -130,8 +130,8 @@ public class RecyclerBinderWrapContentTest {
     final int NUM_TO_INSERT = 6;
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
     recyclerBinder.mount(mRecyclerView);
 
@@ -427,8 +427,8 @@ public class RecyclerBinderWrapContentTest {
   public void testWrapContentWithInsertAsyncOnVertical() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
 
     recyclerBinder.mount(mRecyclerView);
@@ -474,8 +474,8 @@ public class RecyclerBinderWrapContentTest {
     final int NUM_TO_INSERT = 6;
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
 
     recyclerBinder.mount(mRecyclerView);
@@ -644,8 +644,8 @@ public class RecyclerBinderWrapContentTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
 
     recyclerBinder.mount(mRecyclerView);
@@ -688,8 +688,8 @@ public class RecyclerBinderWrapContentTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
 
     recyclerBinder.mount(mRecyclerView);
@@ -842,8 +842,8 @@ public class RecyclerBinderWrapContentTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
 
     recyclerBinder.mount(mRecyclerView);
@@ -891,8 +891,8 @@ public class RecyclerBinderWrapContentTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
 
     recyclerBinder.mount(mRecyclerView);
@@ -1093,8 +1093,8 @@ public class RecyclerBinderWrapContentTest {
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
-            .wrapContent(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().wrapContent(true).rangeRatio(RANGE_RATIO).build())
             .build(mComponentContext);
     recyclerBinder.mount(recyclerView);
 
@@ -1133,7 +1133,7 @@ public class RecyclerBinderWrapContentTest {
     RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
             .layoutInfo(new LinearLayoutInfo(mComponentContext, orientation, false))
-            .wrapContent(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().wrapContent(true).build())
             .build(mComponentContext);
 
     Size size = new Size();

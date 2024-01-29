@@ -149,6 +149,12 @@ data class RecyclerBinderConfig(
      */
     @JvmField
     val enableStableIds: Boolean = ComponentsConfiguration.defaultRecyclerBinderUseStableId,
+    /**
+     * If true, the [RecyclerBinder] will measure the parent height by the height of children if the
+     * orientation is vertical, or measure the parent width by the width of children if the
+     * orientation is horizontal.
+     */
+    @JvmField val wrapContent: Boolean = false
 ) {
 
   init {
@@ -163,7 +169,7 @@ data class RecyclerBinderConfig(
 
   companion object {
 
-    const val DEFAULT_RANGE_RATIO = 2f
+    const val DEFAULT_RANGE_RATIO: Float = 2f
 
     private val default: RecyclerBinderConfig = RecyclerBinderConfig()
 
@@ -206,6 +212,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
+  private var wrapContent = configuration.wrapContent
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -267,6 +274,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.enableStableIds = enabled
   }
 
+  fun wrapContent(wrapContent: Boolean): RecyclerBinderConfigBuilder = also {
+    this.wrapContent = wrapContent
+  }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -283,6 +294,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         errorEventHandler = errorEventHandler,
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
-        enableStableIds = enableStableIds)
+        enableStableIds = enableStableIds,
+        wrapContent = wrapContent)
   }
 }

@@ -25,7 +25,6 @@ import com.facebook.rendercore.RunnableHandler;
 
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
-  private final boolean mIsWrapContent;
   // TODO T34627443 make all fields final after removing setters
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
@@ -43,19 +42,13 @@ public class RecyclerBinderConfiguration {
 
   private RecyclerBinderConfiguration(
       RecyclerBinderConfig recyclerBinderConfig,
-      boolean wrapContent,
       boolean useBackgroundChangeSets,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean postToFrontOfQueueForFirstChangeset) {
-    mIsWrapContent = wrapContent;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mRecyclerBinderConfig = recyclerBinderConfig;
-  }
-
-  public boolean isWrapContent() {
-    return mIsWrapContent;
   }
 
   public boolean getUseBackgroundChangeSets() {
@@ -77,7 +70,6 @@ public class RecyclerBinderConfiguration {
   public static class Builder {
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
-    private boolean mWrapContent = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mPostToFrontOfQueueForFirstChangeset;
@@ -86,7 +78,6 @@ public class RecyclerBinderConfiguration {
 
     private Builder(RecyclerBinderConfiguration configuration) {
       mRecyclerBinderConfig = configuration.mRecyclerBinderConfig;
-      this.mWrapContent = configuration.mIsWrapContent;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mPostToFrontOfQueueForFirstChangeset =
@@ -101,16 +92,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder recyclerBinderConfig(RecyclerBinderConfig recyclerBinderConfig) {
       mRecyclerBinderConfig = recyclerBinderConfig;
-      return this;
-    }
-
-    /**
-     * @param isWrapContent If true, the underlying RecyclerBinder will measure the parent height by
-     *     the height of children if the orientation is vertical, or measure the parent width by the
-     *     width of children if the orientation is horizontal.
-     */
-    public Builder wrapContent(boolean isWrapContent) {
-      mWrapContent = isWrapContent;
       return this;
     }
 
@@ -140,7 +121,6 @@ public class RecyclerBinderConfiguration {
           builderRecyclerBinderConfig != null
               ? builderRecyclerBinderConfig
               : new RecyclerBinderConfig(),
-          mWrapContent,
           mUseBackgroundChangeSets,
           mChangeSetThreadHandler,
           mPostToFrontOfQueueForFirstChangeset);

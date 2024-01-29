@@ -31,6 +31,7 @@ import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.MountSpecInterStagePropsTester
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.yoga.YogaEdge
@@ -910,7 +911,9 @@ class LayoutCachingTest {
     val config: RecyclerConfiguration =
         ListRecyclerConfiguration.create()
             .recyclerBinderConfiguration(
-                RecyclerBinderConfiguration.create().wrapContent(true).build())
+                RecyclerBinderConfiguration.create()
+                    .recyclerBinderConfig(RecyclerBinderConfig(wrapContent = true))
+                    .build())
             .build()
     val sectionContext = SectionContext(context)
     return RecyclerCollectionComponent.create(context)
