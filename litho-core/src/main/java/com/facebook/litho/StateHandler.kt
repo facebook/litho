@@ -87,6 +87,7 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
         )
         copyCurrentStateContainers(stateHandler.stateContainers)
         copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
+        stateHandler.cachedValues?.let { cachedValues = HashMap(it) }
       }
     }
   }
