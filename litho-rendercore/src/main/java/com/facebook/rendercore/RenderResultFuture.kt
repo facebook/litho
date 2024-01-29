@@ -24,9 +24,9 @@ class RenderResultFuture<State, RenderContext>(
     private val previousResult: RenderResult<State, RenderContext>?,
     val setRootId: Int,
     val sizeConstraints: SizeConstraints,
-    callable: Callable<RenderResult<State, RenderContext>?>
+    callable: Callable<RenderResult<State, RenderContext>>
 ) :
-    ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>?>(
+    ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>>(
         callable, "RenderResultFuture") {
 
   @Deprecated(message = "Use the constructor that accepts SizeConstraints")
@@ -60,7 +60,7 @@ class RenderResultFuture<State, RenderContext>(
       previousResult,
       setRootId,
       sizeConstraints,
-      Callable<RenderResult<State, RenderContext>?> {
+      Callable<RenderResult<State, RenderContext>> {
         RenderResult.render<State, RenderContext>(
             context,
             resolveResult,

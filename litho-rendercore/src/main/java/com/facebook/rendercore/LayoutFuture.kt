@@ -30,7 +30,7 @@ class LayoutFuture<State, RenderContext>(
     extensions: Array<RenderCoreExtension<*, *>>?,
     val sizeConstraints: SizeConstraints
 ) :
-    ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>?>(
+    ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>>(
         Callable {
           if (previousResult != null &&
               RenderResult.shouldReuseResult(tree, sizeConstraints, previousResult)) {
