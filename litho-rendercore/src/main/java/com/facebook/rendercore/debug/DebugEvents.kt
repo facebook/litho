@@ -373,6 +373,7 @@ object DebugEventDispatcher {
   }
 
   @Synchronized
+  @JvmStatic
   fun subscribe(subscriber: DebugEventSubscriber) {
     mutableSubscribers.add(subscriber)
   }
