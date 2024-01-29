@@ -110,7 +110,7 @@ public class ComponentContext {
     this(context, treePropContainer, lithoConfiguration, null, null, null, null, null);
   }
 
-  protected ComponentContext(
+  ComponentContext(
       Context androidContext,
       @Nullable TreePropContainer treePropContainer,
       @Nullable LithoConfiguration lithoConfiguration,
