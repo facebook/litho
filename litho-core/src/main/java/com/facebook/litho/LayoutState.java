@@ -195,7 +195,7 @@ public class LayoutState
     mIsAccessibilityEnabled = isAccessibilityEnabled;
   }
 
-  ResolveResult getResolveResult() {
+  public ResolveResult getResolveResult() {
     return mResolveResult;
   }
 
