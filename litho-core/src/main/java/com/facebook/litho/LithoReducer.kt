@@ -32,7 +32,7 @@ import com.facebook.rendercore.visibility.VisibilityOutput
 import kotlin.math.max
 import kotlin.math.min
 
-object LithoReducer {
+internal object LithoReducer {
 
   private const val DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds"
 
@@ -45,7 +45,7 @@ object LithoReducer {
       layoutCache: LayoutCache,
       reductionState: ReductionState,
   ): LayoutState {
-    setSizeAfterMeasureAndCollectResults(reductionState.c, lsc, reductionState)
+    setSizeAfterMeasureAndCollectResults(reductionState.componentContext, lsc, reductionState)
     return reductionState.createLayoutStateFromReductionState(
         lsc, resolveResult, treeId, layoutCache)
   }
@@ -56,22 +56,16 @@ object LithoReducer {
       result: LayoutResult? = null,
       hierarchy: DebugHierarchy.Node? = null,
   ) {
-    val reductionState = createReductionStateFromLayoutState(layoutState)
+    val reductionState =
+        ReductionState(
+            componentContext = layoutState.mResolveResult.context,
+            sizeConstraints = layoutState.sizeConstraints,
+            currentLayoutState = layoutState,
+            root = layoutState.mLayoutResult,
+            offsetRootX = layoutState.mRootX,
+            offsetRootY = layoutState.mRootY)
     addRootHostRenderTreeNode(reductionState, result, hierarchy)
     reductionState.mergeReductionStateIntoLayoutState(layoutState)
-  }
-
-  private fun createReductionStateFromLayoutState(layoutState: LayoutState): ReductionState {
-    if (layoutState?.resolveResult == null) {
-      throw IllegalArgumentException("Both layoutState and resolveResult cannot be null here.")
-    }
-    return ReductionState(
-        c = layoutState.mResolveResult.context,
-        sizeConstraints = layoutState.sizeConstraints,
-        currentLayoutState = layoutState,
-        root = layoutState.mLayoutResult,
-        offsetRootX = layoutState.mRootX,
-        offsetRootY = layoutState.mRootY)
   }
 
   private fun setSizeAfterMeasureAndCollectResults(

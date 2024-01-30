@@ -35,17 +35,17 @@ import com.facebook.rendercore.visibility.VisibilityOutput
  * going to be transferred to [LayoutState] in the end.
  */
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
-data class ReductionState(
+internal data class ReductionState(
+    val componentContext: ComponentContext,
+    val sizeConstraints: SizeConstraints,
+    val currentLayoutState: LayoutState?,
+    val offsetRootX: Int,
+    val offsetRootY: Int,
+    val root: LayoutResult? = null,
     var attachables: MutableList<Attachable>? = null,
     var transitions: MutableList<Transition>? = null,
     var scopedComponentInfosNeedingPreviousRenderData: MutableList<ScopedComponentInfo>? = null,
     var workingRangeContainer: WorkingRangeContainer? = null,
-    val c: ComponentContext,
-    val sizeConstraints: SizeConstraints,
-    val currentLayoutState: LayoutState?,
-    val root: LayoutResult? = null,
-    val offsetRootX: Int,
-    val offsetRootY: Int
 ) {
   var layoutResult: LayoutResult? = root
   var width: Int = 0
@@ -56,7 +56,6 @@ data class ReductionState(
   var currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? = null
   var hasComponentsExcludedFromIncrementalMount: Boolean = false
 
-  val componentContext = c
   val mountableOutputs: MutableList<RenderTreeNode> = ArrayList(8)
   val componentRootName: String = componentContext.componentScope?.simpleName ?: ""
   val widthSpec: Int = getWidthSpec(sizeConstraints)
