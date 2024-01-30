@@ -167,6 +167,14 @@ class TreeState {
       }
     }
 
+  val keysForAppliedStateUpdates: Set<String>
+    get() {
+      return HashSet<String>().apply {
+        addAll(resolveState.keysForAppliedUpdates)
+        addAll(layoutState.keysForAppliedUpdates)
+      }
+    }
+
   fun addStateContainer(key: String, stateContainer: StateContainer, isNestedTree: Boolean) {
     getStateHandler(isNestedTree).addStateContainer(key, stateContainer)
   }

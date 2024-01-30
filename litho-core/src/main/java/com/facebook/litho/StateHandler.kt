@@ -286,6 +286,14 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
           addAll(appliedHookUpdates.keys)
         }
 
+  @get:Synchronized
+  val keysForAppliedUpdates: Set<String>
+    get() =
+        HashSet<String>().apply {
+          addAll(_appliedStateUpdates.keys)
+          addAll(appliedHookUpdates.keys)
+        }
+
   private fun clearStateUpdates(appliedStateUpdates: Map<String, List<StateUpdate>>) {
     synchronized(this) {
       if (_pendingStateUpdates.isEmpty()) {
