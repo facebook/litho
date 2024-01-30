@@ -21,9 +21,11 @@ import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
+import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.NestedLithoTree
+import com.facebook.litho.NestedLithoTreeState
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.ResolveResult
@@ -128,9 +130,9 @@ internal class VerticalScrollComponent(
     val fadingEdgeLengthPx = fadingEdgeLength.toPixels()
 
     val (
-        tree: NestedLithoTree,
+        state: NestedLithoTreeState,
         resolveResult: ResolveResult,
-    ) = useNestedTree(root = child, treePropContainer = context.treePropContainer)
+    ) = useNestedTree(root = child, treeProps = context.treePropContainer)
 
     val scrollPosition = useState {
       LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
@@ -139,7 +141,6 @@ internal class VerticalScrollComponent(
     return LithoPrimitive(
         layoutBehavior =
             VerticalScrollLayoutBehavior(
-                tree = tree,
                 resolveResult = resolveResult,
                 fillViewport = fillViewport,
             ),
@@ -153,7 +154,7 @@ internal class VerticalScrollComponent(
                   // mounts a Render Tree View in the Litho Scroll View
                   doesMountRenderTreeHosts = true
 
-                  bindToRenderTreeView(tree = tree) { renderTreeView as LithoRenderTreeView }
+                  bindToRenderTreeView(state = state) { renderTreeView as LithoRenderTreeView }
 
                   withDescription("onScrollStateChange") {
                     onScrollStateChange.bindTo(LithoScrollView::setScrollStateListener, null)
@@ -236,7 +237,6 @@ internal class VerticalScrollComponent(
 }
 
 internal class VerticalScrollLayoutBehavior(
-    private val tree: NestedLithoTree,
     private val resolveResult: ResolveResult,
     private val fillViewport: Boolean,
 ) : LayoutBehavior {
@@ -257,7 +257,12 @@ internal class VerticalScrollLayoutBehavior(
           )
         }
 
-    val layoutState = tree.layout(result = resolveResult, sizeConstraints = constraints)
+    val layoutState =
+        NestedLithoTree.layout(
+            result = resolveResult,
+            sizeConstraints = constraints,
+            current = layoutContext.consumePreviousLayoutDataForCurrentNode() as LayoutState?,
+        )
 
     // Ensure that width is not less than 0
     val width: Int = max(sizeConstraints.minWidth, layoutState.width)

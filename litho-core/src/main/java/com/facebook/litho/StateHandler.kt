@@ -276,6 +276,16 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
     commitHookState(stateHandler.appliedHookUpdates)
   }
 
+  fun commit() {
+    synchronized(this) {
+      clearStateUpdates(appliedStateUpdates)
+      clearUnusedStateContainers(this)
+      commitHookState(appliedHookUpdates)
+      _appliedStateUpdates.clear()
+      appliedHookUpdates.clear()
+    }
+  }
+
   @get:Synchronized
   val keysForPendingUpdates: Set<String>
     get() =

@@ -85,6 +85,11 @@ class TreeState {
     layoutState.commit(localTreeState.layoutState)
   }
 
+  fun commit() {
+    resolveState.commit()
+    layoutState.commit()
+  }
+
   fun queueStateUpdate(
       key: String,
       stateUpdate: StateContainer.StateUpdate,

@@ -16,13 +16,19 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import android.view.ViewGroup
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.ComponentContextUtils.buildDefaultLithoConfiguration
+import com.facebook.litho.NestedLithoTree.enqueue
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.primitives.MountBehavior as PrimitiveMountBehavior
 import com.facebook.rendercore.primitives.MountConfigurationScope
 import com.facebook.rendercore.primitives.Primitive
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KFunction2
 import kotlin.reflect.KMutableProperty1
 
@@ -199,46 +205,139 @@ fun interface UnbindDynamicFunc {
 }
 
 fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderTreeView(
-    tree: NestedLithoTree,
+    state: NestedLithoTreeState,
     getRenderTreeView: ContentType.() -> LithoRenderTreeView,
 ) {
-  bindWithLayoutData<LayoutState>(tree) { content, layoutState ->
-    tree.commit(newLayoutState = layoutState)
-    content.getRenderTreeView().setLayoutState(layoutState, tree.state)
-    onUnbind {}
+  withDescription("litho-tree") {
+    bindWithLayoutData<LayoutState>(state) { content, layoutState ->
+      state.commit(newLayoutState = layoutState)
+      content.getRenderTreeView().setLayoutState(layoutState, layoutState.treeState)
+      onUnbind {}
+    }
   }
 
-  bind(Unit) { onUnbind { it.getRenderTreeView().resetLayoutState() } }
+  withDescription("root-host-reference") {
+    bind(state.mountedViewReference) { content ->
+      state.mountedViewReference.mountedView = content
+      onUnbind { state.mountedViewReference.mountedView = null }
+    }
+  }
+
+  withDescription("final-unmount") {
+    bind(Unit) { content ->
+      onUnbind {
+        state.treeLifecycleProvider.release()
+        content.getRenderTreeView().resetLayoutState()
+      }
+    }
+  }
 }
 
 @Hook
 fun PrimitiveComponentScope.useNestedTree(
+    androidContext: Context = context.androidContext,
     config: ComponentsConfiguration = context.lithoConfiguration.componentsConfig,
     root: Component,
-    treePropContainer: TreePropContainer? = null,
-    vararg deps: Any? = emptyArray(),
-): Pair<NestedLithoTree, ResolveResult> {
+    treeProps: TreePropContainer? = context.treePropContainer,
+): Pair<NestedLithoTreeState, ResolveResult> {
 
   // Any() is used ensure state updates are always
   // requested, and not skipped due to duplicate checks.
   val stateForSync = useState { Any() }
 
-  val tree =
-      useCached(config, *deps) {
-        NestedLithoTree(
-            context = context,
-            config = config,
-        ) { isAsync ->
-          if (isAsync) {
-            stateForSync.update(Any())
-          } else {
-            stateForSync.updateSync(Any())
-          }
-        }
+  val nestedTreeState = useCached(Unit) { NestedLithoTreeState(currentState = TreeState()) }
+  val lithoConfig =
+      useCached(config) {
+        buildDefaultLithoConfiguration(
+            context = androidContext,
+            componentsConfig = config,
+            renderUnitIdGenerator = RenderUnitIdGenerator(nestedTreeState.id),
+        )
       }
 
-  val result = tree.resolve(root = root, treePropContainer = treePropContainer)
-  return Pair(tree, result)
+  val currentResolveResult = nestedTreeState.currentResolveResult
+  val newState = nestedTreeState.getUpdatedState()
+
+  val onStateUpdate = { update: PendingStateUpdate ->
+    nestedTreeState.enqueue(update)
+    when {
+      update.isLazy -> {
+        // No-Op
+      }
+      !update.isAsync -> {
+        stateForSync.updateSync(Any())
+      }
+      else -> {
+        stateForSync.update(Any())
+      }
+    }
+  }
+
+  val errorComponentRef = useState { AtomicReference<Component?>(null) }
+
+  val componentContext =
+      ComponentContext(
+          androidContext,
+          treeProps,
+          lithoConfig,
+          LithoTree(
+              stateUpdater = NestedStateUpdater(state = newState, requestUpdate = onStateUpdate),
+              mountedViewReference = nestedTreeState.mountedViewReference,
+              errorComponentReceiver = { errorComponentRef.update(AtomicReference(it)) },
+              lithoTreeLifecycleProvider = nestedTreeState.treeLifecycleProvider,
+              nestedTreeState.id,
+          ),
+          "nested-tree-root",
+          context.lifecycleProvider,
+          null,
+          null,
+      )
+
+  val errorComponent = errorComponentRef.value.getAndSet(null)
+
+  val result =
+      NestedLithoTree.resolve(
+          nestedTreeState.id,
+          componentContext,
+          errorComponent ?: root,
+          treeProps,
+          newState,
+          currentResolveResult,
+      )
+
+  return Pair(nestedTreeState, result)
+}
+
+@DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
+data class NestedLithoTreeState(
+    val id: Int = LithoTree.generateComponentTreeId(),
+    @Volatile var currentState: TreeState,
+    @Volatile var currentResolveResult: ResolveResult? = null,
+    @Volatile var currentLayoutState: LayoutState? = null,
+    val pendingStateUpdates: MutableList<PendingStateUpdate> = ArrayList(),
+) {
+
+  val mountedViewReference: NestedMountedViewReference = NestedMountedViewReference()
+  val treeLifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider()
+
+  fun enqueue(update: PendingStateUpdate) {
+    synchronized(pendingStateUpdates) { pendingStateUpdates.add(update) }
+  }
+
+  fun getUpdatedState(): TreeState {
+    return synchronized(this) { TreeState(currentState).enqueue(ArrayList(pendingStateUpdates)) }
+  }
+
+  fun commit(newLayoutState: LayoutState) {
+    synchronized(this) {
+      val appliedUpdates = newLayoutState.treeState.keysForAppliedStateUpdates
+      pendingStateUpdates.removeAll { e -> appliedUpdates.contains(e.key) }
+      newLayoutState.treeState.commit()
+      currentState = newLayoutState.treeState
+      currentResolveResult = newLayoutState.resolveResult
+      currentLayoutState = newLayoutState
+    }
+  }
 }
 
 class BindDynamicScope {
