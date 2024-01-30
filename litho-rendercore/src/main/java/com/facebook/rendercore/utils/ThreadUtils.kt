@@ -150,6 +150,11 @@ object ThreadUtils {
   }
 
   @JvmStatic
+  fun scheduleOnUiThread(delayMs: Long, runnable: Runnable) {
+    uiThreadHandler.postDelayed(runnable, delayMs)
+  }
+
+  @JvmStatic
   fun runOnBackgroundThread(runnable: Runnable) {
     defaultBackgroundThreadHandler.post(runnable)
   }
