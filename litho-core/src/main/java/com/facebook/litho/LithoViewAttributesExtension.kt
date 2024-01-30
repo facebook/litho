@@ -187,6 +187,11 @@ class LithoViewAttributesExtension private constructor() :
       if (content !is View) {
         return
       }
+
+      if (content is ComponentHost) {
+        content.setSafeViewModificationsEnabled(true)
+      }
+
       setClickHandler(attributes.clickHandler, content)
       setLongClickHandler(attributes.longClickHandler, content)
       setFocusChangeHandler(attributes.focusChangeHandler, content)
@@ -243,6 +248,10 @@ class LithoViewAttributesExtension private constructor() :
         setViewForeground(content, attributes.foreground)
         setViewLayoutDirection(content, attributes)
       }
+
+      if (content is ComponentHost) {
+        content.setSafeViewModificationsEnabled(false)
+      }
     }
 
     @JvmStatic
@@ -251,6 +260,11 @@ class LithoViewAttributesExtension private constructor() :
       if (content !is View) {
         return
       }
+
+      if (content is ComponentHost) {
+        content.setSafeViewModificationsEnabled(true)
+      }
+
       if (attributes.clickHandler != null) {
         unsetClickHandler(content)
       }
@@ -311,7 +325,12 @@ class LithoViewAttributesExtension private constructor() :
         unsetViewLayoutDirection(content)
       }
       unsetViewLayerType(content, mountFlags)
+
+      if (content is ComponentHost) {
+        content.setSafeViewModificationsEnabled(false)
+      }
     }
+
     /**
      * Store a [NodeInfo] as a tag in `view`. [LithoView] contains the logic for setting/unsetting
      * it whenever accessibility is enabled/disabled
@@ -336,6 +355,7 @@ class LithoViewAttributesExtension private constructor() :
         ViewCompat.setAccessibilityDelegate(view, null)
       }
     }
+
     /**
      * Installs the click listeners that will dispatch the click handler defined in the component's
      * props. Unconditionally set the clickable flag on the view.
@@ -352,6 +372,7 @@ class LithoViewAttributesExtension private constructor() :
       view.setOnClickListener(null)
       view.isClickable = false
     }
+
     /**
      * Installs the long click listeners that will dispatch the click handler defined in the
      * component's props. Unconditionally set the clickable flag on the view.
@@ -392,6 +413,7 @@ class LithoViewAttributesExtension private constructor() :
         v.setTag(R.id.component_long_click_listener, listener)
       }
     }
+
     /**
      * Installs the on focus change listeners that will dispatch the click handler defined in the
      * component's props. Unconditionally set the clickable flag on the view.
@@ -435,6 +457,7 @@ class LithoViewAttributesExtension private constructor() :
         v.setTag(R.id.component_focus_change_listener, listener)
       }
     }
+
     /**
      * Installs the touch listeners that will dispatch the touch handler defined in the component's
      * props.
@@ -456,6 +479,7 @@ class LithoViewAttributesExtension private constructor() :
         listener.eventHandler = null
       }
     }
+
     /** Sets the intercept touch handler defined in the component's props. */
     private fun setInterceptTouchHandler(
         interceptTouchHandler: EventHandler<InterceptTouchEvent>?,

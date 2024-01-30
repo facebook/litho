@@ -79,7 +79,12 @@ internal constructor(
      * By default, we do not allow preallocation of [Drawable]. By turning this option on, you can
      * also preallocate [Drawable] mount content, when [mountContentPreallocation] is enabled.
      */
-    @JvmField val enableDrawablePreAllocation: Boolean = false
+    @JvmField val enableDrawablePreAllocation: Boolean = false,
+    /**
+     * If [true] this will log debug events whenever we detect that a click/touch handler was set on
+     * a [com.facebook.litho.ComponentHost] outside of the [ViewAttributesExtension].
+     */
+    @JvmField val componentHostUnsafeModificationsLoggingEnabled: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -239,6 +244,8 @@ internal constructor(
         baseConfig.shouldEnableDefaultAOSPLithoLifecycleProvider
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
     private var enableDrawablePreAllocation = baseConfig.enableDrawablePreAllocation
+    private var componentHostUnsafeModificationsLoggingEnabled =
+        baseConfig.componentHostUnsafeModificationsLoggingEnabled
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -280,6 +287,10 @@ internal constructor(
       enableDrawablePreAllocation = enabled
     }
 
+    fun componentHostUnsafeModificationsLoggingEnabled(enabled: Boolean): Builder = also {
+      componentHostUnsafeModificationsLoggingEnabled = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -293,7 +304,9 @@ internal constructor(
           shouldEnableDefaultAOSPLithoLifecycleProvider =
               shouldEnableDefaultAOSPLithoLifecycleProvider,
           enableStateUpdatesBatching = enableStateUpdatesBatching,
-          enableDrawablePreAllocation = enableDrawablePreAllocation)
+          enableDrawablePreAllocation = enableDrawablePreAllocation,
+          componentHostUnsafeModificationsLoggingEnabled =
+              componentHostUnsafeModificationsLoggingEnabled)
     }
   }
 }

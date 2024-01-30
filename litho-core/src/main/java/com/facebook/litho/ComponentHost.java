@@ -21,6 +21,7 @@ import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.litho.LithoRenderUnit.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Key;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -45,14 +46,18 @@ import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.MountState;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.transitions.DisappearingHost;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import kotlin.Unit;
 
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used by
@@ -102,6 +107,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   private TouchExpansionDelegate mTouchExpansionDelegate;
 
   interface ExceptionLogMessageProvider {
+
     StringBuilder getLogMessage();
   }
 
@@ -120,8 +126,9 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   private boolean mImplementsVirtualViews = false;
 
-  public ComponentHost(Context context) {
+  public ComponentHost(Context context, boolean logUnsafeViewModifications) {
     this(context, null);
+    mLogUnsafeViewModificationsEnabled = logUnsafeViewModifications;
   }
 
   public ComponentHost(ComponentContext context) {
@@ -1502,5 +1509,72 @@ public class ComponentHost extends Host implements DisappearingHost {
   @Override
   public void unsetInLayout() {
     mInLayout = false;
+  }
+
+  /**
+   * This is used to help in an investigation around unsafe setting/unsetting of click/touch
+   * listeners, and which could help to unblock host recycling.
+   */
+  private boolean mLogUnsafeViewModificationsEnabled;
+
+  /**
+   * This flag is used to understand if a view property (e.g, click listener) was modified under the
+   * context of a Litho operation or not. It is used to detect unsafe modifications and log them.
+   *
+   * @see {@link LithoViewAttributesExtension}
+   */
+  private boolean mIsSafeViewModificationsEnabled;
+
+  protected void setSafeViewModificationsEnabled(boolean enabled) {
+    mIsSafeViewModificationsEnabled = enabled;
+  }
+
+  private void checkUnsafeViewModification() {
+    if (mLogUnsafeViewModificationsEnabled && !mIsSafeViewModificationsEnabled) {
+      DebugEventDispatcher.dispatch(
+          LithoDebugEvent.DebugInfo,
+          () -> "-1",
+          LogLevel.DEBUG,
+          (attribute) -> {
+            attribute.put(Key, "unsafe-component-host-modification");
+            return Unit.INSTANCE;
+          });
+    }
+  }
+
+  @Override
+  public void setOnClickListener(@Nullable OnClickListener l) {
+    checkUnsafeViewModification();
+    super.setOnClickListener(l);
+  }
+
+  @Override
+  public void setOnLongClickListener(@Nullable OnLongClickListener l) {
+    checkUnsafeViewModification();
+    super.setOnLongClickListener(l);
+  }
+
+  @Override
+  public void setOnTouchListener(OnTouchListener l) {
+    checkUnsafeViewModification();
+    super.setOnTouchListener(l);
+  }
+
+  @Override
+  public void setTag(Object tag) {
+    checkUnsafeViewModification();
+    super.setTag(tag);
+  }
+
+  @Override
+  public void setEnabled(boolean enabled) {
+    checkUnsafeViewModification();
+    super.setEnabled(enabled);
+  }
+
+  @Override
+  public void setOnFocusChangeListener(OnFocusChangeListener l) {
+    checkUnsafeViewModification();
+    super.setOnFocusChangeListener(l);
   }
 }

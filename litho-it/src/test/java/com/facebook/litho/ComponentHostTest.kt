@@ -727,7 +727,7 @@ class ComponentHostTest {
 
     constructor(context: ComponentContext?) : super(context)
 
-    constructor(context: Context?) : super(context)
+    constructor(context: Context?) : super(context, false)
 
     override fun invalidate(dirty: Rect) {
       super.invalidate(dirty)

@@ -63,7 +63,7 @@ class MountItemTest {
           override fun onCreateLayout(c: ComponentContext): Component =
               SimpleMountSpecTester.create(c).build()
         }
-    componentHost = ComponentHost(getApplicationContext<Context>())
+    componentHost = ComponentHost(getApplicationContext<Context>(), false)
     content = View(getApplicationContext())
     contentDescription = "contentDescription"
     viewTag = "tag"

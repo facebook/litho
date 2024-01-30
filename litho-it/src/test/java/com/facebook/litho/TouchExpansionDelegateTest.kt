@@ -48,7 +48,7 @@ class TouchExpansionDelegateTest {
 
   @Test
   fun onTouchEventOnEmptyDelegate_shouldNoOp() {
-    val host = ComponentHost(ApplicationProvider.getApplicationContext<Context>())
+    val host = ComponentHost(ApplicationProvider.getApplicationContext<Context>(), false)
     val delegate = TouchExpansionDelegate(host)
     val handled =
         delegate.onTouchEvent(

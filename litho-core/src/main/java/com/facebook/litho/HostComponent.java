@@ -35,11 +35,13 @@ class HostComponent extends SpecGeneratedComponent {
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   private boolean mImplementsVirtualViews = false;
-  private boolean mRecyclingEnabled;
+  private final boolean mRecyclingEnabled;
+  private final boolean mLogUnsafeViewModifications;
 
-  protected HostComponent(boolean recyclingEnabled) {
+  protected HostComponent(boolean recyclingEnabled, boolean logUnsafeViewModifications) {
     super("HostComponent");
     mRecyclingEnabled = recyclingEnabled;
+    mLogUnsafeViewModifications = logUnsafeViewModifications;
   }
 
   @Override
@@ -60,7 +62,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   protected Object onCreateMountContent(Context c) {
-    return new ComponentHost(c);
+    return new ComponentHost(c, mLogUnsafeViewModifications);
   }
 
   @Override
@@ -113,8 +115,12 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   static HostComponent create(ComponentContext context) {
+    ComponentsConfiguration componentsConfiguration =
+        context.getLithoConfiguration().componentsConfig;
+
     return new HostComponent(
-        context.getLithoConfiguration().componentsConfig.componentHostRecyclingEnabled);
+        componentsConfiguration.componentHostRecyclingEnabled,
+        componentsConfiguration.componentHostUnsafeModificationsLoggingEnabled);
   }
 
   @Override
