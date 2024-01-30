@@ -38,8 +38,9 @@ import com.facebook.rendercore.RenderTreeNode
  */
 abstract class MountExtension<Input, State> {
 
-  fun createExtensionState(mountDelegate: MountDelegate?): ExtensionState<State> =
-      ExtensionState(this, mountDelegate, createState())
+  @Suppress("UNCHECKED_CAST")
+  fun createExtensionState(mountDelegate: MountDelegate): ExtensionState<State> =
+      ExtensionState(this as MountExtension<Any?, State>, mountDelegate, createState())
 
   protected abstract fun createState(): State
 
