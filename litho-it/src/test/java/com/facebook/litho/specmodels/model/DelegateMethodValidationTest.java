@@ -16,13 +16,16 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.OnBind;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -32,8 +35,11 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,7 +217,7 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Argument at index 0 is not a valid parameter, should be one of the following: "
+            "Argument at index 0 (someBool) is not a valid parameter, should be one of the following: "
                 + "@Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. "
                 + "@InjectProp T someInjectPropName. @CachedValue T value, where the cached value "
                 + "has a corresponding @OnCalculateCachedValue method. ");
@@ -232,6 +238,7 @@ public class DelegateMethodValidationTest {
                         ImmutableList.of(
                             mComponentContextParamModel,
                             MockMethodParamModel.newBuilder()
+                                .name("arg")
                                 .type(TypeName.INT)
                                 .representedObject(mMethodParamObject2)
                                 .build()))
@@ -245,7 +252,7 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject2);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Argument at index 1 is not a valid parameter, should be one of the following: "
+            "Argument at index 1 (arg) is not a valid parameter, should be one of the following: "
                 + "@Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. "
                 + "@InjectProp T someInjectPropName. @CachedValue T value, where the cached value "
                 + "has a corresponding @OnCalculateCachedValue method. ");
@@ -534,11 +541,328 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Argument at index 2 is not a valid parameter, should be one of the following: "
+            "Argument at index 2 (unmatched) is not a valid parameter, should be one of the following: "
                 + "@Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. "
                 + "@InjectProp T someInjectPropName. @CachedValue T value, where the cached value "
                 + "has a corresponding @OnCalculateCachedValue method. Or one of the following, "
                 + "where no annotations should be added to the parameter: java.lang.Integer "
                 + "matched. char unmatched. ");
+  }
+
+  @Test
+  public void testDelegateMethodWithUnmatchedStateValue() throws Exception {
+    final Map<Class<? extends Annotation>, DelegateMethodDescription> map = new HashMap<>();
+    map.put(
+        OnCreateInitialState.class,
+        DelegateMethodDescription.fromDelegateMethodDescription(
+                LAYOUT_SPEC_DELEGATE_METHODS_MAP.get(OnCreateInitialState.class))
+            .optionalParameters(
+                ImmutableList.of(
+                    MethodParamModelFactory.createSimpleMethodParamModel(
+                        new TypeSpec(
+                            ParameterizedTypeName.get(
+                                ClassName.get(StateValue.class), TypeName.OBJECT)),
+                        "unmatched",
+                        mDelegateMethodObject1)))
+            .build());
+
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateInitialState.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onCreateInitialState")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            mComponentContextParamModel,
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(TypeName.CHAR), "unmatched", mMethodParamObject3)))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateMethods(
+            mLayoutSpecModel, map, DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Argument at index 1 (unmatched) is not a valid parameter, should be one of the following: "
+                + "@Prop T somePropName. @TreeProp T someTreePropName. "
+                + "StateValue<T> stateName, where a state param with type T and name stateName is "
+                + "declared elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the "
+                + "following, where no annotations should be added to the parameter: "
+                + "com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
+  }
+
+  @Test
+  public void testDelegateMethodWithUnmatchedStateValueKotlin() throws Exception {
+    final Map<Class<? extends Annotation>, DelegateMethodDescription> map = new HashMap<>();
+    map.put(
+        OnCreateInitialState.class,
+        DelegateMethodDescription.fromDelegateMethodDescription(
+                LAYOUT_SPEC_DELEGATE_METHODS_MAP.get(OnCreateInitialState.class))
+            .optionalParameters(
+                ImmutableList.of(
+                    MethodParamModelFactory.createSimpleMethodParamModel(
+                        new TypeSpec(
+                            ParameterizedTypeName.get(
+                                ClassName.get(StateValue.class), TypeName.OBJECT)),
+                        "unmatched",
+                        mDelegateMethodObject1)))
+            .build());
+
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateInitialState.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onCreateInitialState")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            mComponentContextParamModel,
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(TypeName.CHAR), "unmatched", mMethodParamObject3)))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
+    when(mLayoutSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_CLASS);
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateMethods(
+            mLayoutSpecModel, map, DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Argument at index 1 (unmatched) is not a valid parameter, should be one of the following: "
+                + "@Prop T somePropName. @TreeProp T someTreePropName. "
+                + "StateValue<T> stateName, where a state param with type T and name stateName is "
+                + "declared elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the "
+                + "following, where no annotations should be added to the parameter: "
+                + "com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
+  }
+
+  @Test
+  public void testDelegateMethodWithCovariantStateValueJava() throws Exception {
+    final Map<Class<? extends Annotation>, DelegateMethodDescription> map = new HashMap<>();
+    map.put(
+        OnCreateInitialState.class,
+        DelegateMethodDescription.fromDelegateMethodDescription(
+                LAYOUT_SPEC_DELEGATE_METHODS_MAP.get(OnCreateInitialState.class))
+            .optionalParameters(
+                ImmutableList.of(
+                    MethodParamModelFactory.createSimpleMethodParamModel(
+                        new TypeSpec(
+                            ParameterizedTypeName.get(
+                                ClassName.get(StateValue.class),
+                                WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+                        "name1",
+                        mDelegateMethodObject1)))
+            .build());
+
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateInitialState.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onCreateInitialState")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            mComponentContextParamModel,
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(
+                                    ParameterizedTypeName.get(
+                                        ClassName.get(StateValue.class),
+                                        ParameterizedTypeName.get(
+                                            ClassName.get(List.class), TypeName.OBJECT))),
+                                "name1",
+                                mMethodParamObject3)))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
+    when(mLayoutSpecModel.getStateValues())
+        .thenReturn(
+            ImmutableList.of(
+                new StateParamModel(
+                    MockMethodParamModel.newBuilder()
+                        .type(
+                            ParameterizedTypeName.get(
+                                ClassName.get(List.class),
+                                WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                        .name("name1")
+                        .representedObject(mDelegateMethodObject2)
+                        .build(),
+                    false /* canUpdateLazily */)));
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateMethods(
+            mLayoutSpecModel, map, DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Argument at index 1 (name1) is not a valid parameter, should be one of the "
+                + "following: @Prop T somePropName. @TreeProp T someTreePropName. "
+                + "StateValue<T> stateName, where a state param with type T and name stateName is "
+                + "declared elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the "
+                + "following, where no annotations should be added to the parameter: "
+                + "com.facebook.litho.StateValue<?> name1. ");
+  }
+
+  @Test
+  public void testDelegateMethodWithCovariantStateValueKotlin() throws Exception {
+    final Map<Class<? extends Annotation>, DelegateMethodDescription> map = new HashMap<>();
+    map.put(
+        OnCreateInitialState.class,
+        DelegateMethodDescription.fromDelegateMethodDescription(
+                LAYOUT_SPEC_DELEGATE_METHODS_MAP.get(OnCreateInitialState.class))
+            .optionalParameters(
+                ImmutableList.of(
+                    MethodParamModelFactory.createSimpleMethodParamModel(
+                        new TypeSpec(
+                            ParameterizedTypeName.get(
+                                ClassName.get(StateValue.class),
+                                WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+                        "name1",
+                        mDelegateMethodObject1)))
+            .build());
+
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateInitialState.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onCreateInitialState")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            mComponentContextParamModel,
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(
+                                    ParameterizedTypeName.get(
+                                        ClassName.get(StateValue.class),
+                                        ParameterizedTypeName.get(
+                                            ClassName.get(List.class), TypeName.OBJECT))),
+                                "name1",
+                                mMethodParamObject3)))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
+    when(mLayoutSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_CLASS);
+    when(mLayoutSpecModel.getStateValues())
+        .thenReturn(
+            ImmutableList.of(
+                new StateParamModel(
+                    MockMethodParamModel.newBuilder()
+                        .type(
+                            ParameterizedTypeName.get(
+                                ClassName.get(List.class),
+                                WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                        .name("name1")
+                        .representedObject(mDelegateMethodObject2)
+                        .build(),
+                    false /* canUpdateLazily */)));
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateMethods(
+            mLayoutSpecModel, map, DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Argument at index 1 (name1) is not a valid parameter. This StateValue<T> has "
+                + "unsuppressed wildcards from a Kotlin spec. Wildcards need to be suppressed via "
+                + "@JvmSuppressWildcards StateValue<ContainerType<T>> or "
+                + "StateValue<ContainerType<@JvmSuppressWildcards T>>.");
+  }
+
+  @Test
+  public void testDelegateMethodWithCovariantStateValueKotlinButStateNotAllowedType()
+      throws Exception {
+    final DelegateMethodDescription onCreateInitialStateMethodDescription =
+        LAYOUT_SPEC_DELEGATE_METHODS_MAP.get(OnCreateInitialState.class);
+    final List<DelegateMethodDescription.OptionalParameterType> optionalParamTypeWithoutState =
+        new ArrayList<>(onCreateInitialStateMethodDescription.optionalParameterTypes);
+    optionalParamTypeWithoutState.remove(STATE_VALUE);
+
+    final Map<Class<? extends Annotation>, DelegateMethodDescription> map = new HashMap<>();
+    map.put(
+        OnCreateInitialState.class,
+        DelegateMethodDescription.fromDelegateMethodDescription(
+                onCreateInitialStateMethodDescription)
+            .optionalParameters(
+                ImmutableList.of(
+                    MethodParamModelFactory.createSimpleMethodParamModel(
+                        new TypeSpec(
+                            ParameterizedTypeName.get(
+                                ClassName.get(StateValue.class),
+                                WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+                        "name1",
+                        mDelegateMethodObject1)))
+            .optionalParameterTypes(ImmutableList.copyOf(optionalParamTypeWithoutState))
+            .build());
+
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateInitialState.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onCreateInitialState")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            mComponentContextParamModel,
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(
+                                    ParameterizedTypeName.get(
+                                        ClassName.get(StateValue.class),
+                                        ParameterizedTypeName.get(
+                                            ClassName.get(List.class), TypeName.OBJECT))),
+                                "name1",
+                                mMethodParamObject3)))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
+    when(mLayoutSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_CLASS);
+    when(mLayoutSpecModel.getStateValues())
+        .thenReturn(
+            ImmutableList.of(
+                new StateParamModel(
+                    MockMethodParamModel.newBuilder()
+                        .type(
+                            ParameterizedTypeName.get(
+                                ClassName.get(List.class),
+                                WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                        .name("name1")
+                        .representedObject(mDelegateMethodObject2)
+                        .build(),
+                    false /* canUpdateLazily */)));
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateMethods(
+            mLayoutSpecModel, map, DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Argument at index 1 (name1) is not a valid parameter, should be one of the "
+                + "following: @Prop T somePropName. @TreeProp T someTreePropName. "
+                + "@InjectProp T someInjectPropName. Or one of the following, where no annotations "
+                + "should be added to the parameter: com.facebook.litho.StateValue<?> name1. ");
   }
 }
