@@ -22,6 +22,7 @@ import android.view.View
 import android.widget.TextView
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.visibility.VisibilityMountExtension
 import com.facebook.rendercore.visibility.VisibilityOutput
 
@@ -390,6 +391,29 @@ private constructor(
       val rootNode = result.node
       val outerWrapperComponentIndex = (rootNode.componentCount - 1).coerceAtLeast(0)
       return getInstance(result, outerWrapperComponentIndex, x, y, 0, 0, null)
+    }
+
+    /**
+     * Returns whether this Component should be considered to be mounted, even outside of
+     * incremental mount.
+     *
+     * @see SpecGeneratedComponent.excludeFromIncrementalMount
+     */
+    @JvmStatic
+    fun isExcludedFromIncrementalMount(
+        debugComponent: DebugComponent,
+        componentTree: ComponentTree
+    ): Boolean {
+      val renderUnit = getRenderUnit(debugComponent, componentTree)
+      val component = debugComponent.component
+
+      val shouldExcludePrimitiveFromIncrementalMount: Boolean =
+          renderUnit?.findAttachBinderByClass(ExcludeFromIncrementalMountBinder::class.java) != null
+      val shouldExcludeSpecGeneratedComponentFromIncrementalMount: Boolean =
+          component is SpecGeneratedComponent && component.excludeFromIncrementalMount()
+
+      return shouldExcludePrimitiveFromIncrementalMount ||
+          shouldExcludeSpecGeneratedComponentFromIncrementalMount
     }
 
     @JvmStatic
