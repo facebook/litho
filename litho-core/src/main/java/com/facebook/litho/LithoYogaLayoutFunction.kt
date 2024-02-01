@@ -119,14 +119,7 @@ internal object LithoYogaLayoutFunction {
       cachedLayoutResult: LithoLayoutResult,
       isTracing: Boolean
   ): LithoLayoutResult {
-    if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "cloneYogaNodeTree:${cachedLayoutResult.node.headComponent.simpleName}")
-    }
     val clonedNode: YogaNode = cachedLayoutResult.getYogaNode().cloneWithChildren()
-    if (isTracing) {
-      ComponentsSystrace.endSection()
-    }
     return cloneLayoutResultsRecursively(context, cachedLayoutResult, clonedNode, isTracing)
   }
 
@@ -136,16 +129,10 @@ internal object LithoYogaLayoutFunction {
       clonedYogaNode: YogaNode,
       isTracing: Boolean
   ): LithoLayoutResult {
-    if (isTracing) {
-      ComponentsSystrace.beginSection("copyLayoutResult")
-    }
     val node: LithoNode = cachedLayoutResult.node
     val result: LithoLayoutResult = copyLayoutResult(cachedLayoutResult, node, clonedYogaNode)
     clonedYogaNode.data = Pair<Any, Any>(context, result)
     saveLithoLayoutResultIntoCache(context, node, result)
-    if (isTracing) {
-      ComponentsSystrace.endSection()
-    }
     for (i in 0 until cachedLayoutResult.childCount) {
       val child: LithoLayoutResult =
           cloneLayoutResultsRecursively(
@@ -221,11 +208,6 @@ internal object LithoYogaLayoutFunction {
     if (layoutResult == null) {
       val writer: YogaLayoutProps = currentNode.createYogaNodeWriter()
 
-      // return am empty layout result if the writer is null
-      if (isTracing) {
-        ComponentsSystrace.beginSection("createYogaNode:${currentNode.headComponent.simpleName}")
-      }
-
       // Transfer the layout props to YogaNode
       currentNode.writeToYogaNode(writer)
       yogaNode = writer.node
@@ -253,10 +235,6 @@ internal object LithoYogaLayoutFunction {
                       widthFromStyle = writer.widthFromStyle,
                       heightFromStyle = writer.heightFromStyle,
                       _layoutData = layoutData))
-
-      if (isTracing) {
-        ComponentsSystrace.endSection()
-      }
     }
 
     checkNotNull(yogaNode) { "YogaNode cannot be null when building YogaTree." }

@@ -1057,11 +1057,6 @@ public class MountState implements MountDelegateTarget {
   private void updateMountItemIfNeeded(RenderTreeNode renderTreeNode, MountItem currentMountItem) {
     final MountDelegate mountDelegate = mMountDelegate;
     final boolean isTracing = mTracer.isTracing();
-
-    if (isTracing) {
-      mTracer.beginSection("updateMountItemIfNeeded");
-    }
-
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
     final Object newLayoutData = renderTreeNode.getLayoutData();
     final RenderTreeNode currentNode = currentMountItem.getRenderTreeNode();
@@ -1128,7 +1123,9 @@ public class MountState implements MountDelegateTarget {
     if (isTracing) {
       mTracer.beginSection("UpdateBounds: " + renderUnit.getDescription());
     }
+
     updateBoundsForMountedRenderTreeNode(renderTreeNode, currentMountItem, mountDelegate);
+
     if (isTracing) {
       mTracer.endSection();
     }
@@ -1138,10 +1135,6 @@ public class MountState implements MountDelegateTarget {
     }
 
     currentRenderUnit.onEndUpdateRenderUnit();
-
-    if (isTracing) {
-      mTracer.endSection();
-    }
   }
 
   private static void assertParentContentType(
