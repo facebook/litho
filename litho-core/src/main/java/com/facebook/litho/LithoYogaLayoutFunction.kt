@@ -370,6 +370,8 @@ internal object LithoYogaLayoutFunction {
     if (isPrimitiveBehaviorEquivalent) {
       yogaOutput._layoutData = diff.layoutData
       yogaOutput._cachedMeasuresValid = true
+    } else if (currentNode.primitive != null) {
+      yogaOutput._layoutData = diff.layoutData
     } else if (!Layout.shouldComponentUpdate(currentNode, diff)) {
       val scopedComponentInfo = currentNode.tailScopedComponentInfo
       val diffNodeScopedComponentInfo = checkNotNull(diff.scopedComponentInfo)

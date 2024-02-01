@@ -261,7 +261,7 @@ internal class VerticalScrollLayoutBehavior(
         NestedLithoTree.layout(
             result = resolveResult,
             sizeConstraints = constraints,
-            current = layoutContext.consumePreviousLayoutDataForCurrentNode() as LayoutState?,
+            current = previousLayoutData as LayoutState?,
         )
 
     // Ensure that width is not less than 0

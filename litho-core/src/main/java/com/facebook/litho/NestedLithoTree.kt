@@ -42,6 +42,7 @@ object NestedLithoTree {
       current: ResolveResult?,
   ): ResolveResult {
     return if (current == null ||
+        !root.isEquivalentTo(current.component, true) ||
         state.keysForPendingStateUpdates.isNotEmpty() ||
         treeProps != current.context.treePropContainer) {
       ResolveTreeFuture.resolve(
@@ -83,22 +84,27 @@ object NestedLithoTree {
 
   fun TreeState.enqueue(updates: List<PendingStateUpdate>): TreeState {
     for (update in updates) {
-      when (update.updater) {
-        is HookUpdater -> {
-          queueHookStateUpdate(
-              key = update.key,
-              updater = update.updater,
-              isNestedTree = update.isLayoutState,
-          )
-        }
-        is StateContainer.StateUpdate -> {
-          queueStateUpdate(
-              key = update.key,
-              stateUpdate = update.updater,
-              update.isLazy,
-              isNestedTree = update.isLayoutState,
-          )
-        }
+      this.enqueue(update)
+    }
+    return this
+  }
+
+  fun TreeState.enqueue(update: PendingStateUpdate): TreeState {
+    when (update.updater) {
+      is HookUpdater -> {
+        queueHookStateUpdate(
+            key = update.key,
+            updater = update.updater,
+            isNestedTree = update.isLayoutState,
+        )
+      }
+      is StateContainer.StateUpdate -> {
+        queueStateUpdate(
+            key = update.key,
+            stateUpdate = update.updater,
+            update.isLazy,
+            isNestedTree = update.isLayoutState,
+        )
       }
     }
     return this
