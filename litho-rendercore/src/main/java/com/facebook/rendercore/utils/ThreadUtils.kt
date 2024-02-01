@@ -155,6 +155,11 @@ object ThreadUtils {
   }
 
   @JvmStatic
+  fun cancelScheduleOnUiThread(runnable: Runnable) {
+    uiThreadHandler.removeCallbacks(runnable)
+  }
+
+  @JvmStatic
   fun runOnBackgroundThread(runnable: Runnable) {
     defaultBackgroundThreadHandler.post(runnable)
   }
