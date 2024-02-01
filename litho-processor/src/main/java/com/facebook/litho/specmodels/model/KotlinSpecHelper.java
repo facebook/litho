@@ -16,12 +16,14 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.google.common.base.Preconditions;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 
 /** Helper functions to handle wildcard cases from Kotlin spec files */
 public class KotlinSpecHelper {
+
   public static boolean isKotlinSpec(SpecModel specModel) {
     return specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON
         || specModel.getSpecElementType() == SpecElementType.KOTLIN_CLASS;
@@ -33,6 +35,32 @@ public class KotlinSpecHelper {
    */
   public static TypeName maybeRemoveWildcardFromVarArgsIfKotlinSpec(
       SpecModel specModel, TypeName typeName) {
+    return maybeRemoveWildcardFromContainerIfKotlinSpec(
+        specModel, typeName, 1 /* maxTypeArgumentsSupported */);
+  }
+
+  /**
+   * Removes all wildcards from a container type, without all number of arguments supported. (See
+   * {@link #maybeRemoveWildcardFromVarArgsIfKotlinSpec} for more details).
+   */
+  public static TypeName maybeRemoveWildcardFromContainerIfKotlinSpec(
+      final SpecModel specModel, final TypeName typeName) {
+    return maybeRemoveWildcardFromContainerIfKotlinSpec(
+        specModel, typeName, Integer.MAX_VALUE /* maxTypeArgumentsSupported */);
+  }
+
+  /**
+   * Given List&lt;? extends Color&gt; transforms it to List&lt;Color&gt;, for a Kotlin Spec. Note
+   * that if Kotlin spec specifies @JvmSuppressWildcards, then this isn't needed.
+   *
+   * @param maxTypeArgumentsToCleanup the number of type arguments to clean up, where List<T> has 1
+   *     and Map<K,T> has 2. If there are more than maxTypeArgumentsToCleanup, we don't do anything.
+   */
+  public static TypeName maybeRemoveWildcardFromContainerIfKotlinSpec(
+      final SpecModel specModel, final TypeName typeName, final int maxTypeArgumentsToCleanup) {
+    Preconditions.checkArgument(
+        maxTypeArgumentsToCleanup > 0, "Must support updating at least 1 type argument");
+
     if (!isKotlinSpec(specModel)) {
       return typeName;
     }
@@ -43,13 +71,22 @@ public class KotlinSpecHelper {
     if (parameterizedTypeName.typeArguments.isEmpty()) {
       return typeName;
     }
-    final TypeName firstElementTypeName = ((ParameterizedTypeName) typeName).typeArguments.get(0);
-    if (firstElementTypeName instanceof WildcardTypeName) {
-      return ParameterizedTypeName.get(
-          parameterizedTypeName.rawType, getBaseTypeIfWildcard(firstElementTypeName));
-    } else {
+
+    final int numTypeArguments = parameterizedTypeName.typeArguments.size();
+    if (numTypeArguments > maxTypeArgumentsToCleanup) {
       return typeName;
     }
+
+    final TypeName[] newTypeArguments =
+        parameterizedTypeName.typeArguments.toArray(new TypeName[numTypeArguments]);
+    for (int i = 0; i < numTypeArguments; i++) {
+      final TypeName elementTypeName = newTypeArguments[i];
+      if (elementTypeName instanceof WildcardTypeName) {
+        newTypeArguments[i] = getBaseTypeIfWildcard(elementTypeName);
+      }
+    }
+
+    return ParameterizedTypeName.get(parameterizedTypeName.rawType, newTypeArguments);
   }
 
   /** Given List&lt;? extends Color&gt; returns Color. */

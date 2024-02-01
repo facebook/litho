@@ -155,9 +155,9 @@ public class SpecModelUtils {
   public static boolean areTypesEqualIgnoringKotlinCovariance(
       SpecModel specModel, TypeName typeName1, TypeName typeName2) {
     final TypeName typeName1WithoutWildcards =
-        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(specModel, typeName1);
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(specModel, typeName1);
     final TypeName typeName2WithoutWildcards =
-        KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(specModel, typeName2);
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(specModel, typeName2);
 
     return typeName1WithoutWildcards.box().equals(typeName2WithoutWildcards.box());
   }

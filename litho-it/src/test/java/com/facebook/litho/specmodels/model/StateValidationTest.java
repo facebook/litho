@@ -34,6 +34,7 @@ import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -561,6 +562,46 @@ public class StateValidationTest {
                 .type(
                     ParameterizedTypeName.get(
                         ClassName.get(List.class), WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                .name("name1")
+                .representedObject(mRepresentedObject2)
+                .build(),
+            false /* canUpdateLazily */);
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+
+    List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
+                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+  }
+
+  @Test
+  public void testStateWithCovariantDifferentReturnTypesTwoTypeARgumentsForKotlinSpec() {
+    StateParamModel stateValue1 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassName.get(Map.class),
+                        TypeName.OBJECT,
+                        WildcardTypeName.subtypeOf(TypeName.OBJECT)))
+                .name("name1")
+                .representedObject(mRepresentedObject1)
+                .build(),
+            false /* canUpdateLazily */);
+    StateParamModel stateValue2 =
+        new StateParamModel(
+            MockMethodParamModel.newBuilder()
+                .type(
+                    ParameterizedTypeName.get(
+                        ClassName.get(Map.class),
+                        WildcardTypeName.subtypeOf(TypeName.OBJECT),
+                        TypeName.OBJECT))
                 .name("name1")
                 .representedObject(mRepresentedObject2)
                 .build(),

@@ -29,6 +29,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -164,6 +165,53 @@ public class CachedValueValidationTest {
             .name("onCalculateName1")
             .returnTypeSpec(
                 new TypeSpec(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.OBJECT)))
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.<MethodParamModel>of())
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+    when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
+
+    List<SpecModelValidationError> validationErrors = CachedValueValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "CachedValue params for collections in Kotlin Specs need to add "
+                + "@JvmSuppressWildCards such as CollectionType<@JvmSuppressWildcards T>. "
+                + "Add the annotation for @CachedValue params.");
+  }
+
+  @Test
+  public void testCachedValueWithCovariantWithTwoArgumentsReturnTypeInCachedValueKotlinSpec() {
+    when(mCachedValue1.getTypeName())
+        .thenReturn(
+            ParameterizedTypeName.get(
+                ClassName.get(Map.class),
+                ClassName.get(String.class),
+                WildcardTypeName.subtypeOf(TypeName.OBJECT)));
+
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCalculateCachedValue.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("onCalculateName1")
+            .returnTypeSpec(
+                new TypeSpec(
+                    ParameterizedTypeName.get(
+                        ClassName.get(Map.class), ClassName.get(String.class), TypeName.OBJECT)))
             .typeVariables(ImmutableList.of())
             .methodParams(ImmutableList.<MethodParamModel>of())
             .representedObject(mDelegateMethodRepresentedObject1)
