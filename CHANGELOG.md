@@ -1,11 +1,26 @@
 # Changelog
 
-## Version 0.49.0-SNAPSHOT
+## Version 0.50.0-SNAPSHOT
 
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.49.0...master).
+
+## Version 0.49.0
+
+_2024-02-01_
+
+* Converted more code to Kotlin.
+* [NEW] Added debug event APIs for better debugging and integration with Flipper's new UI Debugger. 
+* [NEW] Added layout caching to improve performance.
+* [BREAKING] Moved several configs from LithoConfiguration to ComponentsConfiguration.
+* [BREAKING] Merged several configs from RecyclerBinderConfig and RecyclerBinderConfiguration.
 * [BREAKING] Removed `Component.canResolve()` and `Component.resolve(ResolveContext, ComponentContext)` methods. All classes extending Component must now implement the new `Component.resolve(ResolveContext, ScopedComponentInfo, int, int, ComponentsLogger)` method which is always used in the resolution flow.
 * [BREAKING] Rename `Style.performAccessibilityAction`, `Style.sendAccessibilityEvent` and `Style.sendAccessibilityEventUnchecked` methods.
+* [BREAKING] Yoga updated to use C++ 20.
+* [BREAKING] Deletes several public constructors of EventHandler.
+* Overhauled the render pipeline to support custom layout systems.
+* Numerous bug fixes.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.48.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.48.0...v0.49.0).
 
 ## Version 0.48.0
 
