@@ -408,9 +408,6 @@ public class ComponentTreeHolder {
       // if custom attributes are provided on RenderInfo, they will be preferred over builder values
       applyCustomAttributesIfProvided(builder);
 
-      System.out.println(
-          "[ComponentTreeHolder] applying configuration: " + mComponentsConfiguration);
-
       builder
           .componentsConfiguration(mComponentsConfiguration)
           .layoutThreadHandler(mLayoutHandler)
