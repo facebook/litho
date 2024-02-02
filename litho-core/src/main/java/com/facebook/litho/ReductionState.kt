@@ -79,7 +79,8 @@ internal data class ReductionState(
   val animatableItems: LongSparseArray<AnimatableItem> = LongSparseArray<AnimatableItem>(8)
   val outputsIdToPositionMap: LongSparseArray<Int> = LongSparseArray<Int>(8)
   val id: Int = LayoutState.getIdGenerator().getAndIncrement()
-  val previousLayoutStateId: Int = currentLayoutState?.mId ?: 0
+  val previousLayoutStateId: Int =
+      currentLayoutState?.mId ?: LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID
   val rootX: Int = offsetRootX
   val rootY: Int = offsetRootY
 

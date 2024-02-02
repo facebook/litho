@@ -95,7 +95,7 @@ public class LayoutState
   }
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
-  private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
+  static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
 
   final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
