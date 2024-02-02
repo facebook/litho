@@ -317,8 +317,6 @@ public class TextMeasurementUtils {
         break;
     }
 
-    int layoutHeightMaybeIncludingEllipsisText = layoutHeight;
-
     // Handle custom text truncation:
     CharSequence processedText = text;
     if (textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("")) {
@@ -343,7 +341,6 @@ public class TextMeasurementUtils {
         processedText = truncated;
         layout = newLayout;
         textLayout.isExplicitlyTruncated = true;
-        layoutHeightMaybeIncludingEllipsisText = LayoutMeasureUtil.getHeight(newLayout);
       }
     }
 
@@ -361,8 +358,7 @@ public class TextMeasurementUtils {
       textLayout.imageSpans = spanned.getSpans(0, processedText.length(), ImageSpan.class);
     }
 
-    return new Pair<>(
-        new Rect(0, 0, layoutWidth, layoutHeightMaybeIncludingEllipsisText), textLayout);
+    return new Pair<>(new Rect(0, 0, layoutWidth, layoutHeight), textLayout);
   }
 
   static Layout createTextLayout(
