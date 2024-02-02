@@ -55,7 +55,7 @@ private constructor(
         getRenderType(component),
         context,
         debugKey),
-    ContentAllocator<Any?> {
+    ContentAllocator<Any> {
 
   private var isShouldUpdateCachingEnabled = false
   private var isShouldUpdateResultCached = false
@@ -105,7 +105,7 @@ private constructor(
     return component.simpleName
   }
 
-  override fun getContentAllocator(): ContentAllocator<Any?> {
+  override fun getContentAllocator(): ContentAllocator<Any> {
     return this
   }
 

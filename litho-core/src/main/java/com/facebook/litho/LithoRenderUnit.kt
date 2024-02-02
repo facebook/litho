@@ -34,7 +34,7 @@ protected constructor(
     renderType: RenderType?,
     @field:JvmField val componentContext: ComponentContext?,
     private val debugKey: String?
-) : RenderUnit<Any?>(renderType), TransitionRenderUnit {
+) : RenderUnit<Any>(renderType), TransitionRenderUnit {
 
   override fun getId(): Long = _id
 

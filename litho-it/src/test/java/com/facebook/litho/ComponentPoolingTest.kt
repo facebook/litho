@@ -57,7 +57,7 @@ class ComponentPoolingTest {
     assertThat(component.onCreateMountContentCount).isEqualTo(POOL_SIZE)
 
     // Acquire POOL_SIZE contents
-    val objects = arrayOfNulls<Any>(POOL_SIZE + 1)
+    val objects = MutableList(POOL_SIZE + 1) { Any() }
     for (i in 0 until POOL_SIZE) {
       objects[i] = MountItemsPool.acquireMountContent(context, component)
     }

@@ -32,7 +32,7 @@ private constructor(
     nodeInfo: NodeInfo?,
     flags: Int,
     importantForAccessibility: Int,
-    val primitiveRenderUnit: PrimitiveRenderUnit<Any?>,
+    val primitiveRenderUnit: PrimitiveRenderUnit<Any>,
     context: ComponentContext?,
     debugKey: String?
 ) :
@@ -47,7 +47,7 @@ private constructor(
         context,
         debugKey) {
 
-  override fun getContentAllocator(): ContentAllocator<Any?> {
+  override fun getContentAllocator(): ContentAllocator<Any> {
     return primitiveRenderUnit.contentAllocator
   }
 
@@ -61,7 +61,7 @@ private constructor(
 
   override fun mountBinders(
       context: Context,
-      content: Any?,
+      content: Any,
       layoutData: Any?,
       bindData: BindData,
       tracer: Systracer
@@ -72,7 +72,7 @@ private constructor(
 
   override fun unmountBinders(
       context: Context,
-      content: Any?,
+      content: Any,
       layoutData: Any?,
       bindData: BindData,
       tracer: Systracer
@@ -83,7 +83,7 @@ private constructor(
 
   override fun attachBinders(
       context: Context,
-      content: Any?,
+      content: Any,
       layoutData: Any?,
       bindData: BindData,
       tracer: Systracer
@@ -94,7 +94,7 @@ private constructor(
 
   override fun detachBinders(
       context: Context,
-      content: Any?,
+      content: Any,
       layoutData: Any?,
       bindData: BindData,
       tracer: Systracer
@@ -105,7 +105,7 @@ private constructor(
 
   override fun updateBinders(
       context: Context,
-      content: Any?,
+      content: Any,
       currentRenderUnit: RenderUnit<Any?>,
       currentLayoutData: Any?,
       newLayoutData: Any?,
@@ -158,7 +158,7 @@ private constructor(
         nodeInfo: NodeInfo?,
         flags: Int,
         importantForAccessibility: Int,
-        primitiveRenderUnit: PrimitiveRenderUnit<Any?>,
+        primitiveRenderUnit: PrimitiveRenderUnit<Any>,
         debugKey: String?
     ): PrimitiveLithoRenderUnit {
       return PrimitiveLithoRenderUnit(

@@ -74,7 +74,7 @@ class MountBehavior<ContentType : Any>(
   }
 }
 
-abstract class PrimitiveRenderUnit<ContentType>(
+abstract class PrimitiveRenderUnit<ContentType : Any>(
     renderType: RenderType,
     fixedMountBinders: List<DelegateBinder<*, ContentType, *>>,
     private val doesMountRenderTreeHosts: Boolean

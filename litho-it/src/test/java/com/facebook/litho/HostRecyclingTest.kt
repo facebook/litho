@@ -147,7 +147,7 @@ class HostRecyclingTest {
       return null
     }
 
-    override fun release(item: Any?): Boolean {
+    override fun release(item: Any): Boolean {
       if (item is ComponentHost) {
         _numComponentHostsReleaseRequests++
         return itemPool.release(item)
@@ -156,8 +156,8 @@ class HostRecyclingTest {
     }
 
     override fun maybePreallocateContent(
-        c: Context?,
-        contentAllocator: ContentAllocator<*>?
+        c: Context,
+        contentAllocator: ContentAllocator<*>
     ): Boolean = false
   }
 

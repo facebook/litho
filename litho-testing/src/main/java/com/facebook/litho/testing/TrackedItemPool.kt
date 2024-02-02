@@ -25,7 +25,7 @@ class TrackedItemPool(lifecycle: Any, size: Int) :
   var currentSize: Int = 0
     private set
 
-  override fun acquire(contentAllocator: ContentAllocator<*>?): Any? {
+  override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
     return super.acquire(contentAllocator).apply {
       if (this != null) {
         currentSize--

@@ -40,8 +40,8 @@ class MountItem(renderTreeNode: RenderTreeNode, val content: Any) {
     _renderTreeNode = renderTreeNode
   }
 
-  fun releaseMountContent(context: Context?) {
-    MountItemsPool.release(context, renderUnit.getContentAllocator(), content)
+  fun releaseMountContent(context: Context) {
+    MountItemsPool.release(context, renderUnit.contentAllocator, content)
   }
 
   companion object {

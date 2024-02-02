@@ -28,7 +28,7 @@ class TrackingMountContentPool(maxSize: Int) :
   var releaseCount: Int = 0
     private set
 
-  override fun acquire(contentAllocator: ContentAllocator<*>?): Any? {
+  override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
     val item = super.acquire(contentAllocator)
     acquireCount++
     return item

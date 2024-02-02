@@ -331,7 +331,7 @@ object LithoNodeUtils {
           layoutOutputNodeInfo,
           flags,
           importantForAccessibility,
-          primitive.renderUnit as PrimitiveRenderUnit<Any?>,
+          primitive.renderUnit as PrimitiveRenderUnit<Any>,
           debugKey)
     }
     @Suppress("UNCHECKED_CAST")

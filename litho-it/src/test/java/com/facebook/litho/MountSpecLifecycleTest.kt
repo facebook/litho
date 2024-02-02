@@ -371,7 +371,7 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_ATTACHED)
-    assertThat(MountItemsPool.getMountItemPools().size)
+    assertThat(MountItemsPool.mountItemPools.size)
         .describedAs("Should contain only 1 content pool")
         .isEqualTo(1)
   }

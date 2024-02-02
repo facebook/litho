@@ -27,7 +27,7 @@ import com.facebook.rendercore.RenderUnit.RenderType
  * Instances must implement at least createContent and getRenderType methods to allocate the
  * RenderUnit content (View or Drawable) and to make it possible to query the type of the content.
  */
-interface ContentAllocator<Content> {
+interface ContentAllocator<Content : Any> {
 
   /** Allocates the mountable content (View or Drawable). */
   fun createContent(context: Context): Content
