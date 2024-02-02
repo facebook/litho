@@ -46,17 +46,6 @@ object NodeConfig {
     return yogaNodeFactory?.create(yogaConfig) ?: LithoYogaFactory.createYogaNode(yogaConfig)
   }
 
-  /**
-   * Toggles a Yoga setting on whether to print debug logs to adb.
-   *
-   * @param enable whether to print logs or not
-   */
-  @JvmStatic
-  @Synchronized
-  fun setPrintYogaDebugLogs(enable: Boolean) {
-    yogaConfig.setPrintTreeFlag(enable)
-  }
-
   fun interface InternalYogaNodeFactory {
     fun create(config: YogaConfig): YogaNode
   }
