@@ -84,15 +84,6 @@ internal data class ReductionState(
   val rootX: Int = offsetRootX
   val rootY: Int = offsetRootY
 
-  fun isLayoutRoot(result: LithoLayoutResult): Boolean {
-    val lr = layoutResult
-    return if (lr is NestedTreeHolderResult) {
-      result == lr.nestedResult
-    } else {
-      result == lr
-    }
-  }
-
   fun createLayoutStateFromReductionState(
       lsc: LithoLayoutContext,
       resolveResult: ResolveResult,

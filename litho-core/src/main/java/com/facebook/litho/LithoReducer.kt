@@ -748,6 +748,15 @@ internal object LithoReducer {
     reductionState.currentTransitionId = null
   }
 
+  private fun isLayoutRoot(reductionState: ReductionState, result: LithoLayoutResult): Boolean {
+    val layoutResult = reductionState.layoutResult
+    return if (layoutResult is NestedTreeHolderResult) {
+      result == layoutResult.nestedResult
+    } else {
+      result == layoutResult
+    }
+  }
+
   /**
    * If we have an interactive LayoutSpec or a MountSpec Drawable, we need to insert an
    * HostComponent in the Outputs such as it will be used as a HostView at Mount time. View
@@ -768,7 +777,7 @@ internal object LithoReducer {
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
-    require(!(node.willMountView && !reductionState.isLayoutRoot(result))) {
+    require(!(node.willMountView && !isLayoutRoot(reductionState, result))) {
       "We shouldn't insert a host as a parent of a View"
     }
     val hostRenderTreeNode: RenderTreeNode =
