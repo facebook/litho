@@ -332,13 +332,25 @@ public class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
-      Output<Integer> measuredHeight) {
+      Output<Integer> measuredHeight,
+      Output<Boolean> needMinimallyWideLayout) {
 
     if (TextUtils.isEmpty(text)) {
       measureLayout.set(null);
       size.width = 0;
       size.height = 0;
       return;
+    }
+
+    TextAlignment resolvedTextAlignment = getTextAlignment(textAlignment, alignment);
+    boolean isTextAlignmentOverride = false;
+    if (minimallyWide && resolvedTextAlignment == TEXT_END) {
+      // To ensure correct minimally wide behavior, we need to perform text layout twice. This is
+      // because we cannot accurately retrieve the width of each line from TextLayout if we have
+      // alignment from the end. Therefore, we run the first pass with TEXT_START enforced, and do
+      // the second layout in onBoundsDefined with the actual alignment setting.
+      resolvedTextAlignment = TEXT_START;
+      isTextAlignmentOverride = true;
     }
 
     Layout newLayout =
@@ -363,7 +375,7 @@ public class TextSpec {
             letterSpacing,
             textStyle,
             typeface,
-            getTextAlignment(textAlignment, alignment),
+            resolvedTextAlignment,
             glyphWarming,
             layout.getResolvedLayoutDirection(),
             minEms,
@@ -379,7 +391,12 @@ public class TextSpec {
 
     measureLayout.set(newLayout);
 
+    final int fullWidth = Math.max(0, SizeSpec.resolveSize(widthSpec, newLayout.getWidth()));
     size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
+    if (isTextAlignmentOverride || (minimallyWide && fullWidth != size.width)) {
+      // either TextAlignment is TEXT_END or minimally wide width is different
+      needMinimallyWideLayout.set(true);
+    }
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
@@ -602,6 +619,7 @@ public class TextSpec {
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
+      @FromMeasure Boolean needMinimallyWideLayout,
       Output<CharSequence> processedText,
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
@@ -617,8 +635,12 @@ public class TextSpec {
         layout.getWidth() - layout.getPaddingLeft() - layout.getPaddingRight();
     final float layoutHeight =
         layout.getHeight() - layout.getPaddingTop() - layout.getPaddingBottom();
+    final boolean forceRelayout = needMinimallyWideLayout != null && needMinimallyWideLayout;
 
-    if (measureLayout != null && measuredWidth == layoutWidth && measuredHeight == layoutHeight) {
+    if (measureLayout != null
+        && !forceRelayout
+        && measuredWidth == layoutWidth
+        && measuredHeight == layoutHeight) {
       textLayout.set(measureLayout);
     } else {
       textLayout.set(
@@ -881,6 +903,7 @@ public class TextSpec {
 
     return paint.getOffsetForAdvance(text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance);
   }
+
   /**
    * @param layout A prepared text layout object
    * @return The (zero-indexed) line number at which the text in this layout will be ellipsized, or
