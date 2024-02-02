@@ -134,7 +134,8 @@ internal data class ReductionState(
     layoutState.mMountableOutputBottoms.addAll(mountableOutputBottoms)
     layoutState.mIncrementalMountOutputs.putAll(incrementalMountOutputs)
     layoutState.mHasComponentsExcludedFromIncrementalMount =
-        hasComponentsExcludedFromIncrementalMount
+        (layoutState.mHasComponentsExcludedFromIncrementalMount ||
+            hasComponentsExcludedFromIncrementalMount)
     layoutState.mRenderUnitIdsWhichHostRenderTrees.addAll(renderUnitIdsWhichHostRenderTrees)
     layoutState.mRenderUnitsWithViewAttributes.putAll(renderUnitsWithViewAttributes)
     layoutState.mDynamicValueOutputs.putAll(dynamicValueOutputs)
