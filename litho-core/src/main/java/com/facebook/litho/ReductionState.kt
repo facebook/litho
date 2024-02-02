@@ -53,7 +53,8 @@ internal data class ReductionState(
   var rootNode: LithoNode? = null
   var diffTreeRoot: DiffNode? = null
   var currentTransitionId: TransitionId? = null
-  var currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? = null
+  var currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? =
+      currentLayoutState?.mCurrentLayoutOutputAffinityGroup
   var hasComponentsExcludedFromIncrementalMount: Boolean = false
 
   val mountableOutputs: MutableList<RenderTreeNode> = ArrayList(8)
