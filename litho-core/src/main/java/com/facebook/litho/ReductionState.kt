@@ -61,8 +61,8 @@ internal data class ReductionState(
   val widthSpec: Int = getWidthSpec(sizeConstraints)
   val heightSpec: Int = getHeightSpec(sizeConstraints)
   val visibilityOutputs: MutableList<VisibilityOutput> = ArrayList(8)
-  val testOutputs: MutableList<TestOutput> =
-      if (ComponentsConfiguration.isEndToEndTestRun) ArrayList(8) else ArrayList(0)
+  val testOutputs: MutableList<TestOutput>? =
+      if (ComponentsConfiguration.isEndToEndTestRun) ArrayList(8) else null
   val scopedSpecComponentInfos: MutableList<ScopedComponentInfo> = ArrayList()
   val componentKeyToBounds: MutableMap<String, Rect> = HashMap()
   val componentHandleToBounds: MutableMap<Handle, Rect> = HashMap()
@@ -124,7 +124,7 @@ internal data class ReductionState(
     layoutState.mCurrentTransitionId = currentTransitionId
     layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup
     layoutState.mVisibilityOutputs = visibilityOutputs
-    layoutState.mTestOutputs?.addAll(testOutputs)
+    testOutputs?.let { layoutState.mTestOutputs?.addAll(it) }
     layoutState.mScopedSpecComponentInfos = scopedSpecComponentInfos
     layoutState.mComponentKeyToBounds.putAll(componentKeyToBounds)
     layoutState.mComponentHandleToBounds.putAll(componentHandleToBounds)
