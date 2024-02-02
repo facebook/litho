@@ -512,7 +512,7 @@ internal object LithoReducer {
                 type = OutputUnitType.BACKGROUND,
                 matchHostBoundsTransitions = needsHostView)
 
-        diffNode?.backgroundOutput = backgroundRenderTreeNode.renderUnit as LithoRenderUnit
+        diffNode.backgroundOutput = backgroundRenderTreeNode.renderUnit as LithoRenderUnit
       }
     }
 
@@ -540,19 +540,17 @@ internal object LithoReducer {
           transitionId = if (!needsHostView) reductionState.currentTransitionId else null,
           parent = parentRenderTreeNode)
 
-      diffNode?.contentOutput = contentRenderUnit
+      diffNode.contentOutput = contentRenderUnit
     }
 
     // Set the measurements, and the layout data on the diff node
-    if (diffNode != null) {
-      diffNode.lastWidthSpec = result.widthSpec
-      diffNode.lastHeightSpec = result.heightSpec
-      diffNode.lastMeasuredWidth = result.contentWidth
-      diffNode.lastMeasuredHeight = result.contentHeight
-      diffNode.layoutData = result.layoutData
-      diffNode.primitive = result.node.primitive
-      diffNode.delegate = result.delegate
-    }
+    diffNode.lastWidthSpec = result.widthSpec
+    diffNode.lastHeightSpec = result.heightSpec
+    diffNode.lastMeasuredWidth = result.contentWidth
+    diffNode.lastMeasuredHeight = result.contentHeight
+    diffNode.layoutData = result.layoutData
+    diffNode.primitive = result.node.primitive
+    diffNode.delegate = result.delegate
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (i in 0 until result.childCount) {
@@ -583,7 +581,7 @@ internal object LithoReducer {
               type = OutputUnitType.BORDER,
               matchHostBoundsTransitions = needsHostView)
 
-      diffNode?.borderOutput = borderRenderTreeNode.renderUnit as LithoRenderUnit
+      diffNode.borderOutput = borderRenderTreeNode.renderUnit as LithoRenderUnit
     }
 
     // 6. Add foreground if defined.
@@ -601,7 +599,7 @@ internal object LithoReducer {
                 type = OutputUnitType.FOREGROUND,
                 matchHostBoundsTransitions = needsHostView)
 
-        diffNode?.foregroundOutput = foregroundRenderTreeNode.renderUnit as LithoRenderUnit
+        diffNode.foregroundOutput = foregroundRenderTreeNode.renderUnit as LithoRenderUnit
       }
     }
 
@@ -615,7 +613,7 @@ internal object LithoReducer {
                   contentRenderTreeNode ?: if (needsHostView) parentRenderTreeNode else null)
 
       reductionState.visibilityOutputs.add(visibilityOutput)
-      diffNode?.visibilityOutput = visibilityOutput
+      diffNode.visibilityOutput = visibilityOutput
     }
 
     // 8. If we're in a testing environment, maintain an additional data structure with
