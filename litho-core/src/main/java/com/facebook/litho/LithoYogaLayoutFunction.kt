@@ -612,6 +612,7 @@ internal object LithoYogaLayoutFunction {
       height = diffNode.lastMeasuredHeight
       layoutData = diffNode.layoutData
       delegate = diffNode.delegate
+      yogaOutput._isCachedLayout = true
 
       // Measure the component
     } else {
