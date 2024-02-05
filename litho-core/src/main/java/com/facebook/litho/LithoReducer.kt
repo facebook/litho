@@ -45,33 +45,26 @@ internal object LithoReducer {
       layoutCache: LayoutCache,
       reductionState: ReductionState,
   ): LayoutState {
-    setSizeAfterMeasureAndCollectResults(reductionState.componentContext, lsc, reductionState)
-    return reductionState.createLayoutStateFromReductionState(
-        lsc, resolveResult, treeId, layoutCache)
-  }
 
-  @JvmStatic
-  fun addRootHostRenderTreeNode(
-      layoutState: LayoutState,
-      result: LayoutResult? = null,
-      hierarchy: DebugHierarchy.Node? = null,
-  ) {
-    val reductionState =
-        ReductionState(
-            componentContext = layoutState.mResolveResult.context,
-            sizeConstraints = layoutState.sizeConstraints,
-            currentLayoutState = layoutState,
-            root = layoutState.mLayoutResult,
-            offsetRootX = layoutState.mRootX,
-            offsetRootY = layoutState.mRootY)
-    addRootHostRenderTreeNode(reductionState, result, hierarchy)
-    reductionState.mergeReductionStateIntoLayoutState(layoutState)
+    setSizeAfterMeasureAndCollectResults(reductionState, lsc)
+
+    if (reductionState.mountableOutputs.isEmpty()) {
+      addRootHostRenderTreeNode(reductionState)
+    }
+
+    return LayoutState(
+        resolveResult,
+        reductionState.sizeConstraints,
+        treeId,
+        lsc.isAccessibilityEnabled,
+        layoutCache.writeCacheData,
+        mergeLists(resolveResult.eventHandlers, lsc.eventHandlers)?.toMutableList(),
+        reductionState)
   }
 
   private fun setSizeAfterMeasureAndCollectResults(
-      c: ComponentContext,
-      lithoLayoutContext: LithoLayoutContext,
       reductionState: ReductionState,
+      lithoLayoutContext: LithoLayoutContext,
   ) {
     if (lithoLayoutContext.isFutureReleased) {
       return
@@ -82,6 +75,7 @@ internal object LithoReducer {
           .trimIndent()
     }
 
+    val context: ComponentContext = reductionState.componentContext
     val isTracing: Boolean = ComponentsSystrace.isTracing
     val widthSpec: Int = reductionState.widthSpec
     val heightSpec: Int = reductionState.heightSpec
@@ -110,7 +104,7 @@ internal object LithoReducer {
 
     var parent: RenderTreeNode? = null
     var hierarchy: DebugHierarchy.Node? = null
-    if (c.mLithoConfiguration.componentsConfig.shouldAddHostViewForRootComponent) {
+    if (context.mLithoConfiguration.componentsConfig.shouldAddHostViewForRootComponent) {
       hierarchy = if (root is LithoLayoutResult) root.node.getDebugHierarchy() else null
       addRootHostRenderTreeNode(reductionState, root, hierarchy)
       parent = reductionState.mountableOutputs[0]
@@ -120,7 +114,7 @@ internal object LithoReducer {
       ComponentsSystrace.beginSection("collectResults")
     }
     collectResults(
-        parentContext = c,
+        parentContext = context,
         result = root,
         reductionState = reductionState,
         lithoLayoutContext = lithoLayoutContext,
@@ -817,7 +811,7 @@ internal object LithoReducer {
       errorMessage.append("Error while sorting ReductionState tops. Size: $size").append("\n")
       val rect = Rect()
       for (i in 0 until size) {
-        val node: RenderTreeNode = reductionState.mountableOutputs.get(i)
+        val node: RenderTreeNode = reductionState.mountableOutputs[i]
         errorMessage.append("   Index $i top: ${node.getAbsoluteBounds(rect).top}").append("\n")
       }
       throw IllegalStateException(errorMessage.toString())
@@ -836,7 +830,7 @@ internal object LithoReducer {
       errorMessage.append("Error while sorting ReductionState bottoms. Size: $size").append("\n")
       val rect = Rect()
       for (i in 0 until size) {
-        val node: RenderTreeNode = reductionState.mountableOutputs.get(i)
+        val node: RenderTreeNode = reductionState.mountableOutputs[i]
         errorMessage
             .append("   Index $i bottom: ${node.getAbsoluteBounds(rect).bottom}")
             .append("\n")

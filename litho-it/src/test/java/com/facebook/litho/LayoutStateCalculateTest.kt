@@ -1921,7 +1921,8 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(200, EXACTLY))
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(0)
+    // contains one root host
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(1)
   }
 
   @Test

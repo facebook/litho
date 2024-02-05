@@ -50,9 +50,6 @@ import com.facebook.rendercore.visibility.VisibilityExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,53 +94,38 @@ public class LayoutState
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
 
-  final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
-  final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
-  @Nullable List<ScopedComponentInfo> mScopedSpecComponentInfos;
-  private @Nullable List<Pair<String, EventHandler<?>>> mCreatedEventHandlers;
-
+  private final Map<String, Rect> mComponentKeyToBounds;
+  private final Map<Handle, Rect> mComponentHandleToBounds;
   final ResolveResult mResolveResult;
-
-  final SizeConstraints mSizeConstraints;
-
+  private final SizeConstraints mSizeConstraints;
+  final List<RenderTreeNode> mMountableOutputs;
+  final List<VisibilityOutput> mVisibilityOutputs;
+  final LongSparseArray<Integer> mOutputsIdToPositionMap;
+  final Map<Long, ViewAttributes> mRenderUnitsWithViewAttributes;
+  final Map<Long, IncrementalMountOutput> mIncrementalMountOutputs;
+  final Map<Long, DynamicValueOutput> mDynamicValueOutputs;
+  final ArrayList<IncrementalMountOutput> mMountableOutputTops;
+  final ArrayList<IncrementalMountOutput> mMountableOutputBottoms;
+  final LongSparseArray<AnimatableItem> mAnimatableItems;
+  final Set<Long> mRenderUnitIdsWhichHostRenderTrees;
+  private final Systracer mTracer = ComponentsSystrace.getSystrace();
+  private final @Nullable List<TestOutput> mTestOutputs;
+  final @Nullable LithoNode mRoot;
+  @Nullable LayoutResult mLayoutResult;
+  private final @Nullable TransitionId mRootTransitionId;
+  private final @Nullable DiffNode mDiffTreeRoot;
   final int mRootX;
   final int mRootY;
-
-  final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
-  List<VisibilityOutput> mVisibilityOutputs;
-  final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
-  final Map<Long, ViewAttributes> mRenderUnitsWithViewAttributes = new HashMap<>(8);
-  final Map<Long, IncrementalMountOutput> mIncrementalMountOutputs = new LinkedHashMap<>(8);
-  final Map<Long, DynamicValueOutput> mDynamicValueOutputs = new LinkedHashMap<>(8);
-  final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
-  final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
-  final LongSparseArray<AnimatableItem> mAnimatableItems = new LongSparseArray<>(8);
-  final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new HashSet<>(4);
-  private final Systracer mTracer = ComponentsSystrace.getSystrace();
-  final @Nullable List<TestOutput> mTestOutputs;
-
-  @Nullable LithoNode mRoot;
-  @Nullable LayoutResult mLayoutResult;
-  @Nullable TransitionId mRootTransitionId;
-  @Nullable DiffNode mDiffTreeRoot;
-
-  int mWidth;
-  int mHeight;
-
-  private int mComponentTreeId = -1;
-  final int mId;
+  private final int mWidth;
+  private final int mHeight;
+  private final int mComponentTreeId;
+  private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
-  final int mPreviousLayoutStateId;
-
+  private final int mPreviousLayoutStateId;
   private final boolean mIsAccessibilityEnabled;
-
-  @Nullable TransitionId mCurrentTransitionId;
-  @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
-  final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
-      new LinkedHashMap<>();
-  final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
+  final @Nullable TransitionId mCurrentTransitionId;
+  private final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping;
   private @Nullable RenderTree mCachedRenderTree = null;
-
   private final @Nullable List<Attachable> mAttachables;
   private final @Nullable List<Transition> mTransitions;
   private final @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
@@ -157,42 +139,61 @@ public class LayoutState
   // TODO(t66287929): Remove mIsCommitted from LayoutState by matching RenderState logic around
   // Futures.
   private boolean mIsCommitted;
-
   private boolean mShouldProcessVisibilityOutputs;
-  private boolean mEnableDrawablePreallocation;
+  private final boolean mEnableDrawablePreallocation;
+  private @Nullable List<ScopedComponentInfo> mScopedSpecComponentInfos;
+  private @Nullable List<Pair<String, EventHandler<?>>> mCreatedEventHandlers;
+  final @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
 
   LayoutState(
-      int id,
       ResolveResult resolveResult,
       SizeConstraints sizeConstraints,
-      int rootX,
-      int rootY,
       int componentTreeId,
       boolean isAccessibilityEnabled,
-      @Nullable LayoutState current,
       @Nullable LayoutCache.CachedData layoutCacheData,
+      @Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers,
       ReductionState reductionState) {
-    mId = id;
     mResolveResult = resolveResult;
     mEnableDrawablePreallocation =
         mResolveResult.context.mLithoConfiguration.componentsConfig.enableDrawablePreAllocation;
     mSizeConstraints = sizeConstraints;
-    mRootX = rootX;
-    mRootY = rootY;
-    mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mLayoutCacheData = layoutCacheData;
-    mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
-    mScopedSpecComponentInfos = new ArrayList<>();
-    mVisibilityOutputs = new ArrayList<>(8);
+    mIsAccessibilityEnabled = isAccessibilityEnabled;
+    mComponentTreeId = componentTreeId;
+    mRootTransitionId = LithoNodeUtils.createTransitionId(resolveResult.node);
+    mCreatedEventHandlers = createdEventHandlers;
 
+    mId = reductionState.getId();
+    mRoot = reductionState.getRootNode();
+    mRootX = reductionState.getRootX();
+    mRootY = reductionState.getRootY();
+    mWidth = reductionState.getWidth();
+    mHeight = reductionState.getHeight();
+    mLayoutResult = reductionState.getLayoutResult();
+    mPreviousLayoutStateId = reductionState.getPreviousLayoutStateId();
+    mDiffTreeRoot = reductionState.getDiffTreeRoot();
+    mCurrentTransitionId = reductionState.getCurrentTransitionId();
+    mMountableOutputs = reductionState.getMountableOutputs();
+    mIncrementalMountOutputs = reductionState.getIncrementalMountOutputs();
+    mMountableOutputTops = reductionState.getMountableOutputTops();
+    mMountableOutputBottoms = reductionState.getMountableOutputBottoms();
     mAttachables = reductionState.getAttachables();
     mTransitions = reductionState.getTransitions();
+    mTestOutputs = reductionState.getTestOutputs();
+    mScopedSpecComponentInfos = reductionState.getScopedSpecComponentInfos();
+    mVisibilityOutputs = reductionState.getVisibilityOutputs();
     mScopedComponentInfosNeedingPreviousRenderData =
         reductionState.getScopedComponentInfosNeedingPreviousRenderData();
     mWorkingRangeContainer = reductionState.getWorkingRangeContainer();
-    mComponentTreeId = componentTreeId;
-    mRootTransitionId = LithoNodeUtils.createTransitionId(resolveResult.node);
-    mIsAccessibilityEnabled = isAccessibilityEnabled;
+    mRenderUnitsWithViewAttributes = reductionState.getRenderUnitsWithViewAttributes();
+    mRenderUnitIdsWhichHostRenderTrees = reductionState.getRenderUnitIdsWhichHostRenderTrees();
+    mDynamicValueOutputs = reductionState.getDynamicValueOutputs();
+    mAnimatableItems = reductionState.getAnimatableItems();
+    mTransitionIdMapping = reductionState.getTransitionIdMapping();
+    mOutputsIdToPositionMap = reductionState.getOutputsIdToPositionMap();
+    mComponentKeyToBounds = reductionState.getComponentKeyToBounds();
+    mComponentHandleToBounds = reductionState.getComponentHandleToBounds();
+    mCurrentLayoutOutputAffinityGroup = reductionState.getCurrentLayoutOutputAffinityGroup();
   }
 
   public ResolveResult getResolveResult() {
@@ -229,10 +230,6 @@ public class LayoutState
     return scopedSpecComponentInfos;
   }
 
-  void setCreatedEventHandlers(@Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers) {
-    mCreatedEventHandlers = createdEventHandlers;
-  }
-
   @Nullable
   List<Pair<String, EventHandler<?>>> consumeCreatedEventHandlers() {
     final List<Pair<String, EventHandler<?>>> createdEventHandlers = mCreatedEventHandlers;
@@ -257,10 +254,6 @@ public class LayoutState
     }
 
     final RenderTreeNode root;
-
-    if (mMountableOutputs.isEmpty()) {
-      LithoReducer.addRootHostRenderTreeNode(this, null, null);
-    }
 
     root = mMountableOutputs.get(0);
 

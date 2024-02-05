@@ -156,8 +156,8 @@ class LayoutTreeFuture(
                   sizeConstraints = sizeConstraints,
                   currentLayoutState = currentLayoutState,
                   root = root,
-                  offsetRootX = lsc.rootOffset.x,
-                  offsetRootY = lsc.rootOffset.y,
+                  rootX = lsc.rootOffset.x,
+                  rootY = lsc.rootOffset.y,
                   attachables = resolveResult.outputs?.let { ArrayList(it.attachables) },
                   transitions = resolveResult.outputs?.let { ArrayList(it.transitions) },
                   scopedComponentInfosNeedingPreviousRenderData =
