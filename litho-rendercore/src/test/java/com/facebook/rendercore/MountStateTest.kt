@@ -372,7 +372,7 @@ class MountStateTest {
     val unit = TestRenderUnit()
     node.setRenderUnit(unit)
     val tree = createRenderTree(c, node)
-    val rootRenderUnit = tree.root.renderUnit
+    val rootRenderUnit = tree.root.renderUnit as RenderUnit<View>
     val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
     val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
