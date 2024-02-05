@@ -332,8 +332,7 @@ public class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
-      Output<Integer> measuredHeight,
-      Output<Boolean> needMinimallyWideLayout) {
+      Output<Integer> measuredHeight) {
 
     if (TextUtils.isEmpty(text)) {
       measureLayout.set(null);
@@ -389,14 +388,47 @@ public class TextSpec {
             textDirection,
             lineHeight);
 
-    measureLayout.set(newLayout);
-
     final int fullWidth = Math.max(0, SizeSpec.resolveSize(widthSpec, newLayout.getWidth()));
     size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
     if (isTextAlignmentOverride || (minimallyWide && fullWidth != size.width)) {
       // either TextAlignment is TEXT_END or minimally wide width is different
-      needMinimallyWideLayout.set(true);
+      newLayout =
+          createTextLayout(
+              context,
+              widthSpec,
+              ellipsize,
+              shouldIncludeFontPadding,
+              maxLines,
+              shadowRadius,
+              shadowDx,
+              shadowDy,
+              shadowColor,
+              isSingleLine,
+              text,
+              textColor,
+              textColorStateList,
+              linkColor,
+              textSize,
+              extraSpacing,
+              spacingMultiplier,
+              letterSpacing,
+              textStyle,
+              typeface,
+              getTextAlignment(textAlignment, alignment),
+              glyphWarming,
+              layout.getResolvedLayoutDirection(),
+              minEms,
+              maxEms,
+              minTextWidth,
+              maxTextWidth,
+              context.getAndroidContext().getResources().getDisplayMetrics().density,
+              breakStrategy,
+              hyphenationFrequency,
+              justificationMode,
+              textDirection,
+              lineHeight);
     }
+    measureLayout.set(newLayout);
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
@@ -619,7 +651,6 @@ public class TextSpec {
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
-      @FromMeasure Boolean needMinimallyWideLayout,
       Output<CharSequence> processedText,
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
@@ -635,12 +666,8 @@ public class TextSpec {
         layout.getWidth() - layout.getPaddingLeft() - layout.getPaddingRight();
     final float layoutHeight =
         layout.getHeight() - layout.getPaddingTop() - layout.getPaddingBottom();
-    final boolean forceRelayout = needMinimallyWideLayout != null && needMinimallyWideLayout;
 
-    if (measureLayout != null
-        && !forceRelayout
-        && measuredWidth == layoutWidth
-        && measuredHeight == layoutHeight) {
+    if (measureLayout != null && measuredWidth == layoutWidth && measuredHeight == layoutHeight) {
       textLayout.set(measureLayout);
     } else {
       textLayout.set(
