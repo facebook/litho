@@ -19,7 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import androidx.annotation.Nullable;
 
-final class SimpleTestBinder implements RenderUnit.Binder<Object, Object, Void> {
+final class SimpleTestBinder implements RenderUnit.Binder<Object, Object, Object> {
   final Runnable mMountRunnable;
 
   SimpleTestBinder(Runnable mountRunnable) {
@@ -36,12 +36,12 @@ final class SimpleTestBinder implements RenderUnit.Binder<Object, Object, Void> 
   }
 
   @Override
-  public Void bind(Context context, Object o, Object o2, @Nullable Object layoutData) {
+  public Object bind(Context context, Object o, Object o2, @Nullable Object layoutData) {
     mMountRunnable.run();
     return null;
   }
 
   @Override
   public void unbind(
-      Context context, Object o, Object o2, @Nullable Object layoutData, Void bindData) {}
+      Context context, Object o, Object o2, @Nullable Object layoutData, Object bindData) {}
 }

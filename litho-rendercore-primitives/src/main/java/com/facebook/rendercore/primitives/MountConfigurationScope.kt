@@ -34,11 +34,11 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    */
   var doesMountRenderTreeHosts: Boolean = false
 
-  internal val fixedBinders: List<RenderUnit.DelegateBinder<*, ContentType, *>>
+  internal val fixedBinders: List<RenderUnit.DelegateBinder<*, ContentType, in Any>>
     get() = _fixedBinders
 
-  private val _fixedBinders: MutableList<RenderUnit.DelegateBinder<*, ContentType, *>> =
-      mutableListOf<RenderUnit.DelegateBinder<*, ContentType, *>>()
+  private val _fixedBinders: MutableList<RenderUnit.DelegateBinder<*, ContentType, in Any>> =
+      mutableListOf()
   /**
    * Stores the current binder description which is used by a binder defined within
    * withDescription{} block.
@@ -68,48 +68,36 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   "binder:${binderDescription ?: _fixedBinders.size}"
 
               override fun shouldUpdate(
-                  currentModel: Array<out Any?>?,
-                  newModel: Array<out Any?>?,
+                  currentModel: Array<out Any?>,
+                  newModel: Array<out Any?>,
                   currentLayoutData: Any?,
                   nextLayoutData: Any?
               ): Boolean {
-                if (currentModel == null && newModel == null) {
-                  // nothing has changed
-                  return false
-                }
-
-                if (currentModel != null && newModel != null) {
-                  // return true if model has changed
-                  return !areObjectsEquivalent(currentModel, newModel)
-                }
-
-                // model was null and became non null or was non null and became null
-                return true
+                return !areObjectsEquivalent(currentModel, newModel)
               }
 
               override fun bind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
-                  model: Array<out Any?>?,
+                  model: Array<out Any?>,
                   layoutData: Any?
               ): UnbindFunc {
                 return bindScope.bindCall(content)
               }
 
               override fun unbind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
-                  model: Array<out Any?>?,
+                  model: Array<out Any?>,
                   layoutData: Any?,
-                  unbindFunc: UnbindFunc
+                  unbindFunc: UnbindFunc?
               ) {
-                unbindFunc.onUnbind()
+                unbindFunc?.onUnbind()
               }
 
-              override fun getDescription(): String {
-                return renderUnitDescription
-              }
-            }))
+              override val description: String = renderUnitDescription
+            }
+                as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
   }
 
   /**
@@ -142,57 +130,43 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   "binder:${binderDescription ?: _fixedBinders.size}"
 
               override fun shouldUpdate(
-                  currentModel: Array<out Any?>?,
-                  newModel: Array<out Any?>?,
+                  currentModel: Array<out Any?>,
+                  newModel: Array<out Any?>,
                   currentLayoutData: Any?,
                   nextLayoutData: Any?
               ): Boolean {
-                if (currentModel == null &&
-                    newModel == null &&
-                    currentLayoutData == null &&
-                    nextLayoutData == null) {
-                  // nothing has changed
-                  return false
-                }
 
                 if (!areObjectsEquivalent(currentLayoutData, nextLayoutData)) {
                   // layout data has changed
                   return true
                 }
 
-                if (currentModel != null && newModel != null) {
-                  // return true if model has changed
-                  return !areObjectsEquivalent(currentModel, newModel)
-                }
-
-                // model was null and became non null or was non null and became null
-                return true
+                return !areObjectsEquivalent(currentModel, newModel)
               }
 
               @Suppress("UNCHECKED_CAST")
               override fun bind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
-                  model: Array<out Any?>?,
+                  model: Array<out Any?>,
                   layoutData: Any?
               ): UnbindFunc {
                 return bindScope.bindCall(content, layoutData as LayoutDataT)
               }
 
               override fun unbind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
-                  model: Array<out Any?>?,
+                  model: Array<out Any?>,
                   layoutData: Any?,
-                  unbindFunc: UnbindFunc
+                  unbindFunc: UnbindFunc?
               ) {
-                unbindFunc.onUnbind()
+                unbindFunc?.onUnbind()
               }
 
-              override fun getDescription(): String {
-                return renderUnitDescription
-              }
-            }))
+              override val description: String = renderUnitDescription
+            }
+                as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
   }
 
   /**
@@ -205,7 +179,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
-            object : RenderUnit.Binder<T, ContentType, Any?> {
+            object : RenderUnit.Binder<T, ContentType, Any> {
 
               val renderUnitDescription: String =
                   "binder:${binderDescription ?: _fixedBinders.size}"
@@ -220,7 +194,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun bind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
                   model: T,
                   layoutData: Any?
@@ -230,7 +204,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun unbind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
                   model: T,
                   layoutData: Any?,
@@ -239,9 +213,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                 setter(content, defaultValue)
               }
 
-              override fun getDescription(): String {
-                return renderUnitDescription
-              }
+              override val description: String = renderUnitDescription
             }))
   }
 
@@ -255,7 +227,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
     _fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
-            object : RenderUnit.Binder<T, ContentType, Any?> {
+            object : RenderUnit.Binder<T, ContentType, Any> {
 
               val renderUnitDescription: String =
                   "binder:${binderDescription ?: _fixedBinders.size}"
@@ -270,7 +242,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun bind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
                   model: T,
                   layoutData: Any?
@@ -280,7 +252,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               }
 
               override fun unbind(
-                  context: Context?,
+                  context: Context,
                   content: ContentType,
                   model: T,
                   layoutData: Any?,
@@ -289,9 +261,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                 setter.set(content, defaultValue)
               }
 
-              override fun getDescription(): String {
-                return renderUnitDescription
-              }
+              override val description: String = renderUnitDescription
             }))
   }
 

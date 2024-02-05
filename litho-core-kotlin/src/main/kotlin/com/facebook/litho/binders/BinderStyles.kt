@@ -42,10 +42,10 @@ import com.facebook.rendercore.RenderUnit.DelegateBinder
  * the last time it is unmounted before going offscreen, you should set the
  * [RenderUnit.Binder.shouldUpdate] to `false`.
  */
-fun Style.viewBinder(binder: DelegateBinder<*, View, Any?>): Style =
+fun Style.viewBinder(binder: DelegateBinder<*, View, Any>): Style =
     this + ObjectStyleItem(BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER, binder)
 
-fun Style.viewBinder(binder: RenderUnit.Binder<Any?, View, Any?>): Style =
+fun Style.viewBinder(binder: RenderUnit.Binder<Any?, View, Any>): Style =
     this +
         ObjectStyleItem(
             BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,

@@ -182,8 +182,9 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
     mOnTouchListener = onTouchListener;
   }
 
-  public static Binder<HostRenderUnit, HostView, Void> sBackgroundBindFunction =
-      new Binder<HostRenderUnit, HostView, Void>() {
+  public static Binder<HostRenderUnit, HostView, Object> sBackgroundBindFunction =
+      new Binder<HostRenderUnit, HostView, Object>() {
+
         @Override
         public boolean shouldUpdate(
             HostRenderUnit currentValue,
@@ -200,7 +201,8 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
         }
 
         @Override
-        public Void bind(
+        @Nullable
+        public Object bind(
             Context context,
             HostView hostView,
             HostRenderUnit hostRenderUnit,
@@ -215,13 +217,14 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
             HostView hostView,
             HostRenderUnit hostRenderUnit,
             @Nullable Object layoutData,
-            Void bindData) {
+            @Nullable Object bindData) {
           hostView.setBackground(null);
         }
       };
 
-  public static Binder<HostRenderUnit, HostView, Void> sForegroundBindFunction =
-      new Binder<HostRenderUnit, HostView, Void>() {
+  public static Binder<HostRenderUnit, HostView, Object> sForegroundBindFunction =
+      new Binder<HostRenderUnit, HostView, Object>() {
+
         @Override
         public boolean shouldUpdate(
             HostRenderUnit currentValue,
@@ -238,7 +241,8 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
         }
 
         @Override
-        public Void bind(
+        @Nullable
+        public Object bind(
             Context context,
             HostView hostView,
             HostRenderUnit hostRenderUnit,
@@ -253,13 +257,13 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
             HostView hostView,
             HostRenderUnit hostRenderUnit,
             @Nullable Object layoutData,
-            Void bindData) {
+            @Nullable Object bindData) {
           hostView.setForegroundCompat(null);
         }
       };
 
-  public static Binder<HostRenderUnit, HostView, Void> sLayerTypeBindFunction =
-      new Binder<HostRenderUnit, HostView, Void>() {
+  public static Binder<HostRenderUnit, HostView, Object> sLayerTypeBindFunction =
+      new Binder<HostRenderUnit, HostView, Object>() {
 
         @Override
         public boolean shouldUpdate(
@@ -271,7 +275,8 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
         }
 
         @Override
-        public Void bind(
+        @Nullable
+        public Object bind(
             Context context,
             HostView hostView,
             HostRenderUnit hostRenderUnit,
@@ -286,13 +291,14 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
             HostView hostView,
             HostRenderUnit hostRenderUnit,
             @Nullable Object layoutData,
-            Void bindData) {
+            @Nullable Object bindData) {
           hostView.setLayerType(View.LAYER_TYPE_NONE, null);
         }
       };
 
-  public static Binder<HostRenderUnit, HostView, Void> sTouchHandlersBindFunction =
-      new Binder<HostRenderUnit, HostView, Void>() {
+  public static Binder<HostRenderUnit, HostView, Object> sTouchHandlersBindFunction =
+      new Binder<HostRenderUnit, HostView, Object>() {
+
         @Override
         public boolean shouldUpdate(
             HostRenderUnit currentValue,
@@ -304,7 +310,8 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
         }
 
         @Override
-        public Void bind(
+        @Nullable
+        public Object bind(
             Context context,
             HostView hostView,
             HostRenderUnit hostRenderUnit,
@@ -340,7 +347,7 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
             HostView hostView,
             HostRenderUnit hostRenderUnit,
             @Nullable Object layoutData,
-            Void bindData) {
+            @Nullable Object bindData) {
           hostView.setOnTouchListener(null);
           hostView.setInterceptTouchEventHandler(null);
           hostView.setOnClickListener(null);

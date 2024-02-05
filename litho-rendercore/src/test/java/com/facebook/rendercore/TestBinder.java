@@ -18,11 +18,12 @@ package com.facebook.rendercore;
 
 import android.content.Context;
 import android.view.View;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TestBinder<MODEL> implements RenderUnit.Binder<MODEL, View, Void> {
+public class TestBinder<MODEL> implements RenderUnit.Binder<MODEL, View, Object> {
 
   public static class TestBinder1 extends TestBinder<RenderUnit> {
     public TestBinder1() {
@@ -76,14 +77,16 @@ public class TestBinder<MODEL> implements RenderUnit.Binder<MODEL, View, Void> {
   }
 
   @Override
-  public Void bind(Context context, View view, MODEL model, Object layoutData) {
+  @Nullable
+  public Object bind(Context context, View view, MODEL model, Object layoutData) {
     bindOrder.add(this);
     wasBound = true;
     return null;
   }
 
   @Override
-  public void unbind(Context context, View view, MODEL model, Object layoutData, Void bindData) {
+  public void unbind(
+      Context context, View view, MODEL model, Object layoutData, @Nullable Object bindData) {
     unbindOrder.add(this);
     wasUnbound = true;
   }

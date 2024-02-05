@@ -45,6 +45,6 @@ class MountItem(renderTreeNode: RenderTreeNode, val content: Any) {
   }
 
   companion object {
-    @JvmStatic fun getId(item: MountItem): Long = item._renderTreeNode.renderUnit.getId()
+    @JvmStatic fun getId(item: MountItem): Long = item._renderTreeNode.renderUnit.id
   }
 }

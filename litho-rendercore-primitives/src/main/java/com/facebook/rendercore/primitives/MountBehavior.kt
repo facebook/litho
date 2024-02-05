@@ -16,12 +16,8 @@
 
 package com.facebook.rendercore.primitives
 
-import android.content.Context
-import com.facebook.rendercore.BindData
 import com.facebook.rendercore.ContentAllocator
-import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.Systracer
 
 /**
  * MountBehavior defines how to allocate a [View]/[Drawable] and apply properties to it.
@@ -55,28 +51,23 @@ class MountBehavior<ContentType : Any>(
     renderUnit =
         object :
             PrimitiveRenderUnit<ContentType>(
-                contentAllocator.getRenderType(),
+                contentAllocator.renderType,
                 mountConfigurationScope.fixedBinders,
                 mountConfigurationScope.doesMountRenderTreeHosts) {
-          override fun getContentAllocator(): ContentAllocator<ContentType> {
-            return this@MountBehavior.contentAllocator
-          }
+          override val contentAllocator: ContentAllocator<ContentType> =
+              this@MountBehavior.contentAllocator
 
-          override fun getId(): Long {
-            return this@MountBehavior.id
-          }
+          override val id: Long = this@MountBehavior.id
 
-          override fun getDescription(): String {
-            return this@MountBehavior.description?.take(MAX_DESCRIPTION_LENGTH)
-                ?: super.getDescription()
-          }
+          override val description: String =
+              this@MountBehavior.description?.take(MAX_DESCRIPTION_LENGTH) ?: super.description
         }
   }
 }
 
 abstract class PrimitiveRenderUnit<ContentType : Any>(
     renderType: RenderType,
-    fixedMountBinders: List<DelegateBinder<*, ContentType, *>>,
+    fixedMountBinders: List<DelegateBinder<*, ContentType, in Any>>,
     private val doesMountRenderTreeHosts: Boolean
 ) :
     RenderUnit<ContentType>(
@@ -87,79 +78,4 @@ abstract class PrimitiveRenderUnit<ContentType : Any>(
         ) {
 
   override fun doesMountRenderTreeHosts(): Boolean = doesMountRenderTreeHosts
-
-  /**
-   * This method is an override that calls super impl to make it public on RenderUnit because it
-   * needs to be called in PrimitiveLithoRenderUnit.
-   */
-  public override fun mountBinders(
-      context: Context,
-      content: ContentType,
-      layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
-  ) = super.mountBinders(context, content, layoutData, bindData, tracer)
-
-  /**
-   * This method is an override that calls super impl to make it public on RenderUnit because it
-   * needs to be called in PrimitiveLithoRenderUnit.
-   */
-  public override fun unmountBinders(
-      context: Context,
-      content: ContentType,
-      layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
-  ) = super.unmountBinders(context, content, layoutData, bindData, tracer)
-
-  /**
-   * This method is an override that calls super impl to make it public on RenderUnit because it
-   * needs to be called in PrimitiveLithoRenderUnit.
-   */
-  public override fun attachBinders(
-      context: Context,
-      content: ContentType,
-      layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
-  ) = super.attachBinders(context, content, layoutData, bindData, tracer)
-
-  /**
-   * This method is an override that calls super impl to make it public on RenderUnit because it
-   * needs to be called in PrimitiveLithoRenderUnit.
-   */
-  public override fun detachBinders(
-      context: Context,
-      content: ContentType,
-      layoutData: Any?,
-      bindData: BindData,
-      tracer: Systracer
-  ) = super.detachBinders(context, content, layoutData, bindData, tracer)
-
-  /**
-   * This method is an override that calls super impl to make it public on RenderUnit because it
-   * needs to be called in PrimitiveLithoRenderUnit.
-   */
-  public override fun updateBinders(
-      context: Context,
-      content: ContentType,
-      currentRenderUnit: RenderUnit<ContentType>,
-      currentLayoutData: Any?,
-      newLayoutData: Any?,
-      mountDelegate: MountDelegate?,
-      bindData: BindData,
-      isAttached: Boolean,
-      tracer: Systracer,
-  ) =
-      super.updateBinders(
-          context,
-          content,
-          currentRenderUnit,
-          currentLayoutData,
-          newLayoutData,
-          mountDelegate,
-          bindData,
-          isAttached,
-          tracer,
-      )
 }

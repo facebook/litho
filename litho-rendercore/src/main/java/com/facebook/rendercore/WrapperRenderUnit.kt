@@ -29,22 +29,22 @@ import androidx.annotation.IdRes
 class WrapperRenderUnit<ContentType : Any>(private val renderUnit: RenderUnit<ContentType>) :
     RenderUnit<ContentType>(renderUnit.renderType) {
 
-  override fun getId(): Long = renderUnit.id
+  override val id: Long = renderUnit.id
 
-  override fun getContentAllocator(): ContentAllocator<ContentType> = renderUnit.contentAllocator
+  override val contentAllocator: ContentAllocator<ContentType> = renderUnit.contentAllocator
 
   override fun doesMountRenderTreeHosts(): Boolean = renderUnit.doesMountRenderTreeHosts()
 
-  override fun getRenderContentType(): Class<*> = renderUnit.renderContentType
+  override val renderContentType: Class<*> = renderUnit.renderContentType
 
-  override fun getDescription(): String = renderUnit.description
+  override val description: String = renderUnit.description
 
   override fun <T> getExtra(@IdRes key: Int): T? = renderUnit.getExtra(key)
 
   override fun addOptionalMountBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsOptionalMountBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.getDescription()} already exists in the wrapped ${renderUnit.getDescription()}")
+          "Binder ${binder.description} already exists in the wrapped ${renderUnit.description}")
     }
     super.addOptionalMountBinder(binder)
   }
@@ -52,12 +52,12 @@ class WrapperRenderUnit<ContentType : Any>(private val renderUnit: RenderUnit<Co
   override fun addAttachBinder(binder: DelegateBinder<*, in ContentType, *>) {
     if (renderUnit.containsAttachBinder(binder)) {
       throw IllegalArgumentException(
-          "Binder ${binder.getDescription()} already exists in the wrapped ${renderUnit.getDescription()}")
+          "Binder ${binder.description} already exists in the wrapped ${renderUnit.description}")
     }
     super.addAttachBinder(binder)
   }
 
-  override fun <T : Binder<*, *, *>> findAttachBinderByClass(klass: Class<T>): T? =
+  override fun <T : Binder<*, *, *>?> findAttachBinderByClass(klass: Class<T>): T? =
       renderUnit.findAttachBinderByClass(klass) ?: super.findAttachBinderByClass(klass)
 
   override fun mountBinders(

@@ -47,9 +47,7 @@ private constructor(
         context,
         debugKey) {
 
-  override fun getContentAllocator(): ContentAllocator<Any> {
-    return primitiveRenderUnit.contentAllocator
-  }
+  override val contentAllocator: ContentAllocator<Any> = primitiveRenderUnit.contentAllocator
 
   override fun doesMountRenderTreeHosts(): Boolean {
     return primitiveRenderUnit.doesMountRenderTreeHosts()
@@ -106,7 +104,7 @@ private constructor(
   override fun updateBinders(
       context: Context,
       content: Any,
-      currentRenderUnit: RenderUnit<Any?>,
+      currentRenderUnit: RenderUnit<Any>,
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,
@@ -130,23 +128,19 @@ private constructor(
     return primitiveRenderUnit.findAttachBinderByClass(klass)
   }
 
-  override fun containsAttachBinder(delegateBinder: DelegateBinder<*, *, *>?): Boolean {
+  override fun containsAttachBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {
     return primitiveRenderUnit.containsAttachBinder(delegateBinder)
   }
 
-  override fun containsOptionalMountBinder(delegateBinder: DelegateBinder<*, *, *>?): Boolean {
+  override fun containsOptionalMountBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {
     return primitiveRenderUnit.containsOptionalMountBinder(delegateBinder)
   }
 
-  override fun getRenderContentType(): Class<*> {
-    return primitiveRenderUnit.javaClass
-  }
+  override val renderContentType: Class<*> = primitiveRenderUnit.javaClass
 
-  override fun getDescription(): String {
-    return primitiveRenderUnit.description
-  }
+  override val description: String = primitiveRenderUnit.description
 
-  override fun addOptionalMountBinder(binder: DelegateBinder<*, in Any?, *>?) {
+  override fun addOptionalMountBinder(binder: DelegateBinder<*, in Any, *>) {
     primitiveRenderUnit.addOptionalMountBinder(binder)
   }
 

@@ -101,17 +101,11 @@ private constructor(
   override val isRecyclingDisabled: Boolean
     get() = (component is SpecGeneratedComponent && component.isRecyclingDisabled)
 
-  override fun getDescription(): String {
-    return component.simpleName
-  }
+  override val description: String = component.simpleName
 
-  override fun getContentAllocator(): ContentAllocator<Any> {
-    return this
-  }
+  override val contentAllocator: ContentAllocator<Any> = this
 
-  override fun getRenderContentType(): Class<*> {
-    return component.javaClass
-  }
+  override val renderContentType: Class<*> = component.javaClass
 
   companion object {
 
@@ -119,8 +113,8 @@ private constructor(
     const val STATE_UPDATED = 1
     const val STATE_DIRTY = 2
 
-    val mountBinder: Binder<MountSpecLithoRenderUnit, Any, Any?> =
-        object : Binder<MountSpecLithoRenderUnit, Any, Any?> {
+    val mountBinder: Binder<MountSpecLithoRenderUnit, Any, Any> =
+        object : Binder<MountSpecLithoRenderUnit, Any, Any> {
           override fun shouldUpdate(
               current: MountSpecLithoRenderUnit,
               next: MountSpecLithoRenderUnit,
@@ -164,8 +158,8 @@ private constructor(
           }
         }
 
-    val binderBinder: Binder<MountSpecLithoRenderUnit, Any, Any?> =
-        object : Binder<MountSpecLithoRenderUnit, Any, Any?> {
+    val binderBinder: Binder<MountSpecLithoRenderUnit, Any, Any> =
+        object : Binder<MountSpecLithoRenderUnit, Any, Any> {
           override fun shouldUpdate(
               current: MountSpecLithoRenderUnit,
               next: MountSpecLithoRenderUnit,

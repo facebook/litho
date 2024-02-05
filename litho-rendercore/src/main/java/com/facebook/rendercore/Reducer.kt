@@ -196,8 +196,8 @@ object Reducer {
 
     override fun getPoolableContentType(): Class<*> = renderContentType
 
-    override fun getContentAllocator(): ContentAllocator<Any> = this
+    override val contentAllocator: ContentAllocator<Any> = this
 
-    override fun getId(): Long = MountState.ROOT_HOST_ID
+    override val id: Long = MountState.ROOT_HOST_ID
   }
 }

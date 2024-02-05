@@ -33,7 +33,7 @@ interface ContentAllocator<Content : Any> {
   fun createContent(context: Context): Content
 
   /** Returns the [RenderUnit.RenderType] of the mountable content. */
-  fun getRenderType(): RenderType
+  val renderType: RenderType
 
   /** Creates a mount-content that can be pooled. This is typically a View or Drawable subclass. */
   fun createPoolableContent(context: Context): Content = createContent(context)

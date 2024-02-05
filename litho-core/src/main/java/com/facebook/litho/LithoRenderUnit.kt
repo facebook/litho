@@ -25,20 +25,19 @@ import com.facebook.rendercore.transitions.TransitionRenderUnit
 
 abstract class LithoRenderUnit
 protected constructor(
-    private val _id: Long,
+    override val id: Long,
     val component: Component,
     @field:JvmField val commonDynamicProps: SparseArray<DynamicValue<Any?>>?,
     val nodeInfo: NodeInfo?,
     val flags: Int,
     importantForAccessibility: Int,
-    renderType: RenderType?,
+    renderType: RenderType,
     @field:JvmField val componentContext: ComponentContext?,
-    private val debugKey: String?
+    private val _debugKey: String?
 ) : RenderUnit<Any>(renderType), TransitionRenderUnit {
 
-  override fun getId(): Long = _id
-
-  override fun getDebugKey(): String = debugKey ?: componentContext?.globalKey ?: _id.toString()
+  override val debugKey: String
+    get() = _debugKey ?: componentContext?.globalKey ?: id.toString()
 
   // the A11Y prop for descendants has been corrected
   val importantForAccessibility: Int =

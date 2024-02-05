@@ -61,12 +61,12 @@ class MountStateTest {
     root.addChild(leafTwo)
     val testRenderUnitOne = TestRenderUnit()
     val testRenderUnitTwo = TestRenderUnit()
-    val testBinderOne = TestBinder<Any?>()
-    val testBinderTwo = TestBinder<Any?>()
+    val testBinderOne = TestBinder<Any>()
+    val testBinderTwo = TestBinder<Any>()
     testRenderUnitOne.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(testRenderUnitOne, testBinderOne))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne))
     testRenderUnitTwo.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(testRenderUnitTwo, testBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitTwo, testBinderTwo))
     leaf.setRenderUnit(testRenderUnitOne)
     leafTwo.setRenderUnit(testRenderUnitTwo)
     val renderTree = createRenderTree(c, root)
@@ -92,11 +92,11 @@ class MountStateTest {
         object : TestRenderUnit() {
           override fun createContent(c: Context): View = innerTestHost
 
-          override fun getDescription(): String = "testRenderUnitOne"
+          override val description: String = "testRenderUnitOne"
         }
-    val testBinderOne = TestBinder<Any?>()
+    val testBinderOne = TestBinder<Any>()
     testRenderUnitOne.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(testRenderUnitOne, testBinderOne))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne))
     leaf.setRenderUnit(testRenderUnitOne)
     val renderTree = createRenderTree(c, root)
     val mountState = createMountState(c)
@@ -104,9 +104,9 @@ class MountStateTest {
     val innerLeaf = TestNode(0, 0, 10, 10)
     innerTreeRoot.addChild(innerLeaf)
     val innerRenderUnit = TestRenderUnit()
-    val innerBinder = TestBinder<Any?>()
+    val innerBinder = TestBinder<Any>()
     innerRenderUnit.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(innerRenderUnit, innerBinder))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(innerRenderUnit, innerBinder))
     innerLeaf.setRenderUnit(innerRenderUnit)
     val innerRenderTree = createRenderTree(c, innerTreeRoot)
     val innerMountState = MountState(innerTestHost)
@@ -131,17 +131,17 @@ class MountStateTest {
     val unbindOrder: MutableList<*> = ArrayList<Any?>()
 
     // Using anonymous class to create another type.
-    val attachBinderOne = object : TestBinder<Any?>(bindOrder, unbindOrder) {}
-    val attachBinderTwo = TestBinder<Any?>(bindOrder, unbindOrder)
+    val attachBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
+    val attachBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     val renderUnit = TestRenderUnit()
     renderUnit.addAttachBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, attachBinderTwo))
-    val mountBinderOne = object : TestBinder<Any?>(bindOrder, unbindOrder) {}
-    val mountBinderTwo = TestBinder<Any?>(bindOrder, unbindOrder)
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo))
+    val mountBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
+    val mountBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     renderUnit.addOptionalMountBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo))
     leaf.setRenderUnit(renderUnit)
     val renderTree = createRenderTree(c, root)
     val host = TestHostView(c, bindOrder, unbindOrder)
@@ -175,7 +175,7 @@ class MountStateTest {
       val newLeaf = TestNode(10, 10, 10, 10)
       newLeaf.setLayoutData(Any())
       val newRenderUnit = TestRenderUnit()
-      newRenderUnit.id = id
+      newRenderUnit.setId(id)
       newLeaf.setRenderUnit(newRenderUnit)
       val newRenderTree = createRenderTree(c, newRoot)
       mountState.mount(newRenderTree)
@@ -204,14 +204,14 @@ class MountStateTest {
       newRoot.addChild(newLeaf)
       val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
       val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
-      val mountBinder = TestBinder<Any?>(bindOrder, unbindOrder)
-      val attachBinder = TestBinder<Any?>(bindOrder, unbindOrder)
+      val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
+      val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
       val newRenderUnit = TestRenderUnit()
       newRenderUnit.addOptionalMountBinder(
-          DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, mountBinder))
+          DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinder))
       newRenderUnit.addAttachBinder(
-          DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, attachBinder))
-      newRenderUnit.id = id
+          DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinder))
+      newRenderUnit.setId(id)
       newLeaf.setRenderUnit(newRenderUnit)
       val newRenderTree = createRenderTree(c, newRoot)
       mountState.mount(newRenderTree)
@@ -265,7 +265,7 @@ class MountStateTest {
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder1),
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder2),
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder3))
-      newRenderUnit.id = id
+      newRenderUnit.setId(id)
       newLeaf.setRenderUnit(newRenderUnit)
       val newRenderTree = createRenderTree(c, newRoot)
       mountState.mount(newRenderTree)
@@ -283,8 +283,8 @@ class MountStateTest {
     var mountState: MountState
     val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
     val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val currentMountBinder1 = TestBinder<Any?>(bindOrder, unbindOrder)
-    val currentAttachBinder1 = TestBinder<Any?>(bindOrder, unbindOrder)
+    val currentMountBinder1 = TestBinder<Any>(bindOrder, unbindOrder)
+    val currentAttachBinder1 = TestBinder<Any>(bindOrder, unbindOrder)
     run {
       val root = TestNode()
 
@@ -293,24 +293,24 @@ class MountStateTest {
         val leaf1 = TestNode(0, 0, 10, 10)
         val renderUnit1 = TestRenderUnit()
         renderUnit1.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit1, currentMountBinder1))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit1, currentMountBinder1))
         renderUnit1.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit1, currentAttachBinder1))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit1, currentAttachBinder1))
         id1 = renderUnit1.id
         leaf1.setRenderUnit(renderUnit1)
         root.addChild(leaf1)
       }
 
       // Adds 2nd child
-      val mountBinder2 = TestBinder<Any?>(bindOrder, unbindOrder)
-      val attachBinder2 = TestBinder<Any?>(bindOrder, unbindOrder)
+      val mountBinder2 = TestBinder<Any>(bindOrder, unbindOrder)
+      val attachBinder2 = TestBinder<Any>(bindOrder, unbindOrder)
       run {
         val leaf2 = TestNode(10, 10, 10, 10)
         val renderUnit2 = TestRenderUnit()
         renderUnit2.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit2, mountBinder2))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit2, mountBinder2))
         renderUnit2.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit2, attachBinder2))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit2, attachBinder2))
         id2 = renderUnit2.id
         leaf2.setRenderUnit(renderUnit2)
         root.addChild(leaf2)
@@ -327,10 +327,10 @@ class MountStateTest {
     unbindOrder.clear()
     run {
       val newRoot = TestNode()
-      val newMountBinder1 = TestBinder<Any?>(bindOrder, unbindOrder)
-      val newAttachBinder1 = TestBinder<Any?>(bindOrder, unbindOrder)
-      val mountBinder2 = TestBinder<Any?>(bindOrder, unbindOrder)
-      val attachBinder2 = TestBinder<Any?>(bindOrder, unbindOrder)
+      val newMountBinder1 = TestBinder<Any>(bindOrder, unbindOrder)
+      val newAttachBinder1 = TestBinder<Any>(bindOrder, unbindOrder)
+      val mountBinder2 = TestBinder<Any>(bindOrder, unbindOrder)
+      val attachBinder2 = TestBinder<Any>(bindOrder, unbindOrder)
 
       // Adds 1st new child (should update = true)
       run {
@@ -338,10 +338,10 @@ class MountStateTest {
         newLeaf1.setLayoutData(Any()) // makes should update return true
         val newRenderUnit = TestRenderUnit()
         newRenderUnit.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, newMountBinder1))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, newMountBinder1))
         newRenderUnit.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, newAttachBinder1))
-        newRenderUnit.id = id1
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, newAttachBinder1))
+        newRenderUnit.setId(id1)
         newLeaf1.setRenderUnit(newRenderUnit)
         newRoot.addChild(newLeaf1)
       }
@@ -351,10 +351,10 @@ class MountStateTest {
         val newLeaf2 = TestNode(10, 10, 10, 10)
         val newRenderUnit = TestRenderUnit()
         newRenderUnit.addOptionalMountBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, mountBinder2))
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinder2))
         newRenderUnit.addAttachBinder(
-            DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, attachBinder2))
-        newRenderUnit.id = id2
+            DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinder2))
+        newRenderUnit.setId(id2)
         newLeaf2.setRenderUnit(newRenderUnit)
         newRoot.addChild(newLeaf2)
       }
@@ -375,12 +375,12 @@ class MountStateTest {
     val rootRenderUnit = tree.root.renderUnit
     val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
     val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val mountBinder = TestBinder<Any?>(bindOrder, unbindOrder)
-    val attachDetachBinder = TestBinder<Any?>(bindOrder, unbindOrder)
+    val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
+    val attachDetachBinder = TestBinder<Any>(bindOrder, unbindOrder)
     rootRenderUnit.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(rootRenderUnit, mountBinder))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(rootRenderUnit, mountBinder))
     rootRenderUnit.addAttachBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(rootRenderUnit, attachDetachBinder))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(rootRenderUnit, attachDetachBinder))
     val mountState: MountState = createMountState(c)
     mountState.mount(tree)
     assertThat(bindOrder).containsExactly(mountBinder, attachDetachBinder)
@@ -403,7 +403,7 @@ class MountStateTest {
         object : TestHostRenderUnit() {
           override fun createContent(c: Context): Host = testHost
 
-          override fun getDescription(): String = "hostRenderUnit"
+          override val description: String = "hostRenderUnit"
         }
     hostNode.setRenderUnit(hostRenderUnit)
     val childRenderUnit = TestRenderUnit()
@@ -558,8 +558,8 @@ class MountStateTest {
     val c: Context = RuntimeEnvironment.application
     val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
     val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val bindBinder = TestBinder<Any?>(bindOrder, unbindOrder)
-    val mountBinder = TestBinder<Any?>(bindOrder, unbindOrder)
+    val bindBinder = TestBinder<Any>(bindOrder, unbindOrder)
+    val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val root: LayoutResult? =
         SimpleLayoutResult.create()
             .width(200)
@@ -569,9 +569,9 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>)
+                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
                     .width(100)
                     .height(100))
             .build()
@@ -596,10 +596,10 @@ class MountStateTest {
   @Test
   fun onAttachDetachRootHostToWindow_mountStateCallsAttachDetachBinders() {
     val c = renderCoreTestRule.context
-    val bindOrder: MutableList<TestBinder<Any?>?> = ArrayList()
-    val unbindOrder: MutableList<TestBinder<Any?>?> = ArrayList()
-    val attachBinder = TestBinder<Any?>(bindOrder, unbindOrder)
-    val mountBinder = TestBinder<Any?>(bindOrder, unbindOrder)
+    val bindOrder: MutableList<TestBinder<Any>> = ArrayList()
+    val unbindOrder: MutableList<TestBinder<Any>> = ArrayList()
+    val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
+    val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val root: LayoutResult? =
         SimpleLayoutResult.create()
             .width(200)
@@ -609,9 +609,9 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>)
+                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
                     .width(100)
                     .height(100))
             .build()
@@ -644,8 +644,8 @@ class MountStateTest {
     val c = renderCoreTestRule.context
     val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
     val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val attachBinder = TestBinder<Any?>(bindOrder, unbindOrder)
-    val mountBinder = TestBinder<Any?>(bindOrder, unbindOrder)
+    val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
+    val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val root: LayoutResult? =
         SimpleLayoutResult.create()
             .width(200)
@@ -655,9 +655,9 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>)
+                                attachBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
                     .width(100)
                     .height(100))
             .build()
@@ -783,8 +783,8 @@ class MountStateTest {
     val c: Context = RuntimeEnvironment.application
     val bindOrder: MutableList<Pair<Any?, Any?>?> = ArrayList()
     val unbindOrder: MutableList<Pair<Any?, Any?>?> = ArrayList()
-    val bindBinder = TestBinderWithBindData<Any?>(bindOrder, unbindOrder, 1)
-    val mountBinder = TestBinderWithBindData<Any?>(bindOrder, unbindOrder, 2)
+    val bindBinder = TestBinderWithBindData<Any>(bindOrder, unbindOrder, 1)
+    val mountBinder = TestBinderWithBindData<Any>(bindOrder, unbindOrder, 2)
     val root: LayoutResult? =
         SimpleLayoutResult.create()
             .width(200)
@@ -794,9 +794,9 @@ class MountStateTest {
                     .renderUnit(
                         ViewWrapperUnit(TextView(c), 1)
                             .addBindBinders(
-                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>)
+                                bindBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>)
                             .addMounBinders(
-                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Void>))
+                                mountBinder as RenderUnit.Binder<ViewWrapperUnit, View, Any>))
                     .width(100)
                     .height(100))
             .build()
@@ -875,7 +875,7 @@ class MountStateTest {
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder1),
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder2),
           DelegateBinder.createDelegateBinder(newRenderUnit, attachBinder3))
-      newRenderUnit.id = id
+      newRenderUnit.setId(id)
       newLeaf.setRenderUnit(newRenderUnit)
       val newRenderTree = createRenderTree(c, newRoot)
       mountState.mount(newRenderTree)

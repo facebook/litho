@@ -67,8 +67,8 @@ class RenderTreeHostViewTests {
     val renderUnit2 = TestRenderUnit()
 
     // Setup tree with 2 render-units with the same ID.
-    renderUnit1.id = 1
-    renderUnit2.id = 1
+    renderUnit1.setId(1)
+    renderUnit2.setId(1)
     val node1 = RenderTreeNode(null, renderUnit1, null, Rect(), null, 0)
     val node2 = RenderTreeNode(null, renderUnit2, null, Rect(), null, 1)
     var exceptionOccurred = false

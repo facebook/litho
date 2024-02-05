@@ -45,12 +45,12 @@ class MountStateWithDelegateTest {
     root.addChild(leaf)
     val testRenderUnitOne = TestRenderUnit()
     val testRenderUnitTwo = TestRenderUnit()
-    val testBinderOne = TestBinder<Any?>()
-    val testBinderTwo = TestBinder<Any?>()
+    val testBinderOne = TestBinder<Any>()
+    val testBinderTwo = TestBinder<Any>()
     testRenderUnitOne.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(testRenderUnitOne, testBinderOne))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitOne, testBinderOne))
     testRenderUnitTwo.addOptionalMountBinder(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(testRenderUnitTwo, testBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(testRenderUnitTwo, testBinderTwo))
     leaf.setRenderUnit(testRenderUnitOne)
     val mountExtension = TestMountExtensionWithAcquire()
     val extensions: Array<RenderCoreExtension<*, *>> =
@@ -84,21 +84,21 @@ class MountStateWithDelegateTest {
     val root = TestNode()
     val leaf = TestNode(0, 0, 10, 10)
     root.addChild(leaf)
-    val bindOrder: MutableList<Any?> = ArrayList()
-    val unbindOrder: MutableList<Any?> = ArrayList()
+    val bindOrder: MutableList<Any> = ArrayList()
+    val unbindOrder: MutableList<Any> = ArrayList()
 
     // Using anonymous class to create another type.
-    val attachBinderOne = object : TestBinder<Any?>(bindOrder, unbindOrder) {}
-    val attachBinderTwo = TestBinder<Any?>(bindOrder, unbindOrder)
+    val attachBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
+    val attachBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     val renderUnit = TestRenderUnit()
     renderUnit.addAttachBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, attachBinderTwo))
-    val mountBinderOne = object : TestBinder<Any?>(bindOrder, unbindOrder) {}
-    val mountBinderTwo = TestBinder<Any?>(bindOrder, unbindOrder)
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo))
+    val mountBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
+    val mountBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     renderUnit.addOptionalMountBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo))
     leaf.setRenderUnit(renderUnit)
     val mountExtension = TestMountExtensionWithAcquire(bindOrder, unbindOrder)
     val extensions: Array<RenderCoreExtension<*, *>> =
@@ -138,21 +138,21 @@ class MountStateWithDelegateTest {
     val root = TestNode()
     val leaf = TestNode(0, 0, 10, 10)
     root.addChild(leaf)
-    val bindOrder: MutableList<Any?> = ArrayList()
-    val unbindOrder: MutableList<Any?> = ArrayList()
+    val bindOrder: MutableList<Any> = ArrayList()
+    val unbindOrder: MutableList<Any> = ArrayList()
 
     // Using anonymous class to create another type.
-    val attachBinderOne = object : TestBinder<Any?>(bindOrder, unbindOrder) {}
-    val attachBinderTwo = TestBinder<Any?>(bindOrder, unbindOrder)
+    val attachBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
+    val attachBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     val renderUnit = TestRenderUnit()
     renderUnit.addAttachBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, attachBinderTwo))
-    val mountBinderOne = object : TestBinder<Any?>(bindOrder, unbindOrder) {}
-    val mountBinderTwo = TestBinder<Any?>(bindOrder, unbindOrder)
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, attachBinderTwo))
+    val mountBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
+    val mountBinderTwo = TestBinder<Any>(bindOrder, unbindOrder)
     renderUnit.addOptionalMountBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(renderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(renderUnit, mountBinderTwo))
     leaf.setRenderUnit(renderUnit)
     val mountExtension = TestMountExtensionWithAcquire(bindOrder, unbindOrder)
     val extensions: Array<RenderCoreExtension<*, *>> =
@@ -173,11 +173,11 @@ class MountStateWithDelegateTest {
     // use the same id so that the render unit gets update on it.
     val newRenderUnit = TestRenderUnit(renderUnit.id)
     newRenderUnit.addAttachBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, attachBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, attachBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, attachBinderTwo))
     newRenderUnit.addOptionalMountBinders(
-        DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, mountBinderOne),
-        DelegateBinder.createDelegateBinder<Any, View, Void>(newRenderUnit, mountBinderTwo))
+        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinderOne),
+        DelegateBinder.createDelegateBinder<Any, View, Any>(newRenderUnit, mountBinderTwo))
     newLeaf.setRenderUnit(newRenderUnit)
     val newRenderTree = createRenderTree(c, newRoot, extensions)
     mountState.mount(newRenderTree)
@@ -202,8 +202,8 @@ class MountStateWithDelegateTest {
   private inner class TestMountExtensionWithAcquire
   @JvmOverloads
   constructor(
-      private val bindOrder: MutableList<Any?> = ArrayList(),
-      private val unbindOrder: MutableList<Any?> = ArrayList()
+      private val bindOrder: MutableList<Any> = ArrayList(),
+      private val unbindOrder: MutableList<Any> = ArrayList()
   ) : TestMountExtension(), OnItemCallbacks<Any?> {
     fun acquire(state: ExtensionState<*>, id: Long, position: Int) {
       state.acquireMountReference(id, true)
