@@ -118,8 +118,8 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
       ComponentContext context, Component component, LithoLifecycleProvider lifecycleProvider) {
     final LithoView lithoView = new LithoView(context);
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      lithoView.setLifecycleProvider(lifecycleProvider);
       lithoView.setComponentTree(ComponentTree.create(context, component).build());
+      lithoView.setLifecycleProvider(lifecycleProvider);
     } else {
       lithoView.setComponentTree(
           ComponentTree.create(context, component, lifecycleProvider).build());
