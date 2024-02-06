@@ -447,8 +447,10 @@ public class TransitionsExtension
   /** @return whether we should animate transitions. */
   private static boolean shouldAnimateTransitions(
       final TransitionsExtensionState state, TransitionsExtensionInput input) {
-    return (state.mLastMountedTreeId == input.getTreeId()
-        || state.mInput.needsToRerunTransitions());
+    return input != null
+        && state.mInput != null
+        && (state.mLastMountedTreeId == input.getTreeId()
+            || state.mInput.needsToRerunTransitions());
   }
 
   /** @return whether we have any transitions to animate for the current mount */
