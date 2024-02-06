@@ -2,6 +2,8 @@
 
 ## Version 0.50.0-SNAPSHOT
 
+* [BREAKING] All the nested BUCK modules under litho-core deleted
+
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.49.0...master).
 
 ## Version 0.49.0
