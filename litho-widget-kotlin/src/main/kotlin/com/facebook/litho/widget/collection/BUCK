@@ -17,8 +17,8 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_STDLIB_TARGET",
-    "LITHO_KOTLIN_TARGET",
     "LITHO_PROCESSOR_TARGET",
     "LITHO_SECTIONS_COMMON_TARGET",
     "LITHO_SECTIONS_PROCESSOR_TARGET",
@@ -46,7 +46,7 @@ litho_android_library(
     tests = [make_dep_path("litho-widget-kotlin/src/test/kotlin/com/facebook/litho/widget/collection:collection")],
     visibility = ["PUBLIC"],
     deps = [
-        LITHO_KOTLIN_TARGET,
+        LITHO_JAVA_TARGET,
         LITHO_WIDGET_KOTLIN_TARGET,
         LITHO_SECTIONS_TARGET,
         LITHO_WIDGET_TARGET,
