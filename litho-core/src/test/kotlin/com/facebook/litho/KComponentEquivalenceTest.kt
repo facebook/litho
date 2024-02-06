@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -113,7 +114,7 @@ class KComponentEquivalenceTest {
       }
     }
 
-    data class Name(val name: String)
+    @DataClassGenerate data class Name(val name: String)
 
     class ComponentWithComplexProps(private val counter: Counter, private val name: Name) :
         KComponent() {

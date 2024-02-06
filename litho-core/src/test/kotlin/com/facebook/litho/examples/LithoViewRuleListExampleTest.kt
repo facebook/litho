@@ -16,6 +16,7 @@
 
 package com.facebook.litho.examples
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -80,7 +81,7 @@ class LithoViewRuleListExampleTest {
   @Test
   fun `test child is present in LazyList with multiple component types`() {
 
-    data class Item(val id: Int, val name: String, val quantity: Int)
+    @DataClassGenerate data class Item(val id: Int, val name: String, val quantity: Int)
 
     val items =
         listOf(

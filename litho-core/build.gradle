@@ -88,6 +88,12 @@ dependencies {
     testImplementation deps.junit
     testImplementation deps.robolectric
     testImplementation deps.mockitokotlin
+    testImplementation deps.robolectric
+    testImplementation deps.supportRecyclerView
+    testImplementation deps.supportTestJunit
+    testImplementation project(':litho-rendercore-testing')
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-widget-kotlin')
 }
 
 apply plugin: "com.vanniktech.maven.publish"

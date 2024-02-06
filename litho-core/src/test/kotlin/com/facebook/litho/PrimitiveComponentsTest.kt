@@ -23,6 +23,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.accessibility.ImportantForAccessibility
 import com.facebook.litho.accessibility.accessibilityRole
 import com.facebook.litho.accessibility.accessibilityRoleDescription
@@ -1328,4 +1329,4 @@ class TestPrimitiveWithTwoBindersComponent(
   }
 }
 
-data class TestPrimitiveLayoutData(val width: Int, val height: Int)
+@DataClassGenerate data class TestPrimitiveLayoutData(val width: Int, val height: Int)

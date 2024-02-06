@@ -15,7 +15,7 @@ If you need to get a handle of a component that is inside the ComponentTree of t
 All of the following examples use the `TestComponent` that has one direct child, `InnerComponent`, and one non-direct child, `Text`.
 :::
 
-```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=test_component_start end=test_component_end
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=test_component_start end=test_component_end
 ```
 
 ## Assertions against the component hierarchy
@@ -31,14 +31,14 @@ These use cases are detailed in the following sub-sections.
 
 If you want to find out only the **direct** children, which for the `TestComponent` is `InnerComponent`, you can use `findDirectComponent(Class<out Component?>)`:
 
-```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=find_direct_component_start end=find_direct_component_end
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=find_direct_component_start end=find_direct_component_end
 ```
 
 ### Use Case: how to assert my component renders a certain component somewhere in its children
 
 If you want to find a component that is not a direct child of your component (or if the hierarchy level is not important in your test), you can use `findComponent(Class<out Component?>)`:
 
-```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=find_non_direct_component_start end=find_non_direct_component_end
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=find_non_direct_component_start end=find_non_direct_component_end
 ```
 
 If you want to confirm that given component classes were rendered, but you don't need a component instance itself, you can use either of the following:
@@ -48,7 +48,7 @@ If you want to confirm that given component classes were rendered, but you don't
 
 Both are used in the following snippet:
 
-```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=contains_components_start end=contains_components_end
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=contains_components_start end=contains_components_end
 ```
 
 You can use `containsComponent()` `hasExactly()` providing different parameters such as 'the number of times the component class should be present in the component tree' or 'the varargs of all of the classes you would like to check'.
@@ -64,7 +64,7 @@ In addition, you can check if the view doesn't contain a given class by using `d
 
 It's possible to check if your component requires Props, as shown in the following snippet:
 
-```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=has_props_start end=has_props_end
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=has_props_start end=has_props_end
 ```
 
 ## Assertions against the view hierarchy
@@ -73,7 +73,7 @@ It's possible to check if your component requires Props, as shown in the followi
 
 With this assertion, you can, for example, check if a given text or drawable is visible or if the view contains a given test key, as shown in the following snippet:
 
-```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=lithoview_assertion_start end=lithoview_assertion_end
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=lithoview_assertion_start end=lithoview_assertion_end
 ```
 
 ### Some popular assertions

@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.annotation.SuppressLint
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -30,6 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for common props equivalence of KComponent classes. */
+@SuppressLint("KComponentJavaApiDetector")
 @RunWith(LithoTestRunner::class)
 class KComponentEquivalenceWithCommonPropsTest {
 

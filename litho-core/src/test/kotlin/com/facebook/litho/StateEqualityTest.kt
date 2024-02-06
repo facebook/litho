@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicReference
@@ -114,7 +115,7 @@ class StateEqualityTest {
     assertThat(stateBox1.get()).isNotEqualTo(stateBox2.get())
   }
 
-  private data class DataClassDemo(val i: Int)
+  @DataClassGenerate private data class DataClassDemo(val i: Int)
 
   private class StateBoxComponent<T>(
       private val initialState1: T,

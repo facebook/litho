@@ -159,7 +159,7 @@ In the Kotlin API, there is no way to generate multiple variants of the same set
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropResourceTypeParentKComponent.kt start=start_prop_with_resource_type_usage end=end_prop_with_resource_type_usage
 ```
 
-Other supported functions are `drawableRes()`, `drawableAttr()`, `drawableColor()`, `colorAttr()` and `intRes()`. These can be found in the code under [`Resources`](https://github.com/facebook/litho/blob/master/litho-core-kotlin/src/main/kotlin/com/facebook/litho/Resources.kt)
+Other supported functions are `drawableRes()`, `drawableAttr()`, `drawableColor()`, `colorAttr()` and `intRes()`. These can be found in the code under [`Resources`](https://github.com/facebook/litho/blob/master/litho-core/src/main/java/com/facebook/litho/Resources.kt)
   </TabItem>
   <TabItem value="java_props_tab">
 
