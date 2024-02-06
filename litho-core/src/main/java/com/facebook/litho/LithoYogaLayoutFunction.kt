@@ -488,7 +488,7 @@ internal object LithoYogaLayoutFunction {
         // If the Layout Result was cached, but the size has changed, then interstage props
         // container (layout data) could be mutated when @OnBoundsDefined is invoked. To avoid that
         // create new interstage props container (layout data), and copy over the current values.
-        if (layoutResult.isCachedLayout) {
+        if (layoutResult.isCachedLayout || layoutResult.isDiffedLayout) {
           layoutData = component.createInterStagePropsContainer()
           if (layoutData != null && layoutResult.layoutData != null) {
             component.copyInterStageImpl(
@@ -612,7 +612,7 @@ internal object LithoYogaLayoutFunction {
       height = diffNode.lastMeasuredHeight
       layoutData = diffNode.layoutData
       delegate = diffNode.delegate
-      yogaOutput._isCachedLayout = true
+      yogaOutput._isDiffedLayout = true
 
       // Measure the component
     } else {
@@ -770,6 +770,7 @@ internal object LithoYogaLayoutFunction {
               layoutResult.layoutOutput.copy(
                   yogaNode = yogaNode,
                   _isCachedLayout = true,
+                  _isDiffedLayout = false,
                   _cachedMeasuresValid = true,
                   _wasMeasured = false,
                   _measureHadExceptions = false,
@@ -862,6 +863,7 @@ data class YogaLayoutOutput(
     internal var _heightSpec: Int = UNSPECIFIED,
     internal var _lastMeasuredSize: Long = Long.MIN_VALUE,
     internal var _isCachedLayout: Boolean = false,
+    internal var _isDiffedLayout: Boolean = false,
     internal var _layoutData: Any? = null,
     internal var _wasMeasured: Boolean = false,
     internal var _cachedMeasuresValid: Boolean = false,

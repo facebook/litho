@@ -61,6 +61,9 @@ open class LithoLayoutResult(
   val isCachedLayout: Boolean
     get() = layoutOutput.isCachedLayout
 
+  val isDiffedLayout: Boolean
+    get() = layoutOutput._isDiffedLayout
+
   val cachedMeasuresValid: Boolean
     get() = layoutOutput.cachedMeasuresValid
 
