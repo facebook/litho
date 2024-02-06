@@ -18,7 +18,6 @@ package com.facebook.rendercore
 
 import android.graphics.Rect
 import com.facebook.proguard.annotations.DoNotStrip
-import java.lang.IndexOutOfBoundsException
 import java.util.Locale
 
 @DoNotStrip
@@ -32,16 +31,15 @@ class RenderTreeNode(
 ) {
   val absoluteX: Int = (parent?.absoluteX ?: 0) + bounds.left
   val absoluteY: Int = (parent?.absoluteY ?: 0) + bounds.top
-  private val children: MutableList<RenderTreeNode> by lazy(LazyThreadSafetyMode.NONE) {
-    ArrayList(DEFAULT_SIZE)
-  }
+  private val children: MutableList<RenderTreeNode> by
+      lazy(LazyThreadSafetyMode.NONE) { ArrayList(DEFAULT_SIZE) }
 
   fun child(renderTreeNode: RenderTreeNode) {
     children.add(renderTreeNode)
   }
   /**
-   * Sets the absolutes bounds of this render tree node in [outRect]; i.e. returns the bounds
-   * of this render tree node within its [RootHost].
+   * Sets the absolutes bounds of this render tree node in [outRect]; i.e. returns the bounds of
+   * this render tree node within its [RootHost].
    *
    * @param outRect the calculated absolute bounds.
    */
