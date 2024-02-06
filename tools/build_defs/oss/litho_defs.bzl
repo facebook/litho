@@ -28,14 +28,6 @@ LITHO_JAVA_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho:l
 
 LITHO_ANNOTATIONS_TARGET = make_dep_path("litho-annotations/src/main/java/com/facebook/litho/annotations:annotations")
 
-LITHO_CONFIG_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/config:config")
-
-LITHO_PERFBOOST_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/perfboost:perfboost")
-
-LITHO_VIEWCOMPAT_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompat:viewcompat")
-
-LITHO_UTILS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils")
-
 LITHO_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget/accessibility:accessibility")
 
 LITHO_WIDGET_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget")
@@ -45,10 +37,6 @@ LITHO_WIDGET_MATERIAL_TARGET = make_dep_path("litho-widget-material/src/main/jav
 LITHO_WIDGET_RES_TARGET = make_dep_path("litho-widget:res")
 
 LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebook/litho/fresco:fresco")
-
-LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/stats:stats")
-
-LITHO_YOGA_FACTORY_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/yoga:yoga")
 
 LITHO_EDITOR_CORE_TARGET = make_dep_path("litho-editor-core/src/main/java/com/facebook/litho/editor:editor")
 
