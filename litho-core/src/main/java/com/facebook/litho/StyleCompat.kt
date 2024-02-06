@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.accessibility.accessibilityRole
@@ -71,6 +72,7 @@ fun <T : Component.Builder<T>> Component.Builder<T>.kotlinStyle(style: Style?): 
  *         .build())
  * ```
  */
+@SuppressLint("KComponentNonRtlParamsUsageDetector")
 object StyleCompat {
 
   /** @see [JavaStyle.background] */
