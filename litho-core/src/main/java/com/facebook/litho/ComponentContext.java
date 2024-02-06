@@ -743,7 +743,7 @@ public class ComponentContext {
   }
 
   public static boolean isVisibilityProcessingEnabled(ComponentContext c) {
-    return c.mLithoConfiguration.isVisibilityProcessingEnabled;
+    return c.mLithoConfiguration.componentsConfig.visibilityProcessingEnabled;
   }
 
   public boolean isReconciliationEnabled() {

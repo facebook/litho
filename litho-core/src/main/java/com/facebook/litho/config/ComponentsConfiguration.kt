@@ -84,7 +84,12 @@ internal constructor(
      * If [true] this will log debug events whenever we detect that a click/touch handler was set on
      * a [com.facebook.litho.ComponentHost] outside of the [ViewAttributesExtension].
      */
-    @JvmField val componentHostUnsafeModificationsLoggingEnabled: Boolean = false
+    @JvmField val componentHostUnsafeModificationsLoggingEnabled: Boolean = false,
+    /**
+     * Whether the [com.facebook.LithoView] associated with the [com.facebook.litho.ComponentTree]
+     * will process visibility events.
+     */
+    @JvmField val visibilityProcessingEnabled: Boolean = true
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -246,6 +251,7 @@ internal constructor(
     private var enableDrawablePreAllocation = baseConfig.enableDrawablePreAllocation
     private var componentHostUnsafeModificationsLoggingEnabled =
         baseConfig.componentHostUnsafeModificationsLoggingEnabled
+    private var visibilityProcessingEnabled = baseConfig.visibilityProcessingEnabled
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -291,6 +297,10 @@ internal constructor(
       componentHostUnsafeModificationsLoggingEnabled = enabled
     }
 
+    fun enableVisibilityProcessing(enabled: Boolean): Builder = also {
+      visibilityProcessingEnabled = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -306,7 +316,8 @@ internal constructor(
           enableStateUpdatesBatching = enableStateUpdatesBatching,
           enableDrawablePreAllocation = enableDrawablePreAllocation,
           componentHostUnsafeModificationsLoggingEnabled =
-              componentHostUnsafeModificationsLoggingEnabled)
+              componentHostUnsafeModificationsLoggingEnabled,
+          visibilityProcessingEnabled = visibilityProcessingEnabled)
     }
   }
 }

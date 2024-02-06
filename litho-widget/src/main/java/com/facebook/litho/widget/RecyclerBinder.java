@@ -139,7 +139,6 @@ public class RecyclerBinder
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
   private final @Nullable RunnableHandler mAsyncInsertHandler;
-  private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private final RecyclerRangeTraverser mRangeTraverser;
@@ -403,7 +402,6 @@ public class RecyclerBinder
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         ComponentsConfiguration componentsConfiguration,
-        boolean visibilityProcessingEnabled,
         @Nullable LithoLifecycleProvider lifecycleProvider,
         @Nullable ErrorEventHandler errorEventHandler);
   }
@@ -416,14 +414,12 @@ public class RecyclerBinder
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             ComponentsConfiguration componentsConfiguration,
-            boolean visibilityProcessingEnabled,
             @Nullable LithoLifecycleProvider lifecycleProvider,
             @Nullable ErrorEventHandler errorEventHandler) {
           return ComponentTreeHolder.create(componentsConfiguration)
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
-              .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .parentLifecycleProvider(lifecycleProvider)
               .errorEventHandler(errorEventHandler)
               .build();
@@ -444,7 +440,6 @@ public class RecyclerBinder
     private boolean isSubAdapter;
     private @Nullable LithoStartupLogger startupLogger;
     private RunnableHandler mAsyncInsertLayoutHandler;
-    private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
     private @RecyclingStrategy int recyclingStrategy =
         ComponentsConfiguration.recyclerBinderStrategy;
@@ -588,9 +583,6 @@ public class RecyclerBinder
       if (lifecycleProvider == null) {
         lifecycleProvider = ComponentTree.getLifecycleProvider(c);
       }
-
-      visibilityProcessing =
-          visibilityProcessing && ComponentContext.isVisibilityProcessingEnabled(c);
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
@@ -798,7 +790,6 @@ public class RecyclerBinder
 
     mHScrollAsyncMode = mRecyclerBinderConfig.hScrollAsyncMode;
 
-    mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mIsSubAdapter = builder.isSubAdapter;
     mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
@@ -4006,7 +3997,6 @@ public class RecyclerBinder
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
         mComponentsConfiguration,
-        mVisibilityProcessingEnabled,
         mParentLifecycle,
         mErrorEventHandler);
   }

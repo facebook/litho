@@ -179,7 +179,6 @@ public class RecyclerBinderTest {
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              boolean processVisibility,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
@@ -200,7 +199,6 @@ public class RecyclerBinderTest {
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              boolean processVisibility,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo, true);

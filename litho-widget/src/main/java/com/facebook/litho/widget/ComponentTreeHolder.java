@@ -75,7 +75,6 @@ public class ComponentTreeHolder {
   private @Nullable final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
   private final int mId;
-  private final boolean mVisibilityProcessingEnabled;
 
   @GuardedBy("this")
   private boolean mIsTreeValid;
@@ -117,7 +116,6 @@ public class ComponentTreeHolder {
     private final ComponentsConfiguration componentsConfiguration;
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private boolean visibilityProcessingEnabled = true;
     private @Nullable LithoLifecycleProvider parentLifecycle;
     private @Nullable ErrorEventHandler errorEventHandler;
 
@@ -138,11 +136,6 @@ public class ComponentTreeHolder {
     public Builder componentTreeMeasureListenerFactory(
         @Nullable ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
       this.componentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
-      return this;
-    }
-
-    public Builder visibilityProcessingEnabled(boolean visibilityProcessingEnabled) {
-      this.visibilityProcessingEnabled = visibilityProcessingEnabled;
       return this;
     }
 
@@ -175,7 +168,6 @@ public class ComponentTreeHolder {
     mLayoutHandler = builder.layoutHandler;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mId = sIdGenerator.getAndIncrement();
-    mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     mParentLifecycle = builder.parentLifecycle;
     mErrorEventHandler = builder.errorEventHandler;
     mComponentsConfiguration = builder.componentsConfiguration;
@@ -416,7 +408,6 @@ public class ComponentTreeHolder {
               mComponentTreeMeasureListenerFactory == null
                   ? null
                   : mComponentTreeMeasureListenerFactory.create(this))
-          .visibilityProcessing(mVisibilityProcessingEnabled)
           .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag());
 
       mComponentTree = builder.build();

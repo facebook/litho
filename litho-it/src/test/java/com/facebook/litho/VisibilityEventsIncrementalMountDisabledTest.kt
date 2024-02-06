@@ -22,6 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren
@@ -1400,7 +1401,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
                             .heightPx(100))
                     .build())
             .incrementalMount(false)
-            .visibilityProcessing(true)
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(visibilityProcessingEnabled = true))
             .build()
     lithoView.componentTree = componentTree
     parent.addView(

@@ -44,6 +44,7 @@ import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
@@ -191,8 +192,11 @@ public final class ComponentTestHelper {
     return mountComponent(
         lithoView,
         ComponentTree.create(context, component)
-            .incrementalMount(incrementalMountEnabled)
-            .visibilityProcessing(visibilityProcessingEnabled)
+            .componentsConfiguration(
+                ComponentsConfiguration.create(context.mLithoConfiguration.componentsConfig)
+                    .incrementalMountEnabled(incrementalMountEnabled)
+                    .enableVisibilityProcessing(visibilityProcessingEnabled)
+                    .build())
             .build(),
         makeMeasureSpec(width, EXACTLY),
         makeMeasureSpec(height, EXACTLY));

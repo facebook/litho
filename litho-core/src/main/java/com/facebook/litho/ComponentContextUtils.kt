@@ -38,7 +38,6 @@ object ComponentContextUtils {
     return LithoConfiguration(
         componentsConfig = componentsConfig,
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
-        isVisibilityProcessingEnabled = true,
         errorEventHandler = DefaultErrorEventHandler.INSTANCE,
         logTag = logTagToUse,
         logger = loggerToUse,

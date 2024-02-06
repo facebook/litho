@@ -493,7 +493,6 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            builder.visibilityProcessingEnabled,
             builder.errorEventHandler,
             builder.logTag,
             builder.logger,
@@ -1150,7 +1149,7 @@ public class ComponentTree
   }
 
   boolean isVisibilityProcessingEnabled() {
-    return mContext.mLithoConfiguration.isVisibilityProcessingEnabled;
+    return ComponentContext.isVisibilityProcessingEnabled(mContext);
   }
 
   public boolean isReconciliationEnabled() {
@@ -3031,7 +3030,6 @@ public class ComponentTree
   public static class Builder {
 
     // required
-    private boolean visibilityProcessingEnabled = true;
     private Component root;
 
     private Context mAndroidContext;
@@ -3114,11 +3112,6 @@ public class ComponentTree
     @Deprecated
     public Builder incrementalMount(boolean isEnabled) {
       incrementalMountEnabled = isEnabled;
-      return this;
-    }
-
-    public Builder visibilityProcessing(boolean isEnabled) {
-      visibilityProcessingEnabled = isEnabled;
       return this;
     }
 
