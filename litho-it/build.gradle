@@ -26,7 +26,7 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
         freeCompilerArgs = ['-Xjvm-default=all']
     }
-    
+
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
@@ -85,7 +85,6 @@ android {
 dependencies {
     // For main targets
     implementation project(':litho-core')
-    implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')

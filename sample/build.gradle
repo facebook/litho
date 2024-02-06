@@ -43,7 +43,6 @@ dependencies {
     compileOnly project(':litho-sections-annotations')
 
     implementation project(':litho-core')
-    implementation project(':litho-core-kotlin')
     implementation project(':litho-coroutines-kotlin')
     implementation project(':litho-editor-core')
     implementation project(':litho-editor-flipper')

@@ -34,8 +34,6 @@ android {
     }
 
     dependencies {
-        api project(':litho-core-kotlin')
-
         kapt project(':litho-processor')
         kapt project(':litho-sections-processor')
 

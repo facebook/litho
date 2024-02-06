@@ -33,11 +33,10 @@ android {
     }
 
     dependencies {
+        api project(':litho-core')
         compileOnly deps.jsr305
         compileOnly deps.proguardAnnotations
         compileOnly deps.supportAnnotations
-
-        api project(':litho-core-kotlin')
     }
 }
 

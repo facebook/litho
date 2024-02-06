@@ -43,8 +43,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    implementation project(':litho-core-kotlin')
-    api project(':litho-core')
+    implementation project(':litho-core')
     api project(':litho-widget')
     api project(':litho-sections-core')
     api project(':litho-sections-widget')
