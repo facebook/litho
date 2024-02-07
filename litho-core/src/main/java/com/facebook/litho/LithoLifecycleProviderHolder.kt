@@ -16,6 +16,10 @@
 
 package com.facebook.litho
 
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleOwner
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
 
 /**
@@ -36,6 +40,8 @@ internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifec
 
   private var hasHeldLifecycleProvider: Boolean = false
 
+  private var isDefaultLifecycleProvider: Boolean = false
+
   fun getHeldLifecycleProvider(): LithoLifecycleProvider? {
     return if (hasHeldLifecycleProvider) {
       internalLifecycleProvider
@@ -45,7 +51,11 @@ internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifec
   }
 
   @Synchronized
-  fun setHeldLifecycleProvider(lifecycleProvider: LithoLifecycleProvider?) {
+  @JvmOverloads
+  fun setHeldLifecycleProvider(
+      lifecycleProvider: LithoLifecycleProvider?,
+      isDefault: Boolean = false
+  ) {
     if (internalLifecycleProvider == lifecycleProvider) {
       return
     }
@@ -57,6 +67,37 @@ internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifec
     hasHeldLifecycleProvider = lifecycleProvider != null
 
     lithoLifecycleListeners.forEach { listener -> internalLifecycleProvider.addListener(listener) }
+    isDefaultLifecycleProvider = isDefault
+  }
+
+  @Synchronized
+  fun attachDefaultAOSPLithoLifecycleProvider(lithoView: LithoView) {
+    if (lithoView.isAttached && !hasHeldLifecycleProvider) {
+      try {
+        setHeldLifecycleProvider(
+            AOSPLithoLifecycleProvider(FragmentManager.findFragment(lithoView)), true)
+      } catch (e: IllegalStateException) {
+        val lifecycleOwner = getLifecycleOwnerFromContext(lithoView.context)
+        if (lifecycleOwner != null) {
+          setHeldLifecycleProvider(AOSPLithoLifecycleProvider(lifecycleOwner), true)
+        }
+      }
+    }
+  }
+
+  @Synchronized
+  fun detachDefaultAOSPLithoLifecycleProvider() {
+    if (isDefaultLifecycleProvider) {
+      setHeldLifecycleProvider(null)
+    }
+  }
+
+  private fun getLifecycleOwnerFromContext(context: Context): LifecycleOwner? {
+    return when (context) {
+      is LifecycleOwner -> context
+      is ContextWrapper -> getLifecycleOwnerFromContext(context.baseContext)
+      else -> null
+    }
   }
 
   override fun onMovedToState(state: LithoLifecycle) {
