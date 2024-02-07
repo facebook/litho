@@ -237,6 +237,8 @@ internal constructor(
    */
   class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
 
+    private var shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
+        baseConfig.shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
     private var specsApiStateUpdateDuplicateDetectionEnabled =
         baseConfig.specsApiStateUpdateDuplicateDetectionEnabled
@@ -252,6 +254,12 @@ internal constructor(
     private var componentHostUnsafeModificationsLoggingEnabled =
         baseConfig.componentHostUnsafeModificationsLoggingEnabled
     private var visibilityProcessingEnabled = baseConfig.visibilityProcessingEnabled
+
+    fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
+        enabled: Boolean
+    ): Builder = also {
+      shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible = enabled
+    }
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -317,7 +325,9 @@ internal constructor(
           enableDrawablePreAllocation = enableDrawablePreAllocation,
           componentHostUnsafeModificationsLoggingEnabled =
               componentHostUnsafeModificationsLoggingEnabled,
-          visibilityProcessingEnabled = visibilityProcessingEnabled)
+          visibilityProcessingEnabled = visibilityProcessingEnabled,
+          shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
+              shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible)
     }
   }
 }
