@@ -30,11 +30,14 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.concurrent.ThreadSafe
 
 /** todo: javadocs * */
-class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
+class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>
+@JvmOverloads
+constructor(
     private val context: Context,
     private val delegate: Delegate<State>,
     private val renderContext: RenderContext?,
-    val extensions: Array<RenderCoreExtension<*, *>>?
+    val extensions: Array<RenderCoreExtension<*, *>>?,
+    private val resolveExecutor: Executor = Executor { r -> ThreadUtils.runOnBackgroundThread(r) }
 ) : StateUpdateReceiver<StateUpdateType> {
 
   /**
@@ -79,7 +82,7 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     fun onUIRenderTreeUpdated(newRenderTree: RenderTree?)
   }
 
-  private val uIHandler: RenderStateHandler = RenderStateHandler(Looper.getMainLooper())
+  private val uiHandler: RenderStateHandler = RenderStateHandler(Looper.getMainLooper())
   val id: Int = ID_GENERATOR.incrementAndGet()
 
   @ThreadConfined(ThreadConfined.UI) private var hostListener: HostListener? = null
@@ -101,18 +104,26 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
   private var committedLayoutVersion = UNSET
   private var sizeConstraints: SizeConstraints = SizeConstraints()
   private var hasSizeConstraints = false
+  private val resolveToken = Any()
 
   @ThreadConfined(ThreadConfined.ANY)
   fun setTree(resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?) {
-    setTree(resolveFunc, null)
+    updateRenderStateInternal(resolveFunc, doAsync = false)
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  fun setTree(
+  fun setTreeAsync(
       resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?,
-      executor: Executor?
   ) {
-    requestResolve(resolveFunc, executor)
+    updateRenderStateInternal(resolveFunc, doAsync = true)
+  }
+
+  private fun updateRenderStateInternal(
+      resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?,
+      doAsync: Boolean
+  ) {
+    uiHandler.removeCallbacksAndMessages(resolveToken)
+    uiHandler.postAtTime({ requestResolve(resolveFunc, doAsync) }, resolveToken, 0)
   }
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -123,18 +134,18 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
         return
       }
     }
-    if (!uIHandler.hasMessages(UPDATE_STATE_MESSAGE)) {
-      uIHandler.sendEmptyMessage(UPDATE_STATE_MESSAGE)
+    if (!uiHandler.hasMessages(UPDATE_STATE_MESSAGE)) {
+      uiHandler.sendEmptyMessage(UPDATE_STATE_MESSAGE)
     }
   }
 
   private fun flushStateUpdates() {
-    requestResolve(null, null)
+    requestResolve(null, doAsync = false)
   }
 
   private fun requestResolve(
       resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?,
-      executor: Executor?
+      doAsync: Boolean,
   ) {
     val future: ResolveFuture<State, RenderContext, StateUpdateType>
     synchronized(this) {
@@ -156,8 +167,8 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
               resolveVersionCounter++)
       resolveFuture = future
     }
-    if (executor != null) {
-      executor.execute(Runnable { resolveTreeAndMaybeCommit(future) })
+    if (doAsync) {
+      resolveExecutor.execute { resolveTreeAndMaybeCommit(future) }
     } else {
       resolveTreeAndMaybeCommit(future)
     }
@@ -323,8 +334,8 @@ class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>(
     if (ThreadUtils.isMainThread) {
       maybePromoteCommittedTreeToUI()
     } else {
-      if (!uIHandler.hasMessages(PROMOTION_MESSAGE)) {
-        uIHandler.sendEmptyMessage(PROMOTION_MESSAGE)
+      if (!uiHandler.hasMessages(PROMOTION_MESSAGE)) {
+        uiHandler.sendEmptyMessage(PROMOTION_MESSAGE)
       }
     }
   }

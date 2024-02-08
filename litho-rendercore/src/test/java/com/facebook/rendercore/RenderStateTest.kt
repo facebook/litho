@@ -20,6 +20,7 @@ import android.os.Looper
 import com.facebook.rendercore.RenderState.ResolveFunc
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
 import com.facebook.rendercore.testing.TestNode
+import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -46,8 +47,19 @@ class RenderStateTest {
         override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
       }
 
+  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
-  fun testSettingTreeWithExecutoreResolvesOnTheExecutor() {
+  fun testSettingTreeAsyncResolvesOnTheExecutor() {
+    val wasExecuteCalled = AtomicBoolean()
+    val wasCalledInExecute = AtomicBoolean()
+    val executing = AtomicBoolean()
+
+    val resolveExecutor = Executor { runnable ->
+      wasExecuteCalled.set(true)
+      executing.set(true)
+      runnable.run()
+      executing.set(false)
+    }
     val renderState: RenderState<Any?, Any?, TestStateUpdate> =
         RenderState(
             RuntimeEnvironment.application,
@@ -63,21 +75,13 @@ class RenderStateTest {
               override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
             },
             null,
-            null)
-    val wasExecuteCalled = AtomicBoolean()
-    val wasCalledInExecute = AtomicBoolean()
-    val executing = AtomicBoolean()
-    renderState.setTree(
-        { resolveContext, committedTree, committedState, stateUpdatesToApply ->
-          wasCalledInExecute.set(executing.get())
-          ResolveResult<Node<Any?>, Any?>(TestNode(), null)
-        },
-        { runnable ->
-          wasExecuteCalled.set(true)
-          executing.set(true)
-          runnable.run()
-          executing.set(false)
-        })
+            null,
+            resolveExecutor)
+    renderState.setTreeAsync { _, _, _, _ ->
+      wasCalledInExecute.set(executing.get())
+      ResolveResult(TestNode(), null)
+    }
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
     assertThat(wasExecuteCalled.get()).isTrue
     assertThat(wasCalledInExecute.get()).isTrue
   }
@@ -412,6 +416,8 @@ class RenderStateTest {
       appliedStateUpdates.set(stateUpdatesToApply)
       ResolveResult(TestNode(), Any())
     }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
     assertThat(resolveCount.toInt()).isEqualTo(1)
 
     // Two state updates are triggered.
@@ -437,6 +443,9 @@ class RenderStateTest {
       appliedStateUpdates.set(stateUpdatesToApply)
       ResolveResult(TestNode(), Any())
     }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+
     assertThat(resolveCount.toInt()).isEqualTo(1)
     renderState.enqueueStateUpdate(TestStateUpdate())
 
@@ -449,12 +458,13 @@ class RenderStateTest {
       ResolveResult(TestNode(), Any())
     }
 
+    // Release the Looper to update the RenderState.
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+
     // 'setTree' triggered 'resolve' which applied 'pendingStateUpdates'.
     assertThat(resolveCount.toInt()).isEqualTo(2)
     assertThat(appliedStateUpdates.get()).hasSize(1)
 
-    // Release the Looper to execute scheduled 'flushStateUpdates'.
-    Shadows.shadowOf(Looper.getMainLooper()).idle()
     // 'resolve' was skipped, because 'pendingStateUpdates' are already empty.
     assertThat(resolveCount.toInt()).isEqualTo(2)
   }
