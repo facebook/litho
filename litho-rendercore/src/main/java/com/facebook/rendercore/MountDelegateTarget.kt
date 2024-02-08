@@ -30,7 +30,7 @@ interface MountDelegateTarget {
 
   fun needsRemount(): Boolean
 
-  fun mount(renderTree: RenderTree)
+  fun mount(renderTree: RenderTree?)
 
   fun attach()
 

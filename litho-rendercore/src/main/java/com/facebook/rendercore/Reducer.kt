@@ -28,7 +28,7 @@ import com.facebook.rendercore.extensions.RenderCoreExtension
  * all the positions are translated relative to the new hosts.
  */
 object Reducer {
-  @JvmField @VisibleForTesting val ROOT_HOST_RENDER_UNIT: RenderUnit<*> = RootHostRenderUnit()
+  @JvmField @VisibleForTesting val ROOT_HOST_RENDER_UNIT: RenderUnit<Any> = RootHostRenderUnit()
 
   @JvmStatic
   private fun reduceTree(
@@ -47,7 +47,7 @@ object Reducer {
     val absoluteX = parent.absoluteX + x
     val absoluteY = parent.absoluteY + y
     visit(parent, layoutResult, bounds, absoluteX, absoluteY, flattenedTree.size, extensions)
-    val renderUnit = layoutResult.renderUnit
+    val renderUnit: RenderUnit<Any>? = layoutResult.renderUnit as RenderUnit<Any>?
     val xTranslation: Int
     val yTranslation: Int
     val nextParent: RenderTreeNode
@@ -105,7 +105,7 @@ object Reducer {
   @JvmStatic
   private fun createRenderTreeNode(
       layoutResult: LayoutResult,
-      renderUnit: RenderUnit<*>,
+      renderUnit: RenderUnit<Any>,
       bounds: Rect,
       parent: RenderTreeNode?
   ): RenderTreeNode {
