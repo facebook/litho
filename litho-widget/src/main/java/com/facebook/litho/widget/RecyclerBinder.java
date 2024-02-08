@@ -56,7 +56,6 @@ import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
-import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoStartupLogger;
@@ -149,7 +148,6 @@ public class RecyclerBinder
   private final int mItemViewCacheSize;
   private final boolean mRequestMountForPrefetchedItems;
   private final @RecyclingStrategy int mRecyclingStrategy;
-  private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   private final AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
@@ -402,8 +400,7 @@ public class RecyclerBinder
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         ComponentsConfiguration componentsConfiguration,
-        @Nullable LithoLifecycleProvider lifecycleProvider,
-        @Nullable ErrorEventHandler errorEventHandler);
+        @Nullable LithoLifecycleProvider lifecycleProvider);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -414,14 +411,12 @@ public class RecyclerBinder
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             ComponentsConfiguration componentsConfiguration,
-            @Nullable LithoLifecycleProvider lifecycleProvider,
-            @Nullable ErrorEventHandler errorEventHandler) {
+            @Nullable LithoLifecycleProvider lifecycleProvider) {
           return ComponentTreeHolder.create(componentsConfiguration)
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .parentLifecycleProvider(lifecycleProvider)
-              .errorEventHandler(errorEventHandler)
               .build();
         }
       };
@@ -794,7 +789,6 @@ public class RecyclerBinder
     mIsSubAdapter = builder.isSubAdapter;
     mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
     mStartupLogger = builder.startupLogger;
-    mErrorEventHandler = mRecyclerBinderConfig.errorEventHandler;
     mRecyclingStrategy = builder.recyclingStrategy;
   }
 
@@ -3997,8 +3991,7 @@ public class RecyclerBinder
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
         mComponentsConfiguration,
-        mParentLifecycle,
-        mErrorEventHandler);
+        mParentLifecycle);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {

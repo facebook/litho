@@ -29,7 +29,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
@@ -57,7 +56,6 @@ public class ComponentTreeHolder {
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
-  private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
@@ -117,7 +115,6 @@ public class ComponentTreeHolder {
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable LithoLifecycleProvider parentLifecycle;
-    private @Nullable ErrorEventHandler errorEventHandler;
 
     private Builder(ComponentsConfiguration configuration) {
       componentsConfiguration = configuration;
@@ -144,11 +141,6 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder errorEventHandler(ErrorEventHandler errorEventHandler) {
-      this.errorEventHandler = errorEventHandler;
-      return this;
-    }
-
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -169,7 +161,6 @@ public class ComponentTreeHolder {
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mId = sIdGenerator.getAndIncrement();
     mParentLifecycle = builder.parentLifecycle;
-    mErrorEventHandler = builder.errorEventHandler;
     mComponentsConfiguration = builder.componentsConfiguration;
   }
 
@@ -397,9 +388,6 @@ public class ComponentTreeHolder {
                 context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
       }
 
-      // if custom attributes are provided on RenderInfo, they will be preferred over builder values
-      applyCustomAttributesIfProvided(builder);
-
       builder
           .componentsConfiguration(mComponentsConfiguration)
           .layoutThreadHandler(mLayoutHandler)
@@ -415,12 +403,6 @@ public class ComponentTreeHolder {
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
       }
-    }
-  }
-
-  private void applyCustomAttributesIfProvided(ComponentTree.Builder builder) {
-    if (mErrorEventHandler != null) {
-      builder.errorHandler(mErrorEventHandler);
     }
   }
 

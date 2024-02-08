@@ -380,11 +380,11 @@ public class ComponentContext {
           return errorEventHandler;
         }
       } catch (IllegalStateException e) {
-        return mLithoConfiguration.errorEventHandler;
+        return mLithoConfiguration.componentsConfig.errorEventHandler;
       }
     }
 
-    return mLithoConfiguration.errorEventHandler;
+    return mLithoConfiguration.componentsConfig.errorEventHandler;
   }
 
   @Nullable

@@ -493,7 +493,6 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            builder.errorEventHandler,
             builder.logTag,
             builder.logger,
             renderUnitIdGenerator,
@@ -1321,8 +1320,8 @@ public class ComponentTree
                   isLayoutState,
                   !isSpecsDuplicateStateUpdateDetectionEnabled());
         } catch (Exception e) {
-          if (mContext.mLithoConfiguration.errorEventHandler != null) {
-            mContext.mLithoConfiguration.errorEventHandler.onError(mContext, e);
+          if (mContext.mLithoConfiguration.componentsConfig.errorEventHandler != null) {
+            mContext.mLithoConfiguration.componentsConfig.errorEventHandler.onError(mContext, e);
           }
         }
       }
@@ -3041,7 +3040,6 @@ public class ComponentTree
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
-    private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
@@ -3171,17 +3169,6 @@ public class ComponentTree
 
     public Builder measureListener(@Nullable MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
-      return this;
-    }
-
-    /**
-     * Sets the custom ErrorEventHandler. Ignores null values to never overwrite Litho's
-     * DefaultErrorEventHandler.
-     */
-    public Builder errorHandler(ErrorEventHandler errorEventHandler) {
-      if (errorEventHandler != null) {
-        this.errorEventHandler = errorEventHandler;
-      }
       return this;
     }
 

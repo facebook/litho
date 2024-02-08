@@ -185,7 +185,12 @@ class ComponentErrorBoundaryTest {
     val errorEventHandler = Mockito.mock(ErrorEventHandler::class.java)
     val component = ThrowExceptionGrandChildTester.create(lithoViewRule.context).build()
     val componentTreeBuilder = ComponentTree.create(lithoViewRule.context)
-    val componentTree = componentTreeBuilder.errorHandler(errorEventHandler).build()
+    val componentTree =
+        componentTreeBuilder
+            .componentsConfiguration(
+                lithoViewRule.context.lithoConfiguration.componentsConfig.copy(
+                    errorEventHandler = errorEventHandler))
+            .build()
     componentTree.root = component
     lithoViewRule.useComponentTree(componentTree)
     lithoViewRule.attachToWindow().measure().layout()

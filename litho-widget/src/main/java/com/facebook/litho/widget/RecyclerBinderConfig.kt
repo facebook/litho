@@ -18,7 +18,6 @@ package com.facebook.litho.widget
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
-import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LayoutThreadPoolConfiguration
 
@@ -132,7 +131,6 @@ data class RecyclerBinderConfig(
      * been created by this config.
      */
     @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null,
-    @JvmField val errorEventHandler: ErrorEventHandler? = null,
     /**
      * Ratio to determine the number of components before and after the
      * [androidx.recyclerview.widget.RecyclerView]'s total number of currently visible items to have
@@ -207,7 +205,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var itemViewCacheSize = configuration.itemViewCacheSize
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
   private var threadPoolConfig = configuration.threadPoolConfig
-  private var errorEventHandler = configuration.errorEventHandler
   private var componentsConfiguration = configuration.componentsConfiguration
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
@@ -254,10 +251,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
       threadPoolConfig: LayoutThreadPoolConfiguration?
   ): RecyclerBinderConfigBuilder = also { this.threadPoolConfig = threadPoolConfig }
 
-  fun errorEventHandler(errorEventHandler: ErrorEventHandler?): RecyclerBinderConfigBuilder = also {
-    this.errorEventHandler = errorEventHandler
-  }
-
   fun componentsConfiguration(
       componentsConfiguration: ComponentsConfiguration?
   ): RecyclerBinderConfigBuilder = also { this.componentsConfiguration = componentsConfiguration }
@@ -291,7 +284,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         estimatedViewportCount = estimatedViewportCount,
         hasDynamicItemHeight = hasDynamicItemHeight,
         threadPoolConfig = threadPoolConfig,
-        errorEventHandler = errorEventHandler,
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
         enableStableIds = enableStableIds,

@@ -19,6 +19,8 @@ package com.facebook.litho.config
 import android.os.Build
 import com.facebook.litho.BuildConfig
 import com.facebook.litho.ComponentsLogger
+import com.facebook.litho.DefaultErrorEventHandler
+import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
 
@@ -89,7 +91,13 @@ internal constructor(
      * Whether the [com.facebook.LithoView] associated with the [com.facebook.litho.ComponentTree]
      * will process visibility events.
      */
-    @JvmField val visibilityProcessingEnabled: Boolean = true
+    @JvmField val visibilityProcessingEnabled: Boolean = true,
+    /**
+     * This class is an error event handler that clients can optionally set on a [ComponentTree] to
+     * gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
+     * layout.
+     */
+    @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler.INSTANCE
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -251,6 +259,7 @@ internal constructor(
         baseConfig.shouldEnableDefaultAOSPLithoLifecycleProvider
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
     private var enableDrawablePreAllocation = baseConfig.enableDrawablePreAllocation
+    private var errorEventHandler = baseConfig.errorEventHandler
     private var componentHostUnsafeModificationsLoggingEnabled =
         baseConfig.componentHostUnsafeModificationsLoggingEnabled
     private var visibilityProcessingEnabled = baseConfig.visibilityProcessingEnabled
@@ -309,6 +318,10 @@ internal constructor(
       visibilityProcessingEnabled = enabled
     }
 
+    fun errorEventHandler(handler: ErrorEventHandler): Builder = also {
+      errorEventHandler = handler
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -327,7 +340,8 @@ internal constructor(
               componentHostUnsafeModificationsLoggingEnabled,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
-              shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible)
+              shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible,
+          errorEventHandler = errorEventHandler)
     }
   }
 }

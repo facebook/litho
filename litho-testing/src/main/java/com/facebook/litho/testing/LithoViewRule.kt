@@ -197,12 +197,14 @@ constructor(
    */
   fun withThrowOnErrorHandler(): ComponentTree {
     return ComponentTree.create(context)
-        .errorHandler(
-            object : ErrorEventHandler() {
-              override fun onError(cc: ComponentContext, e: Exception): Component? {
-                throw e
-              }
-            })
+        .componentsConfiguration(
+            context.lithoConfiguration.componentsConfig.copy(
+                errorEventHandler =
+                    object : ErrorEventHandler() {
+                      override fun onError(cc: ComponentContext, e: Exception): Component? {
+                        throw e
+                      }
+                    }))
         .build()
   }
 }

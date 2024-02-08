@@ -50,7 +50,7 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class StateUpdateTest {
-  private var context: ComponentContext? = null
+  private lateinit var context: ComponentContext
   private var widthSpec = 0
   private var heightSpec = 0
 
@@ -459,7 +459,12 @@ class StateUpdateTest {
           }
         }
 
-    val componentTree = ComponentTree.create(context).errorHandler(errorEventHandler).build()
+    val componentTree =
+        ComponentTree.create(context)
+            .componentsConfiguration(
+                context.lithoConfiguration.componentsConfig.copy(
+                    errorEventHandler = errorEventHandler))
+            .build()
 
     lithoViewRule.render(componentTree = componentTree) {
       Column { child(ComponentWithStateCrashOnUpdateState.create(context).build()) }
