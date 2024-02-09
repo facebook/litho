@@ -97,7 +97,7 @@ module.exports = {
           'kotlin/migration-strategies',
           'kotlin/custom-view-compat',
         ],
-      'Codegen APIs': [
+      'Spec APIs': [
         'codegen/overview',
         'codegen/layout-specs',
         'codegen/mount-specs',
