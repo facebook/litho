@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable
 import android.util.SparseArray
 import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
@@ -30,7 +31,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.ComponentWithState
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaDirection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -67,7 +67,7 @@ class LithoNodeTest {
   @Test
   fun testLayoutDirectionFlag() {
     val node = acquireInternalNode()
-    node.layoutDirection(YogaDirection.INHERIT)
+    node.layoutDirection(LayoutDirection.INHERIT)
     assertThat(isFlagSet(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue
     clearFlag(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")
     assertEmptyFlags(node)

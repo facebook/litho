@@ -24,7 +24,6 @@ import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.utils.MeasureSpecUtils
-import com.facebook.yoga.YogaDirection
 
 internal object Layout {
 
@@ -351,16 +350,7 @@ internal object Layout {
 
       // If the resolved tree inherits the layout direction, then set it now.
       if (newNode.isLayoutDirectionInherit) {
-        newNode.layoutDirection(
-            when (holderResult.layoutDirection) {
-              LayoutDirection.LTR -> YogaDirection.LTR
-              LayoutDirection.RTL -> YogaDirection.RTL
-              LayoutDirection.INHERIT -> YogaDirection.INHERIT
-              else -> {
-                throw IllegalArgumentException(
-                    "Invalid layout direction: ${holderResult.layoutDirection}")
-              }
-            })
+        newNode.layoutDirection(holderResult.layoutDirection)
       }
 
       val layoutCache: LayoutCache =

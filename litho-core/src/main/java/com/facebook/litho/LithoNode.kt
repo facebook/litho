@@ -37,6 +37,7 @@ import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.Node
@@ -83,7 +84,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   internal var id: Int = idGenerator.getAndIncrement()
   internal var children: MutableList<LithoNode> = ArrayList(4)
-  internal var layoutDirection: YogaDirection? = null
+  internal var layoutDirection: LayoutDirection? = null
   internal var justifyContent: YogaJustify? = null
   internal var alignContent: YogaAlign? = null
   internal var alignItems: YogaAlign? = null
@@ -127,7 +128,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
             importantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
 
   val isLayoutDirectionInherit: Boolean
-    get() = layoutDirection == null || layoutDirection == YogaDirection.INHERIT
+    get() = layoutDirection?.isInherit ?: true
 
   var nodeInfo: NodeInfo? = null
     internal set
@@ -314,7 +315,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     val node: YogaNode = writer.node
 
     // Apply the extra layout props
-    layoutDirection?.let { node.setDirection(it) }
+    layoutDirection?.let { node.setDirection(it.toYogaDirection()) }
     flexDirection?.let { node.flexDirection = it }
     justifyContent?.let { node.justifyContent = it }
     alignContent?.let { node.alignContent = it }
@@ -435,7 +436,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     return this
   }
 
-  open fun layoutDirection(direction: YogaDirection) {
+  open fun layoutDirection(direction: LayoutDirection) {
     privateFlags = privateFlags or PFLAG_LAYOUT_DIRECTION_IS_SET
     layoutDirection = direction
   }

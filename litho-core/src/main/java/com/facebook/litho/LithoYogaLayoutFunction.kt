@@ -910,15 +910,7 @@ data class YogaLayoutOutput(
     get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
 
   override val layoutDirection: LayoutDirection
-    get() =
-        when (yogaNode.layoutDirection) {
-          YogaDirection.LTR -> LayoutDirection.LTR
-          YogaDirection.RTL -> LayoutDirection.RTL
-          YogaDirection.INHERIT -> LayoutDirection.INHERIT
-          else ->
-              throw IllegalArgumentException(
-                  "Unknown layout direction: ${yogaNode.layoutDirection}")
-        }
+    get() = yogaNode.layoutDirection.toLayoutDirection()
 
   override val widthSpec: Int
     get() = _widthSpec

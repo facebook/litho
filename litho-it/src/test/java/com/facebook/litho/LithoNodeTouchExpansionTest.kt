@@ -18,12 +18,12 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
-import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -57,7 +57,7 @@ class LithoNodeTouchExpansionTest {
             null)
   }
 
-  private fun setDirection(direction: YogaDirection): LithoNodeTouchExpansionTest {
+  private fun setDirection(direction: LayoutDirection): LithoNodeTouchExpansionTest {
     node.layoutDirection(direction)
     return this
   }
@@ -129,7 +129,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionLeftWithDefinedStartInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.START, 5)
             .touchExpansionPx(YogaEdge.LEFT, 10)
             .calculateLayout()
@@ -139,7 +139,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionLeftWithDefinedEndInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.END, 5)
             .touchExpansionPx(YogaEdge.LEFT, 10)
             .calculateLayout()
@@ -169,7 +169,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionRightWithDefinedStartInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.START, 5)
             .touchExpansionPx(YogaEdge.RIGHT, 10)
             .calculateLayout()
@@ -179,7 +179,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionRightWithDefinedEndInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.END, 5)
             .touchExpansionPx(YogaEdge.RIGHT, 10)
             .calculateLayout()

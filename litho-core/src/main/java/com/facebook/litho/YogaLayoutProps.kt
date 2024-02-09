@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
@@ -31,7 +32,9 @@ import kotlin.jvm.JvmField
 open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
 
   @JvmField var isPaddingSet: Boolean = false
+
   @JvmField var widthFromStyle: Float = YogaConstants.UNDEFINED
+
   @JvmField var heightFromStyle: Float = YogaConstants.UNDEFINED
 
   override fun widthPx(width: Int) {
@@ -204,5 +207,23 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
 
   open fun alignItems(align: YogaAlign) {
     node.alignItems = align
+  }
+}
+
+fun YogaDirection.toLayoutDirection(): LayoutDirection {
+  return when (this) {
+    YogaDirection.LTR -> LayoutDirection.LTR
+    YogaDirection.RTL -> LayoutDirection.RTL
+    YogaDirection.INHERIT -> LayoutDirection.INHERIT
+    else -> throw IllegalArgumentException("Unknown YogaDirection $this")
+  }
+}
+
+fun LayoutDirection.toYogaDirection(): YogaDirection {
+  return when (this) {
+    LayoutDirection.LTR -> YogaDirection.LTR
+    LayoutDirection.RTL -> YogaDirection.RTL
+    LayoutDirection.INHERIT -> YogaDirection.INHERIT
+    else -> throw IllegalArgumentException("Unknown LayoutDirection $this")
   }
 }

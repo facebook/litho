@@ -163,5 +163,5 @@ open class LithoLayoutResult(
     children.add(child)
   }
 
-  private fun isDirectionRtl(): Boolean = (layoutOutput.layoutDirection == LayoutDirection.RTL)
+  private fun isDirectionRtl(): Boolean = layoutOutput.layoutDirection.isRTL
 }

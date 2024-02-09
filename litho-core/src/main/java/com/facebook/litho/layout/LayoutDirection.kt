@@ -24,6 +24,15 @@ package com.facebook.litho.layout
 @JvmInline
 value class LayoutDirection private constructor(val value: Int) {
 
+  val isInherit: Boolean
+    get() = this == INHERIT
+
+  val isRTL: Boolean
+    get() = this == RTL
+
+  val isLTR: Boolean
+    get() = this == LTR
+
   fun getLayoutDirectionForView(): Int {
     return when (this) {
       LTR -> android.view.View.LAYOUT_DIRECTION_LTR
