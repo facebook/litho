@@ -93,6 +93,7 @@ import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Component to render text. See <a href="https://fblitho.com/docs/widgets#text">text-widget</a> for
@@ -332,7 +333,8 @@ public class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
-      Output<Integer> measuredHeight) {
+      Output<Integer> measuredHeight,
+      Output<Integer> fullWidth) {
 
     if (TextUtils.isEmpty(text)) {
       measureLayout.set(null);
@@ -342,15 +344,6 @@ public class TextSpec {
     }
 
     TextAlignment resolvedTextAlignment = getTextAlignment(textAlignment, alignment);
-    boolean isTextAlignmentOverride = false;
-    if (minimallyWide && resolvedTextAlignment == TEXT_END) {
-      // To ensure correct minimally wide behavior, we need to perform text layout twice. This is
-      // because we cannot accurately retrieve the width of each line from TextLayout if we have
-      // alignment from the end. Therefore, we run the first pass with TEXT_START enforced, and do
-      // the second layout in onBoundsDefined with the actual alignment setting.
-      resolvedTextAlignment = TEXT_START;
-      isTextAlignmentOverride = true;
-    }
 
     Layout newLayout =
         createTextLayout(
@@ -387,48 +380,10 @@ public class TextSpec {
             justificationMode,
             textDirection,
             lineHeight);
-
-    final int fullWidth = Math.max(0, SizeSpec.resolveSize(widthSpec, newLayout.getWidth()));
-    size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
-    if (isTextAlignmentOverride || (minimallyWide && fullWidth != size.width)) {
-      // either TextAlignment is TEXT_END or minimally wide width is different
-      newLayout =
-          createTextLayout(
-              context,
-              widthSpec,
-              ellipsize,
-              shouldIncludeFontPadding,
-              maxLines,
-              shadowRadius,
-              shadowDx,
-              shadowDy,
-              shadowColor,
-              isSingleLine,
-              text,
-              textColor,
-              textColorStateList,
-              linkColor,
-              textSize,
-              extraSpacing,
-              spacingMultiplier,
-              letterSpacing,
-              textStyle,
-              typeface,
-              getTextAlignment(textAlignment, alignment),
-              glyphWarming,
-              layout.getResolvedLayoutDirection(),
-              minEms,
-              maxEms,
-              minTextWidth,
-              maxTextWidth,
-              context.getAndroidContext().getResources().getDisplayMetrics().density,
-              breakStrategy,
-              hyphenationFrequency,
-              justificationMode,
-              textDirection,
-              lineHeight);
-    }
     measureLayout.set(newLayout);
+
+    fullWidth.set(Math.max(0, SizeSpec.resolveSize(widthSpec, newLayout.getWidth())));
+    size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
@@ -464,7 +419,15 @@ public class TextSpec {
     final int fullWidth = SizeSpec.resolveSize(widthSpec, layout.getWidth());
 
     if (minimallyWide && layout.getLineCount() > 1) {
-      final int minimalWidth = SizeSpec.resolveSize(widthSpec, LayoutMeasureUtil.getWidth(layout));
+      float leftMost = fullWidth;
+      float rightMost = 0;
+      for (int i = 0, count = layout.getLineCount(); i < count; i++) {
+        leftMost = Math.min(leftMost, layout.getLineLeft(i));
+        rightMost = Math.max(rightMost, layout.getLineRight(i));
+      }
+      // To determine the width of the longest line, which is also the minimum width we desire,
+      // without leading and trailing whitespaces.
+      final int minimalWidth = SizeSpec.resolveSize(widthSpec, (int) (rightMost - leftMost));
 
       if (fullWidth - minimalWidth > minimallyWideThreshold) {
         return minimalWidth;
@@ -648,11 +611,14 @@ public class TextSpec {
       @Nullable @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @Nullable @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
+      @Prop(optional = true) boolean minimallyWide,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
+      @FromMeasure Integer fullWidth,
       Output<CharSequence> processedText,
       Output<Layout> textLayout,
+      Output<Float> textLayoutTranslationX,
       Output<Float> textLayoutTranslationY,
       Output<ClickableSpan[]> clickableSpans,
       Output<ImageSpan[]> imageSpans) {
@@ -669,6 +635,16 @@ public class TextSpec {
 
     if (measureLayout != null && measuredWidth == layoutWidth && measuredHeight == layoutHeight) {
       textLayout.set(measureLayout);
+      // We don't need to perform translation if we didn't pass minimally wide threshold above
+      if (minimallyWide && !Objects.equals(fullWidth, measuredWidth)) {
+        // Regardless of the text alignment, we can always use the leftmost point (the longest line)
+        // as our starting point to keep the text drawable center-aligned.
+        float leftMost = measuredWidth;
+        for (int i = 0, count = measureLayout.getLineCount(); i < count; i++) {
+          leftMost = Math.min(leftMost, measureLayout.getLineLeft(i));
+        }
+        textLayoutTranslationX.set(-leftMost);
+      }
     } else {
       textLayout.set(
           createTextLayout(
@@ -966,6 +942,7 @@ public class TextSpec {
       @Nullable @Prop(optional = true) TouchableSpanListener touchableSpanListener,
       final @FromBoundsDefined CharSequence processedText,
       @FromBoundsDefined Layout textLayout,
+      @FromBoundsDefined Float textLayoutTranslationX,
       @FromBoundsDefined Float textLayoutTranslationY,
       @Nullable @FromBoundsDefined ClickableSpan[] clickableSpans,
       @Nullable @FromBoundsDefined ImageSpan[] imageSpans) {
@@ -990,6 +967,7 @@ public class TextSpec {
     textDrawable.mount(
         processedText,
         textLayout,
+        textLayoutTranslationX == null ? 0 : textLayoutTranslationX,
         textLayoutTranslationY == null ? 0 : textLayoutTranslationY,
         clipToBounds,
         textColorStateList,

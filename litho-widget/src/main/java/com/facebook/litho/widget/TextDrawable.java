@@ -59,6 +59,7 @@ import javax.annotation.Nullable;
 public class TextDrawable extends Drawable implements Touchable, TextContent, Drawable.Callback {
 
   private @Nullable Layout mLayout;
+  private float mLayoutTranslationX;
   private float mLayoutTranslationY;
   private boolean mClipToBounds;
   private boolean mShouldHandleTouch;
@@ -102,7 +103,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (mClipToBounds) {
       canvas.clipRect(bounds);
     }
-    canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
+    canvas.translate(bounds.left + mLayoutTranslationX, bounds.top + mLayoutTranslationY);
     try {
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
     } catch (IndexOutOfBoundsException e) {
@@ -301,6 +302,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         text,
         layout,
         0,
+        0,
         false,
         null,
         userColor,
@@ -320,6 +322,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mount(
         text,
         layout,
+        0,
         0,
         false,
         null,
@@ -348,6 +351,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         text,
         layout,
         0,
+        0,
         false,
         null,
         userColor,
@@ -366,6 +370,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   public void mount(
       CharSequence text,
       Layout layout,
+      float layoutTranslationX,
       float layoutTranslationY,
       boolean clipToBounds,
       ColorStateList colorStateList,
@@ -381,6 +386,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       float clickableSpanExpandedOffset,
       String contextLogTag) {
     mLayout = layout;
+    mLayoutTranslationX = layoutTranslationX;
     mLayoutTranslationY = layoutTranslationY;
     mClipToBounds = clipToBounds;
     mText = text;

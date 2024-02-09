@@ -308,12 +308,11 @@ public class TextSpecTest {
 
   private static Layout setupWidthTestTextLayout() {
     final Layout layout = mock(Layout.class);
-    final int fullWidth = FULL_TEXT_WIDTH;
-    final int minimalWidth = MINIMAL_TEXT_WIDTH;
 
     when(layout.getLineCount()).thenReturn(2);
-    when(layout.getWidth()).thenReturn(fullWidth);
-    when(layout.getLineRight(anyInt())).thenReturn((float) minimalWidth);
+    when(layout.getWidth()).thenReturn(FULL_TEXT_WIDTH);
+    when(layout.getLineRight(anyInt())).thenReturn((float) MINIMAL_TEXT_WIDTH);
+    when(layout.getLineLeft(anyInt())).thenReturn(0.0f);
 
     return layout;
   }
