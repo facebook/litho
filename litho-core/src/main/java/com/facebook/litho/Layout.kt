@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import android.graphics.Rect
-import android.view.View
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.LayoutResult
@@ -353,9 +353,13 @@ internal object Layout {
       if (newNode.isLayoutDirectionInherit) {
         newNode.layoutDirection(
             when (holderResult.layoutDirection) {
-              View.LAYOUT_DIRECTION_LTR -> YogaDirection.LTR
-              View.LAYOUT_DIRECTION_RTL -> YogaDirection.RTL
-              else -> YogaDirection.INHERIT
+              LayoutDirection.LTR -> YogaDirection.LTR
+              LayoutDirection.RTL -> YogaDirection.RTL
+              LayoutDirection.INHERIT -> YogaDirection.INHERIT
+              else -> {
+                throw IllegalArgumentException(
+                    "Invalid layout direction: ${holderResult.layoutDirection}")
+              }
             })
       }
 
@@ -479,5 +483,5 @@ sealed interface LithoLayoutOutput {
   val delegate: LayoutResult?
   val nestedResult: LithoLayoutResult?
   val adjustedBounds: Rect
-  val layoutDirection: Int
+  val layoutDirection: LayoutDirection
 }

@@ -847,7 +847,7 @@ class LithoViewAttributesExtension private constructor() :
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
         return
       }
-      view.layoutDirection = attributes.layoutDirection
+      view.layoutDirection = attributes.layoutDirection.getLayoutDirectionForView()
     }
 
     private fun unsetViewLayoutDirection(view: View) {

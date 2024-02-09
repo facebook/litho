@@ -19,13 +19,13 @@ package com.facebook.litho
 import android.graphics.Point
 import android.graphics.Rect
 import android.util.Pair
-import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
@@ -909,12 +909,15 @@ data class YogaLayoutOutput(
   override val paddingBottom: Int
     get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
 
-  override val layoutDirection: Int
+  override val layoutDirection: LayoutDirection
     get() =
         when (yogaNode.layoutDirection) {
-          YogaDirection.LTR -> View.LAYOUT_DIRECTION_LTR
-          YogaDirection.RTL -> View.LAYOUT_DIRECTION_RTL
-          else -> View.LAYOUT_DIRECTION_INHERIT
+          YogaDirection.LTR -> LayoutDirection.LTR
+          YogaDirection.RTL -> LayoutDirection.RTL
+          YogaDirection.INHERIT -> LayoutDirection.INHERIT
+          else ->
+              throw IllegalArgumentException(
+                  "Unknown layout direction: ${yogaNode.layoutDirection}")
         }
 
   override val widthSpec: Int

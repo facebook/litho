@@ -29,6 +29,7 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import com.facebook.litho.drawable.DrawableUtils
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.utils.equals
 import com.facebook.rendercore.utils.isEquivalentTo
 
@@ -64,7 +65,7 @@ class ViewAttributes {
   var background: Drawable? = null
   var foreground: Drawable? = null
   var padding: Rect? = null
-  var layoutDirection: Int = View.LAYOUT_DIRECTION_INHERIT
+  var layoutDirection: LayoutDirection = LayoutDirection.INHERIT
   var stateListAnimator: StateListAnimator? = null
   @DrawableRes var stateListAnimatorRes: Int = 0
   @LayerType var layerType: Int = LayerType.LAYER_TYPE_NOT_SET

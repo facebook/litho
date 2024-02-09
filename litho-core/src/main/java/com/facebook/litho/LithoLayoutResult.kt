@@ -17,8 +17,8 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import android.view.View
 import androidx.annotation.Px
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.LayoutResult
 
 /** This is the default implementation of a [LayoutResult] for Litho. */
@@ -98,7 +98,7 @@ open class LithoLayoutResult(
       }
     }
 
-  val layoutDirection: Int
+  val layoutDirection: LayoutDirection
     get() = layoutOutput.layoutDirection
 
   val contentRenderUnit: LithoRenderUnit?
@@ -163,6 +163,5 @@ open class LithoLayoutResult(
     children.add(child)
   }
 
-  private fun isDirectionRtl(): Boolean =
-      (layoutOutput.layoutDirection == View.LAYOUT_DIRECTION_RTL)
+  private fun isDirectionRtl(): Boolean = (layoutOutput.layoutDirection == LayoutDirection.RTL)
 }
