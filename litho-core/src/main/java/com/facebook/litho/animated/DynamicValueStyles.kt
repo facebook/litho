@@ -60,7 +60,7 @@ internal data class DynamicStyleItem(
     override val value: DynamicValue<*>
 ) : StyleItem<DynamicValue<*>> {
   override fun applyCommonProps(context: ComponentContext, commonProps: CommonProps) {
-    val commonDynamicProps = commonProps.orCreateCommonDynamicProps
+    val commonDynamicProps = commonProps.getOrCreateDynamicProps()
     when (field) {
       DynamicField.ALPHA -> commonDynamicProps.put(KEY_ALPHA, value)
       DynamicField.BACKGROUND_COLOR -> commonDynamicProps.put(KEY_BACKGROUND_COLOR, value)

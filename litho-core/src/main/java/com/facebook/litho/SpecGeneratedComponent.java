@@ -849,7 +849,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (mCommonProps == null) {
       return null;
     }
-    return mCommonProps.getCommonDynamicProps();
+    return mCommonProps.getOrCreateDynamicProps();
   }
 
   /**
@@ -858,7 +858,7 @@ public abstract class SpecGeneratedComponent extends Component
    * @see DynamicPropsManager
    */
   final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
-    return getOrCreateCommonProps().getOrCreateCommonDynamicProps();
+    return getOrCreateCommonProps().getOrCreateDynamicProps();
   }
 
   /**
@@ -894,8 +894,8 @@ public abstract class SpecGeneratedComponent extends Component
 
   public final boolean hasClickHandlerSet() {
     return mCommonProps != null
-        && mCommonProps.getNullableNodeInfo() != null
-        && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
+        && mCommonProps.getNodeInfo() != null
+        && mCommonProps.getNodeInfo().getClickHandler() != null;
   }
 
   @Override

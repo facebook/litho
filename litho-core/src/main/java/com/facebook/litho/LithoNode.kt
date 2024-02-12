@@ -213,8 +213,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * Returns a nullable map of [RenderUnit.DelegateBinder] that is aimed to be used to set the
    * optional mount binders right after creating a [MountSpecLithoRenderUnit].
    */
-  var customDelegateBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any?, Any>>? =
-      null
+  var customDelegateBindersForMountSpec: MutableMap<Class<*>, DelegateBinder<Any, Any, Any>>? = null
     internal set
 
   /**
@@ -567,7 +566,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
    * view binders), the addition of the optional mount binders is delayed until the moment of its
    * creation. For that, we store these binders in the [LithoNode] and use them later.
    */
-  fun addCustomBinders(delegateBindersMap: Map<Class<*>, DelegateBinder<Any, Any?, Any>>? = null) {
+  fun addCustomBinders(delegateBindersMap: Map<Class<*>, DelegateBinder<Any, Any, Any>>? = null) {
     if (delegateBindersMap.isNullOrEmpty()) {
       return
     }
@@ -584,7 +583,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
     customDelegateBindersForMountSpec
         .getOrCreate {
-          LinkedHashMap<Class<*>, DelegateBinder<Any, Any?, Any>>().also {
+          LinkedHashMap<Class<*>, DelegateBinder<Any, Any, Any>>().also {
             customDelegateBindersForMountSpec = it
           }
         }

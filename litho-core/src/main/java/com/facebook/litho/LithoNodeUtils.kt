@@ -282,7 +282,7 @@ object LithoNodeUtils {
       duplicateChildrenStates: Boolean = false,
       hasHostView: Boolean = false,
       isMountViewSpec: Boolean = false,
-      customDelegateBindersForMountSpec: Map<Class<*>, RenderUnit.DelegateBinder<Any, Any?, Any>>? =
+      customDelegateBindersForMountSpec: Map<Class<*>, RenderUnit.DelegateBinder<Any, Any, Any>>? =
           null,
       debugKey: String? = null,
   ): LithoRenderUnit {
