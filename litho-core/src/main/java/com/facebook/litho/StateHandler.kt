@@ -28,7 +28,30 @@ import javax.annotation.concurrent.GuardedBy
 import kotlin.collections.HashSet
 
 /** Holds information about the current State of the components in a Component Tree. */
-class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = null) {
+class StateHandler {
+
+  constructor(initialStateContainer: InitialStateContainer, stateHandler: StateHandler? = null) {
+    this.initialStateContainer = initialStateContainer
+    if (stateHandler != null) {
+      copyStateUpdatesMap(
+          stateHandler.pendingStateUpdates,
+          stateHandler.pendingHookUpdates,
+          stateHandler.pendingLazyStateUpdates,
+          stateHandler.appliedStateUpdates,
+          stateHandler.appliedHookUpdates,
+      )
+      copyCurrentStateContainers(stateHandler.stateContainers)
+      copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
+      stateHandler.cachedValues?.let { cachedValues = HashMap(it) }
+    }
+  }
+
+  constructor(
+      stateHandler: StateHandler? = null
+  ) : this(
+      initialStateContainer = stateHandler?.initialStateContainer ?: InitialStateContainer(),
+      stateHandler = stateHandler,
+  )
 
   /** List of state updates that will be applied during the next layout pass. */
   @GuardedBy("this")
@@ -71,26 +94,6 @@ class StateHandler @VisibleForTesting constructor(stateHandler: StateHandler? = 
 
   var initialStateContainer: InitialStateContainer
     private set
-
-  init {
-    if (stateHandler == null) {
-      initialStateContainer = InitialStateContainer()
-    } else {
-      synchronized(this) {
-        initialStateContainer = stateHandler.initialStateContainer
-        copyStateUpdatesMap(
-            stateHandler.pendingStateUpdates,
-            stateHandler.pendingHookUpdates,
-            stateHandler.pendingLazyStateUpdates,
-            stateHandler.appliedStateUpdates,
-            stateHandler.appliedHookUpdates,
-        )
-        copyCurrentStateContainers(stateHandler.stateContainers)
-        copyPendingStateTransitions(stateHandler.pendingStateUpdateTransitions)
-        stateHandler.cachedValues?.let { cachedValues = HashMap(it) }
-      }
-    }
-  }
 
   @get:Synchronized
   val isEmpty: Boolean

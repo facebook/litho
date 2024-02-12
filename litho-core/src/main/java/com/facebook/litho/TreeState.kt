@@ -27,9 +27,11 @@ class TreeState {
   val layoutState: StateHandler
 
   private val eventTriggersContainer: EventTriggersContainer
+
   @UIState private val renderState: RenderState
 
   @UIState val mountInfo: TreeMountInfo
+
   @get:VisibleForTesting val eventHandlersController: EventHandlersController
 
   /**
@@ -38,20 +40,56 @@ class TreeState {
    */
   class TreeMountInfo {
     @JvmField @Volatile var hasMounted: Boolean = false
+
     @JvmField @Volatile var isFirstMount: Boolean = false
   }
 
-  constructor() : this(fromState = null)
+  private constructor(
+      resolveState: StateHandler,
+      layoutState: StateHandler,
+      mountInfo: TreeMountInfo,
+      renderState: RenderState,
+      eventTriggersContainer: EventTriggersContainer,
+      eventHandlersController: EventHandlersController,
+  ) {
 
-  @JvmOverloads
-  constructor(fromState: TreeState?) {
-    resolveState = StateHandler(fromState?.resolveState)
-    layoutState = StateHandler(fromState?.layoutState)
-    mountInfo = fromState?.mountInfo ?: TreeMountInfo()
-    renderState = fromState?.renderState ?: RenderState()
-    eventTriggersContainer = fromState?.eventTriggersContainer ?: EventTriggersContainer()
-    eventHandlersController = fromState?.eventHandlersController ?: EventHandlersController()
+    if (resolveState.initialStateContainer === layoutState.initialStateContainer) {
+      throw IllegalArgumentException(
+          "The same InitialStateContainer cannot be used for both resolve and layout states")
+    }
+
+    this.resolveState = resolveState
+    this.layoutState = layoutState
+    this.mountInfo = mountInfo
+    this.renderState = renderState
+    this.eventTriggersContainer = eventTriggersContainer
+    this.eventHandlersController = eventHandlersController
   }
+
+  constructor(
+      fromState: TreeState?
+  ) : this(
+      resolveState = StateHandler(fromState?.resolveState),
+      layoutState = StateHandler(fromState?.layoutState),
+      mountInfo = fromState?.mountInfo ?: TreeMountInfo(),
+      renderState = fromState?.renderState ?: RenderState(),
+      eventTriggersContainer = fromState?.eventTriggersContainer ?: EventTriggersContainer(),
+      eventHandlersController = fromState?.eventHandlersController ?: EventHandlersController(),
+  )
+
+  constructor(
+      initialResolveStateContainer: InitialStateContainer,
+      initialLayoutStateContainer: InitialStateContainer,
+  ) : this(
+      resolveState = StateHandler(initialResolveStateContainer),
+      layoutState = StateHandler(initialLayoutStateContainer),
+      mountInfo = TreeMountInfo(),
+      renderState = RenderState(),
+      eventTriggersContainer = EventTriggersContainer(),
+      eventHandlersController = EventHandlersController(),
+  )
+
+  constructor() : this(fromState = null)
 
   private fun getStateHandler(isNestedTree: Boolean): StateHandler {
     return if (isNestedTree) {
