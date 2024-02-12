@@ -16,6 +16,8 @@
 
 package com.facebook.litho.layout
 
+import android.view.View
+
 /**
  * A class for defining layout directions. A layout direction can be left-to-right (LTR) or
  * right-to-left (RTL). It can also be inherited (from a parent) or deduced from the default
@@ -35,10 +37,10 @@ value class LayoutDirection private constructor(val value: Int) {
 
   fun getLayoutDirectionForView(): Int {
     return when (this) {
-      LTR -> android.view.View.LAYOUT_DIRECTION_LTR
-      RTL -> android.view.View.LAYOUT_DIRECTION_RTL
-      INHERIT -> android.view.View.LAYOUT_DIRECTION_INHERIT
-      LOCALE -> android.view.View.LAYOUT_DIRECTION_LOCALE
+      LTR -> View.LAYOUT_DIRECTION_LTR
+      RTL -> View.LAYOUT_DIRECTION_RTL
+      INHERIT -> View.LAYOUT_DIRECTION_INHERIT
+      LOCALE -> View.LAYOUT_DIRECTION_LOCALE
       else -> throw IllegalArgumentException("Unknown layout direction $value")
     }
   }
@@ -56,5 +58,16 @@ value class LayoutDirection private constructor(val value: Int) {
 
     /** Horizontal layout direction is deduced from the default language script for the locale. */
     val LOCALE: LayoutDirection = LayoutDirection(3)
+
+    @JvmStatic
+    fun fromInt(value: Int): LayoutDirection {
+      return when (value) {
+        View.LAYOUT_DIRECTION_LTR -> LTR
+        View.LAYOUT_DIRECTION_RTL -> RTL
+        View.LAYOUT_DIRECTION_INHERIT -> INHERIT
+        View.LAYOUT_DIRECTION_LOCALE -> LOCALE
+        else -> throw IllegalArgumentException("Unknown layout direction $value")
+      }
+    }
   }
 }

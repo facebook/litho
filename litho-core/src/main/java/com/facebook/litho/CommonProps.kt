@@ -33,13 +33,13 @@ import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.drawable.DrawableUtils
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.utils.equals
 import com.facebook.rendercore.utils.isEquivalentTo
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
-import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaPositionType
@@ -160,7 +160,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
             (PFLAG_SCALE_KEY_IS_SET or PFLAG_ALPHA_KEY_IS_SET or PFLAG_ROTATION_KEY_IS_SET)) != 0)
   }
 
-  override fun layoutDirection(direction: YogaDirection) {
+  override fun layoutDirection(direction: LayoutDirection) {
     layoutProps.layoutDirection(direction)
   }
 
@@ -956,7 +956,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     @Px private var flexBasisPx: Int = 0
     private var flexBasisPercent: Float = 0f
     private var aspectRatio: Float = 0f
-    private var layoutDirection: YogaDirection? = null
+    private var layoutDirection: LayoutDirection? = null
     private var alignSelf: YogaAlign? = null
     private var positionType: YogaPositionType? = null
     private var positions: Edges? = null
@@ -1037,7 +1037,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       maxHeightPercent = percent
     }
 
-    override fun layoutDirection(direction: YogaDirection) {
+    override fun layoutDirection(direction: LayoutDirection) {
       privateFlags = privateFlags or PFLAG_LAYOUT_DIRECTION_IS_SET
       layoutDirection = direction
     }

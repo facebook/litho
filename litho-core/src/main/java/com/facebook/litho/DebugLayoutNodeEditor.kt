@@ -61,7 +61,7 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   }
 
   fun setLayoutDirection(yogaDirection: YogaDirection) {
-    node.debugLayoutEditor?.layoutDirection(yogaDirection)
+    node.debugLayoutEditor?.layoutDirection(yogaDirection.toLayoutDirection())
   }
 
   fun setFlexDirection(direction: YogaFlexDirection) {

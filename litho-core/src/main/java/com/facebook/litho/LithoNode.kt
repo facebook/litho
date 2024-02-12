@@ -47,7 +47,6 @@ import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
-import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
 import com.facebook.yoga.YogaJustify
@@ -959,7 +958,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
               props.positionType(YogaPositionType.fromInt(a.getInteger(attr, 0)))
           R.styleable.ComponentLayout_flex_layoutDirection -> {
             val layoutDirection = a.getInteger(attr, -1)
-            props.layoutDirection(YogaDirection.fromInt(layoutDirection))
+            props.layoutDirection(LayoutDirection.fromInt(layoutDirection))
           }
           R.styleable.ComponentLayout_flex -> {
             val flex = a.getFloat(attr, -1f)

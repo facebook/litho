@@ -97,8 +97,8 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     node.setMaxHeightPercent(heightFromStyle)
   }
 
-  override fun layoutDirection(direction: YogaDirection) {
-    node.setDirection(direction)
+  override fun layoutDirection(direction: LayoutDirection) {
+    node.setDirection(direction.toYogaDirection())
   }
 
   override fun alignSelf(alignSelf: YogaAlign) {
@@ -207,6 +207,13 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
 
   open fun alignItems(align: YogaAlign) {
     node.alignItems = align
+  }
+
+  companion object {
+    @JvmStatic
+    fun setLayoutDirection(commonProps: CommonProps, direction: YogaDirection) {
+      commonProps.layoutDirection(direction.toLayoutDirection())
+    }
   }
 }
 

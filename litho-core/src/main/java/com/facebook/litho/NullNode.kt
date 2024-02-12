@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
-import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
@@ -71,7 +71,7 @@ class NullWriter internal constructor() : YogaLayoutProps(node = NodeConfig.crea
 
   override fun maxHeightPercent(percent: Float) = Unit
 
-  override fun layoutDirection(direction: YogaDirection) = Unit
+  override fun layoutDirection(direction: LayoutDirection) = Unit
 
   override fun alignSelf(alignSelf: YogaAlign) = Unit
 

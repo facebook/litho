@@ -1458,8 +1458,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * <p>Default: {@link YogaDirection#INHERIT}
      */
-    public T layoutDirection(YogaDirection layoutDirection) {
-      mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);
+    public T layoutDirection(YogaDirection direction) {
+      YogaLayoutProps.setLayoutDirection(mComponent.getOrCreateCommonProps(), direction);
       return getThis();
     }
 

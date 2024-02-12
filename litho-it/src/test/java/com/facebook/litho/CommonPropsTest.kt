@@ -60,7 +60,7 @@ class CommonPropsTest {
   @Test
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   fun testSetPropsAndBuild() {
-    commonProps.layoutDirection(YogaDirection.INHERIT)
+    commonProps.layoutDirection(YogaDirection.INHERIT.toLayoutDirection())
     commonProps.alignSelf(YogaAlign.AUTO)
     commonProps.positionType(YogaPositionType.ABSOLUTE)
     commonProps.flex(2f)
@@ -358,7 +358,7 @@ class CommonPropsTest {
   }
 
   private fun setCommonProps(commonProps: CommonProps) {
-    commonProps.layoutDirection(YogaDirection.INHERIT)
+    commonProps.layoutDirection(YogaDirection.INHERIT.toLayoutDirection())
     commonProps.alignSelf(YogaAlign.AUTO)
     commonProps.positionType(YogaPositionType.ABSOLUTE)
     commonProps.flex(2f)

@@ -23,6 +23,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
+import com.facebook.litho.toLayoutDirection
 import com.facebook.rendercore.Dimen
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
@@ -137,7 +138,8 @@ internal class FlexboxObjectStyleItem(
     when (field) {
       FlexboxObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
       FlexboxObjectField.BORDER -> commonProps.border(value as Border?)
-      FlexboxObjectField.LAYOUT_DIRECTION -> commonProps.layoutDirection(value as YogaDirection)
+      FlexboxObjectField.LAYOUT_DIRECTION ->
+          commonProps.layoutDirection((value as YogaDirection).toLayoutDirection())
       FlexboxObjectField.POSITION_TYPE ->
           value?.let { commonProps.positionType(it as YogaPositionType) }
       FlexboxObjectField.MARGIN_AUTO -> value?.let { commonProps.marginAuto(it as YogaEdge) }
