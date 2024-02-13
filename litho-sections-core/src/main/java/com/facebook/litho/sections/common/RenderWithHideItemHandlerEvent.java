@@ -20,6 +20,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.widget.RenderInfo;
 
 /**
@@ -38,7 +39,7 @@ import com.facebook.litho.widget.RenderInfo;
  * @param hideItemHandler is the handler that should be used for hiding a model.
  * @param loggingExtras a bundle of logging extras we want to expose to the rendered component.
  */
-@Event(returnType = RenderInfo.class)
+@Event(returnType = RenderInfo.class, mode = EventHandlerRebindMode.NONE)
 public class RenderWithHideItemHandlerEvent {
   public int index;
   public Object model;

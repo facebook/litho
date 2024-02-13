@@ -17,6 +17,7 @@
 package com.facebook.litho.sections;
 
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import javax.annotation.Nullable;
 
 /**
@@ -36,7 +37,7 @@ import javax.annotation.Nullable;
  * </code>
  * </pre>
  */
-@Event
+@Event(mode = EventHandlerRebindMode.NONE)
 public class LoadingEvent {
   public enum LoadingState {
     INITIAL_LOAD,
