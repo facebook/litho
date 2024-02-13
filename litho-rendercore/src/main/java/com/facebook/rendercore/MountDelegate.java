@@ -538,7 +538,8 @@ public class MountDelegate {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  public void onBoundsAppliedToItem(RenderTreeNode node, Object content, Systracer tracer) {
+  public void onBoundsAppliedToItem(
+      RenderTreeNode node, Object content, boolean changed, Systracer tracer) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
@@ -550,7 +551,8 @@ public class MountDelegate {
           tracer.beginSection("Extension:onBoundsAppliedToItem " + extension.getName());
         }
         ((OnItemCallbacks) extension)
-            .onBoundsAppliedToItem(state, node.getRenderUnit(), content, node.getLayoutData());
+            .onBoundsAppliedToItem(
+                state, node.getRenderUnit(), content, node.getLayoutData(), changed);
         if (isTracing) {
           tracer.endSection();
         }

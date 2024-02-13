@@ -150,7 +150,8 @@ public class DynamicPropsExtension
       ExtensionState<DynamicPropsExtensionState> extensionState,
       RenderUnit<?> renderUnit,
       Object content,
-      @Nullable Object layoutData) {}
+      @Nullable Object layoutData,
+      boolean changed) {}
 
   static class DynamicPropsExtensionState {
     private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();

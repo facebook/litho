@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import kotlin.Unit;
+import org.jetbrains.annotations.NotNull;
 
 /** Extension for performing incremental mount. */
 public class IncrementalMountExtension
@@ -351,10 +352,11 @@ public class IncrementalMountExtension
 
   @Override
   public void onBoundsAppliedToItem(
-      ExtensionState<IncrementalMountExtensionState> extensionState,
-      RenderUnit<?> renderUnit,
-      Object content,
-      @Nullable Object layoutData) {}
+      @NotNull ExtensionState<IncrementalMountExtensionState> extensionState,
+      @NotNull RenderUnit<?> renderUnit,
+      @NotNull Object content,
+      @Nullable Object layoutData,
+      boolean changed) {}
 
   @Override
   public void onUnmount(final ExtensionState<IncrementalMountExtensionState> extensionState) {

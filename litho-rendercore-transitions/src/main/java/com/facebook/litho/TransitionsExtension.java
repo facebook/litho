@@ -254,7 +254,8 @@ public class TransitionsExtension
       final ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
-      final @Nullable Object layoutData) {
+      final @Nullable Object layoutData,
+      boolean changed) {
     final @Nullable TransitionsExtensionInput input = extensionState.getState().mInput;
     if (input != null
         && input.isIncrementalMountEnabled()

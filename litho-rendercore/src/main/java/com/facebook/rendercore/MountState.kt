@@ -376,9 +376,19 @@ constructor(
     }
     val content = item.content
     val forceTraversal = content is View && content.isLayoutRequested
-    BoundsUtils.applyBoundsToMountContent(
-        item.renderTreeNode, item.content, forceTraversal /* force */, tracer)
-    mountDelegate?.onBoundsAppliedToItem(renderTreeNode, item.content, tracer)
+    val changed =
+        BoundsUtils.applyBoundsToMountContent(
+            item.renderTreeNode,
+            item.content,
+            forceTraversal /* force */,
+            tracer,
+        )
+    mountDelegate?.onBoundsAppliedToItem(
+        renderTreeNode,
+        item.content,
+        changed,
+        tracer,
+    )
   }
 
   /** Updates the extensions of this [MountState] from the new [RenderTree]. */
@@ -571,13 +581,24 @@ constructor(
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
-    BoundsUtils.applyBoundsToMountContent(renderTreeNode, item.content, true /* force */, tracer)
+    val changed =
+        BoundsUtils.applyBoundsToMountContent(
+            renderTreeNode,
+            item.content,
+            true /* force */,
+            tracer,
+        )
     if (isTracing) {
       tracer.endSection()
       tracer.beginSection("MountItem:after ${renderTreeNode.renderUnit.description}")
     }
 
-    _mountDelegate?.onBoundsAppliedToItem(renderTreeNode, item.content, tracer)
+    _mountDelegate?.onBoundsAppliedToItem(
+        renderTreeNode,
+        item.content,
+        changed,
+        tracer,
+    )
     _mountDelegate?.endNotifyVisibleBoundsChangedSection()
 
     if (isTracing) {

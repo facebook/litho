@@ -92,7 +92,8 @@ interface OnItemCallbacks<State> {
       extensionState: ExtensionState<State>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
+      layoutData: Any?,
+      changed: Boolean
   )
 }
 

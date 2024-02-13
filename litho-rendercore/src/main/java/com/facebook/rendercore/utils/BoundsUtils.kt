@@ -37,10 +37,10 @@ object BoundsUtils {
       content: Any,
       force: Boolean,
       tracer: Systracer? = null
-  ) {
+  ): Boolean {
     val bounds = renderTreeNode.bounds
     val padding = renderTreeNode.resolvedPadding
-    applyBoundsToMountContent(
+    return applyBoundsToMountContent(
         bounds.left, bounds.top, bounds.right, bounds.bottom, padding, content, force, tracer)
   }
 
@@ -59,28 +59,37 @@ object BoundsUtils {
       content: Any,
       force: Boolean,
       tracer: Systracer? = null
-  ) {
+  ): Boolean {
     val isTracing = tracer?.isTracing() == true
     if (isTracing) {
       tracer?.beginSection("applyBoundsToMountContent")
     }
     try {
-      if (content is View) {
-        applyBoundsToView(content, left, top, right, bottom, padding, force)
-      } else if (content is Drawable) {
-        var paddedLeft = left
-        var paddedTop = top
-        var paddedRight = right
-        var paddedBottom = bottom
-        if (padding != null) {
-          paddedLeft += padding.left
-          paddedTop += padding.top
-          paddedRight -= padding.right
-          paddedBottom -= padding.bottom
+      when (content) {
+        is View -> {
+          return applyBoundsToView(content, left, top, right, bottom, padding, force)
         }
-        content.setBounds(paddedLeft, paddedTop, paddedRight, paddedBottom)
-      } else {
-        throw IllegalStateException("Unsupported mounted content $content")
+        is Drawable -> {
+          var paddedLeft = left
+          var paddedTop = top
+          var paddedRight = right
+          var paddedBottom = bottom
+          if (padding != null) {
+            paddedLeft += padding.left
+            paddedTop += padding.top
+            paddedRight -= padding.right
+            paddedBottom -= padding.bottom
+          }
+          val bounds = content.bounds
+          content.setBounds(paddedLeft, paddedTop, paddedRight, paddedBottom)
+          return bounds.left != paddedLeft ||
+              bounds.top != paddedTop ||
+              bounds.right != paddedRight ||
+              bounds.bottom != paddedBottom
+        }
+        else -> {
+          throw IllegalStateException("Unsupported mounted content $content")
+        }
       }
     } finally {
       if (isTracing) {
@@ -102,7 +111,7 @@ object BoundsUtils {
       bottom: Int,
       padding: Rect?,
       force: Boolean
-  ) {
+  ): Boolean {
     val width = right - left
     val height = bottom - top
     if (padding != null && view !is Host) {
@@ -119,6 +128,9 @@ object BoundsUtils {
         view.right != right ||
         view.bottom != bottom) {
       view.layout(left, top, right, bottom)
+      return true
     }
+
+    return false
   }
 }

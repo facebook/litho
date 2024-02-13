@@ -353,6 +353,7 @@ public class RenderCoreExtensionTest {
         ExtensionState extensionState,
         RenderUnit renderUnit,
         Object content,
-        @Nullable Object layoutData) {}
+        @Nullable Object layoutData,
+        boolean changed) {}
   }
 }

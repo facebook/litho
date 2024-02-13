@@ -150,8 +150,9 @@ class LithoViewAttributesExtension private constructor() :
       extensionState: ExtensionState<LithoViewAttributesState>,
       renderUnit: RenderUnit<*>,
       content: Any,
-      layoutData: Any?
-  ) = Unit
+      layoutData: Any?,
+      changed: Boolean
+  ) {}
 
   override fun shouldUpdateItem(
       extensionState: ExtensionState<LithoViewAttributesState>,

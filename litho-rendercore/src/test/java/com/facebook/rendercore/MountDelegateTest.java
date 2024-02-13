@@ -36,6 +36,7 @@ import com.facebook.rendercore.testing.ViewWrapperUnit;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -196,9 +197,10 @@ public class MountDelegateTest {
 
     @Override
     public void onBoundsAppliedToItem(
-        ExtensionState<Map<Long, Boolean>> extensionState,
-        RenderUnit<?> renderUnit,
-        Object content,
-        @Nullable Object layoutData) {}
+        @NotNull ExtensionState<Map<Long, Boolean>> extensionState,
+        @NotNull RenderUnit<?> renderUnit,
+        @NotNull Object content,
+        @org.jetbrains.annotations.Nullable Object layoutData,
+        boolean changed) {}
   }
 }

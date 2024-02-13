@@ -267,7 +267,8 @@ class MountStateWithDelegateTest {
         extensionState: ExtensionState<Any?>,
         renderUnit: RenderUnit<*>,
         content: Any,
-        layoutData: Any?
+        layoutData: Any?,
+        changed: Boolean
     ) = Unit
 
     override fun beforeMountItem(
