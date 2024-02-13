@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
  * Container for inter-stage props. A component with inter-stage props will generate its own
  * InterStagePropsContainer implementation which will hold fields for each inter-stage prop
  * specified.
  */
-public interface InterStagePropsContainer {}
+interface InterStagePropsContainer
