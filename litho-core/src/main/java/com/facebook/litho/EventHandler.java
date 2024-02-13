@@ -73,6 +73,7 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
               attribute.put(Key, UnboundEventHandler);
               attribute.put(Name, CommonUtils.getSectionNameForTracing(event.getClass()));
               attribute.put(Source, this.toString());
+              attribute.put("hasDispatchInfo", info != null);
               return Unit.INSTANCE;
             });
       }
