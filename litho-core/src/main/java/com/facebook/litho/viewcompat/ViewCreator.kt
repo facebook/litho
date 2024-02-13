@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.viewcompat;
+package com.facebook.litho.viewcompat
 
-import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.Context
+import android.view.View
+import android.view.ViewGroup
 
 /**
  * Creates a View of the specified type.
  *
- * @param <V> the type of View to create.
+ * @param V the type of View to create.
  */
-public interface ViewCreator<V extends View> {
-
+fun interface ViewCreator<V : View> {
   /**
    * @param c android Context.
-   * @param parent the parent {@link ViewGroup}, or {@code null} if there isn't one.
+   * @param parent the parent [ViewGroup], or `null` if there isn't one.
    * @return a new view of type V.
    */
-  V createView(Context c, ViewGroup parent);
+  fun createView(c: Context, parent: ViewGroup): V
 }
