@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.internal;
+package com.facebook.litho.internal
 
-public class MutableInt {
+import kotlin.jvm.JvmField
 
-  public int value;
-
-  public MutableInt(int value) {
-    this.value = value;
-  }
-}
+class MutableInt(@field:JvmField var value: Int)
