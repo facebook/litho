@@ -56,11 +56,7 @@ internal class KEventHandler<E : Any, R>(
     private val onEvent: (event: E) -> R,
     private val tag: String? = null,
 ) :
-    EventHandler<E>(
-        id,
-        EventHandlerRebindMode.NONE, // TODO: Check if this is correct
-        EventDispatchInfo(null, null),
-        params),
+    EventHandler<E>(id, EventHandlerRebindMode.NONE, EventDispatchInfo(null, null), params),
     HasEventDispatcher,
     EventDispatcher {
 
