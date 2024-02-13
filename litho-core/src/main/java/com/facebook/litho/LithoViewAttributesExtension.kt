@@ -152,7 +152,21 @@ class LithoViewAttributesExtension private constructor() :
       content: Any,
       layoutData: Any?,
       changed: Boolean
-  ) {}
+  ) {
+    if (content is View && changed) {
+      val state = extensionState.state
+      val id = renderUnit.id
+      val attrs = state.getCurrentViewAttributes(id)
+
+      if (attrs != null && !attrs.systemGestureExclusionZones.isNullOrEmpty()) {
+        val bounds = Rect(content.left, content.top, content.right, content.bottom)
+        val exclusions = attrs.systemGestureExclusionZones?.let { it.map { e -> e(bounds) } }
+        if (exclusions != null) {
+          ViewCompat.setSystemGestureExclusionRects(content, exclusions)
+        }
+      }
+    }
+  }
 
   override fun shouldUpdateItem(
       extensionState: ExtensionState<LithoViewAttributesState>,
@@ -329,6 +343,10 @@ class LithoViewAttributesExtension private constructor() :
 
       if (content is ComponentHost) {
         content.setSafeViewModificationsEnabled(false)
+      }
+
+      if (!attributes.systemGestureExclusionZones.isNullOrEmpty()) {
+        ViewCompat.setSystemGestureExclusionRects(content, emptyList())
       }
     }
 

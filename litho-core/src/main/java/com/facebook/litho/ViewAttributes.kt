@@ -234,6 +234,8 @@ class ViewAttributes {
   val paddingBottom: Int
     get() = padding?.bottom ?: 0
 
+  var systemGestureExclusionZones: List<(Rect) -> Rect>? = null
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is ViewAttributes) return false

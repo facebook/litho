@@ -623,6 +623,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     _layoutProps?.copyInto(layoutProps)
   }
 
+  fun addSystemGestureExclusionZone(exclusion: (Rect) -> Rect) {
+    otherProps.addSystemGestureExclusionZone(exclusion)
+  }
+
   fun copyInto(c: ComponentContext, node: LithoNode) {
     c.applyStyle(node, defStyleAttr, defStyleRes)
     if (_nodeInfo != null) {
@@ -687,6 +691,8 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var layerType = LayerType.LAYER_TYPE_NOT_SET
     private var layerPaint: Paint? = null
     private var visibilityOutputTag: String? = null
+
+    private var systemGestureExclusionZones: MutableList<(Rect) -> Rect>? = null
 
     fun delegateMountViewBinder(binder: DelegateBinder<Any, Any, Any>) {
       typeToDelegateViewBinder =
@@ -805,6 +811,12 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       this.visibilityOutputTag = visibilityOutputTag
     }
 
+    fun addSystemGestureExclusionZone(exclusion: (Rect) -> Rect) {
+      (systemGestureExclusionZones
+              ?: ArrayList<(Rect) -> Rect>().also { systemGestureExclusionZones = it })
+          .add(exclusion)
+    }
+
     fun copyInto(node: LithoNode) {
       if ((privateFlags and PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET).toLong() != 0L) {
         node.importantForAccessibility(importantForAccessibility)
@@ -872,6 +884,8 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       }
       node.layerType(layerType, layerPaint)
       node.visibilityOutputTag(visibilityOutputTag)
+
+      systemGestureExclusionZones?.let { node.addSystemGestureExclusionZones(it) }
     }
 
     override fun isEquivalentTo(other: OtherProps?): Boolean {
@@ -902,6 +916,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
               isEquivalentTo(border, other.border) &&
               equals(transitionOwnerKey, other.transitionOwnerKey) &&
               equals(transitionKey, other.transitionKey) &&
+              equals(systemGestureExclusionZones, other.systemGestureExclusionZones) &&
               DrawableUtils.isEquivalentTo(foreground, other.foreground))
     }
 

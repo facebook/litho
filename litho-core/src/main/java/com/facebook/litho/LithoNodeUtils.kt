@@ -463,6 +463,8 @@ object LithoNodeUtils {
       } else {
         attrs.stateListAnimator = lithoNode.stateListAnimator
       }
+
+      attrs.systemGestureExclusionZones = lithoNode.systemGestureExclusionZones
     }
     return attrs
   }

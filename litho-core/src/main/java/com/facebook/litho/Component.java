@@ -34,6 +34,7 @@ import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
@@ -81,6 +82,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Represents a unique instance of a component. To create new {@link Component} instances, use the
@@ -2162,6 +2164,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     public T keyboardNavigationCluster(boolean isKeyboardNavigationCluster) {
       mComponent.getOrCreateCommonProps().keyboardNavigationCluster(isKeyboardNavigationCluster);
+      return getThis();
+    }
+
+    public T addSystemGestureExclusionZone(Function1<Rect, Rect> exclusion) {
+      mComponent.getOrCreateCommonProps().addSystemGestureExclusionZone(exclusion);
       return getThis();
     }
 

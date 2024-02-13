@@ -227,6 +227,10 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var touchExpansion: Edges? = null
     private set
 
+  private var _systemGestureExclusionZones: MutableList<(Rect) -> Rect>? = null
+  val systemGestureExclusionZones: List<(Rect) -> Rect>?
+    get() = _systemGestureExclusionZones
+
   var isClone: Boolean = false
     private set
 
@@ -795,6 +799,12 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     yogaWrap = wrap
   }
 
+  fun addSystemGestureExclusionZones(zones: MutableList<(Rect) -> Rect>) {
+    (_systemGestureExclusionZones
+            ?: ArrayList<(Rect) -> Rect>().also { _systemGestureExclusionZones = it })
+        .addAll(zones)
+  }
+
   fun applyAttributes(c: Context, @AttrRes defStyleAttr: Int, @StyleRes defStyleRes: Int) {
     val a = c.obtainStyledAttributes(null, R.styleable.ComponentLayout, defStyleAttr, defStyleRes)
     for (i in 0 until a.indexCount) {
@@ -1037,10 +1047,14 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       if (hasSelectedStateWhenDisablingDrawableOutputs(node)) {
         return true
       }
-      if (Component.isLayoutSpec(node.tailComponent) && node.hasCustomBindersForMountSpec()) {
+
+      if (Component.isLayoutSpec(node.tailComponent) &&
+          (!node.systemGestureExclusionZones.isNullOrEmpty() ||
+              node.hasCustomBindersForMountSpec())) {
         return true
       }
-      return willMountDrawable(node) && node.hasCustomBindersForMountSpec()
+      return willMountDrawable(node) &&
+          (!node.systemGestureExclusionZones.isNullOrEmpty() || node.hasCustomBindersForMountSpec())
     }
 
     private fun hasViewAttributes(nodeInfo: NodeInfo?): Boolean {

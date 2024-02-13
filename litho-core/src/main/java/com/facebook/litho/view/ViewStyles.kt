@@ -18,6 +18,7 @@ package com.facebook.litho.view
 
 import android.animation.StateListAnimator
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.SparseArray
@@ -69,6 +70,7 @@ internal enum class ObjectField : StyleItemField {
   VIEW_TAGS,
   ENABLED,
   KEYBOARD_NAVIGATION_CLUSTER,
+  ADD_TOUCH_EXCLUSION_ZONE,
 }
 
 /** Enums for [FloatStyleItem]. */
@@ -149,6 +151,8 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
       ObjectField.ENABLED -> commonProps.enabled(value as Boolean)
       ObjectField.KEYBOARD_NAVIGATION_CLUSTER ->
           commonProps.keyboardNavigationCluster(value as Boolean)
+      ObjectField.ADD_TOUCH_EXCLUSION_ZONE ->
+          commonProps.addSystemGestureExclusionZone(value as (Rect) -> Rect)
     }
   }
 }
@@ -590,3 +594,13 @@ inline fun Style.shadow(
  */
 inline fun Style.keyboardNavigationCluster(isKeyboardNavigationCluster: Boolean): Style =
     this + ObjectStyleItem(ObjectField.KEYBOARD_NAVIGATION_CLUSTER, isKeyboardNavigationCluster)
+
+/**
+ * Excludes a rectangle within the local bounds from the system gesture. After layout, []exclusion]
+ * is called to determine the Rect to exclude from the system gesture area.
+ *
+ * The bounds of the content's location in the layout is passed as passed as exclusion's parameter.
+ */
+inline fun Style.addSystemGestureExclusionZone(noinline exclusion: (bounds: Rect) -> Rect): Style {
+  return this + ObjectStyleItem(ObjectField.ADD_TOUCH_EXCLUSION_ZONE, exclusion)
+}
