@@ -114,7 +114,7 @@ object NestedLithoTree {
 // region NestedStateUpdater
 class NestedStateUpdater(
     private val state: TreeState,
-    private val requestUpdate: (update: PendingStateUpdate) -> Unit,
+    private val updater: StateUpdateRequester,
 ) : StateUpdater {
 
   override var isFirstMount: Boolean
@@ -130,7 +130,7 @@ class NestedStateUpdater(
       isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
-    requestUpdate(
+    updater.request(
         PendingStateUpdate(
             key = globalKey,
             updater = updateBlock,
@@ -147,7 +147,7 @@ class NestedStateUpdater(
       isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
-    requestUpdate(
+    updater.request(
         PendingStateUpdate(
             key = globalKey,
             updater = updateBlock,
@@ -164,7 +164,7 @@ class NestedStateUpdater(
       isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
-    requestUpdate(
+    updater.request(
         PendingStateUpdate(
             key = globalKey,
             updater = stateUpdate,
@@ -181,7 +181,7 @@ class NestedStateUpdater(
       isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
-    requestUpdate(
+    updater.request(
         PendingStateUpdate(
             key = globalKey,
             updater = stateUpdate,
@@ -196,7 +196,7 @@ class NestedStateUpdater(
       stateUpdate: StateContainer.StateUpdate,
       isLayoutState: Boolean
   ) {
-    requestUpdate(
+    updater.request(
         PendingStateUpdate(
             key = globalKey,
             updater = stateUpdate,
