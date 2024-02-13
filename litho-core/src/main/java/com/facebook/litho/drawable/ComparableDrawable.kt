@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.drawable;
+package com.facebook.litho.drawable
 
-import android.graphics.drawable.Drawable;
-import com.facebook.rendercore.Equivalence;
+import android.graphics.drawable.Drawable
+import com.facebook.rendercore.Equivalence
 
 /**
- * Comparable Drawable allows drawables to be compared by explicitly implementing the {@link
- * #isEquivalentTo(ComparableDrawable)}. This allows drawables to be compared in a more meaningful
- * way, instead of using {@link Drawable#equals(Object)} which only checks if the references are
- * equal.
+ * Comparable Drawable allows drawables to be compared by explicitly implementing the
+ * [Equivalence.isEquivalentTo]. This allows drawables to be compared in a more meaningful way,
+ * instead of using [Drawable.equals] which only checks if the references are equal.
  *
  * @see ComparableColorDrawable
  */
-public interface ComparableDrawable extends Equivalence<ComparableDrawable> {
-
+interface ComparableDrawable : Equivalence<ComparableDrawable> {
   /**
    * @param other The other drawable
-   * @return {@code true} iff this drawable is equivalent to the {@param other}.
+   * @return `true` iff this drawable is equivalent to the [other].
    */
-  @Override
-  boolean isEquivalentTo(ComparableDrawable other);
+  override fun isEquivalentTo(other: ComparableDrawable): Boolean
 }
