@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.drawable;
+package com.facebook.litho.drawable
 
-import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
+import android.graphics.drawable.Drawable
 
-public class DrawableUtils {
+object DrawableUtils {
 
   /** null safe utility method to check equality of 2 comparable drawables */
-  public static boolean isEquivalentTo(@Nullable Drawable x, @Nullable Drawable y) {
+  @JvmStatic
+  fun isEquivalentTo(x: Drawable?, y: Drawable?): Boolean {
     if (x == null) {
-      return y == null;
+      return y == null
     } else if (y == null) {
-      return false;
+      return false
     }
-
-    if (x instanceof ComparableDrawable && y instanceof ComparableDrawable) {
-      return ((ComparableDrawable) x).isEquivalentTo((ComparableDrawable) y);
-    }
-
-    return x.equals(y);
+    return if (x is ComparableDrawable && y is ComparableDrawable) {
+      x.isEquivalentTo(y)
+    } else x == y
   }
 }
