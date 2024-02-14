@@ -154,10 +154,10 @@ class LithoViewAttributesExtension private constructor() :
       layoutData: Any?,
       changed: Boolean
   ) {
-    if (content is View && changed) {
+    if (content is View) {
       val state = extensionState.state
       val id = renderUnit.id
-      val attrs = state.getCurrentViewAttributes(id)
+      val attrs = state.getNewViewAttributes(id)
 
       if (attrs != null && !attrs.systemGestureExclusionZones.isNullOrEmpty()) {
         val bounds = Rect(content.left, content.top, content.right, content.bottom)
