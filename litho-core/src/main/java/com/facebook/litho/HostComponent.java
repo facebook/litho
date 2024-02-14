@@ -62,7 +62,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   protected Object onCreateMountContent(Context c) {
-    return new ComponentHost(c, mLogUnsafeViewModifications);
+    return new ComponentHost(c, mRecyclingEnabled || mLogUnsafeViewModifications);
   }
 
   @Override
