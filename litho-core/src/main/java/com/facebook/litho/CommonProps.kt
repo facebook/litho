@@ -544,6 +544,10 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     getOrCreateNodeInfo().setKeyboardNavigationCluster(isKeyboardNavigationCluster)
   }
 
+  fun tooltipText(tooltipText: String?) {
+    getOrCreateNodeInfo().setTooltipText(tooltipText)
+  }
+
   val isKeyboardNavigationCluster: Boolean
     get() =
         (_nodeInfo?.keyboardNavigationClusterState == NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE)

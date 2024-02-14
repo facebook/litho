@@ -237,6 +237,12 @@ class NodeInfoTest {
   }
 
   @Test
+  fun testTooltipTextFlag() {
+    nodeInfo.setTooltipText("test")
+    testFlagIsSetThenClear(nodeInfo, "PFLAG_TOOLTIP_TEXT_IS_SET")
+  }
+
+  @Test
   fun testAccessibilityRoleFlag() {
     nodeInfo.accessibilityRole = AccessibilityRole.BUTTON
     testFlagIsSetThenClear(nodeInfo, "PFLAG_ACCESSIBILITY_ROLE_IS_SET")

@@ -71,6 +71,7 @@ internal enum class ObjectField : StyleItemField {
   ENABLED,
   KEYBOARD_NAVIGATION_CLUSTER,
   ADD_TOUCH_EXCLUSION_ZONE,
+  TOOLTIP_TEXT,
 }
 
 /** Enums for [FloatStyleItem]. */
@@ -153,6 +154,7 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
           commonProps.keyboardNavigationCluster(value as Boolean)
       ObjectField.ADD_TOUCH_EXCLUSION_ZONE ->
           commonProps.addSystemGestureExclusionZone(value as (Rect) -> Rect)
+      ObjectField.TOOLTIP_TEXT -> commonProps.tooltipText(value as String?)
     }
   }
 }
@@ -604,3 +606,10 @@ inline fun Style.keyboardNavigationCluster(isKeyboardNavigationCluster: Boolean)
 inline fun Style.addSystemGestureExclusionZone(noinline exclusion: (bounds: Rect) -> Rect): Style {
   return this + ObjectStyleItem(ObjectField.ADD_TOUCH_EXCLUSION_ZONE, exclusion)
 }
+/**
+ * Sets the tooltip text which will be displayed in a small popup next to the view.
+ *
+ * See [android.view.View.setTooltipText]
+ */
+inline fun Style.tooltipText(tooltipText: String?): Style =
+    this + ObjectStyleItem(ObjectField.TOOLTIP_TEXT, tooltipText)

@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput
@@ -233,6 +234,7 @@ class LithoViewAttributesExtension private constructor() :
       setEnabled(content, attributes)
       setSelected(content, attributes)
       setKeyboardNavigationCluster(content, attributes)
+      setTooltipText(content, attributes.tooltipText)
       setScale(content, attributes)
       setAlpha(content, attributes)
       setRotation(content, attributes)
@@ -310,6 +312,9 @@ class LithoViewAttributesExtension private constructor() :
       unsetClipChildren(content, attributes.clipChildren)
       if (!attributes.contentDescription.isNullOrEmpty()) {
         unsetContentDescription(content)
+      }
+      if (!attributes.tooltipText.isNullOrEmpty()) {
+        unsetTooltipText(content)
       }
       unsetScale(content, attributes)
       unsetAlpha(content, attributes)
@@ -731,6 +736,26 @@ class LithoViewAttributesExtension private constructor() :
     private fun unsetKeyboardNavigationCluster(view: View, flags: Int) {
       ViewCompat.setKeyboardNavigationCluster(
           view, LithoMountData.isViewKeyboardNavigationCluster(flags))
+    }
+
+    private fun setTooltipText(view: View, tooltipText: String?) {
+      /**
+       * Avoid calling tooltip for M devices since there's a bug that could cause long pressing
+       * twice to freeze devices. Not considering L devices since litho is minSdk L
+       */
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+        TooltipCompat.setTooltipText(view, tooltipText)
+      }
+    }
+
+    private fun unsetTooltipText(view: View) {
+      /**
+       * Avoid calling tooltip for M devices since there's a bug that could cause long pressing
+       * twice to freeze devices. Not considering L devices since litho is minSdk L
+       */
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+        TooltipCompat.setTooltipText(view, null)
+      }
     }
 
     private fun setScale(view: View, attributes: ViewAttributes) {

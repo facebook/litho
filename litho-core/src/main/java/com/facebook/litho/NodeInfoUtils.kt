@@ -49,6 +49,9 @@ object NodeInfoUtils {
     if (!equals(x.contentDescription, y.contentDescription)) {
       return false
     }
+    if (!equals(x.tooltipText, y.tooltipText)) {
+      return false
+    }
     if (!isEquivalentTo(
         x.dispatchPopulateAccessibilityEventHandler, y.dispatchPopulateAccessibilityEventHandler)) {
       return false

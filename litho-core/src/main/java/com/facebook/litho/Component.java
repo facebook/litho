@@ -2172,6 +2172,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
+    public T tooltipText(@Nullable String tooltipText) {
+      mComponent.getOrCreateCommonProps().tooltipText(tooltipText);
+      return getThis();
+    }
+
     @Deprecated
     public T visibilityOutputTag(@Nullable String visibilityOutputTag) {
       mComponent.getOrCreateCommonProps().visibilityOutputTag(visibilityOutputTag);

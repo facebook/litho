@@ -151,6 +151,8 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   private static final long PFLAG_ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED_HANDLER_IS_SET = 1L << 31;
   // When this flag is set, onPerformActionForVirtualViewHandler was explicitly set on this node
   private static final long PFLAG_ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW_HANDLER_IS_SET = 1L << 32;
+  // When this flag is set, tooltipText was explicitly set on this node.
+  private static final long PFLAG_TOOLTIP_TEXT_IS_SET = 1L << 33;
 
   private @Nullable CharSequence mContentDescription;
   private int mViewId = View.NO_ID;
@@ -204,6 +206,7 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   private @AccessibilityHeadingState int mAccessibilityHeadingState = ACCESSIBILITY_HEADING_UNSET;
   private @KeyboardNavigationClusterState int mKeyboardNavigationClusterState =
       KEYBOARD_NAVIGATION_CLUSTER_UNSET;
+  private @Nullable String mTooltipText;
 
   private long mPrivateFlags;
 
@@ -214,6 +217,15 @@ public class NodeInfo implements Equivalence<NodeInfo> {
 
   public @Nullable CharSequence getContentDescription() {
     return mContentDescription;
+  }
+
+  public void setTooltipText(@Nullable String tooltipText) {
+    mPrivateFlags |= PFLAG_TOOLTIP_TEXT_IS_SET;
+    mTooltipText = tooltipText;
+  }
+
+  public @Nullable String getTooltipText() {
+    return mTooltipText;
   }
 
   public void setViewId(@IdRes int id) {
@@ -756,6 +768,9 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     if ((mPrivateFlags & PFLAG_CONTENT_DESCRIPTION_IS_SET) != 0) {
       target.setContentDescription(mContentDescription);
     }
+    if ((mPrivateFlags & PFLAG_TOOLTIP_TEXT_IS_SET) != 0) {
+      target.setTooltipText(mTooltipText);
+    }
     if ((mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
       target.setShadowElevation(mShadowElevation);
     }
@@ -843,6 +858,9 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     }
     if ((mPrivateFlags & PFLAG_CONTENT_DESCRIPTION_IS_SET) != 0) {
       target.setContentDescription(mContentDescription);
+    }
+    if ((mPrivateFlags & PFLAG_TOOLTIP_TEXT_IS_SET) != 0) {
+      target.setTooltipText(mTooltipText);
     }
     if ((mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
       target.setShadowElevation(mShadowElevation);

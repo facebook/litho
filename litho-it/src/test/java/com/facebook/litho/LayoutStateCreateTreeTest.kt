@@ -407,6 +407,7 @@ class LayoutStateCreateTreeTest {
             .invisibleHandler(invisibleHandler)
             .visibilityChangedHandler(visibleRectChangedHandler)
             .contentDescription("test")
+            .tooltipText("test")
             .viewTag(viewTag)
             .viewTags(viewTags)
             .shadowElevationPx(60f)

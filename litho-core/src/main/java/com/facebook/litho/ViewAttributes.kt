@@ -41,6 +41,7 @@ class ViewAttributes {
   var disableDrawableOutputs: Boolean = false
 
   var contentDescription: CharSequence? = null
+  var tooltipText: String? = null
   var viewId: Int = View.NO_ID
     set(value) {
       field = value
@@ -251,6 +252,7 @@ class ViewAttributes {
     if (clipToOutline != other.clipToOutline) return false
     if (clipChildren != other.clipChildren) return false
     if (!equals(contentDescription, other.contentDescription)) return false
+    if (!equals(tooltipText, other.tooltipText)) return false
     if (isEnabled != other.isEnabled) return false
     if (!isEquivalentTo(focusChangeHandler, other.focusChangeHandler)) return false
     if (isFocusable != other.isFocusable) return false
@@ -327,6 +329,7 @@ class ViewAttributes {
     result = 31 * result + shadowElevation.hashCode()
     result = 31 * result + ambientShadowColor
     result = 31 * result + spotShadowColor
+    result = 31 * result + (tooltipText?.hashCode() ?: 0)
     return result
   }
 
@@ -337,6 +340,7 @@ class ViewAttributes {
     target.disableDrawableOutputs = disableDrawableOutputs
 
     contentDescription?.let { target.contentDescription = it }
+    tooltipText?.let { target.tooltipText = it }
     target.viewId = viewId
     viewTag?.let { target.viewTag = it }
     transitionName?.let { target.transitionName = it }

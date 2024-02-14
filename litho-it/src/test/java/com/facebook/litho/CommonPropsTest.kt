@@ -114,6 +114,7 @@ class CommonPropsTest {
     commonProps.selected(false)
     commonProps.enabled(false)
     commonProps.keyboardNavigationCluster(true)
+    commonProps.tooltipText("test")
     commonProps.visibleHeightRatio(55f)
     commonProps.visibleWidthRatio(56f)
     commonProps.accessibilityHeading(false)
@@ -341,9 +342,9 @@ class CommonPropsTest {
   fun testDifferentObjectWithSameContentEquivalentTo() {
     commonProps = CommonProps()
     setCommonProps(commonProps)
-    val mCommonProps2 = CommonProps()
-    setCommonProps(mCommonProps2)
-    assertThat(commonProps.isEquivalentTo(mCommonProps2)).isEqualTo(true)
+    val commonProps2 = CommonProps()
+    setCommonProps(commonProps2)
+    assertThat(commonProps.isEquivalentTo(commonProps2)).isEqualTo(true)
   }
 
   @Test
@@ -351,10 +352,10 @@ class CommonPropsTest {
     commonProps = CommonProps()
     setCommonProps(commonProps)
     commonProps.duplicateParentState(false)
-    val mCommonProps2 = CommonProps()
-    setCommonProps(mCommonProps2)
-    mCommonProps2.duplicateParentState(true)
-    assertThat(commonProps.isEquivalentTo(mCommonProps2)).isEqualTo(false)
+    val commonProps2 = CommonProps()
+    setCommonProps(commonProps2)
+    commonProps2.duplicateParentState(true)
+    assertThat(commonProps.isEquivalentTo(commonProps2)).isEqualTo(false)
   }
 
   private fun setCommonProps(commonProps: CommonProps) {
@@ -435,6 +436,7 @@ class CommonPropsTest {
     commonProps.visibleHeightRatio(55f)
     commonProps.visibleWidthRatio(56f)
     commonProps.accessibilityHeading(false)
+    commonProps.tooltipText("test")
     val visibleHandler = EventHandlerTestUtil.create<VisibleEvent>(3, content)
     val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, content)
     val unfocusedHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(3, content)

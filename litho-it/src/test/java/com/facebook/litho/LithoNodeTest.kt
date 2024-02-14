@@ -119,6 +119,7 @@ class LithoNodeTest {
     toBeAppliedInfo.setKeyboardNavigationCluster(false)
     toBeAppliedInfo.setAccessibilityHeading(false)
     toBeAppliedInfo.contentDescription = "test"
+    toBeAppliedInfo.tooltipText = "test"
     toBeAppliedInfo.viewTag = viewTag
     toBeAppliedInfo.viewTags = viewTags
     toBeAppliedInfo.shadowElevation = 60f
@@ -152,6 +153,7 @@ class LithoNodeTest {
     verify(nodeInfo).setKeyboardNavigationCluster(false)
     verify(nodeInfo).setAccessibilityHeading(false)
     verify(nodeInfo).contentDescription = "test"
+    verify(nodeInfo).setTooltipText("test")
     verify(nodeInfo).viewTag = viewTag
     verify(nodeInfo).viewTags = viewTags
     verify(nodeInfo).shadowElevation = 60f
