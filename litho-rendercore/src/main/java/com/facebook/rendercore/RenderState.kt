@@ -108,22 +108,14 @@ constructor(
 
   @ThreadConfined(ThreadConfined.ANY)
   fun setTree(resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?) {
-    updateRenderStateInternal(resolveFunc, doAsync = false)
+    requestResolve(resolveFunc, doAsync = false)
   }
 
   @ThreadConfined(ThreadConfined.ANY)
   fun setTreeAsync(
       resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?,
   ) {
-    updateRenderStateInternal(resolveFunc, doAsync = true)
-  }
-
-  private fun updateRenderStateInternal(
-      resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?,
-      doAsync: Boolean
-  ) {
-    uiHandler.removeCallbacksAndMessages(resolveToken)
-    uiHandler.postAtTime({ requestResolve(resolveFunc, doAsync) }, resolveToken, 0)
+    requestResolve(resolveFunc, doAsync = true)
   }
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -134,13 +126,13 @@ constructor(
         return
       }
     }
-    if (!uiHandler.hasMessages(UPDATE_STATE_MESSAGE)) {
-      uiHandler.sendEmptyMessage(UPDATE_STATE_MESSAGE)
-    }
+
+    flushStateUpdates(doAsync = false)
   }
 
-  private fun flushStateUpdates() {
-    requestResolve(null, doAsync = false)
+  private fun flushStateUpdates(doAsync: Boolean) {
+    uiHandler.removeCallbacksAndMessages(resolveToken)
+    uiHandler.postAtTime({ requestResolve(null, doAsync) }, resolveToken, 0)
   }
 
   private fun requestResolve(
@@ -356,7 +348,6 @@ constructor(
     override fun handleMessage(msg: Message) {
       when (msg.what) {
         PROMOTION_MESSAGE -> maybePromoteCommittedTreeToUI()
-        UPDATE_STATE_MESSAGE -> flushStateUpdates()
         else -> throw RuntimeException("Unknown message: " + msg.what)
       }
     }
@@ -366,7 +357,6 @@ constructor(
     @JvmField var NO_ID: Int = -1
     private const val UNSET: Int = -1
     private const val PROMOTION_MESSAGE: Int = 99
-    private const val UPDATE_STATE_MESSAGE: Int = 100
     private val ID_GENERATOR: AtomicInteger = AtomicInteger(0)
 
     @JvmStatic
