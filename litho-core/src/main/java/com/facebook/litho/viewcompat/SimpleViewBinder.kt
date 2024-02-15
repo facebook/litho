@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.viewcompat;
+package com.facebook.litho.viewcompat
 
-import android.view.View;
-import com.facebook.infer.annotation.Nullsafe;
+import android.view.View
 
 /**
- * Empty implementation of {@link com.facebook.litho.viewcompat.ViewBinder}. This can be useful if
- * we need to override only one method.
+ * Empty implementation of [com.facebook.litho.viewcompat.ViewBinder]. This can be useful if we need
+ * to override only one method.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class SimpleViewBinder<V extends View> implements ViewBinder<V> {
+open class SimpleViewBinder<V : View> : ViewBinder<V> {
 
-  @Override
-  public void prepare() {}
+  override fun prepare() = Unit
 
-  @Override
-  public void bind(V view) {}
+  override fun bind(view: V) = Unit
 
-  @Override
-  public void unbind(V view) {}
+  override fun unbind(view: V) = Unit
 }
