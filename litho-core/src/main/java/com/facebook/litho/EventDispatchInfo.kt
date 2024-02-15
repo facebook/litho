@@ -27,8 +27,8 @@ class EventDispatchInfo(
      * These should only be null for manually created EventHandlers (i.e. not create by the
      * *::newEventHandler() API)
      */
-    @JvmField var hasEventDispatcher: HasEventDispatcher?,
-    @JvmField var componentContext: ComponentContext?,
+    @JvmField var hasEventDispatcher: HasEventDispatcher? = null,
+    @JvmField var componentContext: ComponentContext? = null,
 ) {
   @JvmField var isBound: Boolean = false
   @JvmField var tag: String? = null

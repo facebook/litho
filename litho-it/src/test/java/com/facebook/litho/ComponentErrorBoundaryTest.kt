@@ -56,8 +56,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.robolectric.annotation.LooperMode
 
 /**
@@ -194,7 +194,7 @@ class ComponentErrorBoundaryTest {
     componentTree.root = component
     lithoViewRule.useComponentTree(componentTree)
     lithoViewRule.attachToWindow().measure().layout()
-    Mockito.verify(errorEventHandler).onError(ArgumentMatchers.any(), ArgumentMatchers.any())
+    Mockito.verify(errorEventHandler).onError(any(), any())
   }
 
   @Test
