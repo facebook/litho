@@ -21,7 +21,9 @@ import android.view.ViewGroup
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ComponentContextUtils.buildDefaultLithoConfiguration
+import com.facebook.litho.NestedLithoTree.commit
 import com.facebook.litho.NestedLithoTree.enqueue
+import com.facebook.litho.NestedLithoTree.runEffects
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.ContentAllocator
@@ -208,13 +210,9 @@ fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderT
     state: NestedLithoTreeState,
     getRenderTreeView: ContentType.() -> LithoRenderTreeView,
 ) {
-  withDescription("litho-tree") {
-    bindWithLayoutData<LayoutState>(state) { content, layoutState ->
-      state.commit(newLayoutState = layoutState)
-      content.getRenderTreeView().setLayoutState(layoutState, layoutState.treeState)
-      onUnbind {}
-    }
-  }
+
+  // mounts a Render Tree View in the Litho Scroll View
+  doesMountRenderTreeHosts = true
 
   withDescription("root-host-reference") {
     bind(state.mountedViewReference) { content ->
@@ -223,10 +221,19 @@ fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderT
     }
   }
 
+  withDescription("litho-tree") {
+    bindWithLayoutData<LayoutState>(state) { content, layoutState ->
+      state.commit(layoutState = layoutState)
+      layoutState.runEffects()
+      content.getRenderTreeView().setLayoutState(layoutState, layoutState.treeState)
+      onUnbind {}
+    }
+  }
+
   withDescription("final-unmount") {
     bind(Unit) { content ->
       onUnbind {
-        state.treeLifecycleProvider.release()
+        state.cleanup()
         content.getRenderTreeView().resetLayoutState()
       }
     }
@@ -311,7 +318,7 @@ fun PrimitiveComponentScope.useNestedTree(
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 data class NestedLithoTreeState(
     val id: Int = LithoTree.generateComponentTreeId(),
-    @Volatile var currentState: TreeState,
+    @Volatile var currentState: TreeState?,
     @Volatile var currentResolveResult: ResolveResult? = null,
     @Volatile var currentLayoutState: LayoutState? = null,
     val pendingStateUpdates: MutableList<PendingStateUpdate> = ArrayList(),
@@ -328,14 +335,31 @@ data class NestedLithoTreeState(
     return synchronized(this) { TreeState(currentState).enqueue(ArrayList(pendingStateUpdates)) }
   }
 
-  fun commit(newLayoutState: LayoutState) {
+  fun commit(layoutState: LayoutState) {
     synchronized(this) {
-      val appliedUpdates = newLayoutState.treeState.keysForAppliedStateUpdates
-      pendingStateUpdates.removeAll { e -> appliedUpdates.contains(e.key) }
-      newLayoutState.treeState.commit()
-      currentState = newLayoutState.treeState
-      currentResolveResult = newLayoutState.resolveResult
-      currentLayoutState = newLayoutState
+
+      // remove applied state updates
+      if (pendingStateUpdates.isNotEmpty()) {
+        val appliedUpdates = layoutState.treeState.keysForAppliedStateUpdates
+        pendingStateUpdates.removeAll { e -> appliedUpdates.contains(e.key) }
+      }
+
+      currentState = layoutState.treeState
+      currentResolveResult = layoutState.resolveResult
+      currentLayoutState = layoutState
+
+      // commit the layout state
+      layoutState.commit()
+    }
+  }
+
+  fun cleanup() {
+    synchronized(this) {
+      currentState?.effectsHandler?.onDetached()
+      treeLifecycleProvider.release()
+      currentState = null
+      currentResolveResult = null
+      currentLayoutState = null
     }
   }
 }

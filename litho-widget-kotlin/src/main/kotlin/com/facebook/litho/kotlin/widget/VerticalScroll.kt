@@ -151,9 +151,7 @@ internal class VerticalScrollComponent(
                   LithoScrollView(context, LithoRenderTreeView(context))
                 }) {
 
-                  // mounts a Render Tree View in the Litho Scroll View
-                  doesMountRenderTreeHosts = true
-
+                  // bind to LithoRenderTreeView
                   bindToRenderTreeView(state = state) { renderTreeView as LithoRenderTreeView }
 
                   withDescription("onScrollStateChange") {
