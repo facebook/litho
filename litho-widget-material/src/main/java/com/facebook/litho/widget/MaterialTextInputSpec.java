@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
+import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -477,13 +478,17 @@ class MaterialTextInputSpec {
   static void onBind(
       final ComponentContext c,
       MountableTextInputLayout textInputLayout,
-      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
+      @Prop(optional = true) @Nullable ActionMode.Callback selectionActionModeCallback,
+      @Prop(optional = true) @Nullable ActionMode.Callback insertionActionModeCallback) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onBindEditText(
         c,
         editText,
         textWatchers,
+        selectionActionModeCallback,
+        insertionActionModeCallback,
         MaterialTextInput.getTextChangedEventHandler(c),
         MaterialTextInput.getSelectionChangedEventHandler(c),
         MaterialTextInput.getInputFocusChangedEventHandler(c),

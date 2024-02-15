@@ -43,6 +43,7 @@ import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -547,7 +548,7 @@ class TextInputSpec {
     editText.setError(error, errorDrawable);
 
     if (cursorDrawableRes != -1) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (SDK_INT >= Build.VERSION_CODES.Q) {
         editText.setTextCursorDrawable(cursorDrawableRes);
       } else {
         try {
@@ -824,6 +825,8 @@ class TextInputSpec {
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
       @Prop(optional = true) boolean disableAutofill,
+      @Prop(optional = true) @Nullable ActionMode.Callback selectionActionModeCallback,
+      @Prop(optional = true) @Nullable ActionMode.Callback insertionActionModeCallback,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -873,11 +876,15 @@ class TextInputSpec {
   static void onBind(
       final ComponentContext c,
       EditTextWithEventHandlers editText,
-      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
+      @Prop(optional = true) @Nullable ActionMode.Callback selectionActionModeCallback,
+      @Prop(optional = true) @Nullable ActionMode.Callback insertionActionModeCallback) {
     onBindEditText(
         c,
         editText,
         textWatchers,
+        selectionActionModeCallback,
+        insertionActionModeCallback,
         TextInput.getTextChangedEventHandler(c),
         TextInput.getSelectionChangedEventHandler(c),
         TextInput.getInputFocusChangedEventHandler(c),
@@ -891,6 +898,8 @@ class TextInputSpec {
       final ComponentContext c,
       EditTextWithEventHandlers editText,
       @Nullable List<TextWatcher> textWatchers,
+      @Nullable ActionMode.Callback selectionActionModeCallback,
+      @Nullable ActionMode.Callback insertionActionModeCallback,
       EventHandler textChangedEventHandler,
       EventHandler selectionChangedEventHandler,
       EventHandler inputFocusChangedEventHandler,
@@ -899,6 +908,10 @@ class TextInputSpec {
       EventHandler EditorActionEventHandler,
       EventHandler inputConnectionEventHandler) {
     editText.attachWatchers(textWatchers);
+    editText.setCustomSelectionActionModeCallback(selectionActionModeCallback);
+    if (SDK_INT >= M) {
+      editText.setCustomInsertionActionModeCallback(insertionActionModeCallback);
+    }
 
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(textChangedEventHandler);
@@ -937,6 +950,10 @@ class TextInputSpec {
     editText.setKeyPreImeEventEventHandler(null);
     editText.setEditorActionEventHandler(null);
     editText.setInputConnectionEventHandler(null);
+    editText.setCustomSelectionActionModeCallback(null);
+    if (SDK_INT >= M) {
+      editText.setCustomInsertionActionModeCallback(null);
+    }
   }
 
   @Nullable
