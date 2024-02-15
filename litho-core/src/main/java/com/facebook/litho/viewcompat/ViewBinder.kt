@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.viewcompat;
+package com.facebook.litho.viewcompat
 
-import android.view.View;
+import android.view.View
 
 /**
  * Binds data to a view.
  *
- * @param <V> the type of View.
+ * @param V the type of View.
  */
-public interface ViewBinder<V extends View> {
+interface ViewBinder<V : View> {
 
   /**
    * Prepares the binder to be bound to a view.
    *
-   * <p>Use this method to perform calculations ahead of time and save them.
+   * Use this method to perform calculations ahead of time and save them.
    */
-  void prepare();
+  fun prepare()
 
   /**
    * Binds data to the given view so it can be rendered on screen. This will always be called after
@@ -38,12 +38,12 @@ public interface ViewBinder<V extends View> {
    *
    * @param view the view to bind.
    */
-  void bind(V view);
+  fun bind(view: V)
 
   /**
    * Cleans up a view that goes off screen after it has already been bound.
    *
    * @param view the view to unbind.
    */
-  void unbind(V view);
+  fun unbind(view: V)
 }
