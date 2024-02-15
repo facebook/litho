@@ -247,21 +247,49 @@ public class TextMeasurementUtils {
 
   public static Pair<Rect, TextLayout> layout(
       Context context, int widthSpec, int heightSpec, CharSequence text, TextStyle textStyle) {
+    CharSequence processedText = text;
     final TextLayout textLayout = new TextLayout();
     textLayout.textStyle = textStyle;
 
-    if (TextUtils.isEmpty(text) && !textStyle.shouldLayoutEmptyText) {
-      textLayout.processedText = text;
+    if (TextUtils.isEmpty(processedText) && !textStyle.shouldLayoutEmptyText) {
+      textLayout.processedText = processedText;
       return new Pair<>(new Rect(0, 0, 0, 0), textLayout);
     }
     Layout layout =
-        TextMeasurementUtils.createTextLayout(context, textStyle, widthSpec, heightSpec, text);
+        TextMeasurementUtils.createTextLayout(
+            context, textStyle, widthSpec, heightSpec, processedText);
 
     final int layoutWidth =
         View.resolveSize(
             layout.getWidth()
                 + Math.round(textStyle.extraSpacingLeft + textStyle.extraSpacingRight),
             widthSpec);
+
+    // Handle custom text truncation:
+    if (textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("")) {
+      final int ellipsizedLineNumber = getEllipsizedLineNumber(layout);
+      if (ellipsizedLineNumber != -1) {
+        final CharSequence truncated =
+            truncateText(
+                processedText,
+                textStyle.customEllipsisText,
+                layout,
+                ellipsizedLineNumber,
+                layoutWidth - textStyle.extraSpacingLeft - textStyle.extraSpacingRight);
+
+        Layout newLayout =
+            TextMeasurementUtils.createTextLayout(
+                context,
+                textStyle,
+                View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
+                heightSpec,
+                truncated);
+
+        processedText = truncated;
+        layout = newLayout;
+        textLayout.isExplicitlyTruncated = true;
+      }
+    }
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(layout);
@@ -289,7 +317,7 @@ public class TextMeasurementUtils {
     final int capHeightOffset;
 
     if (hasManualSpacing(textStyle)) {
-      final int[] capHeights = getCapHeightBaselineSpacing(layout.getPaint(), text);
+      final int[] capHeights = getCapHeightBaselineSpacing(layout.getPaint(), processedText);
 
       final int baselineOffset = capHeights[BASELINE_OFFSET_INDEX];
       capHeightOffset = capHeights[CAP_HEIGHT_OFFSET_INDEX] - textStyle.manualCapSpacing;
@@ -315,33 +343,6 @@ public class TextMeasurementUtils {
       default:
         textLayoutTranslationY = extraSpacingHeight - capHeightOffset;
         break;
-    }
-
-    // Handle custom text truncation:
-    CharSequence processedText = text;
-    if (textStyle.customEllipsisText != null && !textStyle.customEllipsisText.equals("")) {
-      final int ellipsizedLineNumber = getEllipsizedLineNumber(layout);
-      if (ellipsizedLineNumber != -1) {
-        final CharSequence truncated =
-            truncateText(
-                text,
-                textStyle.customEllipsisText,
-                layout,
-                ellipsizedLineNumber,
-                layoutWidth - textStyle.extraSpacingLeft - textStyle.extraSpacingRight);
-
-        Layout newLayout =
-            TextMeasurementUtils.createTextLayout(
-                context,
-                textStyle,
-                View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
-                heightSpec,
-                truncated);
-
-        processedText = truncated;
-        layout = newLayout;
-        textLayout.isExplicitlyTruncated = true;
-      }
     }
 
     textLayout.processedText = processedText;
