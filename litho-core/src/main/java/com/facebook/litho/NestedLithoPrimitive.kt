@@ -19,7 +19,10 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
+import com.facebook.litho.NestedLithoTree.cleanup
+import com.facebook.litho.NestedLithoTree.commit
 import com.facebook.litho.NestedLithoTree.enqueue
+import com.facebook.litho.NestedLithoTree.runEffects
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -117,7 +120,9 @@ fun NestedLithoPrimitive(
 
             // commit the state for the LayoutState that is going to be mounted
             val newState = layoutState.resolveResult.treeState
-            newState.commit()
+
+            layoutState.commit()
+            layoutState.runEffects()
 
             content.setLayoutState(layoutState, newState)
 
@@ -135,6 +140,7 @@ fun NestedLithoPrimitive(
         withDescription("final-unmount") {
           bind(Unit) { content ->
             onUnbind {
+              content.currentLayoutState?.cleanup()
               lifecycleProvider.release()
               content.resetLayoutState()
             }

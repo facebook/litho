@@ -82,6 +82,32 @@ object NestedLithoTree {
     }
   }
 
+  fun LayoutState.commit() {
+    val components = consumeScopedSpecComponentInfos()
+    val eventHandlers = consumeCreatedEventHandlers()
+    val stateUpdater = checkNotNull(componentContext.stateUpdater)
+    val mountedView = checkNotNull(componentContext.lithoTree).mountedViewReference
+
+    // clear state updates
+    treeState.commit()
+
+    // bind event handlers
+    treeState.bindEventAndTriggerHandlers(eventHandlers, components)
+
+    // bind handles
+    for (handle in componentHandles) {
+      handle.setStateUpdaterAndRootViewReference(stateUpdater, mountedView)
+    }
+  }
+
+  fun LayoutState.runEffects() {
+    treeState.effectsHandler.onAttached(attachables)
+  }
+
+  fun LayoutState.cleanup() {
+    treeState.effectsHandler.onDetached()
+  }
+
   fun TreeState.enqueue(updates: List<PendingStateUpdate>): TreeState {
     for (update in updates) {
       this.enqueue(update)
