@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.perfboost;
+package com.facebook.litho.perfboost
 
-/** Factory for creating a {@link LithoPerfBooster}. */
-public abstract class LithoPerfBoosterFactory {
-  LithoPerfBooster mBooster;
+/** Factory for creating a [LithoPerfBooster]. */
+abstract class LithoPerfBoosterFactory {
 
-  public LithoPerfBooster acquireInstance() {
-    if (mBooster != null) {
-      return mBooster;
+  private var booster: LithoPerfBooster? = null
+
+  fun acquireInstance(): LithoPerfBooster {
+    val booster = this.booster
+    if (booster != null) {
+      return booster
     }
-
-    mBooster = create();
-    return mBooster;
+    return create().also { this.booster = it }
   }
 
-  protected abstract LithoPerfBooster create();
+  protected abstract fun create(): LithoPerfBooster
 }
