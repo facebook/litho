@@ -25,7 +25,7 @@ import java.util.Arrays
 
 /** A comparable gradient drawable. */
 open class ComparableGradientDrawable(
-    orientation: Orientation? = null,
+    orientation: Orientation = Orientation.TOP_BOTTOM, // default orientation of GradientDrawable
     @JvmField protected var colors: IntArray? = null
 ) : GradientDrawable(orientation, colors), ComparableDrawable {
 
