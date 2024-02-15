@@ -69,6 +69,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -144,7 +145,6 @@ public class ComponentTree
   private @Nullable List<OnReleaseListener> mOnReleaseListeners;
 
   private String mReleasedComponent;
-  private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
 
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
@@ -980,11 +980,7 @@ public class ComponentTree
   private void dispatchOnAttached() {
     final @Nullable List<Attachable> attachables =
         mMainThreadLayoutState != null ? mMainThreadLayoutState.getAttachables() : null;
-    if (mAttachDetachHandler != null) {
-      mAttachDetachHandler.onAttached(attachables);
-    } else if (attachables != null) {
-      getOrCreateAttachDetachHandler().onAttached(attachables);
-    }
+    Preconditions.checkNotNull(mTreeState).getEffectsHandler().onAttached(attachables);
   }
 
   void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
@@ -2644,6 +2640,8 @@ public class ComponentTree
       throw new IllegalStateException("Releasing a ComponentTree that is currently being mounted");
     }
 
+    final @Nullable AttachDetachHandler effectsHandler;
+
     synchronized (this) {
       if (mDebugEventsSubscriber != null) {
         DebugEventBus.unsubscribe(mDebugEventsSubscriber);
@@ -2709,6 +2707,12 @@ public class ComponentTree
       // dispatch OnExitRange events.
       clearWorkingRangeStatusHandler();
 
+      if (mTreeState != null) {
+        effectsHandler = mTreeState.getEffectsHandler();
+      } else {
+        effectsHandler = null;
+      }
+
       mMainThreadLayoutState = null;
       mCommittedLayoutState = null;
       mTreeState = null;
@@ -2716,9 +2720,9 @@ public class ComponentTree
       mCommittedResolveResult = null;
     }
 
-    if (mAttachDetachHandler != null) {
-      // Execute detached callbacks if necessary.
-      mAttachDetachHandler.onDetached();
+    // Execute detached callbacks if necessary.
+    if (effectsHandler != null) {
+      effectsHandler.onDetached();
     }
 
     if (mOnReleaseListeners != null) {
@@ -2745,9 +2749,8 @@ public class ComponentTree
   }
 
   @VisibleForTesting
-  @Nullable
   AttachDetachHandler getAttachDetachHandler() {
-    return mAttachDetachHandler;
+    return Preconditions.checkNotNull(mTreeState).getEffectsHandler();
   }
 
   @Override
@@ -2856,16 +2859,6 @@ public class ComponentTree
     } else {
       mMainThreadHandler.post(this::release, "Release");
     }
-  }
-
-  @UiThread
-  private AttachDetachHandler getOrCreateAttachDetachHandler() {
-    AttachDetachHandler handler = mAttachDetachHandler;
-    if (handler == null) {
-      handler = new AttachDetachHandler();
-      mAttachDetachHandler = handler;
-    }
-    return handler;
   }
 
   @Override
@@ -3100,12 +3093,12 @@ public class ComponentTree
     }
 
     /**
+     * @param isEnabled a boolean value to enable or disable incremental mount.
      * @deprecated This method usage is to be replaced by the {@link
      *     #componentsConfiguration(ComponentsConfiguration)} method.
      *     <p>This method is deprecated because the configuration of the tree should now be handled
      *     through the {@link ComponentsConfiguration} object, allowing for more centralized and
      *     flexible configuration.
-     * @param isEnabled a boolean value to enable or disable incremental mount.
      */
     @Deprecated
     public Builder incrementalMount(boolean isEnabled) {

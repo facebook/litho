@@ -25,6 +25,7 @@ import com.facebook.rendercore.utils.isEqualOrEquivalentTo
 class TreeState {
   val resolveState: StateHandler
   val layoutState: StateHandler
+  val effectsHandler: AttachDetachHandler
 
   private val eventTriggersContainer: EventTriggersContainer
 
@@ -49,6 +50,7 @@ class TreeState {
       layoutState: StateHandler,
       mountInfo: TreeMountInfo,
       renderState: RenderState,
+      effectsHandler: AttachDetachHandler,
       eventTriggersContainer: EventTriggersContainer,
       eventHandlersController: EventHandlersController,
   ) {
@@ -62,6 +64,7 @@ class TreeState {
     this.layoutState = layoutState
     this.mountInfo = mountInfo
     this.renderState = renderState
+    this.effectsHandler = effectsHandler
     this.eventTriggersContainer = eventTriggersContainer
     this.eventHandlersController = eventHandlersController
   }
@@ -73,6 +76,7 @@ class TreeState {
       layoutState = StateHandler(fromState?.layoutState),
       mountInfo = fromState?.mountInfo ?: TreeMountInfo(),
       renderState = fromState?.renderState ?: RenderState(),
+      effectsHandler = fromState?.effectsHandler ?: AttachDetachHandler(),
       eventTriggersContainer = fromState?.eventTriggersContainer ?: EventTriggersContainer(),
       eventHandlersController = fromState?.eventHandlersController ?: EventHandlersController(),
   )
@@ -85,6 +89,7 @@ class TreeState {
       layoutState = StateHandler(initialLayoutStateContainer),
       mountInfo = TreeMountInfo(),
       renderState = RenderState(),
+      effectsHandler = AttachDetachHandler(),
       eventTriggersContainer = EventTriggersContainer(),
       eventHandlersController = EventHandlersController(),
   )
