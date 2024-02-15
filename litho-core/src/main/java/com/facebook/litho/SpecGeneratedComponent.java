@@ -346,8 +346,8 @@ public abstract class SpecGeneratedComponent extends Component
     try {
       return acceptTriggerEventImpl(eventTrigger, eventState, params);
     } catch (Exception e) {
-      if (eventTrigger.mComponentContext != null) {
-        ComponentUtils.handle(eventTrigger.mComponentContext, e);
+      if (eventTrigger.getComponentContext() != null) {
+        ComponentUtils.handle(eventTrigger.getComponentContext(), e);
         return null;
       } else {
         throw e;

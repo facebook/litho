@@ -398,14 +398,14 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   @Override
   protected Object acceptTriggerEventImpl(
       final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
-    int id = eventTrigger.mId;
+    int id = eventTrigger.getId();
     switch (id) {
       case -1670292499:
         {
           ClickEvent _event = (ClickEvent) eventState;
           onClickEventTrigger(
-              (com.facebook.litho.ComponentContext) eventTrigger.mComponentContext,
-              eventTrigger.mTriggerTarget,
+              (com.facebook.litho.ComponentContext) eventTrigger.getComponentContext(),
+              eventTrigger.getTriggerTarget(),
               _event.view);
           return null;
         }
@@ -417,8 +417,8 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   @Override
   public void recordEventTrigger(ComponentContext c, EventTriggersContainer container) {
     if (onClickEventTriggerTrigger != null) {
-      onClickEventTriggerTrigger.mComponentContext = c;
-      onClickEventTriggerTrigger.mTriggerTarget = this;
+      onClickEventTriggerTrigger.setComponentContext(c);
+      onClickEventTriggerTrigger.setTriggerTarget(this);
       container.recordEventTrigger(onClickEventTriggerTrigger);
     }
   }

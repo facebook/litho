@@ -116,8 +116,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     try {
       return acceptTriggerEventImpl(eventTrigger, eventState, params);
     } catch (Exception e) {
-      if (eventTrigger.mComponentContext != null) {
-        throw ComponentUtils.wrapWithMetadata(eventTrigger.mComponentContext, e);
+      if (eventTrigger.getComponentContext() != null) {
+        throw ComponentUtils.wrapWithMetadata(eventTrigger.getComponentContext(), e);
       } else {
         throw e;
       }

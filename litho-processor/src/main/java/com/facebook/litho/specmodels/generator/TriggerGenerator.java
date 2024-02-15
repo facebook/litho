@@ -85,7 +85,7 @@ public class TriggerGenerator {
             .addParameter(ParameterSpec.builder(OBJECT, "eventState", Modifier.FINAL).build())
             .addParameter(ArrayTypeName.of(TypeName.OBJECT), "params", Modifier.FINAL);
 
-    methodBuilder.addStatement("int id = eventTrigger.mId");
+    methodBuilder.addStatement("int id = eventTrigger.getId()");
     methodBuilder.beginControlFlow("switch($L)", "id");
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
@@ -105,8 +105,8 @@ public class TriggerGenerator {
       final CodeBlock.Builder eventTriggerParams =
           CodeBlock.builder()
               .indent()
-              .add("\n($L) eventTrigger.mComponentContext", specModel.getContextClass());
-      eventTriggerParams.add(",\n$L", "eventTrigger.mTriggerTarget");
+              .add("\n($L) eventTrigger.getComponentContext()", specModel.getContextClass());
+      eventTriggerParams.add(",\n$L", "eventTrigger.getTriggerTarget()");
 
       int paramIndex = 0;
       for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
@@ -150,8 +150,8 @@ public class TriggerGenerator {
       String trigger = ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
       methodBuilder
           .beginControlFlow("if ($L != null)", trigger)
-          .addStatement("$L.mComponentContext = c", trigger)
-          .addStatement("$L.mTriggerTarget = this", trigger)
+          .addStatement("$L.setComponentContext(c)", trigger)
+          .addStatement("$L.setTriggerTarget(this)", trigger)
           .addStatement("container.recordEventTrigger($L)", trigger)
           .endControlFlow();
     }
