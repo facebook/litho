@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.perfboost;
+package com.facebook.litho.perfboost
 
-import android.os.Handler;
+import android.os.Handler
 
 /**
  * Provides methods for optimizing for critical operations so that they are executed more
  * efficiently.
  */
-public interface LithoPerfBooster {
+fun interface LithoPerfBooster {
 
-  void markImportantThread(Handler handler);
+  fun markImportantThread(handler: Handler)
 }
