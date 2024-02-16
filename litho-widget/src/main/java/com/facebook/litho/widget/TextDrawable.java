@@ -551,15 +551,23 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
        * {@link Layout#getLineLeft} and {@link Layout#getLineRight} do NOT properly account for
        * paragraph margins on non-centered text, so we need an alternative.
        *
-       * <p>To determine the actual bounds of the line, we need the line's direction, leading
-       * margin, and extent, but only the first is available directly. The margin is given by either
-       * {@link Layout#getParagraphLeft} or {@link Layout#getParagraphRight} depending on line
-       * direction, and {@link Layout#getLineMax} gives the extent *plus* the leading margin, so we
-       * can figure out the rest from there.
+       * <p>To determine the actual bounds of the line, we need the line's direction and alignment,
+       * leading margin, and extent, but only the first is available directly. The margin is given
+       * by either {@link Layout#getParagraphLeft} or {@link Layout#getParagraphRight} depending on
+       * line direction, and {@link Layout#getLineMax} gives the extent *plus* the leading margin,
+       * so we can figure out the rest from there.
        */
-      final boolean rtl = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-      left = rtl ? mLayout.getWidth() - mLayout.getLineMax(line) : mLayout.getParagraphLeft(line);
-      right = rtl ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
+      final int direction = mLayout.getParagraphDirection(line);
+      final Layout.Alignment alignment = mLayout.getParagraphAlignment(line);
+      final boolean rightAligned =
+          (direction == Layout.DIR_RIGHT_TO_LEFT && alignment == Layout.Alignment.ALIGN_NORMAL)
+              || (direction == Layout.DIR_LEFT_TO_RIGHT
+                  && alignment == Layout.Alignment.ALIGN_OPPOSITE);
+      left =
+          rightAligned
+              ? mLayout.getWidth() - mLayout.getLineMax(line)
+              : mLayout.getParagraphLeft(line);
+      right = rightAligned ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
     }
 
     if (x < left || x > right) {
