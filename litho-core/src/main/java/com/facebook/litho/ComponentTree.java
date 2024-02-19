@@ -197,9 +197,10 @@ public class ComponentTree
 
   public synchronized void subscribeToLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      mLifecycleProvider = lifecycleProvider;
       if (mLithoView != null) {
         mLithoView.subscribeComponentTreeToLifecycleProvider(lifecycleProvider);
+      } else {
+        mLifecycleProvider = lifecycleProvider;
       }
     } else {
       if (mLifecycleProvider != null) {
