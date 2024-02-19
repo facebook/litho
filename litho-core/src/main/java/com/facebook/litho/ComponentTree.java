@@ -494,7 +494,6 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            builder.logger,
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer,
             builder.componentTreeDebugEventListener);
@@ -1198,7 +1197,7 @@ public class ComponentTree
         return;
       }
     }
-    final ComponentsLogger logger = getContextLogger();
+    final ComponentsLogger logger = getLogger();
     final PerfEvent event =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
@@ -2305,7 +2304,7 @@ public class ComponentTree
       @Nullable String extraAttribution,
       Component root,
       int pipelineVersion) {
-    ComponentsLogger logger = getContextLogger();
+    ComponentsLogger logger = getLogger();
     PerfEvent resolvePerfEvent = null;
     if (logger != null) {
       resolvePerfEvent = logger.newPerformanceEvent(eventId);
@@ -2836,12 +2835,8 @@ public class ComponentTree
     setRoot(component);
   }
 
-  private @Nullable ComponentsLogger getContextLogger() {
-    return mContext.mLithoConfiguration.logger;
-  }
-
   public @Nullable ComponentsLogger getLogger() {
-    return mContext.mLithoConfiguration.logger;
+    return mContext.mLithoConfiguration.componentsConfig.componentsLogger;
   }
 
   public @Nullable String getLogTag() {
@@ -3033,7 +3028,6 @@ public class ComponentTree
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
-    private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
@@ -3043,7 +3037,6 @@ public class ComponentTree
     private @Nullable final TreePropContainer parentTreePropContainer;
 
     protected Builder(ComponentContext context) {
-      logger = context.getLogger();
       config = context.mLithoConfiguration.componentsConfig;
       visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
       treePropContainer = context.getTreePropContainer();
@@ -3160,11 +3153,6 @@ public class ComponentTree
 
     public Builder measureListener(@Nullable MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
-      return this;
-    }
-
-    public Builder logger(@Nullable ComponentsLogger logger) {
-      this.logger = logger;
       return this;
     }
 

@@ -98,7 +98,8 @@ internal constructor(
      * layout.
      */
     @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler.INSTANCE,
-    @JvmField val logTag: String? = null
+    @JvmField val logTag: String? = null,
+    @JvmField val componentsLogger: ComponentsLogger? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -226,7 +227,6 @@ internal constructor(
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
     @JvmField var reduceMemorySpikeGetUri: Boolean = false
     @JvmField var bindOnSameComponentTree: Boolean = true
-    @JvmField var componentsLogger: ComponentsLogger? = null
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
 
     /**
@@ -265,6 +265,7 @@ internal constructor(
         baseConfig.componentHostUnsafeModificationsLoggingEnabled
     private var visibilityProcessingEnabled = baseConfig.visibilityProcessingEnabled
     private var logTag = baseConfig.logTag
+    private var componentsLogger = baseConfig.componentsLogger
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -326,6 +327,10 @@ internal constructor(
 
     fun logTag(tag: String?): Builder = also { logTag = tag }
 
+    fun componentsLogger(componentsLogger: ComponentsLogger?): Builder = also {
+      this.componentsLogger = componentsLogger
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -346,7 +351,8 @@ internal constructor(
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
               shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible,
           errorEventHandler = errorEventHandler,
-          logTag = logTag)
+          logTag = logTag,
+          componentsLogger = componentsLogger)
     }
   }
 }

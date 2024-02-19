@@ -50,6 +50,7 @@ import javax.annotation.concurrent.ThreadSafe;
  */
 @ThreadSafe
 public class ComponentTreeHolder {
+
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
@@ -66,6 +67,7 @@ public class ComponentTreeHolder {
   static final int RENDER_DRAWN = 2;
 
   interface ComponentTreeMeasureListenerFactory {
+
     @Nullable
     MeasureListener create(ComponentTreeHolder holder);
   }
@@ -390,20 +392,25 @@ public class ComponentTreeHolder {
 
       String renderInfoLogTag = mRenderInfo.getLogTag();
 
+      ComponentsConfiguration.Builder treeComponentsConfigurationBuilder =
+          ComponentsConfiguration.create(mComponentsConfiguration);
+
+      if (mRenderInfo.getLogTag() != null) {
+        treeComponentsConfigurationBuilder.logTag(renderInfoLogTag);
+      }
+
+      if (mRenderInfo.getComponentsLogger() != null) {
+        treeComponentsConfigurationBuilder.componentsLogger(mRenderInfo.getComponentsLogger());
+      }
+
       builder
-          .componentsConfiguration(
-              renderInfoLogTag != null
-                  ? ComponentsConfiguration.create(mComponentsConfiguration)
-                      .logTag(renderInfoLogTag)
-                      .build()
-                  : mComponentsConfiguration)
+          .componentsConfiguration(treeComponentsConfigurationBuilder.build())
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
           .measureListener(
               mComponentTreeMeasureListenerFactory == null
                   ? null
-                  : mComponentTreeMeasureListenerFactory.create(this))
-          .logger(mRenderInfo.getComponentsLogger());
+                  : mComponentTreeMeasureListenerFactory.create(this));
 
       mComponentTree = builder.build();
 
@@ -486,9 +493,11 @@ public class ComponentTreeHolder {
 
     mTreeState = mComponentTree.acquireTreeState();
   }
+
   /** Lifecycle controlled by a ComponentTreeHolder. */
   private class ComponentTreeHolderLifecycleProvider
       implements LithoLifecycleProvider, LithoLifecycleListener, AOSPLifecycleOwnerProvider {
+
     public LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
 
     public ComponentTreeHolderLifecycleProvider() {

@@ -19,10 +19,10 @@ package com.facebook.samples.litho.kotlin.logging
 import android.os.Bundle
 import android.util.Log
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentContextUtils
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentTreeDebugEventListener
 import com.facebook.litho.LithoView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEvent.LayoutCommitted
 import com.facebook.litho.debug.LithoDebugEvent.StateUpdateEnqueued
 import com.facebook.rendercore.debug.DebugEvent
@@ -34,17 +34,15 @@ class LoggingActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val c =
-        ComponentContext(
-            this,
-            ComponentContextUtils.buildDefaultLithoConfiguration(
-                context = this, logger = SampleComponentsLogger()),
-            null)
+    val c = ComponentContext(this)
 
     val lithoView =
         LithoView.create(
             c,
             ComponentTree.create(c, LoggingRootComponent())
+                .componentsConfiguration(
+                    ComponentsConfiguration.defaultInstance.copy(
+                        componentsLogger = SampleComponentsLogger()))
                 .withComponentTreeDebugEventListener(
                     object : ComponentTreeDebugEventListener {
                       override fun onEvent(debugEvent: DebugEvent) {
