@@ -97,7 +97,8 @@ internal constructor(
      * gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
      * layout.
      */
-    @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler.INSTANCE
+    @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler.INSTANCE,
+    @JvmField val logTag: String? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -263,6 +264,7 @@ internal constructor(
     private var componentHostUnsafeModificationsLoggingEnabled =
         baseConfig.componentHostUnsafeModificationsLoggingEnabled
     private var visibilityProcessingEnabled = baseConfig.visibilityProcessingEnabled
+    private var logTag = baseConfig.logTag
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -322,6 +324,8 @@ internal constructor(
       errorEventHandler = handler
     }
 
+    fun logTag(tag: String?): Builder = also { logTag = tag }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -341,7 +345,8 @@ internal constructor(
           visibilityProcessingEnabled = visibilityProcessingEnabled,
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
               shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible,
-          errorEventHandler = errorEventHandler)
+          errorEventHandler = errorEventHandler,
+          logTag = logTag)
     }
   }
 }

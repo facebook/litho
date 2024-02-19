@@ -60,7 +60,7 @@ internal constructor(
   ) : this(
       null,
       componentTree?.root?.simpleName,
-      componentTree?.logTag,
+      componentTree?.lithoConfiguration?.componentsConfig?.logTag,
       cause,
   )
 

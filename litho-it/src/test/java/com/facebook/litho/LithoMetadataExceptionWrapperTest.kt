@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.TouchExpansionDelegateTest.Companion.emulateClickEvent
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
@@ -236,7 +237,8 @@ class LithoMetadataExceptionWrapperTest {
     return ComponentContext(
         androidContext,
         ComponentContextUtils.buildDefaultLithoConfiguration(
-            context = androidContext, logTag = "myLogTag"),
+            context = androidContext,
+            componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = "myLogTag")),
         null)
   }
 }

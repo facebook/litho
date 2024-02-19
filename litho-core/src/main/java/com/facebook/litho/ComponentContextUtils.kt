@@ -27,19 +27,17 @@ object ComponentContextUtils {
       componentsConfig: ComponentsConfiguration = ComponentsConfiguration.defaultInstance,
       renderUnitIdGenerator: RenderUnitIdGenerator? = null,
       transformer: VisibilityBoundsTransformer? = null,
-      logTag: String? = null,
       logger: ComponentsLogger? = null,
   ): LithoConfiguration {
     val loggerToUse = logger ?: ComponentsConfiguration.componentsLogger
-    var logTagToUse = logTag
-    if (logTag == null && logger == null && loggerToUse != null) {
+    var logTagToUse = componentsConfig.logTag
+    if (logTagToUse == null && logger == null && loggerToUse != null) {
       logTagToUse = "global-components-logger"
     }
     return LithoConfiguration(
-        componentsConfig = componentsConfig,
+        componentsConfig = componentsConfig.copy(logTag = logTagToUse),
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
-        logTag = logTagToUse,
-        logger = loggerToUse,
+        logger = logger ?: ComponentsConfiguration.componentsLogger,
         renderUnitIdGenerator = renderUnitIdGenerator,
         visibilityBoundsTransformer = transformer,
         debugEventListener = null)

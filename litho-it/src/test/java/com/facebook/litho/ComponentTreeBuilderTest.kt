@@ -20,6 +20,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -46,7 +47,8 @@ class ComponentTreeBuilderTest {
         ComponentContext(
             androidContext,
             ComponentContextUtils.buildDefaultLithoConfiguration(
-                context = androidContext, logTag = LOG_TAG),
+                context = androidContext,
+                componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = LOG_TAG)),
             null)
 
     root = TestLayoutComponent.create(context).build()

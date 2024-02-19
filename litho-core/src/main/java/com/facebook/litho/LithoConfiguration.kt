@@ -25,7 +25,6 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 data class LithoConfiguration(
     @JvmField val componentsConfig: ComponentsConfiguration,
     @JvmField val areTransitionsEnabled: Boolean,
-    @JvmField val logTag: String? = null,
     @JvmField val logger: ComponentsLogger? = null,
     @JvmField val renderUnitIdGenerator: RenderUnitIdGenerator?,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer?,

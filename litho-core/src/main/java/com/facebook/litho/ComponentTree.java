@@ -493,7 +493,6 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            builder.logTag,
             builder.logger,
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer,
@@ -2845,7 +2844,7 @@ public class ComponentTree
   }
 
   public @Nullable String getLogTag() {
-    return mContext.mLithoConfiguration.logTag;
+    return mContext.mLithoConfiguration.componentsConfig.logTag;
   }
 
   /*
@@ -3033,7 +3032,6 @@ public class ComponentTree
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
-    private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
@@ -3045,7 +3043,6 @@ public class ComponentTree
 
     protected Builder(ComponentContext context) {
       logger = context.getLogger();
-      logTag = context.getLogTag();
       config = context.mLithoConfiguration.componentsConfig;
       visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
       treePropContainer = context.getTreePropContainer();
@@ -3165,10 +3162,8 @@ public class ComponentTree
       return this;
     }
 
-    // TODO: T48569046 verify the usage, if this should be split up
-    public Builder logger(@Nullable ComponentsLogger logger, @Nullable String logTag) {
+    public Builder logger(@Nullable ComponentsLogger logger) {
       this.logger = logger;
-      this.logTag = logTag;
       return this;
     }
 
@@ -3185,10 +3180,6 @@ public class ComponentTree
         root = new EmptyComponent();
       }
 
-      if (logTag == null) {
-        logTag = root.getSimpleName();
-      }
-
       /*
        * If the client has defined an incremental mount property - then we need to override the components
        * configuration to take it into account.
@@ -3198,8 +3189,11 @@ public class ComponentTree
               ? incrementalMountEnabled
               : config.incrementalMountEnabled;
 
+      String logTag = config.logTag;
+
       config =
           ComponentsConfiguration.create(config)
+              .logTag(logTag != null ? logTag : root.getSimpleName())
               /**
                * We disable incremental mount if the {@link
                * LithoDebugConfigurations#isIncrementalMountGloballyDisabled} is enabled.

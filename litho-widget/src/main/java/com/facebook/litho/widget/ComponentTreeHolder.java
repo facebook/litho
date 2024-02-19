@@ -388,15 +388,22 @@ public class ComponentTreeHolder {
                 context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
       }
 
+      String renderInfoLogTag = mRenderInfo.getLogTag();
+
       builder
-          .componentsConfiguration(mComponentsConfiguration)
+          .componentsConfiguration(
+              renderInfoLogTag != null
+                  ? ComponentsConfiguration.create(mComponentsConfiguration)
+                      .logTag(renderInfoLogTag)
+                      .build()
+                  : mComponentsConfiguration)
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
           .measureListener(
               mComponentTreeMeasureListenerFactory == null
                   ? null
                   : mComponentTreeMeasureListenerFactory.create(this))
-          .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag());
+          .logger(mRenderInfo.getComponentsLogger());
 
       mComponentTree = builder.build();
 

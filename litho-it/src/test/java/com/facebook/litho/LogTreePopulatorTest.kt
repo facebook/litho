@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.logging.TestComponentsLogger
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
@@ -40,7 +41,8 @@ class LogTreePopulatorTest {
         ComponentContext(
             androidContext,
             ComponentContextUtils.buildDefaultLithoConfiguration(
-                context = androidContext, logTag = "test"),
+                context = androidContext,
+                componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = "test")),
             null)
   }
 
