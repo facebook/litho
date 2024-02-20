@@ -64,6 +64,7 @@ include ':sample-barebones'
 include ':sample-codelab'
 include ':yoga'
 include ':yogajni'
+include ':litho-flexlayout'
 
 project(':yoga').projectDir = file('lib/yoga')
 project(':yogajni').projectDir = file('lib/yogajni')

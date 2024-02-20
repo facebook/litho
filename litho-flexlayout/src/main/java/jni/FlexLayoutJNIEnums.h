@@ -1,0 +1,51 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
+// This should be in sync with FlexBoxStyle.Keys in java
+enum class FlexBoxStyleKeys {
+  Direction,
+  FlexDirection,
+  JustifyContent,
+  AlignContent,
+  AlignItems,
+  FlexWrap,
+  Overflow,
+  Padding,
+  PaddingPercent,
+  Border,
+  PointScaleFactor
+};
+
+enum class FlexItemStyleKeys {
+  Flex,
+  FlexGrow,
+  FlexShrink,
+  FlexBasis,
+  FlexBasisPercent,
+  FlexBasisAuto,
+  Width,
+  WidthPercent,
+  WidthAuto,
+  MinWidth,
+  MinWidthPercent,
+  MaxWidth,
+  MaxWidthPercent,
+  Height,
+  HeightPercent,
+  HeightAuto,
+  MinHeight,
+  MinHeightPercent,
+  MaxHeight,
+  MaxHeightPercent,
+  AlignSelf,
+  PositionType,
+  AspectRatio,
+  Display,
+  Margin,
+  MarginPercent,
+  MarginAuto,
+  Position,
+  PositionPercent,
+  HasMeasureFunction,
+  HasBaselineFunction,
+  EnableTextRounding,
+};
