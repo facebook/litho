@@ -55,6 +55,7 @@ dependencies {
     // Project dependencies
     api project(':litho-annotations')
     api project(':litho-perf-logger')
+    api project(':litho-flexlayout')
     api project(':litho-rendercore')
     api project(':litho-rendercore-incremental-mount')
     api project(':litho-rendercore-primitives')
