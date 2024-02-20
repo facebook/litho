@@ -102,14 +102,21 @@ object Resolver {
       parent: ComponentContext,
       component: Component,
       globalKeyToReuse: String?
-  ): LithoNode? =
-      resolveImpl(
+  ): LithoNode? {
+    val prev = parent.renderStateContext
+    parent.renderStateContext = resolveContext
+    try {
+      return resolveImpl(
           resolveContext = resolveContext,
           parent = parent,
           parentWidthSpec = MEASURE_SPEC_UNSPECIFIED,
           parentHeightSpec = MEASURE_SPEC_UNSPECIFIED,
           component = component,
           globalKeyToReuse = globalKeyToReuse)
+    } finally {
+      parent.renderStateContext = prev
+    }
+  }
 
   @JvmStatic
   fun resolveImpl(
