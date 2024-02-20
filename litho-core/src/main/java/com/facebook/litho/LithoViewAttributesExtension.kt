@@ -27,7 +27,6 @@ import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
-import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput
@@ -739,23 +738,11 @@ class LithoViewAttributesExtension private constructor() :
     }
 
     private fun setTooltipText(view: View, tooltipText: String?) {
-      /**
-       * Avoid calling tooltip for M devices since there's a bug that could cause long pressing
-       * twice to freeze devices. Not considering L devices since litho is minSdk L
-       */
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-        TooltipCompat.setTooltipText(view, tooltipText)
-      }
+      ViewCompat.setTooltipText(view, tooltipText)
     }
 
     private fun unsetTooltipText(view: View) {
-      /**
-       * Avoid calling tooltip for M devices since there's a bug that could cause long pressing
-       * twice to freeze devices. Not considering L devices since litho is minSdk L
-       */
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-        TooltipCompat.setTooltipText(view, null)
-      }
+      ViewCompat.setTooltipText(view, null)
     }
 
     private fun setScale(view: View, attributes: ViewAttributes) {
