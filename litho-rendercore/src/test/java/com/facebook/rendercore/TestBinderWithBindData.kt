@@ -22,7 +22,7 @@ import androidx.core.util.Pair
 
 open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
 
-  class TestBinderWithBindData1 : TestBinderWithBindData<RenderUnit<*>?> {
+  class TestBinderWithBindData1 : TestBinderWithBindData<RenderUnit<*>> {
     constructor() : super()
 
     constructor(
@@ -39,7 +39,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     ) : super(bindOrder, unbindOrder, bindData)
   }
 
-  class TestBinderWithBindData2 : TestBinderWithBindData<RenderUnit<*>?> {
+  class TestBinderWithBindData2 : TestBinderWithBindData<RenderUnit<*>> {
     constructor() : super()
 
     constructor(
@@ -56,7 +56,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     ) : super(bindOrder, unbindOrder, bindData)
   }
 
-  class TestBinderWithBindData3 : TestBinderWithBindData<RenderUnit<*>?> {
+  class TestBinderWithBindData3 : TestBinderWithBindData<RenderUnit<*>> {
     constructor() : super()
 
     constructor(
@@ -73,7 +73,7 @@ open class TestBinderWithBindData<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     ) : super(bindOrder, unbindOrder, bindData)
   }
 
-  class TestBinderWithBindData4 : TestBinderWithBindData<RenderUnit<*>?> {
+  class TestBinderWithBindData4 : TestBinderWithBindData<RenderUnit<*>> {
     constructor() : super()
 
     constructor(

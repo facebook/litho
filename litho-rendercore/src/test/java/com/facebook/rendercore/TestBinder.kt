@@ -21,7 +21,7 @@ import android.view.View
 
 open class TestBinder<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
 
-  class TestBinder1 : TestBinder<RenderUnit<*>?> {
+  class TestBinder1 : TestBinder<RenderUnit<*>> {
     constructor() : super()
 
     constructor(
@@ -30,7 +30,7 @@ open class TestBinder<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     ) : super(bindOrder, unbindOrder)
   }
 
-  class TestBinder2 : TestBinder<RenderUnit<*>?> {
+  class TestBinder2 : TestBinder<RenderUnit<*>> {
     constructor() : super()
 
     constructor(
@@ -39,7 +39,7 @@ open class TestBinder<MODEL> : RenderUnit.Binder<MODEL, View, Any> {
     ) : super(bindOrder, unbindOrder)
   }
 
-  class TestBinder3 : TestBinder<RenderUnit<*>?> {
+  class TestBinder3 : TestBinder<RenderUnit<*>> {
     constructor() : super()
 
     constructor(
