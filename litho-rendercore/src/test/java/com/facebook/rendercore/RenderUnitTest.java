@@ -534,7 +534,7 @@ public class RenderUnitTest {
 
   @Test
   public void unmountBinders_withBindData_passesBindDataToUnbind() {
-    List<Pair<Object, Object>> unbindOrder = new ArrayList();
+    List<Object> unbindOrder = new ArrayList();
     final TestBinderWithBindData1 fixedBinder1 =
         new TestBinderWithBindData1(mBindOrder, unbindOrder);
     final TestBinderWithBindData2 fixedBinder2 =
@@ -565,15 +565,15 @@ public class RenderUnitTest {
 
     // assert that unbind was called in correct order and correct bind data was passed
     assertThat(unbindOrder).hasSize(4);
-    assertThat(unbindOrder.get(0).second).isEqualTo(4);
-    assertThat(unbindOrder.get(1).second).isEqualTo(3);
-    assertThat(unbindOrder.get(2).second).isEqualTo(2);
-    assertThat(unbindOrder.get(3).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(0)).second).isEqualTo(4);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(1)).second).isEqualTo(3);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(2)).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(3)).second).isEqualTo(1);
   }
 
   @Test
   public void detachBinders_withBindData_passesBindDataToUnbind() {
-    List<Pair<Object, Object>> unbindOrder = new ArrayList();
+    List<Object> unbindOrder = new ArrayList();
 
     final TestBinderWithBindData1 attachBinder1 =
         new TestBinderWithBindData1(mBindOrder, unbindOrder);
@@ -597,13 +597,13 @@ public class RenderUnitTest {
 
     // assert that unbind was called in correct order and correct bind data was passed
     assertThat(unbindOrder).hasSize(2);
-    assertThat(unbindOrder.get(0).second).isEqualTo(2);
-    assertThat(unbindOrder.get(1).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(0)).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(1)).second).isEqualTo(1);
   }
 
   @Test
   public void updateBinders_withBindData_passesBindDataToUnbindAndUpdatesIt() {
-    final List<Pair<Object, Object>> unbindOrder = new ArrayList<>();
+    final List<Object> unbindOrder = new ArrayList<>();
     final TestBinderWithBindData1 attachBinder1 =
         new TestBinderWithBindData1(mBindOrder, unbindOrder, 100);
     final TestBinderWithBindData2 attachBinder2 =
@@ -653,12 +653,12 @@ public class RenderUnitTest {
 
     // assert that unbind was called in correct order and correct bind data was passed
     assertThat(unbindOrder).hasSize(6);
-    assertThat(unbindOrder.get(0).second).isEqualTo(6);
-    assertThat(unbindOrder.get(1).second).isEqualTo(5);
-    assertThat(unbindOrder.get(2).second).isEqualTo(4);
-    assertThat(unbindOrder.get(3).second).isEqualTo(3);
-    assertThat(unbindOrder.get(4).second).isEqualTo(2);
-    assertThat(unbindOrder.get(5).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(0)).second).isEqualTo(6);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(1)).second).isEqualTo(5);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(2)).second).isEqualTo(4);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(3)).second).isEqualTo(3);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(4)).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(5)).second).isEqualTo(1);
 
     // assert fixed binders bind data is correct
     assertThat(bindData.getFixedBindersBindData()).containsExactly(500, 600);
@@ -679,7 +679,7 @@ public class RenderUnitTest {
   @Test
   public void
       updateBinders_withBindDataAndDifferentNumberOfBinders_passesBindDataToUnbindAndUpdatedsIt() {
-    final List<Pair<Object, Object>> unbindOrder = new ArrayList<>();
+    final List<Object> unbindOrder = new ArrayList<>();
     final TestBinderWithBindData1 attachBinder1 =
         new TestBinderWithBindData1(mBindOrder, unbindOrder, 100);
     final TestBinderWithBindData2 attachBinder2 =
@@ -727,12 +727,12 @@ public class RenderUnitTest {
 
     // assert that unbind was called in correct order and correct bind data was passed
     assertThat(unbindOrder).hasSize(6);
-    assertThat(unbindOrder.get(0).second).isEqualTo(6);
-    assertThat(unbindOrder.get(1).second).isEqualTo(5);
-    assertThat(unbindOrder.get(2).second).isEqualTo(4);
-    assertThat(unbindOrder.get(3).second).isEqualTo(3);
-    assertThat(unbindOrder.get(4).second).isEqualTo(2);
-    assertThat(unbindOrder.get(5).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(0)).second).isEqualTo(6);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(1)).second).isEqualTo(5);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(2)).second).isEqualTo(4);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(3)).second).isEqualTo(3);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(4)).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(5)).second).isEqualTo(1);
 
     // assert fixed binders bind data is correct
     assertThat(bindData.getFixedBindersBindData()).containsExactly(500, 600);

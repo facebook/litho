@@ -781,8 +781,8 @@ class MountStateTest {
   @Test
   fun onAttachDetachMountState_MountStateShouldCallBindersAndPassBindData() {
     val c: Context = RuntimeEnvironment.application
-    val bindOrder: MutableList<Pair<Any?, Any?>?> = ArrayList()
-    val unbindOrder: MutableList<Pair<Any?, Any?>?> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val bindBinder = TestBinderWithBindData<Any>(bindOrder, unbindOrder, 1)
     val mountBinder = TestBinderWithBindData<Any>(bindOrder, unbindOrder, 2)
     val root: LayoutResult? =
@@ -809,19 +809,19 @@ class MountStateTest {
 
     // assert that bind was called in correct order and correct bind data was returned
     assertThat(bindOrder).hasSize(2)
-    assertThat(bindOrder[0]?.second).isEqualTo(2)
-    assertThat(bindOrder[1]?.second).isEqualTo(1)
+    assertThat((bindOrder[0] as? Pair<Any?, Any?>)?.second).isEqualTo(2)
+    assertThat((bindOrder[1] as? Pair<Any?, Any?>)?.second).isEqualTo(1)
     mountState.detach()
 
     // assert that unbind was called in correct order and correct bind data was passed after detach
     assertThat(unbindOrder).hasSize(1)
-    assertThat(unbindOrder[0]?.second).isEqualTo(1)
+    assertThat((unbindOrder[0] as? Pair<Any?, Any?>)?.second).isEqualTo(1)
     unbindOrder.clear()
     mountState.unmountAllItems()
 
     // assert that unbind was called in correct order and correct bind data was passed after unmount
     assertThat(unbindOrder).hasSize(1)
-    assertThat(unbindOrder[0]?.second).isEqualTo(2)
+    assertThat((unbindOrder[0] as? Pair<Any?, Any?>)?.second).isEqualTo(2)
   }
 
   @Test
@@ -829,8 +829,8 @@ class MountStateTest {
     val c: Context = RuntimeEnvironment.application
     val id: Long
     var mountState: MountState
-    val bindOrder: MutableList<Pair<Any?, Any?>?> = ArrayList()
-    val unbindOrder: MutableList<Pair<Any?, Any?>?> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val mountBinder = TestBinderWithBindData1(bindOrder, unbindOrder, 1)
     val attachBinder = TestBinderWithBindData1(bindOrder, unbindOrder, 2)
     run {
@@ -852,8 +852,8 @@ class MountStateTest {
 
       // assert that bind was called in correct order and correct bind data was returned
       assertThat(bindOrder).hasSize(2)
-      assertThat(bindOrder[0]?.second).isEqualTo(1)
-      assertThat<Any?>(bindOrder[1]?.second).isEqualTo(2)
+      assertThat((bindOrder[0] as? Pair<Any?, Any?>)?.second).isEqualTo(1)
+      assertThat<Any?>((bindOrder[1] as? Pair<Any?, Any?>)?.second).isEqualTo(2)
     }
     bindOrder.clear()
     unbindOrder.clear()
@@ -886,16 +886,16 @@ class MountStateTest {
       // assert that unbind was called in correct order and correct bind data was passed after
       // update
       assertThat(unbindOrder).hasSize(2)
-      assertThat(unbindOrder[0]?.second).isEqualTo(2)
-      assertThat(unbindOrder[1]?.second).isEqualTo(1)
+      assertThat((unbindOrder[0] as? Pair<Any?, Any?>)?.second).isEqualTo(2)
+      assertThat((unbindOrder[1] as? Pair<Any?, Any?>)?.second).isEqualTo(1)
 
       // assert that bind was called in correct order and correct bind data was returned
       assertThat(bindOrder).hasSize(5)
-      assertThat(bindOrder[0]?.second).isEqualTo(10)
-      assertThat(bindOrder[1]?.second).isEqualTo(3)
-      assertThat(bindOrder[2]?.second).isEqualTo(20)
-      assertThat(bindOrder[3]?.second).isEqualTo(4)
-      assertThat<Any?>(bindOrder[4]?.second).isEqualTo(5)
+      assertThat((bindOrder[0] as? Pair<Any?, Any?>)?.second).isEqualTo(10)
+      assertThat((bindOrder[1] as? Pair<Any?, Any?>)?.second).isEqualTo(3)
+      assertThat((bindOrder[2] as? Pair<Any?, Any?>)?.second).isEqualTo(20)
+      assertThat((bindOrder[3] as? Pair<Any?, Any?>)?.second).isEqualTo(4)
+      assertThat<Any?>((bindOrder[4] as? Pair<Any?, Any?>)?.second).isEqualTo(5)
     }
   }
 

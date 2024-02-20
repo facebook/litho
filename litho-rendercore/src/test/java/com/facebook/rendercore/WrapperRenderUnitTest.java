@@ -219,7 +219,7 @@ public class WrapperRenderUnitTest {
 
   @Test
   public void unmountBinders_withBindData_passesBindDataToOriginalAndWrapperBinders() {
-    List<Pair<Object, Object>> originalUnbindOrder = new ArrayList();
+    List<Object> originalUnbindOrder = new ArrayList();
     final TestBinderWithBindData1 originalFixedBinder1 =
         new TestBinderWithBindData1(bindOrder, originalUnbindOrder);
     final TestBinderWithBindData2 originalFixedBinder2 =
@@ -238,7 +238,7 @@ public class WrapperRenderUnitTest {
         createDelegateBinder(new TestRenderUnit(), originalMountBinder1),
         createDelegateBinder(new TestRenderUnit(), originalMountBinder2));
 
-    List<Pair<Object, Object>> wrapperUnbindOrder = new ArrayList();
+    List<Object> wrapperUnbindOrder = new ArrayList();
     final TestBinderWithBindData3 wrapperMountBinder1 =
         new TestBinderWithBindData3(bindOrder, wrapperUnbindOrder);
     final TestBinderWithBindData4 wrapperMountBinder2 =
@@ -264,20 +264,20 @@ public class WrapperRenderUnitTest {
 
     // assert that unbind was called on original RU in correct order and with correct bind data
     assertThat(originalUnbindOrder).hasSize(4);
-    assertThat(originalUnbindOrder.get(0).second).isEqualTo(4);
-    assertThat(originalUnbindOrder.get(1).second).isEqualTo(3);
-    assertThat(originalUnbindOrder.get(2).second).isEqualTo(2);
-    assertThat(originalUnbindOrder.get(3).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(0)).second).isEqualTo(4);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(1)).second).isEqualTo(3);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(2)).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(3)).second).isEqualTo(1);
 
     // assert that unbind was called on wrapper RU in correct order and with correct bind data
     assertThat(wrapperUnbindOrder).hasSize(2);
-    assertThat(wrapperUnbindOrder.get(0).second).isEqualTo(8);
-    assertThat(wrapperUnbindOrder.get(1).second).isEqualTo(7);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(0)).second).isEqualTo(8);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(1)).second).isEqualTo(7);
   }
 
   @Test
   public void detachBinders_withBindData_passesBindDataToOriginalAndWrapperBinders() {
-    List<Pair<Object, Object>> originalUnbindOrder = new ArrayList();
+    List<Object> originalUnbindOrder = new ArrayList();
     new TestBinderWithBindData2(bindOrder, originalUnbindOrder);
     final TestBinderWithBindData1 originalAttachBinder1 =
         new TestBinderWithBindData1(bindOrder, originalUnbindOrder);
@@ -289,7 +289,7 @@ public class WrapperRenderUnitTest {
         createDelegateBinder(new TestRenderUnit(), originalAttachBinder1),
         createDelegateBinder(new TestRenderUnit(), originalAttachBinder2));
 
-    List<Pair<Object, Object>> wrapperUnbindOrder = new ArrayList();
+    List<Object> wrapperUnbindOrder = new ArrayList();
     final TestBinderWithBindData3 wrapperAttachBinder1 =
         new TestBinderWithBindData3(bindOrder, wrapperUnbindOrder);
     final TestBinderWithBindData4 wrapperAttachBinder2 =
@@ -315,18 +315,18 @@ public class WrapperRenderUnitTest {
 
     // assert that unbind was called on original RU in correct order and with correct bind data
     assertThat(originalUnbindOrder).hasSize(2);
-    assertThat(originalUnbindOrder.get(0).second).isEqualTo(2);
-    assertThat(originalUnbindOrder.get(1).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(0)).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(1)).second).isEqualTo(1);
 
     // assert that unbind was called on wrapper RU in correct order and with correct bind data
     assertThat(wrapperUnbindOrder).hasSize(2);
-    assertThat(wrapperUnbindOrder.get(0).second).isEqualTo(4);
-    assertThat(wrapperUnbindOrder.get(1).second).isEqualTo(3);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(0)).second).isEqualTo(4);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(1)).second).isEqualTo(3);
   }
 
   @Test
   public void updateBinders_withBindData_passesBindDataToOriginalAndWrapperBindersAndUpdatesIt() {
-    final List<Pair<Object, Object>> originalUnbindOrder = new ArrayList<>();
+    final List<Object> originalUnbindOrder = new ArrayList<>();
     final TestBinderWithBindData1 originalAttachBinder1 =
         new TestBinderWithBindData1(bindOrder, originalUnbindOrder, 100);
     final TestBinderWithBindData2 originalAttachBinder2 =
@@ -354,7 +354,7 @@ public class WrapperRenderUnitTest {
     currentOriginalRU.addAttachBinder(
         createDelegateBinder(currentOriginalRU, originalAttachBinder2));
 
-    final List<Pair<Object, Object>> wrapperUnbindOrder = new ArrayList<>();
+    final List<Object> wrapperUnbindOrder = new ArrayList<>();
     final TestBinderWithBindData3 wrapperAttachBinder1 =
         new TestBinderWithBindData3(bindOrder, wrapperUnbindOrder, 700);
     final TestBinderWithBindData4 wrapperAttachBinder2 =
@@ -410,19 +410,19 @@ public class WrapperRenderUnitTest {
 
     // assert that unbind was called on original RU in correct order and with correct bind data
     assertThat(originalUnbindOrder).hasSize(6);
-    assertThat(originalUnbindOrder.get(0).second).isEqualTo(10);
-    assertThat(originalUnbindOrder.get(1).second).isEqualTo(9);
-    assertThat(originalUnbindOrder.get(2).second).isEqualTo(6);
-    assertThat(originalUnbindOrder.get(3).second).isEqualTo(5);
-    assertThat(originalUnbindOrder.get(4).second).isEqualTo(2);
-    assertThat(originalUnbindOrder.get(5).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(0)).second).isEqualTo(10);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(1)).second).isEqualTo(9);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(2)).second).isEqualTo(6);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(3)).second).isEqualTo(5);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(4)).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) originalUnbindOrder.get(5)).second).isEqualTo(1);
 
     // assert that unbind was called on wrapper RU in correct order and with correct bind data
     assertThat(wrapperUnbindOrder).hasSize(4);
-    assertThat(wrapperUnbindOrder.get(0).second).isEqualTo(12);
-    assertThat(wrapperUnbindOrder.get(1).second).isEqualTo(11);
-    assertThat(wrapperUnbindOrder.get(2).second).isEqualTo(8);
-    assertThat(wrapperUnbindOrder.get(3).second).isEqualTo(7);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(0)).second).isEqualTo(12);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(1)).second).isEqualTo(11);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(2)).second).isEqualTo(8);
+    assertThat(((Pair<Object, Object>) wrapperUnbindOrder.get(3)).second).isEqualTo(7);
 
     // assert fixed binders bind data is correct
     assertThat(bindData.getFixedBindersBindData()).containsExactly(500, 600);
