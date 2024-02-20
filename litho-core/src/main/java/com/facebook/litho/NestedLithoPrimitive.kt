@@ -193,11 +193,7 @@ fun createdNestedTreeComponentContext(
 internal class LithoLayoutBehavior(val result: ResolveResult) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val layoutState =
-        NestedLithoTree.layout(
-            result,
-            sizeConstraints,
-            layoutContext.consumePreviousLayoutDataForCurrentNode() as LayoutState?,
-        )
+        NestedLithoTree.layout(result, sizeConstraints, previousLayoutData as LayoutState?)
     return PrimitiveLayoutResult(
         width = layoutState.width,
         height = layoutState.height,
