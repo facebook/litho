@@ -36,7 +36,7 @@ constructor(
   private var _treeState: TreeState? = treeState
   private var _future: TreeFuture<*>? = treeFuture
 
-  private var _isInterruptible: Boolean = true
+  private var _isInterruptible: Boolean = treeFuture?.isInterruptible ?: false
 
   private var _cachedNodes: MutableMap<Int, LithoNode?>? = null
   private var _eventHandlers: MutableList<Pair<String, EventHandler<*>>>? = null
