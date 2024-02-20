@@ -44,8 +44,8 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(RobolectricTestRunner.class)
 public class WrapperRenderUnitTest {
 
-  private final List<TestBinder<?>> bindOrder = new ArrayList<>();
-  private final List<TestBinder<?>> unbindOrder = new ArrayList<>();
+  private final List<Object> bindOrder = new ArrayList<>();
+  private final List<Object> unbindOrder = new ArrayList<>();
   private final Context context = RuntimeEnvironment.getApplication();
   private final View content = new View(context);
   private final Systracer tracer = RenderCoreSystrace.getInstance();

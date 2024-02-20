@@ -84,8 +84,8 @@ class MountStateWithDelegateTest {
     val root = TestNode()
     val leaf = TestNode(0, 0, 10, 10)
     root.addChild(leaf)
-    val bindOrder: MutableList<Any> = ArrayList()
-    val unbindOrder: MutableList<Any> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
 
     // Using anonymous class to create another type.
     val attachBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
@@ -138,8 +138,8 @@ class MountStateWithDelegateTest {
     val root = TestNode()
     val leaf = TestNode(0, 0, 10, 10)
     root.addChild(leaf)
-    val bindOrder: MutableList<Any> = ArrayList()
-    val unbindOrder: MutableList<Any> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
 
     // Using anonymous class to create another type.
     val attachBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
@@ -202,8 +202,8 @@ class MountStateWithDelegateTest {
   private inner class TestMountExtensionWithAcquire
   @JvmOverloads
   constructor(
-      private val bindOrder: MutableList<Any> = ArrayList(),
-      private val unbindOrder: MutableList<Any> = ArrayList()
+      private val bindOrder: MutableList<Any?> = ArrayList(),
+      private val unbindOrder: MutableList<Any?> = ArrayList()
   ) : TestMountExtension(), OnItemCallbacks<Any?> {
     fun acquire(state: ExtensionState<*>, id: Long, position: Int) {
       state.acquireMountReference(id, true)

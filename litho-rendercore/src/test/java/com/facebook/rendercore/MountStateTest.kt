@@ -127,8 +127,8 @@ class MountStateTest {
     val root = TestNode()
     val leaf = TestNode(0, 0, 10, 10)
     root.addChild(leaf)
-    val bindOrder: MutableList<*> = ArrayList<Any?>()
-    val unbindOrder: MutableList<*> = ArrayList<Any?>()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
 
     // Using anonymous class to create another type.
     val attachBinderOne = object : TestBinder<Any>(bindOrder, unbindOrder) {}
@@ -202,8 +202,8 @@ class MountStateTest {
       val newRoot = TestNode()
       val newLeaf = TestNode(10, 10, 10, 10)
       newRoot.addChild(newLeaf)
-      val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
-      val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
+      val bindOrder: MutableList<Any?> = ArrayList()
+      val unbindOrder: MutableList<Any?> = ArrayList()
       val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
       val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
       val newRenderUnit = TestRenderUnit()
@@ -224,8 +224,8 @@ class MountStateTest {
     val c: Context = RuntimeEnvironment.application
     val id: Long
     var mountState: MountState
-    val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val mountBinder = TestBinder1(bindOrder, unbindOrder)
     val attachBinder = TestBinder1(bindOrder, unbindOrder)
     run {
@@ -241,7 +241,7 @@ class MountStateTest {
       val renderTree = createRenderTree(c, root)
       mountState = createMountState(c)
       mountState.mount(renderTree)
-      assertThat<TestBinder<*>?>(bindOrder).containsExactly(mountBinder, attachBinder)
+      assertThat(bindOrder).containsExactly(mountBinder, attachBinder)
     }
 
     // Reset bind/unbind order for next mount.
@@ -270,7 +270,7 @@ class MountStateTest {
       val newRenderTree = createRenderTree(c, newRoot)
       mountState.mount(newRenderTree)
       assertThat(unbindOrder).containsExactly(attachBinder, mountBinder)
-      assertThat<TestBinder<*>?>(bindOrder)
+      assertThat(bindOrder)
           .containsExactly(mountBinder1, mountBinder2, attachBinder1, attachBinder2, attachBinder3)
     }
   }
@@ -281,8 +281,8 @@ class MountStateTest {
     val id1: Long
     val id2: Long
     var mountState: MountState
-    val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val currentMountBinder1 = TestBinder<Any>(bindOrder, unbindOrder)
     val currentAttachBinder1 = TestBinder<Any>(bindOrder, unbindOrder)
     run {
@@ -318,7 +318,7 @@ class MountStateTest {
       val renderTree = createRenderTree(c, root)
       mountState = createMountState(c)
       mountState.mount(renderTree)
-      assertThat<TestBinder<*>?>(bindOrder)
+      assertThat(bindOrder)
           .containsExactly(currentMountBinder1, currentAttachBinder1, mountBinder2, attachBinder2)
     }
 
@@ -361,7 +361,7 @@ class MountStateTest {
       val newRenderTree = createRenderTree(c, newRoot)
       mountState.mount(newRenderTree)
       assertThat(unbindOrder).containsExactly(currentAttachBinder1, currentMountBinder1)
-      assertThat<TestBinder<*>?>(bindOrder).containsExactly(newMountBinder1, newAttachBinder1)
+      assertThat(bindOrder).containsExactly(newMountBinder1, newAttachBinder1)
     }
   }
 
@@ -373,8 +373,8 @@ class MountStateTest {
     node.setRenderUnit(unit)
     val tree = createRenderTree(c, node)
     val rootRenderUnit = tree.root.renderUnit as RenderUnit<View>
-    val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val attachDetachBinder = TestBinder<Any>(bindOrder, unbindOrder)
     rootRenderUnit.addOptionalMountBinder(
@@ -556,8 +556,8 @@ class MountStateTest {
   @Test
   fun onAttachDetachMountState_MountStateShouldCallBinders() {
     val c: Context = RuntimeEnvironment.application
-    val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val bindBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val root: LayoutResult? =
@@ -596,8 +596,8 @@ class MountStateTest {
   @Test
   fun onAttachDetachRootHostToWindow_mountStateCallsAttachDetachBinders() {
     val c = renderCoreTestRule.context
-    val bindOrder: MutableList<TestBinder<Any>> = ArrayList()
-    val unbindOrder: MutableList<TestBinder<Any>> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val root: LayoutResult? =
@@ -642,8 +642,8 @@ class MountStateTest {
   @Test
   fun onAttachDetachRenderTreeHostToWindow_mountStateCallsAttachDetachBinders() {
     val c = renderCoreTestRule.context
-    val bindOrder: MutableList<TestBinder<*>?> = ArrayList()
-    val unbindOrder: MutableList<TestBinder<*>?> = ArrayList()
+    val bindOrder: MutableList<Any?> = ArrayList()
+    val unbindOrder: MutableList<Any?> = ArrayList()
     val attachBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val mountBinder = TestBinder<Any>(bindOrder, unbindOrder)
     val root: LayoutResult? =

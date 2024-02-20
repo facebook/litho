@@ -48,8 +48,8 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(RobolectricTestRunner.class)
 public class RenderUnitTest {
 
-  private final List<TestBinder<?>> mBindOrder = new ArrayList<>();
-  private final List<TestBinder<?>> mUnbindOrder = new ArrayList<>();
+  private final List<Object> mBindOrder = new ArrayList<>();
+  private final List<Object> mUnbindOrder = new ArrayList<>();
   private final Context mContext = RuntimeEnvironment.application;
   private final View mContent = new View(mContext);
   private final Systracer mTracer = RenderCoreSystrace.getInstance();
@@ -751,7 +751,7 @@ public class RenderUnitTest {
   public void updateBindersMultipleTimes_withBindData_passesBindDataToUnbind() {
     final boolean[] binderShouldUpdate = new boolean[] {true, false};
 
-    final List<Pair<Object, Object>> unbindOrder = new ArrayList<>();
+    final List<Object> unbindOrder = new ArrayList<>();
     final Binder<TestRenderUnit, View, Object> mountBinder1 =
         new Binder<TestRenderUnit, View, Object>() {
 
@@ -837,7 +837,7 @@ public class RenderUnitTest {
 
     // assert that unbind was called in correct order and correct bind data was passed
     assertThat(unbindOrder).hasSize(1);
-    assertThat(unbindOrder.get(0).second).isEqualTo(1);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(0)).second).isEqualTo(1);
 
     // assert no fixed binders bind data is present
     assertThat(bindData.getFixedBindersBindData()).isNull();
@@ -861,7 +861,7 @@ public class RenderUnitTest {
 
     // assert that unbind was called in correct order and correct bind data was passed
     assertThat(unbindOrder).hasSize(1);
-    assertThat(unbindOrder.get(0).second).isEqualTo(2);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(0)).second).isEqualTo(2);
 
     // assert no fixed binders bind data is present
     assertThat(bindData.getFixedBindersBindData()).isNull();
@@ -885,8 +885,8 @@ public class RenderUnitTest {
 
     // assert that unbind was called in correct order and correct bind data was passed
     assertThat(unbindOrder).hasSize(2);
-    assertThat(unbindOrder.get(0).second).isEqualTo(200);
-    assertThat(unbindOrder.get(1).second).isEqualTo(100);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(0)).second).isEqualTo(200);
+    assertThat(((Pair<Object, Object>) unbindOrder.get(1)).second).isEqualTo(100);
 
     // assert no fixed binders bind data is present
     assertThat(bindData.getFixedBindersBindData()).isNull();
