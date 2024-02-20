@@ -51,7 +51,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   private static final int NON_INTERRUPTIBLE = 2;
 
   protected final AtomicInteger mRunningThreadId = new AtomicInteger(-1);
-  private final AtomicInteger mInterruptState = new AtomicInteger(INTERRUPTIBLE);
+  private final AtomicInteger mInterruptState;
   private final AtomicInteger mRefCount = new AtomicInteger(0);
 
   private volatile @Nullable Object mInterruptToken;
@@ -63,8 +63,10 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
 
   public TreeFuture(boolean isInterruptionEnabled) {
     mIsInterruptionEnabled = isInterruptionEnabled;
-    if (!isInterruptionEnabled) {
-      mInterruptState.set(NON_INTERRUPTIBLE);
+    if (isInterruptionEnabled) {
+      mInterruptState = new AtomicInteger(INTERRUPTIBLE);
+    } else {
+      mInterruptState = new AtomicInteger(NON_INTERRUPTIBLE);
     }
     this.mFutureTask =
         FutureInstrumenter.instrument(
