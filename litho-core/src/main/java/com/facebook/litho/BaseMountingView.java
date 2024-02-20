@@ -90,7 +90,7 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   public BaseMountingView(ComponentContext context, @Nullable AttributeSet attrs) {
-    super(context.getAndroidContext(), attrs);
+    super(context.getAndroidContext(), attrs, /* UnsafeModificationPolicy */ null);
     mMountState = new MountState(this, ComponentsSystrace.getSystrace());
     mMountState.setEnsureParentMounted(true);
     mViewAttributeFlags = LithoMountData.getViewAttributeFlags(this);

@@ -36,12 +36,14 @@ class HostComponent extends SpecGeneratedComponent {
 
   private boolean mImplementsVirtualViews = false;
   private final boolean mRecyclingEnabled;
-  private final boolean mLogUnsafeViewModifications;
+  private final @Nullable ComponentHost.UnsafeModificationPolicy mUnsafeModificationPolicy;
 
-  protected HostComponent(boolean recyclingEnabled, boolean logUnsafeViewModifications) {
+  protected HostComponent(
+      boolean recyclingEnabled,
+      @Nullable ComponentHost.UnsafeModificationPolicy unsafeModificationPolicy) {
     super("HostComponent");
     mRecyclingEnabled = recyclingEnabled;
-    mLogUnsafeViewModifications = logUnsafeViewModifications;
+    mUnsafeModificationPolicy = unsafeModificationPolicy;
   }
 
   @Override
@@ -62,7 +64,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   protected Object onCreateMountContent(Context c) {
-    return new ComponentHost(c, mRecyclingEnabled || mLogUnsafeViewModifications);
+    return new ComponentHost(c, mUnsafeModificationPolicy);
   }
 
   @Override
@@ -118,9 +120,16 @@ class HostComponent extends SpecGeneratedComponent {
     ComponentsConfiguration componentsConfiguration =
         context.getLithoConfiguration().componentsConfig;
 
-    return new HostComponent(
-        componentsConfiguration.componentHostRecyclingEnabled,
-        componentsConfiguration.componentHostUnsafeModificationsLoggingEnabled);
+    ComponentHost.UnsafeModificationPolicy policy =
+        componentsConfiguration.componentHostInvalidModificationPolicy;
+
+    /* If we are testing host recycling and no policy was set, then we override to be LOG */
+    if (policy != ComponentHost.UnsafeModificationPolicy.CRASH
+        && componentsConfiguration.componentHostRecyclingEnabled) {
+      policy = ComponentHost.UnsafeModificationPolicy.LOG;
+    }
+
+    return new HostComponent(componentsConfiguration.componentHostRecyclingEnabled, policy);
   }
 
   @Override

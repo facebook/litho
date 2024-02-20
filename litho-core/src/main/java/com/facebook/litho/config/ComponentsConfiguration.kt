@@ -18,6 +18,8 @@ package com.facebook.litho.config
 
 import android.os.Build
 import com.facebook.litho.BuildConfig
+import com.facebook.litho.ComponentHost
+import com.facebook.litho.ComponentHost.UnsafeModificationPolicy
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.DefaultErrorEventHandler
 import com.facebook.litho.ErrorEventHandler
@@ -83,11 +85,6 @@ internal constructor(
      */
     @JvmField val enableDrawablePreAllocation: Boolean = false,
     /**
-     * If [true] this will log debug events whenever we detect that a click/touch handler was set on
-     * a [com.facebook.litho.ComponentHost] outside of the [ViewAttributesExtension].
-     */
-    @JvmField val componentHostUnsafeModificationsLoggingEnabled: Boolean = false,
-    /**
      * Whether the [com.facebook.LithoView] associated with the [com.facebook.litho.ComponentTree]
      * will process visibility events.
      */
@@ -99,7 +96,15 @@ internal constructor(
      */
     @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler.INSTANCE,
     @JvmField val logTag: String? = null,
-    @JvmField val componentsLogger: ComponentsLogger? = null
+    @JvmField val componentsLogger: ComponentsLogger? = null,
+    /**
+     * Determines whether we log, crash, or do nothing if an invalid
+     * [com.facebook.litho.ComponentHost] view modification is detected.
+     *
+     * @see [ComponentHost.UnsafeModificationPolicy]
+     */
+    @JvmField
+    val componentHostInvalidModificationPolicy: ComponentHost.UnsafeModificationPolicy? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -261,8 +266,8 @@ internal constructor(
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
     private var enableDrawablePreAllocation = baseConfig.enableDrawablePreAllocation
     private var errorEventHandler = baseConfig.errorEventHandler
-    private var componentHostUnsafeModificationsLoggingEnabled =
-        baseConfig.componentHostUnsafeModificationsLoggingEnabled
+    private var componentHostInvalidModificationPolicy =
+        baseConfig.componentHostInvalidModificationPolicy
     private var visibilityProcessingEnabled = baseConfig.visibilityProcessingEnabled
     private var logTag = baseConfig.logTag
     private var componentsLogger = baseConfig.componentsLogger
@@ -313,9 +318,9 @@ internal constructor(
       enableDrawablePreAllocation = enabled
     }
 
-    fun componentHostUnsafeModificationsLoggingEnabled(enabled: Boolean): Builder = also {
-      componentHostUnsafeModificationsLoggingEnabled = enabled
-    }
+    fun componentHostInvalidModificationPolicy(
+        invalidModificationPolicy: UnsafeModificationPolicy?
+    ): Builder = also { componentHostInvalidModificationPolicy = invalidModificationPolicy }
 
     fun enableVisibilityProcessing(enabled: Boolean): Builder = also {
       visibilityProcessingEnabled = enabled
@@ -345,8 +350,7 @@ internal constructor(
               shouldEnableDefaultAOSPLithoLifecycleProvider,
           enableStateUpdatesBatching = enableStateUpdatesBatching,
           enableDrawablePreAllocation = enableDrawablePreAllocation,
-          componentHostUnsafeModificationsLoggingEnabled =
-              componentHostUnsafeModificationsLoggingEnabled,
+          componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
               shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible,

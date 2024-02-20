@@ -126,17 +126,21 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   private boolean mImplementsVirtualViews = false;
 
-  public ComponentHost(Context context, boolean logUnsafeViewModifications) {
-    this(context, null);
-    mLogUnsafeViewModificationsEnabled = logUnsafeViewModifications;
+  public ComponentHost(
+      Context context, @Nullable UnsafeModificationPolicy unsafeModificationPolicy) {
+    this(context, null, unsafeModificationPolicy);
   }
 
   public ComponentHost(ComponentContext context) {
-    this(context.getAndroidContext(), null);
+    this(context.getAndroidContext(), null, null);
   }
 
-  public ComponentHost(Context context, @Nullable AttributeSet attrs) {
+  public ComponentHost(
+      Context context,
+      @Nullable AttributeSet attrs,
+      @Nullable UnsafeModificationPolicy unsafeModificationPolicy) {
     super(context, attrs);
+    mUnsafeModificationPolicy = unsafeModificationPolicy;
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
@@ -559,7 +563,10 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   void setComponentLongClickListener(ComponentLongClickListener listener) {
     mOnLongClickListener = listener;
+    boolean prevSafeModification = mIsSafeViewModificationsEnabled;
+    setSafeViewModificationsEnabled(true);
     this.setOnLongClickListener(listener);
+    setSafeViewModificationsEnabled(prevSafeModification);
   }
 
   /** @return The previously set long click listener */
@@ -575,7 +582,10 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   void setComponentFocusChangeListener(ComponentFocusChangeListener listener) {
     mOnFocusChangeListener = listener;
+    boolean prevSafeModification = mIsSafeViewModificationsEnabled;
+    setSafeViewModificationsEnabled(true);
     this.setOnFocusChangeListener(listener);
+    setSafeViewModificationsEnabled(prevSafeModification);
   }
 
   /** @return The previously set focus change listener */
@@ -590,7 +600,10 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   void setComponentTouchListener(ComponentTouchListener listener) {
     mOnTouchListener = listener;
+    boolean prevSafeModification = mIsSafeViewModificationsEnabled;
+    setSafeViewModificationsEnabled(true);
     setOnTouchListener(listener);
+    setSafeViewModificationsEnabled(prevSafeModification);
   }
 
   /**
@@ -1511,11 +1524,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     mInLayout = false;
   }
 
-  /**
-   * This is used to help in an investigation around unsafe setting/unsetting of click/touch
-   * listeners, and which could help to unblock host recycling.
-   */
-  private boolean mLogUnsafeViewModificationsEnabled;
+  private final @Nullable UnsafeModificationPolicy mUnsafeModificationPolicy;
 
   /**
    * This flag is used to understand if a view property (e.g, click listener) was modified under the
@@ -1530,15 +1539,22 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private void checkUnsafeViewModification() {
-    if (mLogUnsafeViewModificationsEnabled && !mIsSafeViewModificationsEnabled) {
-      DebugEventDispatcher.dispatch(
-          LithoDebugEvent.DebugInfo,
-          () -> "-1",
-          LogLevel.DEBUG,
-          (attribute) -> {
-            attribute.put(Key, "unsafe-component-host-modification");
-            return Unit.INSTANCE;
-          });
+    if (!mIsSafeViewModificationsEnabled && mUnsafeModificationPolicy != null) {
+      switch (mUnsafeModificationPolicy) {
+        case LOG:
+          DebugEventDispatcher.dispatch(
+              LithoDebugEvent.DebugInfo,
+              () -> "-1",
+              LogLevel.DEBUG,
+              (attribute) -> {
+                attribute.put(Key, "unsafe-component-host-modification");
+                return Unit.INSTANCE;
+              });
+          break;
+        case CRASH:
+          throw new ComponentHostInvalidModification(
+              "Should not modify component host outside of the Litho View Attributes Extensions. Let us know if your use case is valid");
+      }
     }
   }
 
@@ -1576,5 +1592,55 @@ public class ComponentHost extends Host implements DisappearingHost {
   public void setOnFocusChangeListener(OnFocusChangeListener l) {
     checkUnsafeViewModification();
     super.setOnFocusChangeListener(l);
+  }
+
+  /**
+   * This determines what is the actions to take if we detected an invalid modification of a {@link
+   * ComponentHost}.
+   *
+   * <p>This can happen for example if a client sets a click listener outside of a Litho specific
+   * codepath.
+   *
+   * <p>This method demonstrates how to use a Column with a specific style.
+   *
+   * <p>Example Kotlin code:
+   *
+   * <pre>{@code
+   * Column(style = Style
+   *    .onVisible { event ->
+   *      val view = event.content as? ComponentHost
+   *      if(view != null) view.setOnClickListener { ... } // This an invalid usage
+   *    }
+   * }</pre>
+   */
+  public enum UnsafeModificationPolicy {
+    LOG("log"),
+    CRASH("crash");
+
+    private String mKey;
+
+    public String getKey() {
+      return mKey;
+    }
+
+    UnsafeModificationPolicy(String key) {
+      mKey = key;
+    }
+  }
+
+  /**
+   * This exception is to allow us to identify potential wrong modifications of a {@link
+   * ComponentHost}. This can happen if clients get access to them (e.g. onVisibility callbacks) and
+   * then perform modifications such as setting click listeners/modifying alpha. It is important to
+   * identify these situations since it can break other behaviors such as host recycling.
+   *
+   * <p>There might be valid cases where this happens, but we will defer that evaluation to once
+   * they are identified.
+   */
+  public static class ComponentHostInvalidModification extends RuntimeException {
+
+    public ComponentHostInvalidModification(String message) {
+      super(message);
+    }
   }
 }
