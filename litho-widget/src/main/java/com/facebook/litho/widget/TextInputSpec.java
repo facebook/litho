@@ -1040,7 +1040,9 @@ class TextInputSpec {
 
     // If line count changes state update will be triggered by view
     editText.setText(text);
-    editText.setSelection(text != null ? text.length() : 0);
+    final @Nullable Editable editable = editText.getText();
+    final int length = editable != null ? editable.length() : 0;
+    editText.setSelection(length);
     return false;
   }
 
