@@ -25,11 +25,14 @@ constructor(
     private val _layoutData: Any? = null
 ) : LayoutResult {
 
-  override fun getRenderUnit(): RenderUnit<*>? = _renderUnit
+  override val renderUnit: RenderUnit<*>?
+    get() = _renderUnit
 
-  override fun getLayoutData(): Any? = _layoutData
+  override val layoutData: Any?
+    get() = _layoutData
 
-  override fun getChildrenCount(): Int = 0
+  override val childrenCount: Int
+    get() = 0
 
   override fun getChildAt(index: Int): LayoutResult {
     throw IllegalArgumentException("A MountableLayoutResult has no children")
@@ -43,15 +46,21 @@ constructor(
     throw IllegalArgumentException("A MountableLayoutResult has no children")
   }
 
-  override fun getWidth(): Int = measuredWidth
+  override val width: Int
+    get() = measuredWidth
 
-  override fun getHeight(): Int = measuredHeight
+  override val height: Int
+    get() = measuredHeight
 
-  override fun getPaddingTop(): Int = 0
+  override val paddingTop: Int
+    get() = 0
 
-  override fun getPaddingRight(): Int = 0
+  override val paddingRight: Int
+    get() = 0
 
-  override fun getPaddingBottom(): Int = 0
+  override val paddingBottom: Int
+    get() = 0
 
-  override fun getPaddingLeft(): Int = 0
+  override val paddingLeft: Int
+    get() = 0
 }

@@ -120,8 +120,8 @@ internal object Layout {
       // layout calculation.
       if (isTracing) {
         ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:${component.simpleName}")
-            .arg("widthSpec", "EXACTLY ${result.getWidth()}")
-            .arg("heightSpec", "EXACTLY ${result.getHeight()}")
+            .arg("widthSpec", "EXACTLY ${result.width}")
+            .arg("heightSpec", "EXACTLY ${result.height}")
             .arg("rootComponentId", lithoNode.tailComponent.id)
             .flush()
       }
@@ -137,8 +137,8 @@ internal object Layout {
               lithoLayoutContext = lithoLayoutContext,
               parentContext = immediateParentContext,
               holder = result,
-              widthSpec = MeasureSpecUtils.exactly(result.getWidth()),
-              heightSpec = MeasureSpecUtils.exactly(result.getHeight()))
+              widthSpec = MeasureSpecUtils.exactly(result.width),
+              heightSpec = MeasureSpecUtils.exactly(result.height))
 
       if (isTracing) {
         ComponentsSystrace.endSection()

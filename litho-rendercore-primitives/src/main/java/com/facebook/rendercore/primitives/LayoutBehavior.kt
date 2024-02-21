@@ -169,11 +169,15 @@ class PrimitiveLayoutResult(
 
   internal fun toNodeLayoutResult(renderUnit: RenderUnit<*>?): LayoutResult {
     return object : LayoutResult {
-      override fun getRenderUnit(): RenderUnit<*>? = renderUnit
 
-      override fun getLayoutData(): Any? = this@PrimitiveLayoutResult.layoutData
+      override val renderUnit: RenderUnit<*>?
+        get() = renderUnit
 
-      override fun getChildrenCount(): Int = 0
+      override val layoutData: Any?
+        get() = this@PrimitiveLayoutResult.layoutData
+
+      override val childrenCount: Int
+        get() = 0
 
       override fun getChildAt(index: Int): LayoutResult {
         throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
@@ -187,17 +191,23 @@ class PrimitiveLayoutResult(
         throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
       }
 
-      override fun getWidth(): Int = this@PrimitiveLayoutResult.width
+      override val width: Int
+        get() = this@PrimitiveLayoutResult.width
 
-      override fun getHeight(): Int = this@PrimitiveLayoutResult.height
+      override val height: Int
+        get() = this@PrimitiveLayoutResult.height
 
-      override fun getPaddingTop(): Int = this@PrimitiveLayoutResult.paddingTop
+      override val paddingTop: Int
+        get() = this@PrimitiveLayoutResult.paddingTop
 
-      override fun getPaddingRight(): Int = this@PrimitiveLayoutResult.paddingRight
+      override val paddingRight: Int
+        get() = this@PrimitiveLayoutResult.paddingRight
 
-      override fun getPaddingBottom(): Int = this@PrimitiveLayoutResult.paddingBottom
+      override val paddingBottom: Int
+        get() = this@PrimitiveLayoutResult.paddingBottom
 
-      override fun getPaddingLeft(): Int = this@PrimitiveLayoutResult.paddingLeft
+      override val paddingLeft: Int
+        get() = this@PrimitiveLayoutResult.paddingLeft
     }
   }
 }

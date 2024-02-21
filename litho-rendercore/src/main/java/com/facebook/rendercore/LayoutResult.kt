@@ -14,63 +14,46 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore
 
-import androidx.annotation.Nullable;
-import androidx.annotation.Px;
+import androidx.annotation.Px
 
 /**
  * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
  * and all the layout information needed to position the content of such Node.
  */
-public interface LayoutResult {
+interface LayoutResult {
 
   /** @return the RenderUnit that should be rendered by this layout result. */
-  @Nullable
-  RenderUnit<?> getRenderUnit();
+  val renderUnit: RenderUnit<*>?
 
   /**
    * @return layout specific data that was generated during the layout pass that created this
-   *     LayoutResult.
+   *   LayoutResult.
    */
-  @Nullable
-  Object getLayoutData();
+  val layoutData: Any?
 
   /** @return the number of children of this LayoutResult. */
-  int getChildrenCount();
+  val childrenCount: Int
 
   /** @return the LayoutResult for the given child index */
-  LayoutResult getChildAt(int index);
+  fun getChildAt(index: Int): LayoutResult
 
   /** @return the resolved X position for the Node */
-  @Px
-  int getXForChildAtIndex(int index);
+  @Px fun getXForChildAtIndex(index: Int): Int
 
   /** @return the resolved Y position for the Node */
-  @Px
-  int getYForChildAtIndex(int index);
+  @Px fun getYForChildAtIndex(index: Int): Int
 
-  /** @return the resolved width for the Node */
-  @Px
-  int getWidth();
+  @get:Px val width: Int
 
-  /** @return the resolved height for the Node */
-  @Px
-  int getHeight();
+  @get:Px val height: Int
 
-  /** @return the resolved top padding for the Node */
-  @Px
-  int getPaddingTop();
+  @get:Px val paddingTop: Int
 
-  /** @return the resolved right padding for the Node */
-  @Px
-  int getPaddingRight();
+  @get:Px val paddingRight: Int
 
-  /** @return the resolved bottom padding for the Node */
-  @Px
-  int getPaddingBottom();
+  @get:Px val paddingBottom: Int
 
-  /** @return the resolved left padding for the Node */
-  @Px
-  int getPaddingLeft();
+  @get:Px val paddingLeft: Int
 }

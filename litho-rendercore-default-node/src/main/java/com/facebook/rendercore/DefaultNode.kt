@@ -65,11 +65,14 @@ open class DefaultNode @JvmOverloads constructor(val layoutParams: YogaProps? = 
   companion object {
     private val emptyLayout: LayoutResult =
         object : LayoutResult {
-          override fun getRenderUnit(): RenderUnit<*>? = null
+          override val renderUnit: RenderUnit<*>?
+            get() = null
 
-          override fun getLayoutData(): Any? = null
+          override val layoutData: Any?
+            get() = null
 
-          override fun getChildrenCount(): Int = 0
+          override val childrenCount: Int
+            get() = 0
 
           override fun getChildAt(index: Int): LayoutResult {
             throw UnsupportedOperationException("Empty LayoutResult has no children.")
@@ -79,17 +82,23 @@ open class DefaultNode @JvmOverloads constructor(val layoutParams: YogaProps? = 
 
           override fun getYForChildAtIndex(index: Int): Int = 0
 
-          override fun getWidth(): Int = 0
+          override val width: Int
+            get() = 0
 
-          override fun getHeight(): Int = 0
+          override val height: Int
+            get() = 0
 
-          override fun getPaddingTop(): Int = 0
+          override val paddingTop: Int
+            get() = 0
 
-          override fun getPaddingRight(): Int = 0
+          override val paddingRight: Int
+            get() = 0
 
-          override fun getPaddingBottom(): Int = 0
+          override val paddingBottom: Int
+            get() = 0
 
-          override fun getPaddingLeft(): Int = 0
+          override val paddingLeft: Int
+            get() = 0
         }
   }
 }

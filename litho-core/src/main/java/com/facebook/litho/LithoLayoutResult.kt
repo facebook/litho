@@ -120,29 +120,44 @@ open class LithoLayoutResult(
   val borderRenderUnit: LithoRenderUnit?
     get() = layoutOutput.borderRenderUnit
 
-  @Px override fun getWidth(): Int = layoutOutput.width
+  @get:Px
+  override val width: Int
+    get() = layoutOutput.width
 
-  @Px override fun getHeight(): Int = layoutOutput.height
+  @get:Px
+  override val height: Int
+    get() = layoutOutput.height
 
-  @Px override fun getPaddingTop(): Int = layoutOutput.paddingTop
+  @get:Px
+  override val paddingTop: Int
+    get() = layoutOutput.paddingTop
 
-  @Px override fun getPaddingRight(): Int = layoutOutput.paddingRight
+  @get:Px
+  override val paddingRight: Int
+    get() = layoutOutput.paddingRight
 
-  @Px override fun getPaddingBottom(): Int = layoutOutput.paddingBottom
+  @get:Px
+  override val paddingBottom: Int
+    get() = layoutOutput.paddingBottom
 
-  @Px override fun getPaddingLeft(): Int = layoutOutput.paddingLeft
+  @get:Px
+  override val paddingLeft: Int
+    get() = layoutOutput.paddingLeft
 
-  override fun getRenderUnit(): LithoRenderUnit? = null // Unimplemented.
+  override val renderUnit: LithoRenderUnit?
+    get() = null // Unimplemented.
 
-  override fun getChildrenCount(): Int = children.size
+  override val childrenCount: Int
+    get() = children.size
 
-  override fun getChildAt(i: Int): LithoLayoutResult = children[i]
+  override fun getChildAt(index: Int): LithoLayoutResult = children[index]
 
   override fun getXForChildAtIndex(index: Int): Int = children[index].layoutOutput.x
 
   override fun getYForChildAtIndex(index: Int): Int = children[index].layoutOutput.y
 
-  override fun getLayoutData(): Any? = layoutOutput.layoutData
+  override val layoutData: Any?
+    get() = layoutOutput.layoutData
 
   fun adjustedLeft(): Int = layoutOutput.adjustedBounds.left
 
