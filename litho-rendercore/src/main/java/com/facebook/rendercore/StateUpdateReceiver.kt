@@ -16,11 +16,13 @@
 
 package com.facebook.rendercore
 
-fun interface StateUpdateReceiver<StateUpdateType : StateUpdateReceiver.StateUpdate<*>> {
+interface StateUpdateReceiver<StateUpdateType : StateUpdateReceiver.StateUpdate<*>> {
 
   fun interface StateUpdate<State> {
     fun update(state: State): State
   }
 
   fun enqueueStateUpdate(stateUpdate: StateUpdateType)
+
+  fun enqueueStateUpdateSync(stateUpdate: StateUpdateType)
 }

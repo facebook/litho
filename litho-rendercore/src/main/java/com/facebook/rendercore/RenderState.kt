@@ -120,6 +120,15 @@ constructor(
 
   @ThreadConfined(ThreadConfined.ANY)
   override fun enqueueStateUpdate(stateUpdate: StateUpdateType) {
+    enqueueStateUpdateInternal(stateUpdate, true)
+  }
+
+  @ThreadConfined(ThreadConfined.ANY)
+  override fun enqueueStateUpdateSync(stateUpdate: StateUpdateType) {
+    enqueueStateUpdateInternal(stateUpdate, false)
+  }
+
+  private fun enqueueStateUpdateInternal(stateUpdate: StateUpdateType, async: Boolean) {
     synchronized(this) {
       pendingStateUpdates.add(stateUpdate)
       if (latestResolveFunc == null) {
@@ -127,12 +136,8 @@ constructor(
       }
     }
 
-    flushStateUpdates(doAsync = false)
-  }
-
-  private fun flushStateUpdates(doAsync: Boolean) {
     uiHandler.removeCallbacksAndMessages(resolveToken)
-    uiHandler.postAtTime({ requestResolve(null, doAsync) }, resolveToken, 0)
+    uiHandler.postAtTime({ requestResolve(null, async) }, resolveToken, 0)
   }
 
   private fun requestResolve(

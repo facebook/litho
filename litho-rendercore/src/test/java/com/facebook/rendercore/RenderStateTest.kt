@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore
 
+import android.os.Handler
+import android.os.HandlerThread
 import android.os.Looper
 import com.facebook.rendercore.RenderState.ResolveFunc
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
@@ -362,7 +364,7 @@ class RenderStateTest {
       ResolveResult(TestNode(), Any())
     }
     assertThat(resolveCount.toInt()).isEqualTo(1)
-    renderState.enqueueStateUpdate(TestStateUpdate())
+    renderState.enqueueStateUpdateSync(TestStateUpdate())
     assertThat(resolveCount.toInt()).isEqualTo(2)
     assertThat(appliedStateUpdates.get()).hasSize(1)
   }
@@ -376,7 +378,7 @@ class RenderStateTest {
       appliedStateUpdates.set(stateUpdatesToApply)
       ResolveResult(TestNode(), Any())
     }
-    renderState.enqueueStateUpdate(TestStateUpdate())
+    renderState.enqueueStateUpdateSync(TestStateUpdate())
     assertThat(appliedStateUpdates.get()).hasSize(1)
     renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply
       -> // Below we check that these 'stateUpdatesToApply' are empty, meaning that
@@ -421,8 +423,8 @@ class RenderStateTest {
     assertThat(resolveCount.toInt()).isEqualTo(1)
 
     // Two state updates are triggered.
-    renderState.enqueueStateUpdate(TestStateUpdate())
-    renderState.enqueueStateUpdate(TestStateUpdate())
+    renderState.enqueueStateUpdateSync(TestStateUpdate())
+    renderState.enqueueStateUpdateSync(TestStateUpdate())
     assertThat(resolveCount.toInt()).isEqualTo(1)
     Shadows.shadowOf(Looper.getMainLooper()).idle()
 
@@ -469,9 +471,130 @@ class RenderStateTest {
     assertThat(resolveCount.toInt()).isEqualTo(2)
   }
 
+  @LooperMode(LooperMode.Mode.PAUSED)
+  @Test
+  fun setTreeAsync_resolvesOnResolveExecutor() {
+    val resolveCount = AtomicInteger(0)
+    val resolvedAsync = AtomicBoolean(false)
+    val appliedStateUpdates = AtomicReference<List<*>>()
+    val resolveThread: HandlerThread = HandlerThread("test_ResolveThread").also { it.start() }
+    val renderState: RenderState<Any?, Any?, TestStateUpdate> =
+        RenderState(
+            RuntimeEnvironment.getApplication(),
+            emptyDelegate,
+            null,
+            null,
+            SerialTestExecutor(Handler(resolveThread.looper)))
+    renderState.setTreeAsync { _, _, _, stateUpdatesToApply ->
+      resolveCount.incrementAndGet()
+      resolvedAsync.set(Thread.currentThread().name == "test_ResolveThread")
+      appliedStateUpdates.set(stateUpdatesToApply)
+      ResolveResult(TestNode(), Any())
+    }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    Shadows.shadowOf(resolveThread.looper).idle()
+
+    assertThat(resolveCount.toInt()).isEqualTo(1)
+    assertThat(resolvedAsync.get()).isEqualTo(true)
+  }
+
+  @LooperMode(LooperMode.Mode.PAUSED)
+  @Test
+  fun enqueueStateUpdateAsync_resolvesOnResolveExecutor() {
+    val resolveCount = AtomicInteger(0)
+    val resolvedAsync = AtomicBoolean(false)
+    val appliedStateUpdates = AtomicReference<List<*>>()
+    val resolveThread: HandlerThread = HandlerThread("test_ResolveThread").also { it.start() }
+    val renderState: RenderState<Any?, Any?, TestStateUpdate> =
+        RenderState(
+            RuntimeEnvironment.getApplication(),
+            emptyDelegate,
+            null,
+            null,
+            SerialTestExecutor(Handler(resolveThread.looper)))
+    renderState.setTreeAsync { _, _, _, stateUpdatesToApply ->
+      resolveCount.incrementAndGet()
+      resolvedAsync.set(Thread.currentThread().name == "test_ResolveThread")
+      appliedStateUpdates.set(stateUpdatesToApply)
+      ResolveResult(TestNode(), Any())
+    }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    Shadows.shadowOf(resolveThread.looper).idle()
+
+    assertThat(resolveCount.toInt()).isEqualTo(1)
+
+    renderState.enqueueStateUpdate(TestStateUpdate())
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    Shadows.shadowOf(resolveThread.looper).idle()
+
+    assertThat(resolveCount.toInt()).isEqualTo(2)
+    assertThat(resolvedAsync.get()).isEqualTo(true)
+  }
+
+  @LooperMode(LooperMode.Mode.PAUSED)
+  @Test
+  fun testSyncAsyncStateUpdateSequence() {
+    val resolveCount = AtomicInteger(0)
+    val resolvedAsync = AtomicBoolean(false)
+    val appliedStateUpdates = AtomicReference<List<*>>()
+    val resolveThread: HandlerThread = HandlerThread("test_ResolveThread").also { it.start() }
+    val renderState: RenderState<Any?, Any?, TestStateUpdate> =
+        RenderState(
+            RuntimeEnvironment.getApplication(),
+            emptyDelegate,
+            null,
+            null,
+            SerialTestExecutor(Handler(resolveThread.looper)))
+    renderState.setTreeAsync { _, _, _, stateUpdatesToApply ->
+      resolveCount.incrementAndGet()
+      resolvedAsync.set(Thread.currentThread().name == "test_ResolveThread")
+      appliedStateUpdates.set(stateUpdatesToApply)
+      ResolveResult(TestNode(), Any())
+    }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    Shadows.shadowOf(resolveThread.looper).idle()
+
+    assertThat(resolveCount.toInt()).isEqualTo(1)
+
+    // sync -> async -> sync resolves on the main thread
+    renderState.apply {
+      enqueueStateUpdateSync(TestStateUpdate())
+      enqueueStateUpdate(TestStateUpdate())
+      enqueueStateUpdateSync(TestStateUpdate())
+    }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    Shadows.shadowOf(resolveThread.looper).idle()
+
+    assertThat(resolveCount.toInt()).isEqualTo(2)
+    assertThat(resolvedAsync.get()).isEqualTo(false)
+
+    // sync -> sync -> async resolves on the resolve thread
+    renderState.apply {
+      enqueueStateUpdateSync(TestStateUpdate())
+      enqueueStateUpdateSync(TestStateUpdate())
+      enqueueStateUpdate(TestStateUpdate())
+    }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+    Shadows.shadowOf(resolveThread.looper).idle()
+
+    assertThat(resolveCount.toInt()).isEqualTo(3)
+    assertThat(resolvedAsync.get()).isEqualTo(true)
+  }
+
   internal class TestStateUpdate : StateUpdate<Any> {
     override fun update(o: Any): Any {
       return Unit
+    }
+  }
+
+  internal class SerialTestExecutor(private val handler: Handler) : Executor {
+    override fun execute(command: Runnable) {
+      handler.post(command)
     }
   }
 }
