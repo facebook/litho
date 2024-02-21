@@ -95,8 +95,8 @@ internal constructor(
      * layout.
      */
     @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler.INSTANCE,
-    @JvmField val logTag: String? = null,
     @JvmField val componentsLogger: ComponentsLogger? = null,
+    @JvmField val logTag: String? = if (componentsLogger == null) null else "null",
     /**
      * Determines whether we log, crash, or do nothing if an invalid
      * [com.facebook.litho.ComponentHost] view modification is detected.
