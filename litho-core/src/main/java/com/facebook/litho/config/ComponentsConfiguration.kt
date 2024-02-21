@@ -355,7 +355,12 @@ internal constructor(
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
               shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible,
           errorEventHandler = errorEventHandler,
-          logTag = logTag,
+          logTag =
+              if (logTag == null && componentsLogger != null) {
+                "null"
+              } else {
+                logTag
+              },
           componentsLogger = componentsLogger)
     }
   }
