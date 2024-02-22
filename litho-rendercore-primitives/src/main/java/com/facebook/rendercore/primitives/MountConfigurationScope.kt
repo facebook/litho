@@ -86,7 +86,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   model: Array<out Any?>,
                   layoutData: Any?
               ): UnbindFunc {
-                return bindScope.bindCall(content)
+                return bindScope.withContext(context) { bindScope.bindCall(content) }
               }
 
               override fun unbind(
@@ -96,7 +96,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   layoutData: Any?,
                   unbindFunc: UnbindFunc?
               ) {
-                unbindFunc?.onUnbind()
+                bindScope.withContext(context) { unbindFunc?.onUnbind() }
               }
             }
                 as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
@@ -156,7 +156,9 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   model: Array<out Any?>,
                   layoutData: Any?
               ): UnbindFunc {
-                return bindScope.bindCall(content, layoutData as LayoutDataT)
+                return bindScope.withContext(context) {
+                  bindScope.bindCall(content, layoutData as LayoutDataT)
+                }
               }
 
               override fun unbind(
@@ -166,7 +168,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
                   layoutData: Any?,
                   unbindFunc: UnbindFunc?
               ) {
-                unbindFunc?.onUnbind()
+                bindScope.withContext(context) { unbindFunc?.onUnbind() }
               }
             }
                 as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
@@ -330,6 +332,21 @@ fun interface UnbindFunc {
 }
 
 class BindScope {
+
+  private var context: Context? = null
+
+  internal inline fun <T> withContext(context: Context, block: () -> T): T {
+    this.context = context
+    return try {
+      block()
+    } finally {
+      this.context = null
+    }
+  }
+
+  val androidContext: Context
+    get() = requireNotNull(context)
+
   /**
    * Defines an unbind function to be invoked when the content needs to be updated or a [Primitive]
    * is detached.

@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -1156,6 +1157,36 @@ class PrimitiveComponentsTest {
 
     testView.lithoView.unmountAllItems()
   }
+
+  @Test
+  fun `should provide non null androidContext in bind block`() {
+    var onBindAndroidContext: Context? = null
+    var onUnbindAndroidContext: Context? = null
+
+    class TestComponent(val view: View) : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        return LithoPrimitive(
+            ViewPrimitive(
+                view = view,
+                onBind = { context -> onBindAndroidContext = context },
+                onUnbind = { context -> onUnbindAndroidContext = context }),
+            style = null)
+      }
+    }
+
+    val testView =
+        lithoViewRule.render { TestComponent(TextView(lithoViewRule.context.androidContext)) }
+
+    lithoViewRule.idle()
+
+    assertThat(onBindAndroidContext).isNotNull
+    assertThat(onUnbindAndroidContext).isNull()
+
+    testView.lithoView.unmountAllItems()
+
+    assertThat(onBindAndroidContext).isNotNull
+    assertThat(onUnbindAndroidContext).isNotNull
+  }
 }
 
 class TestViewPrimitiveComponent(
@@ -1192,6 +1223,8 @@ private fun PrimitiveComponentScope.ViewPrimitive(
     updateState: ((String) -> Unit)? = null,
     str: String? = null,
     excludeFromIncrementalMount: Boolean? = null,
+    onBind: ((Context) -> Unit)? = null,
+    onUnbind: ((Context) -> Unit)? = null,
 ): Primitive {
 
   class ViewPrimitiveLayoutBehavior(private val id: Int = 0) : LayoutBehavior {
@@ -1218,10 +1251,14 @@ private fun PrimitiveComponentScope.ViewPrimitive(
                 bindDynamic(dynamicTag, View::setTag, "default_value")
 
                 bindWithLayoutData<TestPrimitiveLayoutData>(id, steps, updateState, str) { _, _ ->
+                  onBind?.invoke(androidContext)
                   updateState?.invoke("mount")
                   steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
 
-                  onUnbind { steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT)) }
+                  onUnbind {
+                    onUnbind?.invoke(androidContext)
+                    steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT))
+                  }
                 }
               })
 }

@@ -3,6 +3,7 @@
 ## Version 0.50.0-SNAPSHOT
 
 * [BREAKING] All the nested BUCK modules under litho-core deleted
+* Exposed `androidContext` inside of `bind{}` blocks in Primitive API
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.49.0...master).
 
@@ -11,7 +12,7 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 _2024-02-01_
 
 * Converted more code to Kotlin.
-* [NEW] Added debug event APIs for better debugging and integration with Flipper's new UI Debugger. 
+* [NEW] Added debug event APIs for better debugging and integration with Flipper's new UI Debugger.
 * [NEW] Added layout caching to improve performance.
 * [BREAKING] Moved several configs from LithoConfiguration to ComponentsConfiguration.
 * [BREAKING] Merged several configs from RecyclerBinderConfig and RecyclerBinderConfiguration.
