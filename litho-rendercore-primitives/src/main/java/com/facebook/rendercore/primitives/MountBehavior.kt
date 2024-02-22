@@ -18,6 +18,7 @@ package com.facebook.rendercore.primitives
 
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 
 /**
  * MountBehavior defines how to allocate a [View]/[Drawable] and apply properties to it.
@@ -54,13 +55,16 @@ class MountBehavior<ContentType : Any>(
                 contentAllocator.renderType,
                 mountConfigurationScope.fixedBinders,
                 mountConfigurationScope.doesMountRenderTreeHosts) {
-          override val contentAllocator: ContentAllocator<ContentType> =
-              this@MountBehavior.contentAllocator
+          override val contentAllocator: ContentAllocator<ContentType>
+            get() = this@MountBehavior.contentAllocator
 
-          override val id: Long = this@MountBehavior.id
+          override val id: Long
+            get() = this@MountBehavior.id
 
-          override val description: String =
-              this@MountBehavior.description?.take(MAX_DESCRIPTION_LENGTH) ?: super.description
+          override val description: String
+            get() =
+                this@MountBehavior.description?.take(MAX_DESCRIPTION_LENGTH)
+                    ?: getSectionNameForTracing(contentAllocator.getPoolableContentType())
         }
   }
 }

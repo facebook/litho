@@ -1008,8 +1008,7 @@ class PrimitiveComponentsTest {
         }
     var testView = lithoViewRule.render { Column { child(componentNoDescription) } }
 
-    assertThat(defaultRenderUnitDescription)
-        .contains("com.facebook.rendercore.primitives.MountBehavior")
+    assertThat(defaultRenderUnitDescription).contains("com.facebook.litho.PrimitiveComponentsTest")
 
     testView.lithoView.unmountAllItems()
 

@@ -39,9 +39,7 @@ class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: M
     Node<Any?> {
   /** Returns a [RenderUnit] configured with [mountBehavior]. */
   val renderUnit: PrimitiveRenderUnit<*>
-    get() {
-      return mountBehavior.renderUnit
-    }
+    get() = mountBehavior.renderUnit
 
   override fun calculateLayout(
       context: LayoutContext<Any?>,
