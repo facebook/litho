@@ -22,7 +22,6 @@ import android.view.View
 import android.widget.TextView
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.visibility.VisibilityMountExtension
 import com.facebook.rendercore.visibility.VisibilityOutput
@@ -126,9 +125,6 @@ private constructor(
 
   val heightSpec: String
     get() = SizeSpec.toSimpleString(result.heightSpec)
-
-  val sizeConstraints: SizeConstraints?
-    get() = result.sizeConstraints
 
   fun setOverrider(overrider: Overrider) {
     overriders[globalKey] = overrider
@@ -466,7 +462,7 @@ private constructor(
 
     @JvmStatic
     fun generateGlobalKey(treeId: Int?, globalKey: String?): String =
-        "${treeId ?: "notree"}:${globalKey}"
+        "${treeId?: "notree"}:${globalKey}"
 
     @JvmStatic
     fun applyOverrides(context: ComponentContext, component: Component, componentKey: String) {

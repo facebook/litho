@@ -100,7 +100,6 @@ internal object LithoYogaLayoutFunction {
     yogaRoot.calculateLayout(width, height)
 
     layoutResult.layoutOutput.setSizeSpec(widthSpec, heightSpec)
-    layoutResult.layoutOutput.setSizeConstraints(sizeConstraints)
 
     context.renderContext?.rootOffset =
         Point(
@@ -423,7 +422,6 @@ internal object LithoYogaLayoutFunction {
 
     // Record the last measured width, and height spec
     yogaOutput.setSizeSpec(widthSpec, heightSpec)
-    yogaOutput.setSizeConstraints(SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
 
     // If the size of a cached layout has changed then clear size dependant render units
     if (layoutResult.isCachedLayout &&
@@ -526,7 +524,6 @@ internal object LithoYogaLayoutFunction {
       if (!layoutResult.wasMeasured) {
         yogaOutput.setSizeSpec(
             MeasureSpecUtils.exactly(newContentWidth), MeasureSpecUtils.exactly(newContentHeight))
-        yogaOutput.setSizeConstraints(SizeConstraints.exact(newContentWidth, newContentHeight))
         yogaOutput._lastMeasuredSize = YogaMeasureOutput.make(newContentWidth, newContentHeight)
       }
     } else if (Component.isPrimitive(component)) {
@@ -864,7 +861,6 @@ data class YogaLayoutOutput(
     val heightFromStyle: Float = YogaConstants.UNDEFINED,
     internal var _widthSpec: Int = UNSPECIFIED,
     internal var _heightSpec: Int = UNSPECIFIED,
-    internal var _sizeConstraints: SizeConstraints? = null,
     internal var _lastMeasuredSize: Long = Long.MIN_VALUE,
     internal var _isCachedLayout: Boolean = false,
     internal var _isDiffedLayout: Boolean = false,
@@ -922,9 +918,6 @@ data class YogaLayoutOutput(
   override val heightSpec: Int
     get() = _heightSpec
 
-  override val sizeConstraints: SizeConstraints?
-    get() = _sizeConstraints
-
   override val lastMeasuredSize: Long
     get() = _lastMeasuredSize
 
@@ -979,10 +972,6 @@ data class YogaLayoutOutput(
   fun setSizeSpec(widthSpec: Int, heightSpec: Int) {
     _widthSpec = widthSpec
     _heightSpec = heightSpec
-  }
-
-  fun setSizeConstraints(sizeConstraints: SizeConstraints?) {
-    _sizeConstraints = sizeConstraints
   }
 
   fun clear() {

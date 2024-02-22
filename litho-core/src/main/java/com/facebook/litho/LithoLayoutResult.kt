@@ -20,7 +20,6 @@ import android.graphics.Rect
 import androidx.annotation.Px
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.LayoutResult
-import com.facebook.rendercore.SizeConstraints
 
 /** This is the default implementation of a [LayoutResult] for Litho. */
 open class LithoLayoutResult(
@@ -37,9 +36,6 @@ open class LithoLayoutResult(
 
   val heightSpec: Int
     get() = layoutOutput.heightSpec
-
-  val sizeConstraints: SizeConstraints?
-    get() = layoutOutput.sizeConstraints
 
   val delegate: LayoutResult?
     get() = layoutOutput.delegate

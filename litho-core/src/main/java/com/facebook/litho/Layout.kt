@@ -456,7 +456,6 @@ sealed interface LithoLayoutOutput {
   val contentHeight: Int
   val widthSpec: Int
   val heightSpec: Int
-  val sizeConstraints: SizeConstraints?
   val lastMeasuredSize: Long
   val layoutData: Any?
   val wasMeasured: Boolean
