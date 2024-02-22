@@ -53,6 +53,9 @@ object SizeSpec {
   /** Size specification mode: The child can be as large as it wants up to the specified size. */
   const val AT_MOST: Int = View.MeasureSpec.AT_MOST
 
+  /** Size specification is not specified. */
+  const val NONE: Int = -1
+
   /**
    * Creates a size specification based on the supplied size and mode.
    *
@@ -105,6 +108,10 @@ object SizeSpec {
    */
   @JvmStatic
   fun toSimpleString(sizeSpec: Int): String {
+    if (sizeSpec == NONE) {
+      return "NONE"
+    }
+
     val mode = getMode(sizeSpec)
     val size = getSize(sizeSpec)
     return buildString {
