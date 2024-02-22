@@ -39,6 +39,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
 
   private val _fixedBinders: MutableList<RenderUnit.DelegateBinder<*, ContentType, in Any>> =
       mutableListOf()
+
   /**
    * Stores the current binder description which is used by a binder defined within
    * withDescription{} block.
@@ -64,8 +65,11 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
 
-              val renderUnitDescription: String =
-                  "binder:${binderDescription ?: _fixedBinders.size}"
+              private val fixedBinderIndex = _fixedBinders.size
+              private val customDescription: String? = binderDescription
+
+              override val description: String
+                get() = "binder:${customDescription ?: fixedBinderIndex}"
 
               override fun shouldUpdate(
                   currentModel: Array<out Any?>,
@@ -94,8 +98,6 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               ) {
                 unbindFunc?.onUnbind()
               }
-
-              override val description: String = renderUnitDescription
             }
                 as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
   }
@@ -126,8 +128,11 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
 
-              val renderUnitDescription: String =
-                  "binder:${binderDescription ?: _fixedBinders.size}"
+              private val fixedBinderIndex = _fixedBinders.size
+              private val customDescription: String? = binderDescription
+
+              override val description: String
+                get() = "binder:${customDescription ?: fixedBinderIndex}"
 
               override fun shouldUpdate(
                   currentModel: Array<out Any?>,
@@ -163,8 +168,6 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               ) {
                 unbindFunc?.onUnbind()
               }
-
-              override val description: String = renderUnitDescription
             }
                 as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
   }
@@ -181,8 +184,11 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             this,
             object : RenderUnit.Binder<T, ContentType, Any> {
 
-              val renderUnitDescription: String =
-                  "binder:${binderDescription ?: _fixedBinders.size}"
+              private val fixedBinderIndex = _fixedBinders.size
+              private val customDescription: String? = binderDescription
+
+              override val description: String
+                get() = "binder:${customDescription ?: fixedBinderIndex}"
 
               override fun shouldUpdate(
                   currentModel: T,
@@ -212,8 +218,6 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               ) {
                 setter(content, defaultValue)
               }
-
-              override val description: String = renderUnitDescription
             }))
   }
 
@@ -229,8 +233,11 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
             this,
             object : RenderUnit.Binder<T, ContentType, Any> {
 
-              val renderUnitDescription: String =
-                  "binder:${binderDescription ?: _fixedBinders.size}"
+              private val fixedBinderIndex = _fixedBinders.size
+              private val customDescription: String? = binderDescription
+
+              override val description: String
+                get() = "binder:${customDescription ?: fixedBinderIndex}"
 
               override fun shouldUpdate(
                   currentModel: T,
@@ -260,8 +267,6 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
               ) {
                 setter.set(content, defaultValue)
               }
-
-              override val description: String = renderUnitDescription
             }))
   }
 
