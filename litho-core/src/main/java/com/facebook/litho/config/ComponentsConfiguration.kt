@@ -80,11 +80,6 @@ internal constructor(
      */
     @JvmField val enableStateUpdatesBatching: Boolean = true,
     /**
-     * By default, we do not allow preallocation of [Drawable]. By turning this option on, you can
-     * also preallocate [Drawable] mount content, when [mountContentPreallocation] is enabled.
-     */
-    @JvmField val enableDrawablePreAllocation: Boolean = false,
-    /**
      * Whether the [com.facebook.LithoView] associated with the [com.facebook.litho.ComponentTree]
      * will process visibility events.
      */
@@ -264,7 +259,6 @@ internal constructor(
     private var shouldEnableDefaultAOSPLithoLifecycleProvider =
         baseConfig.shouldEnableDefaultAOSPLithoLifecycleProvider
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
-    private var enableDrawablePreAllocation = baseConfig.enableDrawablePreAllocation
     private var errorEventHandler = baseConfig.errorEventHandler
     private var componentHostInvalidModificationPolicy =
         baseConfig.componentHostInvalidModificationPolicy
@@ -314,10 +308,6 @@ internal constructor(
       enableStateUpdatesBatching = enabled
     }
 
-    fun enableDrawablePreAllocation(enabled: Boolean): Builder = also {
-      enableDrawablePreAllocation = enabled
-    }
-
     fun componentHostInvalidModificationPolicy(
         invalidModificationPolicy: UnsafeModificationPolicy?
     ): Builder = also { componentHostInvalidModificationPolicy = invalidModificationPolicy }
@@ -349,7 +339,6 @@ internal constructor(
           shouldEnableDefaultAOSPLithoLifecycleProvider =
               shouldEnableDefaultAOSPLithoLifecycleProvider,
           enableStateUpdatesBatching = enableStateUpdatesBatching,
-          enableDrawablePreAllocation = enableDrawablePreAllocation,
           componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =

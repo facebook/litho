@@ -56,7 +56,7 @@ class NestedPreallocationTest {
     LithoAssertions.assertThat(lithoView).hasVisibleText("Title")
     LithoAssertions.assertThat(lithoView).hasVisibleText("Number 1")
 
-    Assertions.assertThat(pool.preallocationsAttempted).isEqualTo(10)
+    Assertions.assertThat(pool.preallocationsAttempted).isEqualTo(11)
   }
 
   @Test

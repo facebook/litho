@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
-import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.graphics.Rect;
@@ -140,7 +139,6 @@ public class LayoutState
   // Futures.
   private boolean mIsCommitted;
   private boolean mShouldProcessVisibilityOutputs;
-  private final boolean mEnableDrawablePreallocation;
   private @Nullable List<ScopedComponentInfo> mScopedSpecComponentInfos;
   private @Nullable List<Pair<String, EventHandler<?>>> mCreatedEventHandlers;
   final @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
@@ -154,8 +152,6 @@ public class LayoutState
       @Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers,
       ReductionState reductionState) {
     mResolveResult = resolveResult;
-    mEnableDrawablePreallocation =
-        mResolveResult.context.mLithoConfiguration.componentsConfig.enableDrawablePreAllocation;
     mSizeConstraints = sizeConstraints;
     mLayoutCacheData = layoutCacheData;
     mIsAccessibilityEnabled = isAccessibilityEnabled;
@@ -335,26 +331,23 @@ public class LayoutState
           continue;
         }
 
-        if (mEnableDrawablePreallocation || isMountableView(treeNode.getRenderUnit())) {
+        if (isTracing) {
+          ComponentsSystrace.beginSection("preallocateMount: " + component.getSimpleName());
+        }
 
-          if (isTracing) {
-            ComponentsSystrace.beginSection("preallocateMount: " + component.getSimpleName());
-          }
+        boolean preallocated =
+            MountItemsPool.maybePreallocateContent(
+                mResolveResult.context.getAndroidContext(),
+                treeNode.getRenderUnit().getContentAllocator());
 
-          boolean preallocated =
-              MountItemsPool.maybePreallocateContent(
-                  mResolveResult.context.getAndroidContext(),
-                  treeNode.getRenderUnit().getContentAllocator());
+        Log.d(
+            "LayoutState",
+            "Preallocation of "
+                + component.getSimpleName()
+                + (preallocated ? " succeeded" : " failed"));
 
-          Log.d(
-              "LayoutState",
-              "Preallocation of "
-                  + component.getSimpleName()
-                  + (preallocated ? " succeeded" : " failed"));
-
-          if (isTracing) {
-            ComponentsSystrace.endSection();
-          }
+        if (isTracing) {
+          ComponentsSystrace.endSection();
         }
       }
     }
