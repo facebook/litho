@@ -31,5 +31,5 @@ fun interface ViewCreator<V : View> {
    * @param parent the parent [ViewGroup], or `null` if there isn't one.
    * @return a new view of type V.
    */
-  fun createView(c: Context, parent: ViewGroup): V
+  fun createView(c: Context, parent: ViewGroup?): V
 }
