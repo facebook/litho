@@ -31,6 +31,7 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
@@ -67,6 +68,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private ColorStateList mColorStateList;
   private int mUserColor;
   private int mHighlightColor;
+  private float mOutlineWidth;
   private ClickableSpan[] mClickableSpans;
   private ImageSpan[] mImageSpans;
 
@@ -105,6 +107,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     }
     canvas.translate(bounds.left + mLayoutTranslationX, bounds.top + mLayoutTranslationY);
     try {
+      maybeDrawOutline(canvas);
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
     } catch (IndexOutOfBoundsException e) {
       RuntimeException withDebugInfo =
@@ -114,6 +117,34 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     }
 
     canvas.restoreToCount(saveCount);
+  }
+
+  /**
+   * All texts drawn on top of images and videos need contrast outlines and shadows to be more
+   * visible against busy backgrounds. Standard Android shadows do not produce the separation of
+   * intensity needed, so the Litho library Text Component provides a special outline`attribute that
+   * draws contrast outlines usually combined with shadows. These outlines are drawn outside the
+   * contours to avoid reducing the visible surface of character glyphs. However, since Android has
+   * no mode for drawing outside strokes, they need to be drawn twice: the first pass draws strokes,
+   * and the second pass draws inner filled shapes. This method performs the first outlining pass if
+   * needed.
+   *
+   * @param canvas - A canvas to draw on.
+   */
+  private void maybeDrawOutline(Canvas canvas) {
+    if (mOutlineWidth > 0f) {
+      Paint p = mLayout.getPaint();
+      int savedColor = p.getColor();
+      Paint.Style savedStyle = p.getStyle();
+      float savedStrokeWidth = p.getStrokeWidth();
+      p.setColor(p.getShadowLayerColor());
+      p.setStyle(Paint.Style.STROKE);
+      p.setStrokeWidth(mOutlineWidth);
+      mLayout.draw(canvas);
+      p.setStrokeWidth(savedStrokeWidth);
+      p.setStyle(savedStyle);
+      p.setColor(savedColor);
+    }
   }
 
   private String getDebugInfo() {
@@ -307,6 +338,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         userColor,
         0,
+        0f,
         clickableSpans,
         null,
         null,
@@ -328,6 +360,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         userColor,
         highlightColor,
+        0f,
         null,
         null,
         null,
@@ -356,6 +389,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         userColor,
         highlightColor,
+        0f,
         clickableSpans,
         null,
         null,
@@ -376,6 +410,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       ColorStateList colorStateList,
       int userColor,
       int highlightColor,
+      float outlineWidth,
       @Nullable ClickableSpan[] clickableSpans,
       @Nullable ImageSpan[] imageSpans,
       @Nullable ClickableSpanListener spanListener,
@@ -399,6 +434,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mTextOffsetOnTouchListener = textOffsetOnTouchListener;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
+    setOutlineWidth(outlineWidth);
     mClickableSpanExpandedOffset = clickableSpanExpandedOffset;
     if (userColor != 0) {
       mColorStateList = null;
@@ -436,6 +472,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       mLayout.getPaint().setColor(textColor);
     }
     invalidateSelf();
+  }
+
+  public void setOutlineWidth(float outlineWidth) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      mOutlineWidth = outlineWidth;
+      invalidateSelf();
+    }
   }
 
   private static boolean containsLongClickableSpan(@Nullable ClickableSpan[] clickableSpans) {

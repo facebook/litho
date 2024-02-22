@@ -127,6 +127,7 @@ import java.util.Objects;
  * @prop shadowDx Horizontal offset of the shadow.
  * @prop shadowDy Vertical offset of the shadow.
  * @prop shadowColor Color for the shadow underneath the text.
+ * @prop outlineWidth If set, gives the text outline of the specified width.
  * @prop isSingleLine If set, makes the text to be rendered in a single line.
  * @prop textColor Color of the text.
  * @prop textColorStateList ColorStateList of the text.
@@ -201,6 +202,7 @@ public class TextSpec {
   @PropDefault protected static final int minTextWidth = DEFAULT_MIN_WIDTH;
   @PropDefault protected static final int maxTextWidth = DEFAULT_MAX_WIDTH;
   @PropDefault protected static final int shadowColor = Color.GRAY;
+  @PropDefault protected static final float outlineWidth = 0f;
   @PropDefault protected static final int textColor = DEFAULT_COLOR;
   @PropDefault protected static final int linkColor = Color.BLUE;
 
@@ -932,6 +934,7 @@ public class TextSpec {
       TextDrawable textDrawable,
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float outlineWidth,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Nullable @Prop(optional = true) final EventHandler textOffsetOnTouchHandler,
       @Prop(optional = true) int highlightStartOffset,
@@ -973,6 +976,7 @@ public class TextSpec {
         textColorStateList,
         textColor,
         highlightColor,
+        outlineWidth,
         clickableSpans,
         imageSpans,
         spanListener,
