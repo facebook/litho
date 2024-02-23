@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
@@ -40,6 +39,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
@@ -240,6 +240,7 @@ public abstract class SpecGeneratedComponent extends Component
       final int parentHeightSpec,
       final @Nullable ComponentsLogger componentsLogger) {
 
+    final Integer traceId = generateTraceIdentifier(LithoDebugEvent.ComponentRendered);
     final boolean isTracing = ComponentsSystrace.isTracing();
     final ComponentContext c = scopedComponentInfo.getContext();
     LithoNode node = null;
@@ -249,50 +250,63 @@ public abstract class SpecGeneratedComponent extends Component
       node = new LithoNode();
       node.flexDirection(YogaFlexDirection.COLUMN);
 
-      // Call onPrepare for MountSpecs
-      PerfEvent prepareEvent =
-          Resolver.createPerformanceEvent(
-              this, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE);
-
-      Integer componentPrepareTraceIdentifier = generateTraceIdentifier(ComponentPrepared);
-      if (componentPrepareTraceIdentifier != null) {
+      if (traceId != null) {
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
-
         beginTrace(
-            componentPrepareTraceIdentifier,
-            ComponentPrepared,
+            traceId,
+            LithoDebugEvent.ComponentRendered,
             String.valueOf(resolveContext.getTreeId()),
             attributes);
       }
 
       if (isTracing) {
-        ComponentsSystrace.beginSection("onPrepare:" + getSimpleName());
+        ComponentsSystrace.beginSection("render:" + getSimpleName());
       }
 
       try {
         onPrepare(scopedComponentInfo.getContext());
       } finally {
-        if (prepareEvent != null && componentsLogger != null) {
-          componentsLogger.logPerfEvent(prepareEvent);
+        if (isTracing) {
+          ComponentsSystrace.endSection();
         }
-
-        if (componentPrepareTraceIdentifier != null) {
-          endTrace(componentPrepareTraceIdentifier);
+        if (traceId != null) {
+          endTrace(traceId);
         }
-      }
-
-      if (isTracing) {
-        // end of prepare
-        ComponentsSystrace.endSection();
       }
     }
 
     // If the component is a LayoutSpec.
     else if (Component.isLayoutSpec(this)) {
 
-      final RenderResult renderResult =
-          render(resolveContext, c, parentWidthSpec, parentHeightSpec);
+      if (traceId != null) {
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
+        beginTrace(
+            traceId,
+            LithoDebugEvent.ComponentRendered,
+            String.valueOf(resolveContext.getTreeId()),
+            attributes);
+      }
+
+      final RenderResult renderResult;
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("render:" + getSimpleName());
+      }
+
+      try {
+        renderResult = render(resolveContext, c, parentWidthSpec, parentHeightSpec);
+      } finally {
+        if (isTracing) {
+          // end of prepare
+          ComponentsSystrace.endSection();
+        }
+        if (traceId != null) {
+          endTrace(traceId);
+        }
+      }
+
       final Component root = renderResult.component;
 
       if (root != null) {

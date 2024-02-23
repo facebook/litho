@@ -19,11 +19,10 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.litho.ComponentsSystrace.beginSection
 import com.facebook.litho.ComponentsSystrace.endSection
-import com.facebook.litho.debug.LithoDebugEventAttributes
+import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
+import com.facebook.litho.debug.LithoDebugEventAttributes.Component
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace
-import com.facebook.rendercore.debug.DebugEventDispatcher.endTrace
-import com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier
+import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.MountBehavior
@@ -43,63 +42,68 @@ abstract class PrimitiveComponent : Component() {
       parentHeightSpec: Int,
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
+
     val node = LithoNode()
     var commonProps: CommonProps? = null
-    val isTracing = ComponentsSystrace.isTracing
 
     val prepareEvent =
         Resolver.createPerformanceEvent(
-            this, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE)
+            this,
+            componentsLogger,
+            FrameworkLogEvents.EVENT_COMPONENT_PREPARE,
+        )
 
-    val componentPrepareTraceIdentifier =
-        generateTraceIdentifier(com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared)
-    if (componentPrepareTraceIdentifier != null) {
-      val attributes = HashMap<String, Any?>()
-      attributes[LithoDebugEventAttributes.Component] = simpleName
-      beginTrace(
-          componentPrepareTraceIdentifier,
-          com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared,
-          resolveContext.treeId.toString(),
-          attributes)
+    val c = scopedComponentInfo.context
+    val primitiveComponentScope = PrimitiveComponentScope(c, resolveContext)
+    val lithoPrimitive: LithoPrimitive =
+        DebugEventDispatcher.trace(
+            type = ComponentRendered,
+            renderStateId = { resolveContext.treeId.toString() },
+            attributesAccumulator = { it[Component] = simpleName },
+        ) {
+          val isTracing = ComponentsSystrace.isTracing
+          if (isTracing) {
+            beginSection("render:$simpleName")
+          }
+          val result: LithoPrimitive =
+              try {
+                primitiveComponentScope.render()
+              } finally {
+                if (isTracing) {
+                  endSection()
+                }
+              }
+
+          return@trace result
+        }
+
+    primitiveComponentScope.cleanUp()
+
+    if (lithoPrimitive.style != null) {
+      commonProps = CommonProps()
+      lithoPrimitive.style.applyCommonProps(c, commonProps)
     }
 
-    if (isTracing) {
-      beginSection("prepare:$simpleName")
+    if (primitiveComponentScope.shouldExcludeFromIncrementalMount) {
+      lithoPrimitive.primitive.renderUnit.addAttachBinder(
+          RenderUnit.DelegateBinder.createDelegateBinder(
+              lithoPrimitive.primitive.renderUnit,
+              ExcludeFromIncrementalMountBinder.INSTANCE,
+          ))
     }
 
-    try {
-      val c = scopedComponentInfo.context
-      val primitiveComponentScope = PrimitiveComponentScope(c, resolveContext)
-      val lithoPrimitive = primitiveComponentScope.render()
+    node.primitive = lithoPrimitive.primitive
 
-      primitiveComponentScope.cleanUp()
+    Resolver.applyTransitionsAndUseEffectEntriesToNode(
+        primitiveComponentScope.transitions,
+        primitiveComponentScope.useEffectEntries,
+        node,
+    )
 
-      if (lithoPrimitive.style != null) {
-        commonProps = CommonProps()
-        lithoPrimitive.style.applyCommonProps(c, commonProps)
-      }
-
-      if (primitiveComponentScope.shouldExcludeFromIncrementalMount) {
-        lithoPrimitive.primitive.renderUnit.addAttachBinder(
-            RenderUnit.DelegateBinder.createDelegateBinder(
-                lithoPrimitive.primitive.renderUnit, ExcludeFromIncrementalMountBinder.INSTANCE))
-      }
-
-      node.primitive = lithoPrimitive.primitive
-
-      Resolver.applyTransitionsAndUseEffectEntriesToNode(
-          primitiveComponentScope.transitions, primitiveComponentScope.useEffectEntries, node)
-    } finally {
-      if (prepareEvent != null && componentsLogger != null) {
-        componentsLogger.logPerfEvent(prepareEvent)
-      }
-      componentPrepareTraceIdentifier?.let { endTrace(it) }
+    if (prepareEvent != null && componentsLogger != null) {
+      componentsLogger.logPerfEvent(prepareEvent)
     }
 
-    if (isTracing) {
-      // end of prepare
-      endSection()
-    }
     return ComponentResolveResult(node, commonProps)
   }
 

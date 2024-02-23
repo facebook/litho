@@ -17,6 +17,9 @@
 package com.facebook.litho
 
 import android.content.Context
+import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
+import com.facebook.litho.debug.LithoDebugEventAttributes.Component
+import com.facebook.rendercore.debug.DebugEventDispatcher.trace
 import com.facebook.rendercore.utils.hasEquivalentFields
 
 /** Base class for Kotlin Components. */
@@ -51,10 +54,32 @@ abstract class KComponent : Component() {
       parentHeightSpec: Int,
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
-    val c: ComponentContext = scopedComponentInfo.context
-    val renderResult: RenderResult = render(resolveContext, c, parentWidthSpec, parentHeightSpec)
-    val root = renderResult.component
 
+    val c: ComponentContext = scopedComponentInfo.context
+    val renderResult: RenderResult =
+        trace(
+            type = ComponentRendered,
+            renderStateId = { resolveContext.treeId.toString() },
+            attributesAccumulator = { it[Component] = simpleName },
+        ) {
+          val isTracing = ComponentsSystrace.isTracing
+          if (isTracing) {
+            ComponentsSystrace.beginSection("render:$simpleName")
+          }
+
+          val result =
+              try {
+                render(resolveContext, c, parentWidthSpec, parentHeightSpec)
+              } finally {
+                if (isTracing) {
+                  ComponentsSystrace.endSection()
+                }
+              }
+
+          return@trace result
+        }
+
+    val root = renderResult.component
     val node: LithoNode? =
         if (root != null) {
           Resolver.resolve(resolveContext, c, root)
@@ -64,7 +89,10 @@ abstract class KComponent : Component() {
 
     if (node != null) {
       Resolver.applyTransitionsAndUseEffectEntriesToNode(
-          renderResult.transitions, renderResult.useEffectEntries, node)
+          renderResult.transitions,
+          renderResult.useEffectEntries,
+          node,
+      )
     }
 
     // KComponent doesn't itself hold any CommonProps so return null
