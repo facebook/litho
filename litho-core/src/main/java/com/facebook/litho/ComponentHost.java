@@ -1534,7 +1534,7 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   private boolean mIsSafeViewModificationsEnabled;
 
-  protected void setSafeViewModificationsEnabled(boolean enabled) {
+  public void setSafeViewModificationsEnabled(boolean enabled) {
     mIsSafeViewModificationsEnabled = enabled;
   }
 
