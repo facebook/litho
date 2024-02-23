@@ -134,48 +134,77 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
           value, new Pair<>(component, commonDynamicProps));
     }
 
-    resetDynamicValues(content);
+    // Go through all common dynamic props to reset them if they were set
+    if (commonDynamicProps != null) {
+      for (int i = 0; i < commonDynamicProps.size(); i++) {
+        final int key = commonDynamicProps.keyAt(i);
+        resetDynamicValues(key, content);
+      }
+    }
+
     mAffectingDynamicValues.remove(component);
   }
 
-  private static void resetDynamicValues(Object content) {
+  private static void resetDynamicValues(int key, Object content) {
     if (!(content instanceof View)) {
       return;
     }
 
     final View target = (View) content;
-    if (target.getAlpha() != 1) {
-      target.setAlpha(1);
-    }
+    switch (key) {
+      case KEY_ALPHA:
+        if (target.getAlpha() != 1) {
+          target.setAlpha(1);
+        }
+        break;
 
-    if (target.getTranslationX() != 0) {
-      target.setTranslationX(0);
-    }
+      case KEY_TRANSLATION_X:
+        if (target.getTranslationX() != 0) {
+          target.setTranslationX(0);
+        }
+        break;
 
-    if (target.getTranslationY() != 0) {
-      target.setTranslationY(0);
-    }
+      case KEY_TRANSLATION_Y:
+        if (target.getTranslationY() != 0) {
+          target.setTranslationY(0);
+        }
+        break;
 
-    if (target.getScaleX() != 1) {
-      target.setScaleX(1);
-    }
+      case KEY_SCALE_X:
+        if (target.getScaleX() != 1) {
+          target.setScaleX(1);
+        }
+        break;
 
-    if (target.getScaleY() != 1) {
-      target.setScaleY(1);
-    }
+      case KEY_SCALE_Y:
+        if (target.getScaleY() != 1) {
+          target.setScaleY(1);
+        }
+        break;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (target.getElevation() != 0) {
-        target.setElevation(0);
-      }
-    }
+      case KEY_ELEVATION:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && target.getElevation() != 0) {
+          target.setElevation(0);
+        }
+        break;
 
-    if (target.getBackground() != null) {
-      target.setBackground(null);
-    }
+      case KEY_ROTATION:
+        if (target.getRotation() != 0) {
+          target.setRotation(0);
+        }
+        break;
 
-    if (target.getRotation() != 0) {
-      target.setRotation(0);
+      case KEY_BACKGROUND_COLOR:
+      case KEY_BACKGROUND_DRAWABLE:
+        if (target.getBackground() != null) {
+          target.setBackground(null);
+        }
+        break;
+
+      case KEY_FOREGROUND_COLOR:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && target.getForeground() != null) {
+          ViewUtils.setViewForeground(target, null);
+        }
     }
   }
 
