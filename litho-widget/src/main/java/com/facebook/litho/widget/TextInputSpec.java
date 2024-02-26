@@ -996,6 +996,24 @@ class TextInputSpec {
     }
   }
 
+  @OnTrigger(ShowCursorEvent.class)
+  static void showCursor(
+      ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    final EditTextWithEventHandlers view = mountedView.get();
+    if (view != null) {
+      view.setCursorVisible(true);
+    }
+  }
+
+  @OnTrigger(HideCursorEvent.class)
+  static void hideCursor(
+      ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    final EditTextWithEventHandlers view = mountedView.get();
+    if (view != null) {
+      view.setCursorVisible(false);
+    }
+  }
+
   @OnTrigger(GetTextEvent.class)
   @Nullable
   static CharSequence getText(
