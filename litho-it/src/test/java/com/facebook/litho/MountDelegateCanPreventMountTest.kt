@@ -20,6 +20,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.MountDelegateTarget
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.extensions.ExtensionState
 import com.facebook.rendercore.extensions.InformsMountCallback
 import com.facebook.rendercore.extensions.MountExtension
 import java.lang.IllegalStateException
@@ -52,6 +53,8 @@ class MountDelegateCanPreventMountTest {
 
     // When no extensions prevent mounting, calls to isLockedForMount default to true
     val mountExtension: MountExtension<*, *> = mock()
+    val extensionState = mock<ExtensionState<Any>>()
+    whenever(mountExtension.createExtensionState(mountDelegate)).thenReturn(extensionState)
     mountDelegate.registerMountExtension(mountExtension)
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isTrue
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isTrue
@@ -59,6 +62,8 @@ class MountDelegateCanPreventMountTest {
     // When an extension can prevent mounting, calls to isLockedForMount default to false.
     val mountDelegateExtensionPreventMount: InformsMountExtension = mock()
     whenever(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true)
+    whenever(mountDelegateExtensionPreventMount.createExtensionState(mountDelegate))
+        .thenReturn(extensionState)
     mountDelegate.registerMountExtension(mountDelegateExtensionPreventMount)
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isFalse
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isFalse
@@ -84,6 +89,9 @@ class MountDelegateCanPreventMountTest {
     val mountDelegate = MountDelegate(mountDelegateTarget, ComponentsSystrace.systrace)
     val mountDelegateExtensionPreventMount: InformsMountExtension = mock()
     whenever(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true)
+    val extensionState = mock<ExtensionState<Any>>()
+    whenever(mountDelegateExtensionPreventMount.createExtensionState(mountDelegate))
+        .thenReturn(extensionState)
     mountDelegate.registerMountExtension(mountDelegateExtensionPreventMount)
     mountDelegate.acquireMountRef(layoutOutput1)
     mountDelegate.releaseMountRef(layoutOutput1)

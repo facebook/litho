@@ -54,7 +54,7 @@ constructor(
     private set
 
   private var _mountDelegate: MountDelegate? = null
-  private var unmountDelegateExtension: UnmountDelegateExtension<Any?>? = null
+  private var unmountDelegateExtension: UnmountDelegateExtension<Any>? = null
   private var ensureParentMounted = true
 
   fun setEnsureParentMounted(ensureParentMounted: Boolean) {
@@ -293,7 +293,7 @@ constructor(
   override fun getRenderUnitCount(): Int = renderTree?.mountableOutputCount ?: 0
 
   override fun setUnmountDelegateExtension(unmountDelegateExtension: UnmountDelegateExtension<*>) {
-    this.unmountDelegateExtension = unmountDelegateExtension as UnmountDelegateExtension<Any?>
+    this.unmountDelegateExtension = unmountDelegateExtension as UnmountDelegateExtension<Any>
   }
 
   override fun removeUnmountDelegateExtension() {

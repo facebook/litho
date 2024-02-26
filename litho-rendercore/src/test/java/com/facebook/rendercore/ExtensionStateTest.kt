@@ -38,7 +38,7 @@ class ExtensionStateTest {
     val mountDelegate = MountDelegate(mountDelegateTarget, getInstance())
     val mountExtension1 = TestMountExtension()
     val mountExtension2 = TestMountExtension()
-    val extensions: MutableList<Pair<RenderCoreExtension<*, *>?, Any?>> = ArrayList()
+    val extensions: MutableList<Pair<RenderCoreExtension<*, *>, Any>> = ArrayList()
     extensions.add(
         Pair(
             TestRenderCoreExtension(null, mountExtension1, null) as RenderCoreExtension<*, *>?,
