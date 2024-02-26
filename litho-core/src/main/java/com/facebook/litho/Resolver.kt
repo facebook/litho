@@ -21,11 +21,10 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
-import com.facebook.rendercore.debug.DebugEventDispatcher
+import com.facebook.rendercore.debug.DebugEventDispatcher.trace
 import com.facebook.rendercore.transitions.TransitionUtils
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import java.util.ArrayList
-import java.util.HashMap
 import kotlin.jvm.JvmField
 import kotlin.math.max
 
@@ -133,194 +132,193 @@ object Resolver {
     val isTracing = ComponentsSystrace.isTracing
     if (isTracing) {
       ComponentsSystrace.beginSection("resolve:${component.simpleName}")
-      ComponentsSystrace.beginSection("create-node:${component.simpleName}")
     }
 
-    val componentResolvedIdentifier: Int? =
-        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentResolved)
+    val lithoNode =
+        trace(
+            LithoDebugEvent.ComponentResolved,
+            { resolveContext.treeId.toString() },
+            { attributes ->
+              attributes[LithoDebugEventAttributes.Component] = component.simpleName
+            }) {
+              if (isTracing) {
+                ComponentsSystrace.beginSection("create-node:${component.simpleName}")
+              }
+              val componentsLogger: ComponentsLogger? = resolveContext.componentsLogger
+              val resolveLayoutCreationEvent: PerfEvent? =
+                  createPerformanceEvent(
+                      component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_RESOLVE)
+              val node: LithoNode?
+              val c: ComponentContext
+              val globalKey: String
+              val isNestedTree: Boolean = Component.isNestedTree(component)
+              val hasCachedNode: Boolean = Component.hasCachedNode(resolveContext, component)
+              val scopedComponentInfo: ScopedComponentInfo
+              var commonProps: CommonProps? = null
+              try {
+                // 1. Consume the layout created in `willrender`.
+                val cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent)
 
-    if (componentResolvedIdentifier != null) {
-      val attributes =
-          HashMap<String, Any>().apply {
-            set(LithoDebugEventAttributes.Component, component.simpleName)
-          }
-      DebugEventDispatcher.beginTrace(
-          componentResolvedIdentifier,
-          LithoDebugEvent.ComponentResolved,
-          resolveContext.treeId.toString(),
-          attributes)
-    }
+                // 2. Return immediately if cached layout is available.
+                if (cached != null) {
+                  if (isTracing) {
+                    // end create-node
+                    ComponentsSystrace.endSection()
+                  }
+                  return@trace cached
+                }
 
-    val componentsLogger: ComponentsLogger? = resolveContext.componentsLogger
-    val resolveLayoutCreationEvent: PerfEvent? =
-        createPerformanceEvent(
-            component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_RESOLVE)
-    val node: LithoNode?
-    val c: ComponentContext
-    val globalKey: String
-    val isNestedTree: Boolean = Component.isNestedTree(component)
-    val hasCachedNode: Boolean = Component.hasCachedNode(resolveContext, component)
-    val scopedComponentInfo: ScopedComponentInfo
-    var commonProps: CommonProps? = null
-    try {
-      // 1. Consume the layout created in `willrender`.
-      val cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent)
+                val shouldDeferNestedTreeResolution =
+                    (isNestedTree || hasCachedNode) && !resolveNestedTree
 
-      // 2. Return immediately if cached layout is available.
-      if (cached != null) {
-        if (isTracing) {
-          // end create-node
-          ComponentsSystrace.endSection()
-          // end-resolve
-          ComponentsSystrace.endSection()
-        }
-        return cached
-      }
+                // 5. Get or create the scoped context component.
+                c =
+                    if (hasCachedNode) {
+                      val cache: MeasuredResultCache = resolveContext.cache
+                      checkNotNull(cache.getCachedNode(component)).headComponentContext
+                    } else {
+                      createScopedContext(
+                          resolveContext, parent, component, globalKeyToReuse, treePropsToReuse)
+                    }
+                globalKey = c.globalKey
+                scopedComponentInfo = c.scopedComponentInfo
 
-      val shouldDeferNestedTreeResolution = (isNestedTree || hasCachedNode) && !resolveNestedTree
+                // 6. Resolve the component into an InternalNode tree.
 
-      // 5. Get or create the scoped context component.
-      c =
-          if (hasCachedNode) {
-            val cache: MeasuredResultCache = resolveContext.cache
-            checkNotNull(cache.getCachedNode(component)).headComponentContext
-          } else {
-            createScopedContext(
-                resolveContext, parent, component, globalKeyToReuse, treePropsToReuse)
-          }
-      globalKey = c.globalKey
-      scopedComponentInfo = c.scopedComponentInfo
+                // If nested tree resolution is deferred, then create a nested tree holder.
+                if (shouldDeferNestedTreeResolution) {
+                  node =
+                      NestedTreeHolder(
+                          c.treePropContainer,
+                          resolveContext.cache.getCachedNode(component),
+                          parent)
+                } else {
+                  // Resolve the component into an InternalNode.
+                  val resolveResult: ComponentResolveResult =
+                      component.resolve(
+                          resolveContext,
+                          scopedComponentInfo,
+                          parentWidthSpec,
+                          parentHeightSpec,
+                          componentsLogger)
+                  node = resolveResult.lithoNode
+                  commonProps = resolveResult.commonProps
+                }
 
-      // 6. Resolve the component into an InternalNode tree.
+                // 7. If the layout is null then return immediately.
+                if (node == null) {
+                  if (isTracing) {
+                    // end create-node
+                    ComponentsSystrace.endSection()
+                  }
+                  return@trace null
+                }
 
-      // If nested tree resolution is deferred, then create a nested tree holder.
-      if (shouldDeferNestedTreeResolution) {
-        node =
-            NestedTreeHolder(
-                c.treePropContainer, resolveContext.cache.getCachedNode(component), parent)
-      } else {
-        // Resolve the component into an InternalNode.
-        val resolveResult: ComponentResolveResult =
-            component.resolve(
-                resolveContext,
-                scopedComponentInfo,
-                parentWidthSpec,
-                parentHeightSpec,
-                componentsLogger)
-        node = resolveResult.lithoNode
-        commonProps = resolveResult.commonProps
-      }
+                if (isTracing) {
+                  // end create-node
+                  ComponentsSystrace.endSection()
+                }
+              } catch (e: Exception) {
+                ComponentUtils.handleWithHierarchy(parent, component, e)
+                if (isTracing) {
+                  // end create-node
+                  ComponentsSystrace.endSection()
+                }
+                return@trace null
+              }
 
-      // 7. If the layout is null then return immediately.
-      if (node == null) {
-        if (isTracing) {
-          // end create-node
-          ComponentsSystrace.endSection()
-          // end-resolve
-          ComponentsSystrace.endSection()
-        }
-        return null
-      }
+              if (resolveLayoutCreationEvent != null && componentsLogger != null) {
+                componentsLogger.logPerfEvent(resolveLayoutCreationEvent)
+              }
+              if (isTracing) {
+                ComponentsSystrace.beginSection("after-create-node:${component.simpleName}")
+              }
 
-      if (isTracing) {
-        // end create-node
-        ComponentsSystrace.endSection()
-      }
-    } catch (e: Exception) {
-      ComponentUtils.handleWithHierarchy(parent, component, e)
-      if (isTracing) {
-        // end create-node
-        ComponentsSystrace.endSection()
-        // end resolve
-        ComponentsSystrace.endSection()
-      }
-      return null
-    } finally {
-      if (componentResolvedIdentifier != null) {
-        DebugEventDispatcher.endTrace(componentResolvedIdentifier)
-      }
-    }
-    if (resolveLayoutCreationEvent != null && componentsLogger != null) {
-      componentsLogger.logPerfEvent(resolveLayoutCreationEvent)
-    }
-    if (isTracing) {
-      ComponentsSystrace.beginSection("after-create-node:${component.simpleName}")
-    }
+              checkNotNull(node)
+              // 8. Set the measure function
+              // Set measure func on the root node of the generated tree so that the mount calls use
+              // those (see Controller.mountNodeTree()). Handle the case where the component simply
+              // delegates its layout creation to another component, i.e. the root node belongs to
+              // another component.
+              if (node.componentCount == 0) {
+                val isMountSpecWithMeasure =
+                    component.canMeasure() && Component.isMountSpec(component)
+                if ((isMountSpecWithMeasure) ||
+                    (isNestedTree || hasCachedNode) && (!resolveNestedTree)) {
+                  node.setMeasureFunction(Component.sMeasureFunction)
+                }
+              }
 
-    checkNotNull(node)
-    // 8. Set the measure function
-    // Set measure func on the root node of the generated tree so that the mount calls use
-    // those (see Controller.mountNodeTree()). Handle the case where the component simply
-    // delegates its layout creation to another component, i.e. the root node belongs to
-    // another component.
-    if (node.componentCount == 0) {
-      val isMountSpecWithMeasure = component.canMeasure() && Component.isMountSpec(component)
-      if ((isMountSpecWithMeasure) || (isNestedTree || hasCachedNode) && (!resolveNestedTree)) {
-        node.setMeasureFunction(Component.sMeasureFunction)
-      }
-    }
+              /* 9. Copy the common props
+              Skip if resolving a layout with size spec because common props were copied in the
+              previous layout pass. */
+              if (commonProps == null && component is SpecGeneratedComponent) {
+                // this step is still needed to make OCLWSS case work
+                commonProps = component.commonProps
+              }
+              if (node !is NullNode) { // only if NOT a NullNode
+                if (commonProps != null &&
+                    !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
+                  commonProps.copyInto(c, node)
+                }
+              }
 
-    // 9. Copy the common props
-    // Skip if resolving a layout with size spec because common props were copied in the previous
-    // layout pass.
-    if (commonProps == null && component is SpecGeneratedComponent) {
-      // this step is still needed to make OCLWSS case work
-      commonProps = component.commonProps
-    }
-    if (node !is NullNode) { // only if NOT a NullNode
-      if (commonProps != null &&
-          !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
-        commonProps.copyInto(c, node)
-      }
-    }
+              // 10. Add the component to the InternalNode.
+              scopedComponentInfo.commonProps = commonProps
+              node.appendComponent(scopedComponentInfo)
 
-    // 10. Add the component to the InternalNode.
-    scopedComponentInfo.commonProps = commonProps
-    node.appendComponent(scopedComponentInfo)
+              // 11. Create and add transition to this component's InternalNode.
+              if (c.areTransitionsEnabled()) {
+                if (component is SpecGeneratedComponent && component.needsPreviousRenderData()) {
+                  node.addComponentNeedingPreviousRenderData(globalKey, scopedComponentInfo)
+                } else {
+                  try {
+                    // Calls onCreateTransition on the Spec.
+                    val transition =
+                        if (component is SpecGeneratedComponent) {
+                          component.createTransition(c)
+                        } else {
+                          null
+                        }
+                    if (transition != null) {
+                      node.addTransition(transition)
+                    }
+                  } catch (e: Exception) {
+                    ComponentUtils.handleWithHierarchy(parent, component, e)
+                  }
+                }
+              }
 
-    // 11. Create and add transition to this component's InternalNode.
-    if (c.areTransitionsEnabled()) {
-      if (component is SpecGeneratedComponent && component.needsPreviousRenderData()) {
-        node.addComponentNeedingPreviousRenderData(globalKey, scopedComponentInfo)
-      } else {
-        try {
-          // Calls onCreateTransition on the Spec.
-          val transition =
-              if (component is SpecGeneratedComponent) component.createTransition(c) else null
-          if (transition != null) {
-            node.addTransition(transition)
-          }
-        } catch (e: Exception) {
-          ComponentUtils.handleWithHierarchy(parent, component, e)
-        }
-      }
-    }
+              // 12. Add attachable components
+              if (component is SpecGeneratedComponent && component.hasAttachDetachCallback()) {
+                // needs ComponentUtils.getGlobalKey?
+                node.addAttachable(LayoutSpecAttachable(globalKey, component, scopedComponentInfo))
+              }
 
-    // 12. Add attachable components
-    if (component is SpecGeneratedComponent && component.hasAttachDetachCallback()) {
-      // needs ComponentUtils.getGlobalKey?
-      node.addAttachable(LayoutSpecAttachable(globalKey, component, scopedComponentInfo))
-    }
+              // 13. Add working ranges to the InternalNode.
+              scopedComponentInfo.addWorkingRangeToNode(node)
 
-    // 13. Add working ranges to the InternalNode.
-    scopedComponentInfo.addWorkingRangeToNode(node)
+              /* 14. Add custom binders - the custom binders should be added to the RenderUnit as
+              soon as they are created. For Primitives, this happens during "prepare". However, for MountSpecs
+              the common props are only initialized later, and some needed LithoNode for tail components
+              is also filled later, and this is why we are moving the addition a bit below. */
+              if (commonProps != null) {
+                node.addCustomBinders(commonProps.delegateViewBinders)
+              }
 
-    // 14. Add custom binders - the custom binders should be added to the RenderUnit as soon as they
-    // are created. For Primitives, this happens during "prepare". However, for MountSpecs the
-    // common props are only initialized later, and some needed LithoNode for tail components is
-    // also filled later, and this is why we are moving the addition a bit below.
-    if (commonProps != null) {
-      node.addCustomBinders(commonProps.delegateViewBinders)
-    }
-    if (isTracing) {
-      // end of after-create-node
-      ComponentsSystrace.endSection()
-    }
+              if (isTracing) {
+                // end of after-create-node
+                ComponentsSystrace.endSection()
+              }
+              node
+            }
+
     if (isTracing) {
       // end of resolve
       ComponentsSystrace.endSection()
     }
-    return node
+
+    return lithoNode
   }
 
   /**
