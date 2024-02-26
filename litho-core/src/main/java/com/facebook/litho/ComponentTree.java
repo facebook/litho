@@ -495,8 +495,7 @@ public class ComponentTree
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
             renderUnitIdGenerator,
-            builder.visibilityBoundsTransformer,
-            builder.componentTreeDebugEventListener);
+            builder.visibilityBoundsTransformer);
 
     mContext =
         new ComponentContext(
@@ -532,13 +531,14 @@ public class ComponentTree
       }
     }
 
-    if (config.debugEventListener != null) {
+    ComponentTreeDebugEventListener debugEventListener = config.componentsConfig.debugEventListener;
+    if (debugEventListener != null) {
       mDebugEventsSubscriber =
           new ComponentTreeDebugEventsSubscriber(
               mId,
-              config.debugEventListener.getEvents(),
+              debugEventListener.getEvents(),
               debugEvent -> {
-                config.debugEventListener.onEvent(debugEvent);
+                debugEventListener.onEvent(debugEvent);
                 return Unit.INSTANCE;
               });
       DebugEventBus.subscribe(mDebugEventsSubscriber);
@@ -3031,7 +3031,6 @@ public class ComponentTree
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
-    private @Nullable ComponentTreeDebugEventListener componentTreeDebugEventListener;
 
     private @Nullable final TreePropContainer treePropContainer;
     private @Nullable final TreePropContainer parentTreePropContainer;
@@ -3074,12 +3073,6 @@ public class ComponentTree
 
     public Builder withLithoLifecycleProvider(@Nullable LithoLifecycleProvider lifecycleProvider) {
       mLifecycleProvider = lifecycleProvider;
-      return this;
-    }
-
-    public Builder withComponentTreeDebugEventListener(
-        ComponentTreeDebugEventListener componentTreeDebugEventListener) {
-      this.componentTreeDebugEventListener = componentTreeDebugEventListener;
       return this;
     }
 

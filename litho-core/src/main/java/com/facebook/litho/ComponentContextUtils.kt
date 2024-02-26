@@ -32,7 +32,6 @@ object ComponentContextUtils {
         componentsConfig = componentsConfig,
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
         renderUnitIdGenerator = renderUnitIdGenerator,
-        visibilityBoundsTransformer = transformer,
-        debugEventListener = null)
+        visibilityBoundsTransformer = transformer)
   }
 }

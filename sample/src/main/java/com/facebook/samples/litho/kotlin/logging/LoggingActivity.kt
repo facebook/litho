@@ -42,16 +42,16 @@ class LoggingActivity : NavigatableDemoActivity() {
             ComponentTree.create(c, LoggingRootComponent())
                 .componentsConfiguration(
                     ComponentsConfiguration.defaultInstance.copy(
-                        componentsLogger = SampleComponentsLogger()))
-                .withComponentTreeDebugEventListener(
-                    object : ComponentTreeDebugEventListener {
-                      override fun onEvent(debugEvent: DebugEvent) {
-                        Log.d("litho-events", debugEvent.toString())
-                      }
+                        componentsLogger = SampleComponentsLogger(),
+                        debugEventListener =
+                            object : ComponentTreeDebugEventListener {
+                              override fun onEvent(debugEvent: DebugEvent) {
+                                Log.d("litho-events", debugEvent.toString())
+                              }
 
-                      override val events: Set<String> =
-                          setOf(MountItemMount, StateUpdateEnqueued, LayoutCommitted)
-                    })
+                              override val events: Set<String> =
+                                  setOf(MountItemMount, StateUpdateEnqueued, LayoutCommitted)
+                            }))
                 .build())
 
     setContentView(lithoView)

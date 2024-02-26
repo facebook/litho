@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEvent.LayoutCommitted
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
@@ -41,7 +42,8 @@ class ComponentTreeDebugEventListenerTest {
     val componentContext = ComponentContext(getApplicationContext() as Context)
     val componentTree =
         ComponentTree.create(componentContext, EmptyComponent())
-            .withComponentTreeDebugEventListener(listener)
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(debugEventListener = listener))
             .build()
 
     rule.render(componentTree = componentTree) { MyComponent() }
@@ -58,7 +60,8 @@ class ComponentTreeDebugEventListenerTest {
     val componentContext = ComponentContext(getApplicationContext() as Context)
     val componentTree =
         ComponentTree.create(componentContext, EmptyComponent())
-            .withComponentTreeDebugEventListener(null)
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(debugEventListener = null))
             .build()
 
     rule.render(componentTree = componentTree) { MyComponent() }
@@ -74,7 +77,8 @@ class ComponentTreeDebugEventListenerTest {
     val componentContext = ComponentContext(getApplicationContext() as Context)
     val componentTree =
         ComponentTree.create(componentContext, EmptyComponent())
-            .withComponentTreeDebugEventListener(listener)
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(debugEventListener = listener))
             .build()
 
     rule.render(componentTree = componentTree) { MyComponent() }

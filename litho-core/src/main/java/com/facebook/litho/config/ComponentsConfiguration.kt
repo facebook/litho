@@ -20,6 +20,7 @@ import android.os.Build
 import com.facebook.litho.BuildConfig
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentHost.UnsafeModificationPolicy
+import com.facebook.litho.ComponentTreeDebugEventListener
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.DefaultErrorEventHandler
 import com.facebook.litho.ErrorEventHandler
@@ -99,7 +100,15 @@ internal constructor(
      * @see [ComponentHost.UnsafeModificationPolicy]
      */
     @JvmField
-    val componentHostInvalidModificationPolicy: ComponentHost.UnsafeModificationPolicy? = null
+    val componentHostInvalidModificationPolicy: ComponentHost.UnsafeModificationPolicy? = null,
+    /**
+     * You can define a [ComponentTreeDebugEventListener] to listen on specific litho lifecycle
+     * related events.
+     *
+     * @see [com.facebook.litho.debug.LithoDebugEvent]
+     * @see [com.facebook.rendercore.debug.DebugEvent]
+     */
+    @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -265,6 +274,7 @@ internal constructor(
     private var visibilityProcessingEnabled = baseConfig.visibilityProcessingEnabled
     private var logTag = baseConfig.logTag
     private var componentsLogger = baseConfig.componentsLogger
+    private var debugEventListener = baseConfig.debugEventListener
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -326,6 +336,10 @@ internal constructor(
       this.componentsLogger = componentsLogger
     }
 
+    fun debugEventListener(debugEventListener: ComponentTreeDebugEventListener?) {
+      this.debugEventListener = debugEventListener
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -350,7 +364,8 @@ internal constructor(
               } else {
                 logTag
               },
-          componentsLogger = componentsLogger)
+          componentsLogger = componentsLogger,
+          debugEventListener = debugEventListener)
     }
   }
 }
