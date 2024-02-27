@@ -80,6 +80,7 @@ fun NestedLithoPrimitive(
       config,
       currentResolveResult,
       stateUpdateRequest,
+      stateCommitListener,
       errorComponent,
       rootHostReference,
       lifecycleProvider,
@@ -121,6 +122,7 @@ fun NestedLithoPrimitive(
             // commit the state for the LayoutState that is going to be mounted
             val newState = layoutState.resolveResult.treeState
 
+            stateCommitListener?.commit(newState)
             layoutState.commit()
             layoutState.runEffects()
 
@@ -209,6 +211,7 @@ data class NestedLithoResolveContext(
     val config: LithoConfiguration,
     val currentResolveResult: ResolveResult?,
     val stateUpdateRequest: StateUpdateRequester,
+    val stateCommitListener: StateCommitListener? = null,
     val errorComponent: ((Component?) -> Unit) = { /* TODO: provide default implementation */},
     val rootHostReference: NestedMountedViewReference = NestedMountedViewReference(),
     val lifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider(),
@@ -216,4 +219,8 @@ data class NestedLithoResolveContext(
 
 fun interface StateUpdateRequester {
   fun request(update: PendingStateUpdate)
+}
+
+fun interface StateCommitListener {
+  fun commit(treeState: TreeState)
 }
