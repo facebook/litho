@@ -16,8 +16,8 @@
 
 package com.facebook.rendercore
 
-import android.util.LongSparseArray
 import android.util.Pair
+import androidx.collection.LongSparseArray
 import com.facebook.rendercore.extensions.RenderCoreExtension
 import java.util.Locale
 
@@ -25,6 +25,7 @@ import java.util.Locale
 class RenderTree(
     val root: RenderTreeNode,
     private val flatList: Array<RenderTreeNode>,
+    idToIndexMap: LongSparseArray<Int>?,
     val sizeConstraints: SizeConstraints,
     val renderStateId: Int,
     val extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
@@ -41,62 +42,26 @@ class RenderTree(
   val mountableOutputCount: Int
     get() = flatList.size
 
-  private val idToIndexMap = LongSparseArray<Int>()
+  private val idToIndexMap: LongSparseArray<Int>
 
   init {
-    for (i in 0 until flatList.size) {
-      assertNoDuplicateRenderUnits(i)
-      idToIndexMap.put(flatList[i].renderUnit.id, i)
+    if (idToIndexMap != null) {
+      this.idToIndexMap = idToIndexMap
+    } else {
+      this.idToIndexMap = LongSparseArray(flatList.size)
+      for (i in flatList.indices) {
+        assertNoDuplicateRenderUnits(i, this.idToIndexMap, this@RenderTree)
+        this.idToIndexMap.put(flatList[i].renderUnit.id, i)
+      }
     }
-  }
-
-  /**
-   * Throws an exception if this RenderTree already has a RenderUnit with the same ID as the one at
-   * the given index.
-   */
-  private fun assertNoDuplicateRenderUnits(newNodeIndex: Int) {
-    val newNode = flatList[newNodeIndex]
-    if (idToIndexMap[newNode.renderUnit.id] == null) {
-      return
-    }
-    val existingNodeIndex = idToIndexMap[newNode.renderUnit.id]
-    val existingNode = flatList[existingNodeIndex]
-    throw IllegalStateException(
-        String.format(
-            Locale.US,
-            """
-              RenderTrees must not have RenderUnits with the same ID:
-              Attempted to add item with existing ID at index %d: %s
-              Existing item at index %d: %s
-              Full RenderTree: %s
-              """
-                .trimIndent(),
-            newNodeIndex,
-            newNode.generateDebugString(null),
-            existingNodeIndex,
-            existingNode.generateDebugString(null),
-            generateDebugString()))
   }
 
   fun getRenderTreeNodeIndex(renderUnitId: Long): Int {
-    return idToIndexMap[renderUnitId, -1]
+    return idToIndexMap.get(renderUnitId, -1)
   }
 
   fun getRenderTreeNodeAtIndex(index: Int): RenderTreeNode {
     return flatList[index]
-  }
-
-  private fun generateDebugString(): String {
-    val l = Locale.US
-
-    return buildString {
-      append("RenderTree details:\n")
-      append(String.format(l, "%s\n", sizeConstraints.toString()))
-      append(String.format(l, "Full child list (size = %d):\n", flatList.size))
-      for (node in flatList) {
-        append(String.format(l, "%s\n", node.generateDebugString(this@RenderTree)))
-      }
-    }
   }
 
   companion object {
@@ -104,6 +69,7 @@ class RenderTree(
     fun create(
         root: RenderTreeNode,
         flatList: Array<RenderTreeNode>,
+        idToIndexMap: LongSparseArray<Int>?,
         sizeConstraints: Long,
         renderStateId: Int,
         extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
@@ -112,11 +78,57 @@ class RenderTree(
       return RenderTree(
           root,
           flatList,
+          idToIndexMap,
           SizeConstraints.Helper.encode(sizeConstraints),
           renderStateId,
           extensionResults,
           debugData,
       )
+    }
+
+    /**
+     * Throws an exception if this RenderTree already has a RenderUnit with the same ID as the one
+     * at the given index.
+     */
+    private fun assertNoDuplicateRenderUnits(
+        newNodeIndex: Int,
+        idToIndexMap: LongSparseArray<Int>,
+        renderTree: RenderTree,
+    ) {
+      val flatList = renderTree.flatList
+      val newNode = flatList[newNodeIndex]
+      val existingNodeIndex = idToIndexMap.get(newNode.renderUnit.id, -1)
+      if (existingNodeIndex == -1) {
+        return
+      } else {
+        val existingNode = flatList[existingNodeIndex]
+        throw IllegalStateException(
+            String.format(
+                Locale.US,
+                """
+              RenderTrees must not have RenderUnits with the same ID:
+              Attempted to add item with existing ID at index %d: %s
+              Existing item at index %d: %s
+              Full RenderTree: %s
+              """
+                    .trimIndent(),
+                newNodeIndex,
+                newNode.generateDebugString(null),
+                existingNodeIndex,
+                existingNode.generateDebugString(null),
+                generateDebugString(renderTree)))
+      }
+    }
+
+    private fun generateDebugString(renderTree: RenderTree): String {
+      val l = Locale.US
+      return buildString {
+        append("RenderTree details:\n")
+        append(String.format(l, "Full child list (size = %d):\n", renderTree.flatList.size))
+        for (node in renderTree.flatList) {
+          append(String.format(l, "%s\n", node.generateDebugString(renderTree)))
+        }
+      }
     }
   }
 }

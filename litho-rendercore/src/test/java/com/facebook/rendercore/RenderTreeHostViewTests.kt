@@ -75,7 +75,13 @@ class RenderTreeHostViewTests {
     try {
       // RenderTree ctor should detect duplicate RU ids and throw an illegal state exception here.
       RenderTree(
-          node1, arrayOf(node1, node2), SizeConstraints.exact(0, 0), RenderState.NO_ID, null, null)
+          node1,
+          arrayOf(node1, node2),
+          null,
+          SizeConstraints.exact(0, 0),
+          RenderState.NO_ID,
+          null,
+          null)
     } catch (e: IllegalStateException) {
       // Exception occurred as expected, raise flag indicate valid state for assert.
       exceptionOccurred = true

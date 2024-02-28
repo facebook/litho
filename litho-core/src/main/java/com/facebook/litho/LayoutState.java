@@ -265,7 +265,15 @@ public class LayoutState
 
     final RenderTree renderTree =
         RenderTree.create(
-            root, flatList, mSizeConstraints.getEncodedValue(), mComponentTreeId, null, null);
+            root,
+            flatList,
+            getComponentContext().mLithoConfiguration.componentsConfig.shouldReuseIdToPositionMap
+                ? mOutputsIdToPositionMap
+                : null,
+            mSizeConstraints.getEncodedValue(),
+            mComponentTreeId,
+            null,
+            null);
     mCachedRenderTree = renderTree;
 
     return renderTree;

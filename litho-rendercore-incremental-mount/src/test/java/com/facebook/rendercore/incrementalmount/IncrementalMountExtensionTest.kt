@@ -416,6 +416,7 @@ class IncrementalMountExtensionTest {
         RenderTree(
             hostRenderTreeNode,
             flatList,
+            null,
             SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,
@@ -456,6 +457,7 @@ class IncrementalMountExtensionTest {
         RenderTree(
             hostRenderTreeNode,
             flatList,
+            null,
             SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,
@@ -481,6 +483,7 @@ class IncrementalMountExtensionTest {
         RenderTree(
             hostRenderTreeNode,
             flatListReparented,
+            null,
             SizeConstraints.exact(100, 100),
             RenderState.NO_ID,
             null,

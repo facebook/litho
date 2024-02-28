@@ -110,6 +110,7 @@ internal constructor(
      */
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
     @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
+    @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -373,6 +374,7 @@ internal constructor(
           componentsLogger = componentsLogger,
           debugEventListener = debugEventListener,
           shouldBuildRenderTreeInBg = shouldBuildRenderTreeInBg,
+          shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
       )
     }
   }

@@ -150,7 +150,7 @@ object Reducer {
     if (BuildConfig.DEBUG) {
       debugData = layoutResult
     }
-    return RenderTree(root, nodesArray, sizeConstraints, renderStateId, results, debugData)
+    return RenderTree(root, nodesArray, null, sizeConstraints, renderStateId, results, debugData)
   }
 
   @JvmStatic
