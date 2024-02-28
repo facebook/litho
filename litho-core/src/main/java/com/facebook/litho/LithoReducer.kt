@@ -113,15 +113,19 @@ internal object LithoReducer {
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults")
     }
-    collectResults(
-        parentContext = context,
-        result = root,
-        reductionState = reductionState,
-        lithoLayoutContext = lithoLayoutContext,
-        x = 0,
-        y = 0,
-        parent = parent,
-        parentHierarchy = hierarchy)
+    try {
+      collectResults(
+          parentContext = context,
+          result = root,
+          reductionState = reductionState,
+          lithoLayoutContext = lithoLayoutContext,
+          x = 0,
+          y = 0,
+          parent = parent,
+          parentHierarchy = hierarchy)
+    } catch (e: Exception) {
+      throw ComponentUtils.wrapWithMetadata(context, e)
+    }
     if (isTracing) {
       ComponentsSystrace.endSection()
     }
@@ -430,16 +434,20 @@ internal object LithoReducer {
 
       val nestedTree: LithoLayoutResult = result.nestedResult ?: return
 
-      collectResults(
-          parentContext = immediateParentContext,
-          result = nestedTree,
-          reductionState = reductionState,
-          lithoLayoutContext = lithoLayoutContext,
-          x = x + result.getXForChildAtIndex(0), // Account for position of the holder node.
-          y = y + result.getYForChildAtIndex(0), // Account for position of the holder node.
-          parent = parent,
-          parentDiffNode = parentDiffNode,
-          parentHierarchy = hierarchy)
+      try {
+        collectResults(
+            parentContext = immediateParentContext,
+            result = nestedTree,
+            reductionState = reductionState,
+            lithoLayoutContext = lithoLayoutContext,
+            x = x + result.getXForChildAtIndex(0), // Account for position of the holder node.
+            y = y + result.getYForChildAtIndex(0), // Account for position of the holder node.
+            parent = parent,
+            parentDiffNode = parentDiffNode,
+            parentHierarchy = hierarchy)
+      } catch (e: Exception) {
+        throw ComponentUtils.wrapWithMetadata(immediateParentContext, e)
+      }
       return
     }
 
@@ -549,16 +557,20 @@ internal object LithoReducer {
     // We must process the nodes in order so that the layout state output order is correct.
     for (i in 0 until result.childCount) {
       val child: LithoLayoutResult = result.getChildAt(i)
-      collectResults(
-          parentContext = context,
-          result = child,
-          reductionState = reductionState,
-          lithoLayoutContext = lithoLayoutContext,
-          x = x + result.getXForChildAtIndex(i),
-          y = y + result.getYForChildAtIndex(i),
-          parent = parentRenderTreeNode,
-          parentDiffNode = diffNode,
-          parentHierarchy = hierarchy)
+      try {
+        collectResults(
+            parentContext = context,
+            result = child,
+            reductionState = reductionState,
+            lithoLayoutContext = lithoLayoutContext,
+            x = x + result.getXForChildAtIndex(i),
+            y = y + result.getYForChildAtIndex(i),
+            parent = parentRenderTreeNode,
+            parentDiffNode = diffNode,
+            parentHierarchy = hierarchy)
+      } catch (e: Exception) {
+        throw ComponentUtils.wrapWithMetadata(context, e)
+      }
     }
 
     // 5. Add border color if defined.

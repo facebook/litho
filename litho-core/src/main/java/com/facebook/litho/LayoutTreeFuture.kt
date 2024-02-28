@@ -166,11 +166,15 @@ class LayoutTreeFuture(
                       },
               )
           if (root != null) {
-            measurePendingSubtrees(
-                parentContext = c,
-                lithoLayoutContext = lsc,
-                reductionState = reductionState,
-                result = root)
+            try {
+              measurePendingSubtrees(
+                  parentContext = c,
+                  lithoLayoutContext = lsc,
+                  reductionState = reductionState,
+                  result = root)
+            } catch (e: Exception) {
+              throw ComponentUtils.wrapWithMetadata(c, e)
+            }
           }
 
           perfEvent?.markerPoint("start_reduce")

@@ -173,21 +173,29 @@ internal object Layout {
             .addAll(outputs.componentsThatNeedPreviousRenderData)
       }
 
-      measurePendingSubtrees(
-          parentContext = parentContext,
-          lithoLayoutContext = lithoLayoutContext,
-          reductionState = reductionState,
-          result = nestedTree)
+      try {
+        measurePendingSubtrees(
+            parentContext = parentContext,
+            lithoLayoutContext = lithoLayoutContext,
+            reductionState = reductionState,
+            result = nestedTree)
+      } catch (e: Exception) {
+        throw ComponentUtils.wrapWithMetadata(parentContext, e)
+      }
       return
     } else if (result.childrenCount > 0) {
       val context: ComponentContext = result.node.tailComponentContext
       for (i in 0 until result.childCount) {
         val child: LithoLayoutResult = result.getChildAt(i)
-        measurePendingSubtrees(
-            parentContext = context,
-            lithoLayoutContext = lithoLayoutContext,
-            reductionState = reductionState,
-            result = child)
+        try {
+          measurePendingSubtrees(
+              parentContext = context,
+              lithoLayoutContext = lithoLayoutContext,
+              reductionState = reductionState,
+              result = child)
+        } catch (e: Exception) {
+          throw ComponentUtils.wrapWithMetadata(context, e)
+        }
       }
     }
 
