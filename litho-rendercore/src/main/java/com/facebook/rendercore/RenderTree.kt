@@ -43,23 +43,6 @@ class RenderTree(
 
   private val idToIndexMap = LongSparseArray<Int>()
 
-  @Deprecated(message = "Use the constructor that accepts SizeConstraints")
-  constructor(
-      root: RenderTreeNode,
-      flatList: Array<RenderTreeNode>,
-      widthSpec: Int,
-      heightSpec: Int,
-      renderStateId: Int,
-      extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
-      debugData: Any?
-  ) : this(
-      root,
-      flatList,
-      SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
-      renderStateId,
-      extensionResults,
-      debugData)
-
   init {
     for (i in 0 until flatList.size) {
       assertNoDuplicateRenderUnits(i)
@@ -113,6 +96,27 @@ class RenderTree(
       for (node in flatList) {
         append(String.format(l, "%s\n", node.generateDebugString(this@RenderTree)))
       }
+    }
+  }
+
+  companion object {
+    @JvmStatic
+    fun create(
+        root: RenderTreeNode,
+        flatList: Array<RenderTreeNode>,
+        sizeConstraints: Long,
+        renderStateId: Int,
+        extensionResults: List<Pair<RenderCoreExtension<*, *>, Any>>?,
+        debugData: Any?
+    ): RenderTree {
+      return RenderTree(
+          root,
+          flatList,
+          SizeConstraints.Helper.encode(sizeConstraints),
+          renderStateId,
+          extensionResults,
+          debugData,
+      )
     }
   }
 }

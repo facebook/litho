@@ -316,6 +316,10 @@ value class SizeConstraints internal constructor(val encodedValue: Long) {
       return encodedWidth.shl(32) or encodedHeight
     }
 
+    fun encode(encoded: Long): SizeConstraints {
+      return SizeConstraints(encoded)
+    }
+
     internal fun getMinWidth(sizeConstraints: Long): Int {
       return Mode.forConstraints(sizeConstraints.high).decodeMinWidth(sizeConstraints)
     }

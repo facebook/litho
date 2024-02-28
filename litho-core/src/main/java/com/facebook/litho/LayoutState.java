@@ -264,14 +264,8 @@ public class LayoutState
     }
 
     final RenderTree renderTree =
-        new RenderTree(
-            root,
-            flatList,
-            SizeConstraints.Helper.getWidthSpec(mSizeConstraints.getEncodedValue()),
-            SizeConstraints.Helper.getHeightSpec(mSizeConstraints.getEncodedValue()),
-            mComponentTreeId,
-            null,
-            null);
+        RenderTree.create(
+            root, flatList, mSizeConstraints.getEncodedValue(), mComponentTreeId, null, null);
     mCachedRenderTree = renderTree;
 
     return renderTree;
