@@ -787,7 +787,12 @@ class TextInputSpec {
 
   @OnCreateMountContent
   protected static EditTextWithEventHandlers onCreateMountContent(Context c) {
-    return new EditTextWithEventHandlers(c);
+    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c);
+    // Setting a custom editable factory so we can catch and rethrow crashes from
+    // SpannableStringBuilder#setSpan with additional information. This should cause no
+    // functional changes.
+    editText.setEditableFactory(new ForLoggingEditableFactory());
+    return editText;
   }
 
   @OnMount
@@ -1469,6 +1474,31 @@ class TextInputSpec {
         editText.setImportantForAutofill(importantForAutofill);
         editText.setAutofillHints(autofillHints);
       }
+    }
+  }
+
+  private static class ForLoggingEditableFactory extends Editable.Factory {
+
+    @Override
+    public Editable newEditable(CharSequence source) {
+      return new SpannableStringBuilder(source) {
+        @Override
+        public void setSpan(Object what, int start, int end, int flags) {
+          /*
+           Catching and rethrowing IndexOutOfBoundsExceptions with additional info. One known source
+           of this crash is when using spell checker exceeds EditText maxLength
+           (https://issuetracker.google.com/issues/36944935)
+          */
+          try {
+            super.setSpan(what, start, end, flags);
+          } catch (IndexOutOfBoundsException e) {
+            throw new IndexOutOfBoundsException(
+                String.format(
+                    "%s | span=%s | flags=%d",
+                    e.getMessage(), what != null ? what.getClass() : "Unknown", flags));
+          }
+        }
+      };
     }
   }
 }
