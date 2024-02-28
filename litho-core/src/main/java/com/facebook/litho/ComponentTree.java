@@ -2507,6 +2507,9 @@ public class ComponentTree
           && !layoutState.isCommitted()
           && isCompatibleSpec(layoutState, mWidthSpec, mHeightSpec)) {
         mCommittedLayoutVersion = layoutVersion;
+        if (mContext.mLithoConfiguration.componentsConfig.shouldBuildRenderTreeInBg) {
+          layoutState.toRenderTree();
+        }
         mCommittedLayoutState = layoutState;
         layoutState.markCommitted();
         committedNewLayout = true;

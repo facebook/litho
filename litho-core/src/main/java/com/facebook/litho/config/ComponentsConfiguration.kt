@@ -109,6 +109,7 @@ internal constructor(
      * @see [com.facebook.rendercore.debug.DebugEvent]
      */
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
+    @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -275,6 +276,7 @@ internal constructor(
     private var logTag = baseConfig.logTag
     private var componentsLogger = baseConfig.componentsLogger
     private var debugEventListener = baseConfig.debugEventListener
+    private var shouldBuildRenderTreeInBg = baseConfig.shouldBuildRenderTreeInBg
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -340,6 +342,10 @@ internal constructor(
       this.debugEventListener = debugEventListener
     }
 
+    fun shouldBuildRenderTreeInBg(value: Boolean): Builder = also {
+      this.shouldBuildRenderTreeInBg = value
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -365,7 +371,9 @@ internal constructor(
                 logTag
               },
           componentsLogger = componentsLogger,
-          debugEventListener = debugEventListener)
+          debugEventListener = debugEventListener,
+          shouldBuildRenderTreeInBg = shouldBuildRenderTreeInBg,
+      )
     }
   }
 }

@@ -244,7 +244,7 @@ public class LayoutState
     return mHasComponentsExcludedFromIncrementalMount;
   }
 
-  RenderTree toRenderTree() {
+  public RenderTree toRenderTree() {
     if (mCachedRenderTree != null) {
       return mCachedRenderTree;
     }

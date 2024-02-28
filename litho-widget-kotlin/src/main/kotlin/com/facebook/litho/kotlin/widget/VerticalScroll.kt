@@ -279,6 +279,8 @@ internal class VerticalScrollLayoutBehavior(
           max(sizeConstraints.minHeight, layoutState.height)
         }
 
+    layoutState.toRenderTree()
+
     return PrimitiveLayoutResult(width = width, height = height, layoutData = layoutState)
   }
 }

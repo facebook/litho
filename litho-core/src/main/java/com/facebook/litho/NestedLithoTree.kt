@@ -66,20 +66,27 @@ object NestedLithoTree {
       sizeConstraints: SizeConstraints,
       current: LayoutState?,
   ): LayoutState {
-    return if (result != current?.resolveResult || sizeConstraints != current.sizeConstraints) {
-      LayoutTreeFuture.layout(
-          result,
-          sizeConstraints,
-          -1,
-          checkNotNull(result.context.lithoTree).id,
-          current,
-          current?.diffTree,
-          null, // tree future is null; task cannot be cancelled
-          null, // no logger passed; perhaps can inherit from parent
-      )
-    } else {
-      current
+    val layoutState =
+        if (result != current?.resolveResult || sizeConstraints != current.sizeConstraints) {
+          LayoutTreeFuture.layout(
+              result,
+              sizeConstraints,
+              -1,
+              checkNotNull(result.context.lithoTree).id,
+              current,
+              current?.diffTree,
+              null, // tree future is null; task cannot be cancelled
+              null, // no logger passed; perhaps can inherit from parent
+          )
+        } else {
+          current
+        }
+
+    if (result.context.mLithoConfiguration.componentsConfig.shouldBuildRenderTreeInBg) {
+      layoutState.toRenderTree()
     }
+
+    return layoutState
   }
 
   fun LayoutState.commit() {
