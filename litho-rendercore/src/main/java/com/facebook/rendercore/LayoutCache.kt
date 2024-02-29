@@ -53,7 +53,7 @@ class LayoutCache(oldWriteCache: CachedData? = null) {
     @Suppress("UNCHECKED_CAST") return readCache?.cacheById?.get(uniqueId) as? T?
   }
 
-  fun put(uniqueId: Long, value: Any) {
+  fun put(uniqueId: Long, value: Any?) {
     writeCache.cacheById.put(uniqueId, value)
   }
 
