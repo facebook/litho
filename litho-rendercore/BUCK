@@ -18,7 +18,6 @@ load(
 litho_android_library(
     name = "rendercore-stub",
     srcs = glob([
-        "src/main/java/com/facebook/rendercore/**/*.java",
         "src/main/java/com/facebook/rendercore/**/*.kt",
     ]),
     autoglob = False,
@@ -29,7 +28,6 @@ litho_android_library(
         LITHO_PROGUARDANNOTATIONS_TARGET,
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
     ],
-    pure_kotlin = False,
     required_for_source_only_abi = True,
     visibility = LITHO_VISIBILITY,
     deps = [
