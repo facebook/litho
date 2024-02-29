@@ -54,7 +54,7 @@ open class RootHostView @JvmOverloads constructor(context: Context, attrs: Attri
     }
   }
 
-  public override fun performLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+  override fun performLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     rootHostDelegate.onLayout(changed, l, t, r, b)
     performLayoutOnChildrenIfNecessary(this)
   }
