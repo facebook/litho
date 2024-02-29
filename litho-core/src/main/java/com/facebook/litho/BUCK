@@ -69,6 +69,7 @@ litho_android_library(
         LITHO_RENDERCORE_EXTENSIONS_TARGET,
         LITHO_RENDERCORE_EXTENSIONS_RES_TARGET,
         LITHO_PERF_LOGGER,
+        LITHO_FLEXLAYOUT_TARGET,
     ],
     exported_deps = [
         "//fbandroid/java/com/facebook/kotlin/compilerplugins/dataclassgenerate/annotation:dataclassgenerate-annotation",
