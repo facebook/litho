@@ -53,17 +53,6 @@ constructor(
     this.nestedBorderEdges = nestedBorderEdges
   }
 
-  override fun createYogaNodeWriter(): NestedTreeYogaLayoutProps =
-      NestedTreeYogaLayoutProps(NodeConfig.createYogaNode())
-
-  override fun writeToYogaNode(writer: YogaLayoutProps) {
-    val actual = writer as NestedTreeYogaLayoutProps
-    super.writeToYogaNode(writer)
-    nestedBorderEdges = actual.borderWidth
-    nestedTreePadding = actual.padding
-    nestedIsPaddingPercentage = actual.isPaddingPercentage
-  }
-
   override fun createLayoutResult(layoutOutput: YogaLayoutOutput): NestedTreeHolderResult =
       NestedTreeHolderResult(
           c = tailComponentContext, internalNode = this, layoutOutput = layoutOutput)

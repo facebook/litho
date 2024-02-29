@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
-import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
 import com.facebook.yoga.YogaGutter
@@ -31,10 +30,6 @@ import com.facebook.yoga.YogaWrap
  * reconciliation of state, and transitions on a component that conditionally renders to null.
  */
 class NullNode : LithoNode() {
-
-  override fun createYogaNodeWriter(): YogaLayoutProps {
-    return NullWriter().apply { node.display = YogaDisplay.NONE }
-  }
 
   override fun createLayoutResult(layoutOutput: YogaLayoutOutput): LithoLayoutResult {
     return NullLithoLayoutResult(c = tailComponentContext, node = this, layoutOutput = layoutOutput)

@@ -16,12 +16,14 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import android.graphics.Point
 import android.graphics.Rect
 import android.util.Pair
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
+import com.facebook.litho.LithoNode.Companion.setPaddingFromDrawable
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
@@ -38,6 +40,7 @@ import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.rendercore.utils.hasEquivalentFields
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
+import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
@@ -209,7 +212,11 @@ internal object LithoYogaLayoutFunction {
       val writer: YogaLayoutProps = currentNode.createYogaNodeWriter()
 
       // Transfer the layout props to YogaNode
-      currentNode.writeToYogaNode(writer)
+      if (currentNode is NestedTreeHolder) {
+        currentNode.writeNestedTreePropsToYogaNode(writer as NestedTreeYogaLayoutProps)
+      } else if (currentNode !is NullNode) {
+        currentNode.writeNodePropsToYogaNode(writer)
+      }
       yogaNode = writer.node
 
       // Ideally the layout data should be created when measure is called on the mount spec or
@@ -847,6 +854,97 @@ internal object LithoYogaLayoutFunction {
       SizeSpec.EXACTLY -> node.setHeight(SizeSpec.getSize(heightSpec).toFloat())
       else -> {}
     }
+  }
+
+  private fun LithoNode.createYogaNodeWriter(): YogaLayoutProps {
+    return when (this) {
+      is NestedTreeHolder -> {
+        NestedTreeYogaLayoutProps(NodeConfig.createYogaNode())
+      }
+      is NullNode -> {
+        NullWriter().apply { node.display = YogaDisplay.NONE }
+      }
+      else -> {
+        YogaLayoutProps(NodeConfig.createYogaNode())
+      }
+    }
+  }
+
+  private fun LithoNode.writeNodePropsToYogaNode(writer: YogaLayoutProps) {
+    val node: YogaNode = writer.node
+
+    // Apply the extra layout props
+    layoutDirection?.let { node.setDirection(it.toYogaDirection()) }
+    flexDirection?.let { node.flexDirection = it }
+    justifyContent?.let { node.justifyContent = it }
+    alignContent?.let { node.alignContent = it }
+    alignItems?.let { node.alignItems = it }
+    yogaWrap?.let { node.wrap = it }
+    yogaMeasureFunction?.let { node.setMeasureFunction(it) }
+
+    // Apply the layout props from the components to the YogaNode
+    for (info in scopedComponentInfos) {
+      val component: Component = info.component
+
+      // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
+      if (nestedTreeHolder != null && Component.isLayoutSpecWithSizeSpec(component)) {
+        nestedTreeHolder?.transferInto(this)
+        // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
+        _needsHostView = LithoNode.needsHostView(this)
+        paddingFromBackground?.let { setPaddingFromDrawable(writer, it) }
+      } else {
+        info.commonProps?.let { props ->
+          val styleAttr: Int = props.defStyleAttr
+          val styleRes: Int = props.defStyleRes
+          if (styleAttr != 0 || styleRes != 0) {
+            val context: Context = tailComponentContext.androidContext
+            val a =
+                context.obtainStyledAttributes(
+                    null, R.styleable.ComponentLayout, styleAttr, styleRes)
+            LithoNode.applyLayoutStyleAttributes(writer, a)
+            a.recycle()
+          }
+
+          // Set the padding from the background
+          props.paddingFromBackground?.let { padding -> setPaddingFromDrawable(writer, padding) }
+
+          // Copy the layout props into this LithoNode.
+          props.copyLayoutProps(writer)
+        }
+      }
+    }
+
+    // Apply the border widths
+    if (privateFlags and LithoNode.PFLAG_BORDER_IS_SET != 0L) {
+      for (i in borderEdgeWidths.indices) {
+        writer.setBorderWidth(Border.edgeFromIndex(i), borderEdgeWidths[i].toFloat())
+      }
+    }
+
+    // Maybe apply the padding if parent is a Nested Tree Holder
+    nestedPaddingEdges?.let { edges ->
+      for (i in 0 until Edges.EDGES_LENGTH) {
+        val value: Float = edges.getRaw(i)
+        if (!YogaConstants.isUndefined(value)) {
+          val edge: YogaEdge = YogaEdge.fromInt(i)
+          if (nestedIsPaddingPercent?.get(edge.intValue()) != null) {
+            writer.paddingPercent(edge, value)
+          } else {
+            writer.paddingPx(edge, value.toInt())
+          }
+        }
+      }
+    }
+
+    debugLayoutProps?.copyInto(writer)
+    isPaddingSet = writer.isPaddingSet
+  }
+
+  private fun NestedTreeHolder.writeNestedTreePropsToYogaNode(writer: NestedTreeYogaLayoutProps) {
+    writeNodePropsToYogaNode(writer)
+    nestedBorderEdges = writer.borderWidth
+    nestedTreePadding = writer.padding
+    nestedIsPaddingPercentage = writer.isPaddingPercentage
   }
 }
 

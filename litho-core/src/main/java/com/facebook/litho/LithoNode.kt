@@ -51,7 +51,6 @@ import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaMeasureFunction
-import com.facebook.yoga.YogaNode
 import com.facebook.yoga.YogaPositionType
 import com.facebook.yoga.YogaWrap
 import java.util.concurrent.atomic.AtomicInteger
@@ -65,16 +64,8 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   private var _attachables: MutableList<Attachable>? = null
   private var debugComponents: MutableSet<DebugComponent>? = null
   private var _unresolvedComponents: MutableList<Component>? = null
-  private var nestedTreeHolder: NestedTreeHolder? = null
-  private var nestedPaddingEdges: Edges? = null
-  private var nestedIsPaddingPercent: BooleanArray? = null
-  private var debugLayoutProps: DefaultLayoutProps? = null
-  private var _needsHostView: Boolean = false
   private var frozen: Boolean = false
   private var nodeInfoWasWritten: Boolean = false
-  private var flexDirection: YogaFlexDirection? = null
-  private var yogaWrap: YogaWrap? = null
-  private var yogaMeasureFunction: YogaMeasureFunction? = null
   // endregion
 
   // region Properties
@@ -87,9 +78,17 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   internal var justifyContent: YogaJustify? = null
   internal var alignContent: YogaAlign? = null
   internal var alignItems: YogaAlign? = null
+  internal var flexDirection: YogaFlexDirection? = null
+  internal var yogaWrap: YogaWrap? = null
+  internal var yogaMeasureFunction: YogaMeasureFunction? = null
+  internal var nestedTreeHolder: NestedTreeHolder? = null
+  internal var _needsHostView: Boolean = false
+  internal var nestedPaddingEdges: Edges? = null
+  internal var nestedIsPaddingPercent: BooleanArray? = null
   internal var privateFlags: Long = 0
+  internal var debugLayoutProps: DefaultLayoutProps? = null
 
-  private val borderEdgeWidths: IntArray = IntArray(Border.EDGE_COUNT)
+  internal val borderEdgeWidths: IntArray = IntArray(Border.EDGE_COUNT)
   val borderColors: IntArray = IntArray(Border.EDGE_COUNT)
   val borderRadius: FloatArray = FloatArray(Border.RADIUS_COUNT)
 
@@ -309,78 +308,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       throw RuntimeException(e)
     }
     return node
-  }
-
-  open fun createYogaNodeWriter(): YogaLayoutProps = YogaLayoutProps(NodeConfig.createYogaNode())
-
-  open fun writeToYogaNode(writer: YogaLayoutProps) {
-    val node: YogaNode = writer.node
-
-    // Apply the extra layout props
-    layoutDirection?.let { node.setDirection(it.toYogaDirection()) }
-    flexDirection?.let { node.flexDirection = it }
-    justifyContent?.let { node.justifyContent = it }
-    alignContent?.let { node.alignContent = it }
-    alignItems?.let { node.alignItems = it }
-    yogaWrap?.let { node.wrap = it }
-    yogaMeasureFunction?.let { node.setMeasureFunction(it) }
-
-    // Apply the layout props from the components to the YogaNode
-    for (info in _scopedComponentInfos) {
-      val component: Component = info.component
-
-      // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
-      if (nestedTreeHolder != null && Component.isLayoutSpecWithSizeSpec(component)) {
-        nestedTreeHolder?.transferInto(this)
-        // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
-        _needsHostView = needsHostView(this)
-        paddingFromBackground?.let { setPaddingFromDrawable(writer, it) }
-      } else {
-        info.commonProps?.let { props ->
-          val styleAttr: Int = props.defStyleAttr
-          val styleRes: Int = props.defStyleRes
-          if (styleAttr != 0 || styleRes != 0) {
-            val context: Context = tailComponentContext.androidContext
-            val a =
-                context.obtainStyledAttributes(
-                    null, R.styleable.ComponentLayout, styleAttr, styleRes)
-            applyLayoutStyleAttributes(writer, a)
-            a.recycle()
-          }
-
-          // Set the padding from the background
-          props.paddingFromBackground?.let { padding -> setPaddingFromDrawable(writer, padding) }
-
-          // Copy the layout props into this LithoNode.
-          props.copyLayoutProps(writer)
-        }
-      }
-    }
-
-    // Apply the border widths
-    if (privateFlags and PFLAG_BORDER_IS_SET != 0L) {
-      for (i in borderEdgeWidths.indices) {
-        writer.setBorderWidth(Border.edgeFromIndex(i), borderEdgeWidths[i].toFloat())
-      }
-    }
-
-    // Maybe apply the padding if parent is a Nested Tree Holder
-    nestedPaddingEdges?.let { edges ->
-      for (i in 0 until Edges.EDGES_LENGTH) {
-        val value: Float = edges.getRaw(i)
-        if (!YogaConstants.isUndefined(value)) {
-          val edge: YogaEdge = YogaEdge.fromInt(i)
-          if (nestedIsPaddingPercent?.get(edge.intValue()) != null) {
-            writer.paddingPercent(edge, value)
-          } else {
-            writer.paddingPx(edge, value.toInt())
-          }
-        }
-      }
-    }
-
-    debugLayoutProps?.copyInto(writer)
-    isPaddingSet = writer.isPaddingSet
   }
 
   open fun createLayoutResult(layoutOutput: YogaLayoutOutput): LithoLayoutResult =
@@ -905,7 +832,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     internal const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
     internal const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
 
-    private fun applyLayoutStyleAttributes(props: YogaLayoutProps, a: TypedArray) {
+    internal fun applyLayoutStyleAttributes(props: YogaLayoutProps, a: TypedArray) {
       for (i in 0 until a.indexCount) {
         when (val attr = a.getIndex(i)) {
           R.styleable.ComponentLayout_android_layout_width -> {
@@ -988,7 +915,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       }
     }
 
-    private fun setPaddingFromDrawable(target: YogaLayoutProps, padding: Rect) {
+    internal fun setPaddingFromDrawable(target: YogaLayoutProps, padding: Rect) {
       target.paddingPx(YogaEdge.LEFT, padding.left)
       target.paddingPx(YogaEdge.TOP, padding.top)
       target.paddingPx(YogaEdge.RIGHT, padding.right)
