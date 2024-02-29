@@ -17,13 +17,13 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Point
 import android.graphics.Rect
 import android.util.Pair
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
-import com.facebook.litho.LithoNode.Companion.setPaddingFromDrawable
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
@@ -38,12 +38,17 @@ import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.rendercore.utils.hasEquivalentFields
+import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaFlexDirection
+import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
+import com.facebook.yoga.YogaPositionType
+import com.facebook.yoga.YogaWrap
 
 /** Layout function for LithoNode that layout their children via Flexbox. */
 internal object LithoYogaLayoutFunction {
@@ -901,7 +906,7 @@ internal object LithoYogaLayoutFunction {
             val a =
                 context.obtainStyledAttributes(
                     null, R.styleable.ComponentLayout, styleAttr, styleRes)
-            LithoNode.applyLayoutStyleAttributes(writer, a)
+            applyLayoutStyleAttributes(writer, a)
             a.recycle()
           }
 
@@ -945,6 +950,95 @@ internal object LithoYogaLayoutFunction {
     nestedBorderEdges = writer.borderWidth
     nestedTreePadding = writer.padding
     nestedIsPaddingPercentage = writer.isPaddingPercentage
+  }
+
+  private fun applyLayoutStyleAttributes(props: YogaLayoutProps, a: TypedArray) {
+    for (i in 0 until a.indexCount) {
+      when (val attr = a.getIndex(i)) {
+        R.styleable.ComponentLayout_android_layout_width -> {
+          val width = a.getLayoutDimension(attr, -1)
+          // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
+          if (width >= 0) {
+            props.widthPx(width)
+          }
+        }
+        R.styleable.ComponentLayout_android_layout_height -> {
+          val height = a.getLayoutDimension(attr, -1)
+          // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
+          if (height >= 0) {
+            props.heightPx(height)
+          }
+        }
+        R.styleable.ComponentLayout_android_minHeight ->
+            props.minHeightPx(a.getDimensionPixelSize(attr, 0))
+        R.styleable.ComponentLayout_android_minWidth ->
+            props.minWidthPx(a.getDimensionPixelSize(attr, 0))
+        R.styleable.ComponentLayout_android_paddingLeft ->
+            props.paddingPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_paddingTop ->
+            props.paddingPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_paddingRight ->
+            props.paddingPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_paddingBottom ->
+            props.paddingPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_paddingStart ->
+            props.paddingPx(YogaEdge.START, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_paddingEnd ->
+            props.paddingPx(YogaEdge.END, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_padding ->
+            props.paddingPx(YogaEdge.ALL, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_layout_marginLeft ->
+            props.marginPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_layout_marginTop ->
+            props.marginPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_layout_marginRight ->
+            props.marginPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_layout_marginBottom ->
+            props.marginPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_layout_marginStart ->
+            props.marginPx(YogaEdge.START, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_layout_marginEnd ->
+            props.marginPx(YogaEdge.END, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_android_layout_margin ->
+            props.marginPx(YogaEdge.ALL, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_flex_direction ->
+            props.flexDirection(YogaFlexDirection.fromInt(a.getInteger(attr, 0)))
+        R.styleable.ComponentLayout_flex_wrap -> props.wrap(YogaWrap.fromInt(a.getInteger(attr, 0)))
+        R.styleable.ComponentLayout_flex_justifyContent ->
+            props.justifyContent(YogaJustify.fromInt(a.getInteger(attr, 0)))
+        R.styleable.ComponentLayout_flex_alignItems ->
+            props.alignItems(YogaAlign.fromInt(a.getInteger(attr, 0)))
+        R.styleable.ComponentLayout_flex_alignSelf ->
+            props.alignSelf(YogaAlign.fromInt(a.getInteger(attr, 0)))
+        R.styleable.ComponentLayout_flex_positionType ->
+            props.positionType(YogaPositionType.fromInt(a.getInteger(attr, 0)))
+        R.styleable.ComponentLayout_flex_layoutDirection -> {
+          val layoutDirection = a.getInteger(attr, -1)
+          props.layoutDirection(LayoutDirection.fromInt(layoutDirection))
+        }
+        R.styleable.ComponentLayout_flex -> {
+          val flex = a.getFloat(attr, -1f)
+          if (flex >= 0f) {
+            props.flex(flex)
+          }
+        }
+        R.styleable.ComponentLayout_flex_left ->
+            props.positionPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_flex_top ->
+            props.positionPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_flex_right ->
+            props.positionPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
+        R.styleable.ComponentLayout_flex_bottom ->
+            props.positionPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
+      }
+    }
+  }
+
+  private fun setPaddingFromDrawable(target: YogaLayoutProps, padding: Rect) {
+    target.paddingPx(YogaEdge.LEFT, padding.left)
+    target.paddingPx(YogaEdge.TOP, padding.top)
+    target.paddingPx(YogaEdge.RIGHT, padding.right)
+    target.paddingPx(YogaEdge.BOTTOM, padding.bottom)
   }
 }
 
