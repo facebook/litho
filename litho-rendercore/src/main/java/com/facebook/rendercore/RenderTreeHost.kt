@@ -21,5 +21,5 @@ package com.facebook.rendercore
  * [RenderState] to prepare it.
  */
 interface RenderTreeHost : RenderCoreExtensionHost {
-  fun setRenderTree(tree: RenderTree)
+  fun setRenderTree(tree: RenderTree?)
 }
