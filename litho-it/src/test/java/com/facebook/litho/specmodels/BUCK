@@ -33,6 +33,9 @@ litho_robolectric4_test(
     contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "11",
     target = "11",
+    vm_args = [
+        "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+    ],
     deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
