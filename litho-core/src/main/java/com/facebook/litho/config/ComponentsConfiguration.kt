@@ -111,6 +111,7 @@ internal constructor(
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
     @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
     @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
+    @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -278,6 +279,7 @@ internal constructor(
     private var componentsLogger = baseConfig.componentsLogger
     private var debugEventListener = baseConfig.debugEventListener
     private var shouldBuildRenderTreeInBg = baseConfig.shouldBuildRenderTreeInBg
+    private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -347,6 +349,10 @@ internal constructor(
       this.shouldBuildRenderTreeInBg = value
     }
 
+    fun enablePreAllocationSameThreadCheck(value: Boolean): Builder = also {
+      enablePreAllocationSameThreadCheck = value
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -375,6 +381,7 @@ internal constructor(
           debugEventListener = debugEventListener,
           shouldBuildRenderTreeInBg = shouldBuildRenderTreeInBg,
           shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
+          enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
       )
     }
   }

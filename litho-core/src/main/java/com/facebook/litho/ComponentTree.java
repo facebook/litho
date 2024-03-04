@@ -2574,6 +2574,13 @@ public class ComponentTree
       postBackgroundLayoutStateUpdated();
 
       if (mPreAllocateMountContentHandler != null) {
+        if (mContext.mLithoConfiguration.componentsConfig.enablePreAllocationSameThreadCheck) {
+          if (Thread.currentThread().getName() == DEFAULT_LAYOUT_THREAD_NAME) {
+            mPreAllocateMountContentRunnable.run();
+            return;
+          }
+        }
+
         mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
 
         String tag = EMPTY_STRING;
