@@ -46,9 +46,9 @@ constructor(context: Context, attrs: AttributeSet? = null) :
       var renderTree = currentRenderTree
       mountState.mount(renderTree)
       // We could run into the case that mounting a tree ends up requesting another mount.
-      // We need to keep re-mounting untile the mounted renderTree matches the mCurrentRenderTree.
+      // We need to keep re-mounting until the mounted renderTree matches the mCurrentRenderTree.
       var retries = 0
-      while (renderTree != currentRenderTree) {
+      while (renderTree !== currentRenderTree) {
         if (retries > MAX_REMOUNT_RETRIES) {
           ErrorReporter.report(
               LogLevel.ERROR,
