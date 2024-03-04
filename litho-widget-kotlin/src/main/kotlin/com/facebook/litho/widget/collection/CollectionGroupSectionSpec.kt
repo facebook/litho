@@ -30,8 +30,10 @@ object CollectionGroupSectionSpec {
 
   @JvmStatic
   @OnCreateChildren
-  fun onCreateChildren(c: SectionContext, @Prop childrenBuilder: Children.Builder): Children =
-      childrenBuilder.build()
+  fun onCreateChildren(
+      c: SectionContext,
+      @Prop childrenBuilder: (SectionContext) -> Children.Builder
+  ): Children = childrenBuilder(c).build()
 
   @JvmStatic
   @OnDataBound

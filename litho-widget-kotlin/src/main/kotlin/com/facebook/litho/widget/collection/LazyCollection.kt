@@ -152,13 +152,14 @@ class LazyCollection(
 
     val section =
         CollectionGroupSection.create(sectionContext)
-            .childrenBuilder(
-                Children.create()
-                    .child(
-                        createDataDiffSection(
-                            sectionContext,
-                            lazyCollectionChildren.collectionChildren,
-                            alwaysDetectDuplicates)))
+            .childrenBuilder { context ->
+              Children.create()
+                  .child(
+                      createDataDiffSection(
+                          context,
+                          lazyCollectionChildren.collectionChildren,
+                          alwaysDetectDuplicates))
+            }
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
             .onPullToRefresh(onPullToRefresh)
