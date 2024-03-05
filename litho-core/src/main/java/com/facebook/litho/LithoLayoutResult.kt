@@ -155,6 +155,18 @@ open class LithoLayoutResult(
   override val layoutData: Any?
     get() = layoutOutput.layoutData
 
+  val borderTop: Int
+    get() = layoutOutput.borderTop
+
+  val borderRight: Int
+    get() = layoutOutput.borderRight
+
+  val borderBottom: Int
+    get() = layoutOutput.borderBottom
+
+  val borderLeft: Int
+    get() = layoutOutput.borderLeft
+
   fun adjustedLeft(): Int = layoutOutput.adjustedBounds.left
 
   fun adjustedTop(): Int = layoutOutput.adjustedBounds.top

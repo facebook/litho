@@ -464,14 +464,14 @@ internal object LithoYogaLayoutFunction {
         (layoutResult.width -
             layoutResult.paddingRight -
             layoutResult.paddingLeft -
-            getLayoutBorder(layoutResult, YogaEdge.RIGHT) -
-            getLayoutBorder(layoutResult, YogaEdge.LEFT))
+            layoutResult.borderRight -
+            layoutResult.borderLeft)
     val newContentHeight =
         (layoutResult.height -
             layoutResult.paddingTop -
             layoutResult.paddingBottom -
-            getLayoutBorder(layoutResult, YogaEdge.TOP) -
-            getLayoutBorder(layoutResult, YogaEdge.BOTTOM))
+            layoutResult.borderTop -
+            layoutResult.borderBottom)
     if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
 
       hasLayoutSizeChanged =
@@ -586,7 +586,7 @@ internal object LithoYogaLayoutFunction {
           LithoNodeUtils.createForegroundRenderUnit(
               layoutResult.node, layoutResult.width, layoutResult.height, layoutResult.diffNode)
     }
-    if (shouldDrawBorders(layoutResult) &&
+    if (layoutResult.shouldDrawBorders() &&
         (layoutResult.borderRenderUnit == null || hasLayoutSizeChanged)) {
       yogaOutput._borderRenderUnit =
           LithoNodeUtils.createBorderRenderUnit(
@@ -744,15 +744,10 @@ internal object LithoYogaLayoutFunction {
     if (Component.isPrimitive(renderUnit.component)) {
       if (!LithoRenderUnit.isMountableView(renderUnit)) {
         if (lithoLayoutResult.wasMeasured) {
-          bounds.left +=
-              (lithoLayoutResult.paddingLeft + getLayoutBorder(lithoLayoutResult, YogaEdge.LEFT))
-          bounds.top +=
-              (lithoLayoutResult.paddingTop + getLayoutBorder(lithoLayoutResult, YogaEdge.TOP))
-          bounds.right -=
-              (lithoLayoutResult.paddingRight + getLayoutBorder(lithoLayoutResult, YogaEdge.RIGHT))
-          bounds.bottom -=
-              (lithoLayoutResult.paddingBottom +
-                  getLayoutBorder(lithoLayoutResult, YogaEdge.BOTTOM))
+          bounds.left += (lithoLayoutResult.paddingLeft + lithoLayoutResult.borderLeft)
+          bounds.top += (lithoLayoutResult.paddingTop + lithoLayoutResult.borderTop)
+          bounds.right -= (lithoLayoutResult.paddingRight + lithoLayoutResult.borderRight)
+          bounds.bottom -= (lithoLayoutResult.paddingBottom + lithoLayoutResult.borderBottom)
         } else {
           // for exact size the border doesn't need to be adjusted since it's inside the bounds of
           // the content
@@ -788,14 +783,9 @@ internal object LithoYogaLayoutFunction {
                   _measureHadExceptions = false,
                   _adjustedBounds = Rect(layoutResult.layoutOutput.adjustedBounds)))
 
-  private fun shouldDrawBorders(lithoLayoutResult: LithoLayoutResult): Boolean {
-    val yogaNode = lithoLayoutResult.getYogaNode()
-    return lithoLayoutResult.node.hasBorderColor() &&
-        (yogaNode.getLayoutBorder(YogaEdge.LEFT) != 0f ||
-            yogaNode.getLayoutBorder(YogaEdge.TOP) != 0f ||
-            yogaNode.getLayoutBorder(YogaEdge.RIGHT) != 0f ||
-            yogaNode.getLayoutBorder(YogaEdge.BOTTOM) != 0f)
-  }
+  private fun LithoLayoutResult.shouldDrawBorders(): Boolean =
+      node.hasBorderColor() &&
+          (borderLeft != 0 || borderTop != 0 || borderRight != 0 || borderBottom != 0)
 
   private fun createBorderColorDrawable(result: LithoLayoutResult): BorderColorDrawable {
     val node = result.node
@@ -810,10 +800,10 @@ internal object LithoYogaLayoutFunction {
         .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
         .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
         .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
-        .borderLeftWidth(getLayoutBorder(result, leftEdge))
-        .borderTopWidth(getLayoutBorder(result, YogaEdge.TOP))
-        .borderRightWidth(getLayoutBorder(result, rightEdge))
-        .borderBottomWidth(getLayoutBorder(result, YogaEdge.BOTTOM))
+        .borderLeftWidth(if (isRtl) result.borderRight else result.borderLeft)
+        .borderTopWidth(result.borderTop)
+        .borderRightWidth(if (isRtl) result.borderLeft else result.borderRight)
+        .borderBottomWidth(result.borderBottom)
         .borderRadius(borderRadius)
         .build()
   }
@@ -825,9 +815,6 @@ internal object LithoYogaLayoutFunction {
     }
     return direction
   }
-
-  private fun getLayoutBorder(result: LithoLayoutResult, edge: YogaEdge?): Int =
-      FastMath.round(result.getYogaNode().getLayoutBorder(edge))
 
   private fun shouldAlwaysRemeasure(component: Component): Boolean =
       if (component is SpecGeneratedComponent) {
@@ -1100,6 +1087,18 @@ data class YogaLayoutOutput(
 
   override val paddingBottom: Int
     get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+
+  override val borderLeft: Int
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.LEFT))
+
+  override val borderTop: Int
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.TOP))
+
+  override val borderRight: Int
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.RIGHT))
+
+  override val borderBottom: Int
+    get() = FastMath.round(yogaNode.getLayoutBorder(YogaEdge.BOTTOM))
 
   override val layoutDirection: LayoutDirection
     get() = yogaNode.layoutDirection.toLayoutDirection()
