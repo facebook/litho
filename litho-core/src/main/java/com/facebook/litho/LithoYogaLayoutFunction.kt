@@ -38,17 +38,12 @@ import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.rendercore.utils.hasEquivalentFields
-import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
-import com.facebook.yoga.YogaFlexDirection
-import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
-import com.facebook.yoga.YogaPositionType
-import com.facebook.yoga.YogaWrap
 
 /** Layout function for LithoNode that layout their children via Flexbox. */
 internal object LithoYogaLayoutFunction {
@@ -988,35 +983,6 @@ internal object LithoYogaLayoutFunction {
             props.marginPx(YogaEdge.END, a.getDimensionPixelOffset(attr, 0))
         R.styleable.ComponentLayout_android_layout_margin ->
             props.marginPx(YogaEdge.ALL, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_flex_direction ->
-            props.flexDirection(YogaFlexDirection.fromInt(a.getInteger(attr, 0)))
-        R.styleable.ComponentLayout_flex_wrap -> props.wrap(YogaWrap.fromInt(a.getInteger(attr, 0)))
-        R.styleable.ComponentLayout_flex_justifyContent ->
-            props.justifyContent(YogaJustify.fromInt(a.getInteger(attr, 0)))
-        R.styleable.ComponentLayout_flex_alignItems ->
-            props.alignItems(YogaAlign.fromInt(a.getInteger(attr, 0)))
-        R.styleable.ComponentLayout_flex_alignSelf ->
-            props.alignSelf(YogaAlign.fromInt(a.getInteger(attr, 0)))
-        R.styleable.ComponentLayout_flex_positionType ->
-            props.positionType(YogaPositionType.fromInt(a.getInteger(attr, 0)))
-        R.styleable.ComponentLayout_flex_layoutDirection -> {
-          val layoutDirection = a.getInteger(attr, -1)
-          props.layoutDirection(LayoutDirection.fromInt(layoutDirection))
-        }
-        R.styleable.ComponentLayout_flex -> {
-          val flex = a.getFloat(attr, -1f)
-          if (flex >= 0f) {
-            props.flex(flex)
-          }
-        }
-        R.styleable.ComponentLayout_flex_left ->
-            props.positionPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_flex_top ->
-            props.positionPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_flex_right ->
-            props.positionPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_flex_bottom ->
-            props.positionPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
       }
     }
   }
