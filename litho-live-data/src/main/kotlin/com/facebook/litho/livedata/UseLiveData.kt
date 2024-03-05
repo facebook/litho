@@ -25,7 +25,7 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoView
 import com.facebook.litho.State
 import com.facebook.litho.annotations.Hook
-import com.facebook.litho.getTreeProp
+import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
 import com.facebook.litho.onCleanup
 import com.facebook.litho.useEffect
 import com.facebook.litho.useState
@@ -58,7 +58,7 @@ fun <T> ComponentScope.useLiveData(
     initialValue: () -> T?
 ): T? {
   val lifecycleOwner: LifecycleOwner =
-      getTreeProp<LifecycleOwner>()
+      LifecycleOwnerTreeProp.value
           ?: error(
               "There is no lifecycle owner. Make you created your LithoView with an AOSPLithoLifecycleProvider.")
 

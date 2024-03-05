@@ -42,6 +42,7 @@ import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.RootId;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeConstraint;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeSpecsMatch;
+import static com.facebook.litho.lifecycle.LithoLifecycleOwner.LifecycleOwnerTreeProp;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Async;
 import static com.facebook.rendercore.debug.DebugEventAttribute.HeightSpec;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
@@ -210,20 +211,14 @@ public class ComponentTree
       mLifecycleProvider = lifecycleProvider;
       mLifecycleProvider.addListener(this);
 
-      LifecycleOwner lifecycleOwner = null;
-      if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-        lifecycleOwner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
-      }
-
-      setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
+      setLifecycleOwner(lifecycleProvider);
     }
   }
 
   synchronized void setLifecycleOwner(@Nullable LithoLifecycleProvider lifecycleProvider) {
     if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-      LifecycleOwner lifecycleOwner =
-          ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
-      setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
+      LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      setInternalTreeProp(LifecycleOwnerTreeProp, owner);
     }
   }
 
@@ -1542,7 +1537,7 @@ public class ComponentTree
    *
    * <p>It will make sure that the tree properties are properly cloned and stored.
    */
-  private void setInternalTreeProp(Class key, @Nullable Object value) {
+  private void setInternalTreeProp(TreeProp<?> key, @Nullable Object value) {
     if (!mContext.isParentTreePropContainerCloned()) {
       mContext.setTreePropContainer(TreePropContainer.acquire(mContext.getTreePropContainer()));
       mContext.setParentTreePropContainerCloned(true);
