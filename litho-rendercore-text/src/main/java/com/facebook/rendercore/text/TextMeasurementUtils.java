@@ -547,7 +547,11 @@ public class TextMeasurementUtils {
           ellipsisOffset = ellipsisStart;
         }
       }
-      return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
+      if (ellipsisOffset >= 0 && ellipsisOffset < text.length()) {
+        return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
+      } else {
+        return text;
+      }
     } else {
       return text;
     }
