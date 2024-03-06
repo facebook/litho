@@ -16,6 +16,7 @@ com.facebook.litho.drawable
 com.facebook.litho.flexbox
 com.facebook.litho.internal
 com.facebook.litho.layout
+com.facebook.litho.layout.flexlayout
 com.facebook.litho.lifecycle
 com.facebook.litho.perfboost
 com.facebook.litho.stats
