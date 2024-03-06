@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Point
 import android.graphics.Rect
@@ -24,6 +23,7 @@ import android.util.Pair
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
+import com.facebook.litho.LithoNode.Companion.copyStyledAttributes
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
@@ -881,16 +881,8 @@ internal object LithoYogaLayoutFunction {
         paddingFromBackground?.let { setPaddingFromDrawable(writer, it) }
       } else {
         info.commonProps?.let { props ->
-          val styleAttr: Int = props.defStyleAttr
-          val styleRes: Int = props.defStyleRes
-          if (styleAttr != 0 || styleRes != 0) {
-            val context: Context = tailComponentContext.androidContext
-            val a =
-                context.obtainStyledAttributes(
-                    null, R.styleable.ComponentLayout, styleAttr, styleRes)
-            applyLayoutStyleAttributes(writer, a)
-            a.recycle()
-          }
+          // Copy styled attributes into this LithoNode.
+          props.copyStyledAttributes(tailComponentContext.androidContext, writer)
 
           // Set the padding from the background
           props.paddingFromBackground?.let { padding -> setPaddingFromDrawable(writer, padding) }
@@ -934,7 +926,7 @@ internal object LithoYogaLayoutFunction {
     nestedIsPaddingPercentage = writer.isPaddingPercentage
   }
 
-  private fun applyLayoutStyleAttributes(props: YogaLayoutProps, a: TypedArray) {
+  internal fun applyLayoutStyleAttributes(props: LayoutProps, a: TypedArray) {
     for (i in 0 until a.indexCount) {
       when (val attr = a.getIndex(i)) {
         R.styleable.ComponentLayout_android_layout_width -> {
@@ -987,11 +979,19 @@ internal object LithoYogaLayoutFunction {
     }
   }
 
-  private fun setPaddingFromDrawable(target: YogaLayoutProps, padding: Rect) {
-    target.paddingPx(YogaEdge.LEFT, padding.left)
-    target.paddingPx(YogaEdge.TOP, padding.top)
-    target.paddingPx(YogaEdge.RIGHT, padding.right)
-    target.paddingPx(YogaEdge.BOTTOM, padding.bottom)
+  internal fun setPaddingFromDrawable(target: LayoutProps, padding: Rect) {
+    if (padding.left > 0) {
+      target.paddingPx(YogaEdge.LEFT, padding.left)
+    }
+    if (padding.top > 0) {
+      target.paddingPx(YogaEdge.TOP, padding.top)
+    }
+    if (padding.right > 0) {
+      target.paddingPx(YogaEdge.RIGHT, padding.right)
+    }
+    if (padding.bottom > 0) {
+      target.paddingPx(YogaEdge.BOTTOM, padding.bottom)
+    }
   }
 }
 

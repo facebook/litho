@@ -33,14 +33,14 @@ class FlexItemLayoutPropsWriter(
     private val builder: FlexItemStyle.Builder,
     private val isContainer: Boolean,
     private val isLTR: Boolean,
-    positionType: YogaPositionType? = YogaPositionType.RELATIVE
+    positionType: PositionType? = PositionType.RELATIVE
 ) : LayoutProps {
 
   private val hasAbsolutionPosition: Boolean
 
   init {
     // Since flex position relies on position type, we have to read this flag firstly.
-    hasAbsolutionPosition = (positionType == YogaPositionType.ABSOLUTE)
+    hasAbsolutionPosition = (positionType == PositionType.ABSOLUTE)
     if (hasAbsolutionPosition) {
       FlexItemStyle.Builder.setPositionType(builder, PositionType.ABSOLUTE)
     }

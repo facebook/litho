@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.animation.StateListAnimator
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PathEffect
@@ -829,6 +830,32 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     internal const val PFLAG_TRANSITION_KEY_TYPE_IS_SET: Long = 1L shl 32
     internal const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
     internal const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
+
+    private fun applyStyledAttributes(
+        context: Context,
+        styleAttr: Int,
+        styleRes: Int,
+        block: (TypedArray) -> Unit
+    ) {
+      var attributes: TypedArray? = null
+      try {
+        attributes =
+            context.obtainStyledAttributes(null, R.styleable.ComponentLayout, styleAttr, styleRes)
+        block.invoke(attributes)
+      } finally {
+        attributes?.recycle()
+      }
+    }
+
+    internal fun CommonProps.copyStyledAttributes(context: Context, layoutProps: LayoutProps) {
+      val styleAttr: Int = defStyleAttr
+      val styleRes: Int = defStyleRes
+      if (styleAttr != 0 || styleRes != 0) {
+        applyStyledAttributes(context, styleAttr, styleRes) { typedArray ->
+          LithoYogaLayoutFunction.applyLayoutStyleAttributes(layoutProps, typedArray)
+        }
+      }
+    }
 
     /**
      * This utility method checks if the {@param result} will mount a [android.view.View]. It
