@@ -44,10 +44,10 @@ class Border private constructor() : Equivalence<Border> {
       value = [Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT])
   annotation class Corner {
     companion object {
-      const val TOP_LEFT = 0
-      const val TOP_RIGHT = 1
-      const val BOTTOM_RIGHT = 2
-      const val BOTTOM_LEFT = 3
+      const val TOP_LEFT: Int = 0
+      const val TOP_RIGHT: Int = 1
+      const val BOTTOM_RIGHT: Int = 2
+      const val BOTTOM_LEFT: Int = 3
     }
   }
 
@@ -166,11 +166,6 @@ class Border private constructor() : Equivalence<Border> {
      *
      * @param attrId The attribute id to retrieve the border radius value from
      * @param defaultResId Default resource to utilize if the attribute is not set
-     */
-    /**
-     * Specifies the border radius for all corners
-     *
-     * @param attrId The attribute id to retrieve the border radius value from
      */
     @JvmOverloads
     fun radiusAttr(@AttrRes attrId: Int, @DimenRes defaultResId: Int = 0): Builder {
@@ -341,15 +336,14 @@ class Border private constructor() : Equivalence<Border> {
   }
 
   companion object {
-    const val EDGE_LEFT = 0
-    const val EDGE_TOP = 1
-    const val EDGE_RIGHT = 2
-    const val EDGE_BOTTOM = 3
-    const val EDGE_COUNT = 4
-    const val RADIUS_COUNT = 4
+    const val EDGE_LEFT: Int = 0
+    const val EDGE_TOP: Int = 1
+    const val EDGE_RIGHT: Int = 2
+    const val EDGE_BOTTOM: Int = 3
+    const val EDGE_COUNT: Int = 4
+    const val RADIUS_COUNT: Int = 4
 
-    // TODO: Make context non-nullable
-    @JvmStatic fun create(context: ComponentContext?): Builder = Builder(requireNotNull(context))
+    @JvmStatic fun create(context: ComponentContext): Builder = Builder(context)
 
     @JvmStatic
     fun getEdgeColor(colorArray: IntArray, edge: YogaEdge): Int {
