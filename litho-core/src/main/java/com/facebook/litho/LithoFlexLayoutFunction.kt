@@ -164,4 +164,36 @@ internal object LithoFlexLayoutFunction {
         YogaEdge.VERTICAL -> listOf(Edge.TOP, Edge.BOTTOM)
         YogaEdge.ALL -> listOf(Edge.LEFT, Edge.RIGHT, Edge.TOP, Edge.BOTTOM)
       }
+
+  /** Since FlexLayout doesn't support HORIZONTAL, VERTICAL and ALL, we have to translate them. */
+  fun YogaEdge.toEdge(isLTR: Boolean, block: (Edge) -> Unit) {
+    when (this) {
+      YogaEdge.LEFT -> block.invoke(Edge.LEFT)
+      YogaEdge.TOP -> block.invoke(Edge.TOP)
+      YogaEdge.RIGHT -> block.invoke(Edge.RIGHT)
+      YogaEdge.BOTTOM -> block.invoke(Edge.BOTTOM)
+      YogaEdge.START -> {
+        val startEdge = if (isLTR) Edge.LEFT else Edge.RIGHT
+        block.invoke(startEdge)
+      }
+      YogaEdge.END -> {
+        val endEdge = if (isLTR) Edge.RIGHT else Edge.LEFT
+        block.invoke(endEdge)
+      }
+      YogaEdge.HORIZONTAL -> {
+        block.invoke(Edge.LEFT)
+        block.invoke(Edge.RIGHT)
+      }
+      YogaEdge.VERTICAL -> {
+        block.invoke(Edge.TOP)
+        block.invoke(Edge.BOTTOM)
+      }
+      YogaEdge.ALL -> {
+        block.invoke(Edge.LEFT)
+        block.invoke(Edge.RIGHT)
+        block.invoke(Edge.TOP)
+        block.invoke(Edge.BOTTOM)
+      }
+    }
+  }
 }
