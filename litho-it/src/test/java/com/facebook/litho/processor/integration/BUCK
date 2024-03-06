@@ -5,6 +5,7 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "JDK_COMPILER_ARGS",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET",
     "LITHO_ASSERTJ_TARGET",
@@ -28,6 +29,7 @@ fb_java_test(
     contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "1.8",
     target = "1.8",
+    vm_args = JDK_COMPILER_ARGS,
     deps = [
         "//fbandroid/third-party/java/robolectric/android-all:latest",
         LITHO_ANDROIDSUPPORT_TARGET,
