@@ -115,6 +115,20 @@ fun NestedLithoPrimitive(
           contentAllocator = ViewAllocator { LithoRenderTreeView(it) },
       ) {
 
+        // binder to clean up the content before returning it to the pool
+        withDescription("final-unmount") {
+          bind(treeId) { content ->
+            onUnbind {
+              content.currentLayoutState?.cleanup()
+              content.resetLayoutState()
+            }
+          }
+        }
+
+        withDescription("lifecycle-provider-release") {
+          bind(treeId) { _ -> onUnbind { lifecycleProvider.release() } }
+        }
+
         // binder to bind the layout state with the Litho Render Tree View
         withDescription("litho-tree") {
           bindWithLayoutData<LayoutState> { content, layoutState ->
@@ -136,16 +150,6 @@ fun NestedLithoPrimitive(
           bind(rootHostReference) { content ->
             rootHostReference.mountedView = content
             onUnbind { rootHostReference.mountedView = null }
-          }
-        }
-
-        withDescription("final-unmount") {
-          bind(Unit) { content ->
-            onUnbind {
-              content.currentLayoutState?.cleanup()
-              lifecycleProvider.release()
-              content.resetLayoutState()
-            }
           }
         }
       }
