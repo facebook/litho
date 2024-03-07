@@ -23,7 +23,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.Edges
 import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoNode
-import com.facebook.litho.LithoNode.Companion.copyStyledAttributes
+import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.LithoYogaLayoutFunction
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.Node
@@ -61,7 +61,7 @@ class LithoFlexLayoutDataProvider {
       } else {
         info.commonProps?.let { props ->
           // Copy styled attributes into this FlexBoxStyle.
-          props.copyStyledAttributes(node.tailComponentContext.androidContext, writer)
+          props.writeStyledAttributesToLayoutProps(node.tailComponentContext.androidContext, writer)
 
           // Set the padding from the background
           props.paddingFromBackground?.let {
@@ -111,7 +111,7 @@ class LithoFlexLayoutDataProvider {
     for (info in node.scopedComponentInfos) {
       info.commonProps?.let { props ->
         // Copy styled attributes into this FlexItemStyle.
-        props.copyStyledAttributes(node.tailComponentContext.androidContext, writer)
+        props.writeStyledAttributesToLayoutProps(node.tailComponentContext.androidContext, writer)
 
         // Copy the layout props into this FlexItemStyle.
         props.copyLayoutProps(writer)

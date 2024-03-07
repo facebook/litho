@@ -831,7 +831,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     internal const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
     internal const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
 
-    private fun applyStyledAttributes(
+    private fun readStyledAttributes(
         context: Context,
         styleAttr: Int,
         styleRes: Int,
@@ -847,12 +847,68 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       }
     }
 
-    internal fun CommonProps.copyStyledAttributes(context: Context, layoutProps: LayoutProps) {
+    private fun applyLayoutStyleAttributes(props: LayoutProps, a: TypedArray) {
+      for (i in 0 until a.indexCount) {
+        when (val attr = a.getIndex(i)) {
+          R.styleable.ComponentLayout_android_layout_width -> {
+            val width = a.getLayoutDimension(attr, -1)
+            // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
+            if (width >= 0) {
+              props.widthPx(width)
+            }
+          }
+          R.styleable.ComponentLayout_android_layout_height -> {
+            val height = a.getLayoutDimension(attr, -1)
+            // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
+            if (height >= 0) {
+              props.heightPx(height)
+            }
+          }
+          R.styleable.ComponentLayout_android_minHeight ->
+              props.minHeightPx(a.getDimensionPixelSize(attr, 0))
+          R.styleable.ComponentLayout_android_minWidth ->
+              props.minWidthPx(a.getDimensionPixelSize(attr, 0))
+          R.styleable.ComponentLayout_android_paddingLeft ->
+              props.paddingPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_paddingTop ->
+              props.paddingPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_paddingRight ->
+              props.paddingPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_paddingBottom ->
+              props.paddingPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_paddingStart ->
+              props.paddingPx(YogaEdge.START, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_paddingEnd ->
+              props.paddingPx(YogaEdge.END, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_padding ->
+              props.paddingPx(YogaEdge.ALL, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_layout_marginLeft ->
+              props.marginPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_layout_marginTop ->
+              props.marginPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_layout_marginRight ->
+              props.marginPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_layout_marginBottom ->
+              props.marginPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_layout_marginStart ->
+              props.marginPx(YogaEdge.START, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_layout_marginEnd ->
+              props.marginPx(YogaEdge.END, a.getDimensionPixelOffset(attr, 0))
+          R.styleable.ComponentLayout_android_layout_margin ->
+              props.marginPx(YogaEdge.ALL, a.getDimensionPixelOffset(attr, 0))
+        }
+      }
+    }
+
+    internal fun CommonProps.writeStyledAttributesToLayoutProps(
+        context: Context,
+        layoutProps: LayoutProps
+    ) {
       val styleAttr: Int = defStyleAttr
       val styleRes: Int = defStyleRes
       if (styleAttr != 0 || styleRes != 0) {
-        applyStyledAttributes(context, styleAttr, styleRes) { typedArray ->
-          LithoYogaLayoutFunction.applyLayoutStyleAttributes(layoutProps, typedArray)
+        readStyledAttributes(context, styleAttr, styleRes) { typedArray ->
+          applyLayoutStyleAttributes(layoutProps, typedArray)
         }
       }
     }

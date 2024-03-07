@@ -16,14 +16,13 @@
 
 package com.facebook.litho
 
-import android.content.res.TypedArray
 import android.graphics.Point
 import android.graphics.Rect
 import android.util.Pair
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
-import com.facebook.litho.LithoNode.Companion.copyStyledAttributes
+import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
@@ -882,7 +881,7 @@ internal object LithoYogaLayoutFunction {
       } else {
         info.commonProps?.let { props ->
           // Copy styled attributes into this LithoNode.
-          props.copyStyledAttributes(tailComponentContext.androidContext, writer)
+          props.writeStyledAttributesToLayoutProps(tailComponentContext.androidContext, writer)
 
           // Set the padding from the background
           props.paddingFromBackground?.let { padding -> setPaddingFromDrawable(writer, padding) }
@@ -924,59 +923,6 @@ internal object LithoYogaLayoutFunction {
     nestedBorderEdges = writer.borderWidth
     nestedTreePadding = writer.padding
     nestedIsPaddingPercentage = writer.isPaddingPercentage
-  }
-
-  internal fun applyLayoutStyleAttributes(props: LayoutProps, a: TypedArray) {
-    for (i in 0 until a.indexCount) {
-      when (val attr = a.getIndex(i)) {
-        R.styleable.ComponentLayout_android_layout_width -> {
-          val width = a.getLayoutDimension(attr, -1)
-          // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
-          if (width >= 0) {
-            props.widthPx(width)
-          }
-        }
-        R.styleable.ComponentLayout_android_layout_height -> {
-          val height = a.getLayoutDimension(attr, -1)
-          // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
-          if (height >= 0) {
-            props.heightPx(height)
-          }
-        }
-        R.styleable.ComponentLayout_android_minHeight ->
-            props.minHeightPx(a.getDimensionPixelSize(attr, 0))
-        R.styleable.ComponentLayout_android_minWidth ->
-            props.minWidthPx(a.getDimensionPixelSize(attr, 0))
-        R.styleable.ComponentLayout_android_paddingLeft ->
-            props.paddingPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_paddingTop ->
-            props.paddingPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_paddingRight ->
-            props.paddingPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_paddingBottom ->
-            props.paddingPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_paddingStart ->
-            props.paddingPx(YogaEdge.START, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_paddingEnd ->
-            props.paddingPx(YogaEdge.END, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_padding ->
-            props.paddingPx(YogaEdge.ALL, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_layout_marginLeft ->
-            props.marginPx(YogaEdge.LEFT, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_layout_marginTop ->
-            props.marginPx(YogaEdge.TOP, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_layout_marginRight ->
-            props.marginPx(YogaEdge.RIGHT, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_layout_marginBottom ->
-            props.marginPx(YogaEdge.BOTTOM, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_layout_marginStart ->
-            props.marginPx(YogaEdge.START, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_layout_marginEnd ->
-            props.marginPx(YogaEdge.END, a.getDimensionPixelOffset(attr, 0))
-        R.styleable.ComponentLayout_android_layout_margin ->
-            props.marginPx(YogaEdge.ALL, a.getDimensionPixelOffset(attr, 0))
-      }
-    }
   }
 
   internal fun setPaddingFromDrawable(target: LayoutProps, padding: Rect) {
