@@ -165,10 +165,6 @@ internal class FlexContainerLayoutPropsWriter(
     // Ignore item props while writing FlexBoxStyle
   }
 
-  override fun flexBasisAuto() {
-    // Ignore item props while writing FlexBoxStyle
-  }
-
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
     edge.toEdge(isLTR) { FlexBoxStyle.Builder.setBorder(builder, it, borderWidth) }
   }

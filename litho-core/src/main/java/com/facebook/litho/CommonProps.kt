@@ -288,10 +288,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     layoutProps.useHeightAsBaseline(useHeightAsBaseline)
   }
 
-  override fun flexBasisAuto() {
-    layoutProps.flexBasisAuto()
-  }
-
   /** Used by [DebugLayoutNodeEditor] */
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
     layoutProps.setBorderWidth(edge, borderWidth)
@@ -979,7 +975,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var positionPercents: Edges? = null
     private var isReferenceBaseline: Boolean = false
     private var useHeightAsBaseline: Boolean = false
-    private var flexBasisAuto: Boolean = false
 
     /** Used by [DebugLayoutNodeEditor] */
     private var borderEdges: Edges? = null
@@ -1135,10 +1130,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       this.useHeightAsBaseline = useHeightAsBaseline
     }
 
-    override fun flexBasisAuto() {
-      flexBasisAuto = true
-    }
-
     /** Used by [DebugLayoutNodeEditor] */
     override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
       borderEdges = (borderEdges ?: Edges()).apply { this[edge] = borderWidth }
@@ -1282,9 +1273,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       if (useHeightAsBaseline) {
         target.useHeightAsBaseline(true)
       }
-      if (flexBasisAuto) {
-        target.flexBasisAuto()
-      }
       borderEdges?.let {
         for (i in 0 until Edges.EDGES_LENGTH) {
           val value = it.getRaw(i)
@@ -1333,7 +1321,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
               isEquivalentTo(paddings, other.paddings) &&
               isEquivalentTo(paddingPercents, other.paddingPercents) &&
               isEquivalentTo(positionPercents, other.positionPercents) &&
-              flexBasisAuto == other.flexBasisAuto &&
               isEquivalentTo(borderEdges, other.borderEdges) &&
               equals(marginAutos, other.marginAutos) &&
               equals(gapGutter, other.gapGutter) &&

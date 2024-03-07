@@ -173,10 +173,6 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     }
   }
 
-  override fun flexBasisAuto() {
-    node.setFlexBasisAuto()
-  }
-
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
     node.setBorder(edge, borderWidth)
   }

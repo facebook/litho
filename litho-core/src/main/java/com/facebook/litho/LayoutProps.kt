@@ -85,8 +85,6 @@ interface LayoutProps {
 
   fun useHeightAsBaseline(useHeightAsBaseline: Boolean)
 
-  fun flexBasisAuto()
-
   /** Used by [DebugLayoutNodeEditor] */
   fun setBorderWidth(edge: YogaEdge, borderWidth: Float)
 

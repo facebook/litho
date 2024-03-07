@@ -99,7 +99,7 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setFlexBasis(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.flexBasisAuto()
+      YogaUnit.AUTO -> {} // no ops for auto
       YogaUnit.PERCENT -> node.debugLayoutEditor?.flexBasisPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.flexBasisPx(value.value.toInt())
     }

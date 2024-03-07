@@ -185,10 +185,6 @@ class FlexItemLayoutPropsWriter(
     // Not supported yet
   }
 
-  override fun flexBasisAuto() {
-    // Not supported yet
-  }
-
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
     // TODO: log error settings
   }
