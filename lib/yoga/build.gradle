@@ -43,7 +43,7 @@ dependencies {
 task buckBuild(type: Exec) {
     workingDir rootDir
     environment BUCKVERSION: System.getenv('BUCKVERSION') ?: 'last'
-    def buckPath = System.getenv('BUCK_PATH') ?: 'buck1'
+    def buckPath = System.getenv('BUCK_PATH') ?: 'buck'
     commandLine buckPath, 'build', '//lib/yogajni:jni#default,shared'
     doLast {
         System.out.println("[Yoga Buck Build]: exit value: ${executionResult.get().exitValue}")
