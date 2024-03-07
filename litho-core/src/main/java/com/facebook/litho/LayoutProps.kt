@@ -85,10 +85,6 @@ interface LayoutProps {
 
   fun useHeightAsBaseline(useHeightAsBaseline: Boolean)
 
-  fun heightAuto()
-
-  fun widthAuto()
-
   fun flexBasisAuto()
 
   /** Used by [DebugLayoutNodeEditor] */

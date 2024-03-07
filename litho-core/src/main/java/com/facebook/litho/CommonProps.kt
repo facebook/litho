@@ -288,14 +288,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     layoutProps.useHeightAsBaseline(useHeightAsBaseline)
   }
 
-  override fun heightAuto() {
-    layoutProps.heightAuto()
-  }
-
-  override fun widthAuto() {
-    layoutProps.widthAuto()
-  }
-
   override fun flexBasisAuto() {
     layoutProps.flexBasisAuto()
   }
@@ -987,8 +979,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     private var positionPercents: Edges? = null
     private var isReferenceBaseline: Boolean = false
     private var useHeightAsBaseline: Boolean = false
-    private var heightAuto: Boolean = false
-    private var widthAuto: Boolean = false
     private var flexBasisAuto: Boolean = false
 
     /** Used by [DebugLayoutNodeEditor] */
@@ -1145,14 +1135,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       this.useHeightAsBaseline = useHeightAsBaseline
     }
 
-    override fun heightAuto() {
-      heightAuto = true
-    }
-
-    override fun widthAuto() {
-      widthAuto = true
-    }
-
     override fun flexBasisAuto() {
       flexBasisAuto = true
     }
@@ -1300,12 +1282,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       if (useHeightAsBaseline) {
         target.useHeightAsBaseline(true)
       }
-      if (heightAuto) {
-        target.heightAuto()
-      }
-      if (widthAuto) {
-        target.widthAuto()
-      }
       if (flexBasisAuto) {
         target.flexBasisAuto()
       }
@@ -1327,7 +1303,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       return if (other == null) {
         false
       } else
-          ((privateFlags == other.privateFlags &&
+          (privateFlags == other.privateFlags &&
               widthPx == other.widthPx &&
               other.widthPercent.compareTo(widthPercent) == 0 &&
               minWidthPx == other.minWidthPx &&
@@ -1357,8 +1333,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
               isEquivalentTo(paddings, other.paddings) &&
               isEquivalentTo(paddingPercents, other.paddingPercents) &&
               isEquivalentTo(positionPercents, other.positionPercents) &&
-              heightAuto == other.heightAuto) &&
-              widthAuto == other.widthAuto &&
               flexBasisAuto == other.flexBasisAuto &&
               isEquivalentTo(borderEdges, other.borderEdges) &&
               equals(marginAutos, other.marginAutos) &&

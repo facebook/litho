@@ -102,10 +102,6 @@ class NullWriter internal constructor() : YogaLayoutProps(node = NodeConfig.crea
 
   override fun useHeightAsBaseline(useHeightAsBaseline: Boolean) = Unit
 
-  override fun heightAuto() = Unit
-
-  override fun widthAuto() = Unit
-
   override fun flexBasisAuto() = Unit
 
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) = Unit

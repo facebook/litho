@@ -46,14 +46,6 @@ class FlexItemLayoutPropsWriter(
     }
   }
 
-  override fun heightAuto() {
-    // Not supported anymore
-  }
-
-  override fun widthAuto() {
-    // Not supported anymore
-  }
-
   override fun widthPx(width: Int) {
     FlexItemStyle.Builder.setWidth(builder, width.toFloat())
   }

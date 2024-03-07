@@ -173,14 +173,6 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     }
   }
 
-  override fun heightAuto() {
-    node.setHeightAuto()
-  }
-
-  override fun widthAuto() {
-    node.setWidthAuto()
-  }
-
   override fun flexBasisAuto() {
     node.setFlexBasisAuto()
   }

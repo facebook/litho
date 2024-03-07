@@ -165,14 +165,6 @@ internal class FlexContainerLayoutPropsWriter(
     // Ignore item props while writing FlexBoxStyle
   }
 
-  override fun heightAuto() {
-    // Ignore item props while writing FlexBoxStyle
-  }
-
-  override fun widthAuto() {
-    // Ignore item props while writing FlexBoxStyle
-  }
-
   override fun flexBasisAuto() {
     // Ignore item props while writing FlexBoxStyle
   }

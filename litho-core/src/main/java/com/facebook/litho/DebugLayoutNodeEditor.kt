@@ -108,7 +108,7 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setWidth(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.widthAuto()
+      YogaUnit.AUTO -> {} // no ops for auto
       YogaUnit.PERCENT -> node.debugLayoutEditor?.widthPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.widthPx(value.value.toInt())
     }
@@ -135,7 +135,7 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   fun setHeight(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor?.heightAuto()
+      YogaUnit.AUTO -> {} // no ops for auto
       YogaUnit.PERCENT -> node.debugLayoutEditor?.heightPercent(value.value)
       YogaUnit.POINT -> node.debugLayoutEditor?.heightPx(value.value.toInt())
     }
