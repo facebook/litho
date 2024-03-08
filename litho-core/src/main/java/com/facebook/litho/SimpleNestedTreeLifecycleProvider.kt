@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * LithoLifecycleProvider implementation that can be used to subscribe a nested ComponentTree to
@@ -52,11 +51,7 @@ class SimpleNestedTreeLifecycleProvider(parentLifecycleProvider: LithoLifecycleP
     when (state) {
       LithoLifecycle.HINT_VISIBLE -> moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
       LithoLifecycle.HINT_INVISIBLE -> moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
-      LithoLifecycle.DESTROYED -> {
-        if (ComponentsConfiguration.enableFixForNestedComponentTree) {
-          moveToLifecycle(LithoLifecycle.DESTROYED)
-        }
-      }
+      LithoLifecycle.DESTROYED -> {}
     }
   }
 }

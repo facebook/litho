@@ -501,9 +501,7 @@ public class ComponentTree
             "root",
             ComponentsConfiguration.enableRefactorLithoLifecycleProvider
                 ? null
-                : ComponentsConfiguration.enableFixForNestedComponentTree
-                    ? builder.mLifecycleProvider
-                    : getLifecycleProvider(),
+                : getLifecycleProvider(),
             null,
             builder.parentTreePropContainer);
 
@@ -515,14 +513,8 @@ public class ComponentTree
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       mLifecycleProvider = builder.mLifecycleProvider;
     } else {
-      if (ComponentsConfiguration.enableFixForNestedComponentTree) {
-        if (mContext.getLifecycleProvider() != null) {
-          subscribeToLifecycleProvider(mContext.getLifecycleProvider());
-        }
-      } else {
-        if (builder.mLifecycleProvider != null) {
-          subscribeToLifecycleProvider(builder.mLifecycleProvider);
-        }
+      if (builder.mLifecycleProvider != null) {
+        subscribeToLifecycleProvider(builder.mLifecycleProvider);
       }
     }
 

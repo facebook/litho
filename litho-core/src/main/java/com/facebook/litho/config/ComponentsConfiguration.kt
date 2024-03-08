@@ -230,7 +230,6 @@ internal constructor(
     @JvmField var enableSeparateAnimatorBinder: Boolean = false
     @JvmField var enableMountableRecyclerInGroups: Boolean = false
     @JvmField var shouldOverrideHasTransientState: Boolean = false
-    @JvmField var enableFixForNestedComponentTree: Boolean = false
     @JvmField var enableRefactorLithoLifecycleProvider: Boolean = false
     @JvmField var enableDefaultAOSPLithoLifecycleProviderAPI: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
