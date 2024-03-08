@@ -37,7 +37,6 @@ litho_robolectric4_test(
     friend_paths = [
         LITHO_TESTING_TARGET,
     ],
-    java = "//fbandroid/third-party/build-tools/java:java11.sh",
     language = "KOTLIN",
     source = "8",
     target = "8",
