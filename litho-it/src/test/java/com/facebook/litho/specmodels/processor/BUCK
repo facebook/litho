@@ -5,6 +5,7 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "JDK_COMPILER_ARGS",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_COMPILE_TESTING_TARGET",
@@ -22,6 +23,7 @@ fb_java_test(
     contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "11",
     target = "11",
+    vm_args = JDK_COMPILER_ARGS,
     deps = [
         LITHO_ANNOTATIONS_TARGET,
         LITHO_ASSERTJ_TARGET,
