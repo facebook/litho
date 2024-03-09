@@ -104,7 +104,7 @@ jobs:
       - name: Check if SNAPSHOT version
         id: check_snapshot
         run: |
-          echo ::set-output name=IS_SNAPSHOT::`grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' gradle.properties)`
+          echo "IS_SNAPSHOT=`grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' gradle.properties)`" >> $GITHUB_OUTPUT
   deploy:
     needs: [deploy-check]
     if: ${{ needs.deploy-check.outputs.is-snapshot == 'true' }}
