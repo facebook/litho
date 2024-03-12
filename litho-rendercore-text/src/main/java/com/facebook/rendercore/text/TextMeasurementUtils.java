@@ -126,11 +126,18 @@ public class TextMeasurementUtils {
       Pair<Rect, TextLayout> initialResult) {
     final Layout layout = initialResult.second.layout;
 
-    final int lineHeight =
-        (int)
-            ((layout.getPaint().getFontMetricsInt(null) * layout.getSpacingMultiplier())
-                + layout.getSpacingAdd());
-    final int linesWithinConstrainedBounds = Math.max(1, initialResult.first.height() / lineHeight);
+    final int measuredHeightConstraint = initialResult.first.height();
+
+    int linesWithinConstrainedBounds = 0;
+    int lineIndex = layout.getLineCount() - 1;
+    while (lineIndex >= 0) {
+      if (layout.getLineBottom(lineIndex) <= measuredHeightConstraint) {
+        linesWithinConstrainedBounds = lineIndex + 1;
+        break;
+      }
+
+      lineIndex -= 1;
+    }
 
     if (layout.getLineCount() > linesWithinConstrainedBounds) {
       textStyle.setMaxLines(linesWithinConstrainedBounds);
