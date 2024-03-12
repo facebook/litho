@@ -24,6 +24,7 @@ litho_robolectric4_test(
     fork_mode = "per_test",
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_BUILD_CONFIG_TARGET,

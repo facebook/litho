@@ -44,6 +44,7 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         "//fbandroid/java/com/facebook/kotlin/compilerplugins/dataclassgenerate/annotation:dataclassgenerate-annotation",
         LITHO_RENDERCORE_TARGET,

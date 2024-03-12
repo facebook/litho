@@ -34,6 +34,7 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         LITHO_TESTING_ASSERTJ_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET,

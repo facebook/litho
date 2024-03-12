@@ -37,6 +37,7 @@ litho_robolectric4_test(
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         ":testspecs",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,

@@ -22,5 +22,5 @@
 
   <!-- This is the version the BUCK tests will run against to when LithoTestRunner is not specified -->
   <uses-sdk
-      android:targetSdkVersion="34" />
+      android:targetSdkVersion="33" />
 </manifest>

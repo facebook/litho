@@ -36,6 +36,7 @@ litho_robolectric4_test(
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
+    target_sdk_levels = ["33"],
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_BUILD_CONFIG_TARGET,

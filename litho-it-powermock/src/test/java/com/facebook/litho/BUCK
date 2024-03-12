@@ -39,6 +39,7 @@ litho_robolectric4_powermock_test(
     ],
     target_sdk_levels = [
         "21",
+        "33",
     ],
     deps = [
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,

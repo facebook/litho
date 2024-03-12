@@ -60,6 +60,7 @@ litho_robolectric4_test(
     pure_kotlin = False,
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         "//fbandroid/third-party/java/guava:guava",
         "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",

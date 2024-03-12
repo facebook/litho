@@ -40,6 +40,7 @@ litho_robolectric4_test(
     language = "KOTLIN",
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ASSERTJ_TARGET,

@@ -28,6 +28,7 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,

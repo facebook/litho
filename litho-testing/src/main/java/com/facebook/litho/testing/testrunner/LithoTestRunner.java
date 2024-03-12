@@ -78,7 +78,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
 
   @Override
   protected Config buildGlobalConfig() {
-    return Config.Builder.defaults().setSdk(Build.VERSION_CODES.UPSIDE_DOWN_CAKE).build();
+    return Config.Builder.defaults().setSdk(Build.VERSION_CODES.TIRAMISU).build();
   }
 
   @Override

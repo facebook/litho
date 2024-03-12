@@ -41,6 +41,7 @@ litho_robolectric4_test(
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
     pure_kotlin = False,
+    target_sdk_levels = ["33"],
     tests = [
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/api:api"),
     ],

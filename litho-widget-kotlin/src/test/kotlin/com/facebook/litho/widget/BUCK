@@ -35,6 +35,7 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         "//fbandroid/libraries/components/litho-it/src/main/java/com/facebook/litho/widget:widget",
         LITHO_WIDGET_TARGET,
