@@ -2079,6 +2079,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
+    public T viewId(int id) {
+      mComponent.getOrCreateCommonProps().viewId(id);
+      return getThis();
+    }
+
     public T viewTag(@Nullable Object viewTag) {
       mComponent.getOrCreateCommonProps().viewTag(viewTag);
       return getThis();
