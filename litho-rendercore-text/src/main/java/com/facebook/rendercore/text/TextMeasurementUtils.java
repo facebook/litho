@@ -529,11 +529,15 @@ public class TextMeasurementUtils {
       float layoutWidth) {
     // Identify the X position at which to truncate the final line:
     // Note: The left position of the line is needed for the case of RTL text.
+    final float ellipsisTextWidth =
+        BoringLayout.getDesiredWidth(
+            customEllipsisText, 0, customEllipsisText.length(), newLayout.getPaint());
+    final boolean isRTL =
+        newLayout.getParagraphDirection(ellipsizedLineNumber) == Layout.DIR_RIGHT_TO_LEFT;
     final float ellipsisTarget =
-        layoutWidth
-            - BoringLayout.getDesiredWidth(
-                customEllipsisText, 0, customEllipsisText.length(), newLayout.getPaint())
-            + newLayout.getLineLeft(ellipsizedLineNumber);
+        isRTL
+            ? ellipsisTextWidth
+            : layoutWidth - ellipsisTextWidth + newLayout.getLineLeft(ellipsizedLineNumber);
     // Get character offset number corresponding to that X position:
     int ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
