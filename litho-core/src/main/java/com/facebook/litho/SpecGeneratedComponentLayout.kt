@@ -17,40 +17,37 @@
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
-import com.facebook.rendercore.FastMath
 import com.facebook.yoga.YogaDirection
-import com.facebook.yoga.YogaEdge
-import com.facebook.yoga.YogaNode
 
 class SpecGeneratedComponentLayout(
-    private val yogaNode: YogaNode,
+    private val layoutOutput: LithoLayoutOutput,
     private val paddingSet: Boolean,
     private val backgroundDrawable: Drawable?,
 ) : ComponentLayout {
 
   override val x: Int
-    get() = yogaNode.layoutX.toInt()
+    get() = layoutOutput.x
 
   override val y: Int
-    get() = yogaNode.layoutY.toInt()
+    get() = layoutOutput.y
 
   override val width: Int
-    get() = yogaNode.layoutWidth.toInt()
+    get() = layoutOutput.width
 
   override val height: Int
-    get() = yogaNode.layoutHeight.toInt()
+    get() = layoutOutput.height
 
   override val paddingTop: Int
-    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.TOP))
+    get() = layoutOutput.paddingTop
 
   override val paddingRight: Int
-    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.RIGHT))
+    get() = layoutOutput.paddingRight
 
   override val paddingBottom: Int
-    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.BOTTOM))
+    get() = layoutOutput.paddingBottom
 
   override val paddingLeft: Int
-    get() = FastMath.round(yogaNode.getLayoutPadding(YogaEdge.LEFT))
+    get() = layoutOutput.paddingLeft
 
   override val isPaddingSet: Boolean
     get() = paddingSet
@@ -59,5 +56,5 @@ class SpecGeneratedComponentLayout(
     get() = backgroundDrawable
 
   override val resolvedLayoutDirection: YogaDirection
-    get() = yogaNode.layoutDirection
+    get() = layoutOutput.layoutDirection.toYogaDirection()
 }

@@ -507,10 +507,9 @@ internal object LithoYogaLayoutFunction {
           component.onBoundsDefined(
               context,
               SpecGeneratedComponentLayout(
-                  yogaNode = layoutResult.getYogaNode(),
+                  layoutOutput = layoutResult.layoutOutput,
                   paddingSet = layoutResult.node.isPaddingSet,
-                  backgroundDrawable = layoutResult.node.background,
-              ),
+                  backgroundDrawable = layoutResult.node.background),
               layoutData)
         } catch (e: Exception) {
           ComponentUtils.handleWithHierarchy(context, component, e)
@@ -648,10 +647,9 @@ internal object LithoYogaLayoutFunction {
           component.onMeasure(
               componentScopedContext,
               SpecGeneratedComponentLayout(
-                  yogaNode = lithoLayoutResult.getYogaNode(),
-                  paddingSet = node.isPaddingSet,
-                  backgroundDrawable = node.background,
-              ),
+                  layoutOutput = lithoLayoutResult.layoutOutput,
+                  paddingSet = lithoLayoutResult.node.isPaddingSet,
+                  backgroundDrawable = lithoLayoutResult.node.background),
               widthSpec,
               heightSpec,
               size,
