@@ -22,6 +22,8 @@ import android.util.Pair
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.ContextUtils.isLayoutDirectionRTL
+import com.facebook.litho.LithoNode.Companion.applyBorderWidth
+import com.facebook.litho.LithoNode.Companion.applyNestedPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -43,6 +45,10 @@ import com.facebook.yoga.YogaDisplay
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
+
+typealias YogaEdgeIntFunction = ((YogaEdge, Int) -> Unit)
+
+typealias YogaEdgeFloatFunction = ((YogaEdge, Float) -> Unit)
 
 /** Layout function for LithoNode that layout their children via Flexbox. */
 internal object LithoYogaLayoutFunction {
@@ -891,26 +897,12 @@ internal object LithoYogaLayoutFunction {
     }
 
     // Apply the border widths
-    if (privateFlags and LithoNode.PFLAG_BORDER_IS_SET != 0L) {
-      for (i in borderEdgeWidths.indices) {
-        writer.setBorderWidth(Border.edgeFromIndex(i), borderEdgeWidths[i].toFloat())
-      }
-    }
+    applyBorderWidth { yogaEdge, width -> writer.setBorderWidth(yogaEdge, width) }
 
     // Maybe apply the padding if parent is a Nested Tree Holder
-    nestedPaddingEdges?.let { edges ->
-      for (i in 0 until Edges.EDGES_LENGTH) {
-        val value: Float = edges.getRaw(i)
-        if (!YogaConstants.isUndefined(value)) {
-          val edge: YogaEdge = YogaEdge.fromInt(i)
-          if (nestedIsPaddingPercent?.get(edge.intValue()) != null) {
-            writer.paddingPercent(edge, value)
-          } else {
-            writer.paddingPx(edge, value.toInt())
-          }
-        }
-      }
-    }
+    applyNestedPadding(
+        { yogaEdge, paddingPx -> writer.paddingPx(yogaEdge, paddingPx) },
+        { yogaEdge, paddingPercent -> writer.paddingPercent(yogaEdge, paddingPercent) })
 
     debugLayoutProps?.copyInto(writer)
     isPaddingSet = writer.isPaddingSet

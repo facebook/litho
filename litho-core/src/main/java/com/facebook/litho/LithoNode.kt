@@ -831,7 +831,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     internal const val PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET: Long = 1L shl 33
     internal const val PFLAG_BINDER_IS_SET: Long = 1L shl 34
 
-    private fun readStyledAttributes(
+    private inline fun readStyledAttributes(
         context: Context,
         styleAttr: Int,
         styleRes: Int,
@@ -841,7 +841,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       try {
         attributes =
             context.obtainStyledAttributes(null, R.styleable.ComponentLayout, styleAttr, styleRes)
-        block.invoke(attributes)
+        block(attributes)
       } finally {
         attributes?.recycle()
       }
@@ -909,6 +909,33 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       if (styleAttr != 0 || styleRes != 0) {
         readStyledAttributes(context, styleAttr, styleRes) { typedArray ->
           applyLayoutStyleAttributes(layoutProps, typedArray)
+        }
+      }
+    }
+
+    internal inline fun LithoNode.applyBorderWidth(block: YogaEdgeFloatFunction) {
+      if (privateFlags and PFLAG_BORDER_IS_SET != 0L) {
+        for (i in borderEdgeWidths.indices) {
+          block(Border.edgeFromIndex(i), borderEdgeWidths[i].toFloat())
+        }
+      }
+    }
+
+    internal inline fun LithoNode.applyNestedPadding(
+        paddingPx: YogaEdgeIntFunction,
+        paddingPercent: YogaEdgeFloatFunction
+    ) {
+      nestedPaddingEdges?.let { edges ->
+        for (i in 0 until Edges.EDGES_LENGTH) {
+          val value: Float = edges.getRaw(i)
+          if (!YogaConstants.isUndefined(value)) {
+            val edge: YogaEdge = YogaEdge.fromInt(i)
+            if (nestedIsPaddingPercent?.get(edge.intValue()) != null) {
+              paddingPercent(edge, value)
+            } else {
+              paddingPx(edge, value.toInt())
+            }
+          }
         }
       }
     }

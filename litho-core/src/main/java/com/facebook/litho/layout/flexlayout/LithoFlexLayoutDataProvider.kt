@@ -18,17 +18,15 @@ package com.facebook.litho.layout.flexlayout
 
 import com.facebook.flexlayout.styles.FlexBoxStyle
 import com.facebook.flexlayout.styles.FlexItemStyle
-import com.facebook.litho.Border
 import com.facebook.litho.Component
-import com.facebook.litho.Edges
 import com.facebook.litho.LithoLayoutContext
 import com.facebook.litho.LithoNode
+import com.facebook.litho.LithoNode.Companion.applyBorderWidth
+import com.facebook.litho.LithoNode.Companion.applyNestedPadding
 import com.facebook.litho.LithoNode.Companion.writeStyledAttributesToLayoutProps
 import com.facebook.litho.LithoYogaLayoutFunction
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.Node
-import com.facebook.yoga.YogaConstants
-import com.facebook.yoga.YogaEdge
 
 class LithoFlexLayoutDataProvider {
 
@@ -75,26 +73,14 @@ class LithoFlexLayoutDataProvider {
     }
 
     // Apply the border widths
-    if (node.privateFlags and LithoNode.PFLAG_BORDER_IS_SET != 0L) {
-      for (i in node.borderEdgeWidths.indices) {
-        writer.setBorderWidth(Border.edgeFromIndex(i), node.borderEdgeWidths[i].toFloat())
-      }
-    }
+    node.applyBorderWidth { yogaEdge, width -> writer.setBorderWidth(yogaEdge, width) }
 
     // Maybe apply the padding if parent is a Nested Tree Holder
-    node.nestedPaddingEdges?.let { edges ->
-      for (i in 0 until Edges.EDGES_LENGTH) {
-        val value: Float = edges.getRaw(i)
-        if (!YogaConstants.isUndefined(value)) {
-          val yogaEdge: YogaEdge = YogaEdge.fromInt(i)
-          if (node.nestedIsPaddingPercent?.get(yogaEdge.intValue()) != null) {
-            writer.paddingPercent(yogaEdge, value)
-          } else {
-            writer.paddingPx(yogaEdge, value.toInt())
-          }
-        }
-      }
-    }
+    node.applyNestedPadding(
+        { yogaEdge, paddingPx -> writer.paddingPx(yogaEdge, paddingPx) },
+        { yogaEdge, paddingPercent -> writer.paddingPercent(yogaEdge, paddingPercent) })
+
+    node.isPaddingSet = writer.isPaddingSet
     return builder
   }
 
