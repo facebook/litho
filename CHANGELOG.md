@@ -7,6 +7,12 @@
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.49.0...master).
 
+## Version 0.49.1
+_2024-03-13_
+
+* [BREAKING] move litho-core-kotlin to litho-core module
+* Converted more code to Kotlin
+
 ## Version 0.49.0
 
 _2024-02-01_
