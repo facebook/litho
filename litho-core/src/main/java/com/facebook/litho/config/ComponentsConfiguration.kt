@@ -214,7 +214,6 @@ internal constructor(
     @JvmField var hostComponentPoolSize: Int = 30
 
     /** Skip checking for root component and tree-props while layout */
-    @JvmField var isSkipRootCheckingEnabled: Boolean = false
     @JvmField var enableComputeLayoutAsyncAfterInsertion: Boolean = true
     @JvmField var shouldCompareCommonPropsInIsEquivalentTo: Boolean = false
     @JvmField var shouldCompareRootCommonPropsInSingleComponentSection: Boolean = false
