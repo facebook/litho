@@ -18,7 +18,6 @@ fb_java_library(
         ],
     ),
     abi_generation_mode = "class",
-    javac = "fbcode//tools/build/buck/wrappers:javac17.sh",
     provided_deps = [
         ANDROID_STUDIO_PLUGIN_SDK,
     ],
