@@ -872,12 +872,17 @@ internal object LithoYogaLayoutFunction {
     yogaWrap?.let { node.wrap = it }
     yogaMeasureFunction?.let { node.setMeasureFunction(it) }
 
+    var nestedTreeHolderTransfered = false
     // Apply the layout props from the components to the YogaNode
     for (info in scopedComponentInfos) {
       val component: Component = info.component
 
       // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
       if (nestedTreeHolder != null && Component.isLayoutSpecWithSizeSpec(component)) {
+        if (nestedTreeHolderTransfered) {
+          continue
+        }
+        nestedTreeHolderTransfered = true
         nestedTreeHolder?.transferInto(this)
         // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
         _needsHostView = LithoNode.needsHostView(this)

@@ -46,11 +46,16 @@ class LithoFlexLayoutDataProvider {
     node.alignContent?.let { writer.alignContent(it) }
     node.alignItems?.let { writer.alignItems(it) }
     node.yogaWrap?.let { writer.flexWrap(it) }
+    var nestedTreeHolderTransfered = false
 
     for (info in node.scopedComponentInfos) {
       val component: Component = info.component
       // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
       if (node.nestedTreeHolder != null && Component.isLayoutSpecWithSizeSpec(component)) {
+        if (nestedTreeHolderTransfered) {
+          continue
+        }
+        nestedTreeHolderTransfered = true
         node.nestedTreeHolder?.transferInto(node)
         node._needsHostView = LithoNode.needsHostView(node)
         node.paddingFromBackground?.let {
