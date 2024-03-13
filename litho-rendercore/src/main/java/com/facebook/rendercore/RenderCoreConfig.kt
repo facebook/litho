@@ -41,4 +41,10 @@ object RenderCoreConfig {
    * frame.
    */
   @JvmField var useGlobalGapWorker: Boolean = true
+
+  /**
+   * Enables main thread check before calling 'requestLayout' in HostView. This should fix
+   * CalledFromWrongThreadException caused by calling from the wrong thread.
+   */
+  @JvmField var shouldCheckMainThreadOnLayoutRequest: Boolean = false
 }
