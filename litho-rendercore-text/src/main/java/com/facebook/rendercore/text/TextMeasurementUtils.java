@@ -128,7 +128,9 @@ public class TextMeasurementUtils {
 
     final int measuredHeightConstraint = initialResult.first.height();
 
-    int linesWithinConstrainedBounds = 0;
+    // Make sure we have the bare minimum line count if we've exhausted all lines and weren't able
+    // to fit. This allows to show the ellipsis in the best case scenario signaling truncation
+    int linesWithinConstrainedBounds = 1;
     int lineIndex = layout.getLineCount() - 1;
     while (lineIndex >= 0) {
       if (layout.getLineBottom(lineIndex) <= measuredHeightConstraint) {
