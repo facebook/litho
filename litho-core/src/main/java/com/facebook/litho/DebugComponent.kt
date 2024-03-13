@@ -63,8 +63,8 @@ private constructor(
     get() = result.context
 
   /** @return The litho view hosting this component. */
-  val lithoView: LithoView?
-    get() = result.context?.mountedView as LithoView?
+  val lithoView: BaseMountingView?
+    get() = result.context?.mountedView as BaseMountingView?
 
   /** @return If this debug component represents a layout node, return it. */
   val layoutNode: DebugLayoutNode?
@@ -308,7 +308,7 @@ private constructor(
     }
 
   fun rerender() {
-    lithoView?.forceRelayout()
+    (lithoView as? LithoView)?.forceRelayout()
   }
 
   fun canResolve(): Boolean {
@@ -346,7 +346,7 @@ private constructor(
         y: Int,
         xOffset: Int,
         yOffset: Int,
-        componentTree: ComponentTree?
+        timeMachine: ComponentTreeTimeMachine?,
     ): DebugComponent? {
       val node = result.node
       val context = result.context
@@ -355,7 +355,7 @@ private constructor(
       }
       val componentKey = node.getGlobalKeyAt(componentIndex)
       return DebugComponent(
-              componentTreeTimeMachine = componentTree?.timeMachine,
+              componentTreeTimeMachine = timeMachine,
               globalKey = generateGlobalKey(context, componentKey),
               result = result,
               node = result.node,
@@ -369,11 +369,20 @@ private constructor(
     }
 
     @JvmStatic
-    fun getRootInstance(view: LithoView): DebugComponent? = getRootInstance(view.componentTree)
+    fun getRootInstance(view: BaseMountingView): DebugComponent? =
+        getRootInstance(
+            view.currentLayoutState,
+            if (view is LithoView) view.componentTree?.timeMachine else null)
+
+    fun getRootInstance(componentTree: ComponentTree?): DebugComponent? =
+        if (componentTree == null) null
+        else getRootInstance(componentTree.mainThreadLayoutState, componentTree.timeMachine)
 
     @JvmStatic
-    fun getRootInstance(componentTree: ComponentTree?): DebugComponent? {
-      val layoutState = componentTree?.mainThreadLayoutState
+    fun getRootInstance(
+        layoutState: LayoutState?,
+        timeMachine: ComponentTreeTimeMachine?
+    ): DebugComponent? {
       val root = layoutState?.rootLayoutResult
       if (root == null || root is NullLithoLayoutResult) {
         return null
@@ -381,7 +390,7 @@ private constructor(
       check(root is LithoLayoutResult) { "Expected root to be a LithoLayoutResult" }
       val node = root.node
       val outerWrapperComponentIndex = (node.componentCount - 1).coerceAtLeast(0)
-      return getInstance(root, outerWrapperComponentIndex, 0, 0, 0, 0, componentTree)?.apply {
+      return getInstance(root, outerWrapperComponentIndex, 0, 0, 0, 0, timeMachine)?.apply {
         isRoot = true
       }
     }
@@ -402,9 +411,9 @@ private constructor(
     @JvmStatic
     fun isExcludedFromIncrementalMount(
         debugComponent: DebugComponent,
-        componentTree: ComponentTree
+        layoutState: LayoutState
     ): Boolean {
-      val renderUnit = getRenderUnit(debugComponent, componentTree)
+      val renderUnit = getRenderUnit(debugComponent, layoutState)
       val component = debugComponent.component
 
       val shouldExcludePrimitiveFromIncrementalMount: Boolean =
@@ -417,12 +426,8 @@ private constructor(
     }
 
     @JvmStatic
-    fun getRenderUnit(
-        debugComponent: DebugComponent,
-        componentTree: ComponentTree
-    ): RenderUnit<*>? {
+    fun getRenderUnit(debugComponent: DebugComponent, layoutState: LayoutState): RenderUnit<*>? {
       val component = debugComponent.component
-      val layoutState = componentTree.mainThreadLayoutState ?: return null
       for (i in 0 until layoutState.getMountableOutputCount()) {
         val renderTreeNode = layoutState.getMountableOutputAt(i)
         val lithoRenderUnit = renderTreeNode.renderUnit as LithoRenderUnit
@@ -436,10 +441,9 @@ private constructor(
     @JvmStatic
     fun getVisibilityOutput(
         debugComponent: DebugComponent,
-        componentTree: ComponentTree
+        layoutState: LayoutState
     ): VisibilityOutput? {
       val componentGlobalKey = debugComponent.componentGlobalKey
-      val layoutState = componentTree.mainThreadLayoutState ?: return null
       for (i in 0 until layoutState.visibilityOutputCount) {
         val visibilityOutput = layoutState.getVisibilityOutputAt(i)
         if (visibilityOutput.id == componentGlobalKey) {
@@ -450,7 +454,7 @@ private constructor(
     }
 
     @JvmStatic
-    fun isVisible(debugComponent: DebugComponent, lithoView: LithoView): Boolean {
+    fun isVisible(debugComponent: DebugComponent, lithoView: BaseMountingView): Boolean {
       val componentGlobalKey = debugComponent.componentGlobalKey
       return lithoView.visibilityExtensionState?.let {
         VisibilityMountExtension.isVisible(it, componentGlobalKey)

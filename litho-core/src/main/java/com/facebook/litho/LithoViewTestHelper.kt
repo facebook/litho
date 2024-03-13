@@ -80,7 +80,7 @@ object LithoViewTestHelper {
 
   @JvmStatic
   @DoNotStrip
-  fun viewToString(view: LithoView): String = viewToString(view, false).trim()
+  fun viewToString(view: BaseMountingView): String = viewToString(view, false).trim()
 
   /**
    * Provide a nested string representation of a LithoView and its nested components for E2E testing
@@ -99,8 +99,7 @@ object LithoViewTestHelper {
       withProps: Boolean,
       extraDescription: ExtraDescription? = null
   ): String {
-    // TODO support other implementations of BaseMountingView T149859358
-    if (view !is LithoView) {
+    if (view !is BaseMountingView) {
       return ""
     }
     val root = DebugComponent.getRootInstance(view) ?: return ""
@@ -118,7 +117,7 @@ object LithoViewTestHelper {
    */
   @JvmStatic
   @DoNotStrip
-  fun viewToString(view: LithoView, embedded: Boolean): String {
+  fun viewToString(view: BaseMountingView, embedded: Boolean): String {
     val root = DebugComponent.getRootInstance(view)
     return rootInstanceToString(root, embedded, 0)
   }
@@ -171,7 +170,7 @@ object LithoViewTestHelper {
 
   /** calculate the depth on the litho components in general android view hierarchy */
   @JvmStatic
-  private fun getLithoViewDepthInAndroid(view: LithoView): Int {
+  private fun getLithoViewDepthInAndroid(view: BaseMountingView): Int {
     var depth = 3
     var parent = view.parent
     while (parent != null) {
@@ -191,8 +190,7 @@ object LithoViewTestHelper {
 
   @JvmStatic
   fun toDebugString(baseMountingView: BaseMountingView?): String {
-    // TODO support other implementaions of BaseMountingView T149859358
-    if (baseMountingView == null || baseMountingView !is LithoView) {
+    if (baseMountingView == null) {
       return ""
     }
     val debugString = viewToString(baseMountingView, true)
@@ -200,16 +198,16 @@ object LithoViewTestHelper {
   }
 
   @JvmStatic
-  private fun viewBoundsToString(lithoView: LithoView): String {
+  private fun viewBoundsToString(baseMountingView: BaseMountingView): String {
     val sb = StringBuilder()
     sb.append("(")
-    sb.append(lithoView.left)
+    sb.append(baseMountingView.left)
     sb.append(",")
-    sb.append(lithoView.top)
+    sb.append(baseMountingView.top)
     sb.append("-")
-    sb.append(lithoView.right)
+    sb.append(baseMountingView.right)
     sb.append(",")
-    sb.append(lithoView.bottom)
+    sb.append(baseMountingView.bottom)
     sb.append(")")
     return sb.toString()
   }

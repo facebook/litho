@@ -35,8 +35,6 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat.Accessibility
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.rendercore.extensions.ExtensionState;
-import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -777,7 +775,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
 
   @Nullable
   @Override
-  LayoutState getCurrentLayoutState() {
+  public LayoutState getCurrentLayoutState() {
     return mComponentTree == null ? null : mComponentTree.getMainThreadLayoutState();
   }
 
@@ -853,22 +851,6 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
     } else {
       return null;
     }
-  }
-
-  @Nullable
-  VisibilityMountExtension.VisibilityMountExtensionState getVisibilityExtensionState() {
-
-    LithoHostListenerCoordinator lithoHostListenerCoordinator = getLithoHostListenerCoordinator();
-    if (lithoHostListenerCoordinator != null) {
-      ExtensionState visibilityExtensionState =
-          lithoHostListenerCoordinator.getVisibilityExtensionState();
-      if (visibilityExtensionState != null) {
-        return (VisibilityMountExtension.VisibilityMountExtensionState)
-            visibilityExtensionState.getState();
-      }
-    }
-
-    return null;
   }
 
   public void setMountStartupLoggingInfo(

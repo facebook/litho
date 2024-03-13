@@ -32,7 +32,7 @@ object ComponentTreeDumpingHelper {
 
   /** Dumps the tree related to the provided component context */
   @JvmStatic
-  fun dumpContextTree(componentTree: ComponentTree?): String? {
+  fun dumpContextTree(componentTree: ComponentTree): String? {
     // Getting the base of the tree
     val rootComponent = DebugComponent.getRootInstance(componentTree) ?: return null
     val sb = StringBuilder()

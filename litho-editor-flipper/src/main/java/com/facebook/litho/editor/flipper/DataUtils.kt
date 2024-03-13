@@ -96,13 +96,13 @@ object DataUtils {
       return mountingData.build()
     }
 
-    val mountState = lithoView.mountDelegateTarget ?: return mountingData.build()
-    val componentTree = lithoView.componentTree ?: return mountingData.build()
+    val mountState = lithoView.mountDelegateTarget
+    val layoutState = lithoView.currentLayoutState ?: return mountingData.build()
     var hasMountingInfo = false
     val component = node.component
 
     if (component.mountType != Component.MountType.NONE) {
-      val renderUnit = DebugComponent.getRenderUnit(node, componentTree)
+      val renderUnit = DebugComponent.getRenderUnit(node, layoutState)
       if (renderUnit != null) {
         val renderUnitId = renderUnit.id
         val isMounted = mountState.getContentById(renderUnitId) != null
@@ -111,7 +111,7 @@ object DataUtils {
       }
     }
 
-    val visibilityOutput = DebugComponent.getVisibilityOutput(node, componentTree)
+    val visibilityOutput = DebugComponent.getVisibilityOutput(node, layoutState)
     if (visibilityOutput != null) {
       val isVisible = DebugComponent.isVisible(node, lithoView)
       mountingData.put("visible", isVisible)

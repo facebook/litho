@@ -41,8 +41,10 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeUpdateListener;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayDeque;
@@ -1177,6 +1179,22 @@ public abstract class BaseMountingView extends ComponentHost
     return mLithoHostListenerCoordinator;
   }
 
+  @Nullable
+  VisibilityMountExtension.VisibilityMountExtensionState getVisibilityExtensionState() {
+
+    LithoHostListenerCoordinator lithoHostListenerCoordinator = getLithoHostListenerCoordinator();
+    if (lithoHostListenerCoordinator != null) {
+      ExtensionState visibilityExtensionState =
+          lithoHostListenerCoordinator.getVisibilityExtensionState();
+      if (visibilityExtensionState != null) {
+        return (VisibilityMountExtension.VisibilityMountExtensionState)
+            visibilityExtensionState.getState();
+      }
+    }
+
+    return null;
+  }
+
   @Override
   protected boolean shouldRequestLayout() {
     // Don't bubble up layout requests while mounting.
@@ -1194,7 +1212,7 @@ public abstract class BaseMountingView extends ComponentHost
   public abstract boolean isIncrementalMountEnabled();
 
   @Nullable
-  abstract LayoutState getCurrentLayoutState();
+  public abstract LayoutState getCurrentLayoutState();
 
   @Nullable
   protected abstract TreeState getTreeState();

@@ -37,12 +37,12 @@ import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTreeTimeMachine;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.DebugLayoutNodeEditor;
-import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderSource;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.config.LithoDebugConfigurations;
@@ -545,7 +545,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   @Override
   public void setHighlighted(DebugComponent node, boolean selected, boolean isAlignmentMode) {
-    final LithoView lithoView = node.getLithoView();
+    final BaseMountingView lithoView = node.getLithoView();
     if (lithoView == null) {
       return;
     }
@@ -584,7 +584,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   @Override
   public @Nullable Bitmap getSnapshot(DebugComponent node, boolean includeChildren)
       throws Exception {
-    final LithoView lithoView = node.getLithoView();
+    final BaseMountingView lithoView = node.getLithoView();
     if (lithoView == null) {
       return null;
     }

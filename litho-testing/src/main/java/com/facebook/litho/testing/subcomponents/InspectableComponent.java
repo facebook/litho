@@ -19,6 +19,7 @@ package com.facebook.litho.testing.subcomponents;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.DebugComponent;
@@ -123,7 +124,7 @@ public class InspectableComponent {
 
   /** @return The litho view hosting this component. */
   @Nullable
-  public LithoView getLithoView() {
+  public BaseMountingView getLithoView() {
     return mComponent.getLithoView();
   }
 
