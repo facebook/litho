@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.DESTROYED;
+import static com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle.DESTROYED;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.view.View;
@@ -30,8 +30,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.LithoLifecycleListener;
-import com.facebook.litho.LithoLifecycleProvider;
-import com.facebook.litho.LithoLifecycleProviderDelegate;
+import com.facebook.litho.LithoVisibilityEventsController;
+import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
 import com.facebook.litho.Size;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.TreeState;
@@ -55,8 +55,9 @@ public class ComponentTreeHolder {
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
-  private final @Nullable LithoLifecycleProvider mParentLifecycle;
-  private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
+  private final @Nullable LithoVisibilityEventsController mParentLifecycle;
+  private @Nullable ComponentTreeHolderVisibilityEventsController
+      mComponentTreeHolderLifecycleProvider;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
@@ -116,7 +117,7 @@ public class ComponentTreeHolder {
     private final ComponentsConfiguration componentsConfiguration;
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private @Nullable LithoLifecycleProvider parentLifecycle;
+    private @Nullable LithoVisibilityEventsController parentLifecycle;
 
     private Builder(ComponentsConfiguration configuration) {
       componentsConfiguration = configuration;
@@ -138,7 +139,7 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder parentLifecycleProvider(LithoLifecycleProvider parentLifecycle) {
+    public Builder parentLifecycleProvider(LithoVisibilityEventsController parentLifecycle) {
       this.parentLifecycle = parentLifecycle;
       return this;
     }
@@ -383,7 +384,8 @@ public class ComponentTreeHolder {
         builder = ComponentTree.create(context, mRenderInfo.getComponent(), mParentLifecycle);
       } else {
         if (mParentLifecycle != null) {
-          mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderLifecycleProvider();
+          mComponentTreeHolderLifecycleProvider =
+              new ComponentTreeHolderVisibilityEventsController();
         }
         builder =
             ComponentTree.create(
@@ -495,14 +497,16 @@ public class ComponentTreeHolder {
   }
 
   /** Lifecycle controlled by a ComponentTreeHolder. */
-  private class ComponentTreeHolderLifecycleProvider
-      implements LithoLifecycleProvider, LithoLifecycleListener, AOSPLifecycleOwnerProvider {
+  private class ComponentTreeHolderVisibilityEventsController
+      implements LithoVisibilityEventsController,
+          LithoLifecycleListener,
+          AOSPLifecycleOwnerProvider {
 
-    public LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
+    public LithoVisibilityEventsControllerDelegate mLithoLifecycleProviderDelegate;
 
-    public ComponentTreeHolderLifecycleProvider() {
+    public ComponentTreeHolderVisibilityEventsController() {
       mParentLifecycle.addListener(this);
-      mLithoLifecycleProviderDelegate = new LithoLifecycleProviderDelegate();
+      mLithoLifecycleProviderDelegate = new LithoVisibilityEventsControllerDelegate();
     }
 
     @Override

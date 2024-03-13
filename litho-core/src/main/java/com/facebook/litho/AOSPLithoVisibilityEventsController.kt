@@ -20,18 +20,22 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
 
 /**
- * This LithoLifecycleProvider implementation dispatches to the registered observers the lifecycle
- * state changes triggered by the provided LifecycleOwner. For example, if a Fragment is passed as
- * param, the observers will be registered to listen to all of the fragment's lifecycle state
- * changes.
+ * This LithoVisibilityEventsController implementation dispatches to the registered observers the
+ * lifecycle state changes triggered by the provided LifecycleOwner. For example, if a Fragment is
+ * passed as param, the observers will be registered to listen to all of the fragment's lifecycle
+ * state changes.
  */
-open class AOSPLithoLifecycleProvider(
+open class AOSPLithoVisibilityEventsController(
     final override val lifecycleOwner: LifecycleOwner,
-    private val delegate: LithoLifecycleProviderDelegate = LithoLifecycleProviderDelegate()
-) : LithoLifecycleProvider by delegate, LifecycleEventObserver, AOSPLifecycleOwnerProvider {
+    private val delegate: LithoVisibilityEventsControllerDelegate =
+        LithoVisibilityEventsControllerDelegate()
+) :
+    LithoVisibilityEventsController by delegate,
+    LifecycleEventObserver,
+    AOSPLifecycleOwnerProvider {
 
   init {
     lifecycleOwner.lifecycle.addObserver(this)
@@ -39,7 +43,7 @@ open class AOSPLithoLifecycleProvider(
 
   constructor(
       lifecycleOwner: LifecycleOwner
-  ) : this(lifecycleOwner = lifecycleOwner, delegate = LithoLifecycleProviderDelegate())
+  ) : this(lifecycleOwner = lifecycleOwner, delegate = LithoVisibilityEventsControllerDelegate())
 
   override fun onStateChanged(source: LifecycleOwner, event: Event) {
     when (event) {

@@ -57,10 +57,10 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
+import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.MountHelper;
@@ -139,7 +139,7 @@ public class RecyclerBinder
   private final boolean mEnableStableIds;
   private final @Nullable RunnableHandler mAsyncInsertHandler;
   private final boolean mAcquireStateHandlerOnRelease;
-  private final @Nullable LithoLifecycleProvider mParentLifecycle;
+  private final @Nullable LithoVisibilityEventsController mParentLifecycle;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIsSubAdapter;
@@ -400,7 +400,7 @@ public class RecyclerBinder
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         ComponentsConfiguration componentsConfiguration,
-        @Nullable LithoLifecycleProvider lifecycleProvider);
+        @Nullable LithoVisibilityEventsController lifecycleProvider);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -411,7 +411,7 @@ public class RecyclerBinder
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             ComponentsConfiguration componentsConfiguration,
-            @Nullable LithoLifecycleProvider lifecycleProvider) {
+            @Nullable LithoVisibilityEventsController lifecycleProvider) {
           return ComponentTreeHolder.create(componentsConfiguration)
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -438,7 +438,7 @@ public class RecyclerBinder
     private boolean acquireStateHandlerOnRelease = true;
     private @RecyclingStrategy int recyclingStrategy =
         ComponentsConfiguration.recyclerBinderStrategy;
-    private @Nullable LithoLifecycleProvider lifecycleProvider;
+    private @Nullable LithoVisibilityEventsController lifecycleProvider;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
 
     /**
@@ -563,8 +563,9 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder lithoLifecycleProvider(LithoLifecycleProvider lithoLifecycleProvider) {
-      this.lifecycleProvider = lithoLifecycleProvider;
+    public Builder lithoLifecycleProvider(
+        LithoVisibilityEventsController lithoVisibilityEventsController) {
+      lifecycleProvider = lithoVisibilityEventsController;
       return this;
     }
 

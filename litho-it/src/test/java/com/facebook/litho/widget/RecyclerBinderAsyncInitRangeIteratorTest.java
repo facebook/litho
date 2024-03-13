@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoLifecycleProvider;
+import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.Size;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -81,7 +81,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              @Nullable LithoLifecycleProvider lifecycleProvider) {
+              @Nullable LithoVisibilityEventsController lifecycleProvider) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

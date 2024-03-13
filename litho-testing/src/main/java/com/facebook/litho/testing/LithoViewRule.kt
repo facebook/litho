@@ -25,8 +25,8 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ErrorEventHandler
-import com.facebook.litho.LithoLifecycleProvider
 import com.facebook.litho.LithoView
+import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.TreePropContainer
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -64,7 +64,7 @@ class LithoViewRule
 constructor(
     val componentsConfiguration: ComponentsConfiguration? = null,
     val themeResId: Int? = null,
-    private val lithoLifecycleProvider: (() -> LithoLifecycleProvider)? = null
+    private val lithoVisibilityEventsController: (() -> LithoVisibilityEventsController)? = null
 ) : TestRule {
   lateinit var context: ComponentContext
   private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
@@ -124,7 +124,7 @@ constructor(
       componentFunction: (ComponentScope.() -> Component?)? = null
   ): TestLithoView {
     val testLithoView =
-        TestLithoView(context, componentsConfiguration, lithoLifecycleProvider?.invoke())
+        TestLithoView(context, componentsConfiguration, lithoVisibilityEventsController?.invoke())
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
     if (widthPx != null || heightPx != null) {

@@ -25,7 +25,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.facebook.litho.AOSPLithoLifecycleProvider
+import com.facebook.litho.AOSPLithoVisibilityEventsController
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
@@ -48,7 +48,10 @@ class UseLiveDataTest {
 
   @get:Rule
   val rule: LithoViewRule =
-      LithoViewRule(lithoLifecycleProvider = { AOSPLithoLifecycleProvider(fakeLifecycleOwner) })
+      LithoViewRule(
+          lithoVisibilityEventsController = {
+            AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
+          })
 
   @Test
   fun `should observe initial live data value`() {
@@ -174,7 +177,7 @@ class UseLiveDataTest {
 
     val componentTree =
         ComponentTree.create(
-                rule.context, component, AOSPLithoLifecycleProvider(fakeLifecycleOwner))
+                rule.context, component, AOSPLithoVisibilityEventsController(fakeLifecycleOwner))
             .build()
 
     val lithoView = rule.render(componentTree = componentTree) { component }

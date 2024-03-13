@@ -49,8 +49,8 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   private final ComponentContext mComponentContext;
   private boolean mIsAttachedForTest;
   // The bounds of the visible rect that was used for the previous incremental mount.
-  private final LithoLifecycleProviderHolder mLithoLifecycleProviderHolder =
-      new LithoLifecycleProviderHolder();
+  private final LithoVisibilityEventsControllerHolder mLithoLifecycleProviderHolder =
+      new LithoVisibilityEventsControllerHolder();
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
@@ -88,7 +88,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   }
 
   public static LithoView create(
-      Context context, Component component, LithoLifecycleProvider lifecycleProvider) {
+      Context context, Component component, LithoVisibilityEventsController lifecycleProvider) {
     return create(new ComponentContext(context), component, lifecycleProvider);
   }
 
@@ -108,10 +108,12 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
 
   /**
    * Creates a new LithoView and sets a new ComponentTree on it. The ComponentTree is subscribed to
-   * the given LithoLifecycleProvider instance.
+   * the given LithoVisibilityEventsController instance.
    */
   public static LithoView create(
-      ComponentContext context, Component component, LithoLifecycleProvider lifecycleProvider) {
+      ComponentContext context,
+      Component component,
+      LithoVisibilityEventsController lifecycleProvider) {
     final LithoView lithoView = new LithoView(context);
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       lithoView.setComponentTree(ComponentTree.create(context, component).build());
@@ -502,8 +504,8 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   }
 
   /**
-   * @return true if this LithoView has a ComponentTree attached and a LithoLifecycleProvider is set
-   *     on it, false otherwise.
+   * @return true if this LithoView has a ComponentTree attached and a
+   *     LithoVisibilityEventsController is set on it, false otherwise.
    */
   public synchronized boolean componentTreeHasLifecycleProvider() {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
@@ -514,14 +516,14 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   }
 
   /**
-   * If this LithoView has a ComponentTree attached to it, set a LithoLifecycleProvider if it
-   * doesn't already have one.
+   * If this LithoView has a ComponentTree attached to it, set a LithoVisibilityEventsController if
+   * it doesn't already have one.
    *
    * @return true if the LithoView's ComponentTree was subscribed as listener to the given
-   *     LithoLifecycleProvider, false otherwise.
+   *     LithoVisibilityEventsController, false otherwise.
    */
   public synchronized boolean subscribeComponentTreeToLifecycleProvider(
-      LithoLifecycleProvider lifecycleProvider) {
+      LithoVisibilityEventsController lifecycleProvider) {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       setLifecycleProvider(lifecycleProvider);
       return true;
@@ -542,7 +544,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   // It is preferred to call getLifecycleStatus() directly if you need the status of the
   // LifecycleProvider
   @Nullable
-  LithoLifecycleProvider getLithoLifecycleProvider() {
+  LithoVisibilityEventsController getLithoLifecycleProvider() {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       return mLithoLifecycleProviderHolder;
     } else {
@@ -551,7 +553,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   }
 
   @Nullable
-  LithoLifecycleProvider.LithoLifecycle getLifecycleStatus() {
+  LithoVisibilityEventsController.LithoLifecycle getLifecycleStatus() {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       return mLithoLifecycleProviderHolder.getLifecycleStatus();
     } else {
@@ -561,7 +563,8 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
 
   private void subscribeHolderToLifecycleProviderFromComponentTree() {
     if (mComponentTree != null) {
-      LithoLifecycleProvider lifecycleProvider = mComponentTree.getLifecycleProviderForLithoView();
+      LithoVisibilityEventsController lifecycleProvider =
+          mComponentTree.getLifecycleProviderForLithoView();
       if (lifecycleProvider != null) {
         setLifecycleProvider(lifecycleProvider);
         mComponentTree.clearLifecycleProvider();
@@ -599,7 +602,8 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
     }
   }
 
-  private synchronized void setLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
+  private synchronized void setLifecycleProvider(
+      LithoVisibilityEventsController lifecycleProvider) {
     mLithoLifecycleProviderHolder.setHeldLifecycleProvider(lifecycleProvider);
     if (mComponentTree != null) {
       mComponentTree.setLifecycleOwner(mLithoLifecycleProviderHolder.getHeldLifecycleProvider());
@@ -619,7 +623,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   }
 
   @Override
-  public void onMovedToState(LithoLifecycleProvider.LithoLifecycle state) {
+  public void onMovedToState(LithoVisibilityEventsController.LithoLifecycle state) {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       switch (state) {
         case HINT_VISIBLE:
@@ -655,7 +659,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           LITHO_LIFECYCLE_FOUND,
-          "Setting visibility hint but a LithoLifecycleProvider was found, ignoring.");
+          "Setting visibility hint but a LithoVisibilityEventsController was found, ignoring.");
 
       return;
     }
@@ -668,7 +672,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           LITHO_LIFECYCLE_FOUND,
-          "Setting visibility hint but a LithoLifecycleProvider was found, ignoring.");
+          "Setting visibility hint but a LithoVisibilityEventsController was found, ignoring.");
 
       return;
     }
@@ -819,7 +823,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           LITHO_LIFECYCLE_FOUND,
-          "Trying to release a LithoView but a LithoLifecycleProvider was found, ignoring.");
+          "Trying to release a LithoView but a LithoVisibilityEventsController was found, ignoring.");
 
       return;
     }

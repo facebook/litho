@@ -16,17 +16,18 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
 
 /**
- * LithoLifecycleProvider implementation that can be used to subscribe a nested ComponentTree to
- * listen to state changes of the lifecycle provider that the parent ComponentTree is also
- * subscribed to.
+ * LithoVisibilityEventsController implementation that can be used to subscribe a nested
+ * ComponentTree to listen to state changes of the lifecycle provider that the parent ComponentTree
+ * is also subscribed to.
  */
-class SimpleNestedTreeLifecycleProvider(parentLifecycleProvider: LithoLifecycleProvider?) :
-    LithoLifecycleProvider, LithoLifecycleListener {
+class SimpleNestedTreeVisibilityEventsController(
+    parentLifecycleProvider: LithoVisibilityEventsController?
+) : LithoVisibilityEventsController, LithoLifecycleListener {
 
-  private val lithoLifecycleDelegate = LithoLifecycleProviderDelegate()
+  private val lithoLifecycleDelegate = LithoVisibilityEventsControllerDelegate()
 
   override val lifecycleStatus: LithoLifecycle
     get() = lithoLifecycleDelegate.lifecycleStatus

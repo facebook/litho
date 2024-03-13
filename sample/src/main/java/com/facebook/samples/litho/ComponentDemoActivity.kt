@@ -17,7 +17,7 @@
 package com.facebook.samples.litho
 
 import android.os.Bundle
-import com.facebook.litho.AOSPLithoLifecycleProvider
+import com.facebook.litho.AOSPLithoVisibilityEventsController
 import com.facebook.litho.LithoView
 import com.facebook.samples.litho.Demos.SingleDemo
 import java.lang.RuntimeException
@@ -36,7 +36,8 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
       lithoView.setComponent(componentCreator.create(lithoView.componentContext))
       setContentView(lithoView)
     } else {
-      val lithoView = LithoView.create(this, model.component, AOSPLithoLifecycleProvider(this))
+      val lithoView =
+          LithoView.create(this, model.component, AOSPLithoVisibilityEventsController(this))
       setContentView(lithoView)
     }
   }

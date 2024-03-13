@@ -78,7 +78,7 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LithoTree mLithoTree;
 
-  private @Nullable LithoLifecycleProvider mLifecycleProvider;
+  private @Nullable LithoVisibilityEventsController mLifecycleProvider;
 
   // Used to hold styling information applied to components
   @StyleRes
@@ -116,7 +116,7 @@ public class ComponentContext {
       @Nullable LithoConfiguration lithoConfiguration,
       @Nullable LithoTree lithoTree,
       @Nullable String globalKey,
-      @Nullable LithoLifecycleProvider lifecycleProvider,
+      @Nullable LithoVisibilityEventsController lifecycleProvider,
       @Nullable Component componentScope,
       @Nullable TreePropContainer parentTreePropContainer) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
@@ -812,7 +812,7 @@ public class ComponentContext {
   }
 
   @Nullable
-  public LithoLifecycleProvider getLifecycleProvider() {
+  public LithoVisibilityEventsController getLifecycleProvider() {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       return null;
     } else {

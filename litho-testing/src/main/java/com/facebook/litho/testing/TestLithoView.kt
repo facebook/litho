@@ -27,8 +27,8 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
-import com.facebook.litho.LithoLifecycleProvider
 import com.facebook.litho.LithoView
+import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
@@ -73,13 +73,14 @@ class TestLithoView
 internal constructor(
     val context: ComponentContext,
     val componentsConfiguration: ComponentsConfiguration? = null,
-    private val lithoLifecycleProvider: LithoLifecycleProvider? = null
+    private val lithoVisibilityEventsController: LithoVisibilityEventsController? = null
 ) {
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
         val builder =
-            ComponentTree.create(context).withLithoLifecycleProvider(lithoLifecycleProvider)
+            ComponentTree.create(context)
+                .withLithoLifecycleProvider(lithoVisibilityEventsController)
 
         if (componentsConfiguration != null) {
           builder.componentsConfiguration(componentsConfiguration)

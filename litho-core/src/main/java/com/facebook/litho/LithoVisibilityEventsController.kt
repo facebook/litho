@@ -20,7 +20,7 @@ package com.facebook.litho
  * Manages a Litho ComponentTree lifecycle and informs subscribed LithoLifecycleListeners when a
  * lifecycle state occurs.
  */
-interface LithoLifecycleProvider {
+interface LithoVisibilityEventsController {
 
   enum class LithoLifecycle(private val text: String) {
     HINT_VISIBLE("HINT_VISIBLE"),

@@ -20,29 +20,31 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
 
 /**
- * This is a holder to form listening chains for LithoLifecycleProvider in LithoView hierarchy.
- * Consider a simple following case:
+ * This is a holder to form listening chains for LithoVisibilityEventsController in LithoView
+ * hierarchy. Consider a simple following case:
  *
  * LithoView(holder1) <- nested LithoView(holder2) <- nested LithoView(holder3)
  *
  * In this case, holder3 will listen to holder2 and holder2 will listen to holder1. And when holder1
- * is added to hold a AOSPLithoLifecycleProvider, holder2 and holder3 will also listen to it
- * automatically.
+ * is added to hold an AOSPLithoVisibilityEventsController, holder2 and holder3 will also listen to
+ * it automatically.
  */
-internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifecycleListener {
+internal class LithoVisibilityEventsControllerHolder :
+    LithoVisibilityEventsController, LithoLifecycleListener {
 
   private val lithoLifecycleListeners: MutableSet<LithoLifecycleListener> = HashSet()
 
-  private var internalLifecycleProvider: LithoLifecycleProvider = LithoLifecycleProviderDelegate()
+  private var internalLifecycleProvider: LithoVisibilityEventsController =
+      LithoVisibilityEventsControllerDelegate()
 
   private var hasHeldLifecycleProvider: Boolean = false
 
   private var isDefaultLifecycleProvider: Boolean = false
 
-  fun getHeldLifecycleProvider(): LithoLifecycleProvider? {
+  fun getHeldLifecycleProvider(): LithoVisibilityEventsController? {
     return if (hasHeldLifecycleProvider) {
       internalLifecycleProvider
     } else {
@@ -53,7 +55,7 @@ internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifec
   @Synchronized
   @JvmOverloads
   fun setHeldLifecycleProvider(
-      lifecycleProvider: LithoLifecycleProvider?,
+      lifecycleProvider: LithoVisibilityEventsController?,
       isDefault: Boolean = false
   ) {
     if (internalLifecycleProvider == lifecycleProvider) {
@@ -62,8 +64,9 @@ internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifec
     lithoLifecycleListeners.forEach { listener ->
       internalLifecycleProvider.removeListener(listener)
     }
-    // If lifecycleProvider is null, we re-create LithoLifecycleProviderDelegate with default state
-    internalLifecycleProvider = lifecycleProvider ?: LithoLifecycleProviderDelegate()
+    // If lifecycleProvider is null, we re-create LithoVisibilityEventsControllerDelegate with
+    // default state
+    internalLifecycleProvider = lifecycleProvider ?: LithoVisibilityEventsControllerDelegate()
     hasHeldLifecycleProvider = lifecycleProvider != null
 
     lithoLifecycleListeners.forEach { listener -> internalLifecycleProvider.addListener(listener) }
@@ -75,11 +78,11 @@ internal class LithoLifecycleProviderHolder : LithoLifecycleProvider, LithoLifec
     if (lithoView.isAttached && !hasHeldLifecycleProvider) {
       try {
         setHeldLifecycleProvider(
-            AOSPLithoLifecycleProvider(FragmentManager.findFragment(lithoView)), true)
+            AOSPLithoVisibilityEventsController(FragmentManager.findFragment(lithoView)), true)
       } catch (e: IllegalStateException) {
         val lifecycleOwner = getLifecycleOwnerFromContext(lithoView.context)
         if (lifecycleOwner != null) {
-          setHeldLifecycleProvider(AOSPLithoLifecycleProvider(lifecycleOwner), true)
+          setHeldLifecycleProvider(AOSPLithoVisibilityEventsController(lifecycleOwner), true)
         }
       }
     }

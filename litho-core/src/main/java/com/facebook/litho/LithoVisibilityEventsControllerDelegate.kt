@@ -18,18 +18,17 @@ package com.facebook.litho
 
 import androidx.annotation.IntDef
 import androidx.annotation.UiThread
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
-import com.facebook.litho.LithoLifecycleProviderDelegate.LifecycleTransitionStatus
+import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
 import java.lang.IllegalStateException
 import java.util.ArrayList
 
 /**
- * Default [LithoLifecycleProvider] implementation. Defines the standard state changes for a Litho
- * ComponentTree. A custom LithoLifecycleProvider implementation can change the lifecycle state but
- * delegate to this to handle the effects of the state change. See an example of how this
- * facilitates a custom lifecycle implementation in [AOSPLithoLifecycleProvider].
+ * Default [LithoVisibilityEventsController] implementation. Defines the standard state changes for
+ * a Litho ComponentTree. A custom LithoVisibilityEventsController implementation can change the
+ * lifecycle state but delegate to this to handle the effects of the state change. See an example of
+ * how this facilitates a custom lifecycle implementation in [AOSPLithoVisibilityEventsController].
  */
-class LithoLifecycleProviderDelegate : LithoLifecycleProvider {
+class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController {
 
   private val lithoLifecycleListeners: MutableSet<LithoLifecycleListener> = HashSet()
   override var lifecycleStatus = LithoLifecycle.HINT_VISIBLE

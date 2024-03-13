@@ -74,7 +74,7 @@ import androidx.core.util.Preconditions;
 import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
+import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.config.PreAllocationHandler;
@@ -137,7 +137,7 @@ public class ComponentTree
   // existing API to set LifecycleProvider from ComponentTree. But ideally, we should set
   // LifecycleProvider to LithoView directly. The getter `getLifecycleProviderForLithoView` method
   // should be only called by LithoView
-  @Nullable LithoLifecycleProvider mLifecycleProvider;
+  @Nullable LithoVisibilityEventsController mLifecycleProvider;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -196,7 +196,8 @@ public class ComponentTree
     }
   }
 
-  public synchronized void subscribeToLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
+  public synchronized void subscribeToLifecycleProvider(
+      LithoVisibilityEventsController lifecycleProvider) {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       if (mLithoView != null) {
         mLithoView.subscribeComponentTreeToLifecycleProvider(lifecycleProvider);
@@ -215,7 +216,7 @@ public class ComponentTree
     }
   }
 
-  synchronized void setLifecycleOwner(@Nullable LithoLifecycleProvider lifecycleProvider) {
+  synchronized void setLifecycleOwner(@Nullable LithoVisibilityEventsController lifecycleProvider) {
     if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
       LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
       setInternalTreeProp(LifecycleOwnerTreeProp, owner);
@@ -421,7 +422,7 @@ public class ComponentTree
   public static Builder create(
       ComponentContext context,
       @Nullable Component root,
-      @Nullable LithoLifecycleProvider lifecycleProvider) {
+      @Nullable LithoVisibilityEventsController lifecycleProvider) {
     final Builder builder = new ComponentTree.Builder(context);
 
     if (root != null) {
@@ -1804,7 +1805,8 @@ public class ComponentTree
     return mTreeState == null ? new TreeState() : new TreeState(mTreeState);
   }
 
-  public static @Nullable LithoLifecycleProvider getLifecycleProvider(ComponentContext context) {
+  public static @Nullable LithoVisibilityEventsController getLifecycleProvider(
+      ComponentContext context) {
     return context.getLifecycleProvider();
   }
 
@@ -1813,7 +1815,7 @@ public class ComponentTree
   // LifecycleProvider to LithoView directly. The getter `getLifecycleProviderForLithoView` method
   // should be only called by LithoView
   @Nullable
-  LithoLifecycleProvider getLifecycleProviderForLithoView() {
+  LithoVisibilityEventsController getLifecycleProviderForLithoView() {
     return mLifecycleProvider;
   }
 
@@ -1825,7 +1827,7 @@ public class ComponentTree
     return mContext.shouldEnableDefaultAOSPLithoLifecycleProvider();
   }
 
-  public @Nullable LithoLifecycleProvider getLifecycleProvider() {
+  public @Nullable LithoVisibilityEventsController getLifecycleProvider() {
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       return mLithoView != null ? mLithoView.getLithoLifecycleProvider() : null;
     } else {
@@ -1835,9 +1837,9 @@ public class ComponentTree
 
   /**
    * Creates a ComponentTree nested inside the ComponentTree of the provided parentContext. If the
-   * parent ComponentTree is subscribed to a LithoLifecycleProvider, the nested ComponentTree will
-   * also subscribe to a {@link SimpleNestedTreeLifecycleProvider} hooked with the parent's
-   * lifecycle provider.
+   * parent ComponentTree is subscribed to a LithoVisibilityEventsController, the nested
+   * ComponentTree will also subscribe to a {@link SimpleNestedTreeVisibilityEventsController}
+   * hooked with the parent's lifecycle provider.
    *
    * @param parentContext context associated with the parent ComponentTree.
    * @param component root of the new nested ComponentTree.
@@ -1848,10 +1850,11 @@ public class ComponentTree
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       return ComponentTree.create(ComponentContext.makeCopyForNestedTree(parentContext), component);
     } else {
-      final SimpleNestedTreeLifecycleProvider lifecycleProvider =
+      final SimpleNestedTreeVisibilityEventsController lifecycleProvider =
           parentContext.getLifecycleProvider() == null
               ? null
-              : new SimpleNestedTreeLifecycleProvider(parentContext.getLifecycleProvider());
+              : new SimpleNestedTreeVisibilityEventsController(
+                  parentContext.getLifecycleProvider());
 
       return ComponentTree.create(
           ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
@@ -3017,7 +3020,7 @@ public class ComponentTree
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
-    private @Nullable LithoLifecycleProvider mLifecycleProvider;
+    private @Nullable LithoVisibilityEventsController mLifecycleProvider;
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
 
@@ -3060,7 +3063,8 @@ public class ComponentTree
       return this;
     }
 
-    public Builder withLithoLifecycleProvider(@Nullable LithoLifecycleProvider lifecycleProvider) {
+    public Builder withLithoLifecycleProvider(
+        @Nullable LithoVisibilityEventsController lifecycleProvider) {
       mLifecycleProvider = lifecycleProvider;
       return this;
     }

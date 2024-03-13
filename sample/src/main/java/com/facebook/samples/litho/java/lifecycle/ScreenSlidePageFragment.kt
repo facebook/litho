@@ -26,9 +26,9 @@ import androidx.fragment.app.Fragment
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.LithoLifecycleProvider
-import com.facebook.litho.LithoLifecycleProviderDelegate
 import com.facebook.litho.LithoView
+import com.facebook.litho.LithoVisibilityEventsController
+import com.facebook.litho.LithoVisibilityEventsControllerDelegate
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.R
 import com.facebook.samples.litho.java.lifecycle.ConsoleView.LogRunnable
@@ -61,7 +61,7 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
       }
 
   // start_example_lifecycleprovider
-  private val delegate = LithoLifecycleProviderDelegate()
+  private val delegate = LithoVisibilityEventsControllerDelegate()
 
   override fun setUserVisibleHint(isVisibleToUser: Boolean) {
     super.setUserVisibleHint(isVisibleToUser)
@@ -70,10 +70,10 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
     }
     if (isVisibleToUser) {
       wasVisible = true
-      delegate.moveToLifecycle(LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE)
+      delegate.moveToLifecycle(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
     } else {
       wasVisible = false
-      delegate.moveToLifecycle(LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE)
+      delegate.moveToLifecycle(LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
     }
   }
 
@@ -88,7 +88,7 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
         LithoView.create(
             c,
             getComponent(c),
-            delegate /* The LithoLifecycleProvider delegate for this LithoView */)
+            delegate /* The LithoVisibilityEventsController delegate for this LithoView */)
 
     // end_example_lifecycleprovider
     val params1 = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
