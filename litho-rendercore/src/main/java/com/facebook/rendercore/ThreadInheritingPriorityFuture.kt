@@ -55,7 +55,13 @@ open class ThreadInheritingPriorityFuture<T>(callable: Callable<T>, tag: String)
       resolvedResult = newResult
       futureTask = null
     }
+    onResultReady(newResult)
+
     return newResult
+  }
+
+  open fun onResultReady(result: T) {
+    // Override this method to do something when result is ready.
   }
 
   val isRunning: Boolean

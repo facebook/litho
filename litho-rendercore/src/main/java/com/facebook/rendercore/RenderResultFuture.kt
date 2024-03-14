@@ -21,7 +21,7 @@ import com.facebook.rendercore.extensions.RenderCoreExtension
 import java.util.concurrent.Callable
 
 class RenderResultFuture<State, RenderContext>(
-    private val previousResult: RenderResult<State, RenderContext>?,
+    @Volatile private var previousResult: RenderResult<State, RenderContext>?,
     val setRootId: Int,
     val sizeConstraints: SizeConstraints,
     callable: Callable<RenderResult<State, RenderContext>>
@@ -70,6 +70,11 @@ class RenderResultFuture<State, RenderContext>(
             setRootId,
             sizeConstraints)
       })
+
+  override fun onResultReady(result: RenderResult<State, RenderContext>) {
+    super.onResultReady(result)
+    previousResult = null
+  }
 
   val latestAvailableRenderResult: RenderResult<State, RenderContext>?
     get() = if (isDone) runAndGet() else previousResult
