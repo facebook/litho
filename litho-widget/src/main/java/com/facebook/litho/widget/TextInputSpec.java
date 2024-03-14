@@ -830,8 +830,6 @@ class TextInputSpec {
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
       @Prop(optional = true) boolean disableAutofill,
-      @Prop(optional = true) @Nullable ActionMode.Callback selectionActionModeCallback,
-      @Prop(optional = true) @Nullable ActionMode.Callback insertionActionModeCallback,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
