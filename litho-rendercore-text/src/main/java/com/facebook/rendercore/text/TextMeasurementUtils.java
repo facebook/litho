@@ -92,21 +92,6 @@ public class TextMeasurementUtils {
     }
 
     Pair<Rect, TextLayout> result = layout(androidContext, widthSpec, heightSpec, text, textStyle);
-    final boolean fitTextToConstraints =
-        textStyle.shouldTruncateTextUsingConstraints
-            && textStyle.maxLines == Integer.MAX_VALUE
-            && View.MeasureSpec.getMode(heightSpec) != View.MeasureSpec.UNSPECIFIED;
-    if (fitTextToConstraints) {
-      final int measuredHeightConstraint = result.first.height();
-      final boolean isSizeCompatible =
-          LayoutMeasureUtil.getHeight(result.second.layout) <= measuredHeightConstraint;
-      if (!isSizeCompatible) {
-        result =
-            maybeFitTextToConstraints(
-                androidContext, heightSpec, widthSpec, textStyle, text, result);
-      }
-    }
-
     if (textStyle.roundedBackgroundProps != null && text instanceof Spannable) {
       result =
           calculateLayoutWithBackgroundSpan(
@@ -115,39 +100,6 @@ public class TextMeasurementUtils {
 
     return new MountableLayoutResult(
         renderUnit, result.first.width(), result.first.height(), result.second);
-  }
-
-  private static Pair<Rect, TextLayout> maybeFitTextToConstraints(
-      Context context,
-      int heightSpec,
-      int widthSpec,
-      TextStyle textStyle,
-      CharSequence text,
-      Pair<Rect, TextLayout> initialResult) {
-    final Layout layout = initialResult.second.layout;
-
-    final int measuredHeightConstraint = initialResult.first.height();
-
-    // Make sure we have the bare minimum line count if we've exhausted all lines and weren't able
-    // to fit. This allows to show the ellipsis in the best case scenario signaling truncation
-    int linesWithinConstrainedBounds = 1;
-    int lineIndex = layout.getLineCount() - 1;
-    while (lineIndex >= 0) {
-      if (layout.getLineBottom(lineIndex) <= measuredHeightConstraint) {
-        linesWithinConstrainedBounds = lineIndex + 1;
-        break;
-      }
-
-      lineIndex -= 1;
-    }
-
-    if (layout.getLineCount() > linesWithinConstrainedBounds) {
-      textStyle.setMaxLines(linesWithinConstrainedBounds);
-      textStyle.setEllipsize(TextUtils.TruncateAt.END);
-      return layout(context, widthSpec, heightSpec, text, textStyle);
-    }
-
-    return initialResult;
   }
 
   public static Pair<Rect, TextLayout> calculateLayoutWithBackgroundSpan(
@@ -258,6 +210,37 @@ public class TextMeasurementUtils {
     Layout layout =
         TextMeasurementUtils.createTextLayout(
             context, textStyle, widthSpec, heightSpec, processedText);
+
+    // check if the layout should truncate based on the size constraints
+    int linesWithinConstrainedBounds = -1;
+    if (View.MeasureSpec.getMode(heightSpec) != View.MeasureSpec.UNSPECIFIED) {
+      final int heightConstraint = View.MeasureSpec.getSize(heightSpec);
+      final boolean fitTextToConstraints =
+          textStyle.shouldTruncateTextUsingConstraints
+              && textStyle.maxLines == Integer.MAX_VALUE
+              && LayoutMeasureUtil.getHeight(layout) > heightConstraint;
+
+      if (fitTextToConstraints) {
+        linesWithinConstrainedBounds = 1;
+        int lineIndex = layout.getLineCount() - 1;
+        while (lineIndex >= 0) {
+          if (layout.getLineBottom(lineIndex) <= heightConstraint) {
+            linesWithinConstrainedBounds = lineIndex + 1;
+            break;
+          }
+
+          lineIndex -= 1;
+        }
+      }
+    }
+
+    if (linesWithinConstrainedBounds != -1) {
+      // we have constrained the number of lines that can fit, so truncate the layout
+      textStyle.setMaxLines(linesWithinConstrainedBounds);
+      layout =
+          TextMeasurementUtils.createTextLayout(
+              context, textStyle, widthSpec, heightSpec, processedText);
+    }
 
     final int layoutWidth =
         View.resolveSize(
