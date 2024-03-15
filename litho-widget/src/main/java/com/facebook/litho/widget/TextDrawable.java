@@ -69,6 +69,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private int mUserColor;
   private int mHighlightColor;
   private float mOutlineWidth;
+  private int mOutlineColor;
   private ClickableSpan[] mClickableSpans;
   private ImageSpan[] mImageSpans;
 
@@ -122,7 +123,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   /**
    * All texts drawn on top of images and videos need contrast outlines and shadows to be more
    * visible against busy backgrounds. Standard Android shadows do not produce the separation of
-   * intensity needed, so the Litho library Text Component provides a special outline`attribute that
+   * intensity needed, so the Litho library Text Component provides a special outline attribute that
    * draws contrast outlines usually combined with shadows. These outlines are drawn outside the
    * contours to avoid reducing the visible surface of character glyphs. However, since Android has
    * no mode for drawing outside strokes, they need to be drawn twice: the first pass draws strokes,
@@ -137,7 +138,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int savedColor = p.getColor();
       Paint.Style savedStyle = p.getStyle();
       float savedStrokeWidth = p.getStrokeWidth();
-      p.setColor(p.getShadowLayerColor());
+      p.setColor(mOutlineColor != 0 ? mOutlineColor : p.getShadowLayerColor());
       p.setStyle(Paint.Style.STROKE);
       p.setStrokeWidth(mOutlineWidth);
       mLayout.draw(canvas);
@@ -339,6 +340,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         userColor,
         0,
         0f,
+        0,
         clickableSpans,
         null,
         null,
@@ -361,6 +363,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         userColor,
         highlightColor,
         0f,
+        0,
         null,
         null,
         null,
@@ -390,6 +393,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         userColor,
         highlightColor,
         0f,
+        0,
         clickableSpans,
         null,
         null,
@@ -411,6 +415,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int userColor,
       int highlightColor,
       float outlineWidth,
+      int outlineColor,
       @Nullable ClickableSpan[] clickableSpans,
       @Nullable ImageSpan[] imageSpans,
       @Nullable ClickableSpanListener spanListener,
@@ -434,7 +439,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mTextOffsetOnTouchListener = textOffsetOnTouchListener;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
-    setOutlineWidth(outlineWidth);
+    setOutline(outlineWidth, outlineColor);
     mClickableSpanExpandedOffset = clickableSpanExpandedOffset;
     if (userColor != 0) {
       mColorStateList = null;
@@ -474,9 +479,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     invalidateSelf();
   }
 
-  public void setOutlineWidth(float outlineWidth) {
+  public void setOutline(float outlineWidth, @ColorInt int outlineColor) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       mOutlineWidth = outlineWidth;
+      mOutlineColor = outlineColor;
       invalidateSelf();
     }
   }
@@ -842,10 +848,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   }
 
   interface TextOffsetOnTouchListener {
+
     void textOffsetOnTouch(int textOffset);
   }
 
   private class LongClickRunnable implements Runnable {
+
     private LongClickableSpan longClickableSpan;
     private View longClickableSpanView;
 

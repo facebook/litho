@@ -128,6 +128,8 @@ import java.util.Objects;
  * @prop shadowDy Vertical offset of the shadow.
  * @prop shadowColor Color for the shadow underneath the text.
  * @prop outlineWidth If set, gives the text outline of the specified width.
+ * @prop outlineColor Sets the outline color; if it's 0 or not set, outline uses the same color as
+ *     shadow.
  * @prop isSingleLine If set, makes the text to be rendered in a single line.
  * @prop textColor Color of the text.
  * @prop textColorStateList ColorStateList of the text.
@@ -203,6 +205,7 @@ public class TextSpec {
   @PropDefault protected static final int maxTextWidth = DEFAULT_MAX_WIDTH;
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final float outlineWidth = 0f;
+  @PropDefault protected static final int outlineColor = 0;
   @PropDefault protected static final int textColor = DEFAULT_COLOR;
   @PropDefault protected static final int linkColor = Color.BLUE;
 
@@ -935,6 +938,7 @@ public class TextSpec {
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float outlineWidth,
+      @Prop(optional = true, resType = ResType.COLOR) int outlineColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Nullable @Prop(optional = true) final EventHandler textOffsetOnTouchHandler,
       @Prop(optional = true) int highlightStartOffset,
@@ -977,6 +981,7 @@ public class TextSpec {
         textColor,
         highlightColor,
         outlineWidth,
+        outlineColor,
         clickableSpans,
         imageSpans,
         spanListener,
