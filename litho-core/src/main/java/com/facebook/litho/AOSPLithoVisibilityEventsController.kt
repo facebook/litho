@@ -49,7 +49,10 @@ open class AOSPLithoVisibilityEventsController(
     when (event) {
       Lifecycle.Event.ON_RESUME -> moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
       Lifecycle.Event.ON_PAUSE -> moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
-      Lifecycle.Event.ON_DESTROY -> moveToLifecycle(LithoLifecycle.DESTROYED)
+      Lifecycle.Event.ON_DESTROY -> {
+        moveToLifecycle(LithoLifecycle.DESTROYED)
+        lifecycleOwner.lifecycle.removeObserver(this)
+      }
       else -> {}
     }
   }
