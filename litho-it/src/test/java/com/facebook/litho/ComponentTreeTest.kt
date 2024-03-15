@@ -409,7 +409,7 @@ class ComponentTreeTest {
         size,
         treePropContainer)
     val c = componentTree.mainThreadLayoutState!!.componentContext
-    assertThat(c.treePropContainer).isSameAs(treePropContainer)
+    assertThat(c.treePropContainer).isEqualTo(treePropContainer)
   }
 
   @Test

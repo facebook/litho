@@ -90,6 +90,7 @@ import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.debug.DebugEventBus;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -355,7 +356,10 @@ public class ComponentTree
   private int mCommittedLayoutVersion = INVALID_LAYOUT_VERSION;
 
   @GuardedBy("this")
-  private @Nullable TreePropContainer mRootTreePropContainer;
+  private final @Nullable TreePropContainer mTreePropContainerFromParent;
+
+  @GuardedBy("this")
+  private TreePropContainer mRootTreePropContainer;
 
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
@@ -493,10 +497,13 @@ public class ComponentTree
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer);
 
+    mTreePropContainerFromParent = builder.treePropContainer;
+    mRootTreePropContainer = TreePropContainer.acquire(builder.treePropContainer);
+
     mContext =
         new ComponentContext(
             androidContext,
-            builder.treePropContainer,
+            null,
             config,
             LithoTree.Companion.create(this),
             "root",
@@ -504,7 +511,7 @@ public class ComponentTree
                 ? null
                 : getLifecycleProvider(),
             null,
-            builder.parentTreePropContainer);
+            null);
 
     if (LithoDebugConfigurations.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
@@ -1470,14 +1477,10 @@ public class ComponentTree
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
-    final @Nullable TreePropContainer rootTreePropContainer;
-
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
-
-      rootTreePropContainer = TreePropContainer.copy(mRootTreePropContainer);
 
       if (isCreateLayoutInProgress) {
         logStateUpdatesFromCreateLayout(attribution);
@@ -1497,7 +1500,7 @@ public class ComponentTree
         isAsync ? RenderSource.UPDATE_STATE_ASYNC : RenderSource.UPDATE_STATE_SYNC,
         INVALID_LAYOUT_VERSION,
         attribution,
-        rootTreePropContainer,
+        null,
         isCreateLayoutInProgress,
         false);
   }
@@ -1530,16 +1533,8 @@ public class ComponentTree
    *
    * <p>It will make sure that the tree properties are properly cloned and stored.
    */
-  private void setInternalTreeProp(TreeProp<?> key, @Nullable Object value) {
-    if (!mContext.isParentTreePropContainerCloned()) {
-      mContext.setTreePropContainer(TreePropContainer.acquire(mContext.getTreePropContainer()));
-      mContext.setParentTreePropContainerCloned(true);
-    }
-
-    TreePropContainer treePropContainer = mContext.getTreePropContainer();
-    if (treePropContainer != null) {
-      treePropContainer.put(key, value);
-    }
+  private synchronized void setInternalTreeProp(TreeProp<?> key, @Nullable Object value) {
+    mRootTreePropContainer.put(key, value);
   }
 
   @Nullable
@@ -2019,9 +2014,11 @@ public class ComponentTree
       }
 
       if (treePropContainerInitialized) {
-        mRootTreePropContainer = treePropContainer;
-      } else {
-        treePropContainer = mRootTreePropContainer;
+        TreePropContainer newTreeProps = TreePropContainer.acquire(mTreePropContainerFromParent);
+        newTreeProps.putAll(treePropContainer);
+        if (!newTreeProps.equals(mRootTreePropContainer)) {
+          mRootTreePropContainer = newTreeProps;
+        }
       }
 
       requestedWidthSpec = mWidthSpec;
@@ -2106,7 +2103,8 @@ public class ComponentTree
     if (currentResolveResult != null) {
       boolean canLayoutWithoutResolve =
           (currentResolveResult.component == root
-              && currentResolveResult.context.getTreePropContainer() == treePropContainer);
+              && EquivalenceUtils.equals(
+                  currentResolveResult.context.getTreePropContainer(), treePropContainer));
       if (canLayoutWithoutResolve) {
         requestLayoutWithSplitFutures(
             currentResolveResult,
@@ -3025,13 +3023,11 @@ public class ComponentTree
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
 
     private @Nullable final TreePropContainer treePropContainer;
-    private @Nullable final TreePropContainer parentTreePropContainer;
 
     protected Builder(ComponentContext context) {
       config = context.mLithoConfiguration.componentsConfig;
       visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
       treePropContainer = context.getTreePropContainer();
-      parentTreePropContainer = context.getParentTreePropContainer();
       mAndroidContext = context.getAndroidContext();
     }
 
@@ -3315,7 +3311,7 @@ public class ComponentTree
   private void saveRevision(
       Component root,
       TreeState treeState,
-      @Nullable TreePropContainer treePropContainer,
+      TreePropContainer treePropContainer,
       @RenderSource int source,
       @Nullable String attribution) {
     if (mTimeMachine != null) {
