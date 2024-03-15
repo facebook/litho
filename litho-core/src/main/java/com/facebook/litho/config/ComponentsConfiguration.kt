@@ -66,6 +66,7 @@ internal constructor(
     @JvmField val isReconciliationEnabled: Boolean = true,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
     @JvmField val preAllocationHandler: PreAllocationHandler? = null,
+    @JvmField val avoidRedundantPreAllocations: Boolean = false,
     /** Whether the [com.facebook.rendercore.MountState] can be mounted using incremental mount. */
     @JvmField val incrementalMountEnabled: Boolean = true,
     /**

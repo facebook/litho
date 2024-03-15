@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
@@ -47,9 +46,6 @@ import static com.facebook.rendercore.debug.DebugEventAttribute.Async;
 import static com.facebook.rendercore.debug.DebugEventAttribute.HeightSpec;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
 import static com.facebook.rendercore.debug.DebugEventAttribute.WidthSpec;
-import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
-import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
-import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 import static com.facebook.rendercore.utils.MeasureSpecUtils.getMeasureSpecDescription;
 
@@ -85,6 +81,7 @@ import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
@@ -94,7 +91,7 @@ import com.facebook.rendercore.utils.EquivalenceUtils;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -276,14 +273,6 @@ public class ComponentTree
       new ThreadLocal<>();
 
   private final @Nullable IncrementalMountHelper mIncrementalMountHelper;
-  private final boolean mShouldPreallocatePerMountSpec;
-  private final Runnable mPreAllocateMountContentRunnable =
-      new Runnable() {
-        @Override
-        public void run() {
-          preAllocateMountContent(mShouldPreallocatePerMountSpec);
-        }
-      };
 
   private final Object mUpdateStateSyncRunnableLock = new Object();
 
@@ -292,7 +281,7 @@ public class ComponentTree
 
   private final ComponentContext mContext;
 
-  private @Nullable RunnableHandler mPreAllocateMountContentHandler;
+  private @Nullable ContentPreAllocator mPreAllocator;
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
@@ -474,20 +463,6 @@ public class ComponentTree
     mMainThreadHandler = instrumentHandler(mMainThreadHandler);
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
 
-    PreAllocationHandler preAllocationHandler = builder.config.preAllocationHandler;
-    mShouldPreallocatePerMountSpec = preAllocationHandler != null;
-    if (preAllocationHandler != null) {
-      if (preAllocationHandler instanceof PreAllocationHandler.LayoutThread) {
-        mPreAllocateMountContentHandler = new DefaultHandler(getDefaultLayoutThreadLooper());
-      }
-
-      if (preAllocationHandler instanceof PreAllocationHandler.Custom) {
-        PreAllocationHandler.Custom customHandler =
-            (PreAllocationHandler.Custom) preAllocationHandler;
-        mPreAllocateMountContentHandler = instrumentHandler(customHandler.getHandler());
-      }
-    }
-
     Context androidContext = builder.mAndroidContext;
 
     final LithoConfiguration config =
@@ -512,6 +487,41 @@ public class ComponentTree
                 : getLifecycleProvider(),
             null,
             null);
+
+    PreAllocationHandler preAllocationHandler = builder.config.preAllocationHandler;
+    if (preAllocationHandler != null) {
+      RunnableHandler mountContentHandler = null;
+      if (preAllocationHandler instanceof PreAllocationHandler.LayoutThread) {
+        mountContentHandler =
+            new RunnableHandler.DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper());
+      } else if (preAllocationHandler instanceof PreAllocationHandler.Custom) {
+        mountContentHandler =
+            instrumentHandler(((PreAllocationHandler.Custom) preAllocationHandler).getHandler());
+      }
+      if (mountContentHandler != null) {
+        mPreAllocator =
+            new ContentPreAllocator(
+                mId,
+                mContext,
+                mountContentHandler,
+                builder.config.avoidRedundantPreAllocations,
+                getLogger(),
+                () -> {
+                  LayoutState layoutState = null;
+                  synchronized (this) {
+                    if (mMainThreadLayoutState != null) {
+                      layoutState = mMainThreadLayoutState;
+                    } else if (mCommittedLayoutState != null) {
+                      layoutState = mCommittedLayoutState;
+                    }
+                  }
+                  return layoutState != null
+                      ? layoutState.mMountableOutputs
+                      : Collections.emptyList();
+                },
+                MountItemsPool::maybePreallocateContent);
+      }
+    }
 
     if (LithoDebugConfigurations.isTimelineEnabled) {
       mTimeMachine = new DebugComponentTreeTimeMachine(this);
@@ -1173,50 +1183,6 @@ public class ComponentTree
         INVALID_LAYOUT_VERSION,
         null,
         null);
-  }
-
-  /**
-   * Pre-allocate the mount content of all MountSpec in this tree. Must be called after layout is
-   * created.
-   */
-  @ThreadSafe(enableChecks = false)
-  private void preAllocateMountContent(boolean shouldPreallocatePerMountSpec) {
-    final LayoutState toPrePopulate;
-
-    synchronized (this) {
-      if (mMainThreadLayoutState != null) {
-        toPrePopulate = mMainThreadLayoutState;
-      } else if (mCommittedLayoutState != null) {
-        toPrePopulate = mCommittedLayoutState;
-      } else {
-        return;
-      }
-    }
-    final ComponentsLogger logger = getLogger();
-    final PerfEvent event =
-        logger != null
-            ? LogTreePopulator.populatePerfEventFromLogger(
-                mContext, logger, logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT))
-            : null;
-
-    Integer traceIdentifier =
-        generateTraceIdentifier(LithoDebugEvent.ComponentTreeMountContentPreallocated);
-    if (traceIdentifier != null) {
-      beginTrace(
-          traceIdentifier,
-          LithoDebugEvent.ComponentTreeMountContentPreallocated,
-          String.valueOf(mId),
-          new HashMap<>());
-    }
-
-    toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
-
-    if (traceIdentifier != null) {
-      endTrace(traceIdentifier);
-    }
-    if (event != null) {
-      logger.logPerfEvent(event);
-    }
   }
 
   public void setRootSync(@Nullable Component root) {
@@ -2553,24 +2519,21 @@ public class ComponentTree
 
       postBackgroundLayoutStateUpdated();
 
-      if (mPreAllocateMountContentHandler != null) {
+      if (mPreAllocator != null) {
         if (mContext.mLithoConfiguration.componentsConfig.enablePreAllocationSameThreadCheck) {
-          if (Thread.currentThread().getName() == DEFAULT_LAYOUT_THREAD_NAME) {
-            mPreAllocateMountContentRunnable.run();
+          if (DEFAULT_LAYOUT_THREAD_NAME.equals(Thread.currentThread().getName())) {
+            mPreAllocator.executeSync();
             return;
           }
         }
-
-        mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
-
         String tag = EMPTY_STRING;
-        if (mPreAllocateMountContentHandler.isTracing()) {
+        if (mPreAllocator.isHandlerTracing()) {
           tag = "preallocateLayout ";
           if (rootComponent != null) {
             tag = tag + rootComponent.getSimpleName();
           }
         }
-        mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
+        mPreAllocator.execute(tag);
       }
     }
   }
@@ -2679,8 +2642,8 @@ public class ComponentTree
         mLayoutTreeFutures.clear();
       }
 
-      if (mPreAllocateMountContentHandler != null) {
-        mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
+      if (mPreAllocator != null) {
+        mPreAllocator.cancel();
       }
 
       if (mRoot != null) {

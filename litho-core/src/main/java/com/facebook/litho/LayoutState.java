@@ -21,21 +21,18 @@ import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.graphics.Rect;
-import android.util.Log;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutResult;
-import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
@@ -310,66 +307,6 @@ public class LayoutState
 
   static AtomicInteger getIdGenerator() {
     return sIdGenerator;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  void preAllocateMountContent(boolean shouldPreallocatePerMountSpec) {
-    if (!shouldPreallocatePerMountSpec) {
-      return;
-    }
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("preAllocateMountContentForTree");
-    }
-
-    if (!mMountableOutputs.isEmpty()) {
-      for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
-        final RenderTreeNode treeNode = mMountableOutputs.get(i);
-        final Component component = getRenderUnit(treeNode).getComponent();
-
-        if (!isSpecGeneratedComponentThatCanPreallocate(component)
-            && !isPrimitiveThatCanPreallocate(treeNode)) {
-          continue;
-        }
-
-        if (isTracing) {
-          ComponentsSystrace.beginSection("preallocateMount: " + component.getSimpleName());
-        }
-
-        boolean preallocated =
-            MountItemsPool.maybePreallocateContent(
-                mResolveResult.context.getAndroidContext(),
-                treeNode.getRenderUnit().getContentAllocator());
-
-        Log.d(
-            "LayoutState",
-            "Preallocation of "
-                + component.getSimpleName()
-                + (preallocated ? " succeeded" : " failed"));
-
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
-      }
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-  }
-
-  private boolean isPrimitiveThatCanPreallocate(RenderTreeNode treeNode) {
-    return treeNode.getRenderUnit() instanceof PrimitiveLithoRenderUnit
-        && ((PrimitiveLithoRenderUnit) treeNode.getRenderUnit())
-            .getPrimitiveRenderUnit()
-            .getContentAllocator()
-            .canPreallocate();
-  }
-
-  private boolean isSpecGeneratedComponentThatCanPreallocate(Component component) {
-    return component instanceof SpecGeneratedComponent
-        && ((SpecGeneratedComponent) component).canPreallocate();
   }
 
   boolean isActivityValid() {
