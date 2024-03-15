@@ -218,7 +218,7 @@ object LithoNodeUtils {
       @OutputUnitType outputType: Int,
       diffNode: DiffNode? = null,
   ): LithoRenderUnit {
-    val component: DrawableComponent<*> = DrawableComponent.create(drawable, width, height)
+    val component: DrawableComponent = DrawableComponent.create(drawable, width, height)
     val context: ComponentContext = node.tailComponentContext
     val componentKey: String = node.tailComponentKey
     val recycle: LithoRenderUnit? =

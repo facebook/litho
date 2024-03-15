@@ -146,7 +146,7 @@ internal object DebugDraw {
 
   private fun shouldHighlight(component: Component): Boolean =
       // Don't highlight bounds of background/foreground components.
-      component !is DrawableComponent<*>
+      component !is DrawableComponent
 
   private fun dipToPixels(res: Resources, dips: Int): Int {
     val scale = res.displayMetrics.density
