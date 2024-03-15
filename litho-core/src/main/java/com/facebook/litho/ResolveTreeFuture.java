@@ -97,7 +97,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       final int componentTreeId,
       final @Nullable String extraAttribution,
       final int source) {
-    super(useCancellableFutures);
+    super(componentTreeId, useCancellableFutures);
     mComponentContext = c;
     mComponent = component;
     mComponentTreeId = componentTreeId;
@@ -155,12 +155,12 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   @Override
   protected ResolveResult resumeCalculation(ResolveResult partialResult) {
     Integer resolveTraceIdentifier =
-        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResolveResumed);
+        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResume);
 
     if (resolveTraceIdentifier != null) {
       DebugEventDispatcher.beginTrace(
           resolveTraceIdentifier,
-          LithoDebugEvent.ComponentTreeResolveResumed,
+          LithoDebugEvent.ComponentTreeResume,
           String.valueOf(mComponentTreeId),
           createDebugAttributes());
     }

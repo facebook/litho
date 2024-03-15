@@ -31,9 +31,7 @@ import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.debug.DebugEventAttribute
-import com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace
-import com.facebook.rendercore.debug.DebugEventDispatcher.endTrace
-import com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier
+import com.facebook.rendercore.debug.DebugEventDispatcher
 
 class LayoutTreeFuture(
     private val resolveResult: ResolveResult,
@@ -45,23 +43,32 @@ class LayoutTreeFuture(
     private val treeId: Int,
     private val version: Int,
     @RenderSource private val source: Int
-) : TreeFuture<LayoutState>(false) {
+) : TreeFuture<LayoutState>(treeId, false) {
 
   override fun getDescription(): String = "layout"
 
   override fun getVersion(): Int = version
 
   override fun calculate(): LayoutState {
-    return layout(
-        resolveResult,
-        widthSpec,
-        heightSpec,
-        version,
-        treeId,
-        currentLayoutState,
-        diffTreeRoot,
-        this,
-        perfEvent)
+    val sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec)
+    return DebugEventDispatcher.trace(
+        type = LithoDebugEvent.ComponentTreeLayout,
+        renderStateId = { treeId.toString() },
+        attributesAccumulator = { attrs ->
+          attrs[LithoDebugEventAttributes.Root] = resolveResult.component.simpleName
+          attrs[DebugEventAttribute.SizeConstraints] = sizeConstraints.toString()
+          attrs[DebugEventAttribute.Version] = version
+        }) {
+          layout(
+              resolveResult,
+              sizeConstraints,
+              version,
+              treeId,
+              currentLayoutState,
+              diffTreeRoot,
+              this,
+              perfEvent)
+        }
   }
 
   override fun resumeCalculation(partialResult: LayoutState): LayoutState {
@@ -91,16 +98,7 @@ class LayoutTreeFuture(
     ): LayoutState {
 
       LithoStats.incrementLayoutCount()
-
       val isTracing = ComponentsSystrace.isTracing
-      val traceId = generateTraceIdentifier(LithoDebugEvent.ComponentTreeResolve)
-      if (traceId != null) {
-        val attributes: MutableMap<String, Any> = LinkedHashMap()
-        attributes[LithoDebugEventAttributes.Root] = resolveResult.component.simpleName
-        attributes[DebugEventAttribute.Version] = version
-        beginTrace(traceId, LithoDebugEvent.Layout, traceId.toString(), attributes)
-      }
-
       val treeState = resolveResult.treeState
 
       try {
@@ -200,15 +198,9 @@ class LayoutTreeFuture(
           }
         }
       } finally {
-
         treeState.unregisterLayoutInitialState()
-
         if (isTracing) {
           endSection()
-        }
-
-        if (traceId != null) {
-          endTrace(traceId)
         }
       }
     }
@@ -223,16 +215,17 @@ class LayoutTreeFuture(
         diffTreeRoot: DiffNode?,
         future: TreeFuture<*>?,
         perfEvent: PerfEvent?
-    ): LayoutState =
-        layout(
-            resolveResult = resolveResult,
-            sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
-            version = version,
-            treeId = treeId,
-            currentLayoutState = currentLayoutState,
-            diffTreeRoot = diffTreeRoot,
-            future = future,
-            perfEvent = perfEvent,
-        )
+    ): LayoutState {
+      return layout(
+          resolveResult = resolveResult,
+          sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec),
+          version = version,
+          treeId = treeId,
+          currentLayoutState = currentLayoutState,
+          diffTreeRoot = diffTreeRoot,
+          future = future,
+          perfEvent = perfEvent,
+      )
+    }
   }
 }

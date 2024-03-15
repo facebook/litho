@@ -17,6 +17,8 @@
 package com.facebook.litho.debug
 
 import com.facebook.rendercore.debug.DebugEvent
+import com.facebook.rendercore.debug.DebugEventAttribute
+import com.facebook.rendercore.debug.DebugEventDispatcher
 
 object LithoDebugEvent {
 
@@ -49,8 +51,13 @@ object LithoDebugEvent {
   const val ComponentResolveStart = "Litho.Resolve.ComponentResolved.Start"
   const val ComponentRendered = "Litho.Resolve.ComponentRendered"
   const val ComponentTreeResolve = "Litho.ComponentTree.Resolve"
-  const val Layout = "Litho.ComponentTree.Layout"
-  const val ComponentTreeResolveResumed = "Litho.ComponentTree.Resolve.Resumed"
+  const val ComponentTreeLayout = "Litho.ComponentTree.Layout"
+  const val ComponentTreeResume = "Litho.ComponentTree.Resume"
+  const val TreeFutureRun = "Litho.TreeFuture.Run"
+  const val TreeFutureGet = "Litho.TreeFuture.Get"
+  const val TreeFutureWait = "Litho.TreeFuture.Wait"
+  const val TreeFutureInterrupt = "Litho.TreeFuture.Interrupt"
+  const val TreeFutureResume = "Litho.TreeFuture.Resume"
   const val ComponentTreeMountContentPreallocated = "Litho.ComponentTree.MountContent.Preallocated"
   const val DebugInfo = "Litho.DebugInfo" // used to report debug events upstream
 }
@@ -73,4 +80,59 @@ object LithoDebugEventAttributes {
   const val Component = "component"
   const val Stack = "stack"
   const val Cause = "cause"
+}
+
+object LithoDebugEvents {
+
+  object TreeFuture {
+
+    @JvmStatic
+    fun run(treeId: Int, name: String) {
+      dispatch(type = LithoDebugEvent.TreeFutureRun, treeId = treeId) { attrs ->
+        attrs[DebugEventAttribute.Name] = name
+      }
+    }
+
+    @JvmStatic
+    fun wait(treeId: Int, name: String) {
+      dispatch(type = LithoDebugEvent.TreeFutureWait, treeId = treeId) { attrs ->
+        attrs[DebugEventAttribute.Name] = name
+      }
+    }
+
+    @JvmStatic
+    fun get(treeId: Int, name: String, wasInterrupted: Boolean) {
+      dispatch(type = LithoDebugEvent.TreeFutureGet, treeId = treeId) { attrs ->
+        attrs[DebugEventAttribute.Name] = name
+        attrs["wasInterrupted"] = wasInterrupted
+      }
+    }
+
+    @JvmStatic
+    fun resume(treeId: Int, name: String) {
+      dispatch(type = LithoDebugEvent.TreeFutureResume, treeId = treeId) { attrs ->
+        attrs[DebugEventAttribute.Name] = name
+      }
+    }
+
+    @JvmStatic
+    fun interrupt(treeId: Int, name: String) {
+      dispatch(type = LithoDebugEvent.TreeFutureInterrupt, treeId = treeId) { attrs ->
+        attrs[DebugEventAttribute.Name] = name
+      }
+    }
+  }
+
+  private fun dispatch(
+      type: String,
+      treeId: Int,
+      putAttrs: (MutableMap<String, Any?>) -> Unit = {},
+  ) {
+    DebugEventDispatcher.dispatch(
+        type = type,
+        renderStateId = { treeId.toString() },
+    ) { attrs ->
+      putAttrs(attrs)
+    }
+  }
 }
