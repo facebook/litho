@@ -452,7 +452,6 @@ public final class ComponentTestHelper {
     ComponentContext treeContext = tree.getContext();
 
     ComponentContext c = new ComponentContext(treeContext);
-    c.setTreePropContainer(context.getTreePropContainer());
     final ResolveContext rsc = c.setRenderStateContextForTests();
 
     LithoNode root = resolveImmediateSubtree(rsc, c, component, widthSpec, heightSpec);

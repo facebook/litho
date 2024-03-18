@@ -41,13 +41,6 @@ class TreePropContainer {
     map[treeProp] = value
   }
 
-  @JvmName("putAll")
-  internal fun putAll(treeProps: TreePropContainer?) {
-    if (treeProps != null) {
-      synchronized(treeProps.map) { map.putAll(treeProps.map) }
-    }
-  }
-
   operator fun <T : Any> get(key: Class<T>): T? {
     val treeProp = legacyTreePropOf(key)
     return map[treeProp] as T?
