@@ -37,7 +37,7 @@ import com.facebook.rendercore.primitives.ViewAllocator
  * accepts the current state and pending state updates.
  */
 fun NestedLithoPrimitive(
-    id: Long,
+    renderUnitId: Long,
     resolveContext: NestedLithoResolveContext,
     component: Component,
     treeProps: TreePropContainer?,
@@ -52,7 +52,7 @@ fun NestedLithoPrimitive(
       }
 
   return NestedLithoPrimitive(
-      id = id,
+      renderUnitId = renderUnitId,
       resolveContext = resolveContext,
       component = component,
       treeProps = treeProps,
@@ -67,7 +67,7 @@ fun NestedLithoPrimitive(
  * updates before resolving the component to a Primitive.
  */
 fun NestedLithoPrimitive(
-    id: Long,
+    renderUnitId: Long,
     resolveContext: NestedLithoResolveContext,
     component: Component,
     treeProps: TreePropContainer?,
@@ -111,7 +111,7 @@ fun NestedLithoPrimitive(
 
   val mountBehavior =
       MountBehavior(
-          id = id,
+          id = renderUnitId,
           contentAllocator = ViewAllocator { LithoRenderTreeView(it) },
       ) {
 
