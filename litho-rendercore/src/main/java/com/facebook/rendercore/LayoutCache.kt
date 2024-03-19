@@ -17,7 +17,6 @@
 package com.facebook.rendercore
 
 import androidx.collection.LongSparseArray
-import java.util.Collections
 import java.util.HashMap
 
 /**
@@ -33,20 +32,16 @@ class LayoutCache(oldWriteCache: CachedData? = null) {
   class CacheItem(val layoutResult: LayoutResult, val widthSpec: Int, val heightSpec: Int)
 
   class CachedData {
-    internal val cacheByNode: MutableMap<Node<*>, CacheItem> = HashMap<Node<*>, CacheItem>()
+    internal val cacheByRef: MutableMap<Any, Any?> = HashMap<Any, Any?>()
     internal val cacheById: LongSparseArray<Any?> = LongSparseArray()
-
-    fun getCacheByNode(): Map<Node<*>, CacheItem> {
-      return Collections.unmodifiableMap(cacheByNode)
-    }
   }
 
-  operator fun get(node: Node<*>): CacheItem? {
-    return readCache?.cacheByNode?.get(node)
+  operator fun <T : Any?> get(key: Any): T? {
+    @Suppress("UNCHECKED_CAST") return readCache?.cacheByRef?.get(key) as? T
   }
 
-  fun <T> put(node: Node<T>, cacheItem: CacheItem) {
-    writeCache.cacheByNode[node] = cacheItem
+  fun put(key: Any, cacheItem: Any?) {
+    writeCache.cacheByRef[key] = cacheItem
   }
 
   fun <T> get(uniqueId: Long): T? {
