@@ -303,6 +303,9 @@ class LithoViewAttributesExtension private constructor() :
         unsetViewTag(content)
       }
       unsetViewTags(content, attributes.viewTags)
+      // unset the state list animator before any other draw properties as jumping it to its end
+      // state could mutate other view properties
+      unsetViewStateListAnimator(content, attributes)
       unsetShadowElevation(content, attributes.shadowElevation)
       unsetAmbientShadowColor(content, attributes.ambientShadowColor)
       unsetSpotShadowColor(content, attributes.spotShadowColor)
@@ -330,7 +333,6 @@ class LithoViewAttributesExtension private constructor() :
         unsetImportantForAccessibility(content)
       }
       unsetAccessibilityDelegate(content)
-      unsetViewStateListAnimator(content, attributes)
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
       // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
       if (attributes.disableDrawableOutputs) {
@@ -911,6 +913,7 @@ class LithoViewAttributesExtension private constructor() :
       check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         ("MountState has a ViewAttributes with stateListAnimator, however the current Android version doesn't support stateListAnimator on Views")
       }
+      view.stateListAnimator.jumpToCurrentState()
       view.stateListAnimator = null
     }
 
