@@ -51,6 +51,8 @@ inline fun ResourcesScope.Text(
     typeface: Typeface? = DEFAULT,
     @ColorInt shadowColor: Int = Color.GRAY,
     shadowRadius: Dimen = 0.dp,
+    shadowDx: Dimen = 0.dp,
+    shadowDy: Dimen = 0.dp,
     alignment: TextAlignment = TextAlignment.TEXT_START,
     breakStrategy: Int = 0,
     verticalGravity: VerticalGravity = VerticalGravity.TOP,
@@ -85,6 +87,8 @@ inline fun ResourcesScope.Text(
           .typeface(typeface)
           .shadowColor(shadowColor)
           .shadowRadiusPx(shadowRadius.toPixels().toFloat())
+          .shadowDxPx(shadowDx.toPixels().toFloat())
+          .shadowDyPx(shadowDy.toPixels().toFloat())
           .alignment(alignment)
           .breakStrategy(breakStrategy)
           .verticalGravity(verticalGravity)
