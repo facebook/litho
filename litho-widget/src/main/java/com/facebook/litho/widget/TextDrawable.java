@@ -138,6 +138,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int savedColor = p.getColor();
       Paint.Style savedStyle = p.getStyle();
       float savedStrokeWidth = p.getStrokeWidth();
+      Paint.Join savedJoin = p.getStrokeJoin();
+      p.setStrokeJoin(Paint.Join.ROUND);
       p.setColor(mOutlineColor != 0 ? mOutlineColor : p.getShadowLayerColor());
       p.setStyle(Paint.Style.STROKE);
       p.setStrokeWidth(mOutlineWidth);
@@ -145,6 +147,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       p.setStrokeWidth(savedStrokeWidth);
       p.setStyle(savedStyle);
       p.setColor(savedColor);
+      p.setStrokeJoin(savedJoin);
     }
   }
 
