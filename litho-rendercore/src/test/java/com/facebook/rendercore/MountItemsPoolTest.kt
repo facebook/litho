@@ -19,8 +19,6 @@ package com.facebook.rendercore
 import android.app.Activity
 import android.content.Context
 import android.view.View
-import com.facebook.rendercore.MountItemsPool.DefaultItemPool
-import com.facebook.rendercore.MountItemsPool.ItemPool
 import com.facebook.rendercore.MountItemsPool.acquireMountContent
 import com.facebook.rendercore.MountItemsPool.clear
 import com.facebook.rendercore.MountItemsPool.onContextDestroyed
@@ -80,28 +78,13 @@ class MountItemsPoolTest {
     val customPoolSize = 2
     val testRenderUnit = TestRenderUnit(0, customPoolSize)
     prefillMountContentPool(context, prefillCount, testRenderUnit)
-    // it is "+ 1" because as soon as it tries to prefill a mount content that doesn't fill the
-    // pool, then we stop
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(customPoolSize + 1)
+    // the prefill count overrides the default pool size of the render unit
+    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
     val testRenderUnitToAcquire = TestRenderUnit(0, 2)
     for (i in 0 until prefillCount) {
       acquireMountContent(context, testRenderUnitToAcquire)
     }
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-  }
-
-  @Test
-  fun testPrefillMountContentPoolWithCustomPoolFactory() {
-    val customPool: ItemPool = DefaultItemPool(MountItemsPoolTest::class.java, 10)
-    setMountContentPoolFactory { customPool }
-    val prefillCount = 10
-    val testRenderUnit = TestRenderUnit(0, 5)
-    prefillMountContentPool(context, prefillCount, testRenderUnit)
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
-    val testRenderUnitToAcquire = TestRenderUnit(0, 5)
-    for (i in 0 until prefillCount) {
-      acquireMountContent(context, testRenderUnitToAcquire)
-    }
+    // expect no new render units to be created as the pool has been prefilled
     Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(0)
   }
 
@@ -209,10 +192,6 @@ class MountItemsPoolTest {
     override fun createContent(context: Context): View {
       createdCount++
       return View(context)
-    }
-
-    override fun createRecyclingPool(): ItemPool {
-      return DefaultItemPool(MountItemsPoolTest::class.java, customPoolSize)
     }
 
     override val contentAllocator: ContentAllocator<View>

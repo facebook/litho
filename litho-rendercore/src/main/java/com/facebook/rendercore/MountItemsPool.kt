@@ -45,8 +45,6 @@ object MountItemsPool {
     fun createMountContentPool(): ItemPool
   }
 
-  private const val DEFAULT_POOL_SIZE: Int = 3
-
   private val mountContentLock: Any = Any()
 
   @GuardedBy("mountContentLock")
@@ -77,7 +75,7 @@ object MountItemsPool {
   @JvmStatic
   fun acquireMountContent(context: Context, poolableMountContent: ContentAllocator<*>): Any {
     val pool =
-        getMountContentPool(context, poolableMountContent)
+        getOrCreateMountContentPool(context, poolableMountContent)
             ?: return poolableMountContent.createPoolableContent(context)
     val content = pool.acquire(poolableMountContent)
     return content ?: poolableMountContent.createPoolableContent(context)
@@ -85,7 +83,7 @@ object MountItemsPool {
 
   @JvmStatic
   fun release(context: Context, poolableMountContent: ContentAllocator<*>, mountContent: Any) {
-    val pool = getMountContentPool(context, poolableMountContent)
+    val pool = getOrCreateMountContentPool(context, poolableMountContent)
     pool?.release(mountContent)
   }
 
@@ -94,15 +92,15 @@ object MountItemsPool {
       context: Context,
       poolableMountContent: ContentAllocator<*>
   ): Boolean {
-    val pool = getMountContentPool(context, poolableMountContent)
+    val pool = getOrCreateMountContentPool(context, poolableMountContent)
     return pool?.maybePreallocateContent(context, poolableMountContent) ?: false
   }
 
   /**
-   * Can be called to fill up a mount content pool for the specified MountContent types. If a pool
-   * doesn't exist for a Mount Content type, a default one will be created with the specified size.
-   * PoolSize will only be respected if the RenderUnit does not provide a custom Pool
-   * implementation.
+   * Fills up a mount content pool for the specified [poolableMountContent] allocator. If a pool
+   * doesn't exist for a [ContentAllocator], a default one will be created with the specified size.
+   * The specified [poolSize] will only be respected if the [poolableMountContent] does not provide
+   * a custom Pool implementation.
    */
   @JvmStatic
   fun prefillMountContentPool(
@@ -113,7 +111,7 @@ object MountItemsPool {
     if (poolSize == 0) {
       return
     }
-    val pool = getMountContentPool(context, poolableMountContent, poolSize)
+    val pool = getOrCreateMountContentPool(context, poolableMountContent, poolSize)
     if (pool != null) {
       for (i in 0 until poolSize) {
         if (!pool.release(poolableMountContent.createPoolableContent(context))) {
@@ -123,16 +121,19 @@ object MountItemsPool {
     }
   }
 
-  private fun getMountContentPool(
+  /**
+   * Retrieves a recycling pool for the given [ContentAllocator] if it exists. Else it will default
+   * to creating a new pool with the [allocator]'s pool size if no size is specified
+   */
+  private fun getOrCreateMountContentPool(
       context: Context,
-      poolableMountContent: ContentAllocator<*>,
-      size: Int = DEFAULT_POOL_SIZE
+      allocator: ContentAllocator<*>,
+      poolSize: Int = allocator.poolSize()
   ): ItemPool? {
-    if (poolableMountContent.isRecyclingDisabled ||
-        isPoolingDisabled ||
-        poolableMountContent.poolSize() == 0) {
+    if (allocator.isRecyclingDisabled || isPoolingDisabled || poolSize <= 0) {
       return null
     }
+
     synchronized(mountContentLock) {
       var poolsMap = mountContentPoolsByContext[context]
       if (poolsMap == null) {
@@ -144,17 +145,21 @@ object MountItemsPool {
         poolsMap = HashMap()
         mountContentPoolsByContext[context] = poolsMap
       }
-      val poolableContentType = poolableMountContent.getPoolableContentType()
-      var pool = poolsMap[poolableContentType]
-      if (pool == null) {
-        pool = createRecyclingPool(poolableMountContent)
 
-        // PoolableMountContent might produce a null pool. In this case, just create a default one.
-        if (pool == null) {
-          pool = DefaultItemPool(poolableContentType, size)
-        }
-        poolsMap[poolableContentType] = pool
+      val poolableContentType = allocator.getPoolableContentType()
+      var pool = poolsMap[poolableContentType]
+
+      if (pool == null && hasMountContentPoolFactory) {
+        pool = mountContentPoolFactory.get()?.createMountContentPool()
       }
+
+      if (pool == null) {
+        pool =
+            allocator.createRecyclingPool(poolSize)
+                ?: DefaultItemPool(poolableContentType, poolSize)
+      }
+
+      poolsMap[poolableContentType] = pool
       return pool
     }
   }
@@ -173,16 +178,6 @@ object MountItemsPool {
   fun setMountContentPoolFactory(factory: Factory?) {
     mountContentPoolFactory.set(factory)
     hasMountContentPoolFactory = factory != null
-  }
-
-  private fun createRecyclingPool(poolableMountContent: ContentAllocator<*>): ItemPool? {
-    if (hasMountContentPoolFactory) {
-      val factory = mountContentPoolFactory.get()
-      if (factory != null) {
-        return factory.createMountContentPool()
-      }
-    }
-    return poolableMountContent.createRecyclingPool()
   }
 
   /**

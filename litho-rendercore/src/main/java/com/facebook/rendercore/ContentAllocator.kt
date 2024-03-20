@@ -46,10 +46,13 @@ interface ContentAllocator<Content : Any> {
   val isRecyclingDisabled: Boolean
     get() = false
 
-  /**
-   * Creates an ItemPool for this mountable content. Returning null will generate a default pool.
-   */
-  fun createRecyclingPool(): ItemPool? = onCreateMountContentPool()
+  fun createRecyclingPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ItemPool? {
+    return if (poolSizeOverride > UNSET_POOL_SIZE) {
+      DefaultItemPool(javaClass, poolSizeOverride)
+    } else {
+      onCreateMountContentPool()
+    }
+  }
 
   /**
    * This API informs the framework to fill the content pool for this Mountable ahead of time. The
@@ -63,11 +66,12 @@ interface ContentAllocator<Content : Any> {
   /** This API informs the framework about the size of the content pool. The default is 3. */
   fun poolSize(): Int = DEFAULT_MAX_PREALLOCATION
 
-  /** Creates the content pool the framework should use for this Mountable. */
+  /** Creates the content pool the framework should use for this [ContentAllocator] */
   fun onCreateMountContentPool(): ItemPool = DefaultItemPool(javaClass, poolSize())
 
   companion object {
     /** Default size of the content pool. */
     const val DEFAULT_MAX_PREALLOCATION: Int = 3
+    const val UNSET_POOL_SIZE: Int = -1
   }
 }

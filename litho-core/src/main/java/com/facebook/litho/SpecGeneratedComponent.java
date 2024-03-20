@@ -817,7 +817,7 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Nullable
   @Override
-  public MountItemsPool.ItemPool createRecyclingPool() {
+  public MountItemsPool.ItemPool createRecyclingPool(int poolSize) {
     return onCreateMountContentPool();
   }
 
