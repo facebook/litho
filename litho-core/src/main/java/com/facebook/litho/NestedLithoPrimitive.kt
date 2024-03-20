@@ -75,7 +75,7 @@ fun NestedLithoPrimitive(
 ): Pair<Primitive, ResolveResult> {
 
   val (
-      treeId,
+      nestedTreeId,
       androidContext,
       config,
       currentResolveResult,
@@ -88,7 +88,7 @@ fun NestedLithoPrimitive(
 
   val componentContext: ComponentContext =
       createdNestedTreeComponentContext(
-          treeId = treeId,
+          treeId = nestedTreeId.id,
           androidContext = androidContext,
           treeProps = treeProps,
           lithoConfiguration = config,
@@ -101,7 +101,7 @@ fun NestedLithoPrimitive(
 
   val result =
       NestedLithoTree.resolve(
-          treeId,
+          nestedTreeId.id,
           componentContext,
           component,
           treeProps,
@@ -117,7 +117,7 @@ fun NestedLithoPrimitive(
 
         // binder to clean up the content before returning it to the pool
         withDescription("final-unmount") {
-          bind(treeId) { content ->
+          bind(nestedTreeId.id) { content ->
             onUnbind {
               content.currentLayoutState?.cleanup()
               content.resetLayoutState()
@@ -126,7 +126,7 @@ fun NestedLithoPrimitive(
         }
 
         withDescription("lifecycle-provider-release") {
-          bind(treeId) { _ -> onUnbind { lifecycleProvider.release() } }
+          bind(nestedTreeId.id) { _ -> onUnbind { lifecycleProvider.release() } }
         }
 
         // binder to bind the layout state with the Litho Render Tree View
@@ -156,7 +156,11 @@ fun NestedLithoPrimitive(
 
   return Pair(
       Primitive(
-          layoutBehavior = LithoLayoutBehavior(result = result),
+          layoutBehavior =
+              LithoLayoutBehavior(
+                  result = result,
+                  cacheKey = resolveContext.treeId,
+                  resolveContext.usePreviousLayoutState),
           mountBehavior = mountBehavior,
       ),
       result,
@@ -196,10 +200,25 @@ fun createdNestedTreeComponentContext(
   )
 }
 
-internal class LithoLayoutBehavior(val result: ResolveResult) : LayoutBehavior {
+internal class LithoLayoutBehavior(
+    val result: ResolveResult,
+    private val cacheKey: NestedTreeId,
+    private val usePreviousLayoutState: Boolean,
+) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    val layoutState =
-        NestedLithoTree.layout(result, sizeConstraints, previousLayoutData as LayoutState?)
+    val previousLayoutState: LayoutState? =
+        if (usePreviousLayoutState) {
+          layoutContext.layoutCache[cacheKey]
+        } else {
+          null
+        }
+
+    val layoutState = NestedLithoTree.layout(result, sizeConstraints, previousLayoutState)
+
+    if (usePreviousLayoutState) {
+      layoutContext.layoutCache.put(cacheKey, layoutState)
+    }
+
     return PrimitiveLayoutResult(
         width = layoutState.width,
         height = layoutState.height,
@@ -210,7 +229,7 @@ internal class LithoLayoutBehavior(val result: ResolveResult) : LayoutBehavior {
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)
 data class NestedLithoResolveContext(
-    val treeId: Int,
+    val treeId: NestedTreeId,
     val androidContext: Context,
     val config: LithoConfiguration,
     val currentResolveResult: ResolveResult?,
@@ -219,7 +238,10 @@ data class NestedLithoResolveContext(
     val errorComponent: ((Component?) -> Unit) = { /* TODO: provide default implementation */},
     val rootHostReference: NestedMountedViewReference = NestedMountedViewReference(),
     val lifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider(),
+    val usePreviousLayoutState: Boolean,
 )
+
+class NestedTreeId(val id: Int)
 
 fun interface StateUpdateRequester {
   fun request(update: PendingStateUpdate)
