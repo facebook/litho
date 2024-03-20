@@ -326,7 +326,7 @@ class NestedLithoTreeLifecycleProvider : LithoTreeLifecycleProvider {
 
   private val listeners: MutableList<LithoTreeLifecycleProvider.OnReleaseListener> = mutableListOf()
 
-  private var _isReleased: Boolean = false
+  @Volatile private var _isReleased: Boolean = false
 
   override val isReleased: Boolean
     get() = _isReleased
@@ -344,6 +344,7 @@ class NestedLithoTreeLifecycleProvider : LithoTreeLifecycleProvider {
     assertMainThread()
     _isReleased = true
     listeners.forEach { it.onReleased() }
+    listeners.clear()
   }
 }
 // endregion
