@@ -422,6 +422,15 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             final int visibleHeight = getVisibleHeight(intersection);
             int rootHostViewWidth = getRootHostViewWidth(extensionState);
             int rootHostViewHeight = getRootHostViewHeight(extensionState);
+            if (shouldUseTransformedVisibleRect && transformer != null) {
+              final Host host = getRootHost(extensionState);
+              if (host != null && (host.getParent() instanceof View)) {
+                final View parent = (View) host.getParent();
+                rootHostViewWidth = transformer.getViewportWidth(parent);
+                rootHostViewHeight = transformer.getViewportHeight(parent);
+              }
+            }
+
             VisibilityUtils.dispatchOnVisibilityChanged(
                 visibilityChangedHandler,
                 getVisibleTop(visibilityOutputBounds, intersection),

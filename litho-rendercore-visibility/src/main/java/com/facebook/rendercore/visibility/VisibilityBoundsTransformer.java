@@ -28,5 +28,9 @@ public interface VisibilityBoundsTransformer {
 
   int getViewportArea(View view);
 
+  int getViewportWidth(View view);
+
+  int getViewportHeight(View view);
+
   boolean shouldUseTransformedVisibleRect(VisibilityOutput visibilityOutput);
 }
