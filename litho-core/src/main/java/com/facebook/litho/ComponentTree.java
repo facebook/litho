@@ -154,112 +154,8 @@ public class ComponentTree
   @Nullable private final ComponentTreeTimeMachine mTimeMachine;
   @Nullable private final ComponentTreeDebugEventsSubscriber mDebugEventsSubscriber;
 
-  @Override
-  public void onMovedToState(LithoLifecycle state) {
-    switch (state) {
-      case HINT_VISIBLE:
-        onMoveToStateHintVisible();
-        return;
-      case HINT_INVISIBLE:
-        onMoveToStateHintInvisible();
-        return;
-      case DESTROYED:
-        onMoveToStateDestroy();
-        return;
-      default:
-        throw new IllegalStateException("Illegal state: " + state);
-    }
-  }
-
-  private void onMoveToStateHintVisible() {
-    if (mLithoView != null) {
-      mLithoView.setVisibilityHintNonRecursive(true);
-    }
-  }
-
-  private void onMoveToStateHintInvisible() {
-    if (mLithoView != null) {
-      mLithoView.setVisibilityHintNonRecursive(false);
-    }
-  }
-
-  private void onMoveToStateDestroy() {
-    // This will call setComponentTree(null) on the LithoView if any.
-    release();
-    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider
-        && mLifecycleProvider != null) {
-      mLifecycleProvider.removeListener(this);
-      mLifecycleProvider = null;
-    }
-  }
-
-  public synchronized void subscribeToLifecycleProvider(
-      LithoVisibilityEventsController lifecycleProvider) {
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      if (mLithoView != null) {
-        mLithoView.subscribeComponentTreeToLifecycleProvider(lifecycleProvider);
-      } else {
-        mLifecycleProvider = lifecycleProvider;
-      }
-    } else {
-      if (mLifecycleProvider != null) {
-        throw new IllegalStateException("Already subscribed");
-      }
-
-      mLifecycleProvider = lifecycleProvider;
-      mLifecycleProvider.addListener(this);
-
-      setLifecycleOwner(lifecycleProvider);
-    }
-  }
-
-  synchronized void setLifecycleOwner(@Nullable LithoVisibilityEventsController lifecycleProvider) {
-    if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-      LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
-      setInternalTreeProp(LifecycleOwnerTreeProp, owner);
-    }
-  }
-
-  public synchronized boolean isSubscribedToLifecycleProvider() {
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      return mLithoView != null && mLithoView.componentTreeHasLifecycleProvider();
-    } else {
-      return mLifecycleProvider != null;
-    }
-  }
-
-  public interface MeasureListener {
-
-    /**
-     * This callback gets called every time a ComponentTree commits a new layout computation. The
-     * call is executed on the same thread that computed the newly committed layout but outside the
-     * commit lock. This means that in practice the calls are not guaranteed to be ordered. A layout
-     * X committed before a layout Y could end up executing its MeasureListener's callback after the
-     * callback of layout Y. Clients that need guarantee over the ordering can rely on the
-     * layoutVersion parameter that is guaranteed to be increasing for successive commits (in the
-     * example layout X callback will receive a layoutVersion that is lower than the layoutVersion
-     * for layout Y)
-     *
-     * @param layoutVersion the layout version associated with the layout that triggered this
-     *     callback
-     * @param width the resulting width from the committed layout computation
-     * @param height the resulting height from the committed layout computation
-     * @param stateUpdate whether this layout computation was triggered by a state update.
-     */
-    void onSetRootAndSizeSpec(int layoutVersion, int width, int height, boolean stateUpdate);
-  }
-
   @GuardedBy("this")
   private @Nullable List<MeasureListener> mMeasureListeners;
-
-  /**
-   * Listener that will be notified when a new LayoutState is computed and ready to be committed to
-   * this ComponentTree.
-   */
-  public interface NewLayoutStateReadyListener {
-
-    void onNewLayoutStateReady(ComponentTree componentTree);
-  }
 
   // Do not access sDefaultLayoutThreadLooper directly, use getDefaultLayoutThreadLooper().
   @GuardedBy("ComponentTree.class")
@@ -296,6 +192,7 @@ public class ComponentTree
   private RunnableHandler mLayoutThreadHandler;
 
   private RunnableHandler mMainThreadHandler = new DefaultHandler(Looper.getMainLooper());
+
   private final Runnable mBackgroundLayoutStateUpdateRunnable =
       new Runnable() {
         @Override
@@ -303,6 +200,7 @@ public class ComponentTree
           backgroundLayoutStateUpdated();
         }
       };
+
   private volatile @Nullable NewLayoutStateReadyListener mNewLayoutStateReadyListener;
 
   private final Object mCurrentDoLayoutRunnableLock = new Object();
@@ -382,6 +280,8 @@ public class ComponentTree
    */
   @Nullable private String mDebugLogBreadcrumb;
 
+  private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
+
   /**
    * This method associates this {@link ComponentTree} debug logs with the given <code>String</code>
    * This allows you to create an association of the {@link ComponentTree} with any identifier or
@@ -393,8 +293,6 @@ public class ComponentTree
   public void setDebugLogsBreadcrumb(@Nullable String breadcrumb) {
     mDebugLogBreadcrumb = breadcrumb;
   }
-
-  private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
 
   public static Builder create(ComponentContext context) {
     return new ComponentTree.Builder(context);
@@ -2874,98 +2772,277 @@ public class ComponentTree
     return mId;
   }
 
-  private class DoLayoutRunnable extends ThreadTracingRunnable {
+  public synchronized void subscribeToLifecycleProvider(
+      LithoVisibilityEventsController lifecycleProvider) {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      if (mLithoView != null) {
+        mLithoView.subscribeComponentTreeToLifecycleProvider(lifecycleProvider);
+      } else {
+        mLifecycleProvider = lifecycleProvider;
+      }
+    } else {
+      if (mLifecycleProvider != null) {
+        throw new IllegalStateException("Already subscribed");
+      }
 
-    private final ResolveResult mResolveResult;
-    private final @RenderSource int mSource;
-    private final int mWidthSpec;
-    private final int mHeightSpec;
-    private final @Nullable String mAttribution;
-    private final boolean mIsCreateLayoutInProgress;
+      mLifecycleProvider = lifecycleProvider;
+      mLifecycleProvider.addListener(this);
 
-    public DoLayoutRunnable(
-        final ResolveResult resolveResult,
-        @RenderSource int source,
-        int widthSpec,
-        int heightSpec,
-        @Nullable String attribution,
-        boolean isCreateLayoutInProgress) {
-      mResolveResult = resolveResult;
-      mSource = source;
-      mWidthSpec = widthSpec;
-      mHeightSpec = heightSpec;
-      mAttribution = attribution;
-      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
-    }
-
-    @Override
-    public void tracedRun() {
-      doLayout(
-          mResolveResult,
-          null,
-          mSource,
-          mAttribution,
-          mIsCreateLayoutInProgress,
-          mWidthSpec,
-          mHeightSpec);
+      setLifecycleOwner(lifecycleProvider);
     }
   }
 
-  private class DoResolveRunnable extends ThreadTracingRunnable {
-
-    private final @RenderSource int mSource;
-    private final Component mRoot;
-    private final TreePropContainer mTreePropContainer;
-    private final int mWidthSpec;
-    private final int mHeightSpec;
-    private final @Nullable String mAttribution;
-    private final boolean mIsCreateLayoutInProgress;
-
-    public DoResolveRunnable(
-        @RenderSource int source,
-        Component root,
-        TreePropContainer treePropContainer,
-        int widthSpec,
-        int heightSpec,
-        @Nullable String attribution,
-        boolean isCreateLayoutInProgress) {
-      mSource = source;
-      mRoot = root;
-      mTreePropContainer = treePropContainer;
-      mWidthSpec = widthSpec;
-      mHeightSpec = heightSpec;
-      mAttribution = attribution;
-      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
-    }
-
-    @Override
-    public void tracedRun() {
-      doResolve(
-          null,
-          mSource,
-          mAttribution,
-          mIsCreateLayoutInProgress,
-          mRoot,
-          mTreePropContainer,
-          mWidthSpec,
-          mHeightSpec);
+  synchronized void setLifecycleOwner(@Nullable LithoVisibilityEventsController lifecycleProvider) {
+    if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
+      LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      setInternalTreeProp(LifecycleOwnerTreeProp, owner);
     }
   }
 
-  private final class UpdateStateSyncRunnable extends ThreadTracingRunnable {
+  public synchronized boolean isSubscribedToLifecycleProvider() {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return mLithoView != null && mLithoView.componentTreeHasLifecycleProvider();
+    } else {
+      return mLifecycleProvider != null;
+    }
+  }
 
-    private final String mAttribution;
-    private final boolean mIsCreateLayoutInProgress;
+  @Override
+  public void onMovedToState(LithoLifecycle state) {
+    switch (state) {
+      case HINT_VISIBLE:
+        onMoveToStateHintVisible();
+        return;
+      case HINT_INVISIBLE:
+        onMoveToStateHintInvisible();
+        return;
+      case DESTROYED:
+        onMoveToStateDestroy();
+        return;
+      default:
+        throw new IllegalStateException("Illegal state: " + state);
+    }
+  }
 
-    public UpdateStateSyncRunnable(String attribution, boolean isCreateLayoutInProgress) {
-      mAttribution = attribution;
-      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
+  private void onMoveToStateHintVisible() {
+    if (mLithoView != null) {
+      mLithoView.setVisibilityHintNonRecursive(true);
+    }
+  }
+
+  private void onMoveToStateHintInvisible() {
+    if (mLithoView != null) {
+      mLithoView.setVisibilityHintNonRecursive(false);
+    }
+  }
+
+  private void onMoveToStateDestroy() {
+    // This will call setComponentTree(null) on the LithoView if any.
+    release();
+    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider
+        && mLifecycleProvider != null) {
+      mLifecycleProvider.removeListener(this);
+      mLifecycleProvider = null;
+    }
+  }
+
+  /** This should only be used by Flipper. */
+  @Nullable
+  ComponentTreeTimeMachine getTimeMachine() {
+    return mTimeMachine;
+  }
+
+  private void saveRevision(
+      Component root,
+      TreeState treeState,
+      @Nullable TreePropContainer treePropContainer,
+      @RenderSource int source,
+      @Nullable String attribution) {
+    if (mTimeMachine != null) {
+      final TreeState frozenTreeState = new TreeState(treeState);
+      mTimeMachine.storeRevision(root, frozenTreeState, treePropContainer, source, attribution);
+    }
+  }
+
+  /**
+   * Similar to {@link ComponentTree#setRoot(Component)}. This method allows setting a new root with
+   * cached {@link TreePropContainer} and {@link StateHandler}.
+   *
+   * <p>It is used to enable time-travelling through external editors such as Flipper.
+   */
+  @UiThread
+  protected synchronized void applyRevision(ComponentTreeTimeMachine.Revision revision) {
+    ThreadUtils.assertMainThread();
+
+    mTreeState = revision.getTreeState();
+    mRootTreePropContainer = revision.getTreePropContainer();
+
+    setRootAndSizeSpecInternal(
+        revision.getRoot(),
+        SIZE_UNINITIALIZED,
+        SIZE_UNINITIALIZED,
+        false /* isAsync */,
+        null /* output */,
+        RenderSource.RELOAD_PREVIOUS_STATE,
+        INVALID_LAYOUT_VERSION,
+        null,
+        null,
+        false,
+        true);
+  }
+
+  /**
+   * In this approach we are attempting to start the layout calculation using the Choreographer
+   * frame callbacks system.
+   *
+   * <p>Whenever the Choreographer receives a VSYNC signal, it starts a cycle to prepare the next
+   * Frame. In this cycle is goes through 3 main phases: input handling, animation and traversals
+   * (which layouts, measures and draws).
+   *
+   * <p>Fortunately, the Choreographer API provides a way to execute code during the next animation
+   * phase of the processing.
+   *
+   * <p>With this knowledge, this new variant to batch state updates will schedule the layout
+   * calculation start on the Choregrapher's animation phase. This way we can guarantee that all
+   * states generated by input handling are properly enqueued before we start the layout
+   * calculation.
+   */
+  class PostStateUpdateToChoreographerCallback implements BatchedStateUpdatesStrategy {
+
+    private final AtomicReference<Choreographer> mMainChoreographer = new AtomicReference<>();
+
+    private final AtomicInteger mEnqueuedUpdatesCount = new AtomicInteger(0);
+    private final AtomicReference<String> mAttribution = new AtomicReference<>("");
+
+    private final Choreographer.FrameCallback mFrameCallback =
+        new Choreographer.FrameCallback() {
+          @Override
+          public void doFrame(long l) {
+            // We retrieve the attribution before we reset the enqueuedUpdatesCount. The order here
+            // matters, otherwise there could be an inconsistency in the attribution.
+            String attribution = mAttribution.getAndSet("");
+
+            if (mEnqueuedUpdatesCount.getAndSet(0) > 0) {
+              updateStateInternal(
+                  true,
+                  attribution != null
+                      ? attribution
+                      : "<cls>" + getContext().getComponentScope().getClass().getName() + "</cls>",
+                  mContext.isCreateLayoutInProgress());
+            }
+          }
+        };
+
+    private final Runnable mCreateMainChoreographerRunnable =
+        () -> {
+          mMainChoreographer.set(Choreographer.getInstance());
+
+          /* in the case that we have to asynchronously initialize the choreographer, then we
+          verify if we have enqueued state updates. If so, then we post a callback, because it
+          is impossible that one has been set, even though we should be processing these updates.
+          This is the case that the `ComponentTree` was created in a non Main Thread, and state updates were scheduled
+          without the Choreographer being initialized yet. */
+          if (mEnqueuedUpdatesCount.get() > 0) {
+            mMainChoreographer.get().postFrameCallback(mFrameCallback);
+          }
+        };
+
+    PostStateUpdateToChoreographerCallback() {
+      initializeMainChoreographer();
+    }
+
+    /**
+     * This method will guarantee that we will create a {@link Choreographer} instance linked to the
+     * Main Thread {@link Looper}.
+     *
+     * <p>If the thread that is calling this method is the Main Thread, then it will initialize
+     * immediately the {@link Choreographer}. Otherwise, it will schedule a initializion runnable,
+     * that will execute in the main thread (via {@link #mCreateMainChoreographerRunnable})
+     *
+     * @return {@code true} when the main choreographer was initialized already, or {@code false}
+     *     when the process was started, but the initialization has not occured yet.
+     */
+    private void initializeMainChoreographer() {
+      if (mMainChoreographer.get() != null) return;
+
+      if (Looper.myLooper() == Looper.getMainLooper()) {
+        mMainChoreographer.set(Choreographer.getInstance());
+      } else {
+        scheduleChoreographerCreation();
+      }
     }
 
     @Override
-    public void tracedRun() {
-      updateStateInternal(false, mAttribution, mIsCreateLayoutInProgress);
+    public boolean onAsyncStateUpdateEnqueued(
+        String attribution, boolean isCreateLayoutInProgress) {
+      if (mEnqueuedUpdatesCount.getAndIncrement() == 0 && mMainChoreographer.get() != null) {
+        mAttribution.set(attribution);
+        mMainChoreographer.get().postFrameCallback(mFrameCallback);
+      }
+
+      return true;
     }
+
+    @Override
+    public void onInternalStateUpdateStart() {
+      resetEnqueuedUpdates();
+      removeFrameCallback();
+    }
+
+    @Override
+    public void release() {
+      resetEnqueuedUpdates();
+      removeChoreographerCreation();
+      removeFrameCallback();
+    }
+
+    private void resetEnqueuedUpdates() {
+      mEnqueuedUpdatesCount.set(0);
+    }
+
+    private void removeChoreographerCreation() {
+      mMainThreadHandler.remove(mCreateMainChoreographerRunnable);
+    }
+
+    private void removeFrameCallback() {
+      if (mMainChoreographer.get() != null) {
+        mMainChoreographer.get().removeFrameCallback(mFrameCallback);
+      }
+    }
+
+    private void scheduleChoreographerCreation() {
+      mMainThreadHandler.postAtFront(mCreateMainChoreographerRunnable, "Create Main Choreographer");
+    }
+  }
+
+  public interface MeasureListener {
+
+    /**
+     * This callback gets called every time a ComponentTree commits a new layout computation. The
+     * call is executed on the same thread that computed the newly committed layout but outside the
+     * commit lock. This means that in practice the calls are not guaranteed to be ordered. A layout
+     * X committed before a layout Y could end up executing its MeasureListener's callback after the
+     * callback of layout Y. Clients that need guarantee over the ordering can rely on the
+     * layoutVersion parameter that is guaranteed to be increasing for successive commits (in the
+     * example layout X callback will receive a layoutVersion that is lower than the layoutVersion
+     * for layout Y)
+     *
+     * @param layoutVersion the layout version associated with the layout that triggered this
+     *     callback
+     * @param width the resulting width from the committed layout computation
+     * @param height the resulting height from the committed layout computation
+     * @param stateUpdate whether this layout computation was triggered by a state update.
+     */
+    void onSetRootAndSizeSpec(int layoutVersion, int width, int height, boolean stateUpdate);
+  }
+
+  /**
+   * Listener that will be notified when a new LayoutState is computed and ready to be committed to
+   * this ComponentTree.
+   */
+  public interface NewLayoutStateReadyListener {
+
+    void onNewLayoutStateReady(ComponentTree componentTree);
   }
 
   /** A builder class that can be used to create a {@link ComponentTree}. */
@@ -3145,172 +3222,97 @@ public class ComponentTree
     }
   }
 
-  /**
-   * In this approach we are attempting to start the layout calculation using the Choreographer
-   * frame callbacks system.
-   *
-   * <p>Whenever the Choreographer receives a VSYNC signal, it starts a cycle to prepare the next
-   * Frame. In this cycle is goes through 3 main phases: input handling, animation and traversals
-   * (which layouts, measures and draws).
-   *
-   * <p>Fortunately, the Choreographer API provides a way to execute code during the next animation
-   * phase of the processing.
-   *
-   * <p>With this knowledge, this new variant to batch state updates will schedule the layout
-   * calculation start on the Choregrapher's animation phase. This way we can guarantee that all
-   * states generated by input handling are properly enqueued before we start the layout
-   * calculation.
-   */
-  class PostStateUpdateToChoreographerCallback implements BatchedStateUpdatesStrategy {
+  private class DoResolveRunnable extends ThreadTracingRunnable {
 
-    private final AtomicReference<Choreographer> mMainChoreographer = new AtomicReference<>();
+    private final @RenderSource int mSource;
+    private final Component mRoot;
+    private final TreePropContainer mTreePropContainer;
+    private final int mWidthSpec;
+    private final int mHeightSpec;
+    private final @Nullable String mAttribution;
+    private final boolean mIsCreateLayoutInProgress;
 
-    private final AtomicInteger mEnqueuedUpdatesCount = new AtomicInteger(0);
-    private final AtomicReference<String> mAttribution = new AtomicReference<>("");
-
-    private final Choreographer.FrameCallback mFrameCallback =
-        new Choreographer.FrameCallback() {
-          @Override
-          public void doFrame(long l) {
-            // We retrieve the attribution before we reset the enqueuedUpdatesCount. The order here
-            // matters, otherwise there could be an inconsistency in the attribution.
-            String attribution = mAttribution.getAndSet("");
-
-            if (mEnqueuedUpdatesCount.getAndSet(0) > 0) {
-              updateStateInternal(
-                  true,
-                  attribution != null
-                      ? attribution
-                      : "<cls>" + getContext().getComponentScope().getClass().getName() + "</cls>",
-                  mContext.isCreateLayoutInProgress());
-            }
-          }
-        };
-
-    private final Runnable mCreateMainChoreographerRunnable =
-        () -> {
-          mMainChoreographer.set(Choreographer.getInstance());
-
-          /* in the case that we have to asynchronously initialize the choreographer, then we
-          verify if we have enqueued state updates. If so, then we post a callback, because it
-          is impossible that one has been set, even though we should be processing these updates.
-          This is the case that the `ComponentTree` was created in a non Main Thread, and state updates were scheduled
-          without the Choreographer being initialized yet. */
-          if (mEnqueuedUpdatesCount.get() > 0) {
-            mMainChoreographer.get().postFrameCallback(mFrameCallback);
-          }
-        };
-
-    PostStateUpdateToChoreographerCallback() {
-      initializeMainChoreographer();
-    }
-
-    /**
-     * This method will guarantee that we will create a {@link Choreographer} instance linked to the
-     * Main Thread {@link Looper}.
-     *
-     * <p>If the thread that is calling this method is the Main Thread, then it will initialize
-     * immediately the {@link Choreographer}. Otherwise, it will schedule a initializion runnable,
-     * that will execute in the main thread (via {@link #mCreateMainChoreographerRunnable})
-     *
-     * @return {@code true} when the main choreographer was initialized already, or {@code false}
-     *     when the process was started, but the initialization has not occured yet.
-     */
-    private void initializeMainChoreographer() {
-      if (mMainChoreographer.get() != null) return;
-
-      if (Looper.myLooper() == Looper.getMainLooper()) {
-        mMainChoreographer.set(Choreographer.getInstance());
-      } else {
-        scheduleChoreographerCreation();
-      }
+    public DoResolveRunnable(
+        @RenderSource int source,
+        Component root,
+        TreePropContainer treePropContainer,
+        int widthSpec,
+        int heightSpec,
+        @Nullable String attribution,
+        boolean isCreateLayoutInProgress) {
+      mSource = source;
+      mRoot = root;
+      mTreePropContainer = treePropContainer;
+      mWidthSpec = widthSpec;
+      mHeightSpec = heightSpec;
+      mAttribution = attribution;
+      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
 
     @Override
-    public boolean onAsyncStateUpdateEnqueued(
-        String attribution, boolean isCreateLayoutInProgress) {
-      if (mEnqueuedUpdatesCount.getAndIncrement() == 0 && mMainChoreographer.get() != null) {
-        mAttribution.set(attribution);
-        mMainChoreographer.get().postFrameCallback(mFrameCallback);
-      }
+    public void tracedRun() {
+      doResolve(
+          null,
+          mSource,
+          mAttribution,
+          mIsCreateLayoutInProgress,
+          mRoot,
+          mTreePropContainer,
+          mWidthSpec,
+          mHeightSpec);
+    }
+  }
 
-      return true;
+  private class DoLayoutRunnable extends ThreadTracingRunnable {
+
+    private final ResolveResult mResolveResult;
+    private final @RenderSource int mSource;
+    private final int mWidthSpec;
+    private final int mHeightSpec;
+    private final @Nullable String mAttribution;
+    private final boolean mIsCreateLayoutInProgress;
+
+    public DoLayoutRunnable(
+        final ResolveResult resolveResult,
+        @RenderSource int source,
+        int widthSpec,
+        int heightSpec,
+        @Nullable String attribution,
+        boolean isCreateLayoutInProgress) {
+      mResolveResult = resolveResult;
+      mSource = source;
+      mWidthSpec = widthSpec;
+      mHeightSpec = heightSpec;
+      mAttribution = attribution;
+      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
 
     @Override
-    public void onInternalStateUpdateStart() {
-      resetEnqueuedUpdates();
-      removeFrameCallback();
+    public void tracedRun() {
+      doLayout(
+          mResolveResult,
+          null,
+          mSource,
+          mAttribution,
+          mIsCreateLayoutInProgress,
+          mWidthSpec,
+          mHeightSpec);
+    }
+  }
+
+  private final class UpdateStateSyncRunnable extends ThreadTracingRunnable {
+
+    private final String mAttribution;
+    private final boolean mIsCreateLayoutInProgress;
+
+    public UpdateStateSyncRunnable(String attribution, boolean isCreateLayoutInProgress) {
+      mAttribution = attribution;
+      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
 
     @Override
-    public void release() {
-      resetEnqueuedUpdates();
-      removeChoreographerCreation();
-      removeFrameCallback();
+    public void tracedRun() {
+      updateStateInternal(false, mAttribution, mIsCreateLayoutInProgress);
     }
-
-    private void resetEnqueuedUpdates() {
-      mEnqueuedUpdatesCount.set(0);
-    }
-
-    private void removeChoreographerCreation() {
-      mMainThreadHandler.remove(mCreateMainChoreographerRunnable);
-    }
-
-    private void removeFrameCallback() {
-      if (mMainChoreographer.get() != null) {
-        mMainChoreographer.get().removeFrameCallback(mFrameCallback);
-      }
-    }
-
-    private void scheduleChoreographerCreation() {
-      mMainThreadHandler.postAtFront(mCreateMainChoreographerRunnable, "Create Main Choreographer");
-    }
-  }
-
-  /** This should only be used by Flipper. */
-  @Nullable
-  ComponentTreeTimeMachine getTimeMachine() {
-    return mTimeMachine;
-  }
-
-  private void saveRevision(
-      Component root,
-      TreeState treeState,
-      @Nullable TreePropContainer treePropContainer,
-      @RenderSource int source,
-      @Nullable String attribution) {
-    if (mTimeMachine != null) {
-      final TreeState frozenTreeState = new TreeState(treeState);
-      mTimeMachine.storeRevision(root, frozenTreeState, treePropContainer, source, attribution);
-    }
-  }
-
-  /**
-   * Similar to {@link ComponentTree#setRoot(Component)}. This method allows setting a new root with
-   * cached {@link TreePropContainer} and {@link StateHandler}.
-   *
-   * <p>It is used to enable time-travelling through external editors such as Flipper.
-   */
-  @UiThread
-  protected synchronized void applyRevision(ComponentTreeTimeMachine.Revision revision) {
-    ThreadUtils.assertMainThread();
-
-    mTreeState = revision.getTreeState();
-    mRootTreePropContainer = revision.getTreePropContainer();
-
-    setRootAndSizeSpecInternal(
-        revision.getRoot(),
-        SIZE_UNINITIALIZED,
-        SIZE_UNINITIALIZED,
-        false /* isAsync */,
-        null /* output */,
-        RenderSource.RELOAD_PREVIOUS_STATE,
-        INVALID_LAYOUT_VERSION,
-        null,
-        null,
-        false,
-        true);
   }
 }
