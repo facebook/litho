@@ -811,7 +811,7 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
-  public boolean isRecyclingDisabled() {
+  public boolean isPoolingDisabled() {
     return poolSize() == 0;
   }
 

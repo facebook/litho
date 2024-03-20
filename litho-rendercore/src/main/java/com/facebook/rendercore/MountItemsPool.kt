@@ -130,7 +130,7 @@ object MountItemsPool {
       allocator: ContentAllocator<*>,
       poolSize: Int = allocator.poolSize()
   ): ItemPool? {
-    if (allocator.isRecyclingDisabled || isPoolingDisabled || poolSize <= 0) {
+    if (allocator.isPoolingDisabled || isPoolingDisabled || poolSize <= 0) {
       return null
     }
 

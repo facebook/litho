@@ -43,7 +43,7 @@ interface ContentAllocator<Content : Any> {
     return javaClass
   }
 
-  val isRecyclingDisabled: Boolean
+  val isPoolingDisabled: Boolean
     get() = false
 
   fun createRecyclingPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ItemPool? {

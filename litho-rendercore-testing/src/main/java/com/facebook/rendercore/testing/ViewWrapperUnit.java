@@ -72,7 +72,7 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
   }
 
   @Override
-  public boolean isRecyclingDisabled() {
+  public boolean isPoolingDisabled() {
     return true;
   }
 

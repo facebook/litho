@@ -35,31 +35,30 @@ class HostComponent extends SpecGeneratedComponent {
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   private boolean mImplementsVirtualViews = false;
-  private final boolean mRecyclingEnabled;
+  private final boolean mPoolingEnabled;
   private final @Nullable ComponentHost.UnsafeModificationPolicy mUnsafeModificationPolicy;
 
   protected HostComponent(
       boolean recyclingEnabled,
       @Nullable ComponentHost.UnsafeModificationPolicy unsafeModificationPolicy) {
     super("HostComponent");
-    mRecyclingEnabled = recyclingEnabled;
+    mPoolingEnabled = recyclingEnabled;
     mUnsafeModificationPolicy = unsafeModificationPolicy;
   }
 
   @Override
   public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new HostMountContentPool(
-        ComponentsConfiguration.hostComponentPoolSize, mRecyclingEnabled);
+    return new HostMountContentPool(ComponentsConfiguration.hostComponentPoolSize, mPoolingEnabled);
   }
 
   @Override
-  public boolean isRecyclingDisabled() {
-    return !mRecyclingEnabled;
+  public boolean isPoolingDisabled() {
+    return !mPoolingEnabled;
   }
 
   @Override
   public boolean canPreallocate() {
-    return mRecyclingEnabled;
+    return mPoolingEnabled;
   }
 
   @Override
