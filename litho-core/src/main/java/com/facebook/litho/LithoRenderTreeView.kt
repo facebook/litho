@@ -129,7 +129,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
         this.layoutState == null ||
             (requireLayoutState.componentTreeId != layoutState.componentTreeId)
     setMountStateDirty()
-    if (this.layoutState != null) {
+    if (this.layoutState != null && hasNewTree) {
       onBeforeSettingNewTree()
     }
     this.layoutState = layoutState
