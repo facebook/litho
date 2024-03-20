@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import static android.view.View.OVER_SCROLL_IF_CONTENT_SCROLLS;
+import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
@@ -101,6 +102,7 @@ class HorizontalScrollSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @Prop(optional = true) boolean wrapContent, // TODO:T182959582
       @Prop Component contentProps,
       @CachedValue ComponentTree childComponentTree,
       Output<Integer> measuredComponentWidth,
@@ -130,10 +132,15 @@ class HorizontalScrollSpec {
     measuredComponentWidth.set(measuredWidth);
     measuredComponentHeight.set(measuredHeight);
 
-    // If size constraints were not explicitly defined, just fallback to the
-    // component dimensions instead.
-    size.width =
-        SizeSpec.getMode(widthSpec) == UNSPECIFIED ? measuredWidth : SizeSpec.getSize(widthSpec);
+    final int sizeSpecMode = SizeSpec.getMode(widthSpec);
+    final int sizeSpecWidth = SizeSpec.getSize(widthSpec);
+    if (sizeSpecMode == UNSPECIFIED) {
+      size.width = measuredWidth;
+    } else if (sizeSpecMode == AT_MOST && wrapContent) {
+      size.width = Math.min(measuredWidth, sizeSpecWidth);
+    } else {
+      size.width = sizeSpecWidth;
+    }
     size.height = measuredHeight;
   }
 
