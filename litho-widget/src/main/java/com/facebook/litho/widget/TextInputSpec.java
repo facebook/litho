@@ -42,6 +42,7 @@ import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
+import android.text.style.SuggestionRangeSpan;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -82,6 +83,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -791,7 +793,7 @@ class TextInputSpec {
     // Setting a custom editable factory so we can catch and rethrow crashes from
     // SpannableStringBuilder#setSpan with additional information. This should cause no
     // functional changes.
-    editText.setEditableFactory(new ForLoggingEditableFactory());
+    editText.setEditableFactory(new SafeSetSpanEditableFactory());
     return editText;
   }
 
@@ -1475,28 +1477,55 @@ class TextInputSpec {
     }
   }
 
-  private static class ForLoggingEditableFactory extends Editable.Factory {
+  private static class SafeSetSpanEditableFactory extends Editable.Factory {
 
     @Override
     public Editable newEditable(CharSequence source) {
       return new SpannableStringBuilder(source) {
+
         @Override
         public void setSpan(Object what, int start, int end, int flags) {
           /*
-           Catching and rethrowing IndexOutOfBoundsExceptions with additional info. One known source
-           of this crash is when using spell checker exceeds EditText maxLength
-           (https://issuetracker.google.com/issues/36944935)
+            Fix for a crash in the Android Framework when deleting a character while the spell checker popup shows.
+            Prevent setting a SuggestionRangeSpan with end past the Editable length using Math.min
+            (https://issuetracker.google.com/issues/314288203)
           */
           try {
-            super.setSpan(what, start, end, flags);
+            final int spanEnd = shouldUseSafeSpanEnd(what) ? Math.min(end, length()) : end;
+            super.setSpan(what, start, spanEnd, flags);
           } catch (IndexOutOfBoundsException e) {
+            /*
+             Catching and rethrowing IndexOutOfBoundsExceptions with additional info. One known source
+             of this crash is when using spell checker exceeds EditText maxLength
+             (https://issuetracker.google.com/issues/36944935)
+            */
             throw new IndexOutOfBoundsException(
                 String.format(
                     "%s | span=%s | flags=%d",
                     e.getMessage(), what != null ? what.getClass() : "Unknown", flags));
           }
         }
+
+        private boolean shouldUseSafeSpanEnd(Object span) {
+          return SuggestionRangeSpanApi33Util.isSuggestionRangeSpan(span)
+              && ComponentsConfiguration.useSafeSpanEndInTextInputSpec;
+        }
       };
+    }
+  }
+
+  private static class SuggestionRangeSpanApi33Util {
+
+    private static final String SUGGESTION_RANGE_SPAN_CLASS_NAME =
+        "android.text.style.SuggestionRangeSpan";
+
+    // SuggestionRangeSpan was made public in API 33, so check class name for lower API levels
+    private static boolean isSuggestionRangeSpan(Object span) {
+      if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        return span instanceof SuggestionRangeSpan;
+      } else {
+        return span != null && span.getClass().getName().equals(SUGGESTION_RANGE_SPAN_CLASS_NAME);
+      }
     }
   }
 }

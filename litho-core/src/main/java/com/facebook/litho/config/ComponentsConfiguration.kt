@@ -239,6 +239,7 @@ internal constructor(
     @JvmField var reduceMemorySpikeGetUri: Boolean = false
     @JvmField var bindOnSameComponentTree: Boolean = true
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
+    @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
