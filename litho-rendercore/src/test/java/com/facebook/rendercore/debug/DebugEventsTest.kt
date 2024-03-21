@@ -420,6 +420,24 @@ class DebugEventsTest {
     assertThat(events).hasSize(1)
   }
 
+  @Test
+  fun `trace event should be dispatched to trace listeners`() {
+    val traceListener1 = TestTraceListener()
+    DebugEventBus.subscribe(traceListener1)
+
+    DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener1.records.size).isEqualTo(1)
+
+    val traceListener2 = TestTraceListener()
+    DebugEventBus.subscribe(traceListener2)
+
+    DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener1.records.size).isEqualTo(2)
+    assertThat(traceListener2.records.size).isEqualTo(1)
+  }
+
   class TestEventSubscriber(val listener: (DebugEvent) -> Unit) : DebugEventSubscriber(TestEvent) {
     override fun onEvent(event: DebugEvent) {
       listener(event)
@@ -432,6 +450,26 @@ class DebugEventsTest {
   ) : DebugEventSubscriber(*events) {
     override fun onEvent(event: DebugEvent) {
       listener(event)
+    }
+  }
+
+  class TestTraceListener : TraceListener<Int>, DebugEventSubscriber(TestEvent) {
+
+    val records = mutableListOf<Any>()
+
+    private var counter = 0
+
+    override fun onEvent(event: DebugEvent): Unit = Unit
+
+    override fun onTraceStart(type: String): Int {
+      records.add(type)
+      val token = counter
+      counter++
+      return token
+    }
+
+    override fun onTraceEnd(token: Int, event: DebugProcessEvent) {
+      assertThat(records[token]).isEqualTo(event.type)
     }
   }
 }

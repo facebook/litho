@@ -18,6 +18,7 @@ package com.facebook.rendercore.debug
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.rendercore.LogLevel
+import com.facebook.rendercore.debug.DebugEvent.Companion.All
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -67,12 +68,14 @@ sealed class DebugEvent(
       |  type = '$type',
       |  renderStateId = '$renderStateId',
       |  thread = '$threadName',
-      |  attributes = ${attributes.entries.joinToString(
-        prefix = "{\n",
-        separator = ",\n",
-        postfix = "\n|  }",
-        transform = { e -> "|    ${e.key} = ${e.value}" }
-    )}
+      |  attributes = ${
+      attributes.entries.joinToString(
+          prefix = "{\n",
+          separator = ",\n",
+          postfix = "\n|  }",
+          transform = { e -> "|    ${e.key} = ${e.value}" }
+      )
+    }
     """
         .trimMargin()
   }
@@ -150,6 +153,20 @@ class DebugProcessEvent(
 /** Base class for event subscribers */
 abstract class DebugEventSubscriber(vararg val events: String) {
   abstract fun onEvent(event: DebugEvent)
+}
+
+/**
+ * Any [DebugEventSubscriber] that implements this interface will receive callbacks just before and
+ * right after the a trace event. The subscriber can return a token from [onTraceStart] and the
+ * dispatcher will return the token in [onTraceEnd].
+ */
+interface TraceListener<T : Any?> {
+
+  // Called right before trace event starts
+  fun onTraceStart(type: String): T
+
+  // Called after the trace event ends
+  fun onTraceEnd(token: T, event: DebugProcessEvent)
 }
 
 /** Object to dispatch debug events */
@@ -341,9 +358,14 @@ object DebugEventDispatcher {
     }
 
     // find the subscribers listening for this event
+    val traceListeners = mutableListOf<TraceListener<Any?>>()
     val subscribersToNotify =
         subscribers.filter { subscriber ->
-          subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)
+          val matches = subscriber.events.contains(type) || subscriber.events.contains(All)
+          if (subscriber is TraceListener<*>) {
+            traceListeners.add(subscriber as TraceListener<Any?>)
+          }
+          return@filter matches
         }
 
     // run the block if there are no subscribers
@@ -354,6 +376,7 @@ object DebugEventDispatcher {
     val attributes = LinkedHashMap<String, Any?>()
     attributesAccumulator(attributes)
 
+    val tokens: List<Any?> = traceListeners.map { it.onTraceStart(type) }
     val timestamp = System.currentTimeMillis()
     val startTime = System.nanoTime()
     val res = block(TraceScope(attributes = attributes))
@@ -368,6 +391,7 @@ object DebugEventDispatcher {
             attributes = attributes,
         )
 
+    traceListeners.forEachIndexed { i, it -> it.onTraceEnd(token = tokens[i], event = event) }
     subscribersToNotify.forEach { it.onEvent(event) }
 
     return res
