@@ -422,11 +422,15 @@ class DebugEventsTest {
 
   @Test
   fun `trace event should be dispatched to trace listeners`() {
+    val traceListener0 = TestTraceListener("random")
+    DebugEventBus.subscribe(traceListener0)
+
     val traceListener1 = TestTraceListener()
     DebugEventBus.subscribe(traceListener1)
 
     DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
 
+    assertThat(traceListener0.records.size).isEqualTo(0)
     assertThat(traceListener1.records.size).isEqualTo(1)
 
     val traceListener2 = TestTraceListener()
@@ -434,8 +438,23 @@ class DebugEventsTest {
 
     DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
 
+    assertThat(traceListener0.records.size).isEqualTo(0)
     assertThat(traceListener1.records.size).isEqualTo(2)
     assertThat(traceListener2.records.size).isEqualTo(1)
+
+    DebugEventBus.unsubscribe(traceListener1)
+
+    DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener0.records.size).isEqualTo(0)
+    assertThat(traceListener1.records.size).isEqualTo(2)
+    assertThat(traceListener2.records.size).isEqualTo(2)
+
+    DebugEventDispatcher.trace(type = "random", renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener0.records.size).isEqualTo(1)
+    assertThat(traceListener1.records.size).isEqualTo(2)
+    assertThat(traceListener2.records.size).isEqualTo(2)
   }
 
   class TestEventSubscriber(val listener: (DebugEvent) -> Unit) : DebugEventSubscriber(TestEvent) {
@@ -453,7 +472,9 @@ class DebugEventsTest {
     }
   }
 
-  class TestTraceListener : TraceListener<Int>, DebugEventSubscriber(TestEvent) {
+  class TestTraceListener(
+      vararg events: String = arrayOf(TestEvent),
+  ) : TraceListener<Int>, DebugEventSubscriber(*events) {
 
     val records = mutableListOf<Any>()
 

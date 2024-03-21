@@ -362,7 +362,7 @@ object DebugEventDispatcher {
     val subscribersToNotify =
         subscribers.filter { subscriber ->
           val matches = subscriber.events.contains(type) || subscriber.events.contains(All)
-          if (subscriber is TraceListener<*>) {
+          if (matches && subscriber is TraceListener<*>) {
             traceListeners.add(subscriber as TraceListener<Any?>)
           }
           return@filter matches
