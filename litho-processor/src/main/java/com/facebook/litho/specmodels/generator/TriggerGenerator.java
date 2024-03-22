@@ -307,7 +307,8 @@ public class TriggerGenerator {
 
     triggerMethod
         .addJavadoc(
-            "@deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #$L(ComponentContext, Handle)}.\n",
+            "@deprecated Do not use this method to get a EventTrigger to use later. Instead give"
+                + " the component a Handle and use {@link #$L(ComponentContext, Handle)}.\n",
             eventMethodModel.name.toString())
         .addAnnotation(java.lang.Deprecated.class)
         .addParameter(contextClassName, "c")
@@ -427,7 +428,9 @@ public class TriggerGenerator {
           .addAnnotation(java.lang.Deprecated.class);
     } else if (triggerLookup == TriggerLookup.HANDLE) {
       triggerMethod.addJavadoc(
-          "This will send the $L trigger to the component with the given handle.\nFor more information about using triggers, see https://fblitho.com/docs/trigger-events\n",
+          "This will send the $L trigger to the component with the given handle.\n"
+              + "For more information about using triggers, see"
+              + " https://fblitho.com/docs/trigger-events\n",
           eventMethodModel.name.toString());
     }
 

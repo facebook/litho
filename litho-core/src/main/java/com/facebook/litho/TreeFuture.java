@@ -138,7 +138,9 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     return mInterruptState.get() == INTERRUPTED;
   }
 
-  /** @return {@code true} if this future is interruptible. */
+  /**
+   * @return {@code true} if this future is interruptible.
+   */
   boolean isInterruptible() {
     return mInterruptState.get() == INTERRUPTIBLE;
   }

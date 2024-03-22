@@ -23,7 +23,9 @@ import org.assertj.core.api.Condition;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.util.Preconditions;
 
-/** @deprecated Use {@link LithoViewAssert#containsComponent)} instead. */
+/**
+ * @deprecated Use {@link LithoViewAssert#containsComponent)} instead.
+ */
 @Deprecated
 public class LithoViewSubComponentExtractor
     implements Extractor<LithoView, List<InspectableComponent>> {

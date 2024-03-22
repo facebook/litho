@@ -253,7 +253,8 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "private com.facebook.litho.StateContainer getStateContainerImpl(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return (com.facebook.litho.StateContainer) c.getScopedComponentInfo().getStateContainer();\n"
+                + "  return (com.facebook.litho.StateContainer)"
+                + " c.getScopedComponentInfo().getStateContainer();\n"
                 + "}\n");
   }
 
@@ -294,7 +295,8 @@ public class ComponentBodyGeneratorTest {
                 + "@com.facebook.litho.annotations.Comparable(\n"
                 + "    type = 5\n"
                 + ")\n"
-                + "java.util.List<? extends java.lang.Number> arg9 = java.util.Collections.emptyList();\n");
+                + "java.util.List<? extends java.lang.Number> arg9 ="
+                + " java.util.Collections.emptyList();\n");
     assertThat(dataHolder.getFieldSpecs().get(5).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
@@ -392,7 +394,8 @@ public class ComponentBodyGeneratorTest {
                 + "@com.facebook.litho.annotations.Comparable(\n"
                 + "    type = 5\n"
                 + ")\n"
-                + "java.util.List<java.lang.Number> numbers = java.util.Collections.emptyList();\n");
+                + "java.util.List<java.lang.Number> numbers ="
+                + " java.util.Collections.emptyList();\n");
   }
 
   @Test
@@ -452,15 +455,18 @@ public class ComponentBodyGeneratorTest {
                 + "  if (arg0 != mountTestRef.arg0) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg4 != null ? !arg4.isEquivalentTo(mountTestRef.arg4, shouldCompareCommonProps) : mountTestRef.arg4 != null) {\n"
+                + "  if (arg4 != null ? !arg4.isEquivalentTo(mountTestRef.arg4,"
+                + " shouldCompareCommonProps) : mountTestRef.arg4 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (arg5 != null) {\n"
-                + "    if (mountTestRef.arg5 == null || arg5.size() != mountTestRef.arg5.size()) {\n"
+                + "    if (mountTestRef.arg5 == null || arg5.size() != mountTestRef.arg5.size())"
+                + " {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    java.util.Iterator<com.facebook.litho.Component> _e1_1 = arg5.iterator();\n"
-                + "    java.util.Iterator<com.facebook.litho.Component> _e2_1 = mountTestRef.arg5.iterator();\n"
+                + "    java.util.Iterator<com.facebook.litho.Component> _e2_1 ="
+                + " mountTestRef.arg5.iterator();\n"
                 + "    while (_e1_1.hasNext() && _e2_1.hasNext()) {\n"
                 + "      if (!_e1_1.next().isEquivalentTo(_e2_1.next())) {\n"
                 + "        return false;\n"
@@ -469,10 +475,12 @@ public class ComponentBodyGeneratorTest {
                 + "  } else if (mountTestRef.arg5 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg6 != null ? !arg6.equals(mountTestRef.arg6) : mountTestRef.arg6 != null) {\n"
+                + "  if (arg6 != null ? !arg6.equals(mountTestRef.arg6) : mountTestRef.arg6 !="
+                + " null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg9 != null ? !arg9.equals(mountTestRef.arg9) : mountTestRef.arg9 != null) {\n"
+                + "  if (arg9 != null ? !arg9.equals(mountTestRef.arg9) : mountTestRef.arg9 !="
+                + " null) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  return true;\n"
@@ -546,7 +554,8 @@ public class ComponentBodyGeneratorTest {
             "@java.lang.Override\n"
                 + "public Test makeShallowCopy() {\n"
                 + "  Test component = (Test) super.makeShallowCopy();\n"
-                + "  component.arg4 = component.arg4 != null ? component.arg4.makeShallowCopy() : null;\n"
+                + "  component.arg4 = component.arg4 != null ? component.arg4.makeShallowCopy() :"
+                + " null;\n"
                 + "  return component;\n"
                 + "}\n");
   }

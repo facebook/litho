@@ -218,7 +218,8 @@ public final class AnimatedProperties {
         // No-op: x/y are always properly set for Drawables
       }
     }
-  };
+  }
+  ;
 
   private static class WidthAnimatedProperty implements AnimatedProperty {
     @Override

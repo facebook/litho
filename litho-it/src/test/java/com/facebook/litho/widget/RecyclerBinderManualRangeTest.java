@@ -184,7 +184,8 @@ public class RecyclerBinderManualRangeTest {
   public void testCanMeasureIsUnsupported() {
     mExpectedException.expect(RuntimeException.class);
     mExpectedException.expectMessage(
-        "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to determine its size!");
+        "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to"
+            + " determine its size!");
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()

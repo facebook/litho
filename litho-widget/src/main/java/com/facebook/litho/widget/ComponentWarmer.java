@@ -324,7 +324,8 @@ public class ComponentWarmer {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           COMPONENT_WARMER_LOG_TAG,
-          "ComponentWarmer not ready: unable to prepare sync. This will be executed asynchronously when the ComponentWarmer is ready.");
+          "ComponentWarmer not ready: unable to prepare sync. This will be executed asynchronously"
+              + " when the ComponentWarmer is ready.");
 
       addToPending(tag, componentRenderInfo, handler);
 

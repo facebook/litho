@@ -693,7 +693,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mErrorEventHandler = errorHandler;
   }
 
-  /** @return a handle that is unique to this component. */
+  /**
+   * @return a handle that is unique to this component.
+   */
   @Nullable
   public final Handle getHandle() {
     return mHandle;
@@ -708,7 +710,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mHandle = handle;
   }
 
-  /** @return a key that is local to the component's parent. */
+  /**
+   * @return a key that is local to the component's parent.
+   */
   final String getKey() {
     if (mKey == null) {
       if (mHasManualKey) {
@@ -733,12 +737,16 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mKey = key;
   }
 
-  /** @return if has a handle set */
+  /**
+   * @return if has a handle set
+   */
   final boolean hasHandle() {
     return mHandle != null;
   }
 
-  /** @return if has a manually set key */
+  /**
+   * @return if has a manually set key
+   */
   final boolean hasManualKey() {
     return mHasManualKey;
   }
@@ -826,7 +834,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return component.hasCachedNode(context);
   }
 
-  /** @return whether the given component is a pure render component. */
+  /**
+   * @return whether the given component is a pure render component.
+   */
   @VisibleForTesting
   public static boolean isPureRender(@Nullable Component component) {
     return component != null && component.isPureRender();
@@ -1214,17 +1224,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisAttr(@AttrRes int resId) {
       return flexBasisAttr(resId, 0);
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisDip(@Dimension(unit = DP) float flexBasis) {
       return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
     }
@@ -1255,7 +1271,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisRes(@DimenRes int resId) {
       return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -1371,17 +1389,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return mComponent.hasClickHandlerSet();
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightAttr(@AttrRes int resId) {
       return heightAttr(resId, 0);
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightDip(@Dimension(unit = DP) float height) {
       return heightPx(mResourceResolver.dipsToPixels(height));
     }
@@ -1409,7 +1433,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightRes(@DimenRes int resId) {
       return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -1470,23 +1496,31 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #marginPx */
+    /**
+     * @see #marginPx
+     */
     public T marginAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #marginPx */
+    /**
+     * @see #marginPx
+     */
     public T marginAttr(YogaEdge edge, @AttrRes int resId) {
       return marginAttr(edge, resId, 0);
     }
 
-    /** @see #marginPx */
+    /**
+     * @see #marginPx
+     */
     public T marginAuto(YogaEdge edge) {
       mComponent.getOrCreateCommonProps().marginAuto(edge);
       return getThis();
     }
 
-    /** @see #marginPx */
+    /**
+     * @see #marginPx
+     */
     public T marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
       return marginPx(edge, mResourceResolver.dipsToPixels(margin));
     }
@@ -1511,22 +1545,30 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #marginPx */
+    /**
+     * @see #marginPx
+     */
     public T marginRes(YogaEdge edge, @DimenRes int resId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightAttr(@AttrRes int resId) {
       return maxHeightAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightDip(@Dimension(unit = DP) float maxHeight) {
       return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
     }
@@ -1540,28 +1582,38 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightPx(@Px int maxHeight) {
       mComponent.getOrCreateCommonProps().maxHeightPx(maxHeight);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightRes(@DimenRes int resId) {
       return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthAttr(@AttrRes int resId) {
       return maxWidthAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthDip(@Dimension(unit = DP) float maxWidth) {
       return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
     }
@@ -1575,28 +1627,38 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthPx(@Px int maxWidth) {
       mComponent.getOrCreateCommonProps().maxWidthPx(maxWidth);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthRes(@DimenRes int resId) {
       return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightAttr(@AttrRes int resId) {
       return minHeightAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightDip(@Dimension(unit = DP) float minHeight) {
       return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
     }
@@ -1610,28 +1672,38 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightPx(@Px int minHeight) {
       mComponent.getOrCreateCommonProps().minHeightPx(minHeight);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightRes(@DimenRes int resId) {
       return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthAttr(@AttrRes int resId) {
       return minWidthAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthDip(@Dimension(unit = DP) float minWidth) {
       return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
     }
@@ -1655,7 +1727,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthRes(@DimenRes int resId) {
       return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -1704,17 +1778,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #paddingPx */
+    /**
+     * @see #paddingPx
+     */
     public T paddingAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #paddingPx */
+    /**
+     * @see #paddingPx
+     */
     public T paddingAttr(YogaEdge edge, @AttrRes int resId) {
       return paddingAttr(edge, resId, 0);
     }
 
-    /** @see #paddingPx */
+    /**
+     * @see #paddingPx
+     */
     public T paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
       return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
     }
@@ -1739,7 +1819,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #paddingPx */
+    /**
+     * @see #paddingPx
+     */
     public T paddingRes(YogaEdge edge, @DimenRes int resId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -1752,17 +1834,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #positionPx */
+    /**
+     * @see #positionPx
+     */
     public T positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #positionPx */
+    /**
+     * @see #positionPx
+     */
     public T positionAttr(YogaEdge edge, @AttrRes int resId) {
       return positionAttr(edge, resId, 0);
     }
 
-    /** @see #positionPx */
+    /**
+     * @see #positionPx
+     */
     public T positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
       return positionPx(edge, mResourceResolver.dipsToPixels(position));
     }
@@ -1787,7 +1875,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #positionPx */
+    /**
+     * @see #positionPx
+     */
     public T positionRes(YogaEdge edge, @DimenRes int resId) {
       return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -2115,17 +2205,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthAttr(@AttrRes int resId) {
       return widthAttr(resId, 0);
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthDip(@Dimension(unit = DP) float width) {
       return widthPx(mResourceResolver.dipsToPixels(width));
     }
@@ -2152,7 +2248,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthRes(@DimenRes int resId) {
       return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }

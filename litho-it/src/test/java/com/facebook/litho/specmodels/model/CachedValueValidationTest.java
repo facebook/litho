@@ -62,7 +62,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "The cached value must have a corresponding @OnCalculateCachedValue method that has the same name.");
+            "The cached value must have a corresponding @OnCalculateCachedValue method that has the"
+                + " same name.");
   }
 
   @Test
@@ -96,7 +97,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "CachedValue param types and the return type of the corresponding @OnCalculateCachedValue method must be the same.");
+            "CachedValue param types and the return type of the corresponding"
+                + " @OnCalculateCachedValue method must be the same.");
   }
 
   @Test
@@ -136,7 +138,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "CachedValue param types and the return type of the corresponding @OnCalculateCachedValue method must be the same.");
+            "CachedValue param types and the return type of the corresponding"
+                + " @OnCalculateCachedValue method must be the same.");
   }
 
   @Test
@@ -261,7 +264,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Cached values must not be Components, since Components are stateful. Just create the Component as normal.");
+            "Cached values must not be Components, since Components are stateful. Just create the"
+                + " Component as normal.");
   }
 
   @Test
@@ -302,7 +306,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(paramObject);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "@OnCalculateCachedValue methods may only take ComponentContext, @Prop, @TreeProp, @InjectProp and @State as params.");
+            "@OnCalculateCachedValue methods may only take ComponentContext, @Prop, @TreeProp,"
+                + " @InjectProp and @State as params.");
   }
 
   @Test

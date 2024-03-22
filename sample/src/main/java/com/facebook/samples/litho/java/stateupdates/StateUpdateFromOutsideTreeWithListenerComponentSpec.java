@@ -50,6 +50,7 @@ public class StateUpdateFromOutsideTreeWithListenerComponentSpec {
           }
         });
   }
+
   // end_implement_observer
 
   @OnUpdateState

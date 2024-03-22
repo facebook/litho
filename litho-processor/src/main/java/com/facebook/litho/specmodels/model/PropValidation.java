@@ -327,9 +327,10 @@ public class PropValidation {
                   props.get(i).getRepresentedObject(),
                   "The prop "
                       + props.get(i).getName()
-                      + " is defined differently in different "
-                      + "methods. Ensure that each instance of this prop is declared in the same "
-                      + "way (this means having the same type, resType and values for isOptional, isCommonProp and overrideCommonPropBehavior)."));
+                      + " is defined differently in different methods. Ensure that each instance of"
+                      + " this prop is declared in the same way (this means having the same type,"
+                      + " resType and values for isOptional, isCommonProp and"
+                      + " overrideCommonPropBehavior)."));
         }
       }
     }

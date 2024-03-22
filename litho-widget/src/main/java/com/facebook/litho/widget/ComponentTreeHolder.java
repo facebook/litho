@@ -366,7 +366,9 @@ public class ComponentTreeHolder {
                 mLastRequestedWidthSpec, mLastRequestedHeightSpec));
   }
 
-  /** @return whether this ComponentTreeHolder has been inserted into the adapter yet. */
+  /**
+   * @return whether this ComponentTreeHolder has been inserted into the adapter yet.
+   */
   public synchronized boolean isInserted() {
     return mIsInserted;
   }

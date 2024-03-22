@@ -28,9 +28,9 @@ public class ExpandableElementActivity extends NavigatableDemoActivity {
       new Message[] {
         new Message(
             true,
-            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque "
-                + "laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi "
-                + "architecto beatae vitae dicta sunt explicabo",
+            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque"
+                + " laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et"
+                + " quasi architecto beatae vitae dicta sunt explicabo",
             true,
             "DEC 25 AT 9:55"),
         new Message(

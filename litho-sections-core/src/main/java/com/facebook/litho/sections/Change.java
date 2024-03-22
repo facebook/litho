@@ -209,13 +209,17 @@ public final class Change {
     return acquireMoveChange(fromIndex, toIndex, data);
   }
 
-  /** @return the type of this Change. */
+  /**
+   * @return the type of this Change.
+   */
   @Type
   public int getType() {
     return mType;
   }
 
-  /** @return the index at which this change will be applied. */
+  /**
+   * @return the index at which this change will be applied.
+   */
   public int getIndex() {
     return mIndex;
   }
@@ -227,7 +231,9 @@ public final class Change {
     return mToIndex;
   }
 
-  /** @return the number of changes to be made. This is only valid if type is *_RANGE. */
+  /**
+   * @return the number of changes to be made. This is only valid if type is *_RANGE.
+   */
   public int getCount() {
     return mCount;
   }

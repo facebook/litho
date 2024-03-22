@@ -5292,7 +5292,8 @@ public class RecyclerBinderTest {
   public void testApplyReadyBatchesInfiniteLoop() {
     mExpectedException.expect(RuntimeException.class);
     mExpectedException.expectMessage(
-        "Too many retries -- RecyclerView is stuck in layout. Batch size: 1, isSubAdapter: false, isAttachedToWindow: false");
+        "Too many retries -- RecyclerView is stuck in layout. Batch size: 1, isSubAdapter: false,"
+            + " isAttachedToWindow: false");
 
     ShadowLooper.pauseMainLooper();
 
@@ -5509,7 +5510,8 @@ public class RecyclerBinderTest {
     }
     assertThat(steps)
         .describedAs(
-            "Should call @OnDetached for components not in visible range and call @OnAttached method for components in visible range")
+            "Should call @OnDetached for components not in visible range and call @OnAttached"
+                + " method for components in visible range")
         .isEqualTo(expectedSteps);
   }
 

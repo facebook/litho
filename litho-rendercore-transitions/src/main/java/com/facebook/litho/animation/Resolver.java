@@ -25,7 +25,9 @@ import com.facebook.litho.dataflow.GraphBinding;
  */
 public interface Resolver {
 
-  /** @return the current value of this property before the next mount state is applied. */
+  /**
+   * @return the current value of this property before the next mount state is applied.
+   */
   float getCurrentState(PropertyHandle propertyHandle);
 
   /**

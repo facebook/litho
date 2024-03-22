@@ -593,10 +593,11 @@ public class SectionTreeTest {
             })
         .isInstanceOf(RuntimeException.class)
         .hasMessageMatching(
-            "Index out of bounds while applying a new section. This indicates a bad diff was sent "
-                + "to the RecyclerBinder. See https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception "
-                + "for more information. Debug info: Duplicates are "
-                + "\\[type:\\w+ hash:\\w+ position:\\d+] and \\[type:\\w+ hash:\\w+ position:\\d+] in the \\[\\w+].");
+            "Index out of bounds while applying a new section. This indicates a bad diff was sent"
+                + " to the RecyclerBinder. See"
+                + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception"
+                + " for more information. Debug info: Duplicates are \\[type:\\w+ hash:\\w+"
+                + " position:\\d+] and \\[type:\\w+ hash:\\w+ position:\\d+] in the \\[\\w+].");
   }
 
   @Test

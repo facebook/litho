@@ -337,7 +337,8 @@ public class ComponentUtils {
         for (int index = 0; index < level - 1; index++) {
           isLast = iterator.next() == null;
           if (!isLast) {
-            while (iterator.next() != null) ;
+            while (iterator.next() != null)
+              ;
           }
           builder.append(isLast ? ' ' : "\u2502").append(' ');
         }

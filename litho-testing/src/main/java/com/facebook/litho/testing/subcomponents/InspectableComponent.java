@@ -47,7 +47,9 @@ public class InspectableComponent {
     mComponent = component;
   }
 
-  /** @return The root {@link InspectableComponent} of a LithoView. */
+  /**
+   * @return The root {@link InspectableComponent} of a LithoView.
+   */
   @Nullable
   public static InspectableComponent getRootInstance(LithoView view) {
     final DebugComponent rootInstance = DebugComponent.getRootInstance(view);
@@ -77,17 +79,23 @@ public class InspectableComponent {
     return null;
   }
 
-  /** @return A canonical name for this component. Suitable to present to the user. */
+  /**
+   * @return A canonical name for this component. Suitable to present to the user.
+   */
   public String getName() {
     return mComponent.getComponent().getClass().getName();
   }
 
-  /** @return A simpler canonical name for this component. Suitable to present to the user. */
+  /**
+   * @return A simpler canonical name for this component. Suitable to present to the user.
+   */
   public String getSimpleName() {
     return mComponent.getComponent().getSimpleName();
   }
 
-  /** @return The class of the underlying Component. */
+  /**
+   * @return The class of the underlying Component.
+   */
   public Class getComponentClass() {
     return mComponent.getComponent().getClass();
   }
@@ -110,35 +118,47 @@ public class InspectableComponent {
     return res;
   }
 
-  /** @return A mounted view or null if this component does not mount a view. */
+  /**
+   * @return A mounted view or null if this component does not mount a view.
+   */
   @Nullable
   public View getMountedView() {
     return mComponent.getMountedView();
   }
 
-  /** @return A mounted drawable or null if this component does not mount a drawable. */
+  /**
+   * @return A mounted drawable or null if this component does not mount a drawable.
+   */
   @Nullable
   public Drawable getMountedDrawable() {
     return mComponent.getMountedDrawable();
   }
 
-  /** @return The litho view hosting this component. */
+  /**
+   * @return The litho view hosting this component.
+   */
   @Nullable
   public BaseMountingView getLithoView() {
     return mComponent.getLithoView();
   }
 
-  /** @return The bounds of this component relative to its hosting {@link LithoView}. */
+  /**
+   * @return The bounds of this component relative to its hosting {@link LithoView}.
+   */
   public Rect getBoundsInLithoView() {
     return mComponent.getBoundsInLithoView();
   }
 
-  /** @return The bounds of this component relative to its parent. */
+  /**
+   * @return The bounds of this component relative to its parent.
+   */
   public Rect getBounds() {
     return mComponent.getBounds();
   }
 
-  /** @return This component's testKey or null if none is set. */
+  /**
+   * @return This component's testKey or null if none is set.
+   */
   @Nullable
   public String getTestKey() {
     return mComponent.getTestKey();
@@ -155,7 +175,9 @@ public class InspectableComponent {
     return mComponent.getComponentTestKey();
   }
 
-  /** @return This component's componentTag or null if none is set. */
+  /**
+   * @return This component's componentTag or null if none is set.
+   */
   @Nullable
   public Object getComponentTag() {
     return mComponent.getComponentTag();
@@ -170,51 +192,67 @@ public class InspectableComponent {
     return mComponent.getTextContent();
   }
 
-  /** @return The {@link ComponentHost} that wraps this component or null if one cannot be found. */
+  /**
+   * @return The {@link ComponentHost} that wraps this component or null if one cannot be found.
+   */
   @Nullable
   public ComponentHost getComponentHost() {
     return mComponent.getComponentHost();
   }
 
-  /** @return This component's key or null if none is set. */
+  /**
+   * @return This component's key or null if none is set.
+   */
   @Nullable
   public String getKey() {
     return mComponent.getKey();
   }
 
-  /** @return The Component instance this debug component wraps. */
+  /**
+   * @return The Component instance this debug component wraps.
+   */
   public Component getComponent() {
     return mComponent.getComponent();
   }
 
-  /** @return The foreground drawable asscociated with this debug component. May be null. */
+  /**
+   * @return The foreground drawable asscociated with this debug component. May be null.
+   */
   @Nullable
   public Drawable getForeground() {
     final DebugLayoutNode layout = mComponent.getLayoutNode();
     return layout == null ? null : layout.getForeground();
   }
 
-  /** @return The background drawable asscociated with this debug component. May be null. */
+  /**
+   * @return The background drawable asscociated with this debug component. May be null.
+   */
   @Nullable
   public Drawable getBackground() {
     final DebugLayoutNode layout = mComponent.getLayoutNode();
     return layout == null ? null : layout.getBackground();
   }
 
-  /** @return The int value of the importantForAccessibility property on this debug component. */
+  /**
+   * @return The int value of the importantForAccessibility property on this debug component.
+   */
   @Nullable
   public Integer getImportantForAccessibility() {
     final DebugLayoutNode layout = mComponent.getLayoutNode();
     return layout == null ? null : layout.getImportantForAccessibility();
   }
 
-  /** @return The boolean value of the focusable property on this debug component. */
+  /**
+   * @return The boolean value of the focusable property on this debug component.
+   */
   public boolean getFocusable() {
     final DebugLayoutNode layout = mComponent.getLayoutNode();
     return layout == null ? false : layout.getFocusable();
   }
 
-  /** @return The content description CharSequence on this debug component. May be null. */
+  /**
+   * @return The content description CharSequence on this debug component. May be null.
+   */
   @Nullable
   public CharSequence getContentDescription() {
     final DebugLayoutNode layout = mComponent.getLayoutNode();

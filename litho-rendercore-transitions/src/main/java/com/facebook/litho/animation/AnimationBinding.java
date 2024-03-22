@@ -42,7 +42,9 @@ public interface AnimationBinding {
   /** Stops this animation. */
   void stop();
 
-  /** @return whether this animation is running */
+  /**
+   * @return whether this animation is running
+   */
   boolean isActive();
 
   /**

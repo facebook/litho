@@ -43,7 +43,8 @@ public class TagValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "MyTestSpec: Spec classes use interfaces as component tags. Tags cannot be non-empty interfaces like 'java.lang.Object'.");
+            "MyTestSpec: Spec classes use interfaces as component tags. Tags cannot be non-empty"
+                + " interfaces like 'java.lang.Object'.");
   }
 
   @Test
@@ -58,6 +59,7 @@ public class TagValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "MyTestSpec: Spec classes use interfaces as component tags. Tags cannot extend other interfaces like 'java.lang.Object'.");
+            "MyTestSpec: Spec classes use interfaces as component tags. Tags cannot extend other"
+                + " interfaces like 'java.lang.Object'.");
   }
 }

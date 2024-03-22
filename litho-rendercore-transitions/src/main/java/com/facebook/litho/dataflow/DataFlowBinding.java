@@ -42,7 +42,9 @@ public interface DataFlowBinding {
    */
   void deactivate();
 
-  /** @return whether this binding has been activated and not yet deactivated. */
+  /**
+   * @return whether this binding has been activated and not yet deactivated.
+   */
   boolean isActive();
 
   /** Sets the {@link BindingListener}. */

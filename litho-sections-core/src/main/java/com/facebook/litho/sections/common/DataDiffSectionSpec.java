@@ -113,7 +113,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DataDiffSectionSpec<T> {
 
   public static final String DUPLICATES_EXIST_MSG =
-      "Detected duplicates in data passed to DataDiffSection. Read more here: https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception";
+      "Detected duplicates in data passed to DataDiffSection. Read more here:"
+          + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception";
 
   public static final String RENDER_INFO_RETURNS_NULL_MSG =
       "RenderInfo has returned null. Returning ComponentRenderInfo.createEmpty() as default.";

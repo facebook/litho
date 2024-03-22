@@ -148,7 +148,9 @@ public class SectionTree {
     /** Request focus on the item with the given id, plus some additional offset. */
     void requestFocusWithOffset(Object id, int offset);
 
-    /** @return whether this target supports applying change sets from a background thread. */
+    /**
+     * @return whether this target supports applying change sets from a background thread.
+     */
     boolean supportsBackgroundChangeSets();
 
     /** Notify this target that a new set of configurations is applied. */
@@ -166,7 +168,10 @@ public class SectionTree {
 
   private static final String EMPTY_STRING = "";
   private static final String INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE =
-      "Index out of bounds while applying a new section. This indicates a bad diff was sent to the RecyclerBinder. See https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception for more information. Debug info: ";
+      "Index out of bounds while applying a new section. This indicates a bad diff was sent to the"
+          + " RecyclerBinder. See"
+          + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception"
+          + " for more information. Debug info: ";
 
   @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
@@ -1109,7 +1114,8 @@ public class SectionTree {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
           STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD,
-          "Large number of state updates detected which indicates an infinite loop leading to unresponsive apps");
+          "Large number of state updates detected which indicates an infinite loop leading to"
+              + " unresponsive apps");
     }
   }
 
@@ -2009,7 +2015,9 @@ public class SectionTree {
       return this;
     }
 
-    /** @return the {@link SectionTree}. */
+    /**
+     * @return the {@link SectionTree}.
+     */
     public SectionTree build() {
       return new SectionTree(this);
     }

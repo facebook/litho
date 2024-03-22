@@ -217,10 +217,10 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Argument at index 0 (someBool) is not a valid parameter, should be one of the following: "
-                + "@Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. "
-                + "@InjectProp T someInjectPropName. @CachedValue T value, where the cached value "
-                + "has a corresponding @OnCalculateCachedValue method. ");
+            "Argument at index 0 (someBool) is not a valid parameter, should be one of the"
+                + " following: @Prop T somePropName. @TreeProp T someTreePropName. @State T"
+                + " someStateName. @InjectProp T someInjectPropName. @CachedValue T value, where"
+                + " the cached value has a corresponding @OnCalculateCachedValue method. ");
   }
 
   @Test
@@ -438,10 +438,10 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput "
-                + "you must have a method annotated with interface "
-                + "com.facebook.litho.annotations.OnPrepare that has a param Output<java.lang.Integer> "
-                + "interStageInput");
+            "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput"
+                + " you must have a method annotated with interface"
+                + " com.facebook.litho.annotations.OnPrepare that has a param"
+                + " Output<java.lang.Integer> interStageInput");
   }
 
   @Test
@@ -494,9 +494,9 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput "
-                + "your method annotated with interface com.facebook.litho.annotations.OnPrepare must "
-                + "have a param Output<java.lang.Integer> interStageInput");
+            "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput"
+                + " your method annotated with interface com.facebook.litho.annotations.OnPrepare"
+                + " must have a param Output<java.lang.Integer> interStageInput");
   }
 
   @Test
@@ -541,12 +541,12 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Argument at index 2 (unmatched) is not a valid parameter, should be one of the following: "
-                + "@Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. "
-                + "@InjectProp T someInjectPropName. @CachedValue T value, where the cached value "
-                + "has a corresponding @OnCalculateCachedValue method. Or one of the following, "
-                + "where no annotations should be added to the parameter: java.lang.Integer "
-                + "matched. char unmatched. ");
+            "Argument at index 2 (unmatched) is not a valid parameter, should be one of the"
+                + " following: @Prop T somePropName. @TreeProp T someTreePropName. @State T"
+                + " someStateName. @InjectProp T someInjectPropName. @CachedValue T value, where"
+                + " the cached value has a corresponding @OnCalculateCachedValue method. Or one of"
+                + " the following, where no annotations should be added to the parameter:"
+                + " java.lang.Integer matched. char unmatched. ");
   }
 
   @Test
@@ -591,12 +591,12 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Argument at index 1 (unmatched) is not a valid parameter, should be one of the following: "
-                + "@Prop T somePropName. @TreeProp T someTreePropName. "
-                + "StateValue<T> stateName, where a state param with type T and name stateName is "
-                + "declared elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the "
-                + "following, where no annotations should be added to the parameter: "
-                + "com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
+            "Argument at index 1 (unmatched) is not a valid parameter, should be one of the"
+                + " following: @Prop T somePropName. @TreeProp T someTreePropName. StateValue<T>"
+                + " stateName, where a state param with type T and name stateName is declared"
+                + " elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the"
+                + " following, where no annotations should be added to the parameter:"
+                + " com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
   }
 
   @Test
@@ -642,12 +642,12 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Argument at index 1 (unmatched) is not a valid parameter, should be one of the following: "
-                + "@Prop T somePropName. @TreeProp T someTreePropName. "
-                + "StateValue<T> stateName, where a state param with type T and name stateName is "
-                + "declared elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the "
-                + "following, where no annotations should be added to the parameter: "
-                + "com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
+            "Argument at index 1 (unmatched) is not a valid parameter, should be one of the"
+                + " following: @Prop T somePropName. @TreeProp T someTreePropName. StateValue<T>"
+                + " stateName, where a state param with type T and name stateName is declared"
+                + " elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the"
+                + " following, where no annotations should be added to the parameter:"
+                + " com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
   }
 
   @Test

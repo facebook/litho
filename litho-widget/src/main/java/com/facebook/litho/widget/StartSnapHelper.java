@@ -223,7 +223,9 @@ public class StartSnapHelper extends SnapHelper {
     return closestChild;
   }
 
-  /** @return the first View whose start is before the start of this recycler view */
+  /**
+   * @return the first View whose start is before the start of this recycler view
+   */
   @Nullable
   private static View findFirstViewBeforeStart(
       LayoutManager layoutManager, OrientationHelper helper) {

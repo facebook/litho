@@ -322,13 +322,17 @@ public class ComponentHost extends Host implements DisappearingHost {
     mTouchExpansionDelegate.unregisterTouchExpansion(index);
   }
 
-  /** @return number of {@link MountItem}s that are currently mounted in the host. */
+  /**
+   * @return number of {@link MountItem}s that are currently mounted in the host.
+   */
   @Override
   public int getMountItemCount() {
     return mMountItems.size();
   }
 
-  /** @return the {@link MountItem} that was mounted with the given index. */
+  /**
+   * @return the {@link MountItem} that was mounted with the given index.
+   */
   @Override
   public MountItem getMountItemAt(int index) {
     return mMountItems.valueAt(index);
@@ -353,7 +357,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return null;
   }
 
-  /** @return list of drawables that are mounted on this host. */
+  /**
+   * @return list of drawables that are mounted on this host.
+   */
   public List<Drawable> getDrawables() {
     final int size = mDrawableMountItems.size();
     if (size == 0) {
@@ -369,7 +375,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return drawables;
   }
 
-  /** @return list of names of content mounted on this host. */
+  /**
+   * @return list of names of content mounted on this host.
+   */
   public List<String> getContentNames() {
     final int contentSize = mMountItems.size();
     if (contentSize == 0) {
@@ -384,7 +392,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return contentNames;
   }
 
-  /** @return the text content that is mounted on this host. */
+  /**
+   * @return the text content that is mounted on this host.
+   */
   @DoNotStrip
   public List<TextContent> getTextContent() {
     return ComponentHostUtils.extractTextContent(ComponentHostUtils.extractContent(mMountItems));
@@ -410,12 +420,16 @@ public class ComponentHost extends Host implements DisappearingHost {
     return textList;
   }
 
-  /** @return the image content that is mounted on this host. */
+  /**
+   * @return the image content that is mounted on this host.
+   */
   public ImageContent getImageContent() {
     return ComponentHostUtils.extractImageContent(ComponentHostUtils.extractContent(mMountItems));
   }
 
-  /** @return the content descriptons that are set on content mounted on this host */
+  /**
+   * @return the content descriptons that are set on content mounted on this host
+   */
   @Nullable
   @Override
   public CharSequence getContentDescription() {
@@ -569,7 +583,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     setSafeViewModificationsEnabled(prevSafeModification);
   }
 
-  /** @return The previously set long click listener */
+  /**
+   * @return The previously set long click listener
+   */
   @Nullable
   ComponentLongClickListener getComponentLongClickListener() {
     return mOnLongClickListener;
@@ -588,7 +604,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     setSafeViewModificationsEnabled(prevSafeModification);
   }
 
-  /** @return The previously set focus change listener */
+  /**
+   * @return The previously set focus change listener
+   */
   ComponentFocusChangeListener getComponentFocusChangeListener() {
     return mOnFocusChangeListener;
   }
@@ -626,7 +644,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return super.onInterceptTouchEvent(ev);
   }
 
-  /** @return The previous set touch listener. */
+  /**
+   * @return The previous set touch listener.
+   */
   @Nullable
   public ComponentTouchListener getComponentTouchListener() {
     return mOnTouchListener;
@@ -1553,7 +1573,8 @@ public class ComponentHost extends Host implements DisappearingHost {
           break;
         case CRASH:
           throw new ComponentHostInvalidModification(
-              "Should not modify component host outside of the Litho View Attributes Extensions. Let us know if your use case is valid");
+              "Should not modify component host outside of the Litho View Attributes Extensions."
+                  + " Let us know if your use case is valid");
       }
     }
   }

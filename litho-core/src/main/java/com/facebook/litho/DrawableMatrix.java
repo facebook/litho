@@ -32,7 +32,9 @@ public final class DrawableMatrix extends Matrix {
 
   private DrawableMatrix() {}
 
-  /** @return True if this Matrix requires a clipRect() on the bounds of the drawable. */
+  /**
+   * @return True if this Matrix requires a clipRect() on the bounds of the drawable.
+   */
   public boolean shouldClipRect() {
     return mShouldClipRect;
   }

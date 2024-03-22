@@ -626,7 +626,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(ComponentContext c, String key, View view) {
     int methodId = -830639048;
@@ -639,7 +641,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(EventTrigger trigger, View view) {
     ClickEvent _eventState = new ClickEvent();
@@ -647,7 +651,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   static void onClickEventTrigger(ComponentContext c, View view) {
     TestMount component = (TestMount) c.getComponentScope();

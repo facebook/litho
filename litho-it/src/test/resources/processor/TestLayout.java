@@ -367,7 +367,9 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(ComponentContext c, String key, View view) {
     int methodId = -1670292499;
@@ -380,7 +382,9 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(EventTrigger trigger, View view) {
     ClickEvent _eventState = new ClickEvent();
@@ -388,7 +392,9 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   static void onClickEventTrigger(ComponentContext c, View view) {
     TestLayout component = (TestLayout) c.getComponentScope();

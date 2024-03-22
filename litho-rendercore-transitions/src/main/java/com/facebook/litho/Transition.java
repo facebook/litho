@@ -680,7 +680,9 @@ public abstract class Transition {
         .resolve(resolver, new PropertyHandle(rootTransitionId, property));
   }
 
-  /** @return {@code true} iff a and b are equal. */
+  /**
+   * @return {@code true} iff a and b are equal.
+   */
   static boolean equals(@Nullable Object a, @Nullable Object b) {
     if (a == b) {
       return true;

@@ -207,7 +207,8 @@ public class TreePropGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void populateTreePropContainer(com.facebook.litho.TreePropContainer treePropContainer) {\n"
+                + "protected void populateTreePropContainer(com.facebook.litho.TreePropContainer"
+                + " treePropContainer) {\n"
                 + "  if (treePropContainer == null) {\n"
                 + "    return;\n"
                 + "  }\n"
@@ -217,10 +218,12 @@ public class TreePropGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.TreePropContainer getTreePropContainerForChildren(\n"
+                + "protected com.facebook.litho.TreePropContainer"
+                + " getTreePropContainerForChildren(\n"
                 + "    com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.TreePropContainer parentTreePropContainer) {\n"
-                + "  final com.facebook.litho.TreePropContainer childTreePropContainer = com.facebook.litho.TreePropContainer.acquire(parentTreePropContainer);\n"
+                + "  final com.facebook.litho.TreePropContainer childTreePropContainer ="
+                + " com.facebook.litho.TreePropContainer.acquire(parentTreePropContainer);\n"
                 + "  TestStateContainer _state = getStateContainerImpl(c);\n"
                 + "  childTreePropContainer.put(boolean.class, TestSpec.onCreateTreeProp(\n"
                 + "      (com.facebook.litho.ComponentContext) c,\n"
@@ -242,22 +245,27 @@ public class TreePropGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void populateTreePropContainer(com.facebook.litho.TreePropContainer treePropContainer) {\n"
+                + "protected void populateTreePropContainer(com.facebook.litho.TreePropContainer"
+                + " treePropContainer) {\n"
                 + "  if (treePropContainer == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  genericTreeProp = treePropContainer.get(com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject.class);\n"
+                + "  genericTreeProp ="
+                + " treePropContainer.get(com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject.class);\n"
                 + "  treeProp = treePropContainer.get(int.class);\n"
                 + "}\n");
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.TreePropContainer getTreePropContainerForChildren(\n"
+                + "protected com.facebook.litho.TreePropContainer"
+                + " getTreePropContainerForChildren(\n"
                 + "    com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.TreePropContainer parentTreePropContainer) {\n"
-                + "  final com.facebook.litho.TreePropContainer childTreePropContainer = com.facebook.litho.TreePropContainer.acquire(parentTreePropContainer);\n"
-                + "  childTreePropContainer.put(com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject.class, TestSpec.onCreateTreeProp(\n"
+                + "  final com.facebook.litho.TreePropContainer childTreePropContainer ="
+                + " com.facebook.litho.TreePropContainer.acquire(parentTreePropContainer);\n"
+                + "  childTreePropContainer.put(com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject.class,"
+                + " TestSpec.onCreateTreeProp(\n"
                 + "      (com.facebook.litho.ComponentContext) c,\n"
                 + "      prop));\n"
                 + "  return childTreePropContainer;\n"

@@ -78,7 +78,9 @@ class GeneratedFilesListener implements BulkFileListener, Disposable {
     }
   }
 
-  /** @param path path with "/" dividers. */
+  /**
+   * @param path path with "/" dividers.
+   */
   private static boolean isOutput(String path) {
     // Guessing if the path is build output
     return containsOrEndsWithSegment(path, BUCK_OUT_BASE)

@@ -236,7 +236,9 @@ public class LayoutState
     return mAttachables;
   }
 
-  /** @return true, means there are components marked as 'ExcludeFromIncrementalMount'. */
+  /**
+   * @return true, means there are components marked as 'ExcludeFromIncrementalMount'.
+   */
   boolean hasComponentsExcludedFromIncrementalMount() {
     return mHasComponentsExcludedFromIncrementalMount;
   }
@@ -449,7 +451,9 @@ public class LayoutState
     return getComponentTreeId();
   }
 
-  /** @return The id of the {@link ComponentTree} that generated this {@link LayoutState} */
+  /**
+   * @return The id of the {@link ComponentTree} that generated this {@link LayoutState}
+   */
   public int getComponentTreeId() {
     return mComponentTreeId;
   }

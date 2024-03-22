@@ -59,7 +59,8 @@ public class TextSpecTest {
   private static final int FULL_TEXT_WIDTH = 100;
   private static final int MINIMAL_TEXT_WIDTH = 95;
   private static final String ARABIC_RTL_TEST_STRING =
-      "\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0627\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631";
+      "\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0627\u0644\u0649"
+          + " \u0627\u0644\u064A\u0633\u0627\u0631";
 
   @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 

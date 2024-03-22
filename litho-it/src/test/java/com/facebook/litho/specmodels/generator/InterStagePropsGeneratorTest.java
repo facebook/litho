@@ -109,7 +109,8 @@ public class InterStagePropsGeneratorTest {
     assertThat(container.toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Generated\n"
-                + "static class MountTestInterStagePropsContainer implements com.facebook.litho.InterStagePropsContainer {\n"
+                + "static class MountTestInterStagePropsContainer implements"
+                + " com.facebook.litho.InterStagePropsContainer {\n"
                 + "  java.lang.String stringOutput;\n"
                 + "}\n");
   }
@@ -157,7 +158,8 @@ public class InterStagePropsGeneratorTest {
             "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl(\n"
                 + "    com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
-                + "  return (MountTestInterStagePropsContainer) super.getInterStagePropsContainer(c, interStageProps);\n"
+                + "  return (MountTestInterStagePropsContainer)"
+                + " super.getInterStagePropsContainer(c, interStageProps);\n"
                 + "}\n");
   }
 
@@ -223,9 +225,11 @@ public class InterStagePropsGeneratorTest {
             "@java.lang.Override\n"
                 + "protected void onMeasure(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.ComponentLayout layout, int widthSpec, int heightSpec,\n"
-                + "    com.facebook.litho.Size size, com.facebook.litho.InterStagePropsContainer _5) {\n"
+                + "    com.facebook.litho.Size size, com.facebook.litho.InterStagePropsContainer"
+                + " _5) {\n"
                 + "  com.facebook.litho.InterStagePropsContainer _interStageProps = _5;\n"
-                + "  com.facebook.litho.Output<java.lang.String> stringOutputTmp = new Output<>();\n"
+                + "  com.facebook.litho.Output<java.lang.String> stringOutputTmp = new"
+                + " Output<>();\n"
                 + "  MountTestSpec.onMeasure(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.ComponentLayout) layout,\n"
@@ -233,22 +237,26 @@ public class InterStagePropsGeneratorTest {
                 + "    (int) heightSpec,\n"
                 + "    (com.facebook.litho.Size) size,\n"
                 + "    (com.facebook.litho.Output<java.lang.String>) stringOutputTmp);\n"
-                + "  getInterStagePropsContainerImpl(c, _interStageProps).stringOutput = stringOutputTmp.get();\n"
+                + "  getInterStagePropsContainerImpl(c, _interStageProps).stringOutput ="
+                + " stringOutputTmp.get();\n"
                 + "}\n");
 
     assertThat(onBindMethod.toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void onBind(com.facebook.litho.ComponentContext c, java.lang.Object lithoView,\n"
+                + "protected void onBind(com.facebook.litho.ComponentContext c, java.lang.Object"
+                + " lithoView,\n"
                 + "    com.facebook.litho.InterStagePropsContainer _2) {\n"
                 + "  com.facebook.litho.InterStagePropsContainer _interStageProps = _2;\n"
-                + "  com.facebook.litho.Output<java.lang.String> stringOutputTmp = new Output<>();\n"
+                + "  com.facebook.litho.Output<java.lang.String> stringOutputTmp = new"
+                + " Output<>();\n"
                 + "  MountTestSpec.onBind(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.LithoView) lithoView,\n"
                 + "    (java.lang.Integer) getPrepareInterStagePropsContainerImpl(c).color,\n"
                 + "    (com.facebook.litho.Output<java.lang.String>) stringOutputTmp);\n"
-                + "  getInterStagePropsContainerImpl(c, _interStageProps).stringOutput = stringOutputTmp.get();\n"
+                + "  getInterStagePropsContainerImpl(c, _interStageProps).stringOutput ="
+                + " stringOutputTmp.get();\n"
                 + "}\n");
   }
 

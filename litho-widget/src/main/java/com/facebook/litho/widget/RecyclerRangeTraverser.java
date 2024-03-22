@@ -118,7 +118,9 @@ public interface RecyclerRangeTraverser {
       int rangeStart, int rangeEnd, int firstVisible, int lastVisible, Processor processor);
 
   interface Processor {
-    /** @return Whether or not to continue */
+    /**
+     * @return Whether or not to continue
+     */
     boolean process(int index);
   }
 }

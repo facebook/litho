@@ -576,7 +576,9 @@ public abstract class SpecGeneratedComponent extends Component
     return false;
   }
 
-  /** @return true if the Component is using state, false otherwise. */
+  /**
+   * @return true if the Component is using state, false otherwise.
+   */
   protected boolean hasState() {
     return false;
   }
@@ -627,7 +629,9 @@ public abstract class SpecGeneratedComponent extends Component
     return false;
   }
 
-  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
+  /**
+   * @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters.
+   */
   protected boolean isMountSizeDependent() {
     return false;
   }
@@ -821,7 +825,9 @@ public abstract class SpecGeneratedComponent extends Component
     return onCreateMountContentPool();
   }
 
-  /** @return true if this component can be preallocated. */
+  /**
+   * @return true if this component can be preallocated.
+   */
   @Override
   public boolean canPreallocate() {
     return false;

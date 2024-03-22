@@ -83,32 +83,44 @@ public final class LithoStats {
     return sComponentCalculateLayoutOnUICount.get();
   }
 
-  /** @return the global count of all mount operations that have happened in the process. */
+  /**
+   * @return the global count of all mount operations that have happened in the process.
+   */
   public static long getComponentMountCount() {
     return sComponentMountCount.get();
   }
 
-  /** @return the global count of all do resolve operations that have happened in the process. */
+  /**
+   * @return the global count of all do resolve operations that have happened in the process.
+   */
   public static long getResolveCount() {
     return sResolveCount.get();
   }
 
-  /** @return the global count of all do resume operations that have happened in the process. */
+  /**
+   * @return the global count of all do resume operations that have happened in the process.
+   */
   public static long getResumeCount() {
     return sResumeCount.get();
   }
 
-  /** @return the global count of all do layout operations that have happened in the process. */
+  /**
+   * @return the global count of all do layout operations that have happened in the process.
+   */
   public static long getLayoutCount() {
     return sLayoutCount.get();
   }
 
-  /** @return the global count of all do resolve operations that have been avoided/cancelled. */
+  /**
+   * @return the global count of all do resolve operations that have been avoided/cancelled.
+   */
   public static long getResolveCancelledCount() {
     return sResolveCancelledCount.get();
   }
 
-  /** @return the global count of all do layout operations that have been avoided/cancelled. */
+  /**
+   * @return the global count of all do layout operations that have been avoided/cancelled.
+   */
   public static long getLayoutCancelledCount() {
     return sLayoutCancelledCount.get();
   }

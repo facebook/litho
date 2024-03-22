@@ -84,6 +84,7 @@ public class ParallelTransitionWithAnimatorsComponentSpec {
             .animate(AnimatedProperties.Y)
             .animator(Transition.timing(1000, new BounceInterpolator())));
   }
+
   // end
 
   @OnEvent(ClickEvent.class)

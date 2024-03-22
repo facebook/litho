@@ -131,7 +131,9 @@ public @interface Prop {
    */
   ResType resType() default ResType.NONE;
 
-  /** @return The documentation for the annotated parameter. */
+  /**
+   * @return The documentation for the annotated parameter.
+   */
   String docString() default "";
 
   /**
@@ -155,7 +157,9 @@ public @interface Prop {
    */
   String varArg() default "";
 
-  /** @return {@code true} if the name of the prop conflicts with a common prop. */
+  /**
+   * @return {@code true} if the name of the prop conflicts with a common prop.
+   */
   boolean isCommonProp() default false;
 
   /**

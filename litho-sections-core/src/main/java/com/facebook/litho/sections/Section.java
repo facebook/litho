@@ -127,7 +127,9 @@ public abstract class Section extends SectionLifecycle
 
     public abstract T getThis();
 
-    /** @return The immutable {@link Section}. */
+    /**
+     * @return The immutable {@link Section}.
+     */
     public abstract Section build();
 
     /**
@@ -164,7 +166,9 @@ public abstract class Section extends SectionLifecycle
   @Nullable private Handle mHandle;
   @Nullable private boolean mShouldCompareCommonProps;
 
-  /** @return a unique key for this {@link Section} within its tree. */
+  /**
+   * @return a unique key for this {@link Section} within its tree.
+   */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public String getGlobalKey() {
     return mGlobalKey;
@@ -176,7 +180,9 @@ public abstract class Section extends SectionLifecycle
     mGlobalKey = key;
   }
 
-  /** @return get the {@link Handle} associated with this section. */
+  /**
+   * @return get the {@link Handle} associated with this section.
+   */
   @Nullable
   Handle getHandle() {
     return mHandle;
@@ -227,14 +233,18 @@ public abstract class Section extends SectionLifecycle
     mCount = count;
   }
 
-  /** @return the direct children of this {@link Section}. */
+  /**
+   * @return the direct children of this {@link Section}.
+   */
   @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public List<Section> getChildren() {
     return mChildren;
   }
 
-  /** @return the parent of this {@link Section} in the tree. */
+  /**
+   * @return the parent of this {@link Section} in the tree.
+   */
   @Nullable
   public Section getParent() {
     return mParent;
@@ -261,7 +271,9 @@ public abstract class Section extends SectionLifecycle
     }
   }
 
-  /** @return true if this Section or any of its children were invalidated. */
+  /**
+   * @return true if this Section or any of its children were invalidated.
+   */
   boolean isInvalidated() {
     return mInvalidated;
   }

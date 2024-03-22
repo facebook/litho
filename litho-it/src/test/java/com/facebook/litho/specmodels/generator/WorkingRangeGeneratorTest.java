@@ -83,7 +83,8 @@ public class WorkingRangeGeneratorTest {
     assertThat(WorkingRangeGenerator.generateDispatchOnEnteredRangeMethod(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public void dispatchOnEnteredRange(com.facebook.litho.ComponentContext c, java.lang.String name,\n"
+                + "public void dispatchOnEnteredRange(com.facebook.litho.ComponentContext c,"
+                + " java.lang.String name,\n"
                 + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  switch (name) {\n"
                 + "    case \"enter\": {\n"
@@ -103,7 +104,8 @@ public class WorkingRangeGeneratorTest {
     assertThat(WorkingRangeGenerator.generateDispatchOnExitedRangeMethod(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public void dispatchOnExitedRange(com.facebook.litho.ComponentContext c, java.lang.String name,\n"
+                + "public void dispatchOnExitedRange(com.facebook.litho.ComponentContext c,"
+                + " java.lang.String name,\n"
                 + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  switch (name) {\n"
                 + "    case \"exit\": {\n"
@@ -180,7 +182,8 @@ public class WorkingRangeGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.Component component = c.getComponentScope();\n"
-                + "  registerWorkingRange(c, \"enter\", workingRange, component, c.getGlobalKey());\n"
+                + "  registerWorkingRange(c, \"enter\", workingRange, component,"
+                + " c.getGlobalKey());\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -191,7 +194,8 @@ public class WorkingRangeGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.Component component = c.getComponentScope();\n"
-                + "  registerWorkingRange(c, \"exit\", workingRange, component, c.getGlobalKey());\n"
+                + "  registerWorkingRange(c, \"exit\", workingRange, component,"
+                + " c.getGlobalKey());\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
@@ -202,7 +206,8 @@ public class WorkingRangeGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.Component component = c.getComponentScope();\n"
-                + "  registerWorkingRange(c, \"prefetch\", workingRange, component, c.getGlobalKey());\n"
+                + "  registerWorkingRange(c, \"prefetch\", workingRange, component,"
+                + " c.getGlobalKey());\n"
                 + "}\n");
   }
 }

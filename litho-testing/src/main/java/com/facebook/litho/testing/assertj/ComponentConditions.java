@@ -114,7 +114,9 @@ public final class ComponentConditions {
     return text(is(text.toString()));
   }
 
-  /** @see #textEquals(CharSequence) */
+  /**
+   * @see #textEquals(CharSequence)
+   */
   public static Condition<InspectableComponent> textEquals(final String text) {
     return text(is(text));
   }

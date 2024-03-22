@@ -117,9 +117,30 @@ public class DetailActivity extends AppCompatActivity {
                 .textSizeSp(12)
                 .transitionName("DESCRIPTION")
                 .text(
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent egestas augue venenatis suscipit maximus. Maecenas vel volutpat nunc. Etiam volutpat ultricies ante a iaculis. Fusce ultrices eleifend ligula in maximus. Fusce commodo, mauris vitae consequat tincidunt, nunc massa pharetra ante, non interdum magna sapien vel tortor. Aliquam in ultrices odio. Phasellus ac ante sit amet purus efficitur tempus fermentum in erat. Nullam auctor lorem ut justo convallis vestibulum. Fusce consequat velit eget pharetra consequat. Integer vulputate nisl eu libero luctus, id consequat ipsum eleifend. Nam quis sodales neque. Nullam nec velit sed leo feugiat imperdiet.\n"
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent egestas"
+                        + " augue venenatis suscipit maximus. Maecenas vel volutpat nunc. Etiam"
+                        + " volutpat ultricies ante a iaculis. Fusce ultrices eleifend ligula in"
+                        + " maximus. Fusce commodo, mauris vitae consequat tincidunt, nunc massa"
+                        + " pharetra ante, non interdum magna sapien vel tortor. Aliquam in"
+                        + " ultrices odio. Phasellus ac ante sit amet purus efficitur tempus"
+                        + " fermentum in erat. Nullam auctor lorem ut justo convallis vestibulum."
+                        + " Fusce consequat velit eget pharetra consequat. Integer vulputate nisl"
+                        + " eu libero luctus, id consequat ipsum eleifend. Nam quis sodales neque."
+                        + " Nullam nec velit sed leo feugiat imperdiet.\n"
                         + "\n"
-                        + "Praesent lacinia lorem quis mauris molestie, ut placerat nisi ultricies. Sed a fringilla mi. Ut ornare a lorem quis consectetur. Pellentesque id leo id odio accumsan egestas. Proin sollicitudin turpis orci, in tempus dolor eleifend dapibus. Aenean facilisis fringilla orci, vel facilisis nunc commodo in. Sed scelerisque lectus ac diam feugiat, sit amet condimentum enim imperdiet. Integer urna arcu, aliquet quis facilisis quis, faucibus quis lorem. Nam congue augue est, ac porttitor mauris vehicula ut. Phasellus sapien tortor, euismod non dui quis, vulputate auctor orci. Maecenas a lectus in felis tincidunt pulvinar. Praesent nec laoreet ante, in sollicitudin quam. Vestibulum convallis, ante sit amet consequat varius, urna dui sagittis odio, suscipit rutrum ipsum nisi non eros. Cras interdum mattis libero at posuere. Phasellus venenatis dui massa, sed egestas mauris porta id."))
+                        + "Praesent lacinia lorem quis mauris molestie, ut placerat nisi ultricies."
+                        + " Sed a fringilla mi. Ut ornare a lorem quis consectetur. Pellentesque id"
+                        + " leo id odio accumsan egestas. Proin sollicitudin turpis orci, in tempus"
+                        + " dolor eleifend dapibus. Aenean facilisis fringilla orci, vel facilisis"
+                        + " nunc commodo in. Sed scelerisque lectus ac diam feugiat, sit amet"
+                        + " condimentum enim imperdiet. Integer urna arcu, aliquet quis facilisis"
+                        + " quis, faucibus quis lorem. Nam congue augue est, ac porttitor mauris"
+                        + " vehicula ut. Phasellus sapien tortor, euismod non dui quis, vulputate"
+                        + " auctor orci. Maecenas a lectus in felis tincidunt pulvinar. Praesent"
+                        + " nec laoreet ante, in sollicitudin quam. Vestibulum convallis, ante sit"
+                        + " amet consequat varius, urna dui sagittis odio, suscipit rutrum ipsum"
+                        + " nisi non eros. Cras interdum mattis libero at posuere. Phasellus"
+                        + " venenatis dui massa, sed egestas mauris porta id."))
         .build();
   }
 }

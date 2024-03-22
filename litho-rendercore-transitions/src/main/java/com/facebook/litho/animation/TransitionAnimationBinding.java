@@ -46,12 +46,16 @@ public abstract class TransitionAnimationBinding extends BaseAnimationBinding {
         });
   }
 
-  /** @see GraphBinding#addBinding(ValueNode, ValueNode, String) */
+  /**
+   * @see GraphBinding#addBinding(ValueNode, ValueNode, String)
+   */
   public void addBinding(ValueNode fromNode, ValueNode toNode, String inputName) {
     mGraphBinding.addBinding(fromNode, toNode, inputName);
   }
 
-  /** @see GraphBinding#addBinding(ValueNode, ValueNode) */
+  /**
+   * @see GraphBinding#addBinding(ValueNode, ValueNode)
+   */
   public void addBinding(ValueNode fromNode, ValueNode toNode) {
     mGraphBinding.addBinding(fromNode, toNode);
   }

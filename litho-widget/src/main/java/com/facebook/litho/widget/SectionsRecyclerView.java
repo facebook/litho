@@ -54,6 +54,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
    * relayout its children eventually.
    */
   private boolean mHasBeenDetachedFromWindow = false;
+
   /**
    * When we set an ItemAnimator during mount, we want to store the one that was already set on the
    * RecyclerView so that we can reset it during unmount.

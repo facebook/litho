@@ -168,7 +168,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     state.mPreviousLocalVisibleRect.setEmpty();
   }
 
-  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  /**
+   * @deprecated Only used for Litho's integration. Marked for removal.
+   */
   @Deprecated
   public static void setRootHost(
       ExtensionState<VisibilityMountExtensionState> extensionState, Host root) {
@@ -650,7 +652,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     private @Nullable VisibilityBoundsTransformer mVisibilityBoundsTransformer;
     private @Nullable VisibilityExtensionInput mInput;
 
-    /** @deprecated Only used for Litho's integration. Marked for removal. */
+    /**
+     * @deprecated Only used for Litho's integration. Marked for removal.
+     */
     @Deprecated private @Nullable Host mRootHost;
 
     private VisibilityMountExtensionState() {}

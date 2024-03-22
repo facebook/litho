@@ -43,6 +43,7 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
 public abstract class SectionLifecycle implements EventDispatcher, EventTriggerTarget {
   static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
       "SectionLifecycle:WrongContextForEventHandler";
+
   /**
    * This methods will delegate to the {@link GroupSectionSpec} method annotated with {@link
    * com.facebook.litho.sections.annotations.OnCreateChildren}

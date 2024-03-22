@@ -54,7 +54,8 @@ class DynamicPropsValidation {
           new SpecModelValidationError(
               specModel.getRepresentedObject(),
               specModel.getSpecName()
-                  + " does not define @OnCreateMountContent method which is required for all @MountSpecs."));
+                  + " does not define @OnCreateMountContent method which is required for all"
+                  + " @MountSpecs."));
       return validationErrors;
     }
 

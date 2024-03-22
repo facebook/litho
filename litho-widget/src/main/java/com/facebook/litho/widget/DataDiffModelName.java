@@ -19,6 +19,8 @@ package com.facebook.litho.widget;
 /** Interface to provide name of the model used for tracing purposes. */
 public interface DataDiffModelName {
 
-  /** @return name of the data model. */
+  /**
+   * @return name of the data model.
+   */
   String getName();
 }
