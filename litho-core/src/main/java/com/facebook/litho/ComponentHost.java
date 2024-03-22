@@ -21,7 +21,7 @@ import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.litho.LithoRenderUnit.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
-import static com.facebook.rendercore.debug.DebugEventAttribute.Key;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -1547,7 +1547,7 @@ public class ComponentHost extends Host implements DisappearingHost {
               () -> "-1",
               LogLevel.DEBUG,
               (attribute) -> {
-                attribute.put(Key, "unsafe-component-host-modification");
+                attribute.put(Name, "unsafe-component-host-modification");
                 return Unit.INSTANCE;
               });
           break;

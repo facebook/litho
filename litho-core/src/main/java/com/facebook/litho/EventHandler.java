@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.rendercore.debug.DebugEventAttribute.Key;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
 
@@ -70,8 +69,8 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
             () -> "-1",
             LogLevel.DEBUG,
             (attribute) -> {
-              attribute.put(Key, UnboundEventHandler);
-              attribute.put(Name, CommonUtils.getSectionNameForTracing(event.getClass()));
+              attribute.put(Name, UnboundEventHandler);
+              attribute.put("event", CommonUtils.getSectionNameForTracing(event.getClass()));
               attribute.put(Source, this.toString());
               attribute.put("hasDispatchInfo", info != null);
               return Unit.INSTANCE;
