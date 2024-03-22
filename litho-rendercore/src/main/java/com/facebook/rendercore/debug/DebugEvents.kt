@@ -19,6 +19,7 @@ package com.facebook.rendercore.debug
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.debug.DebugEvent.Companion.All
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -182,7 +183,7 @@ object DebugEventDispatcher {
       minLogLevelRef.set(value)
     }
 
-  private val mutableSubscribers: MutableSet<DebugEventSubscriber> = mutableSetOf()
+  private val mutableSubscribers: MutableSet<DebugEventSubscriber> = CopyOnWriteArraySet()
 
   val subscribers: Set<DebugEventSubscriber>
     @Synchronized get() = mutableSubscribers
@@ -258,8 +259,7 @@ object DebugEventDispatcher {
    */
   @JvmStatic
   fun generateTraceIdentifier(type: String): Int? =
-      if (subscribers.isNotEmpty() &&
-          subscribers.any { type in it.events || DebugEvent.All in it.events }) {
+      if (subscribers.isNotEmpty() && subscribers.any { type in it.events || All in it.events }) {
         lastTraceIdentifier.getAndIncrement()
       } else {
         null
