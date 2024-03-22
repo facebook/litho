@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
@@ -73,9 +72,9 @@ class HostComponent extends SpecGeneratedComponent {
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) convertContent;
 
-    if (Build.VERSION.SDK_INT >= 11) {
-      // We need to do this in case an external user of this ComponentHost has manually set alpha
-      // to 0, which will mean that it won't draw anything.
+    if (!ComponentsConfiguration.skipHostAlphaReset) {
+      // We need to do this in case an external user of this ComponentHost
+      // has manually set alpha to 0, which will mean that it won't draw anything.
       host.setAlpha(1.0f);
     }
 
