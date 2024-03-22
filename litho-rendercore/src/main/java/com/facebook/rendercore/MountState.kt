@@ -25,6 +25,7 @@ import com.facebook.rendercore.debug.DebugEventAttribute.Bounds
 import com.facebook.rendercore.debug.DebugEventAttribute.Description
 import com.facebook.rendercore.debug.DebugEventAttribute.HashCode
 import com.facebook.rendercore.debug.DebugEventAttribute.Key
+import com.facebook.rendercore.debug.DebugEventAttribute.Name
 import com.facebook.rendercore.debug.DebugEventAttribute.NumMountableOutputs
 import com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId
 import com.facebook.rendercore.debug.DebugEventAttribute.RootHostHashCode
@@ -512,100 +513,98 @@ constructor(
       mountRootItem(renderTreeNode)
       return
     }
-    val traceIdentifier = DebugEventDispatcher.generateTraceIdentifier(DebugEvent.RenderUnitMounted)
-    if (traceIdentifier != null) {
-      val attributes = HashMap<String, Any?>()
-      attributes[RenderUnitId] = renderTreeNode.renderUnit.id
-      attributes[Description] = renderTreeNode.renderUnit.description
-      attributes[Bounds] = renderTreeNode.bounds
-      attributes[RootHostHashCode] = _rootHost.hashCode()
-      attributes[Key] = renderTreeNode.renderUnit.debugKey
-      DebugEventDispatcher.beginTrace(
-          traceIdentifier,
-          DebugEvent.RenderUnitMounted,
-          checkNotNull(renderTree).renderStateId.toString(),
-          attributes)
-    }
-    val isTracing = tracer.isTracing()
-    if (isTracing) {
-      tracer.beginSection("MountItem: ${renderTreeNode.renderUnit.description}")
-    }
 
-    // 1. Resolve the correct host to mount our content to.
-    val hostTreeNode = checkNotNull(renderTreeNode.parent)
-    val parentRenderUnit = hostTreeNode.renderUnit
-    val renderUnit: RenderUnit<Any> = renderTreeNode.renderUnit as RenderUnit<Any>
+    DebugEventDispatcher.trace(
+        type = DebugEvent.RenderUnitMounted,
+        renderStateId = { checkNotNull(renderTree).renderStateId.toString() },
+        attributesAccumulator = { attributes ->
+          attributes[RenderUnitId] = renderTreeNode.renderUnit.id
+          attributes[Name] = renderTreeNode.renderUnit.description
+          attributes[Bounds] = renderTreeNode.bounds
+          attributes[RootHostHashCode] = _rootHost.hashCode()
+          attributes[Key] = renderTreeNode.renderUnit.debugKey
+        },
+    ) {
+      val isTracing = tracer.isTracing()
+      if (isTracing) {
+        tracer.beginSection("MountItem: ${renderTreeNode.renderUnit.description}")
+      }
 
-    // 2. Ensure render tree node's parent is mounted or throw exception depending on the
-    // ensure-parent-mounted flag.
-    if (isTracing) {
-      tracer.beginSection("MountItem:mount-parent ${parentRenderUnit.description}")
-    }
-    maybeEnsureParentIsMounted(hostTreeNode, parentRenderUnit)
-    if (isTracing) {
-      tracer.endSection()
-    }
-    val mountItem = checkNotNull(idToMountedItemMap[parentRenderUnit.id])
-    val parentContent = mountItem.content
-    assertParentContentType(parentContent, renderUnit, parentRenderUnit)
-    val host = parentContent as Host
+      // 1. Resolve the correct host to mount our content to.
+      val hostTreeNode = checkNotNull(renderTreeNode.parent)
+      val parentRenderUnit = hostTreeNode.renderUnit
+      val renderUnit: RenderUnit<Any> = renderTreeNode.renderUnit as RenderUnit<Any>
 
-    // 3. call the RenderUnit's Mount bindings.
-    if (isTracing) {
-      tracer.beginSection("MountItem:acquire-content ${renderUnit.description}")
-    }
-    val content = MountItemsPool.acquireMountContent(context, renderUnit.contentAllocator)
-    if (isTracing) {
-      tracer.endSection()
-    }
-    _mountDelegate?.startNotifyVisibleBoundsChangedSection()
-    if (isTracing) {
-      tracer.beginSection("MountItem:mount ${renderTreeNode.renderUnit.description}")
-    }
-    val item = MountItem(renderTreeNode, content)
-    mountRenderUnitToContent(renderTreeNode, renderUnit, content, item.bindData)
+      // 2. Ensure render tree node's parent is mounted or throw exception depending on the
+      // ensure-parent-mounted flag.
+      if (isTracing) {
+        tracer.beginSection("MountItem:mount-parent ${parentRenderUnit.description}")
+      }
+      maybeEnsureParentIsMounted(hostTreeNode, parentRenderUnit)
+      if (isTracing) {
+        tracer.endSection()
+      }
+      val mountItem = checkNotNull(idToMountedItemMap[parentRenderUnit.id])
+      val parentContent = mountItem.content
+      assertParentContentType(parentContent, renderUnit, parentRenderUnit)
+      val host = parentContent as Host
 
-    // 4. Mount the content into the selected host.
-    mountContentInHost(item, host, renderTreeNode)
-    if (isTracing) {
-      tracer.endSection()
-      tracer.beginSection("MountItem:bind ${renderTreeNode.renderUnit.description}")
-    }
+      // 3. call the RenderUnit's Mount bindings.
+      if (isTracing) {
+        tracer.beginSection("MountItem:acquire-content ${renderUnit.description}")
+      }
+      val content = MountItemsPool.acquireMountContent(context, renderUnit.contentAllocator)
+      if (isTracing) {
+        tracer.endSection()
+      }
+      _mountDelegate?.startNotifyVisibleBoundsChangedSection()
+      if (isTracing) {
+        tracer.beginSection("MountItem:mount ${renderTreeNode.renderUnit.description}")
+      }
+      val item = MountItem(renderTreeNode, content)
+      mountRenderUnitToContent(renderTreeNode, renderUnit, content, item.bindData)
 
-    // 5. Call attach binding functions
-    bindRenderUnitToContent(item)
-    if (isTracing) {
-      tracer.endSection()
-      tracer.beginSection("MountItem:applyBounds ${renderTreeNode.renderUnit.description}")
-    }
+      // 4. Mount the content into the selected host.
+      mountContentInHost(item, host, renderTreeNode)
+      if (isTracing) {
+        tracer.endSection()
+        tracer.beginSection("MountItem:bind ${renderTreeNode.renderUnit.description}")
+      }
 
-    // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
-    // bind might have triggered a layout request within a View.
-    val changed =
-        BoundsUtils.applyBoundsToMountContent(
-            renderTreeNode,
-            item.content,
-            true /* force */,
-            tracer,
-        )
-    if (isTracing) {
-      tracer.endSection()
-      tracer.beginSection("MountItem:after ${renderTreeNode.renderUnit.description}")
-    }
+      // 5. Call attach binding functions
+      bindRenderUnitToContent(item)
+      if (isTracing) {
+        tracer.endSection()
+        tracer.beginSection("MountItem:applyBounds ${renderTreeNode.renderUnit.description}")
+      }
 
-    _mountDelegate?.onBoundsAppliedToItem(
-        renderTreeNode,
-        item.content,
-        changed,
-        tracer,
-    )
-    _mountDelegate?.endNotifyVisibleBoundsChangedSection()
+      // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
+      // bind might have triggered a layout request within a View.
+      val changed =
+          BoundsUtils.applyBoundsToMountContent(
+              renderTreeNode,
+              item.content,
+              true /* force */,
+              tracer,
+          )
+      if (isTracing) {
+        tracer.endSection()
+        tracer.beginSection("MountItem:after ${renderTreeNode.renderUnit.description}")
+      }
 
-    if (isTracing) {
-      tracer.endSection()
-      tracer.endSection()
+      _mountDelegate?.onBoundsAppliedToItem(
+          renderTreeNode,
+          item.content,
+          changed,
+          tracer,
+      )
+      _mountDelegate?.endNotifyVisibleBoundsChangedSection()
+
+      if (isTracing) {
+        tracer.endSection()
+        tracer.endSection()
+      }
     }
-    traceIdentifier?.let { DebugEventDispatcher.endTrace(it) }
   }
 
   private fun unmountItemRecursively(id: Long) {
