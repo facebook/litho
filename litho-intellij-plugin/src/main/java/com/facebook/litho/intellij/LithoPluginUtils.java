@@ -110,7 +110,9 @@ public class LithoPluginUtils {
         && hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
   }
 
-  /** @return true if given name ends with "Spec". */
+  /**
+   * @return true if given name ends with "Spec".
+   */
   @Contract("null -> false")
   public static boolean isSpecName(@Nullable String clsName) {
     return clsName != null && clsName.endsWith(SPEC_SUFFIX);
@@ -181,7 +183,9 @@ public class LithoPluginUtils {
     return null;
   }
 
-  /** @return the Stream of unique parameters from all methods excluding current method. */
+  /**
+   * @return the Stream of unique parameters from all methods excluding current method.
+   */
   public static Stream<PsiParameter> getPsiParameterStream(
       @Nullable PsiMethod currentMethod, PsiMethod[] allMethods) {
     return Stream.of(allMethods)

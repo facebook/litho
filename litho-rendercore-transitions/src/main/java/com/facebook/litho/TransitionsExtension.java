@@ -445,7 +445,9 @@ public class TransitionsExtension
     }
   }
 
-  /** @return whether we should animate transitions. */
+  /**
+   * @return whether we should animate transitions.
+   */
   private static boolean shouldAnimateTransitions(
       final TransitionsExtensionState state, TransitionsExtensionInput input) {
     return input != null
@@ -454,7 +456,9 @@ public class TransitionsExtension
             || state.mInput.needsToRerunTransitions());
   }
 
-  /** @return whether we have any transitions to animate for the current mount */
+  /**
+   * @return whether we have any transitions to animate for the current mount
+   */
   private static boolean hasTransitionsToAnimate(final TransitionsExtensionState state) {
     return state.mRootTransition != null;
   }

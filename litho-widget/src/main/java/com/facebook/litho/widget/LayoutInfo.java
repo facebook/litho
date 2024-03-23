@@ -35,10 +35,14 @@ public interface LayoutInfo extends ViewportInfo {
    */
   int getScrollDirection();
 
-  /** @return The {@link LayoutManager} to be used with the {@link RecyclerView}. */
+  /**
+   * @return The {@link LayoutManager} to be used with the {@link RecyclerView}.
+   */
   LayoutManager getLayoutManager();
 
-  /** @param renderInfoCollection */
+  /**
+   * @param renderInfoCollection
+   */
   void setRenderInfoCollection(RenderInfoCollection renderInfoCollection);
 
   /**

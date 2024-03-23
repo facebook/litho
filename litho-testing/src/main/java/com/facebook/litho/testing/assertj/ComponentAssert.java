@@ -449,7 +449,9 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
-  /** @deprecated see {@link #wontRender()} */
+  /**
+   * @deprecated see {@link #wontRender()}
+   */
   @Deprecated
   public ComponentAssert willNotRender() {
     return wontRender();

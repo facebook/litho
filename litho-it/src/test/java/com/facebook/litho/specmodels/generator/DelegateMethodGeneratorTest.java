@@ -140,7 +140,8 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
+                + "protected com.facebook.litho.Component"
+                + " onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _result;\n"
                 + "  TestStateContainer _state = getStateContainerImpl(c);\n"
                 + "  _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
@@ -217,7 +218,8 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
+                + "protected com.facebook.litho.Component"
+                + " onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _result;\n"
                 + "  _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"

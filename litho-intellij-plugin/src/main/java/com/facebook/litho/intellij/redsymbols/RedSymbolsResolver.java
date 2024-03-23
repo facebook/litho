@@ -195,7 +195,8 @@ class RedSymbolsResolver {
     final Map<String, PsiClass> redSymbolToClass = new HashMap<>();
     for (String redSymbol : allRedSymbols) {
       LithoGeneratedFileProvider.INSTANCE()
-          .guessQualifiedNames(project, symbolsScope, redSymbol, eventMetadata).stream()
+          .guessQualifiedNames(project, symbolsScope, redSymbol, eventMetadata)
+          .stream()
           .map(
               fqn -> {
                 // Red symbol might exist for present but not-bind class
@@ -216,7 +217,9 @@ class RedSymbolsResolver {
     return redSymbolToClass;
   }
 
-  /** @return if the binding was finished before editor disposed. */
+  /**
+   * @return if the binding was finished before editor disposed.
+   */
   private static boolean bindExpressions(
       Map<PsiClass, List<PsiElement>> resolved,
       VirtualFile virtualFile,

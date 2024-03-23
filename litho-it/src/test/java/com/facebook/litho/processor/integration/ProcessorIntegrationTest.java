@@ -202,7 +202,8 @@ public class ProcessorIntegrationTest {
         .failsToCompile()
         .withErrorCount(1)
         .withErrorContaining(
-            "TestSpec interfaces must not contain any members. Please remove these function declarations: ()void test, ()java.util.List<java.lang.Integer> list")
+            "TestSpec interfaces must not contain any members. Please remove these function"
+                + " declarations: ()void test, ()java.util.List<java.lang.Integer> list")
         .in(javaFileObject)
         .onLine(24);
   }

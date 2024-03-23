@@ -240,6 +240,7 @@ class TextInputSpec {
 
   /** UI thread only; used in OnMount. */
   private static final Rect sBackgroundPaddingRect = new Rect();
+
   /** UI thread only; used in OnMount. */
   private static final InputFilter[] NO_FILTERS = new InputFilter[0];
 

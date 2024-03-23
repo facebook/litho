@@ -542,8 +542,9 @@ public class StateValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
-                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as"
+                + " CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and"
+                + " StateValue types.");
   }
 
   @Test
@@ -576,8 +577,9 @@ public class StateValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
-                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as"
+                + " CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and"
+                + " StateValue types.");
   }
 
   @Test
@@ -616,8 +618,9 @@ public class StateValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
-                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as"
+                + " CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and"
+                + " StateValue types.");
   }
 
   @Test
@@ -650,8 +653,9 @@ public class StateValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as "
-                + "CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and StateValue types.");
+            "State values for collections in Kotlin specs need to add @JvmSuppressWildcards such as"
+                + " CollectionType<@JvmSuppressWildcards T>. Add the annotation for both @State and"
+                + " StateValue types.");
     assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(1).message)
         .isEqualTo(

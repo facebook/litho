@@ -57,6 +57,7 @@ public class SimpleAllLayoutTransitionComponentSpec {
   static void onUpdateState(StateValue<Boolean> toRight) {
     toRight.set(!toRight.get());
   }
+
   // no_animation
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {

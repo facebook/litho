@@ -329,7 +329,9 @@ public class EventGenerator {
     return methodSpec.build();
   }
 
-  /** @return the name of the defined ComponentContext param on this event method. */
+  /**
+   * @return the name of the defined ComponentContext param on this event method.
+   */
   static String getContextParamName(SpecModel specModel, SpecMethodModel eventMethodModel) {
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final ImmutableList<MethodParamModel> models = eventMethodModel.methodParams;

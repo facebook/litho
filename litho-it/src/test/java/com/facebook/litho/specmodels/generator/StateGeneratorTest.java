@@ -338,9 +338,12 @@ public class StateGeneratorTest {
         .isEqualTo(
             "private TestWithStateStateContainer getStateContainerWithLazyStateUpdatesApplied(\n"
                 + "    com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState component) {\n"
-                + "  TestWithStateStateContainer _stateContainer = (TestWithStateStateContainer) getStateContainerImpl(c);\n"
-                + "  return (TestWithStateStateContainer) c.applyLazyStateUpdatesForContainer(_stateContainer);\n"
+                + "    com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState"
+                + " component) {\n"
+                + "  TestWithStateStateContainer _stateContainer = (TestWithStateStateContainer)"
+                + " getStateContainerImpl(c);\n"
+                + "  return (TestWithStateStateContainer)"
+                + " c.applyLazyStateUpdatesForContainer(_stateContainer);\n"
                 + "}\n");
   }
 
@@ -354,12 +357,15 @@ public class StateGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "protected static void updateCurrentState(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nulalbleObject) {\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable"
+                + " java.lang.Object nulalbleObject) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject, nulalbleObject);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject,"
+                + " nulalbleObject);\n"
                 + "  c.updateStateAsync(_stateUpdate, \""
                 + STATE_UPDATE_PREFIX
                 + "TestWithState.updateCurrentState\");\n"
@@ -368,12 +374,15 @@ public class StateGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "protected static void updateCurrentStateAsync(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nulalbleObject) {\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable"
+                + " java.lang.Object nulalbleObject) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject, nulalbleObject);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject,"
+                + " nulalbleObject);\n"
                 + "  c.updateStateAsync(_stateUpdate, \""
                 + STATE_UPDATE_PREFIX
                 + "TestWithState.updateCurrentState\");\n"
@@ -382,12 +391,15 @@ public class StateGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
             "protected static void updateCurrentStateSync(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nulalbleObject) {\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable"
+                + " java.lang.Object nulalbleObject) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject, nulalbleObject);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject,"
+                + " nulalbleObject);\n"
                 + "  c.updateStateSync(_stateUpdate, \""
                 + STATE_UPDATE_PREFIX
                 + "TestWithState.updateCurrentState\");\n"
@@ -403,12 +415,14 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "protected static void updateCurrentStateWithTransition(com.facebook.litho.ComponentContext c) {\n"
+            "protected static void"
+                + " updateCurrentStateWithTransition(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(0);\n"
                 + "  c.updateStateWithTransition(_stateUpdate, \""
                 + STATE_UPDATE_PREFIX
                 + "TestWithStateWithTransition.updateCurrentState\");\n"
@@ -430,7 +444,8 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
                 + "}\n");
   }
@@ -450,7 +465,8 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
                 + "}\n");
   }
@@ -470,7 +486,8 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
                 + "}\n");
   }
@@ -490,7 +507,8 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new"
+                + " com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
                 + "}\n");
   }

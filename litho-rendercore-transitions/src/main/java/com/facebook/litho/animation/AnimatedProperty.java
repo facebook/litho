@@ -27,10 +27,14 @@ public interface AnimatedProperty {
    */
   String getName();
 
-  /** @return the current value of this property on the given mount content (View or Drawable). */
+  /**
+   * @return the current value of this property on the given mount content (View or Drawable).
+   */
   float get(Object mountContent);
 
-  /** @return the current value of this property on the given {@link AnimatableItem}. */
+  /**
+   * @return the current value of this property on the given {@link AnimatableItem}.
+   */
   float get(AnimatableItem animatableItem);
 
   /** Updates the value of this property on the given mount content to the given value. */

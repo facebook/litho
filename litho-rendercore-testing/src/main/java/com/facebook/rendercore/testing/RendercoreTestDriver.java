@@ -128,7 +128,8 @@ public class RendercoreTestDriver {
     public void render() {
       if (mRootHost == null) {
         throw new IllegalArgumentException(
-            "RootHost is null. If you're using RenderTreeHost, call renderWithRenderTree() instead.");
+            "RootHost is null. If you're using RenderTreeHost, call renderWithRenderTree()"
+                + " instead.");
       }
 
       View rootHostAsView = (View) mRootHost;

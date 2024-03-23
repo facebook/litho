@@ -109,17 +109,21 @@ public class GroupSectionSpecGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.sections.Children createChildren(com.facebook.litho.sections.SectionContext c) {\n"
+                + "protected com.facebook.litho.sections.Children"
+                + " createChildren(com.facebook.litho.sections.SectionContext c) {\n"
                 + "  com.facebook.litho.sections.Children _result;\n"
-                + "  _result = (com.facebook.litho.sections.Children) TestGroupSectionSpec.onCreateChildren(\n"
+                + "  _result = (com.facebook.litho.sections.Children)"
+                + " TestGroupSectionSpec.onCreateChildren(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c);\n"
                 + "  return _result;\n"
                 + "}\n");
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void dataRendered(com.facebook.litho.sections.SectionContext c, boolean isDataChanged,\n"
-                + "    boolean isMounted, long uptimeMillis, int firstVisibleIndex, int lastVisibleIndex,\n"
+                + "protected void dataRendered(com.facebook.litho.sections.SectionContext c,"
+                + " boolean isDataChanged,\n"
+                + "    boolean isMounted, long uptimeMillis, int firstVisibleIndex, int"
+                + " lastVisibleIndex,\n"
                 + "    com.facebook.litho.sections.ChangesInfo changesInfo, int globalOffset) {\n"
                 + "  TestGroupSectionSpec.onDataRendered(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c,\n"

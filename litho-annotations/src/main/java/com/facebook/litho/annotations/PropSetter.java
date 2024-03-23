@@ -25,8 +25,13 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface PropSetter {
-  /** @return {@link Prop} name that method with this annotation sets. */
+  /**
+   * @return {@link Prop} name that method with this annotation sets.
+   */
   String value();
-  /** @return true if the {@link Prop} is required, false if is optional. */
+
+  /**
+   * @return true if the {@link Prop} is required, false if is optional.
+   */
   boolean required();
 }

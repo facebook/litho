@@ -103,7 +103,8 @@ public class DiffSectionSpecModelFactoryTest {
   public void testUpdateStateWithTransitionMethodsIsNotNull() {
     assertThat(mDiffSectionSpecModel.getUpdateStateWithTransitionMethods())
         .describedAs(
-            "UpdateStateWithTransitionMethods cannot be null as otherwise the Litho Structure will not render")
+            "UpdateStateWithTransitionMethods cannot be null as otherwise the Litho Structure will"
+                + " not render")
         .isNotNull();
   }
 }

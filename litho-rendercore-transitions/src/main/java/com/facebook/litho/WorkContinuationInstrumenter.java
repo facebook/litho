@@ -43,6 +43,7 @@ public final class WorkContinuationInstrumenter {
      */
     @Nullable
     Object onAskForWorkToContinue(String tag);
+
     /**
      * Tracks when some work is ready to offered for continuation.
      *

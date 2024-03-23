@@ -217,7 +217,8 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
               throw new ComponentsProcessingException(
                   "Mount type cannot be correctly inferred from the name of "
                       + element
-                      + ".  Please specify `@OnCreateMountContent(mountingType = MountingType.VIEW)`.");
+                      + ".  Please specify `@OnCreateMountContent(mountingType ="
+                      + " MountingType.VIEW)`.");
             } else {
               return ClassNames.COMPONENT_MOUNT_TYPE_VIEW;
             }
@@ -228,7 +229,8 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
               throw new ComponentsProcessingException(
                   "Mount type cannot be correctly inferred from the name of "
                       + element
-                      + ".  Please specify `@OnCreateMountContent(mountingType = MountingType.DRAWABLE)`.");
+                      + ".  Please specify `@OnCreateMountContent(mountingType ="
+                      + " MountingType.DRAWABLE)`.");
             }
           }
 
@@ -238,7 +240,8 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
             throw new ComponentsProcessingException(
                 "Failed to get mount type for "
                     + element
-                    + ".  Try specifying `@OnCreateMountContent(mountingType = MountingType.VIEW)` (or DRAWABLE).");
+                    + ".  Try specifying `@OnCreateMountContent(mountingType = MountingType.VIEW)`"
+                    + " (or DRAWABLE).");
           }
         }
       }

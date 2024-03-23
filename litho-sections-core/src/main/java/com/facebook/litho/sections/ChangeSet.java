@@ -57,12 +57,16 @@ public final class ChangeSet {
     mChanges = new ArrayList<>();
   }
 
-  /** @return the {@link Change} at index. */
+  /**
+   * @return the {@link Change} at index.
+   */
   public Change getChangeAt(int index) {
     return mChanges.get(index);
   }
 
-  /** @return the number of {@link Change}s in this ChangeSet. */
+  /**
+   * @return the number of {@link Change}s in this ChangeSet.
+   */
   public int getChangeCount() {
     return mChanges.size();
   }
@@ -236,13 +240,17 @@ public final class ChangeSet {
     return mChangeSetStats;
   }
 
-  /** @return an empty ChangeSet. */
+  /**
+   * @return an empty ChangeSet.
+   */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ChangeSet acquireChangeSet(@Nullable Section section, boolean enableStats) {
     return acquireChangeSet(0, section, enableStats);
   }
 
-  /** @return an empty ChangeSet starting from count startCount. */
+  /**
+   * @return an empty ChangeSet starting from count startCount.
+   */
   static ChangeSet acquireChangeSet(
       int startCount, @Nullable Section section, boolean enableStats) {
     final ChangeSet changeSet = new ChangeSet();

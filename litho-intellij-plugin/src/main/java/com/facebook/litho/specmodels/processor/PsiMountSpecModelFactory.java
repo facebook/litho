@@ -57,7 +57,9 @@ public class PsiMountSpecModelFactory {
     mMountSpecGenerator = mountSpecGenerator;
   }
 
-  /** @return a new {@link MountSpecModel} or null */
+  /**
+   * @return a new {@link MountSpecModel} or null
+   */
   @Nullable
   public MountSpecModel createWithPsi(
       Project project,

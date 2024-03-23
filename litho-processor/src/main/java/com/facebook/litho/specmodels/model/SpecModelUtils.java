@@ -215,7 +215,9 @@ public class SpecModelUtils {
     return typeName1WithoutWildcards.box().equals(typeName2WithoutWildcards.box());
   }
 
-  /** @return the model for state/prop that this Diff is refering to. */
+  /**
+   * @return the model for state/prop that this Diff is refering to.
+   */
   public static MethodParamModel getReferencedParamModelForDiff(
       SpecModel specModel, RenderDataDiffModel diffModel) {
     if (MethodParamModelUtils.isAnnotatedWith(diffModel, Prop.class)) {

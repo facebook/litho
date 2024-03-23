@@ -103,9 +103,11 @@ public class MountSpecModelFactoryTest {
     int integer;
   }
 
-  static class ColorDrawable {};
+  static class ColorDrawable {}
+  ;
 
-  static class Context {};
+  static class Context {}
+  ;
 
   @MountSpec(
       value = "TestMountComponentName",

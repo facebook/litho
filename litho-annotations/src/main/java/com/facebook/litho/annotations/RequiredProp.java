@@ -25,6 +25,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface RequiredProp {
-  /** @return required {@link Prop} name method with this annotation sets. */
+  /**
+   * @return required {@link Prop} name method with this annotation sets.
+   */
   String value();
 }

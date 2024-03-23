@@ -132,7 +132,9 @@ public class PropModel implements MethodParamModel {
     return null;
   }
 
-  /** @return a new {@link PropModel} instance with the given name overridden. */
+  /**
+   * @return a new {@link PropModel} instance with the given name overridden.
+   */
   public PropModel withName(String name) {
     return new PropModel(
         mParamModel,

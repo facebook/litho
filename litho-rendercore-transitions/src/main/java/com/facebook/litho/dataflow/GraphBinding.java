@@ -68,7 +68,9 @@ public final class GraphBinding {
     addBinding(fromNode, toNode, ValueNode.DEFAULT_INPUT);
   }
 
-  /** @return all nodes that have a binding defined in this {@link GraphBinding}. */
+  /**
+   * @return all nodes that have a binding defined in this {@link GraphBinding}.
+   */
   ArrayList<ValueNode> getAllNodes() {
     return mAllNodes;
   }
@@ -102,7 +104,9 @@ public final class GraphBinding {
     mBindings.removeBindings();
   }
 
-  /** @return whether this binding has been activated and not yet deactivated. */
+  /**
+   * @return whether this binding has been activated and not yet deactivated.
+   */
   public boolean isActive() {
     return mIsActive;
   }

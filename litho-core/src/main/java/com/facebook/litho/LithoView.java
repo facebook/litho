@@ -823,7 +823,8 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           LITHO_LIFECYCLE_FOUND,
-          "Trying to release a LithoView but a LithoVisibilityEventsController was found, ignoring.");
+          "Trying to release a LithoView but a LithoVisibilityEventsController was found,"
+              + " ignoring.");
 
       return;
     }

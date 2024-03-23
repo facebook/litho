@@ -102,7 +102,9 @@ class BaseLithoComponentsDeclarationHandler {
         .orElse(null);
   }
 
-  /** @return true if the containing file of the given element is a Kotlin file. */
+  /**
+   * @return true if the containing file of the given element is a Kotlin file.
+   */
   private static boolean isKotlinFile(PsiElement sourceElement) {
     return sourceElement.getContainingFile().getLanguage() == KotlinLanguage.INSTANCE;
   }

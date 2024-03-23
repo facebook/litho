@@ -73,6 +73,7 @@ public class SequenceTransitionLoopComponentSpec {
         .alignItems(shown ? YogaAlign.FLEX_END : YogaAlign.FLEX_START)
         .build();
   }
+
   // start
   @OnEvent(TransitionEndEvent.class)
   static void onTransitionEndEvent(
@@ -92,6 +93,7 @@ public class SequenceTransitionLoopComponentSpec {
             .animate(AnimatedProperties.Y)
             .transitionEndHandler(SequenceTransitionLoopComponent.onTransitionEndEvent(c)));
   }
+
   // end
   @OnEvent(ClickEvent.class)
   static void onClickEvent(ComponentContext c, @FromEvent View view) {

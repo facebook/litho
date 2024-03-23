@@ -156,10 +156,12 @@ public class WorkingRangeValidationTest {
     assertThat(validationErrors.get(3).annotation).isEqualTo(mRepresentedObject8);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "The name \"prefetch\" is duplicated, it's must be unique across @OnEnteredRange methods.");
+            "The name \"prefetch\" is duplicated, it's must be unique across @OnEnteredRange"
+                + " methods.");
     assertThat(validationErrors.get(1).message)
         .isEqualTo(
-            "The name \"prefetch\" is duplicated, it's must be unique across @OnEnteredRange methods.");
+            "The name \"prefetch\" is duplicated, it's must be unique across @OnEnteredRange"
+                + " methods.");
     assertThat(validationErrors.get(2).message)
         .isEqualTo(
             "The name \"purge\" is duplicated, it's must be unique across @OnExitedRange methods.");

@@ -53,14 +53,16 @@ public class ViewPagerDemoComponentSpec {
           new Model("This is a ViewPager Demo", "You can swipe to navigate", hsvToColor(0, .5f, 1)),
           new Model(
               "You can also tap left/right",
-              "This isn't built into ViewPagerComponent but you can use a GestureDetector like in this demo!",
+              "This isn't built into ViewPagerComponent but you can use a GestureDetector like in"
+                  + " this demo!",
               hsvToColor(60, .5f, 1)),
           new Model(
               "A ViewPagerComponent lets you specify only the *initial* page index as a prop",
               null,
               hsvToColor(120, .5f, 1)),
           new Model(
-              "RecyclerCollectionEventsController will let you change the page once the ViewPager is on screen",
+              "RecyclerCollectionEventsController will let you change the page once the ViewPager"
+                  + " is on screen",
               "Check out the code for this demo to see how",
               hsvToColor(180, .5f, 1)),
           new Model(

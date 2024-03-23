@@ -80,9 +80,10 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "The prop sameName is defined differently in different methods. Ensure that each "
-                + "instance of this prop is declared in the same way (this means having the same type, "
-                + "resType and values for isOptional, isCommonProp and overrideCommonPropBehavior).");
+            "The prop sameName is defined differently in different methods. Ensure that each"
+                + " instance of this prop is declared in the same way (this means having the same"
+                + " type, resType and values for isOptional, isCommonProp and"
+                + " overrideCommonPropBehavior).");
   }
 
   @Test
@@ -103,9 +104,10 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "The prop sameName is defined differently in different methods. Ensure that each "
-                + "instance of this prop is declared in the same way (this means having the same type, "
-                + "resType and values for isOptional, isCommonProp and overrideCommonPropBehavior).");
+            "The prop sameName is defined differently in different methods. Ensure that each"
+                + " instance of this prop is declared in the same way (this means having the same"
+                + " type, resType and values for isOptional, isCommonProp and"
+                + " overrideCommonPropBehavior).");
   }
 
   @Test
@@ -126,9 +128,10 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "The prop sameName is defined differently in different methods. Ensure that each "
-                + "instance of this prop is declared in the same way (this means having the same type, "
-                + "resType and values for isOptional, isCommonProp and overrideCommonPropBehavior).");
+            "The prop sameName is defined differently in different methods. Ensure that each"
+                + " instance of this prop is declared in the same way (this means having the same"
+                + " type, resType and values for isOptional, isCommonProp and"
+                + " overrideCommonPropBehavior).");
   }
 
   @Test
@@ -164,7 +167,8 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Prop with isCommonProp and name badName is incorrectly defined - see PropValidation.java for a list of common props that may be used.");
+            "Prop with isCommonProp and name badName is incorrectly defined - see"
+                + " PropValidation.java for a list of common props that may be used.");
   }
 
   @Test
@@ -223,7 +227,8 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Props may not be declared with argument type: com.facebook.litho.Component.Builder or its inherited types.");
+            "Props may not be declared with argument type: com.facebook.litho.Component.Builder or"
+                + " its inherited types.");
   }
 
   @Test
@@ -253,8 +258,9 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Props may not be declared with argument type: com.facebook.litho.Component.Builder or its inherited types. "
-                + "com.facebook.litho.Text.Builder is an inherited type of com.facebook.litho.Component.Builder");
+            "Props may not be declared with argument type: com.facebook.litho.Component.Builder or"
+                + " its inherited types. com.facebook.litho.Text.Builder is an inherited type of"
+                + " com.facebook.litho.Component.Builder");
   }
 
   @Test

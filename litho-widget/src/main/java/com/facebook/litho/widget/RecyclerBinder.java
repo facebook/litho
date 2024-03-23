@@ -276,6 +276,7 @@ public class RecyclerBinder
   private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private Size mMeasuredSize;
   private @Nullable RecyclerView mMountedView;
+
   /**
    * Can be set for RecyclerBinder instances which do not have control over the RecyclerView which
    * the adapter sends operations to, and it does not mount or measure it. Only for subadapter mode.
@@ -569,7 +570,9 @@ public class RecyclerBinder
       return this;
     }
 
-    /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
+    /**
+     * @param c The {@link ComponentContext} the RecyclerBinder will use.
+     */
     public RecyclerBinder build(ComponentContext c) {
       if (mRecyclerBinderConfig == null) {
         mRecyclerBinderConfig = new RecyclerBinderConfig();
@@ -923,7 +926,8 @@ public class RecyclerBinder
   public void setSubAdapterModeRecyclerView(RecyclerView recyclerView) {
     if (!mIsSubAdapter) {
       throw new IllegalStateException(
-          "Cannot set a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
+          "Cannot set a subadapter RecyclerView on a RecyclerBinder which is not in subadapter"
+              + " mode.");
     }
 
     registerDrawListener(recyclerView);
@@ -934,7 +938,8 @@ public class RecyclerBinder
   public void removeSubAdapterModeRecyclerView(RecyclerView recyclerView) {
     if (!mIsSubAdapter) {
       throw new IllegalStateException(
-          "Cannot remove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
+          "Cannot remove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter"
+              + " mode.");
     }
 
     unregisterDrawListener(recyclerView);
@@ -1498,9 +1503,12 @@ public class RecyclerBinder
                 + position
                 + ", size="
                 + mComponentTreeHolders.size()
-                + "). This likely means data passed to the section had duplicates or a mutable data model. Component involved in the error whose backing data model may have duplicates: "
+                + "). This likely means data passed to the section had duplicates or a mutable data"
+                + " model. Component involved in the error whose backing data model may have"
+                + " duplicates: "
                 + renderInfo.getName()
-                + ". Read more here: https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception");
+                + ". Read more here:"
+                + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception");
       }
 
       holder = mComponentTreeHolders.get(position);
@@ -2158,7 +2166,8 @@ public class RecyclerBinder
         shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
     if (mHasManualEstimatedViewportCount && shouldMeasureItemForSize) {
       throw new RuntimeException(
-          "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to determine its size!");
+          "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to"
+              + " determine its size!");
     }
 
     mIsInMeasure.set(true);
@@ -2269,7 +2278,9 @@ public class RecyclerBinder
     }
   }
 
-  /** @return true if the view is measured and doesn't need remeasuring. */
+  /**
+   * @return true if the view is measured and doesn't need remeasuring.
+   */
   private boolean isMeasured() {
     return mIsMeasured.get() && !mRequiresRemeasure.get();
   }
@@ -3241,7 +3252,9 @@ public class RecyclerBinder
     traverser.traverse(0, treeHoldersSize, firstVisible, lastVisible, processor);
   }
 
-  /** @return Whether or not to continue layout computation for current range */
+  /**
+   * @return Whether or not to continue layout computation for current range
+   */
   private boolean computeRangeLayoutAt(
       int index, int rangeStart, int rangeEnd, int treeHoldersSize) {
 
@@ -3276,7 +3289,9 @@ public class RecyclerBinder
     return true;
   }
 
-  /** @return Whether or not to continue layout computation for current range */
+  /**
+   * @return Whether or not to continue layout computation for current range
+   */
   private boolean computeRangeLayoutWithRetainMaximumRange(
       int index, int rangeStart, int rangeEnd, int treeHoldersSize, boolean allowDeletions) {
 
@@ -4095,7 +4110,9 @@ public class RecyclerBinder
     return view.getGlobalVisibleRect(sDummyRect);
   }
 
-  /** @return a list of view's visibility, iterating from given view to its ancestor views. */
+  /**
+   * @return a list of view's visibility, iterating from given view to its ancestor views.
+   */
   private static List<String> getVisibleHierarchy(View view) {
     final List<String> hierarchy = new ArrayList<>();
     Object current = view;

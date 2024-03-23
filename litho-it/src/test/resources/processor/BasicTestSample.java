@@ -169,7 +169,8 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                       com.facebook.litho.processor.integration.resources.BasicLayout.class)) {
                 as(
                     new TextDescription(
-                        "Sub-component of type \"com.facebook.litho.processor.integration.resources.BasicLayout\""));
+                        "Sub-component of type"
+                            + " \"com.facebook.litho.processor.integration.resources.BasicLayout\""));
                 return false;
               }
               final com.facebook.litho.processor.integration.resources.BasicLayout impl =
@@ -186,7 +187,8 @@ public final class BasicTestSample implements BasicTestSampleSpec {
               if (mChildMatcher != null && !mChildMatcher.matches(propValueChild)) {
                 as(
                     new TextDescription(
-                        "Sub-component of type <BasicLayout> with prop <child> %s (doesn't match %s)",
+                        "Sub-component of type <BasicLayout> with prop <child> %s (doesn't match"
+                            + " %s)",
                         mChildMatcher, propValueChild));
                 return false;
               }
@@ -195,7 +197,8 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                   && !mMyDimenSizePropMatcher.matches(propValueMyDimenSizeProp)) {
                 as(
                     new TextDescription(
-                        "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s (doesn't match %s)",
+                        "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s"
+                            + " (doesn't match %s)",
                         mMyDimenSizePropMatcher, propValueMyDimenSizeProp));
                 return false;
               }
@@ -204,7 +207,8 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                   && !mMyRequiredColorPropMatcher.matches(propValueMyRequiredColorProp)) {
                 as(
                     new TextDescription(
-                        "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s (doesn't match %s)",
+                        "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s"
+                            + " (doesn't match %s)",
                         mMyRequiredColorPropMatcher, propValueMyRequiredColorProp));
                 return false;
               }
@@ -213,7 +217,8 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                   && !mMyStringPropMatcher.matches(propValueMyStringProp)) {
                 as(
                     new TextDescription(
-                        "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't match %s)",
+                        "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't"
+                            + " match %s)",
                         mMyStringPropMatcher, propValueMyStringProp));
                 return false;
               }

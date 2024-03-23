@@ -73,7 +73,8 @@ public class ProcessorUtils {
               element,
               mirror,
               String.format(
-                  "Error processing the annotation '%s'. Are your imports set up correctly? The causing error was: %s",
+                  "Error processing the annotation '%s'. Are your imports set up correctly? The"
+                      + " causing error was: %s",
                   annotationType.getCanonicalName(), e));
         }
       }

@@ -135,7 +135,9 @@ public class Edges {
     return mValues[edgeIndex];
   }
 
-  /** @param edgeEnumValue This method can directly accept the YogaEdge.XXX.intValue(). */
+  /**
+   * @param edgeEnumValue This method can directly accept the YogaEdge.XXX.intValue().
+   */
   // This duplicates the other getRaw instead of calling each other to save on method calls.
   public float getRaw(int edgeEnumValue) {
     final byte edgeIndex = getIndex(edgeEnumValue);

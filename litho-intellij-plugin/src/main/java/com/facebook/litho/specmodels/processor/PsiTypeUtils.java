@@ -70,7 +70,9 @@ class PsiTypeUtils {
     }
   }
 
-  /** @return Returns a {@link ClassName} for the given class name string. */
+  /**
+   * @return Returns a {@link ClassName} for the given class name string.
+   */
   static ClassName guessClassName(String typeName) {
     return ClassName.bestGuess(typeName);
   }

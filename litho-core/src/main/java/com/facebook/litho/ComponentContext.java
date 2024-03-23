@@ -197,7 +197,9 @@ public class ComponentContext {
     return componentContext;
   }
 
-  /** @deprecated introduced for legacy test cases - don't add new callers */
+  /**
+   * @deprecated introduced for legacy test cases - don't add new callers
+   */
   @VisibleForTesting
   @Deprecated
   public static ComponentContext createScopedComponentContextWithStateForTest(
@@ -564,7 +566,8 @@ public class ComponentContext {
 
     if (mLithoTree == null) {
       throw new RuntimeException(
-          "Calling findViewWithTag on a ComponentContext which isn't associated with a Tree. Make sure it's one received in `render` or `onCreateLayout`");
+          "Calling findViewWithTag on a ComponentContext which isn't associated with a Tree. Make"
+              + " sure it's one received in `render` or `onCreateLayout`");
     }
     final View mountedView = mLithoTree.getMountedViewReference().getMountedView();
     // The tree isn't mounted

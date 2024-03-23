@@ -61,7 +61,9 @@ public class TextureWarmer {
     }
   }
 
-  /** @return the global {@link TextureWarmer} instance. */
+  /**
+   * @return the global {@link TextureWarmer} instance.
+   */
   public static synchronized TextureWarmer getInstance() {
     if (sInstance == null) {
       sInstance = new TextureWarmer();

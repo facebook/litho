@@ -43,7 +43,9 @@ public final class MethodExtractorUtils {
 
   private MethodExtractorUtils() {}
 
-  /** @return a list of params for a method. */
+  /**
+   * @return a list of params for a method.
+   */
   static List<MethodParamModel> getMethodParams(
       ExecutableElement method,
       Messager messager,
@@ -89,7 +91,8 @@ public final class MethodExtractorUtils {
         throw new ComponentsProcessingException(
             param,
             String.format(
-                "Error processing the param '%s'. Are your imports set up correctly? The causing error was: %s",
+                "Error processing the param '%s'. Are your imports set up correctly? The causing"
+                    + " error was: %s",
                 param, e));
       }
     }
