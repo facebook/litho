@@ -284,6 +284,10 @@ public class TextStyle implements Cloneable {
     this.roundedBackgroundProps = roundedBackgroundProps;
   }
 
+  public void setLetterSpacing(float letterSpacing) {
+    this.letterSpacing = letterSpacing;
+  }
+
   public static class RoundedBackgroundProps {
     final RectF padding;
     final float cornerRadius;
