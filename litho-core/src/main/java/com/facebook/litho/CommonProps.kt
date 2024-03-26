@@ -533,7 +533,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   }
 
   fun tooltipText(tooltipText: String?) {
-    getOrCreateNodeInfo().setTooltipText(tooltipText)
+    getOrCreateNodeInfo().tooltipText = tooltipText
   }
 
   val isKeyboardNavigationCluster: Boolean

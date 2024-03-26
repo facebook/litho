@@ -706,7 +706,7 @@ class ViewStylesTest {
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.node
     assertThat(node?.nodeInfo?.clipToOutline).isTrue
 
-    node?.mutableNodeInfo()?.setClipToOutline(false)
+    node?.mutableNodeInfo()?.clipToOutline = false
     assertThat(node?.nodeInfo?.clipToOutline).isFalse
   }
 

@@ -238,7 +238,7 @@ class NodeInfoTest {
 
   @Test
   fun testTooltipTextFlag() {
-    nodeInfo.setTooltipText("test")
+    nodeInfo.tooltipText = "test"
     testFlagIsSetThenClear(nodeInfo, "PFLAG_TOOLTIP_TEXT_IS_SET")
   }
 
@@ -397,19 +397,19 @@ class NodeInfoTest {
 
     private fun isFlagSet(nodeInfo: NodeInfo?, flagName: String): Boolean {
       val flagPosition = Whitebox.getInternalState<Long>(NodeInfo::class.java, flagName)
-      val flags = Whitebox.getInternalState<Long>(nodeInfo, "mPrivateFlags")
+      val flags = nodeInfo?.flags ?: 0
       return flags and flagPosition != 0L
     }
 
     private fun clearFlag(nodeInfo: NodeInfo?, flagName: String) {
       val flagPosition = Whitebox.getInternalState<Long>(NodeInfo::class.java, flagName)
-      var flags = Whitebox.getInternalState<Long>(nodeInfo, "mPrivateFlags")
+      var flags = nodeInfo?.flags ?: 0
       flags = flags and flagPosition.inv()
-      Whitebox.setInternalState(nodeInfo, "mPrivateFlags", flags)
+      Whitebox.setInternalState(nodeInfo, "flags", flags)
     }
 
     private fun assertEmptyFlags(nodeInfo: NodeInfo?) {
-      assertThat(Whitebox.getInternalState<Any>(nodeInfo, "mPrivateFlags") as Long == 0L).isTrue
+      assertThat(nodeInfo?.flags as Long == 0L).isTrue
     }
   }
 }
