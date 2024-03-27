@@ -40,6 +40,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
@@ -51,7 +52,10 @@ import com.facebook.rendercore.text.accessibility.AccessibilityUtils;
 import com.facebook.rendercore.text.accessibility.RCAccessibleClickableSpan;
 import java.util.List;
 
-/** A pared-down TextView that only displays text. */
+/**
+ * A custom Android View that behaves like a TextView providing support for spans, custom drawing
+ * and truncations.
+ */
 @DoNotStrip
 public class RCTextView extends View {
   private static final String ACCESSIBILITY_CLASS_BUTTON = "android.widget.Button";
@@ -112,11 +116,57 @@ public class RCTextView extends View {
       shouldRestore = true;
     }
 
-    mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    final OnPrePostDrawSpan[] onPrePostDrawSpans = getOnPrePostDrawableSpans();
+    if (onPrePostDrawSpans.length == 0) {
+      drawLayout(canvas);
+    } else {
+      drawInternal(onPrePostDrawSpans, canvas);
+    }
 
     if (shouldRestore) {
       canvas.restoreToCount(saveCount);
     }
+  }
+
+  private void drawInternal(final OnPrePostDrawSpan[] onOnPrePostDrawSpans, final Canvas canvas) {
+    OnPrePostDrawSpan.Command currentDrawAction =
+        new OnPrePostDrawSpan.Command() {
+          @Override
+          public void draw(@NonNull Canvas canvas) {
+            drawLayout(canvas);
+          }
+        };
+    final Spanned text = (Spanned) mText;
+    // OnPrePostDraw spans are retrieved in the same order in which they are applied (i.e. in order
+    // of pre-order traversal of the composable span tree).  We want to have their onDraw calls
+    // invoked in the same order.  In order to chain them in that order, we need to walk the spans
+    // list backward.
+    int length = onOnPrePostDrawSpans.length;
+    for (int i = length - 1; i >= 0; i--) {
+      OnPrePostDrawSpan onDraw = onOnPrePostDrawSpans[i];
+      OnPrePostDrawSpan.Command previousAction = currentDrawAction;
+      int spanStart = text.getSpanStart(onDraw);
+      int spanEnd = text.getSpanEnd(onDraw);
+      currentDrawAction =
+          new OnPrePostDrawSpan.Command() {
+            @Override
+            public void draw(@NonNull Canvas canvas) {
+              onDraw.draw(canvas, mText, spanStart, spanEnd, mLayout, previousAction);
+            }
+          };
+    }
+    currentDrawAction.draw(canvas);
+  }
+
+  private void drawLayout(Canvas canvas) {
+    mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+  }
+
+  private OnPrePostDrawSpan[] getOnPrePostDrawableSpans() {
+    if (!(mText instanceof Spanned)) {
+      return new OnPrePostDrawSpan[0];
+    }
+    return ((Spanned) mText).getSpans(0, mText.length(), OnPrePostDrawSpan.class);
   }
 
   public void mount(TextLayout textLayout) {
