@@ -151,7 +151,6 @@ public class ComponentTree
 
   private boolean mInAttach = false;
 
-  @Nullable private final ComponentTreeTimeMachine mTimeMachine;
   @Nullable private final ComponentTreeDebugEventsSubscriber mDebugEventsSubscriber;
 
   @GuardedBy("this")
@@ -414,11 +413,6 @@ public class ComponentTree
       }
     }
 
-    if (LithoDebugConfigurations.isTimelineEnabled) {
-      mTimeMachine = new DebugComponentTreeTimeMachine(this);
-    } else {
-      mTimeMachine = null;
-    }
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       mLifecycleProvider = builder.mLifecycleProvider;
     } else {
@@ -2382,7 +2376,6 @@ public class ComponentTree
         if (localTreeState != null) {
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
-            saveRevision(rootComponent, treeState, treePropContainer, source, extraAttribution);
             treeState.commitLayoutState(localTreeState);
             treeState.bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
           }
@@ -2844,51 +2837,6 @@ public class ComponentTree
       mLifecycleProvider.removeListener(this);
       mLifecycleProvider = null;
     }
-  }
-
-  /** This should only be used by Flipper. */
-  @Nullable
-  ComponentTreeTimeMachine getTimeMachine() {
-    return mTimeMachine;
-  }
-
-  private void saveRevision(
-      Component root,
-      TreeState treeState,
-      @Nullable TreePropContainer treePropContainer,
-      @RenderSource int source,
-      @Nullable String attribution) {
-    if (mTimeMachine != null) {
-      final TreeState frozenTreeState = new TreeState(treeState);
-      mTimeMachine.storeRevision(root, frozenTreeState, treePropContainer, source, attribution);
-    }
-  }
-
-  /**
-   * Similar to {@link ComponentTree#setRoot(Component)}. This method allows setting a new root with
-   * cached {@link TreePropContainer} and {@link StateHandler}.
-   *
-   * <p>It is used to enable time-travelling through external editors such as Flipper.
-   */
-  @UiThread
-  protected synchronized void applyRevision(ComponentTreeTimeMachine.Revision revision) {
-    ThreadUtils.assertMainThread();
-
-    mTreeState = revision.getTreeState();
-    mRootTreePropContainer = revision.getTreePropContainer();
-
-    setRootAndSizeSpecInternal(
-        revision.getRoot(),
-        SIZE_UNINITIALIZED,
-        SIZE_UNINITIALIZED,
-        false /* isAsync */,
-        null /* output */,
-        RenderSource.RELOAD_PREVIOUS_STATE,
-        INVALID_LAYOUT_VERSION,
-        null,
-        null,
-        false,
-        true);
   }
 
   /**

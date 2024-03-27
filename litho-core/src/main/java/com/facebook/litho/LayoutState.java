@@ -80,7 +80,6 @@ public class LayoutState
       case RenderSource.SET_ROOT_SYNC:
       case RenderSource.UPDATE_STATE_SYNC:
       case RenderSource.SET_SIZE_SPEC_SYNC:
-      case RenderSource.RELOAD_PREVIOUS_STATE:
         return true;
       default:
         return false;
@@ -298,8 +297,6 @@ public class LayoutState
         return "measure_setSizeSpecAsync";
       case RenderSource.TEST:
         return "test";
-      case RenderSource.RELOAD_PREVIOUS_STATE:
-        return "reloadState";
       case RenderSource.NONE:
         return "none";
       default:

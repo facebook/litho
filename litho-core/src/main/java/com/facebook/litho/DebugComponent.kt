@@ -43,7 +43,6 @@ private constructor(
     private val y: Int,
     private val xOffset: Int,
     private val yOffset: Int,
-    val componentTreeTimeMachine: ComponentTreeTimeMachine?,
 ) {
 
   interface Overrider {
@@ -160,7 +159,7 @@ private constructor(
                     result.getYForChildAtIndex(0),
                     xFromRoot,
                     yFromRoot,
-                    null)
+                )
             listOfNotNull(component)
           }
           else -> getChildren(result, xFromRoot, yFromRoot)
@@ -173,7 +172,7 @@ private constructor(
     if (index < 0) {
       return emptyList()
     }
-    val component = getInstance(result, index, x, y, xOffset, yOffset, null)
+    val component = getInstance(result, index, x, y, xOffset, yOffset)
     return listOfNotNull(component)
   }
 
@@ -346,7 +345,6 @@ private constructor(
         y: Int,
         xOffset: Int,
         yOffset: Int,
-        timeMachine: ComponentTreeTimeMachine?,
     ): DebugComponent? {
       val node = result.node
       val context = result.context
@@ -355,7 +353,6 @@ private constructor(
       }
       val componentKey = node.getGlobalKeyAt(componentIndex)
       return DebugComponent(
-              componentTreeTimeMachine = timeMachine,
               globalKey = generateGlobalKey(context, componentKey),
               result = result,
               node = result.node,
@@ -370,18 +367,14 @@ private constructor(
 
     @JvmStatic
     fun getRootInstance(view: BaseMountingView): DebugComponent? =
-        getRootInstance(
-            view.currentLayoutState,
-            if (view is LithoView) view.componentTree?.timeMachine else null)
+        getRootInstance(view.currentLayoutState)
 
     fun getRootInstance(componentTree: ComponentTree?): DebugComponent? =
-        if (componentTree == null) null
-        else getRootInstance(componentTree.mainThreadLayoutState, componentTree.timeMachine)
+        if (componentTree == null) null else getRootInstance(componentTree.mainThreadLayoutState)
 
     @JvmStatic
     fun getRootInstance(
         layoutState: LayoutState?,
-        timeMachine: ComponentTreeTimeMachine?
     ): DebugComponent? {
       val root = layoutState?.rootLayoutResult
       if (root == null || root is NullLithoLayoutResult) {
@@ -390,16 +383,14 @@ private constructor(
       check(root is LithoLayoutResult) { "Expected root to be a LithoLayoutResult" }
       val node = root.node
       val outerWrapperComponentIndex = (node.componentCount - 1).coerceAtLeast(0)
-      return getInstance(root, outerWrapperComponentIndex, 0, 0, 0, 0, timeMachine)?.apply {
-        isRoot = true
-      }
+      return getInstance(root, outerWrapperComponentIndex, 0, 0, 0, 0)?.apply { isRoot = true }
     }
 
     @JvmStatic
     fun getInstance(result: LithoLayoutResult, x: Int, y: Int): DebugComponent? {
       val rootNode = result.node
       val outerWrapperComponentIndex = (rootNode.componentCount - 1).coerceAtLeast(0)
-      return getInstance(result, outerWrapperComponentIndex, x, y, 0, 0, null)
+      return getInstance(result, outerWrapperComponentIndex, x, y, 0, 0)
     }
 
     /**
@@ -503,7 +494,7 @@ private constructor(
                 result.getYForChildAtIndex(i),
                 xOffset,
                 yOffset,
-                null)
+            )
             ?.let { add(it) }
       }
     }

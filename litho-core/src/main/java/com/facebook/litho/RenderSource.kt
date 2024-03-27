@@ -28,8 +28,7 @@ import androidx.annotation.IntDef
     RenderSource.UPDATE_STATE_SYNC,
     RenderSource.UPDATE_STATE_ASYNC,
     RenderSource.MEASURE_SET_SIZE_SPEC,
-    RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC,
-    RenderSource.RELOAD_PREVIOUS_STATE)
+    RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC)
 annotation class RenderSource {
   companion object {
     const val TEST = -2
@@ -42,7 +41,6 @@ annotation class RenderSource {
     const val UPDATE_STATE_ASYNC = 5
     const val MEASURE_SET_SIZE_SPEC = 6
     const val MEASURE_SET_SIZE_SPEC_ASYNC = 7
-    const val RELOAD_PREVIOUS_STATE = 8
   }
 }
 
