@@ -24,6 +24,7 @@ import com.facebook.litho.ComponentTreeDebugEventListener
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.DefaultErrorEventHandler
 import com.facebook.litho.ErrorEventHandler
+import com.facebook.litho.config.ComponentsConfiguration.Builder
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
 
@@ -281,6 +282,7 @@ internal constructor(
     private var debugEventListener = baseConfig.debugEventListener
     private var shouldBuildRenderTreeInBg = baseConfig.shouldBuildRenderTreeInBg
     private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
+    private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -354,6 +356,10 @@ internal constructor(
       enablePreAllocationSameThreadCheck = value
     }
 
+    fun avoidRedundantPreAllocations(value: Boolean): Builder = also {
+      avoidRedundantPreAllocations = value
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -383,6 +389,7 @@ internal constructor(
           shouldBuildRenderTreeInBg = shouldBuildRenderTreeInBg,
           shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
+          avoidRedundantPreAllocations = avoidRedundantPreAllocations,
       )
     }
   }
