@@ -82,7 +82,8 @@ class ContentPreAllocator(
           hashMapOf())
     }
 
-    ComponentsSystrace.trace("preAllocateMountContentForTree") {
+    val suffix = if (avoidRedundantPreAllocations) "(avoidRedundantPreAllocations)" else ""
+    ComponentsSystrace.trace("preAllocateMountContentForTree$suffix") {
       val mountOutputs = nodeSupplier()
       preAllocateMountContent(mountOutputs)
     }
@@ -121,7 +122,7 @@ class ContentPreAllocator(
         val preallocated =
             preAllocator(componentContext.androidContext, treeNode.renderUnit.contentAllocator)
         Log.d(
-            "LayoutState",
+            "ContentPreAllocator",
             "Preallocation of $componentSimpleName" + if (preallocated) " succeeded" else " failed")
 
         if (preallocated && avoidRedundantPreAllocations)
