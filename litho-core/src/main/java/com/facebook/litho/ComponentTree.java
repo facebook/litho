@@ -971,24 +971,6 @@ public class ComponentTree
           } else {
             measureOutput[0] = output.width;
             measureOutput[1] = output.height;
-
-            ComponentsReporter.emitMessage(
-                ComponentsReporter.LogLevel.ERROR,
-                "NullLayoutStateInMeasure",
-                "Measure Specs: ["
-                    + View.MeasureSpec.toString(widthSpec)
-                    + ", "
-                    + View.MeasureSpec.toString(heightSpec)
-                    + "], Current Specs: ["
-                    + View.MeasureSpec.toString(mWidthSpec)
-                    + ", "
-                    + View.MeasureSpec.toString(mHeightSpec)
-                    + "], Output [W: "
-                    + output.width
-                    + ", H:"
-                    + output.height
-                    + "], Last Layout Source: "
-                    + LayoutState.layoutSourceToString(mLastLayoutSource));
           }
         }
       } else {
