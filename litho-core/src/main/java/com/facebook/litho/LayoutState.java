@@ -242,6 +242,10 @@ public class LayoutState
     return mHasComponentsExcludedFromIncrementalMount;
   }
 
+  public boolean isEmpty() {
+    return mResolveResult.component instanceof EmptyComponent;
+  }
+
   public RenderTree toRenderTree() {
     if (mCachedRenderTree != null) {
       return mCachedRenderTree;
@@ -736,5 +740,9 @@ public class LayoutState
   @Override
   public Map<Long, DynamicValueOutput> getDynamicValueOutputs() {
     return mDynamicValueOutputs;
+  }
+
+  public static boolean isNullOrEmpty(@Nullable LayoutState layoutState) {
+    return layoutState == null || layoutState.isEmpty();
   }
 }

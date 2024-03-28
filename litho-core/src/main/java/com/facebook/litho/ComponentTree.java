@@ -853,10 +853,19 @@ public class ComponentTree
     if (mCommittedLayoutState == null) {
       throw new RuntimeException("Cannot promote null LayoutState!");
     }
+
     if (mCommittedLayoutState == mMainThreadLayoutState) {
       return;
     }
+
+    final @Nullable LayoutState previousMainThreadLayoutState = mMainThreadLayoutState;
     mMainThreadLayoutState = mCommittedLayoutState;
+
+    if (LayoutState.isNullOrEmpty(previousMainThreadLayoutState)
+        && LayoutState.isNullOrEmpty(mCommittedLayoutState)) {
+      return;
+    }
+
     dispatchOnAttached();
 
     if (mLithoView != null) {
