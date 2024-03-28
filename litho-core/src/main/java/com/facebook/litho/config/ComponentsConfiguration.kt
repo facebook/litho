@@ -63,6 +63,14 @@ internal constructor(
      */
     @JvmField
     val shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible: Boolean = false,
+    /**
+     * If enabled, then the [com.facebook.litho.LithoView] will attempt to unmount any mounted
+     * content of the mount state when it gets detached from window.
+     *
+     * This is done to tackle and edge case where mount contents that have the same top/bottom
+     * boundaries of the host view are not mounted by incremental mount.
+     */
+    @JvmField val unmountOnDetachedFromWindow: Boolean = false,
     /** Whether the [ComponentTree] should be using State Reconciliation. */
     @JvmField val isReconciliationEnabled: Boolean = true,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
@@ -283,6 +291,7 @@ internal constructor(
     private var shouldBuildRenderTreeInBg = baseConfig.shouldBuildRenderTreeInBg
     private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
+    private var unmountOnDetachedFromWindow = baseConfig.unmountOnDetachedFromWindow
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -360,6 +369,10 @@ internal constructor(
       avoidRedundantPreAllocations = value
     }
 
+    fun unmountOnDetachedFromWindow(unmountOnDetachedFromWindow: Boolean): Builder = also {
+      this.unmountOnDetachedFromWindow = unmountOnDetachedFromWindow
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -390,7 +403,7 @@ internal constructor(
           shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
           avoidRedundantPreAllocations = avoidRedundantPreAllocations,
-      )
+          unmountOnDetachedFromWindow = unmountOnDetachedFromWindow)
     }
   }
 }
