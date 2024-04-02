@@ -144,12 +144,10 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
   }
 
   fun resetLayoutState() {
-    if (this.layoutState != null) {
-      hasNewTree = true
-      unmountAllItems()
-    }
-    this.layoutState = null
-    this.treeState = null
+    unmountAllItems()
+    layoutState = null
+    treeState = null
+    hasNewTree = true
     requestLayout()
   }
 }
