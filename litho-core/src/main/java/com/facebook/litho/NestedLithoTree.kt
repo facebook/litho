@@ -113,6 +113,7 @@ object NestedLithoTree {
 
   fun LayoutState.cleanup() {
     treeState.effectsHandler.onDetached()
+    treeState.clearUnusedTriggerHandlers()
   }
 
   fun TreeState.enqueue(updates: List<PendingStateUpdate>): TreeState {
