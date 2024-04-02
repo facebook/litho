@@ -59,6 +59,12 @@ enum class Reason {
   REACT_NATIVE_BRIDGING,
 
   /**
+   * Used when Component.Builder is required at call site, e.g. when creating new native template
+   * component bridges.
+   */
+  COMPONENT_BUILDER_REQUIRED_AT_CALL_SITE,
+
+  /**
    * Used only to mark Kotlin Specs that were created before the Spec API deprecation.
    * [Convert this Spec](https://fblitho.com/docs/kotlin/kotlin-intro/) to the Litho Kotlin API or
    * change [LEGACY] to other appropriate [Reason].
