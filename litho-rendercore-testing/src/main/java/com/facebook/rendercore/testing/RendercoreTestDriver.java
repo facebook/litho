@@ -147,7 +147,8 @@ public class RendercoreTestDriver {
                     Object nextState) {}
 
                 @Override
-                public void commitToUI(RenderTree tree, Object o) {}
+                public void commitToUI(
+                    @Nullable RenderTree tree, @Nullable Object o, int frameVersion) {}
               },
               null,
               null);

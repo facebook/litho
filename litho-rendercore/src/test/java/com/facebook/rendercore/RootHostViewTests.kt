@@ -53,7 +53,7 @@ class RootHostViewTests {
                   nextState: Any?
               ) = Unit
 
-              override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
+              override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) = Unit
             },
             null,
             null)
@@ -84,7 +84,7 @@ class RootHostViewTests {
                   nextState: Any?
               ) = Unit
 
-              override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
+              override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) = Unit
             },
             null,
             null)

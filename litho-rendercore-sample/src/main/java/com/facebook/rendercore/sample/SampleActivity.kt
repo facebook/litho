@@ -90,7 +90,7 @@ class SampleActivity : ComponentActivity(), RenderState.Delegate<SampleData?> {
     currentRenderTree = next
   }
 
-  override fun commitToUI(tree: RenderTree?, state: SampleData?) {
+  override fun commitToUI(tree: RenderTree?, state: SampleData?, frameId: Int) {
     currentRenderTree = tree
   }
 }

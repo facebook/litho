@@ -26,6 +26,7 @@ class LayoutFuture<State, RenderContext>(
     val tree: Node<RenderContext>,
     state: State?,
     val version: Int,
+    val frameId: Int,
     previousResult: RenderResult<State, RenderContext>?,
     extensions: Array<RenderCoreExtension<*, *>>?,
     val sizeConstraints: SizeConstraints

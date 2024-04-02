@@ -46,7 +46,7 @@ class RenderStateTest {
             nextState: Any?
         ) = Unit
 
-        override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
+        override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) = Unit
       }
 
   @LooperMode(LooperMode.Mode.PAUSED)
@@ -74,7 +74,7 @@ class RenderStateTest {
                   nextState: Any?
               ) = Unit
 
-              override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
+              override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) = Unit
             },
             null,
             null,
@@ -110,7 +110,7 @@ class RenderStateTest {
                 wasCalled.set(true)
               }
 
-              override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
+              override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) = Unit
             },
             null,
             null)
@@ -145,7 +145,7 @@ class RenderStateTest {
                 }
               }
 
-              override fun commitToUI(tree: RenderTree?, state: Any?) = Unit
+              override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) = Unit
             },
             null,
             null)
@@ -293,7 +293,7 @@ class RenderStateTest {
                 numberOfCommits.incrementAndGet()
               }
 
-              override fun commitToUI(tree: RenderTree?, state: Any?) {
+              override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) {
                 numberOfUICommits.incrementAndGet()
               }
             },
@@ -331,7 +331,7 @@ class RenderStateTest {
                 numberOfCommits.incrementAndGet()
               }
 
-              override fun commitToUI(tree: RenderTree?, state: Any?) {
+              override fun commitToUI(tree: RenderTree?, state: Any?, frameId: Int) {
                 numberOfUICommits.incrementAndGet()
               }
             },

@@ -24,10 +24,12 @@ import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.rendercore.StateUpdateReceiver.StateUpdate
 import com.facebook.rendercore.extensions.RenderCoreExtension
 import com.facebook.rendercore.utils.ThreadUtils
+import com.facebook.rendercore.utils.VSyncUtils
 import java.util.Objects
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.concurrent.ThreadSafe
+import kotlin.math.roundToInt
 
 /** todo: javadocs * */
 class RenderState<State, RenderContext, StateUpdateType : StateUpdate<*>>
@@ -75,7 +77,7 @@ constructor(
         nextState: State?
     )
 
-    fun commitToUI(tree: RenderTree?, state: State?)
+    fun commitToUI(tree: RenderTree?, state: State?, frameVersion: Int)
   }
 
   fun interface HostListener {
@@ -94,14 +96,20 @@ constructor(
   private var latestResolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>? = null
   private var resolveFuture: ResolveFuture<State, RenderContext, StateUpdateType>? = null
   private var layoutFuture: LayoutFuture<State, RenderContext>? = null
+  private var resolveVersionCounter = 0
+  private var committedResolveVersion = UNSET
   private var committedResolvedTree: Node<RenderContext>? = null
   private var committedState: State? = null
+  private var committedResolvedFrameId = UNSET
   private val pendingStateUpdates: MutableList<StateUpdateType> = ArrayList()
   private var committedRenderResult: RenderResult<State, RenderContext>? = null
-  private var resolveVersionCounter = 0
+
+  private val normalVSyncTime = VSyncUtils.getNormalVsyncTime(context)
+  private val frameReferenceTimeNanos = System.nanoTime()
+
   private var layoutVersionCounter = 0
-  private var committedResolveVersion = UNSET
   private var committedLayoutVersion = UNSET
+  private var committedLayoutFrameId = UNSET
   private var sizeConstraints: SizeConstraints = SizeConstraints()
   private var hasSizeConstraints = false
   private val resolveToken = Any()
@@ -140,6 +148,11 @@ constructor(
     uiHandler.postAtTime({ requestResolve(null, async) }, resolveToken, 0)
   }
 
+  private fun getElapsedFrameCount(): Int {
+    val elapsedTimeNanos = System.nanoTime() - frameReferenceTimeNanos
+    return (elapsedTimeNanos * 1.0 / normalVSyncTime).roundToInt()
+  }
+
   private fun requestResolve(
       resolveFunc: ResolveFunc<State, RenderContext, StateUpdateType>?,
       doAsync: Boolean,
@@ -151,6 +164,7 @@ constructor(
       if (resolveFunc == null && pendingStateUpdates.isEmpty()) {
         return
       }
+
       if (resolveFunc != null) {
         latestResolveFunc = resolveFunc
       }
@@ -161,7 +175,8 @@ constructor(
               committedResolvedTree,
               committedState,
               if (pendingStateUpdates.isEmpty()) emptyList() else ArrayList(pendingStateUpdates),
-              resolveVersionCounter++)
+              resolveVersionCounter++,
+              getElapsedFrameCount())
       resolveFuture = future
     }
     if (doAsync) {
@@ -193,6 +208,7 @@ constructor(
     if (future.version > committedResolveVersion) {
       committedResolveVersion = future.version
       committedResolvedTree = result.resolvedNode
+      committedResolvedFrameId = future.frameId
       committedState = result.resolvedState
       pendingStateUpdates.removeAll(future.stateUpdatesToApply)
       didCommit = true
@@ -223,6 +239,7 @@ constructor(
                 commitedTree,
                 committedState,
                 layoutVersionCounter++,
+                committedResolvedFrameId,
                 committedRenderResult,
                 extensions,
                 sizeConstraints)
@@ -238,6 +255,7 @@ constructor(
           committedRenderResult != renderResult) {
         committedLayoutVersion = layoutFuture.version
         committedNewLayout = true
+        committedLayoutFrameId = layoutFuture.frameId
         committedRenderResult = renderResult
       }
       if (this.layoutFuture == layoutFuture) {
@@ -340,7 +358,8 @@ constructor(
   @ThreadConfined(ThreadConfined.UI)
   private fun maybePromoteCommittedTreeToUI() {
     synchronized(this) {
-      delegate.commitToUI(committedRenderResult?.renderTree, committedRenderResult?.state)
+      delegate.commitToUI(
+          committedRenderResult?.renderTree, committedRenderResult?.state, committedLayoutFrameId)
       if (uiRenderTree == committedRenderResult?.renderTree) {
         return
       }
