@@ -114,13 +114,15 @@ public class LithoTooltipController {
     final Rect anchorBounds = componentHandleToBounds.get(handle);
 
     if (handle == null || anchorBounds == null) {
+      final @Nullable Component component = componentContext.getComponentScope();
+      final String name = component != null ? component.getSimpleName() : "null";
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           INVALID_HANDLE,
           "Cannot find a component with handle "
               + handle
               + " to use as anchor.\nComponent: "
-              + componentContext.getComponentScope().getSimpleName());
+              + name);
       return;
     }
 
