@@ -28,7 +28,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -110,12 +109,6 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     StringBuilder getLogMessage();
   }
-
-  /**
-   * {@link ViewGroup#getClipChildren()} was only added in API 18, will need to keep track of this
-   * flag ourselves on the lower versions
-   */
-  private boolean mClipChildren = true;
 
   private boolean mClippingTemporaryDisabled = false;
   private boolean mClippingToRestore = false;
@@ -1050,22 +1043,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       mClippingToRestore = clipChildren;
       return;
     }
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18, will keep track this way
-      mClipChildren = clipChildren;
-    }
     super.setClipChildren(clipChildren);
-  }
-
-  @Override
-  public boolean getClipChildren() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18
-      return mClipChildren;
-    } else {
-      return super.getClipChildren();
-    }
   }
 
   /**
@@ -1078,11 +1056,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      mClippingToRestore = getClipChildren();
-    } else {
-      mClippingToRestore = mClipChildren;
-    }
+    mClippingToRestore = getClipChildren();
 
     // The order here is crucial, we first need to set clipping then update
     // mClippingTemporaryDisabled flag

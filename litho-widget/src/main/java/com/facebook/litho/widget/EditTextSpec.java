@@ -376,12 +376,7 @@ class EditTextSpec {
         // Padding from the background will be added to the layout separately, so does not need to
         // be a part of this measurement.
         editText.setPadding(0, 0, 0, 0);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-          editText.setBackgroundDrawable(null);
-        } else {
-          editText.setBackground(null);
-        }
+        editText.setBackground(null);
       }
     }
 
@@ -883,7 +878,7 @@ class EditTextSpec {
     }
 
     @Override
-    public void setBackground(Drawable background) {
+    public void setBackground(@Nullable Drawable background) {
       if (background != null) {
         background.mutate();
       }

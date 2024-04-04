@@ -27,7 +27,6 @@ import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
 
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -2853,11 +2852,6 @@ public class RecyclerBinder
   private void enableStickyHeader(RecyclerView recyclerView) {
     if (mIsCircular) {
       Log.w(TAG, "Sticky header is not supported for circular RecyclerViews");
-      return;
-    }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      // Sticky header needs view translation APIs which are not available in Gingerbread and below.
-      Log.w(TAG, "Sticky header is supported only on ICS (API14) and above");
       return;
     }
     if (recyclerView == null) {

@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.animation.AnimatorInflater
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.SparseArray
 import android.view.View
@@ -846,23 +845,14 @@ class LithoViewAttributesExtension private constructor() :
     private fun setViewBackground(view: View, attributes: ViewAttributes) {
       val background = attributes.background
       if (background != null) {
-        setBackgroundCompat(view, background)
+        view.background = background
       }
     }
 
     private fun unsetViewBackground(view: View, attributes: ViewAttributes) {
       val background = attributes.background
       if (background != null) {
-        setBackgroundCompat(view, null)
-      }
-    }
-
-    @Suppress("deprecation")
-    private fun setBackgroundCompat(view: View, drawable: Drawable?) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-        view.setBackgroundDrawable(drawable)
-      } else {
-        view.background = drawable
+        view.background = null
       }
     }
 
@@ -877,16 +867,10 @@ class LithoViewAttributesExtension private constructor() :
     }
 
     private fun setViewLayoutDirection(view: View, attributes: ViewAttributes) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        return
-      }
       view.layoutDirection = attributes.layoutDirection.getLayoutDirectionForView()
     }
 
     private fun unsetViewLayoutDirection(view: View) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        return
-      }
       view.layoutDirection = View.LAYOUT_DIRECTION_INHERIT
     }
 

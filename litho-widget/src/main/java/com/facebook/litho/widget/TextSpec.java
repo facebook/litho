@@ -534,9 +534,7 @@ public class TextSpec {
       layoutBuilder.setLineHeight(lineHeight);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      layoutBuilder.setLetterSpacing(letterSpacing);
-    }
+    layoutBuilder.setLetterSpacing(letterSpacing);
 
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
