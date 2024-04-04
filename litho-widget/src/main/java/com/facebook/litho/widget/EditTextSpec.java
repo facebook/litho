@@ -49,7 +49,10 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.annotation.DoNotInline;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.view.ViewCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -704,7 +707,7 @@ class EditTextSpec {
 
     if (cursorDrawableRes != -1) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        editText.setTextCursorDrawable(cursorDrawableRes);
+        AndroidQImpl.setTextCursorDrawable(editText, cursorDrawableRes);
       } else {
         try {
           // Uses reflection because there is no public API to change cursor color programmatically.
@@ -942,5 +945,15 @@ class EditTextSpec {
         break;
     }
     return alignment;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private static class AndroidQImpl {
+    private AndroidQImpl() {}
+
+    @DoNotInline
+    static void setTextCursorDrawable(EditText editText, @DrawableRes int cursorDrawableRes) {
+      editText.setTextCursorDrawable(cursorDrawableRes);
+    }
   }
 }

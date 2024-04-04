@@ -25,7 +25,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
+import androidx.annotation.DoNotInline
 import androidx.annotation.IdRes
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput
@@ -592,13 +594,13 @@ class LithoViewAttributesExtension private constructor() :
 
     private fun setAmbientShadowColor(view: View, @ColorInt ambientShadowColor: Int) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        view.outlineAmbientShadowColor = ambientShadowColor
+        AndroidPImpl.setAmbientShadowColor(view, ambientShadowColor)
       }
     }
 
     private fun setSpotShadowColor(view: View, @ColorInt spotShadowColor: Int) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        view.outlineSpotShadowColor = spotShadowColor
+        AndroidPImpl.setSpotShadowColor(view, spotShadowColor)
       }
     }
 
@@ -612,7 +614,7 @@ class LithoViewAttributesExtension private constructor() :
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ambientShadowColor != Color.BLACK) {
         // Android documentation says black is the default:
         // https://developer.android.com/reference/android/view/View#getOutlineAmbientShadowColor()
-        view.outlineAmbientShadowColor = Color.BLACK
+        AndroidPImpl.setAmbientShadowColor(view, Color.BLACK)
       }
     }
 
@@ -620,30 +622,30 @@ class LithoViewAttributesExtension private constructor() :
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && spotShadowColor != Color.BLACK) {
         // Android documentation says black is the default:
         // https://developer.android.com/reference/android/view/View#getOutlineSpotShadowColor()
-        view.outlineSpotShadowColor = Color.BLACK
+        AndroidPImpl.setSpotShadowColor(view, Color.BLACK)
       }
     }
 
     private fun setOutlineProvider(view: View, outlineProvider: ViewOutlineProvider?) {
-      if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (outlineProvider != null) {
         view.outlineProvider = outlineProvider
       }
     }
 
     private fun unsetOutlineProvider(view: View, outlineProvider: ViewOutlineProvider?) {
-      if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (outlineProvider != null) {
         view.outlineProvider = ViewOutlineProvider.BACKGROUND
       }
     }
 
     private fun setClipToOutline(view: View, clipToOutline: Boolean) {
-      if (clipToOutline && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (clipToOutline) {
         view.clipToOutline = clipToOutline
       }
     }
 
     private fun unsetClipToOutline(view: View, clipToOutline: Boolean) {
-      if (clipToOutline && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (clipToOutline) {
         view.clipToOutline = false
       }
     }
@@ -880,9 +882,6 @@ class LithoViewAttributesExtension private constructor() :
       if (stateListAnimator == null && stateListAnimatorRes == 0) {
         return
       }
-      check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        ("MountState has a ViewAttributes with stateListAnimator, however the current Android version doesn't support stateListAnimator on Views")
-      }
       if (stateListAnimator == null) {
         stateListAnimator =
             AnimatorInflater.loadStateListAnimator(view.context, stateListAnimatorRes)
@@ -893,9 +892,6 @@ class LithoViewAttributesExtension private constructor() :
     private fun unsetViewStateListAnimator(view: View, attributes: ViewAttributes) {
       if (attributes.stateListAnimator == null && attributes.stateListAnimatorRes == 0) {
         return
-      }
-      check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        ("MountState has a ViewAttributes with stateListAnimator, however the current Android version doesn't support stateListAnimator on Views")
       }
       view.stateListAnimator.jumpToCurrentState()
       view.stateListAnimator = null
@@ -920,5 +916,18 @@ class LithoViewAttributesExtension private constructor() :
         nextAttributes: ViewAttributes?,
         currentAttributes: ViewAttributes?
     ): Boolean = !equals(currentAttributes, nextAttributes)
+  }
+}
+
+@RequiresApi(Build.VERSION_CODES.P)
+private object AndroidPImpl {
+  @DoNotInline
+  fun setAmbientShadowColor(view: View, @ColorInt ambientShadowColor: Int) {
+    view.outlineAmbientShadowColor = ambientShadowColor
+  }
+
+  @DoNotInline
+  fun setSpotShadowColor(view: View, @ColorInt spotShadowColor: Int) {
+    view.outlineSpotShadowColor = spotShadowColor
   }
 }

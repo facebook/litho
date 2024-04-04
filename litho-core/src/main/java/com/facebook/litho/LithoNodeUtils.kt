@@ -20,6 +20,8 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.SparseArray
+import androidx.annotation.DoNotInline
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.facebook.litho.Component.MountType
 import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
@@ -448,7 +450,7 @@ object LithoNodeUtils {
       if (disableBgFgOutputs || !attrs.isHostSpec) {
         attrs.background = result.node.background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          attrs.foreground = lithoNode.foreground
+          AndroidMImpl.setForeground(attrs, lithoNode.foreground)
         }
       }
       if (result.node.isPaddingSet) {
@@ -467,5 +469,13 @@ object LithoNodeUtils {
       attrs.systemGestureExclusionZones = lithoNode.systemGestureExclusionZones
     }
     return attrs
+  }
+}
+
+@RequiresApi(Build.VERSION_CODES.M)
+private object AndroidMImpl {
+  @DoNotInline
+  fun setForeground(attrs: ViewAttributes, foreground: Drawable?) {
+    attrs.foreground = foreground
   }
 }
