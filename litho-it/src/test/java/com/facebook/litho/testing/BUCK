@@ -27,6 +27,8 @@ load(
     "make_dep_path",
 )
 
+oncall("components_for_android")
+
 litho_robolectric4_test(
     name = "testing",
     srcs = glob([

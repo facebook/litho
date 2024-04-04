@@ -7,6 +7,8 @@ load(
     "make_dep_path",
 )
 
+oncall("litho_components_for_android")
+
 fb_java_test(
     name = "test",
     #     TODO: T58412963 enable intelliJ tests

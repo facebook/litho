@@ -25,6 +25,8 @@ load(
     "litho_robolectric4_test",
 )
 
+oncall("components_for_android")
+
 litho_robolectric4_test(
     name = "flipper",
     srcs = glob(["**/*.kt"]),
