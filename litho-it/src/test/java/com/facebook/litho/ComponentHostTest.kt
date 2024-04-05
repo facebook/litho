@@ -450,39 +450,6 @@ class ComponentHostTest {
   }
 
   @Test
-  fun testTemporaryChildClippingDisabling() {
-    val componentHost = ComponentHost(context)
-    assertThat(componentHost.clipChildren).isTrue
-
-    // 1. Testing disable > restore
-    componentHost.temporaryDisableChildClipping()
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isTrue
-
-    // 2. Testing disable > set > restore
-    componentHost.temporaryDisableChildClipping()
-    componentHost.clipChildren = true
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isTrue
-
-    // 3. Same as 1 (disable > restore), but starting with clipping tuned off initially
-    componentHost.clipChildren = false
-    componentHost.temporaryDisableChildClipping()
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isFalse
-
-    // 4. Same as 2 (disable > set > restore), with reverted values
-    componentHost.temporaryDisableChildClipping()
-    componentHost.clipChildren = true
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isTrue
-  }
-
-  @Test
   fun testDisappearingItems() {
     val v1 = View(context.androidContext)
     mount(0, v1)

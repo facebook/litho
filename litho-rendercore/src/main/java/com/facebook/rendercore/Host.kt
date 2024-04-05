@@ -17,17 +17,14 @@
 package com.facebook.rendercore
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.view.ViewGroup
 
 abstract class Host(context: Context, attrs: AttributeSet?) : ViewGroup(context, attrs) {
 
-  /**
-   * [ViewGroup.getClipChildren] was only added in API 18, will need to keep track of this flag
-   * ourselves on the lower versions
-   */
-  private var clipChildren = true
+  init {
+    clipChildren = true
+  }
 
   /**
    * Mounts the given [MountItem] with unique index.
@@ -71,23 +68,6 @@ abstract class Host(context: Context, attrs: AttributeSet?) : ViewGroup(context,
    * @param newIndex The new index of the MountItem.
    */
   abstract fun moveItem(item: MountItem?, oldIndex: Int, newIndex: Int)
-
-  override fun getClipChildren(): Boolean {
-    return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18
-      this.clipChildren
-    } else {
-      super.getClipChildren()
-    }
-  }
-
-  override fun setClipChildren(clipChildren: Boolean) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18, will keep track this way
-      this.clipChildren = clipChildren
-    }
-    super.setClipChildren(clipChildren)
-  }
 
   open val descriptionOfMountedItems: String
     get() = ""

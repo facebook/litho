@@ -110,9 +110,6 @@ public class ComponentHost extends Host implements DisappearingHost {
     StringBuilder getLogMessage();
   }
 
-  private boolean mClippingTemporaryDisabled = false;
-  private boolean mClippingToRestore = false;
-
   /**
    * Is {@code true} if and only if any accessible mounted child content has extra A11Y nodes. This
    * is {@code false} by default, and is set for every mount, unmount, and update call.
@@ -1035,51 +1032,6 @@ public class ComponentHost extends Host implements DisappearingHost {
     // delegate that we receive here. Instead, we'll set this to true at the point that we set that
     // delegate explicitly.
     mIsComponentAccessibilityDelegateSet = false;
-  }
-
-  @Override
-  public void setClipChildren(boolean clipChildren) {
-    if (mClippingTemporaryDisabled) {
-      mClippingToRestore = clipChildren;
-      return;
-    }
-    super.setClipChildren(clipChildren);
-  }
-
-  /**
-   * Temporary disables child clipping, the previous state could be restored by calling {@link
-   * #restoreChildClipping()}. While clipping is disabled calling {@link #setClipChildren(boolean)}
-   * would have no immediate effect, but the restored state would reflect the last set value
-   */
-  void temporaryDisableChildClipping() {
-    if (mClippingTemporaryDisabled) {
-      return;
-    }
-
-    mClippingToRestore = getClipChildren();
-
-    // The order here is crucial, we first need to set clipping then update
-    // mClippingTemporaryDisabled flag
-    setClipChildren(false);
-
-    mClippingTemporaryDisabled = true;
-  }
-
-  /**
-   * Restores child clipping to the state it was in when {@link #temporaryDisableChildClipping()}
-   * was called, unless there were attempts to set a new value, while the clipping was disabled,
-   * then would be restored to the last set value
-   */
-  void restoreChildClipping() {
-    if (!mClippingTemporaryDisabled) {
-      return;
-    }
-
-    // The order here is crucial, we first need to update mClippingTemporaryDisabled flag then set
-    // clipping
-    mClippingTemporaryDisabled = false;
-
-    setClipChildren(mClippingToRestore);
   }
 
   /**
