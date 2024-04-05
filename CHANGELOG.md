@@ -1,11 +1,18 @@
 # Changelog
 
-## Version 0.50.0-SNAPSHOT
+## Version 0.51.0-SNAPSHOT
+
+_release-date_
+
+* TBD
+
+## Version 0.50.0
 
 * [BREAKING] All the nested BUCK modules under litho-core deleted
 * Exposed `androidContext` inside of `bind{}` blocks in Primitive API
+* Converted more code to Kotlin
+* Numerous bug fixes.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.49.0...master).
 
 ## Version 0.49.1
 _2024-03-13_
