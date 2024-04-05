@@ -107,6 +107,7 @@ object DebugEventAttribute {
   const val NumMountableOutputs = "numMountableOutputs"
   const val NumItemsMounted = "numItemsMounted"
   const val NumItemsUnmounted = "numItemsUnmounted"
+  const val WasInterrupted = "wasInterrupted"
 }
 
 /** Base class for marker events */

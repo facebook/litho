@@ -104,7 +104,7 @@ object LithoDebugEvents {
     fun get(treeId: Int, name: String, wasInterrupted: Boolean) {
       dispatch(type = LithoDebugEvent.TreeFutureGet, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
-        attrs["wasInterrupted"] = wasInterrupted
+        attrs[DebugEventAttribute.WasInterrupted] = wasInterrupted
       }
     }
 
