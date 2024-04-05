@@ -234,7 +234,7 @@ fun <ContentType : ViewGroup> MountConfigurationScope<ContentType>.bindToRenderT
     bind(Unit) { content ->
       onUnbind {
         state.cleanup()
-        content.getRenderTreeView().resetLayoutState()
+        content.getRenderTreeView().clean()
       }
     }
   }

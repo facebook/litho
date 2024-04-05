@@ -270,7 +270,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
   public void release() {
     if (mLithoView instanceof LithoRenderTreeView) {
-      ((LithoRenderTreeView) mLithoView).resetLayoutState();
+      ((LithoRenderTreeView) mLithoView).clean();
     } else {
       throw new UnsupportedOperationException(
           "This operation is only support for LithoRenderTreeView but it was : "

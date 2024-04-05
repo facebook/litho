@@ -19,6 +19,10 @@ package com.facebook.litho
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.UiThread
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.facebook.litho.config.ComponentsConfiguration
 
 /**
@@ -26,13 +30,15 @@ import com.facebook.litho.config.ComponentsConfiguration
  * ComponentTree
  */
 class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
-    BaseMountingView(context, attrs) {
+    BaseMountingView(context, attrs), LifecycleEventObserver {
 
   private var hasNewTree = false
 
   // Set together
   private var layoutState: LayoutState? = null
   private var treeState: TreeState? = null
+
+  private var currentLifecycleOwner: LifecycleOwner? = null
 
   private val requireTreeState: TreeState
     get() {
@@ -44,6 +50,24 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
       return requireNotNull(layoutState) { "LayoutState not available." }
     }
 
+  var onClean: (() -> Unit)? = null
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    val lifecycleOwner = findViewTreeLifecycleOwner()
+    if (lifecycleOwner != null && currentLifecycleOwner != lifecycleOwner) {
+      currentLifecycleOwner?.lifecycle?.removeObserver(this)
+      lifecycleOwner.lifecycle.addObserver(this)
+      currentLifecycleOwner = lifecycleOwner
+    }
+  }
+
+  override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+    if (event == Lifecycle.Event.ON_DESTROY) {
+      clean()
+    }
+  }
+
   override fun getConfiguration(): ComponentsConfiguration? {
     return layoutState?.componentContext?.lithoConfiguration?.componentsConfig
   }
@@ -53,7 +77,7 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     return ComponentContext.isIncrementalMountEnabled(componentContext)
   }
 
-  public override fun getCurrentLayoutState(): LayoutState? = layoutState
+  override fun getCurrentLayoutState(): LayoutState? = layoutState
 
   override fun isVisibilityProcessingEnabled(): Boolean {
     val componentContext = layoutState?.componentContext ?: return false
@@ -143,8 +167,12 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
     requestLayout()
   }
 
-  fun resetLayoutState() {
+  fun clean() {
     unmountAllItems()
+    onClean?.invoke()
+    onClean = null
+    currentLifecycleOwner?.lifecycle?.removeObserver(this)
+    currentLifecycleOwner = null
     layoutState = null
     treeState = null
     hasNewTree = true

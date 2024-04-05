@@ -78,6 +78,7 @@ dependencies {
     implementation deps.supportCustomView
     implementation deps.supportViewPager
     implementation deps.supportDynamicAnimations
+    implementation deps.lifecycle
 
     // First-party dependencies
     if (project.isRelease()) {

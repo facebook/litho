@@ -59,6 +59,7 @@ litho_android_library(
     ],
     visibility = LITHO_VISIBILITY,
     deps = [
+        "//third-party/java/androidx/lifecycle/lifecycle-runtime:lifecycle-runtime",
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_BUILD_CONFIG_TARGET,

@@ -115,18 +115,15 @@ fun NestedLithoPrimitive(
           contentAllocator = ViewAllocator { LithoRenderTreeView(it) },
       ) {
 
-        // the litho lifecycle listener release callback should be the last binder to be unbound
-        withDescription("lifecycle-provider-release") {
-          bind(nestedTreeId.id) { _ -> onUnbind { lifecycleProvider.release() } }
-        }
-
         // binder to clean up the content before returning it to the pool
         withDescription("final-unmount") {
           bind(nestedTreeId.id) { content ->
-            onUnbind {
+            content.onClean = {
+              rootHostReference.mountedView = null
               content.currentLayoutState?.cleanup()
-              content.resetLayoutState()
+              lifecycleProvider.release()
             }
+            onUnbind { content.clean() }
           }
         }
 

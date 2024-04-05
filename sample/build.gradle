@@ -73,7 +73,7 @@ dependencies {
     compileOnly deps.inferAnnotations
 
     // Support Library
-    implementation deps.archLifecycle
+    implementation deps.viewModel
     implementation deps.kotlinCoroutines
     implementation deps.kotlinStandardLib
     implementation deps.liveData
