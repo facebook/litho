@@ -168,7 +168,7 @@ interface TraceListener<T : Any?> {
   fun onTraceStart(type: String): T
 
   // Called after the trace event ends
-  fun onTraceEnd(token: T, event: DebugProcessEvent)
+  fun onTraceEnd(payload: T, event: DebugProcessEvent)
 }
 
 /** Object to dispatch debug events */
@@ -377,7 +377,7 @@ object DebugEventDispatcher {
     val attributes = LinkedHashMap<String, Any?>()
     attributesAccumulator(attributes)
 
-    val tokens: List<Any?> = traceListeners.map { it.onTraceStart(type) }
+    val payloads: List<Any?> = traceListeners.map { it.onTraceStart(type) }
     val timestamp = System.currentTimeMillis()
     val startTime = System.nanoTime()
     val res = block(TraceScope(attributes = attributes))
@@ -392,7 +392,7 @@ object DebugEventDispatcher {
             attributes = attributes,
         )
 
-    traceListeners.forEachIndexed { i, it -> it.onTraceEnd(token = tokens[i], event = event) }
+    traceListeners.forEachIndexed { i, it -> it.onTraceEnd(payload = payloads[i], event = event) }
     subscribersToNotify.forEach { it.onEvent(event) }
 
     return res
