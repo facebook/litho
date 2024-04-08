@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
 import com.facebook.litho.debug.LithoDebugEventAttributes.Component
+import com.facebook.rendercore.debug.DebugEventAttribute.Name
 import com.facebook.rendercore.debug.DebugEventDispatcher.trace
 import com.facebook.rendercore.utils.hasEquivalentFields
 
@@ -60,7 +61,10 @@ abstract class KComponent : Component() {
         trace(
             type = ComponentRendered,
             renderStateId = { resolveContext.treeId.toString() },
-            attributesAccumulator = { it[Component] = simpleName },
+            attributesAccumulator = { accumulator ->
+              accumulator[Component] = simpleName
+              accumulator[Name] = simpleName
+            },
         ) {
           val isTracing = ComponentsSystrace.isTracing
           if (isTracing) {
