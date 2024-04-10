@@ -73,7 +73,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
    *     configurations.
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getGlobalConfigs() {
-    return Arrays.asList(UnmountOnDetachConfiguration.class);
+    return Arrays.asList();
   }
 
   @Override
