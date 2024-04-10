@@ -22,6 +22,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import androidx.annotation.Nullable;
+import androidx.core.view.OneShotPreDrawListener;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.BaseMountingView;
@@ -33,6 +34,7 @@ import com.facebook.litho.LithoMetadataExceptionWrapper;
 import com.facebook.litho.LithoRenderTreeView;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TreeState;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.utils.CommonUtils;
@@ -184,21 +186,25 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
   public void setScrollPosition(final @Nullable ScrollPosition scrollPosition) {
     if (scrollPosition != null) {
-      final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
-          new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-              setScrollY(scrollPosition.y);
-              ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
-              if (currentViewTreeObserver.isAlive()) {
-                currentViewTreeObserver.removeOnPreDrawListener(this);
+      if (ComponentsConfiguration.useOneShotPreDrawListener) {
+        mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
+      } else {
+        final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
+            new ViewTreeObserver.OnPreDrawListener() {
+              @Override
+              public boolean onPreDraw() {
+                setScrollY(scrollPosition.y);
+                ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
+                if (currentViewTreeObserver.isAlive()) {
+                  currentViewTreeObserver.removeOnPreDrawListener(this);
+                }
+                return true;
               }
-              return true;
-            }
-          };
-      getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
+            };
+        getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
 
-      mOnPreDrawListener = onPreDrawListener;
+        mOnPreDrawListener = onPreDrawListener;
+      }
     } else {
       setScrollY(0);
       getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
@@ -230,21 +236,25 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     ((LithoView) mLithoView).setComponentTree(contentComponentTree);
 
     mScrollPosition = scrollPosition;
-    final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
-        new ViewTreeObserver.OnPreDrawListener() {
-          @Override
-          public boolean onPreDraw() {
-            setScrollY(scrollPosition.y);
-            ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
-            if (currentViewTreeObserver.isAlive()) {
-              currentViewTreeObserver.removeOnPreDrawListener(this);
+    if (ComponentsConfiguration.useOneShotPreDrawListener) {
+      mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
+    } else {
+      final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
+          new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+              setScrollY(scrollPosition.y);
+              ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
+              if (currentViewTreeObserver.isAlive()) {
+                currentViewTreeObserver.removeOnPreDrawListener(this);
+              }
+              return true;
             }
-            return true;
-          }
-        };
-    getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
+          };
+      getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
 
-    mOnPreDrawListener = onPreDrawListener;
+      mOnPreDrawListener = onPreDrawListener;
+    }
     if (scrollStateListener != null) {
       if (mScrollStateDetector == null) {
         mScrollStateDetector = new ScrollStateDetector(this);
@@ -279,6 +289,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   }
 
   public static class ScrollPosition {
+
     public int y;
 
     public ScrollPosition() {
