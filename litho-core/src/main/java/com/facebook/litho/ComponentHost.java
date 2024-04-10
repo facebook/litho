@@ -667,11 +667,6 @@ public class ComponentHost extends Host implements DisappearingHost {
       return;
     }
 
-    if (component instanceof SpecGeneratedComponent) {
-      // Do not change the current behavior we have for SpecGeneratedComponents.
-      return;
-    }
-
     NodeInfo nodeInfo = (NodeInfo) view.getTag(COMPONENT_NODE_INFO_ID);
     if (mIsComponentAccessibilityDelegateSet && nodeInfo != null) {
       // Check if AccessibilityDelegate is set on the host, it means accessibility is enabled.
