@@ -29,7 +29,7 @@ class RenderResult<State, RenderContext>
 internal constructor(
     val renderTree: RenderTree,
     val nodeTree: Node<RenderContext>,
-    val layoutCacheData: LayoutCache.CachedData,
+    val layoutCacheData: Map<Any, Any?>,
     val state: State?
 ) {
 
@@ -181,7 +181,7 @@ internal constructor(
 
     @VisibleForTesting
     @JvmStatic
-    fun buildCache(previousCache: LayoutCache.CachedData?): LayoutCache {
+    fun buildCache(previousCache: Map<Any, Any?>?): LayoutCache {
       return if (previousCache != null) LayoutCache(previousCache) else LayoutCache(null)
     }
   }

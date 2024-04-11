@@ -31,7 +31,6 @@ import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
-import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
@@ -125,7 +124,7 @@ public class LayoutState
   private final @Nullable List<Transition> mTransitions;
   private final @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private final @Nullable WorkingRangeContainer mWorkingRangeContainer;
-  final @Nullable LayoutCache.CachedData mLayoutCacheData;
+  final @Nullable Map<Object, Object> mLayoutCacheData;
 
   // If there is any component marked with 'ExcludeFromIncrementalMountComponent'
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -144,7 +143,7 @@ public class LayoutState
       SizeConstraints sizeConstraints,
       int componentTreeId,
       boolean isAccessibilityEnabled,
-      @Nullable LayoutCache.CachedData layoutCacheData,
+      @Nullable Map<Object, Object> layoutCacheData,
       @Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers,
       ReductionState reductionState) {
     mResolveResult = resolveResult;

@@ -16,8 +16,7 @@
 
 package com.facebook.rendercore
 
-import androidx.collection.LongSparseArray
-import java.util.HashMap
+import kotlin.collections.HashMap
 
 /**
  * A Cache that can be used to reuse LayoutResults or parts of them across layout calculations. It's
@@ -25,33 +24,20 @@ import java.util.HashMap
  * node. Values put in the LayoutCache (WriteCache) will be available for read in the next layout
  * pass as ReadCache.
  */
-class LayoutCache(oldWriteCache: CachedData? = null) {
-  private val writeCache: CachedData = CachedData()
-  private val readCache: CachedData? = oldWriteCache
+class LayoutCache(oldWriteCache: Map<Any, Any?>? = null) {
+  private val writeCache: MutableMap<Any, Any?> = HashMap()
+  private val readCache: Map<Any, Any?> = oldWriteCache ?: emptyMap()
 
   class CacheItem(val layoutResult: LayoutResult, val widthSpec: Int, val heightSpec: Int)
 
-  class CachedData {
-    internal val cacheByRef: MutableMap<Any, Any?> = HashMap<Any, Any?>()
-    internal val cacheById: LongSparseArray<Any?> = LongSparseArray()
-  }
-
-  operator fun <T : Any?> get(key: Any): T? {
-    @Suppress("UNCHECKED_CAST") return readCache?.cacheByRef?.get(key) as? T
-  }
-
   fun put(key: Any, cacheItem: Any?) {
-    writeCache.cacheByRef[key] = cacheItem
+    writeCache[key] = cacheItem
   }
 
-  fun <T> get(uniqueId: Long): T? {
-    @Suppress("UNCHECKED_CAST") return readCache?.cacheById?.get(uniqueId) as? T?
+  operator fun <T> get(uniqueId: Any): T? {
+    @Suppress("UNCHECKED_CAST") return readCache.get(uniqueId) as? T?
   }
 
-  fun put(uniqueId: Long, value: Any?) {
-    writeCache.cacheById.put(uniqueId, value)
-  }
-
-  val writeCacheData: CachedData
+  val writeCacheData: Map<Any, Any?>
     get() = writeCache
 }
