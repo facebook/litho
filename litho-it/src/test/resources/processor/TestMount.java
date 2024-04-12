@@ -16,7 +16,6 @@
 
 package com.facebook.litho.processor.integration.resources;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -68,7 +67,6 @@ import javax.annotation.Nullable;
  * @prop-required prop8 long
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
-@TargetApi(17)
 @Generated
 public final class TestMount<S extends View> extends SpecGeneratedComponent implements TestTag {
   @Prop(resType = ResType.NONE, optional = false)
