@@ -153,6 +153,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) @Nullable ItemAnimator itemAnimator,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
+      @Prop(optional = true) @Nullable RecyclerView.EdgeEffectFactory edgeEffectFactory,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int leftPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int rightPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int topPadding,
@@ -219,6 +220,7 @@ public class RecyclerCollectionComponentSpec {
             .scrollBarStyle(scrollBarStyle)
             .recyclerViewId(recyclerViewId)
             .overScrollMode(overScrollMode)
+            .edgeEffectFactory(edgeEffectFactory)
             .recyclerEventsController(internalEventsController)
             .refreshHandler(!canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
             .pullToRefresh(canPTR)

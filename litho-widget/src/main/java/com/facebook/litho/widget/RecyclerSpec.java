@@ -85,6 +85,7 @@ class RecyclerSpec {
   @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
   @PropDefault static final int recyclerViewId = View.NO_ID;
   @PropDefault static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
+
   @PropDefault static final int refreshProgressBarColor = Color.BLACK;
   @PropDefault static final boolean clipToPadding = true;
   @PropDefault static final boolean clipChildren = true;
@@ -159,6 +160,7 @@ class RecyclerSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
+      @Prop(optional = true) @Nullable RecyclerView.EdgeEffectFactory edgeEffectFactory,
       @Nullable @Prop(optional = true, isCommonProp = true) CharSequence contentDescription,
       @Prop(optional = true) @Nullable ItemAnimator itemAnimator) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
@@ -187,6 +189,9 @@ class RecyclerSpec {
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
     recyclerView.setOverScrollMode(overScrollMode);
+    if (edgeEffectFactory != null) {
+      recyclerView.setEdgeEffectFactory(edgeEffectFactory);
+    }
     if (refreshProgressBarBackgroundColor != null) {
       sectionsRecycler.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor);
     }
@@ -329,6 +334,7 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Nullable @Prop(optional = true, varArg = "itemDecoration")
           List<RecyclerView.ItemDecoration> itemDecorations,
+      @Nullable @Prop(optional = true) RecyclerView.EdgeEffectFactory edgeEffectFactory,
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
       @Nullable @Prop(optional = true) SnapHelper snapHelper) {
@@ -351,6 +357,10 @@ class RecyclerSpec {
       for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
         recyclerView.removeItemDecoration(itemDecoration);
       }
+    }
+
+    if (edgeEffectFactory != null) {
+      recyclerView.setEdgeEffectFactory(sectionsRecycler.getDefaultEdgeEffectFactory());
     }
 
     binder.unmount(recyclerView);

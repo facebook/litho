@@ -46,6 +46,8 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
+
+  private final RecyclerView.EdgeEffectFactory mDefaultEdgeEffectFactory;
   private @Nullable SectionsRecyclerViewLogger mSectionsRecyclerViewLogger;
   private boolean mIsFirstLayout = true;
 
@@ -65,6 +67,8 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     super(context);
 
     mRecyclerView = recyclerView;
+    // Get the default edge effect factory (at least the default one in the initialized recycler)
+    mDefaultEdgeEffectFactory = mRecyclerView.getEdgeEffectFactory();
 
     // We need to draw first visible item on top of other children to support sticky headers
     mRecyclerView.setChildDrawingOrderCallback(
@@ -112,6 +116,10 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   public LithoView getStickyHeader() {
     return mStickyHeader;
+  }
+
+  public RecyclerView.EdgeEffectFactory getDefaultEdgeEffectFactory() {
+    return mDefaultEdgeEffectFactory;
   }
 
   public void setStickyHeaderVerticalOffset(int verticalOffset) {
@@ -287,6 +295,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   /** Pass to a SectionsRecyclerView to do custom logging. */
   public interface SectionsRecyclerViewLogger {
+
     void onLayoutStarted(boolean isFirstLayoutAfterRecycle);
 
     void onLayoutEnded(boolean isFirstLayoutAfterRecycle);
