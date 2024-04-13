@@ -13,6 +13,7 @@ litho_android_library(
     ]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
+    k2 = True,
     labels = [],
     pure_kotlin = False,
     required_for_source_only_abi = True,

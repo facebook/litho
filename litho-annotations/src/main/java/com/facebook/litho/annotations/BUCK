@@ -18,6 +18,7 @@ litho_android_library(
     ]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
+    k2 = True,
     labels = [],
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,

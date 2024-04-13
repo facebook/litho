@@ -25,6 +25,7 @@ load(
 litho_android_library(
     name = "canvas",
     feature = FBApp_UIFrameworks_Litho_Litho,
+    k2 = True,
     labels = [],
     visibility = ["PUBLIC"],
     deps = [
