@@ -24,6 +24,7 @@ version = VERSION_NAME
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+    namespace 'com.facebook.primitive.canvas'
 
     // We're on an old version of Robolectric which requires this, sadly.
     useLibrary 'org.apache.http.legacy'

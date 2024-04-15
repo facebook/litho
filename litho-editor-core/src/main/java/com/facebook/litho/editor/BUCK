@@ -16,6 +16,7 @@ fb_android_library(
     ]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
+    k2 = True,
     labels = [],
     pure_kotlin = False,
     visibility = [

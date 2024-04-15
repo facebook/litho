@@ -23,7 +23,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath "com.vanniktech:gradle-maven-publish-plugin:${MAVEN_PUBLISH_PLUGIN}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${DOKKA_VERSION}"
