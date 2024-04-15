@@ -47,6 +47,7 @@ android {
             version '3.18.1'
         }
     }
+    namespace 'com.facebook.flexlayout'
 }
 
 dependencies {

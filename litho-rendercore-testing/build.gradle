@@ -30,10 +30,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
+    namespace 'com.facebook.rendercore.testing'
+    lint {
         abortOnError false
     }
+    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {

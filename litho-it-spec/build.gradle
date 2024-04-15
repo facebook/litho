@@ -39,10 +39,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    lintOptions {
+    namespace 'com.facebook.litho.itspec'
+    lint {
         abortOnError false
     }
+
 }
 
 dependencies {

@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
-          java-version: 11
+          java-version: 17
       - name: Set up GCC
         uses: egor-tensin/setup-gcc@v1
         with:
@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
-          java-version: 11
+          java-version: 17
       - name: Set up GCC
         uses: egor-tensin/setup-gcc@v1
         with:
@@ -116,7 +116,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
-          java-version: 11
+          java-version: 17
       - name: Set up GCC
         uses: egor-tensin/setup-gcc@v1
         with:
