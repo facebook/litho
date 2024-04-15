@@ -22,8 +22,8 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    targetCompatibility = targetCompatibilityVersion
-    sourceCompatibility = sourceCompatibilityVersion
+    targetCompatibility = rootProject.targetCompatibilityVersion
+    sourceCompatibility = rootProject.sourceCompatibilityVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -32,11 +32,12 @@ android {
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
+    namespace 'com.facebook.samples.litho'
+    lint {
         abortOnError false
     }
+
+    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {

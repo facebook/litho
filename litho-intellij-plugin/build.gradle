@@ -28,13 +28,13 @@ apply plugin: "org.jetbrains.intellij"
 
 group 'com.facebook.litho.intellij'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = rootProject.sourceCompatibilityVersion
 
 compileKotlin {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+    kotlinOptions.jvmTarget = rootProject.targetCompatibilityVersion
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+    kotlinOptions.jvmTarget = rootProject.targetCompatibilityVersion
 }
 
 sourceSets {
