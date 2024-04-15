@@ -70,6 +70,18 @@ subprojects {
         }
     }
 
+    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper) {
+        kotlin {
+            jvmToolchain(11)
+        }
+    }
+
+    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper) {
+        kotlin {
+            jvmToolchain(11)
+        }
+    }
+
     afterEvaluate {
         tasks.withType(Test) {
             it.dependsOn copyYogaLibs
