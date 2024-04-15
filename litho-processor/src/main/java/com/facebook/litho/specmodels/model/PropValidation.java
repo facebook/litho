@@ -155,6 +155,8 @@ public class PropValidation {
           "performAccessibilityActionHandler",
           "sendAccessibilityEventHandler",
           "sendAccessibilityEventUncheckedHandler",
+          "onPerformActionForVirtualViewHandler",
+          "onVirtualViewKeyboardFocusChangedHandler",
           "transitionKey",
           "alpha",
           "scale",
@@ -291,6 +293,16 @@ public class PropValidation {
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
                   ClassName.bestGuess("com.facebook.litho.SendAccessibilityEventUncheckedEvent"))),
+          new CommonPropModel(
+              "onPerformActionForVirtualViewHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.PerformActionForVirtualViewEvent"))),
+          new CommonPropModel(
+              "onVirtualViewKeyboardFocusChangedHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.VirtualViewKeyboardFocusChangedEvent"))),
           new CommonPropModel("transitionKey", ClassNames.STRING),
           new CommonPropModel("scale", TypeName.FLOAT),
           new CommonPropModel("alpha", TypeName.FLOAT),
@@ -315,9 +327,10 @@ public class PropValidation {
                   props.get(i).getRepresentedObject(),
                   "The prop "
                       + props.get(i).getName()
-                      + " is defined differently in different "
-                      + "methods. Ensure that each instance of this prop is declared in the same "
-                      + "way (this means having the same type, resType and values for isOptional, isCommonProp and overrideCommonPropBehavior)."));
+                      + " is defined differently in different methods. Ensure that each instance of"
+                      + " this prop is declared in the same way (this means having the same type,"
+                      + " resType and values for isOptional, isCommonProp and"
+                      + " overrideCommonPropBehavior)."));
         }
       }
     }

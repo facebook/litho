@@ -27,6 +27,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -39,9 +41,10 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeUpdateListener;
-import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayDeque;
@@ -49,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class BaseMountingView extends ComponentHost
     implements RenderCoreExtensionHost, AnimatedRootHost {
 
@@ -58,14 +62,16 @@ public abstract class BaseMountingView extends ComponentHost
   private static final String TAG = BaseMountingView.class.getSimpleName();
 
   private final MountState mMountState;
+  public final int mViewAttributeFlags;
   protected int mAnimatedWidth = -1;
   protected int mAnimatedHeight = -1;
-  private LithoHostListenerCoordinator mLithoHostListenerCoordinator;
+  private @Nullable LithoHostListenerCoordinator mLithoHostListenerCoordinator;
   private boolean mIsMountStateDirty;
   private boolean mIsMounting;
   private @Nullable Deque<ReentrantMount> mReentrantMounts;
   private final Rect mPreviousMountVisibleRectBounds = new Rect();
   private int mTransientStateCount;
+  private Boolean mHasTransientState = false;
   private boolean mHasVisibilityHint;
   private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
@@ -86,10 +92,12 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   public BaseMountingView(ComponentContext context, @Nullable AttributeSet attrs) {
-    super(context.getAndroidContext(), attrs);
+    super(context.getAndroidContext(), attrs, /* UnsafeModificationPolicy */ null);
     mMountState = new MountState(this, ComponentsSystrace.getSystrace());
     mMountState.setEnsureParentMounted(true);
+    mViewAttributeFlags = LithoMountData.getViewAttributeFlags(this);
   }
+
   /**
    * Sets the width that the BaseMountingView should take on the next measure pass and then requests
    * a layout. This should be called from animation-driving code on each frame to animate the size
@@ -270,6 +278,15 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   @Override
+  public boolean hasTransientState() {
+    if (ComponentsConfiguration.shouldOverrideHasTransientState) {
+      return mHasTransientState;
+    } else {
+      return super.hasTransientState();
+    }
+  }
+
+  @Override
   public void setHasTransientState(boolean hasTransientState) {
     super.setHasTransientState(hasTransientState);
 
@@ -277,9 +294,15 @@ public abstract class BaseMountingView extends ComponentHost
       if (mTransientStateCount == 0 && hasTree()) {
         notifyVisibleBoundsChanged(new Rect(0, 0, getWidth(), getHeight()), false);
       }
+      if (mTransientStateCount == 0) {
+        mHasTransientState = true;
+      }
       mTransientStateCount++;
     } else {
       mTransientStateCount--;
+      if (mTransientStateCount == 0) {
+        mHasTransientState = false;
+      }
       if (mTransientStateCount == 0 && hasTree()) {
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
@@ -378,7 +401,8 @@ public abstract class BaseMountingView extends ComponentHost
       mReentrantMounts.clear();
 
       while (!reentrantMounts.isEmpty()) {
-        final ReentrantMount reentrantMount = reentrantMounts.pollFirst();
+        final ReentrantMount reentrantMount =
+            Preconditions.checkNotNull(reentrantMounts.pollFirst());
         setMountStateDirty();
         mountComponentInternal(
             reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
@@ -396,9 +420,9 @@ public abstract class BaseMountingView extends ComponentHost
 
     final boolean isDirtyMount = isMountStateDirty();
     final TreeMountInfo mountInfo = getMountInfo();
-    if (mountInfo != null && !mountInfo.mHasMounted) {
-      mountInfo.mIsFirstMount = true;
-      mountInfo.mHasMounted = true;
+    if (mountInfo != null && !mountInfo.hasMounted) {
+      mountInfo.isFirstMount = true;
+      mountInfo.hasMounted = true;
     }
     mIsMounting = true;
 
@@ -413,7 +437,7 @@ public abstract class BaseMountingView extends ComponentHost
       throw ComponentUtils.wrapWithMetadata(this, e);
     } finally {
       if (getMountInfo() != null) {
-        getMountInfo().mIsFirstMount = false;
+        getMountInfo().isFirstMount = false;
       }
       mIsMounting = false;
       if (isDirtyMount) {
@@ -482,12 +506,14 @@ public abstract class BaseMountingView extends ComponentHost
       LayoutState layoutState, @Nullable Rect currentVisibleArea) {
     final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
     if (currentVisibleArea != null && !needsMount) {
-      mMountState.getMountDelegate().notifyVisibleBoundsChanged(currentVisibleArea);
+      Preconditions.checkNotNull(mMountState.getMountDelegate())
+          .notifyVisibleBoundsChanged(currentVisibleArea);
     } else {
       // Generate the renderTree here so that any operations
       // that occur in toRenderTree() happen prior to "beforeMount".
       final RenderTree renderTree = layoutState.toRenderTree();
       setupMountExtensions();
+      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       mMountState.mount(renderTree);
       LithoStats.incrementComponentMountCount();
@@ -588,6 +614,7 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected synchronized void onDirtyMountComplete() {}
 
+  @Nullable
   protected TreeMountInfo getMountInfo() {
     final TreeState treeState = getTreeState();
     return treeState != null ? treeState.getMountInfo() : null;
@@ -625,7 +652,7 @@ public abstract class BaseMountingView extends ComponentHost
   @Override
   public void onRegisterForPremount(@Nullable Long frameTime) {
     final @Nullable ComponentsConfiguration config = getConfiguration();
-    if (config != null && config.useIncrementalMountGapWorker()) {
+    if (config != null && config.useIncrementalMountGapWorker) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onRegisterForPremount");
@@ -641,7 +668,7 @@ public abstract class BaseMountingView extends ComponentHost
   @Override
   public void onUnregisterForPremount() {
     final @Nullable ComponentsConfiguration config = getConfiguration();
-    if (config != null && config.useIncrementalMountGapWorker()) {
+    if (config != null && config.useIncrementalMountGapWorker) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onUnregisterForPremount");
@@ -654,7 +681,7 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   @Override
-  public void setRenderTreeUpdateListener(RenderTreeUpdateListener listener) {
+  public void setRenderTreeUpdateListener(@Nullable RenderTreeUpdateListener listener) {
     mMountState.setRenderTreeUpdateListener(listener);
   }
 
@@ -672,6 +699,7 @@ public abstract class BaseMountingView extends ComponentHost
   @UiThread
   void performIncrementalMountForVisibleBoundsChange() {
     assertMainThread();
+
     if (!hasTree()) {
       return;
     }
@@ -679,27 +707,81 @@ public abstract class BaseMountingView extends ComponentHost
     // Per ComponentTree visible area. Because BaseMountingViews can be nested and mounted
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = new Rect();
-    final boolean hasNonEmptyVisibleRect = getLocalVisibleRect(currentVisibleArea);
+    final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
 
-    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
-        && !hasNonEmptyVisibleRect) {
-      // Set to pure empty to allow for easy comparisons.
-      currentVisibleArea.setEmpty();
-    }
-
-    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
-        || hasNonEmptyVisibleRect
+    if (areBoundsVisible
         || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
         // It might not be yet visible but animating from 0 height/width in which case we still
         // need to mount them to trigger animation.
-        || animatingRootBoundsFromZero(currentVisibleArea)) {
+        || animatingRootBoundsFromZero(currentVisibleArea)
+        || hasBecomeInvisible()) {
       mountComponent(currentVisibleArea, true);
     }
   }
 
+  /**
+   * This is used to detect an edge case of using Litho in a nested scenario. You can imagine a a
+   * host XML, which takes a LithoView on top.
+   *
+   * <p>As we scroll the LithoView out of the screen, we will process incremental mount correctly
+   * until the last visible pixel.
+   *
+   * <pre>
+   *        |________________________| top: 0
+   *        ||                      ||
+   *        ||        Litho View    ||
+   *        ||______________________|| bottom: 156
+   *        |                        |
+   *        |                        |
+   *        |    Remaining Host      |
+   *        |                        |
+   *        |_______________________ |
+   * </pre>
+   *
+   * However, once the LithoView goes off the screen but the remaining host is still visible, the
+   * LithoView rect coordinates become negative:
+   *
+   * <pre>
+   *        |________________________| top: -156
+   *        ||                      ||
+   *        ||        Litho View    ||
+   *        ||______________________|| bottom: 0
+   *
+   *                                    invisible
+   *    - - - - - - - - - - - - - - - - - - - - - -
+   *                                    visible
+   *        |_______________________ |
+   *        |                        |
+   *        |    Remaining Host      |
+   *        |                        |
+   *        |_______________________ |
+   * </pre>
+   *
+   * Therefore, the rect is considered not visible, and in normal conditions we wouldn't process an
+   * extra pass of incremental mount.
+   *
+   * <p>We use this check to understand if in the last IM pass, the rect was visible, and that now
+   * is not. If that is the case, we will do an extra pass of IM to guarantee that the visibility
+   * outputs are processed and any onInvisible callback is delivered.
+   */
+  private boolean hasBecomeInvisible() {
+    ComponentsConfiguration configuration = getConfiguration();
+    boolean shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
+        configuration != null
+            && configuration.shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible;
+
+    return shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible
+        && mPreviousMountVisibleRectBounds.bottom >= 0
+        && mPreviousMountVisibleRectBounds.top >= 0
+        && mPreviousMountVisibleRectBounds.height() > 0
+        && mPreviousMountVisibleRectBounds.left >= 0
+        && mPreviousMountVisibleRectBounds.right >= 0
+        && mPreviousMountVisibleRectBounds.width() > 0;
+  }
+
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
     final TreeMountInfo mountInfo = getMountInfo();
-    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
+    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
     final LayoutState layoutState = getCurrentLayoutState();
 
     return hasTree()
@@ -751,12 +833,22 @@ public abstract class BaseMountingView extends ComponentHost
 
   boolean mountComponentIfNeeded() {
     if (isMountStateDirty() || mountStateNeedsRemount()) {
+      boolean isTracing = ComponentsSystrace.isTracing();
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("BaseMountingView::mountComponentIfNeeded");
+      }
+
       if (isIncrementalMountEnabled()) {
         performIncrementalMountForVisibleBoundsChange();
       } else {
         final Rect visibleRect = new Rect();
         getLocalVisibleRect(visibleRect);
         mountComponent(visibleRect, true);
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
 
       return true;
@@ -787,7 +879,7 @@ public abstract class BaseMountingView extends ComponentHost
     if (hasTree()) {
       if (isIncrementalMountEnabled()) {
         final @Nullable ComponentsConfiguration config = getConfiguration();
-        boolean useGapWorker = config != null && config.useIncrementalMountGapWorker();
+        boolean useGapWorker = config != null && config.useIncrementalMountGapWorker;
         mLithoHostListenerCoordinator.enableIncrementalMount(useGapWorker);
       } else {
         mLithoHostListenerCoordinator.disableIncrementalMount();
@@ -828,19 +920,6 @@ public abstract class BaseMountingView extends ComponentHost
 
   boolean isMounting() {
     return mIsMounting;
-  }
-
-  public void registerUIDebugger(MountExtension extension) {
-    if (mLithoHostListenerCoordinator == null) {
-      setupMountExtensions();
-    }
-    mLithoHostListenerCoordinator.registerUIDebugger(extension);
-  }
-
-  public void unregisterUIDebugger() {
-    if (mLithoHostListenerCoordinator != null) {
-      mLithoHostListenerCoordinator.unregisterUIDebugger();
-    }
   }
 
   void resetVisibilityHint() {
@@ -998,11 +1077,13 @@ public abstract class BaseMountingView extends ComponentHost
     }
     final TreeState treeState = getTreeState();
     final TreeMountInfo mountInfo = treeState != null ? treeState.getMountInfo() : null;
-    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
+    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
     if (!hasMounted && rootBoundsTransition.appearTransition != null) {
       return (int)
           Transition.getRootAppearFromValue(
-              rootBoundsTransition.appearTransition, getCurrentLayoutState(), property);
+              rootBoundsTransition.appearTransition,
+              Preconditions.checkNotNull(getCurrentLayoutState()),
+              property);
     }
 
     if (hasMounted && !hasNewComponentTree) {
@@ -1094,8 +1175,24 @@ public abstract class BaseMountingView extends ComponentHost
     notifyVisibleBoundsChanged(rect, true);
   }
 
-  protected LithoHostListenerCoordinator getLithoHostListenerCoordinator() {
+  protected @Nullable LithoHostListenerCoordinator getLithoHostListenerCoordinator() {
     return mLithoHostListenerCoordinator;
+  }
+
+  @Nullable
+  VisibilityMountExtension.VisibilityMountExtensionState getVisibilityExtensionState() {
+
+    LithoHostListenerCoordinator lithoHostListenerCoordinator = getLithoHostListenerCoordinator();
+    if (lithoHostListenerCoordinator != null) {
+      ExtensionState visibilityExtensionState =
+          lithoHostListenerCoordinator.getVisibilityExtensionState();
+      if (visibilityExtensionState != null) {
+        return (VisibilityMountExtension.VisibilityMountExtensionState)
+            visibilityExtensionState.getState();
+      }
+    }
+
+    return null;
   }
 
   @Override
@@ -1115,7 +1212,7 @@ public abstract class BaseMountingView extends ComponentHost
   public abstract boolean isIncrementalMountEnabled();
 
   @Nullable
-  abstract LayoutState getCurrentLayoutState();
+  public abstract LayoutState getCurrentLayoutState();
 
   @Nullable
   protected abstract TreeState getTreeState();
@@ -1125,7 +1222,7 @@ public abstract class BaseMountingView extends ComponentHost
   protected String getTreeName() {
     final LayoutState layoutState = getCurrentLayoutState();
 
-    return layoutState != null ? layoutState.mRootComponentName : "";
+    return layoutState != null ? layoutState.getRootName() : "";
   }
 
   static void drawDebugOverlay(@Nullable BaseMountingView view, int id) {

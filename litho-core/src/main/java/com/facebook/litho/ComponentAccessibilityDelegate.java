@@ -22,7 +22,6 @@ import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -31,6 +30,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItem;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -39,16 +39,20 @@ import javax.annotation.Nullable;
  * Class that is used to set up accessibility for {@link ComponentHost}s. Virtual nodes are only
  * exposed if the component implements support for extra accessibility nodes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String TAG = "ComponentAccessibility";
 
   private final View mView;
-  private NodeInfo mNodeInfo;
+  private @Nullable NodeInfo mNodeInfo;
   private final AccessibilityDelegateCompat mSuperDelegate;
   private static final Rect sDefaultBounds = new Rect(0, 0, 1, 1);
 
   ComponentAccessibilityDelegate(
-      View view, NodeInfo nodeInfo, boolean originalFocus, int originalImportantForAccessibility) {
+      View view,
+      @Nullable NodeInfo nodeInfo,
+      boolean originalFocus,
+      int originalImportantForAccessibility) {
     super(view);
     mView = view;
     mNodeInfo = nodeInfo;
@@ -100,7 +104,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
                   scopedContext, host, node, getInterStageProps(mountItem));
         }
       } catch (Exception e) {
-        ComponentUtils.handle(scopedContext, e);
+        if (scopedContext != null) {
+          ComponentUtils.handle(scopedContext, e);
+        }
       }
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
@@ -138,6 +144,37 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     }
   }
 
+  private void dispatchOnVirtualViewKeyboardFocusChangedEvent(
+      View host, @Nullable AccessibilityNodeInfoCompat node, int virtualViewId, boolean hasFocus) {
+    if (mNodeInfo != null && mNodeInfo.getOnVirtualViewKeyboardFocusChangedHandler() != null) {
+      EventDispatcherUtils.dispatchVirtualViewKeyboardFocusChanged(
+          mNodeInfo.getOnVirtualViewKeyboardFocusChangedHandler(),
+          host,
+          node,
+          virtualViewId,
+          hasFocus,
+          mSuperDelegate);
+    }
+  }
+
+  private boolean dispatchOnPerformActionForVirtualViewEvent(
+      View host,
+      AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      int action,
+      @Nullable Bundle arguments) {
+    if (mNodeInfo != null && mNodeInfo.getOnPerformActionForVirtualViewHandler() != null) {
+      return EventDispatcherUtils.dispatchPerformActionForVirtualView(
+          mNodeInfo.getOnPerformActionForVirtualViewHandler(),
+          host,
+          node,
+          virtualViewId,
+          action,
+          arguments);
+    }
+    return false;
+  }
+
   @Override
   protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {
     final MountItem mountItem = getAccessibleMountItem(mView);
@@ -163,7 +200,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         virtualViewIds.add(i);
       }
     } catch (Exception e) {
-      ComponentUtils.handle(scopedContext, e);
+      if (scopedContext != null) {
+        ComponentUtils.handle(scopedContext, e);
+      }
     }
   }
 
@@ -171,8 +210,6 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   protected void onPopulateNodeForVirtualView(int virtualViewId, AccessibilityNodeInfoCompat node) {
     final MountItem mountItem = getAccessibleMountItem(mView);
     if (mountItem == null) {
-      Log.e(TAG, "No accessible mount item found for view: " + mView);
-
       // ExploreByTouchHelper insists that we set something.
       node.setContentDescription("");
       node.setBoundsInParent(getDefaultBounds());
@@ -195,8 +232,6 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       if (virtualViewId
           >= component.getExtraAccessibilityNodesCount(
               scopedContext, getInterStageProps(mountItem))) {
-        Log.e(TAG, "Received unrecognized virtual view id: " + virtualViewId);
-
         // ExploreByTouchHelper insists that we set something.
         node.setContentDescription("");
         node.setBoundsInParent(getDefaultBounds());
@@ -214,7 +249,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
                 getInterStageProps(mountItem));
       }
     } catch (Exception e) {
-      ComponentUtils.handle(scopedContext, e);
+      if (scopedContext != null) {
+        ComponentUtils.handle(scopedContext, e);
+      }
     }
   }
 
@@ -256,8 +293,53 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
       return (virtualViewId >= 0 ? virtualViewId : INVALID_ID);
     } catch (Exception e) {
-      ComponentUtils.handle(scopedContext, e);
+      if (scopedContext != null) {
+        ComponentUtils.handle(scopedContext, e);
+      }
       return INVALID_ID;
+    }
+  }
+
+  @Override
+  protected void onVirtualViewKeyboardFocusChanged(int virtualViewId, boolean hasFocus) {
+    AccessibilityNodeProviderCompat nodeProvider = this.getAccessibilityNodeProvider(mView);
+    if (nodeProvider == null) {
+      return;
+    }
+
+    AccessibilityNodeInfoCompat node =
+        nodeProvider.findFocus(AccessibilityNodeInfoCompat.FOCUS_INPUT);
+
+    final MountItem mountItem = getAccessibleMountItem(mView);
+    if (mountItem == null) {
+      return;
+    }
+
+    final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
+    if (!(renderUnit.getComponent() instanceof SpecGeneratedComponent)) {
+      dispatchOnVirtualViewKeyboardFocusChangedEvent(mView, node, virtualViewId, hasFocus);
+      return;
+    }
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
+    final ComponentContext scopedContext = getComponentContext(mountItem);
+
+    if (scopedContext == null) {
+      return;
+    }
+
+    try {
+      if (virtualViewId
+          >= component.getExtraAccessibilityNodesCount(
+              scopedContext, getInterStageProps(mountItem))) {
+        return;
+      }
+
+      if (component.implementsKeyboardFocusChangeForVirtualViews()) {
+        component.onVirtualViewKeyboardFocusChanged(
+            scopedContext, mView, node, virtualViewId, hasFocus, getInterStageProps(mountItem));
+      }
+    } catch (Exception e) {
+      ComponentUtils.handle(scopedContext, e);
     }
   }
 
@@ -269,7 +351,56 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   @Override
-  protected boolean onPerformActionForVirtualView(int virtualViewId, int action, Bundle arguments) {
+  protected boolean onPerformActionForVirtualView(
+      int virtualViewId, int action, @Nullable Bundle arguments) {
+    AccessibilityNodeProviderCompat nodeProvider = this.getAccessibilityNodeProvider(mView);
+    if (nodeProvider == null) {
+      return false;
+    }
+
+    AccessibilityNodeInfoCompat node =
+        nodeProvider.findFocus(AccessibilityNodeInfoCompat.FOCUS_INPUT);
+    if (node == null) {
+      return false;
+    }
+
+    final MountItem mountItem = getAccessibleMountItem(mView);
+    if (mountItem == null) {
+      return false;
+    }
+
+    final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
+    if (!(renderUnit.getComponent() instanceof SpecGeneratedComponent)) {
+      return dispatchOnPerformActionForVirtualViewEvent(
+          mView, node, virtualViewId, action, arguments);
+    }
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
+    final ComponentContext scopedContext = getComponentContext(mountItem);
+    if (scopedContext == null) {
+      return false;
+    }
+
+    try {
+      if (virtualViewId
+          >= component.getExtraAccessibilityNodesCount(
+              scopedContext, getInterStageProps(mountItem))) {
+        return false;
+      }
+
+      if (component.implementsOnPerformActionForVirtualView()) {
+        return component.onPerformActionForVirtualView(
+            scopedContext,
+            mView,
+            node,
+            virtualViewId,
+            action,
+            arguments,
+            getInterStageProps(mountItem));
+      }
+    } catch (Exception e) {
+      ComponentUtils.handle(scopedContext, e);
+    }
+
     return false;
   }
 

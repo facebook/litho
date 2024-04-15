@@ -20,7 +20,9 @@ import android.os.Handler
 import android.os.Looper
 import android.view.Choreographer
 import android.view.Display
+import androidx.annotation.UiThread
 import com.facebook.rendercore.MountDelegate
+import com.facebook.rendercore.RenderCoreConfig
 import com.facebook.rendercore.Systracer
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.gapWorkerDeadlineBufferMs
 import java.util.concurrent.TimeUnit
@@ -45,7 +47,7 @@ private constructor(
     latestFrameTimeNs = frameTimeNanos // update the frame time
 
     if (delegates.isNotEmpty()) {
-      val isTracing = tracer.isTracing
+      val isTracing = tracer.isTracing()
       if (isTracing) {
         tracer.beginSection("IncrementalMountGapWorker::doFrame")
       }
@@ -65,7 +67,7 @@ private constructor(
   }
 
   private fun premount(deadlineNs: Long) {
-    val isTracing = tracer.isTracing
+    val isTracing = tracer.isTracing()
     if (isTracing) {
       tracer.beginSection("premount")
     }
@@ -88,7 +90,7 @@ private constructor(
       delegate: MountDelegate,
       deadlineNs: Long,
   ): Boolean {
-    val isTracing = tracer.isTracing
+    val isTracing = tracer.isTracing()
     if (isTracing) {
       tracer.beginSection("premount-item")
     }
@@ -145,8 +147,15 @@ private constructor(
     private var worker: IncrementalMountGapWorker? = null
 
     @JvmStatic
+    @UiThread
     fun get(display: Display?, tracer: Systracer): IncrementalMountGapWorker {
       val frameInterval = getFrameIntervalInNs(display)
+
+      worker?.let { initializedWorker ->
+        if (RenderCoreConfig.useGlobalGapWorker) {
+          return initializedWorker
+        }
+      }
       return IncrementalMountGapWorker(frameInterval, tracer).apply { worker = this }
     }
 

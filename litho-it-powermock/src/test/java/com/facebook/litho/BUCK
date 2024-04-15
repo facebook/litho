@@ -21,12 +21,13 @@ load(
     "LITHO_TESTING_WHITEBOX_TARGET",
     "LITHO_TEST_RES",
     "LITHO_TEST_WIDGET_TARGET",
-    "LITHO_VIEWCOMPAT_TARGET",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
     "litho_robolectric4_powermock_test",
     "make_dep_path",
 )
+
+oncall("components_for_android")
 
 litho_robolectric4_powermock_test(
     name = "litho",
@@ -40,6 +41,7 @@ litho_robolectric4_powermock_test(
     ],
     target_sdk_levels = [
         "21",
+        "33",
     ],
     deps = [
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
@@ -57,7 +59,6 @@ litho_robolectric4_powermock_test(
         LITHO_TESTING_WHITEBOX_TARGET,
         LITHO_TEST_RES,
         LITHO_TEST_WIDGET_TARGET,
-        LITHO_VIEWCOMPAT_TARGET,
         LITHO_WIDGET_TARGET,
         LITHO_YOGA_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),

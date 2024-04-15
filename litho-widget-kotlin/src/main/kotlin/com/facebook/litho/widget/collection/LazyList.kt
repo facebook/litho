@@ -22,16 +22,18 @@ import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 
 /** A scrollable collection of components arranged linearly */
 @Suppress("FunctionName")
 inline fun ResourcesScope.LazyList(
     @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
     @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+    snapToStartOffset: Dimen = 0.dp,
     reverse: Boolean = false,
     crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
     mainAxisWrapContent: Boolean = false,
@@ -65,30 +67,29 @@ inline fun ResourcesScope.LazyList(
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean =
-        if (ComponentsConfiguration.isLazyListUsingComponentContextReconciliationConfig) {
-          context.lithoConfiguration.isReconciliationEnabled
-        } else {
-          false
-        },
-    preallocationPerMountContentEnabled: Boolean =
-        context.lithoConfiguration.preallocationPerMountContentEnabled,
+        context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
+    preAllocationHandler: PreAllocationHandler? =
+        context.lithoConfiguration.componentsConfig.preAllocationHandler,
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
+    shouldExcludeFromIncrementalMount: Boolean = false,
     init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
   return LazyCollection(
       layout =
           CollectionLayouts.Linear(
+              componentContext = context,
               orientation = orientation,
               snapMode = snapMode,
+              snapToStartOffset = snapToStartOffset.toPixels(resourceResolver),
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
-              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              preAllocationHandler = preAllocationHandler,
               crossAxisWrapMode = crossAxisWrapMode,
               mainAxisWrapContent = mainAxisWrapContent),
       itemAnimator,
@@ -122,5 +123,6 @@ inline fun ResourcesScope.LazyList(
       overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
+      shouldExcludeFromIncrementalMount,
       lazyListScope.children)
 }

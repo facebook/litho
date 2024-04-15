@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.Equivalence;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
@@ -137,7 +137,9 @@ public class Edges implements Equivalence<Edges> {
     return mValues[edgeIndex];
   }
 
-  /** @param edgeEnumValue This method can directly accept the YogaEdge.XXX.intValue(). */
+  /**
+   * @param edgeEnumValue This method can directly accept the YogaEdge.XXX.intValue().
+   */
   // This duplicates the other getRaw instead of calling each other to save on method calls.
   public float getRaw(int edgeEnumValue) {
     final byte edgeIndex = getIndex(edgeEnumValue);

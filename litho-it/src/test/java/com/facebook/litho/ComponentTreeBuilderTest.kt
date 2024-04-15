@@ -16,9 +16,11 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -33,17 +35,22 @@ import org.mockito.kotlin.mock
 class ComponentTreeBuilderTest {
 
   private lateinit var looper: Looper
-  private lateinit var componentsLogger: ComponentsLogger
   private lateinit var context: ComponentContext
   private lateinit var root: Component
   private lateinit var componentTreeBuilder: ComponentTree.Builder
 
   @Before
   fun setup() {
+    val androidContext = ApplicationProvider.getApplicationContext<Context>()
     looper = mock()
-    componentsLogger = mock()
     context =
-        ComponentContext(ApplicationProvider.getApplicationContext(), LOG_TAG, componentsLogger)
+        ComponentContext(
+            androidContext,
+            ComponentContextUtils.buildDefaultLithoConfiguration(
+                context = androidContext,
+                componentsConfig = ComponentsConfiguration.defaultInstance.copy(logTag = LOG_TAG)),
+            null)
+
     root = TestLayoutComponent.create(context).build()
     componentTreeBuilder = ComponentTree.create(context, root)
   }
@@ -59,9 +66,7 @@ class ComponentTreeBuilderTest {
   fun testCreationWithInputs() {
     val componentTree = componentTreeBuilder.layoutThreadLooper(looper).build()
     assertSameAsInternalState(componentTree, root, "mRoot")
-    assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled")
     assertThat(componentTree.isIncrementalMountEnabled).isTrue
-    assertThat(context.logger).isEqualTo(componentsLogger)
     assertThat(context.logTag).isEqualTo(LOG_TAG)
     val handler = Whitebox.getInternalState<Handler>(componentTree, "mLayoutThreadHandler")
     assertThat(looper).isSameAs(handler.looper)
@@ -90,7 +95,6 @@ class ComponentTreeBuilderTest {
 
     @JvmStatic
     private fun assertDefaults(componentTree: ComponentTree) {
-      assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled")
       assertThat(componentTree.isIncrementalMountEnabled).isTrue
     }
   }

@@ -20,12 +20,12 @@ import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountItemsPool
 
 class TrackedItemPool(lifecycle: Any, size: Int) :
-    MountItemsPool.DefaultItemPool(lifecycle::class.java, size, false) {
+    MountItemsPool.DefaultItemPool(lifecycle::class.java, size) {
 
   var currentSize: Int = 0
     private set
 
-  override fun acquire(contentAllocator: ContentAllocator<*>?): Any? {
+  override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
     return super.acquire(contentAllocator).apply {
       if (this != null) {
         currentSize--

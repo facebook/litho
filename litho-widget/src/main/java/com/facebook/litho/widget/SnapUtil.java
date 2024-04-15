@@ -59,12 +59,15 @@ public class SnapUtil {
 
   @Nullable
   public static SnapHelper getSnapHelper(
-      @SnapMode int snapMode, int deltaJumpThreshold, int startSnapFlingOffset) {
+      @SnapMode int snapMode,
+      int deltaJumpThreshold,
+      int snapToStartFlingOffset,
+      int snapToStartOffset) {
     switch (snapMode) {
       case SNAP_TO_CENTER:
         return new PagerSnapHelper();
       case SNAP_TO_START:
-        return new StartSnapHelper(startSnapFlingOffset);
+        return new StartSnapHelper(snapToStartFlingOffset, snapToStartOffset);
       case SNAP_TO_CENTER_CHILD:
         return new LinearSnapHelper();
       case SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED:

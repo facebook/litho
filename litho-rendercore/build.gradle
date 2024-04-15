@@ -27,6 +27,10 @@ android {
 
     useLibrary 'org.apache.http.legacy'
 
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjvm-default=all']
+    }
+
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion

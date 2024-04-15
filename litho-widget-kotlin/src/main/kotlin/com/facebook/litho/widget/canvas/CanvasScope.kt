@@ -20,23 +20,23 @@ import android.annotation.SuppressLint
 import android.graphics.Canvas
 import androidx.annotation.FloatRange
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.mountable.canvas.CanvasState
-import com.facebook.mountable.canvas.model.CanvasDrawIntoCanvas
-import com.facebook.mountable.canvas.model.CanvasFill
-import com.facebook.mountable.canvas.model.CanvasGroup
-import com.facebook.mountable.canvas.model.CanvasLayer
-import com.facebook.mountable.canvas.model.CanvasModel
-import com.facebook.mountable.canvas.model.CanvasNodeModel
-import com.facebook.mountable.canvas.model.CanvasStroke
-import com.facebook.mountable.utils.types.BlendingMode
-import com.facebook.mountable.utils.types.DEFAULT_BLENDING_MODE
-import com.facebook.mountable.utils.types.DEFAULT_LINE_CAP
-import com.facebook.mountable.utils.types.DEFAULT_LINE_JOIN
-import com.facebook.mountable.utils.types.LineCap
-import com.facebook.mountable.utils.types.LineJoin
-import com.facebook.mountable.utils.types.Point
-import com.facebook.mountable.utils.types.Size
-import com.facebook.mountable.utils.types.center
+import com.facebook.primitive.canvas.CanvasState
+import com.facebook.primitive.canvas.model.CanvasDrawIntoCanvas
+import com.facebook.primitive.canvas.model.CanvasFill
+import com.facebook.primitive.canvas.model.CanvasGroup
+import com.facebook.primitive.canvas.model.CanvasLayer
+import com.facebook.primitive.canvas.model.CanvasModel
+import com.facebook.primitive.canvas.model.CanvasNodeModel
+import com.facebook.primitive.canvas.model.CanvasStroke
+import com.facebook.primitive.utils.types.BlendingMode
+import com.facebook.primitive.utils.types.DEFAULT_BLENDING_MODE
+import com.facebook.primitive.utils.types.DEFAULT_LINE_CAP
+import com.facebook.primitive.utils.types.DEFAULT_LINE_JOIN
+import com.facebook.primitive.utils.types.LineCap
+import com.facebook.primitive.utils.types.LineJoin
+import com.facebook.primitive.utils.types.Point
+import com.facebook.primitive.utils.types.Size
+import com.facebook.primitive.utils.types.center
 
 class CanvasScope {
   @PublishedApi

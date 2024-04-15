@@ -17,14 +17,15 @@
 package com.facebook.rendercore.primitives
 
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
-import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 import com.facebook.rendercore.px
 import com.facebook.rendercore.utils.exact
 import com.facebook.rendercore.utils.fillSpace
+import com.facebook.rendercore.utils.hasEquivalentFields
 import com.facebook.rendercore.utils.withAspectRatio
 import com.facebook.rendercore.utils.withEqualDimensions
 
@@ -164,27 +165,19 @@ class PrimitiveLayoutResult(
     if (height < 0) {
       throw IllegalArgumentException("height must be >= 0, but was: $height")
     }
-    if (width >= SizeConstraints.MaxValue) {
-      throw IllegalArgumentException(
-          "width must be < ${SizeConstraints.MaxValue}, but was: $width. Components this big may affect performance and lead to out of memory errors.")
-    }
-    if (height >= SizeConstraints.MaxValue) {
-      throw IllegalArgumentException(
-          "height must be < ${SizeConstraints.MaxValue}, but was: $height. Components this big may affect performance and lead to out of memory errors.")
-    }
   }
 
-  internal fun toNodeLayoutResult(
-      widthSpec: Int,
-      heightSpec: Int,
-      renderUnit: RenderUnit<*>?
-  ): LayoutResult {
+  internal fun toNodeLayoutResult(renderUnit: RenderUnit<*>?): LayoutResult {
     return object : LayoutResult {
-      override fun getRenderUnit(): RenderUnit<*>? = renderUnit
 
-      override fun getLayoutData(): Any? = this@PrimitiveLayoutResult.layoutData
+      override val renderUnit: RenderUnit<*>?
+        get() = renderUnit
 
-      override fun getChildrenCount(): Int = 0
+      override val layoutData: Any?
+        get() = this@PrimitiveLayoutResult.layoutData
+
+      override val childrenCount: Int
+        get() = 0
 
       override fun getChildAt(index: Int): LayoutResult {
         throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
@@ -198,21 +191,23 @@ class PrimitiveLayoutResult(
         throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
       }
 
-      override fun getWidth(): Int = this@PrimitiveLayoutResult.width
+      override val width: Int
+        get() = this@PrimitiveLayoutResult.width
 
-      override fun getHeight(): Int = this@PrimitiveLayoutResult.height
+      override val height: Int
+        get() = this@PrimitiveLayoutResult.height
 
-      override fun getPaddingTop(): Int = this@PrimitiveLayoutResult.paddingTop
+      override val paddingTop: Int
+        get() = this@PrimitiveLayoutResult.paddingTop
 
-      override fun getPaddingRight(): Int = this@PrimitiveLayoutResult.paddingRight
+      override val paddingRight: Int
+        get() = this@PrimitiveLayoutResult.paddingRight
 
-      override fun getPaddingBottom(): Int = this@PrimitiveLayoutResult.paddingBottom
+      override val paddingBottom: Int
+        get() = this@PrimitiveLayoutResult.paddingBottom
 
-      override fun getPaddingLeft(): Int = this@PrimitiveLayoutResult.paddingLeft
-
-      override fun getWidthSpec(): Int = widthSpec
-
-      override fun getHeightSpec(): Int = heightSpec
+      override val paddingLeft: Int
+        get() = this@PrimitiveLayoutResult.paddingLeft
     }
   }
 }

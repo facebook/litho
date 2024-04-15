@@ -20,7 +20,7 @@ public class CenterNode implements Node {
     int width = findSizeForChild(widthSpec, childWidht);
     int height = findSizeForChild(heightSpec, childHeight);
 
-    return new CenterLayoutResult(child, widthSpec, heightSpec, width, height, this);
+    return new CenterLayoutResult(child, width, height, this);
   }
 
   private static int findSizeForChild(int sizeSpec, int childSize) {
@@ -38,8 +38,6 @@ public class CenterNode implements Node {
 
   private class CenterLayoutResult implements LayoutResult {
 
-    final int mWidthSpec;
-    final int mHeightSpec;
     final int mWidth;
     final int mHeight;
     final Node mNode;
@@ -47,10 +45,7 @@ public class CenterNode implements Node {
     private final int mChildX;
     private final int mChildY;
 
-    public CenterLayoutResult(
-        LayoutResult child, int widthSpec, int heightSpec, int width, int height, Node node) {
-      mWidthSpec = widthSpec;
-      mHeightSpec = heightSpec;
+    public CenterLayoutResult(LayoutResult child, int width, int height, Node node) {
       mHeight = height;
       mWidth = width;
       mNode = node;
@@ -130,16 +125,6 @@ public class CenterNode implements Node {
     @Override
     public int getPaddingLeft() {
       return 0;
-    }
-
-    @Override
-    public int getWidthSpec() {
-      return mWidthSpec;
-    }
-
-    @Override
-    public int getHeightSpec() {
-      return mHeightSpec;
     }
   }
 }

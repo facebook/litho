@@ -64,6 +64,7 @@ public class PsiDelegateMethodExtractor {
                 ImmutableList.<TypeVariableName>of(),
                 ImmutableList.copyOf(methodParams),
                 psiMethod,
+                null,
                 null);
         delegateMethods.add(delegateMethod);
       }

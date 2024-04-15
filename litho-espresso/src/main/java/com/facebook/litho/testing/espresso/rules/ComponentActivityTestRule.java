@@ -50,7 +50,9 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
     mComponentContext = null;
   }
 
-  /** @return a ComponentContext associated with this Activity. */
+  /**
+   * @return a ComponentContext associated with this Activity.
+   */
   public synchronized ComponentContext getComponentContext() {
     if (mComponentContext == null) {
       throw new RuntimeException("Tried to access ComponentContext before Activity was created");
@@ -84,7 +86,9 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
     instrumentation.waitForIdleSync();
   }
 
-  /** @return the LithoView associated with the Activity. */
+  /**
+   * @return the LithoView associated with the Activity.
+   */
   public LithoView getLithoView() {
     return (LithoView) ((ViewGroup) getActivity().findViewById(android.R.id.content)).getChildAt(0);
   }

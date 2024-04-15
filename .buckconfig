@@ -5,14 +5,14 @@
   google = https://maven.google.com/
 
 [ndk]
-  ndk_version = 15.2.4203891
+  ndk_version = 26.1.10909125
   compiler = clang
-  app_platform = android-30
+  app_platform = android-33
   cpu_abis = arm64, armv7, x86, x86_64
 
 [android]
-  target = android-30
-  build_tools_version = 30.0.2
+  target = android-33
+  build_tools_version = 33.0.2
 
 [tools]
   java11_for_tests = "/usr/local/java-runtime/impl/11/bin/java"

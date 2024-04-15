@@ -16,8 +16,10 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.yoga.LithoYogaFactory
 import com.facebook.yoga.YogaConfig
+import com.facebook.yoga.YogaExperimentalFeature
 import com.facebook.yoga.YogaNode
 import kotlin.jvm.JvmField
 
@@ -31,22 +33,17 @@ object NodeConfig {
   @JvmField @Volatile var yogaNodeFactory: InternalYogaNodeFactory? = null
 
   /** Allows access to the internal YogaConfig instance */
-  @get:JvmStatic val yogaConfig: YogaConfig = LithoYogaFactory.createYogaConfig()
+  @get:JvmStatic
+  val yogaConfig: YogaConfig =
+      LithoYogaFactory.createYogaConfig().apply {
+        setExperimentalFeatureEnabled(
+            YogaExperimentalFeature.WEB_FLEX_BASIS,
+            ComponentsConfiguration.isYogaFlexBasisFixEnabled)
+      }
 
   @JvmStatic
   fun createYogaNode(): YogaNode {
     return yogaNodeFactory?.create(yogaConfig) ?: LithoYogaFactory.createYogaNode(yogaConfig)
-  }
-
-  /**
-   * Toggles a Yoga setting on whether to print debug logs to adb.
-   *
-   * @param enable whether to print logs or not
-   */
-  @JvmStatic
-  @Synchronized
-  fun setPrintYogaDebugLogs(enable: Boolean) {
-    yogaConfig.setPrintTreeFlag(enable)
   }
 
   fun interface InternalYogaNodeFactory {

@@ -16,15 +16,15 @@
 
 package com.facebook.litho.widget.canvas
 
-import com.facebook.mountable.canvas.model.CanvasInverseTransform
-import com.facebook.mountable.canvas.model.CanvasRotate
-import com.facebook.mountable.canvas.model.CanvasScale
-import com.facebook.mountable.canvas.model.CanvasSkew
-import com.facebook.mountable.canvas.model.CanvasTransform
-import com.facebook.mountable.canvas.model.CanvasTransformChildModel
-import com.facebook.mountable.canvas.model.CanvasTransformModel
-import com.facebook.mountable.canvas.model.CanvasTranslate
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.canvas.model.CanvasInverseTransform
+import com.facebook.primitive.canvas.model.CanvasRotate
+import com.facebook.primitive.canvas.model.CanvasScale
+import com.facebook.primitive.canvas.model.CanvasSkew
+import com.facebook.primitive.canvas.model.CanvasTransform
+import com.facebook.primitive.canvas.model.CanvasTransformChildModel
+import com.facebook.primitive.canvas.model.CanvasTransformModel
+import com.facebook.primitive.canvas.model.CanvasTranslate
+import com.facebook.primitive.utils.types.Point
 
 /** A transform which holds a 3x3 matrix for transforming coordinates. */
 @JvmInline
@@ -63,29 +63,9 @@ fun Transform(
 class TransformScope {
   val children: MutableList<CanvasTransformChildModel> = mutableListOf()
 
-  /**
-   * Inverts the specified transform.
-   *
-   * @param a The horizontal scaling. A value of 1 results in no scaling
-   * @param b The vertical skewing
-   * @param c The horizontal skewing
-   * @param d The vertical scaling. A value of 1 results in no scaling
-   * @param tx The horizontal translation (moving)
-   * @param ty The vertical translation (moving)
-   * @param block The lambda callback to issue transform commands
-   */
-  inline fun inverse(
-      a: Float = 1f,
-      b: Float = 0f,
-      c: Float = 0f,
-      d: Float = 1f,
-      tx: Float = 0f,
-      ty: Float = 0f,
-      block: TransformScope.() -> Unit
-  ) {
-    val scope = TransformScope()
-    block(scope)
-    children.add(CanvasInverseTransform(CanvasTransform(a, b, c, d, tx, ty, scope.children)))
+  /** Inverts the transform being built in the current scope. */
+  inline fun inverse() {
+    children.add(CanvasInverseTransform)
   }
 
   /**

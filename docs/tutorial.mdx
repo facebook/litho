@@ -15,10 +15,10 @@ In this initial step, you'll display a view with "Hello World!".
 
 First, initialize `SoLoader` in your `Application` class:
 
-```java file=sample-barebones/src/main/java/com/facebook/samples/lithobarebones/SampleApplication.java start=app_setup_start end=app_setup_end
+```kotlin file=sample-barebones/src/main/java/com/facebook/samples/lithoktbarebones/SampleApplication.kt start=app_setup_start end=app_setup_end
 ```
 
-Behind the scenes, Litho uses [Yoga](https://yogalayout.com/docs/) for layout. Yoga has native dependencies and [SoLoader](https://github.com/facebook/SoLoader) is brought in to take care of loading those. Initializing `SoLoader` here ensures that you're not referencing unloaded libraries later on.
+Behind the scenes, Litho uses [Yoga](https://yogalayout.dev/docs/) for layout. Yoga has native dependencies and [SoLoader](https://github.com/facebook/SoLoader) is brought in to take care of loading those. Initializing `SoLoader` here ensures that you're not referencing unloaded libraries later on.
 
 Next, add a predefined [Text](pathname:///javadoc/com/facebook/litho/widget/Text.html) Litho component to an activity:
 
@@ -92,7 +92,7 @@ public class ListItemSpec {
 }
 ```
 
-You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a `child` property of a [Column](pathname:///javadoc/com/facebook/litho/Column.html). You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://yogalayout.com/docs/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
+You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a `child` property of a [Column](pathname:///javadoc/com/facebook/litho/Column.html). You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://yogalayout.dev/docs/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
 
 How do you render this component? In your activity, simply change the `Component` definition to:
 

@@ -20,10 +20,9 @@ import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Attribution;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.ResolveSource;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.ResolveVersion;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.RunsOnMainThread;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Version;
 
 import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
@@ -98,7 +97,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       final int componentTreeId,
       final @Nullable String extraAttribution,
       final int source) {
-    super(useCancellableFutures);
+    super(componentTreeId, useCancellableFutures);
     mComponentContext = c;
     mComponent = component;
     mComponentTreeId = componentTreeId;
@@ -156,12 +155,12 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   @Override
   protected ResolveResult resumeCalculation(ResolveResult partialResult) {
     Integer resolveTraceIdentifier =
-        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResolveResumed);
+        DebugEventDispatcher.generateTraceIdentifier(LithoDebugEvent.ComponentTreeResume);
 
     if (resolveTraceIdentifier != null) {
       DebugEventDispatcher.beginTrace(
           resolveTraceIdentifier,
-          LithoDebugEvent.ComponentTreeResolveResumed,
+          LithoDebugEvent.ComponentTreeResume,
           String.valueOf(mComponentTreeId),
           createDebugAttributes());
     }
@@ -177,10 +176,9 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
   private HashMap<String, Object> createDebugAttributes() {
     HashMap<String, Object> attributes = new HashMap<>();
-    attributes.put(RunsOnMainThread, ThreadUtils.isMainThread());
     attributes.put(Root, mComponent.getSimpleName());
-    attributes.put(ResolveVersion, mResolveVersion);
-    attributes.put(ResolveSource, layoutSourceToString(mSource));
+    attributes.put(Version, mResolveVersion);
+    attributes.put(Source, layoutSourceToString(mSource));
     attributes.put(Attribution, mExtraAttribution);
     return attributes;
   }
@@ -197,7 +195,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       return false;
     }
 
-    if (mComponentContext.getTreeProps() != thatRtf.mComponentContext.getTreeProps()) {
+    if (mComponentContext.getTreePropContainer()
+        != thatRtf.mComponentContext.getTreePropContainer()) {
       return false;
     }
 
@@ -241,8 +240,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
       state.registerResolveState();
 
-      final ResolveStateContext rsc =
-          new ResolveStateContext(
+      final ResolveContext rsc =
+          new ResolveContext(
               componentTreeId,
               new MeasuredResultCache(),
               state,
@@ -256,7 +255,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
               perfEventLogger,
               context.getLogger());
 
-      final @Nullable CalculationStateContext previousStateContext =
+      final @Nullable CalculationContext previousStateContext =
           context.getCalculationStateContext();
 
       final @Nullable LithoNode node;
@@ -267,11 +266,11 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         context.setCalculationStateContext(previousStateContext);
       }
 
-      final @Nullable List<Attachable> attachables;
+      final @Nullable Resolver.Outputs outputs;
       if (rsc.isLayoutInterrupted()) {
-        attachables = null;
+        outputs = null;
       } else {
-        attachables = Resolver.collectAttachables(node);
+        outputs = Resolver.collectOutputs(node);
         rsc.getCache().freezeCache();
       }
 
@@ -287,8 +286,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           state,
           rsc.isLayoutInterrupted(),
           version,
-          rsc.getCreatedEventHandlers(),
-          attachables,
+          rsc.getEventHandlers(),
+          outputs,
           rsc.isLayoutInterrupted() ? rsc : null);
 
     } finally {
@@ -334,7 +333,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
       partialResult.treeState.registerResolveState();
 
-      final @Nullable CalculationStateContext previousStateContext =
+      final @Nullable CalculationContext previousStateContext =
           context.getCalculationStateContext();
 
       final @Nullable LithoNode node;
@@ -345,11 +344,11 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         context.setCalculationStateContext(previousStateContext);
       }
 
-      final @Nullable List<Attachable> attachables = Resolver.collectAttachables(node);
+      final @Nullable Resolver.Outputs outputs = Resolver.collectOutputs(node);
 
       partialResult.contextForResuming.getCache().freezeCache();
       final List<Pair<String, EventHandler<?>>> createdEventHandlers =
-          partialResult.contextForResuming.getCreatedEventHandlers();
+          partialResult.contextForResuming.getEventHandlers();
 
       partialResult.treeState.unregisterResolveInitialState();
 
@@ -362,7 +361,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           false,
           resolveVersion,
           createdEventHandlers,
-          attachables,
+          outputs,
           null);
     } finally {
       if (isTracing) {

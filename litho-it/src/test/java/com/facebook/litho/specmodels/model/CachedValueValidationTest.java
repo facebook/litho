@@ -23,9 +23,13 @@ import static org.mockito.Mockito.when;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +39,7 @@ import org.junit.runners.JUnit4;
 /** Tests {@link CachedValueValidation} */
 @RunWith(JUnit4.class)
 public class CachedValueValidationTest {
+
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final CachedValueParamModel mCachedValue1 = mock(CachedValueParamModel.class);
   private final Object mRepresentedObject1 = new Object();
@@ -57,7 +62,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "The cached value must have a corresponding @OnCalculateCachedValue method that has the same name.");
+            "The cached value must have a corresponding @OnCalculateCachedValue method that has the"
+                + " same name.");
   }
 
   @Test
@@ -91,7 +97,139 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "CachedValue param types and the return type of the corresponding @OnCalculateCachedValue method must be the same.");
+            "CachedValue param types and the return type of the corresponding"
+                + " @OnCalculateCachedValue method must be the same.");
+  }
+
+  @Test
+  public void testCachedValueWithCovariantReturnTypeInCachedValueJavaSpec() {
+    when(mCachedValue1.getTypeName())
+        .thenReturn(
+            ParameterizedTypeName.get(
+                ClassName.get(List.class), WildcardTypeName.subtypeOf(TypeName.OBJECT)));
+
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCalculateCachedValue.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("onCalculateName1")
+            .returnTypeSpec(
+                new TypeSpec(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.OBJECT)))
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.<MethodParamModel>of())
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
+    when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
+
+    List<SpecModelValidationError> validationErrors = CachedValueValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "CachedValue param types and the return type of the corresponding"
+                + " @OnCalculateCachedValue method must be the same.");
+  }
+
+  @Test
+  public void testCachedValueWithCovariantReturnTypeInCachedValueKotlinSpec() {
+    when(mCachedValue1.getTypeName())
+        .thenReturn(
+            ParameterizedTypeName.get(
+                ClassName.get(List.class), WildcardTypeName.subtypeOf(TypeName.OBJECT)));
+
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCalculateCachedValue.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("onCalculateName1")
+            .returnTypeSpec(
+                new TypeSpec(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.OBJECT)))
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.<MethodParamModel>of())
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+    when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
+
+    List<SpecModelValidationError> validationErrors = CachedValueValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "CachedValue params for collections in Kotlin Specs need to add "
+                + "@JvmSuppressWildCards such as CollectionType<@JvmSuppressWildcards T>. "
+                + "Add the annotation for @CachedValue params.");
+  }
+
+  @Test
+  public void testCachedValueWithCovariantWithTwoArgumentsReturnTypeInCachedValueKotlinSpec() {
+    when(mCachedValue1.getTypeName())
+        .thenReturn(
+            ParameterizedTypeName.get(
+                ClassName.get(Map.class),
+                ClassName.get(String.class),
+                WildcardTypeName.subtypeOf(TypeName.OBJECT)));
+
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCalculateCachedValue.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("onCalculateName1")
+            .returnTypeSpec(
+                new TypeSpec(
+                    ParameterizedTypeName.get(
+                        ClassName.get(Map.class), ClassName.get(String.class), TypeName.OBJECT)))
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.<MethodParamModel>of())
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+    when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
+
+    List<SpecModelValidationError> validationErrors = CachedValueValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "CachedValue params for collections in Kotlin Specs need to add "
+                + "@JvmSuppressWildCards such as CollectionType<@JvmSuppressWildcards T>. "
+                + "Add the annotation for @CachedValue params.");
   }
 
   @Test
@@ -126,7 +264,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Cached values must not be Components, since Components are stateful. Just create the Component as normal.");
+            "Cached values must not be Components, since Components are stateful. Just create the"
+                + " Component as normal.");
   }
 
   @Test
@@ -167,7 +306,8 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(paramObject);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "@OnCalculateCachedValue methods may only take ComponentContext, @Prop, @TreeProp, @InjectProp and @State as params.");
+            "@OnCalculateCachedValue methods may only take ComponentContext, @Prop, @TreeProp,"
+                + " @InjectProp and @State as params.");
   }
 
   @Test

@@ -15,10 +15,13 @@
  */
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
+
 // Dokka requires the kotlin plugin to be applied, however
 // since this module has no Kotlin, we make it conditional
 if (isDokkaBuild) {
-  apply plugin: 'kotlin-android'
   apply plugin: 'org.jetbrains.dokka'
 }
 
@@ -40,7 +43,7 @@ dependencies {
     implementation project(':litho-core')
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
-    annotationProcessor project(':litho-processor')
+    kapt project(':litho-processor')
 
     // Annotations
     compileOnly deps.jsr305

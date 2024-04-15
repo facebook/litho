@@ -27,8 +27,8 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
-import com.facebook.litho.LithoLifecycleProvider
 import com.facebook.litho.LithoView
+import com.facebook.litho.LithoVisibilityEventsController
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
@@ -73,16 +73,20 @@ class TestLithoView
 internal constructor(
     val context: ComponentContext,
     val componentsConfiguration: ComponentsConfiguration? = null,
-    private val lithoLifecycleProvider: LithoLifecycleProvider? = null
+    private val lithoVisibilityEventsController: LithoVisibilityEventsController? = null
 ) {
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
-        _componentTree =
+        val builder =
             ComponentTree.create(context)
-                .withLithoLifecycleProvider(lithoLifecycleProvider)
-                .componentsConfiguration(componentsConfiguration)
-                .build()
+                .withLithoLifecycleProvider(lithoVisibilityEventsController)
+
+        if (componentsConfiguration != null) {
+          builder.componentsConfiguration(componentsConfiguration)
+        }
+
+        _componentTree = builder.build()
       }
       return _componentTree ?: throw AssertionError("Set to null by another thread")
     }
@@ -108,7 +112,7 @@ internal constructor(
 
   val currentRootNode: LithoLayoutResult?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    get() = committedLayoutState?.rootLayoutResult
+    get() = committedLayoutState?.rootLayoutResult as? LithoLayoutResult
 
   private var widthSpec = DEFAULT_WIDTH_SPEC
   private var heightSpec = DEFAULT_HEIGHT_SPEC
@@ -138,6 +142,7 @@ internal constructor(
     lithoView.componentTree = componentTree
     return this
   }
+
   /** Sets the new root [Component] to render. */
   fun setRoot(component: Component?): TestLithoView {
     componentTree.setRoot(component)
@@ -187,6 +192,7 @@ internal constructor(
     this.heightSpec = heightSpec
     return this
   }
+
   /** Explicitly calls measure on the current root [LithoView] */
   fun measure(): TestLithoView {
     lithoView.measure(widthSpec, heightSpec)
@@ -277,6 +283,7 @@ internal constructor(
     return findViewWithTextOrNull(text)
         ?: throw RuntimeException("Did not find view with text '$text'")
   }
+
   /**
    * Finds the first [View] with the specified content description in the rendered hierarchy,
    * returning null if is doesn't exist.
@@ -440,5 +447,6 @@ internal constructor(
 
 @JvmField
 val DEFAULT_WIDTH_SPEC: Int = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+
 @JvmField
 val DEFAULT_HEIGHT_SPEC: Int = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)

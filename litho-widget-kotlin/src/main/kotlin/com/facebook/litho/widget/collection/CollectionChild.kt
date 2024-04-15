@@ -27,6 +27,8 @@ data class CollectionChild(
     val isSticky: Boolean = false,
     val isFullSpan: Boolean = false,
     val spanSize: Int? = null,
+    val parentWidthPercent: Float = -1f,
+    val parentHeightPercent: Float = -1f,
     val deps: Array<Any?>? = null,
     val onNearViewport: OnNearCallback? = null,
 )

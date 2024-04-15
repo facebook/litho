@@ -17,9 +17,10 @@
 package com.facebook.litho
 
 import androidx.annotation.Px
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
-import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaPositionType
 
 interface LayoutProps {
@@ -48,7 +49,7 @@ interface LayoutProps {
 
   fun maxHeightPercent(percent: Float)
 
-  fun layoutDirection(direction: YogaDirection)
+  fun layoutDirection(direction: LayoutDirection)
 
   fun alignSelf(alignSelf: YogaAlign)
 
@@ -84,12 +85,8 @@ interface LayoutProps {
 
   fun useHeightAsBaseline(useHeightAsBaseline: Boolean)
 
-  fun heightAuto()
-
-  fun widthAuto()
-
-  fun flexBasisAuto()
-
   /** Used by [DebugLayoutNodeEditor] */
   fun setBorderWidth(edge: YogaEdge, borderWidth: Float)
+
+  fun gap(gutter: YogaGutter, length: Int)
 }

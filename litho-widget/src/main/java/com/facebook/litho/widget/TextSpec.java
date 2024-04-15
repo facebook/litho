@@ -40,6 +40,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.icu.text.BreakIterator;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.Layout;
 import android.text.Layout.Alignment;
 import android.text.SpannableStringBuilder;
@@ -51,6 +52,7 @@ import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
 import androidx.annotation.Dimension;
+import androidx.annotation.DoNotInline;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -80,17 +82,19 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnPerformActionForVirtualView;
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
 import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.OnVirtualViewKeyboardFocusChanged;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Component to render text. See <a href="https://fblitho.com/docs/widgets#text">text-widget</a> for
@@ -124,6 +128,9 @@ import java.util.Collections;
  * @prop shadowDx Horizontal offset of the shadow.
  * @prop shadowDy Vertical offset of the shadow.
  * @prop shadowColor Color for the shadow underneath the text.
+ * @prop outlineWidth If set, gives the text outline of the specified width.
+ * @prop outlineColor Sets the outline color; if it's 0 or not set, outline uses the same color as
+ *     shadow.
  * @prop isSingleLine If set, makes the text to be rendered in a single line.
  * @prop textColor Color of the text.
  * @prop textColorStateList ColorStateList of the text.
@@ -198,6 +205,8 @@ public class TextSpec {
   @PropDefault protected static final int minTextWidth = DEFAULT_MIN_WIDTH;
   @PropDefault protected static final int maxTextWidth = DEFAULT_MAX_WIDTH;
   @PropDefault protected static final int shadowColor = Color.GRAY;
+  @PropDefault protected static final float outlineWidth = 0f;
+  @PropDefault protected static final int outlineColor = 0;
   @PropDefault protected static final int textColor = DEFAULT_COLOR;
   @PropDefault protected static final int linkColor = Color.BLUE;
 
@@ -330,7 +339,8 @@ public class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
-      Output<Integer> measuredHeight) {
+      Output<Integer> measuredHeight,
+      Output<Integer> fullWidth) {
 
     if (TextUtils.isEmpty(text)) {
       measureLayout.set(null);
@@ -338,6 +348,8 @@ public class TextSpec {
       size.height = 0;
       return;
     }
+
+    TextAlignment resolvedTextAlignment = getTextAlignment(textAlignment, alignment);
 
     Layout newLayout =
         createTextLayout(
@@ -361,7 +373,7 @@ public class TextSpec {
             letterSpacing,
             textStyle,
             typeface,
-            getTextAlignment(textAlignment, alignment),
+            resolvedTextAlignment,
             glyphWarming,
             layout.getResolvedLayoutDirection(),
             minEms,
@@ -374,9 +386,9 @@ public class TextSpec {
             justificationMode,
             textDirection,
             lineHeight);
-
     measureLayout.set(newLayout);
 
+    fullWidth.set(Math.max(0, SizeSpec.resolveSize(widthSpec, newLayout.getWidth())));
     size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
 
     // Adjust height according to the minimum number of lines.
@@ -413,7 +425,15 @@ public class TextSpec {
     final int fullWidth = SizeSpec.resolveSize(widthSpec, layout.getWidth());
 
     if (minimallyWide && layout.getLineCount() > 1) {
-      final int minimalWidth = SizeSpec.resolveSize(widthSpec, LayoutMeasureUtil.getWidth(layout));
+      float leftMost = fullWidth;
+      float rightMost = 0;
+      for (int i = 0, count = layout.getLineCount(); i < count; i++) {
+        leftMost = Math.min(leftMost, layout.getLineLeft(i));
+        rightMost = Math.max(rightMost, layout.getLineRight(i));
+      }
+      // To determine the width of the longest line, which is also the minimum width we desire,
+      // without leading and trailing whitespaces.
+      final int minimalWidth = SizeSpec.resolveSize(widthSpec, (int) (rightMost - leftMost));
 
       if (fullWidth - minimalWidth > minimallyWideThreshold) {
         return minimalWidth;
@@ -515,9 +535,7 @@ public class TextSpec {
       layoutBuilder.setLineHeight(lineHeight);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      layoutBuilder.setLetterSpacing(letterSpacing);
-    }
+    layoutBuilder.setLetterSpacing(letterSpacing);
 
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
@@ -547,11 +565,6 @@ public class TextSpec {
     layoutBuilder.setTextDirection(textDirection);
     layoutBuilder.setAlignment(
         getLayoutAlignment(textAlignment, textDirection, text, layoutDirection));
-
-    // T146855657 this is a temporary step to enable timeout for checking whether layout
-    // isBoringLayout
-    layoutBuilder.enableIsBoringLayoutCheckTimeout(
-        ComponentsConfiguration.enableIsBoringLayoutCheckTimeout);
 
     try {
       newLayout = layoutBuilder.build();
@@ -602,11 +615,14 @@ public class TextSpec {
       @Nullable @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @Nullable @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
+      @Prop(optional = true) boolean minimallyWide,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
+      @FromMeasure Integer fullWidth,
       Output<CharSequence> processedText,
       Output<Layout> textLayout,
+      Output<Float> textLayoutTranslationX,
       Output<Float> textLayoutTranslationY,
       Output<ClickableSpan[]> clickableSpans,
       Output<ImageSpan[]> imageSpans) {
@@ -623,6 +639,16 @@ public class TextSpec {
 
     if (measureLayout != null && measuredWidth == layoutWidth && measuredHeight == layoutHeight) {
       textLayout.set(measureLayout);
+      // We don't need to perform translation if we didn't pass minimally wide threshold above
+      if (minimallyWide && !Objects.equals(fullWidth, measuredWidth)) {
+        // Regardless of the text alignment, we can always use the leftmost point (the longest line)
+        // as our starting point to keep the text drawable center-aligned.
+        float leftMost = measuredWidth;
+        for (int i = 0, count = measureLayout.getLineCount(); i < count; i++) {
+          leftMost = Math.min(leftMost, measureLayout.getLineLeft(i));
+        }
+        textLayoutTranslationX.set(-leftMost);
+      }
     } else {
       textLayout.set(
           createTextLayout(
@@ -826,7 +852,7 @@ public class TextSpec {
     int ellipsisOffset;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       ellipsisOffset =
-          getEllipsisOffsetFromPaintAdvance(
+          AndroidMImpl.getEllipsisOffsetFromPaintAdvance(
               newLayout, text, isRtl, ellipsizedLineNumber, ellipsisTarget);
     } else {
       ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
@@ -859,9 +885,7 @@ public class TextSpec {
           && ellipsisOffset != 0
           && ellipsisOffset != text.length()) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          BreakIterator iterator = BreakIterator.getCharacterInstance();
-          iterator.setText(text);
-          ellipsisOffset = iterator.preceding(ellipsisOffset);
+          ellipsisOffset = AndroidQImpl.breakIteratorGetPreceding(text, ellipsisOffset);
         } else {
           java.text.BreakIterator iterator = java.text.BreakIterator.getCharacterInstance();
           iterator.setText(text.toString());
@@ -875,15 +899,6 @@ public class TextSpec {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
-  private static int getEllipsisOffsetFromPaintAdvance(
-      Layout layout, CharSequence text, boolean isRtl, int line, float advance) {
-    Paint paint = layout.getPaint();
-    int lineStart = layout.getLineStart(line);
-    int lineEnd = layout.getLineEnd(line);
-
-    return paint.getOffsetForAdvance(text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance);
-  }
   /**
    * @param layout A prepared text layout object
    * @return The (zero-indexed) line number at which the text in this layout will be ellipsized, or
@@ -909,6 +924,8 @@ public class TextSpec {
       TextDrawable textDrawable,
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float outlineWidth,
+      @Prop(optional = true, resType = ResType.COLOR) int outlineColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Nullable @Prop(optional = true) final EventHandler textOffsetOnTouchHandler,
       @Prop(optional = true) int highlightStartOffset,
@@ -919,6 +936,7 @@ public class TextSpec {
       @Nullable @Prop(optional = true) TouchableSpanListener touchableSpanListener,
       final @FromBoundsDefined CharSequence processedText,
       @FromBoundsDefined Layout textLayout,
+      @FromBoundsDefined Float textLayoutTranslationX,
       @FromBoundsDefined Float textLayoutTranslationY,
       @Nullable @FromBoundsDefined ClickableSpan[] clickableSpans,
       @Nullable @FromBoundsDefined ImageSpan[] imageSpans) {
@@ -943,11 +961,14 @@ public class TextSpec {
     textDrawable.mount(
         processedText,
         textLayout,
+        textLayoutTranslationX == null ? 0 : textLayoutTranslationX,
         textLayoutTranslationY == null ? 0 : textLayoutTranslationY,
         clipToBounds,
         textColorStateList,
         textColor,
         highlightColor,
+        outlineWidth,
+        outlineColor,
         clickableSpans,
         imageSpans,
         spanListener,
@@ -1048,6 +1069,38 @@ public class TextSpec {
       @Prop(optional = true, resType = ResType.BOOL) boolean accessibleClickableSpans,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     return (accessibleClickableSpans && clickableSpans != null) ? clickableSpans.length : 0;
+  }
+
+  @OnPerformActionForVirtualView
+  static boolean onPerformActionForVirtualView(
+      ComponentContext c,
+      View host,
+      AccessibilityNodeInfoCompat accessibilityNode,
+      int virtualViewId,
+      int action,
+      @Nullable Bundle arguments,
+      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    if (action == AccessibilityNodeInfoCompat.ACTION_CLICK) {
+      clickableSpans[virtualViewId].onClick(host);
+      return true;
+    }
+    return false;
+  }
+
+  @OnVirtualViewKeyboardFocusChanged
+  static void onVirtualViewKeyboardFocusChanged(
+      ComponentContext c,
+      View host,
+      @Nullable AccessibilityNodeInfoCompat accessibilityNode,
+      int virtualViewId,
+      boolean hasFocus,
+      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    final ClickableSpan span = clickableSpans[virtualViewId];
+    if (span instanceof AccessibleClickableSpan) {
+      ((AccessibleClickableSpan) span).setKeyboardFocused(hasFocus);
+      // force redraw when focus changes, so that any visual changes get applied.
+      host.invalidate();
+    }
   }
 
   @OnPopulateExtraAccessibilityNode
@@ -1236,5 +1289,35 @@ public class TextSpec {
         break;
     }
     return alignment;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.M)
+  private static class AndroidMImpl {
+
+    private AndroidMImpl() {}
+
+    @DoNotInline
+    static int getEllipsisOffsetFromPaintAdvance(
+        Layout layout, CharSequence text, boolean isRtl, int line, float advance) {
+      Paint paint = layout.getPaint();
+      int lineStart = layout.getLineStart(line);
+      int lineEnd = layout.getLineEnd(line);
+
+      return paint.getOffsetForAdvance(
+          text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private static class AndroidQImpl {
+
+    private AndroidQImpl() {}
+
+    @DoNotInline
+    static int breakIteratorGetPreceding(CharSequence text, int ellipsisOffset) {
+      BreakIterator iterator = BreakIterator.getCharacterInstance();
+      iterator.setText(text);
+      return iterator.preceding(ellipsisOffset);
+    }
   }
 }

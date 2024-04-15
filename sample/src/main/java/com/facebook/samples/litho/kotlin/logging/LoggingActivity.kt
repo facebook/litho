@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentTreeDebugEventListener
 import com.facebook.litho.LithoView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEvent.LayoutCommitted
 import com.facebook.litho.debug.LithoDebugEvent.StateUpdateEnqueued
 import com.facebook.rendercore.debug.DebugEvent
@@ -33,20 +34,24 @@ class LoggingActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val c = ComponentContext(this, "LITHOSAMPLE", SampleComponentsLogger())
+    val c = ComponentContext(this)
+
     val lithoView =
         LithoView.create(
             c,
             ComponentTree.create(c, LoggingRootComponent())
-                .withComponentTreeDebugEventListener(
-                    object : ComponentTreeDebugEventListener {
-                      override fun onEvent(debugEvent: DebugEvent) {
-                        Log.d("litho-events", debugEvent.toString())
-                      }
+                .componentsConfiguration(
+                    ComponentsConfiguration.defaultInstance.copy(
+                        componentsLogger = SampleComponentsLogger(),
+                        debugEventListener =
+                            object : ComponentTreeDebugEventListener {
+                              override fun onEvent(debugEvent: DebugEvent) {
+                                Log.d("litho-events", debugEvent.toString())
+                              }
 
-                      override val events: Set<String> =
-                          setOf(MountItemMount, StateUpdateEnqueued, LayoutCommitted)
-                    })
+                              override val events: Set<String> =
+                                  setOf(MountItemMount, StateUpdateEnqueued, LayoutCommitted)
+                            }))
                 .build())
 
     setContentView(lithoView)

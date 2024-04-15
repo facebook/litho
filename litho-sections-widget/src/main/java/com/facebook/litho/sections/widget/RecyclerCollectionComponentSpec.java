@@ -53,6 +53,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
@@ -67,8 +68,9 @@ import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
+import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.litho.widget.RecyclerEventsController;
-import com.facebook.litho.widget.SectionsRecyclerView;
+import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
@@ -151,6 +153,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) @Nullable ItemAnimator itemAnimator,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
+      @Prop(optional = true) @Nullable RecyclerView.EdgeEffectFactory edgeEffectFactory,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int leftPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int rightPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int topPadding,
@@ -168,8 +171,9 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean setRootAsync,
       @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
-      @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger,
+      @Prop(optional = true) @Nullable SectionsRecyclerViewLogger sectionsViewLogger,
       @Prop(optional = true) @Nullable CharSequence recyclerContentDescription,
+      @Prop(optional = true) boolean shouldExcludeFromIncrementalMount,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -216,6 +220,7 @@ public class RecyclerCollectionComponentSpec {
             .scrollBarStyle(scrollBarStyle)
             .recyclerViewId(recyclerViewId)
             .overScrollMode(overScrollMode)
+            .edgeEffectFactory(edgeEffectFactory)
             .recyclerEventsController(internalEventsController)
             .refreshHandler(!canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
             .pullToRefresh(canPTR)
@@ -232,6 +237,7 @@ public class RecyclerCollectionComponentSpec {
             .touchInterceptor(touchInterceptor)
             .onItemTouchListener(itemTouchListener)
             .binder(binder)
+            .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
             .itemAnimator(
                 RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
                     ? new NoUpdateItemAnimator()
@@ -242,7 +248,10 @@ public class RecyclerCollectionComponentSpec {
             .contentDescription(recyclerContentDescription);
 
     if (!binder.canMeasure()
-        && !recyclerConfiguration.getRecyclerBinderConfiguration().isWrapContent()) {
+        && !recyclerConfiguration
+            .getRecyclerBinderConfiguration()
+            .getRecyclerBinderConfig()
+            .wrapContent) {
       recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
     }
 
@@ -311,36 +320,26 @@ public class RecyclerCollectionComponentSpec {
     final LayoutInfo newLayoutInfo = recyclerConfiguration.getLayoutInfo(c);
     layoutInfo.set(newLayoutInfo);
 
+    RecyclerBinderConfig recyclerBinderConfig = binderConfiguration.getRecyclerBinderConfig();
+    ComponentsConfiguration componentsConfiguration =
+        (recyclerBinderConfig.componentsConfiguration != null)
+            ? recyclerBinderConfig.componentsConfiguration
+            : c.getLithoConfiguration().componentsConfig;
+
     RecyclerBinder.Builder recyclerBinderBuilder =
         new RecyclerBinder.Builder()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create(recyclerBinderConfig)
+                    .componentsConfiguration(
+                        ComponentsConfiguration.create(componentsConfiguration)
+                            .incrementalMountEnabled(
+                                incrementalMount && componentsConfiguration.incrementalMountEnabled)
+                            .build())
+                    .build())
             .layoutInfo(newLayoutInfo)
-            .rangeRatio(binderConfiguration.getRangeRatio())
-            .layoutHandlerFactory(binderConfiguration.getLayoutHandlerFactory())
-            .wrapContent(binderConfiguration.isWrapContent())
-            .enableStableIds(binderConfiguration.getEnableStableIds())
-            .invalidStateLogParamsList(binderConfiguration.getInvalidStateLogParamsList())
-            .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
-            .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
-            .isCircular(binderConfiguration.isCircular())
-            .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
-            .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
-            .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
-            .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
-            .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
-            .componentWarmer(binderConfiguration.getComponentWarmer())
-            .lithoViewFactory(binderConfiguration.getLithoViewFactory())
-            .errorEventHandler(binderConfiguration.getErrorEventHandler())
-            .recyclerViewItemPrefetch(binderConfiguration.getEnableItemPrefetch())
-            .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
-            .setItemViewCacheSize(binderConfiguration.getItemViewCacheSize())
-            .requestMountForPrefetchedItems(binderConfiguration.getRequestMountForPrefetchedItems())
             .startupLogger(startupLogger);
 
-    if (binderConfiguration.getEstimatedViewportCount()
-        != RecyclerBinderConfiguration.Builder.UNSET) {
-      recyclerBinderBuilder.estimatedViewportCount(binderConfiguration.getEstimatedViewportCount());
-    }
     RecyclerBinder recyclerBinder = recyclerBinderBuilder.build(c);
 
     SectionBinderTarget targetBinder =

@@ -22,7 +22,9 @@ import android.util.DisplayMetrics;
 /** A {@link RuntimeValue} for dimension properties like x/y/width/height. */
 public class DimensionValue implements RuntimeValue {
 
-  /** @return a RuntimeValue that resolves to an absolute value. */
+  /**
+   * @return a RuntimeValue that resolves to an absolute value.
+   */
   public static DimensionValue absolute(float value) {
     return new DimensionValue(Type.ABSOLUTE, value);
   }

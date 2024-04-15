@@ -62,17 +62,17 @@ public class TreePropGenerator {
     }
 
     final MethodSpec.Builder method =
-        MethodSpec.methodBuilder("populateTreeProps")
+        MethodSpec.methodBuilder("populateTreePropContainer")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PROTECTED)
-            .addParameter(ClassNames.TREE_PROPS, "treeProps")
-            .beginControlFlow("if (treeProps == null)")
+            .addParameter(ClassNames.TREE_PROPS, "treePropContainer")
+            .beginControlFlow("if (treePropContainer == null)")
             .addStatement("return")
             .endControlFlow();
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       method.addStatement(
-          "$L = treeProps.get($L.class)",
+          "$L = treePropContainer.get($L.class)",
           treeProp.getName(),
           findTypeByTypeName(treeProp.getTypeName()));
     }
@@ -91,14 +91,14 @@ public class TreePropGenerator {
 
     final String delegateName = SpecModelUtils.getSpecAccessor(specModel);
     final MethodSpec.Builder builder =
-        MethodSpec.methodBuilder("getTreePropsForChildren")
+        MethodSpec.methodBuilder("getTreePropContainerForChildren")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PROTECTED)
             .returns(ClassNames.TREE_PROPS)
             .addParameter(specModel.getContextClass(), "c")
-            .addParameter(ClassNames.TREE_PROPS, "parentTreeProps")
+            .addParameter(ClassNames.TREE_PROPS, "parentTreePropContainer")
             .addStatement(
-                "final $T childTreeProps = $T.acquire(parentTreeProps)",
+                "final $T childTreePropContainer = $T.acquire(parentTreePropContainer)",
                 ClassNames.TREE_PROPS,
                 ClassNames.TREE_PROPS);
 
@@ -118,7 +118,7 @@ public class TreePropGenerator {
       final CodeBlock.Builder block = CodeBlock.builder();
       block
           .add(
-              "childTreeProps.put($L.class, $L.$L(\n",
+              "childTreePropContainer.put($L.class, $L.$L(\n",
               findTypeByTypeName(onCreateTreePropsMethod.returnType),
               delegateName,
               onCreateTreePropsMethod.name)
@@ -136,7 +136,7 @@ public class TreePropGenerator {
             block.add("$L", methodParamModel.getName());
           } else {
             block.add(
-                "(($T) $T.getTreePropFromParent(parentTreeProps,"
+                "(($T) $T.getTreePropFromParent(parentTreePropContainer,"
                     + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
                     + ".class"
                     + "))",
@@ -165,7 +165,7 @@ public class TreePropGenerator {
       builder.addCode(block.add("));\n").unindent().unindent().build());
     }
 
-    builder.addStatement("return childTreeProps");
+    builder.addStatement("return childTreePropContainer");
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }

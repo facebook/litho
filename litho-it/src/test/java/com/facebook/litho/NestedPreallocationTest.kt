@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.widget.TextView
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
@@ -55,7 +56,7 @@ class NestedPreallocationTest {
     LithoAssertions.assertThat(lithoView).hasVisibleText("Title")
     LithoAssertions.assertThat(lithoView).hasVisibleText("Number 1")
 
-    Assertions.assertThat(pool.preallocationsAttempted).isEqualTo(10)
+    Assertions.assertThat(pool.preallocationsAttempted).isEqualTo(11)
   }
 
   @Test
@@ -76,9 +77,9 @@ class NestedPreallocationTest {
     val componentTree =
         ComponentTree.create(context, EmptyComponent())
             .componentsConfiguration(
-                ComponentsConfiguration.create().nestedPreallocationEnabled(true).build())
-            .shouldPreallocateMountContentPerMountSpec(preallocationEnabled)
-            .useDefaultHandlerForContentPreallocation()
+                ComponentsConfiguration.defaultInstance.copy(
+                    preAllocationHandler =
+                        if (preallocationEnabled) PreAllocationHandler.LayoutThread else null))
             .build()
 
     return lithoRule.render(heightPx = 2040, componentTree = componentTree) { TestComponent() }
@@ -94,19 +95,19 @@ class NestedPreallocationTest {
 
     var preallocationsAttempted: Int = 0
 
-    private val itemPool = MountItemsPool.DefaultItemPool(TestComponent::class.java, 2, false)
+    private val itemPool = MountItemsPool.DefaultItemPool(TestComponent::class.java, 2)
 
-    override fun acquire(contentAllocator: ContentAllocator<*>?): Any? {
+    override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
       return itemPool.acquire(contentAllocator)
     }
 
-    override fun release(item: Any?): Boolean {
+    override fun release(item: Any): Boolean {
       return itemPool.release(item)
     }
 
     override fun maybePreallocateContent(
-        c: Context?,
-        contentAllocator: ContentAllocator<*>?
+        c: Context,
+        contentAllocator: ContentAllocator<*>
     ): Boolean {
       preallocationsAttempted++
       return itemPool.maybePreallocateContent(c, contentAllocator)

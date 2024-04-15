@@ -45,17 +45,14 @@ class LayoutStateFutureReleaseTest {
   private var widthSpec = 0
   private var heightSpec = 0
   private lateinit var context: ComponentContext
-  private val config =
-      ComponentsConfiguration.getDefaultComponentsConfiguration().useCancelableLayoutFutures
   private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
+
+  private val defaultConfig = ComponentsConfiguration.defaultInstance
 
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.getDefaultComponentsConfigurationBuilder()
-            .useCancelableLayoutFutures(true))
     widthSpec = makeSizeSpec(40, EXACTLY)
     heightSpec = makeSizeSpec(40, EXACTLY)
     layoutThreadShadowLooper =
@@ -75,17 +72,15 @@ class LayoutStateFutureReleaseTest {
 
   @After
   fun tearDown() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.getDefaultComponentsConfigurationBuilder()
-            .useCancelableLayoutFutures(config))
+    ComponentsConfiguration.defaultInstance = defaultConfig
   }
 
   @Test
   fun testStopResolvingRowChildrenIfLsfReleased() {
     val layoutStateFutureMock: TreeFuture<*> = mock { on { isReleased } doReturn false }
     val c = ComponentContext(context)
-    val resolveStateContext = c.setRenderStateContextForTests()
-    resolveStateContext.setLayoutStateFuture(layoutStateFutureMock)
+    val resolveContext = c.setRenderStateContextForTests()
+    resolveContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
     val child1 =
         TestChildComponent(
@@ -98,7 +93,8 @@ class LayoutStateFutureReleaseTest {
             })
     val child2 = TestChildComponent()
     val row = Row.create(context).child(child1).child(child2).build()
-    val result = row.resolve(resolveStateContext, c)
+    val result =
+        row.resolve(resolveContext, ScopedComponentInfo(row, c, null), 0, 0, null).lithoNode
     Assert.assertTrue(child1.hasRunLayout)
     Assert.assertFalse(child2.hasRunLayout)
     Assert.assertNull(result)
@@ -108,8 +104,8 @@ class LayoutStateFutureReleaseTest {
   fun testStopResolvingColumnChildrenIfLsfReleased() {
     val layoutStateFutureMock: TreeFuture<*> = mock()
     val c = ComponentContext(context)
-    val resolveStateContext = c.setRenderStateContextForTests()
-    resolveStateContext.setLayoutStateFuture(layoutStateFutureMock)
+    val resolveContext = c.setRenderStateContextForTests()
+    resolveContext.setLayoutStateFutureForTest(layoutStateFutureMock)
     val wait = CountDownLatch(1)
     val child1 =
         TestChildComponent(
@@ -122,7 +118,8 @@ class LayoutStateFutureReleaseTest {
             })
     val child2 = TestChildComponent()
     val column = Column.create(context).child(child1).child(child2).build()
-    val result = column.resolve(resolveStateContext, c)
+    val result =
+        column.resolve(resolveContext, ScopedComponentInfo(column, c, null), 0, 0, null).lithoNode
     Assert.assertTrue(child1.hasRunLayout)
     Assert.assertFalse(child2.hasRunLayout)
     Assert.assertNull(result)
@@ -166,12 +163,7 @@ class LayoutStateFutureReleaseTest {
     val column_0 = Column.create(context).child(TestChildComponent()).build()
     val column = Column.create(context).child(child1).build()
     val handler = ThreadPoolLayoutHandler.getNewInstance(LayoutThreadPoolConfigurationImpl(1, 1, 5))
-    componentTree =
-        ComponentTree.create(context, column_0)
-            .componentsConfiguration(
-                ComponentsConfiguration.create().useCancelableLayoutFutures(true).build())
-            .layoutThreadHandler(handler)
-            .build()
+    componentTree = ComponentTree.create(context, column_0).layoutThreadHandler(handler).build()
     componentTree.setLithoView(LithoView(context))
 
     componentTree.setRootAndSizeSpecAsync(column, widthSpec, heightSpec)
@@ -206,7 +198,7 @@ class LayoutStateFutureReleaseTest {
     var hasRunLayout = false
 
     override fun render(
-        resolveStateContext: ResolveStateContext,
+        resolveContext: ResolveContext,
         c: ComponentContext,
         widthSpec: Int,
         heightSpec: Int

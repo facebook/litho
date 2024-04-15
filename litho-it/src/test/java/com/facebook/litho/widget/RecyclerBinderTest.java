@@ -57,16 +57,16 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EmptyComponent;
-import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
-import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -175,23 +175,14 @@ public class RecyclerBinderTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              RunnableHandler resolveHandler,
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              boolean incrementalMountEnabled,
-              boolean processVisibility,
-              boolean isReconciliationEnabled,
-              boolean isLayoutDiffingEnabled,
-              RunnableHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
-              @Nullable LithoLifecycleProvider lifecycleProvider,
-              @Nullable ErrorEventHandler errorEventHandler) {
+              @Nullable LithoVisibilityEventsController lifecycleProvider) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
               holder.mLayoutHandler = layoutHandler;
-              holder.mResolveHandler = resolveHandler;
             }
 
             return holder;
@@ -203,23 +194,14 @@ public class RecyclerBinderTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              RunnableHandler resolveHandler,
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              boolean incrementalMountEnabled,
-              boolean processVisibility,
-              boolean isReconciliationEnabled,
-              boolean isLayoutDiffingEnabled,
-              RunnableHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
-              @Nullable LithoLifecycleProvider lifecycleProvider,
-              @Nullable ErrorEventHandler errorEventHandler) {
+              @Nullable LithoVisibilityEventsController lifecycleProvider) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo, true);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
               holder.mLayoutHandler = layoutHandler;
-              holder.mResolveHandler = resolveHandler;
             }
 
             return holder;
@@ -234,13 +216,13 @@ public class RecyclerBinderTest {
 
     mRecyclerBinderBuilder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(mLayoutInfo)
             .componentTreeHolderFactory(mComponentTreeHolderFactory);
 
     mRecyclerBinderForAsyncInitRangeBuilder =
         new RecyclerBinder.Builder()
-            .rangeRatio(0)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(0).build())
             .layoutInfo(mLayoutInfo)
             .componentTreeHolderFactory(mComponentTreeHolderFactoryLayoutFinishedListener);
 
@@ -248,10 +230,10 @@ public class RecyclerBinderTest {
 
     mCircularRecyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(mCircularLayoutInfo)
             .componentTreeHolderFactory(mComponentTreeHolderFactory)
-            .isCircular(true)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().isCircular(true).build())
             .build(mComponentContext);
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
@@ -512,7 +494,7 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
 
@@ -920,8 +902,8 @@ public class RecyclerBinderTest {
   public void testMoveRange_withRetainMaximumRangeRecyclingStrategy() {
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .rangeRatio(RANGE_RATIO)
-            .estimatedViewportCount(1)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .recyclerBinderConfig(RecyclerBinderConfig.create().estimatedViewportCount(1).build())
             .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
             .build(mComponentContext);
     final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
@@ -937,8 +919,11 @@ public class RecyclerBinderTest {
   public void testIncreaseDecreaseMoveRangeAhead_withRetainMaximumRangeRecyclingStrategy() {
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .rangeRatio(RANGE_RATIO)
-            .estimatedViewportCount(1)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .rangeRatio(RANGE_RATIO)
+                    .estimatedViewportCount(1)
+                    .build())
             .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
             .build(mComponentContext);
     final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
@@ -957,8 +942,11 @@ public class RecyclerBinderTest {
   public void testIncreaseDecreaseMoveRangeBehind_withRetainMaximumRangeRecyclingStrategy() {
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .rangeRatio(RANGE_RATIO)
-            .estimatedViewportCount(1)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .rangeRatio(RANGE_RATIO)
+                    .estimatedViewportCount(1)
+                    .build())
             .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
             .build(mComponentContext);
     final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
@@ -1771,29 +1759,33 @@ public class RecyclerBinderTest {
     final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Nullable
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
-                    if (handlerType == null) {
-                      return layoutHandlerBase;
-                    } else if ((Integer) handlerType == 1) {
-                      return layoutHandler1;
-                    } else if ((Integer) handlerType == 2) {
-                      return layoutHandler2;
-                    } else {
-                      return layoutHandlerN;
-                    }
-                  }
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Nullable
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                            if (handlerType == null) {
+                              return layoutHandlerBase;
+                            } else if ((Integer) handlerType == 1) {
+                              return layoutHandler1;
+                            } else if ((Integer) handlerType == 2) {
+                              return layoutHandler2;
+                            } else {
+                              return layoutHandlerN;
+                            }
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    return true;
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            return true;
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
     final Component component0 = mock(Component.class);
     final Component component1 = mock(Component.class);
@@ -1837,29 +1829,33 @@ public class RecyclerBinderTest {
     final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Nullable
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
-                    if (handlerType == null) {
-                      return null;
-                    } else if ((Integer) handlerType == 1) {
-                      return layoutHandler1;
-                    } else if ((Integer) handlerType == 2) {
-                      return layoutHandler2;
-                    } else {
-                      return layoutHandlerN;
-                    }
-                  }
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Nullable
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                            if (handlerType == null) {
+                              return null;
+                            } else if ((Integer) handlerType == 1) {
+                              return layoutHandler1;
+                            } else if ((Integer) handlerType == 2) {
+                              return layoutHandler2;
+                            } else {
+                              return layoutHandlerN;
+                            }
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    return false;
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            return false;
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
     final Component component0 = mock(Component.class);
     final Component component1 = mock(Component.class);
@@ -1899,35 +1895,40 @@ public class RecyclerBinderTest {
     final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Nullable
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
-                    if (handlerType == null) {
-                      return null;
-                    } else if ((Integer) handlerType == 1) {
-                      return layoutHandler1;
-                    } else if ((Integer) handlerType == 2) {
-                      return layoutHandler2;
-                    } else {
-                      return layoutHandlerN;
-                    }
-                  }
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Nullable
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                            if (handlerType == null) {
+                              return null;
+                            } else if ((Integer) handlerType == 1) {
+                              return layoutHandler1;
+                            } else if ((Integer) handlerType == 2) {
+                              return layoutHandler2;
+                            } else {
+                              return layoutHandlerN;
+                            }
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    final Object previousHandlerType =
-                        previousRenderInfo.getCustomAttribute("handlerType");
-                    final Object newHandlerType = newRenderInfo.getCustomAttribute("handlerType");
-                    return previousHandlerType != null
-                        && newHandlerType != null
-                        && previousHandlerType.equals(1)
-                        && newHandlerType.equals(2);
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            final Object previousHandlerType =
+                                previousRenderInfo.getCustomAttribute("handlerType");
+                            final Object newHandlerType =
+                                newRenderInfo.getCustomAttribute("handlerType");
+                            return previousHandlerType != null
+                                && newHandlerType != null
+                                && previousHandlerType.equals(1)
+                                && newHandlerType.equals(2);
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
     final Component component0 = mock(Component.class);
     final Component component1 = mock(Component.class);
@@ -2286,7 +2287,7 @@ public class RecyclerBinderTest {
   public void testCircularRecyclerMeasureExact() {
     RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .build(mComponentContext);
@@ -2324,7 +2325,7 @@ public class RecyclerBinderTest {
   public void testCircularRecyclerMeasureAtMost() {
     RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false) {
                   @Override
@@ -2492,7 +2493,10 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncWithComponentWarmer() {
     final RecyclerBinder recyclerBinder =
-        spy(new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext));
+        spy(
+            new RecyclerBinder.Builder()
+                .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+                .build(mComponentContext));
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
 
@@ -2529,7 +2533,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncOnMainThread() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2555,7 +2561,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncOnBackgroundThread() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2591,7 +2599,9 @@ public class RecyclerBinderTest {
   @Test
   public void testMultipleInsertAsyncs() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2655,7 +2665,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncBeforeInitialMeasure() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2741,7 +2753,9 @@ public class RecyclerBinderTest {
   public void testInsertRangeAsync() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
@@ -2784,7 +2798,9 @@ public class RecyclerBinderTest {
   public void testInsertRangeAsyncBeforeInitialMeasure() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
@@ -2827,7 +2843,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsync_AsyncMode() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -2856,7 +2874,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsync_PolicyChangeMode() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
 
     final Component component =
@@ -2902,7 +2922,9 @@ public class RecyclerBinderTest {
   @Test
   public void testMultipleInsertAsyncs_AsyncMode() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -2952,7 +2974,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncBeforeInitialMeasure_AsyncMode() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -2981,7 +3005,9 @@ public class RecyclerBinderTest {
   public void testInsertRangeAsync_AsyncMode() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -3017,7 +3043,9 @@ public class RecyclerBinderTest {
   public void testInsertRangeAsyncBeforeInitialMeasure_AsyncMode() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -3056,7 +3084,9 @@ public class RecyclerBinderTest {
   public void testInsertRangeAsyncBeforeInitialMeasureRangeIsLargerThanMeasure_AsyncMode() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -3100,7 +3130,9 @@ public class RecyclerBinderTest {
   public void testInsertsDispatchedInBatch_AsyncMode() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -3143,7 +3175,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncWithSizeChangeBeforeCompletion() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -3173,7 +3207,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncWithSizeChangeBeforeBatchClosed() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -3225,7 +3261,9 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveAsync() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final Component component =
         SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -3251,7 +3289,9 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveAsyncMixedWithInserts() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
@@ -3285,7 +3325,9 @@ public class RecyclerBinderTest {
   @Test
   public void testMoveAsync() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
@@ -3317,7 +3359,9 @@ public class RecyclerBinderTest {
   @Test
   public void testMoveAsyncMixedWithInserts() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
@@ -3421,7 +3465,9 @@ public class RecyclerBinderTest {
   @Test
   public void testUpdateAsyncMixedWithInserts() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
@@ -3468,7 +3514,9 @@ public class RecyclerBinderTest {
   @Test
   public void testUpdateAsyncMixedWithOtherOperations() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
@@ -3592,7 +3640,9 @@ public class RecyclerBinderTest {
   @Test
   public void testUpdateRangeAtAsync() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
@@ -3638,7 +3688,9 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveRangeAtAsync() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
@@ -3672,7 +3724,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncOutOfOrderBeforeMeasure() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
@@ -3705,7 +3759,9 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncAndMutationsBeforeMeasure() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
@@ -3740,7 +3796,9 @@ public class RecyclerBinderTest {
   @Test
   public void testClearAsync() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
@@ -3765,7 +3823,9 @@ public class RecyclerBinderTest {
   @Test
   public void testClearAsyncBeforeMeasure() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
@@ -3790,7 +3850,9 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveItemsAsyncBeforeMeasure() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 6; i++) {
@@ -3842,7 +3904,9 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveAllItemsAsyncBeforeMeasure() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 6; i++) {
@@ -3870,7 +3934,9 @@ public class RecyclerBinderTest {
   @Test
   public void testRenderStateWithNotifyItemRenderCompleteAt() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final RecyclerView recyclerView = mock(RecyclerView.class);
     recyclerBinder.mount(recyclerView);
 
@@ -3913,7 +3979,7 @@ public class RecyclerBinderTest {
     when(delegate.onCreateViewHolder(any(), anyInt())).thenReturn(testViewHolder);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .setAdapterDelegate(delegate)
             .build(mComponentContext);
     final RecyclerView recyclerView = new RecyclerView(mComponentContext.getAndroidContext());
@@ -3949,7 +4015,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback2 =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -3982,7 +4050,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback2 =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -4040,7 +4110,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback2 =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
@@ -4084,7 +4156,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -4110,7 +4184,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4136,7 +4212,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4167,7 +4245,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4191,7 +4271,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4219,7 +4301,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4247,7 +4331,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4277,7 +4363,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback2 =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -4313,7 +4401,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback2 =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -4355,7 +4445,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4387,7 +4479,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4410,7 +4504,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -4438,7 +4534,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
 
     // Mount view before insertions
     recyclerBinder.mount(recyclerView);
@@ -4462,7 +4560,9 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
 
     // Mount view before insertions
     recyclerBinder.mount(recyclerView);
@@ -4550,9 +4650,12 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+                    .rangeRatio(0)
+                    .build())
             .build(mComponentContext);
 
     final List<RenderInfo> components = new ArrayList<>();
@@ -4661,9 +4764,12 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
+                    .rangeRatio(0)
+                    .build())
             .build(mComponentContext);
 
     final List<RenderInfo> components = new ArrayList<>();
@@ -4751,7 +4857,9 @@ public class RecyclerBinderTest {
         mock(ChangeSetCompleteCallback.class);
     final ComponentContext componentContext = new ComponentContext(getApplicationContext());
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(componentContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(componentContext);
     for (int i = 0; i < 40; i++) {
       recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
     }
@@ -4772,14 +4880,16 @@ public class RecyclerBinderTest {
 
   @Test(expected = IllegalStateException.class)
   public void testAsyncOperationsFromMultipleThreadsCrashes() throws InterruptedException {
-    final boolean isDebugMode = ComponentsConfiguration.isDebugModeEnabled;
+    final boolean isDebugMode = LithoDebugConfigurations.isDebugModeEnabled;
 
     // Manually override this to cause change set thread checks
-    ComponentsConfiguration.isDebugModeEnabled = true;
+    LithoDebugConfigurations.isDebugModeEnabled = true;
 
     try {
       final RecyclerBinder recyclerBinder =
-          new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+          new RecyclerBinder.Builder()
+              .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+              .build(mComponentContext);
       final Component component1 =
           SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       final Component component2 =
@@ -4811,7 +4921,7 @@ public class RecyclerBinderTest {
 
       recyclerBinder.insertItemAtAsync(0, renderInfo1);
     } finally {
-      ComponentsConfiguration.isDebugModeEnabled = isDebugMode;
+      LithoDebugConfigurations.isDebugModeEnabled = isDebugMode;
     }
   }
 
@@ -4821,8 +4931,8 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().hScrollAsyncMode(true).rangeRatio(10).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
@@ -4871,8 +4981,8 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().hScrollAsyncMode(true).rangeRatio(10).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
@@ -4928,8 +5038,8 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().hScrollAsyncMode(true).rangeRatio(10).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -4975,8 +5085,8 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .rangeRatio(10)
-            .hscrollAsyncMode(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().hScrollAsyncMode(true).rangeRatio(10).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
@@ -5038,8 +5148,8 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .rangeRatio(10)
-            .hscrollAsyncMode(false)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().hScrollAsyncMode(false).rangeRatio(10).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -5077,7 +5187,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .rangeRatio(10)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(10).build())
             .build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -5113,20 +5223,24 @@ public class RecyclerBinderTest {
     final Component component = mock(Component.class);
     final RecyclerBinder binder =
         mRecyclerBinderBuilder
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 0))
-            .layoutHandlerFactory(
-                new LayoutHandlerFactory() {
-                  @Override
-                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
-                    return layoutHandler;
-                  }
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 0))
+                    .layoutHandlerFactory(
+                        new LayoutHandlerFactory() {
+                          @Override
+                          public RunnableHandler createLayoutCalculationHandler(
+                              RenderInfo renderInfo) {
+                            return layoutHandler;
+                          }
 
-                  @Override
-                  public boolean shouldUpdateLayoutHandler(
-                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                    return false;
-                  }
-                })
+                          @Override
+                          public boolean shouldUpdateLayoutHandler(
+                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                            return false;
+                          }
+                        })
+                    .build())
             .build(mComponentContext);
 
     binder.insertItemAt(0, ComponentRenderInfo.create().component(component).build());
@@ -5141,7 +5255,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
             .layoutInfo(new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false))
-            .rangeRatio(10)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(10).build())
             .build(mComponentContext);
     final RecyclerView recyclerView = mock(RecyclerView.class);
     when(recyclerView.isComputingLayout()).thenReturn(true);
@@ -5178,14 +5292,15 @@ public class RecyclerBinderTest {
   public void testApplyReadyBatchesInfiniteLoop() {
     mExpectedException.expect(RuntimeException.class);
     mExpectedException.expectMessage(
-        "Too many retries -- RecyclerView is stuck in layout. Batch size: 1, isSubAdapter: false, isAttachedToWindow: false");
+        "Too many retries -- RecyclerView is stuck in layout. Batch size: 1, isSubAdapter: false,"
+            + " isAttachedToWindow: false");
 
     ShadowLooper.pauseMainLooper();
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
             .layoutInfo(new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false))
-            .rangeRatio(10)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(10).build())
             .build(mComponentContext);
     final RecyclerView recyclerView = mock(RecyclerView.class);
     when(recyclerView.isComputingLayout()).thenReturn(true);
@@ -5213,7 +5328,7 @@ public class RecyclerBinderTest {
   public void testApplyReadyBatchesMultipleTimesInSameFrameDoesNotTriggerRetryException() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .build(mComponentContext);
@@ -5334,7 +5449,10 @@ public class RecyclerBinderTest {
     final int widthPx = 200;
     final int heightPx = 200;
 
-    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    mRecyclerBinder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final RecyclerView rv = mock(RecyclerView.class);
     mRecyclerBinder.mount(rv);
 
@@ -5392,7 +5510,8 @@ public class RecyclerBinderTest {
     }
     assertThat(steps)
         .describedAs(
-            "Should call @OnDetached for components not in visible range and call @OnAttached method for components in visible range")
+            "Should call @OnDetached for components not in visible range and call @OnAttached"
+                + " method for components in visible range")
         .isEqualTo(expectedSteps);
   }
 
@@ -5402,7 +5521,10 @@ public class RecyclerBinderTest {
     final int widthPx = 200;
     final int heightPx = 200;
 
-    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    mRecyclerBinder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final RecyclerView rv = mock(RecyclerView.class);
     mRecyclerBinder.mount(rv);
 
@@ -5446,11 +5568,18 @@ public class RecyclerBinderTest {
 
   @Test
   public void binder_removeItem_onDetachedIsCalled() {
+    if (ComponentsConfiguration.disableReleaseComponentTreeInRecyclerBinder
+        || ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      return;
+    }
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
 
-    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    mRecyclerBinder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final RecyclerView rv = mock(RecyclerView.class);
     mRecyclerBinder.mount(rv);
 
@@ -5491,11 +5620,18 @@ public class RecyclerBinderTest {
 
   @Test
   public void binder_removeRange_onDetachedIsCalled() {
+    if (ComponentsConfiguration.disableReleaseComponentTreeInRecyclerBinder
+        || ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      return;
+    }
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
 
-    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    mRecyclerBinder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final RecyclerView rv = mock(RecyclerView.class);
     mRecyclerBinder.mount(rv);
 
@@ -5541,11 +5677,18 @@ public class RecyclerBinderTest {
 
   @Test
   public void binder_replaceAll_onDetachedIsCalled() {
+    if (ComponentsConfiguration.disableReleaseComponentTreeInRecyclerBinder
+        || ComponentsConfiguration.enableFixForDisappearTransitionInRecyclerBinder) {
+      return;
+    }
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
 
-    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    mRecyclerBinder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .build(mComponentContext);
     final RecyclerView rv = mock(RecyclerView.class);
     mRecyclerBinder.mount(rv);
 
@@ -5632,7 +5775,7 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .build(parent.getContext());
@@ -5660,7 +5803,7 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
             .build(parent.getContext());
@@ -5684,7 +5827,9 @@ public class RecyclerBinderTest {
             .build();
 
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().enableStableIds(true).build(parent.getContext());
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().enableStableIds(true).build())
+            .build(parent.getContext());
 
     assertThat(recyclerBinder.getInternalAdapter().hasStableIds()).isEqualTo(true);
 
@@ -5708,8 +5853,8 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .enableStableIds(true)
-            .isCircular(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().enableStableIds(true).isCircular(true).build())
             .build(parent.getContext());
 
     assertThat(recyclerBinder.getInternalAdapter().hasStableIds()).isEqualTo(false);
@@ -5723,9 +5868,74 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getInternalAdapter().getItemId(0)).isEqualTo(RecyclerView.NO_ID);
   }
 
+  @Test
+  public void testParentWidthHeightPercent() {
+    final ComponentContext parentContext =
+        new ComponentContext(mComponentContext.getAndroidContext());
+    final ComponentTree parent =
+        ComponentTree.create(mComponentContext, SimpleMountSpecTester.create(parentContext).build())
+            .build();
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .componentTreeHolderFactory(mComponentTreeHolderFactory)
+            .build(parent.getContext());
+
+    Component component =
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
+    recyclerBinder.insertItemAt(
+        0,
+        ComponentRenderInfo.create()
+            .component(component)
+            .parentWidthPercent(50f)
+            .parentHeightPercent(30f)
+            .build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    TestComponentTreeHolder componentTreeHolder = mHoldersForComponents.get(component);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(500);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(300);
+
+    // to verify we would compute the new size based on the parent width and height
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1080, EXACTLY), makeSizeSpec(1900, EXACTLY), null);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(540);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(570);
+
+    // to verify we would ignore invalid inputs, which should be a value between [0-100]
+    recyclerBinder.updateItemAt(
+        0,
+        ComponentRenderInfo.create()
+            .component(component)
+            .parentWidthPercent(-1f) // -1 is not valid
+            .parentHeightPercent(10f)
+            .build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1080, EXACTLY), makeSizeSpec(1900, EXACTLY), null);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(1080);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(190);
+
+    recyclerBinder.updateItemAt(
+        0,
+        ComponentRenderInfo.create()
+            .component(component)
+            .parentWidthPercent(110f) // 110 is not valid
+            .parentHeightPercent(50f)
+            .build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1080, EXACTLY), makeSizeSpec(1900, EXACTLY), null);
+    assertThat(componentTreeHolder.mChildWidth).isEqualTo(1080);
+    assertThat(componentTreeHolder.mChildHeight).isEqualTo(950);
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
-        .rangeRatio(RANGE_RATIO)
+        .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
         .layoutInfo(new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
         .overrideInternalAdapter(adapterMock)
         .build(mComponentContext);

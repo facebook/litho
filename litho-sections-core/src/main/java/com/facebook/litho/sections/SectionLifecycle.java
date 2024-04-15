@@ -30,7 +30,8 @@ import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
 import com.facebook.litho.NoOpEventHandler;
 import com.facebook.litho.StateContainer;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -42,6 +43,7 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
 public abstract class SectionLifecycle implements EventDispatcher, EventTriggerTarget {
   static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
       "SectionLifecycle:WrongContextForEventHandler";
+
   /**
    * This methods will delegate to the {@link GroupSectionSpec} method annotated with {@link
    * com.facebook.litho.sections.annotations.OnCreateChildren}
@@ -115,8 +117,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     try {
       return acceptTriggerEventImpl(eventTrigger, eventState, params);
     } catch (Exception e) {
-      if (eventTrigger.mComponentContext != null) {
-        throw ComponentUtils.wrapWithMetadata(eventTrigger.mComponentContext, e);
+      if (eventTrigger.getComponentContext() != null) {
+        throw ComponentUtils.wrapWithMetadata(eventTrigger.getComponentContext(), e);
       } else {
         throw e;
       }
@@ -214,7 +216,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       final String className,
       final SectionContext c,
       final int id,
-      final Object[] params) {
+      final Object[] params,
+      final EventHandlerRebindMode mode) {
     Section section;
     if (c == null || (section = c.getSectionScope()) == null) {
       ComponentsReporter.emitMessage(
@@ -232,10 +235,16 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
               className, section.getSimpleName()));
     }
     final EventHandler eventHandler =
-        new EventHandler<>(id, new EventDispatchInfo(section, c), params);
+        new EventHandler<>(id, mode, new EventDispatchInfo(section, c), params);
     final ChangeSetCalculationState calculationState = c.getChangeSetCalculationState();
     if (calculationState != null && calculationState.isActive()) {
-      calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
+      if (c.shouldUseNonRebindingEventHandlers()) {
+        if (mode == EventHandlerRebindMode.REBIND) {
+          calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
+        }
+      } else {
+        calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
+      }
     }
     return eventHandler;
   }
@@ -294,11 +303,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * Retrieves all of the tree props used by this Section from the TreeProps map and sets the tree
    * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
+  protected void populateTreePropContainer(@Nullable TreePropContainer parentTreePropContainer) {}
 
   /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
-  protected TreeProps getTreePropsForChildren(
-      SectionContext c, @Nullable TreeProps previousTreeProps) {
+  protected TreePropContainer getTreePropContainerForChildren(
+      SectionContext c, @Nullable TreePropContainer previousTreeProps) {
     return previousTreeProps;
   }
 

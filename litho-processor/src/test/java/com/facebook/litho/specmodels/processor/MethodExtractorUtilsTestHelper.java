@@ -23,7 +23,8 @@ import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
 
 public final class MethodExtractorUtilsTestHelper {
-  private MethodExtractorUtilsTestHelper() {};
+  private MethodExtractorUtilsTestHelper() {}
+  ;
 
   public static void assertOnDetachedHasNoParams(List<MethodParamModel> onDetachedMethodParams) {
     assertThat(onDetachedMethodParams).isEmpty();

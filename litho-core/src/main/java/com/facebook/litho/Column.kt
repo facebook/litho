@@ -16,9 +16,11 @@
 
 package com.facebook.litho
 
+import androidx.annotation.Dimension
 import com.facebook.litho.annotations.Prop
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaFlexDirection
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
 
@@ -48,12 +50,7 @@ private constructor(
       children: MutableList<Component>? = null
   ) : this(null, alignContent, alignItems, justifyContent, wrap, reverse, children)
 
-  override fun canResolve(): Boolean = true
-
-  public override fun resolve(
-      resolveStateContext: ResolveStateContext,
-      c: ComponentContext
-  ): LithoNode? {
+  private fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode? {
     val node = LithoNode()
     node.flexDirection(if (reverse) YogaFlexDirection.COLUMN_REVERSE else YogaFlexDirection.COLUMN)
     alignItems?.let { node.alignItems(it) }
@@ -62,13 +59,13 @@ private constructor(
     wrap?.let { node.wrap(it) }
     children?.let { children ->
       for (child in children) {
-        if (resolveStateContext.isFutureReleased) {
+        if (resolveContext.isFutureReleased) {
           return null
         }
-        if (resolveStateContext.isLayoutInterrupted) {
+        if (resolveContext.isLayoutInterrupted) {
           node.appendUnresolvedComponent(child)
         } else {
-          node.child(resolveStateContext, c, child)
+          node.child(resolveContext, c, child)
         }
       }
     }
@@ -76,13 +73,13 @@ private constructor(
   }
 
   public override fun resolve(
-      resolveStateContext: ResolveStateContext,
+      resolveContext: ResolveContext,
       scopedComponentInfo: ScopedComponentInfo,
       parentWidthSpec: Int,
       parentHeightSpec: Int,
       componentsLogger: ComponentsLogger?
   ): ComponentResolveResult {
-    val lithoNode = resolve(resolveStateContext, scopedComponentInfo.context)
+    val lithoNode = resolve(resolveContext, scopedComponentInfo.context)
     return ComponentResolveResult(lithoNode, commonProps)
   }
 
@@ -161,6 +158,15 @@ private constructor(
 
     override fun justifyContent(justifyContent: YogaJustify?): Builder = apply {
       column.justifyContent = justifyContent
+    }
+
+    override fun gapDip(gutter: YogaGutter, @Dimension(unit = Dimension.DP) gap: Float): Builder =
+        apply {
+          column.orCreateCommonProps.gap(gutter, mResourceResolver.dipsToPixels(gap))
+        }
+
+    override fun gapPx(gutter: YogaGutter, px: Int): Builder = apply {
+      column.orCreateCommonProps.gap(gutter, px)
     }
 
     override fun wrap(wrap: YogaWrap?): Builder = apply { column.wrap = wrap }

@@ -20,10 +20,11 @@ import android.annotation.SuppressLint
 
 /** Exception class used to add additional Litho metadata to a crash. */
 class LithoMetadataExceptionWrapper
-private constructor(
-    private val componentContext: ComponentContext?,
-    private val componentTree: ComponentTree?,
-    cause: Throwable
+internal constructor(
+    private val componentContext: ComponentContext? = null,
+    private val root: String? = null,
+    private val logTag: String? = null,
+    cause: Throwable,
 ) : RuntimeException() {
   @JvmField var lastHandler: EventHandler<ErrorEvent>? = null
   private val componentNameLayoutStack = ArrayList<String>()
@@ -34,14 +35,34 @@ private constructor(
     stackTrace = emptyArray()
   }
 
-  internal constructor(cause: Throwable) : this(null, null, cause)
+  internal constructor(
+      cause: Throwable
+  ) : this(
+      null,
+      null,
+      null,
+      cause,
+  )
 
   internal constructor(
       componentContext: ComponentContext?,
-      cause: Throwable
-  ) : this(componentContext, null, cause)
+      cause: Throwable,
+  ) : this(
+      componentContext,
+      null,
+      null,
+      cause,
+  )
 
-  constructor(componentTree: ComponentTree?, cause: Throwable) : this(null, componentTree, cause)
+  constructor(
+      componentTree: ComponentTree?,
+      cause: Throwable
+  ) : this(
+      null,
+      componentTree?.root?.simpleName,
+      componentTree?.lithoConfiguration?.componentsConfig?.logTag,
+      cause,
+  )
 
   fun addComponentNameForLayoutStack(componentName: String) {
     componentNameLayoutStack.add(componentName)
@@ -62,7 +83,7 @@ private constructor(
       val cause = deepestCause
       if (componentContext != null && componentContext.componentScope != null) {
         msg.append(" at <cls>")
-            .append(componentContext.componentScope.javaClass.name)
+            .append(componentContext.componentScope?.javaClass?.name)
             .append("</cls>")
       }
       msg.append(" => ")
@@ -80,14 +101,14 @@ private constructor(
         }
         msg.appendLine()
       }
-      if (componentContext?.logTag != null) {
-        msg.append("  log_tag: ").appendLine(componentContext.logTag)
-      } else if (componentTree?.logTag != null) {
-        msg.append("  log_tag: ").appendLine(componentTree.logTag)
+
+      val contextLogTag = componentContext?.logTag ?: ""
+      if (contextLogTag.isNotBlank()) {
+        msg.append("  log_tag: ").appendLine(contextLogTag)
+      } else if (logTag != null) {
+        msg.append("  log_tag: ").appendLine(logTag)
       }
-      componentTree?.root?.let { root ->
-        msg.append("  tree_root: <cls>").append(root.javaClass.name).appendLine("</cls>")
-      }
+      root?.let { msg.append("  tree_root: <cls>").append(it).appendLine("</cls>") }
       msg.append("  thread_name: ").appendLine(Thread.currentThread().name)
       msg.appendMap(customMetadata)
       return msg.toString().trim { it <= ' ' }

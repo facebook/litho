@@ -60,7 +60,6 @@ import com.facebook.litho.sections.SectionTree.Target.DynamicConfig
 import com.facebook.litho.sections.widget.ClearRefreshingEvent
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.NoUpdateItemAnimator
-import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionEventsController
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerDynamicConfigEvent
@@ -189,7 +188,7 @@ object ExperimentalRecyclerCollectionComponentSpec {
         else null
     val positionStyle =
         if (!binder.canMeasure() &&
-            !recyclerConfiguration.recyclerBinderConfiguration.isWrapContent) {
+            !recyclerConfiguration.recyclerBinderConfiguration.recyclerBinderConfig.wrapContent) {
           Style.positionType(YogaPositionType.ABSOLUTE).position(all = 0.dp)
         } else null
     val recycler =
@@ -284,38 +283,30 @@ object ExperimentalRecyclerCollectionComponentSpec {
       canMeasureRecycler:
           Boolean, // Don't use this. If false, off incremental mount for all subviews of this
       // Recycler.
-      @Prop(optional = true) incrementalMount: Boolean,
+      @Prop(optional = true) incrementalMount: Boolean, // TODO: Attempt to remove
       @Prop(optional = true) startupLogger: LithoStartupLogger?,
       @Prop(optional = true) stickyHeaderControllerFactory: StickyHeaderControllerFactory?
   ) {
     val binderConfiguration = recyclerConfiguration.recyclerBinderConfiguration
     val newLayoutInfo = recyclerConfiguration.getLayoutInfo(c)
     layoutInfo.set(newLayoutInfo)
+
+    val recyclerBinderConfig = binderConfiguration.recyclerBinderConfig
+    val componentsConfiguration =
+        recyclerBinderConfig.componentsConfiguration ?: c.lithoConfiguration.componentsConfig
+
     val recyclerBinderBuilder =
         RecyclerBinder.Builder()
+            .recyclerBinderConfig(
+                recyclerBinderConfig.copy(
+                    componentsConfiguration =
+                        componentsConfiguration.copy(
+                            incrementalMountEnabled =
+                                incrementalMount &&
+                                    componentsConfiguration.incrementalMountEnabled)))
             .layoutInfo(newLayoutInfo)
-            .rangeRatio(binderConfiguration.rangeRatio)
-            .layoutHandlerFactory(binderConfiguration.layoutHandlerFactory)
-            .wrapContent(binderConfiguration.isWrapContent)
-            .enableStableIds(binderConfiguration.enableStableIds)
-            .invalidStateLogParamsList(binderConfiguration.invalidStateLogParamsList)
-            .threadPoolConfig(binderConfiguration.threadPoolConfiguration)
-            .hscrollAsyncMode(binderConfiguration.hScrollAsyncMode)
-            .isCircular(binderConfiguration.isCircular)
-            .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
-            .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
-            .componentsConfiguration(binderConfiguration.componentsConfiguration)
-            .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
-            .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
-            .componentWarmer(binderConfiguration.componentWarmer)
-            .lithoViewFactory(binderConfiguration.lithoViewFactory)
-            .errorEventHandler(binderConfiguration.errorEventHandler)
-            .recyclerViewItemPrefetch(binderConfiguration.enableItemPrefetch)
             .startupLogger(startupLogger)
-    if (binderConfiguration.estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
-      recyclerBinderBuilder.estimatedViewportCount(binderConfiguration.estimatedViewportCount)
-    }
     val recyclerBinder = recyclerBinderBuilder.build(c)
     val targetBinder =
         SectionBinderTarget(recyclerBinder, binderConfiguration.useBackgroundChangeSets)

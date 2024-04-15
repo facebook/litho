@@ -27,9 +27,9 @@ import androidx.fragment.app.Fragment
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.LithoLifecycleProvider
-import com.facebook.litho.LithoLifecycleProviderDelegate
 import com.facebook.litho.LithoView
+import com.facebook.litho.LithoVisibilityEventsController
+import com.facebook.litho.LithoVisibilityEventsControllerDelegate
 import com.facebook.samples.litho.R
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -56,7 +56,8 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
       }
 
   // start_example_lifecycleprovider
-  private val delegate: LithoLifecycleProviderDelegate = LithoLifecycleProviderDelegate()
+  private val delegate: LithoVisibilityEventsControllerDelegate =
+      LithoVisibilityEventsControllerDelegate()
 
   override fun onClick(view: View) {
 
@@ -64,7 +65,7 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
     replaceFragment()
 
     // inform the LithoView
-    delegate.moveToLifecycle(LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE)
+    delegate.moveToLifecycle(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
   }
 
   override fun onCreateView(
@@ -80,7 +81,7 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
         LithoView.create(
             c,
             getComponent(c),
-            delegate /* The LithoLifecycleProvider delegate for this LithoView */)
+            delegate /* The LithoVisibilityEventsController delegate for this LithoView */)
 
     // end_example_lifecycleprovider
     val layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)

@@ -49,6 +49,10 @@ import javax.annotation.Nullable;
  * Class for validating that the {@link SpecMethodModel}s for a {@link SpecModel} are well-formed.
  */
 public class DelegateMethodValidation {
+  private static final String COVARIANT_STATE_ISSUE_MESSAGE =
+      ". This StateValue<T> has unsuppressed wildcards from a Kotlin spec. Wildcards need to be "
+          + "suppressed via @JvmSuppressWildcards StateValue<ContainerType<T>> or "
+          + "StateValue<ContainerType<@JvmSuppressWildcards T>>.";
 
   static List<SpecModelValidationError> validateLayoutSpecModel(LayoutSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
@@ -159,6 +163,8 @@ public class DelegateMethodValidation {
       int numberOfAllowedMethodArgsUsed =
           getNumberOfAllowedMethodArgsUsed(delegateMethod.methodParams, allowedDelegateMethodArgs);
 
+      System.out.println("Delegate method info: " + delegateMethodDescription);
+
       for (int i = numberOfAllowedMethodArgsUsed, size = delegateMethod.methodParams.size();
           i < size;
           i++) {
@@ -235,13 +241,24 @@ public class DelegateMethodValidation {
           }
         } else if (!isOptionalParamValid(
             specModel, delegateMethodDescription.optionalParameterTypes, delegateMethodParam)) {
+          final boolean isCovariantStateIssue =
+              isCovariantStateIssue(
+                  specModel, delegateMethodDescription.optionalParameterTypes, delegateMethodParam);
+
           validationErrors.add(
               new SpecModelValidationError(
                   delegateMethodParam.getRepresentedObject(),
-                  "Argument at index "
-                      + i
-                      + " is "
-                      + getOptionalParamsError(delegateMethodDescription)));
+                  new StringBuilder()
+                      .append("Argument at index ")
+                      .append(i)
+                      .append(" (")
+                      .append(delegateMethodParam.getName())
+                      .append(") is not a valid parameter")
+                      .append(
+                          isCovariantStateIssue
+                              ? COVARIANT_STATE_ISSUE_MESSAGE
+                              : getOptionalParamsError(delegateMethodDescription))
+                      .toString()));
         }
       }
     }
@@ -514,7 +531,7 @@ public class DelegateMethodValidation {
   public static String getOptionalParamsError(DelegateMethodDescription delegateMethodDescription) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder
-        .append("not a valid parameter, should be one of the following: ")
+        .append(", should be one of the following: ")
         .append(
             getStringRepresentationOfParamTypes(delegateMethodDescription.optionalParameterTypes));
 
@@ -591,5 +608,16 @@ public class DelegateMethodValidation {
     }
 
     return "Unexpected parameter type - please report to the Components team";
+  }
+
+  private static boolean isCovariantStateIssue(
+      SpecModel spec,
+      ImmutableList<OptionalParameterType> parameterTypes,
+      MethodParamModel methodParamModel) {
+    if (!parameterTypes.contains(OptionalParameterType.STATE_VALUE)) {
+      return false;
+    }
+
+    return SpecModelUtils.isStateValueOnlyIfIgnoringKotlinCovariance(spec, methodParamModel);
   }
 }

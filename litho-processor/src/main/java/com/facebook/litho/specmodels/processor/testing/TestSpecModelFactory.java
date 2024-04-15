@@ -167,7 +167,9 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
     }
   }
 
-  /** @return List of props for the original, annotated Spec. */
+  /**
+   * @return List of props for the original, annotated Spec.
+   */
   @Nullable
   private static SpecModel getEnclosedSpecModel(
       Elements elements,

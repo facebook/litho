@@ -23,7 +23,6 @@ import android.graphics.Color
 import android.os.Build
 import android.util.SparseArray
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.LayoutStateCreateTreeTest.TestDrawableComponentWithMockInternalNode
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.testing.TestComponent
@@ -52,12 +51,12 @@ import org.robolectric.annotation.Config
 class LayoutStateCreateTreeTest {
 
   private lateinit var componentContext: ComponentContext
-  private lateinit var resolveStateContext: ResolveStateContext
+  private lateinit var resolveContext: ResolveContext
 
   @Before
   fun setup() {
     componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    resolveStateContext = componentContext.setRenderStateContextForTests()
+    resolveContext = componentContext.setRenderStateContextForTests()
   }
 
   @Test
@@ -69,7 +68,7 @@ class LayoutStateCreateTreeTest {
                   .child(Column.create(c).child(SimpleMountSpecTester.create(c)))
                   .build()
         }
-    var node = Resolver.resolve(resolveStateContext, componentContext, component)
+    var node = Resolver.resolve(resolveContext, componentContext, component)
     assertThat(node?.childCount).isEqualTo(1)
     assertThat(node?.headComponent).isEqualTo(component)
     assertThat(node?.tailComponent).isInstanceOf(Column::class.java)
@@ -123,7 +122,7 @@ class LayoutStateCreateTreeTest {
                   .focusChangeHandler(focusChangedHandler3)
                   .build()
         }
-    var node = Resolver.resolve(resolveStateContext, componentContext, component)
+    var node = Resolver.resolve(resolveContext, componentContext, component)
     assertThat(node?.nodeInfo?.clickHandler).isEqualTo(clickHandler3)
     assertThat(node?.nodeInfo?.longClickHandler).isEqualTo(longClickHandler3)
     assertThat(node?.nodeInfo?.touchHandler).isEqualTo(touchHandler3)
@@ -185,7 +184,7 @@ class LayoutStateCreateTreeTest {
                   .focusChangeHandler(focusChangedHandler3)
                   .build()
         }
-    var node = Resolver.resolve(resolveStateContext, componentContext, component)
+    var node = Resolver.resolve(resolveContext, componentContext, component)
     assertThat(node?.nodeInfo?.clickHandler).isEqualTo(clickHandler3)
     assertThat(node?.nodeInfo?.longClickHandler).isEqualTo(longClickHandler3)
     assertThat(node?.nodeInfo?.touchHandler).isEqualTo(touchHandler3)
@@ -240,7 +239,7 @@ class LayoutStateCreateTreeTest {
                 .build()
           }
         }
-    val node = Resolver.resolve(resolveStateContext, componentContext, component)
+    val node = Resolver.resolve(resolveContext, componentContext, component)
     assertThat(node?.childCount).isEqualTo(0)
     assertThat(node?.tailComponent).isInstanceOf(SimpleMountSpecTester::class.java)
     assertThat(node?.nodeInfo?.clickHandler).isEqualTo(clickHandler2)
@@ -285,7 +284,7 @@ class LayoutStateCreateTreeTest {
                 .build()
           }
         }
-    val node = Resolver.resolve(resolveStateContext, componentContext, component)
+    val node = Resolver.resolve(resolveContext, componentContext, component)
     assertThat(node?.childCount).isEqualTo(0)
     assertThat(node?.tailComponent).isInstanceOf(TestSizeDependentComponent::class.java)
     assertThat(node?.nodeInfo?.clickHandler).isEqualTo(clickHandler2)
@@ -329,6 +328,11 @@ class LayoutStateCreateTreeTest {
     val performAccessibilityActionHandler: EventHandler<PerformAccessibilityActionEvent> = mock()
     val sendAccessibilityEventHandler: EventHandler<SendAccessibilityEventEvent> = mock()
     val sendAccessibilityEventUncheckedHandler: EventHandler<SendAccessibilityEventUncheckedEvent> =
+        mock()
+    val onPerformActionForVirtualViewHandler: EventHandler<PerformActionForVirtualViewEvent> =
+        mock()
+    val onVirtualViewKeyboardFocusChangedHandler:
+        EventHandler<VirtualViewKeyboardFocusChangedEvent> =
         mock()
     val stateListAnimator = mock<StateListAnimator>()
     val component: Component =
@@ -392,6 +396,7 @@ class LayoutStateCreateTreeTest {
             .focusable(true)
             .selected(false)
             .enabled(false)
+            .keyboardNavigationCluster(false)
             .accessibilityHeading(false)
             .visibleHeightRatio(55f)
             .visibleWidthRatio(56f)
@@ -402,6 +407,7 @@ class LayoutStateCreateTreeTest {
             .invisibleHandler(invisibleHandler)
             .visibilityChangedHandler(visibleRectChangedHandler)
             .contentDescription("test")
+            .tooltipText("test")
             .viewTag(viewTag)
             .viewTags(viewTags)
             .shadowElevationPx(60f)
@@ -419,12 +425,14 @@ class LayoutStateCreateTreeTest {
             .performAccessibilityActionHandler(performAccessibilityActionHandler)
             .sendAccessibilityEventHandler(sendAccessibilityEventHandler)
             .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
+            .onPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler)
+            .onVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler)
             .stateListAnimator(stateListAnimator)
             .build()
-    val node = Resolver.resolve(resolveStateContext, componentContext, component)
+    val node = Resolver.resolve(resolveContext, componentContext, component)
     val output: LayoutProps = Mockito.spy(LayoutProps::class.java)
     (component as SpecGeneratedComponent).commonProps?.copyLayoutProps(output)
-    verify(output).layoutDirection(YogaDirection.INHERIT)
+    verify(output).layoutDirection(YogaDirection.INHERIT.toLayoutDirection())
     verify(output).alignSelf(YogaAlign.AUTO)
     verify(output).positionType(YogaPositionType.ABSOLUTE)
     verify(output).flex(2f)
@@ -492,9 +500,8 @@ class LayoutStateCreateTreeTest {
   }
 
   private class TestDrawableComponentWithMockInternalNode : TestComponent() {
-    protected fun canResolve(): Boolean = true
 
-    override fun resolve(resolveStateContext: ResolveStateContext, c: ComponentContext): LithoNode {
+    private fun resolve(resolveContext: ResolveContext, c: ComponentContext): LithoNode {
       val result = mock<LithoLayoutResult>()
       val node = mock<LithoNode>()
       val nodeInfo = mock<NodeInfo>()
@@ -508,13 +515,13 @@ class LayoutStateCreateTreeTest {
     }
 
     public override fun resolve(
-        resolveStateContext: ResolveStateContext,
+        resolveContext: ResolveContext,
         scopedComponentInfo: ScopedComponentInfo,
         parentWidthSpec: Int,
         parentHeightSpec: Int,
         componentsLogger: ComponentsLogger?
     ): ComponentResolveResult {
-      val lithoNode = resolve(resolveStateContext, scopedComponentInfo.context)
+      val lithoNode = resolve(resolveContext, scopedComponentInfo.context)
       return ComponentResolveResult(lithoNode, null)
     }
 

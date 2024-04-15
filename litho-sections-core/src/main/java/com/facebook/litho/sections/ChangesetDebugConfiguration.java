@@ -109,7 +109,9 @@ public class ChangesetDebugConfiguration {
     return sListener;
   }
 
-  /** @return a list with the names of the RenderInfos for this change. */
+  /**
+   * @return a list with the names of the RenderInfos for this change.
+   */
   public static List<String> getRenderInfoNames(Change change) {
     final List<String> names = new ArrayList<>();
     final List<RenderInfo> renderInfos = change.getRenderInfos();

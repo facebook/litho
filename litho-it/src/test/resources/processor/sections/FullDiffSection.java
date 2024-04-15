@@ -352,13 +352,13 @@ public final class FullDiffSection<T> extends Section implements TestTag {
         (Integer) getCached());
   }
 
-  private int getCached() {
-    SectionContext c = getScopedContext();
+  private int getCached(SectionContext c) {
+    String globalKey = c.getGlobalKey();
     final CachedInputs inputs = new CachedInputs(prop1);
-    Integer cached = (Integer) c.getCachedValue(inputs);
+    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
     if (cached == null) {
       cached = FullDiffSectionSpec.onCalculateCached(prop1);
-      c.putCachedValue(inputs, cached);
+      c.putCachedValue(globalKey, 0, inputs, cached);
     }
     return cached;
   }

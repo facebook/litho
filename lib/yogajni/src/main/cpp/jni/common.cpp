@@ -16,9 +16,10 @@ void registerNatives(
     size_t numMethods) {
   jclass clazz = env->FindClass(className);
 
-  assertNoPendingJniExceptionIf(env, !clazz);
+  assertNoPendingJniExceptionIf(env, clazz == nullptr);
 
-  auto result = env->RegisterNatives(clazz, methods, numMethods);
+  auto result =
+      env->RegisterNatives(clazz, methods, static_cast<int32_t>(numMethods));
 
   assertNoPendingJniExceptionIf(env, result != JNI_OK);
 }
@@ -30,7 +31,7 @@ jmethodID getStaticMethodId(
     const char* methodDescriptor) {
   jmethodID methodId =
       env->GetStaticMethodID(clazz, methodName, methodDescriptor);
-  assertNoPendingJniExceptionIf(env, !methodId);
+  assertNoPendingJniExceptionIf(env, methodId == nullptr);
   return methodId;
 }
 
@@ -40,7 +41,7 @@ jmethodID getMethodId(
     const char* methodName,
     const char* methodDescriptor) {
   jmethodID methodId = env->GetMethodID(clazz, methodName, methodDescriptor);
-  assertNoPendingJniExceptionIf(env, !methodId);
+  assertNoPendingJniExceptionIf(env, methodId == nullptr);
   return methodId;
 }
 
@@ -50,7 +51,7 @@ jfieldID getFieldId(
     const char* fieldName,
     const char* fieldSignature) {
   jfieldID fieldId = env->GetFieldID(clazz, fieldName, fieldSignature);
-  assertNoPendingJniExceptionIf(env, !fieldId);
+  assertNoPendingJniExceptionIf(env, fieldId == nullptr);
   return fieldId;
 }
 
@@ -75,23 +76,20 @@ DEFINE_CALL_METHOD_FOR_PRIMITIVE_INTERFACE(void, Void) {
   assertNoPendingJniException(env);
 }
 
-ScopedLocalRef<jobject> callStaticObjectMethod(
-    JNIEnv* env,
-    jclass clazz,
-    jmethodID methodId,
-    ...) {
+ScopedLocalRef<jobject>
+callStaticObjectMethod(JNIEnv* env, jclass clazz, jmethodID methodId, ...) {
   va_list args;
   va_start(args, methodId);
   jobject result = env->CallStaticObjectMethodV(clazz, methodId, args);
   va_end(args);
-  assertNoPendingJniExceptionIf(env, !result);
+  assertNoPendingJniExceptionIf(env, result == nullptr);
   return make_local_ref(env, result);
 }
 
 ScopedGlobalRef<jobject> newGlobalRef(JNIEnv* env, jobject obj) {
   jobject result = env->NewGlobalRef(obj);
 
-  if (!result) {
+  if (result == nullptr) {
     logErrorMessageAndDie("Could not obtain global reference from object");
   }
 
@@ -99,9 +97,9 @@ ScopedGlobalRef<jobject> newGlobalRef(JNIEnv* env, jobject obj) {
 }
 
 ScopedGlobalRef<jthrowable> newGlobalRef(JNIEnv* env, jthrowable obj) {
-  jthrowable result = static_cast<jthrowable>(env->NewGlobalRef(obj));
+  auto result = static_cast<jthrowable>(env->NewGlobalRef(obj));
 
-  if (!result) {
+  if (result == nullptr) {
     logErrorMessageAndDie("Could not obtain global reference from object");
   }
 

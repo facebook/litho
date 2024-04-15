@@ -17,6 +17,7 @@
 package com.facebook.litho.specmodels.model;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.specmodels.generator.EventCaseGenerator;
@@ -48,6 +49,7 @@ public final class ErrorEventHandlerGenerator {
         .name(EventCaseGenerator.INTERNAL_ON_ERROR_HANDLER_NAME)
         .returnTypeSpec(new TypeSpec(TypeName.VOID))
         .typeVariables(ImmutableList.of())
+        .specMethod(new EventMethod(EventHandlerRebindMode.NONE))
         .methodParams(
             ImmutableList.of(
                 new SimpleMethodParamModel(

@@ -29,12 +29,11 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.RenderResult;
-import com.facebook.litho.ResolveStateContext;
+import com.facebook.litho.ResolveContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.SpecGeneratedComponent;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -149,9 +148,10 @@ public class ComponentWarmerTest {
   public void testCancelDuringPrepareAsync() {
     final RecyclerBinder binder =
         new RecyclerBinder.Builder()
-            .componentsConfiguration(
-                ComponentsConfiguration.create().useCancelableLayoutFutures(true).build())
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create()
+                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
+                    .build())
             .build(mContext);
 
     binder.measure(
@@ -217,11 +217,7 @@ public class ComponentWarmerTest {
 
   @Test
   public void testCancelDuringPrepare() {
-    final RecyclerBinder binder =
-        new RecyclerBinder.Builder()
-            .componentsConfiguration(
-                ComponentsConfiguration.create().useCancelableLayoutFutures(true).build())
-            .build(mContext);
+    final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     binder.measure(
         new Size(),
@@ -296,7 +292,10 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer();
     assertThat(warmer.isReady()).isFalse();
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.isReady()).isFalse();
 
@@ -383,7 +382,10 @@ public class ComponentWarmerTest {
     warmer.prepare("tag1", renderInfo1, null);
     warmer.prepare("tag2", renderInfo2, null);
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.getPending().size()).isEqualTo(2);
     assertThat(warmer.getCache().get("tag1")).isNull();
@@ -433,7 +435,10 @@ public class ComponentWarmerTest {
     warmer.prepare("tag1", renderInfo1, null, lithoHandler);
     warmer.prepare("tag2", renderInfo2, null, lithoHandler);
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.getPending().size()).isEqualTo(2);
     assertThat(warmer.getCache().get("tag1")).isNull();
@@ -479,7 +484,10 @@ public class ComponentWarmerTest {
     warmer.prepareAsync("tag1", renderInfo1);
     warmer.prepareAsync("tag2", renderInfo2);
 
-    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+    RecyclerBinder binder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     assertThat(warmer.getPending().size()).isEqualTo(2);
     assertThat(warmer.getCache().get("tag1")).isNull();
@@ -521,7 +529,9 @@ public class ComponentWarmerTest {
     assertThat(testComponentPrepare.ranLayout.get()).isTrue();
 
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().componentWarmer(warmer).build())
+            .build(mContext);
 
     final TestComponent testComponentInsert = new TestComponent("t2");
     final ComponentRenderInfo renderInfoInsert =
@@ -560,10 +570,7 @@ public class ComponentWarmerTest {
 
     @Override
     protected RenderResult render(
-        ResolveStateContext resolveStateContext,
-        ComponentContext c,
-        int widthSpec,
-        int heightSpec) {
+        ResolveContext resolveContext, ComponentContext c, int widthSpec, int heightSpec) {
       ranLayout.set(true);
       return new RenderResult(Column.create(c).build());
     }

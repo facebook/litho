@@ -22,7 +22,7 @@ import android.graphics.drawable.ColorDrawable
 import android.util.SparseArray
 import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
@@ -31,7 +31,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.widget.ComponentWithState
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaDirection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -68,7 +67,7 @@ class LithoNodeTest {
   @Test
   fun testLayoutDirectionFlag() {
     val node = acquireInternalNode()
-    node.layoutDirection(YogaDirection.INHERIT)
+    node.layoutDirection(LayoutDirection.INHERIT)
     assertThat(isFlagSet(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue
     clearFlag(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")
     assertEmptyFlags(node)
@@ -102,6 +101,12 @@ class LithoNodeTest {
     val sendAccessibilityEventHandler: EventHandler<SendAccessibilityEventEvent> = mock()
     val sendAccessibilityEventUncheckedHandler: EventHandler<SendAccessibilityEventUncheckedEvent> =
         mock()
+    val onPerformActionForVirtualViewHandler: EventHandler<PerformActionForVirtualViewEvent> =
+        mock()
+    val onVirtualViewKeyboardFocusChangedHandler:
+        EventHandler<VirtualViewKeyboardFocusChangedEvent> =
+        mock()
+
     val toBeAppliedInfo = NodeInfo()
     toBeAppliedInfo.clickHandler = clickHandler
     toBeAppliedInfo.focusChangeHandler = focusChangedHandler
@@ -111,8 +116,10 @@ class LithoNodeTest {
     toBeAppliedInfo.setFocusable(true)
     toBeAppliedInfo.setSelected(false)
     toBeAppliedInfo.setEnabled(false)
+    toBeAppliedInfo.setKeyboardNavigationCluster(false)
     toBeAppliedInfo.setAccessibilityHeading(false)
     toBeAppliedInfo.contentDescription = "test"
+    toBeAppliedInfo.tooltipText = "test"
     toBeAppliedInfo.viewTag = viewTag
     toBeAppliedInfo.viewTags = viewTags
     toBeAppliedInfo.shadowElevation = 60f
@@ -131,6 +138,9 @@ class LithoNodeTest {
     toBeAppliedInfo.performAccessibilityActionHandler = performAccessibilityActionHandler
     toBeAppliedInfo.sendAccessibilityEventHandler = sendAccessibilityEventHandler
     toBeAppliedInfo.sendAccessibilityEventUncheckedHandler = sendAccessibilityEventUncheckedHandler
+    toBeAppliedInfo.onPerformActionForVirtualViewHandler = onPerformActionForVirtualViewHandler
+    toBeAppliedInfo.onVirtualViewKeyboardFocusChangedHandler =
+        onVirtualViewKeyboardFocusChangedHandler
     node.applyNodeInfo(toBeAppliedInfo)
     verify(nodeInfo).clickHandler = clickHandler
     verify(nodeInfo).focusChangeHandler = focusChangedHandler
@@ -140,8 +150,10 @@ class LithoNodeTest {
     verify(nodeInfo).setFocusable(true)
     verify(nodeInfo).setSelected(false)
     verify(nodeInfo).setEnabled(false)
+    verify(nodeInfo).setKeyboardNavigationCluster(false)
     verify(nodeInfo).setAccessibilityHeading(false)
     verify(nodeInfo).contentDescription = "test"
+    verify(nodeInfo).tooltipText = "test"
     verify(nodeInfo).viewTag = viewTag
     verify(nodeInfo).viewTags = viewTags
     verify(nodeInfo).shadowElevation = 60f
@@ -160,6 +172,9 @@ class LithoNodeTest {
     verify(nodeInfo).performAccessibilityActionHandler = performAccessibilityActionHandler
     verify(nodeInfo).sendAccessibilityEventHandler = sendAccessibilityEventHandler
     verify(nodeInfo).sendAccessibilityEventUncheckedHandler = sendAccessibilityEventUncheckedHandler
+    verify(nodeInfo).onPerformActionForVirtualViewHandler = onPerformActionForVirtualViewHandler
+    verify(nodeInfo).onVirtualViewKeyboardFocusChangedHandler =
+        onVirtualViewKeyboardFocusChangedHandler
   }
 
   @Test
@@ -311,11 +326,10 @@ class LithoNodeTest {
   @Test
   fun testComponentCreateAndRetrieveCachedLayoutLS_measure() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
-    val resultCache = resolveStateContext.cache
+    val componentTree = ComponentTree.create(baseContext).build()
+    val c = componentTree.context
+    val resolveContext = c.setRenderStateContextForTests()
+    val resultCache = resolveContext.cache
     val unspecifiedSizeSpec = unspecified(0)
     val exactSizeSpec = exactly(50)
     val textComponent = Text.create(c).textSizePx(16).text("test").build()
@@ -333,11 +347,10 @@ class LithoNodeTest {
   @Test
   fun testComponentCreateAndRetrieveCachedLayoutLS_measureMightNotCacheInternalNode() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
-    val resultCache = resolveStateContext.cache
+    val componentTree = ComponentTree.create(baseContext).build()
+    val c = componentTree.context
+    val resolveContext = c.setRenderStateContextForTests()
+    val resultCache = resolveContext.cache
     val unspecifiedSizeSpec = unspecified(0)
     val exactSizeSpec = exactly(50)
     val textComponent = Text.create(c).textSizePx(16).text("test").build()
@@ -354,10 +367,10 @@ class LithoNodeTest {
 
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
-    if (ComponentsConfiguration.enableLayoutCaching) {
+    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    if (c.shouldCacheLayouts()) {
       return
     }
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     c.setRenderStateContextForTests()
     val component =
         Column.create(c)
@@ -372,10 +385,10 @@ class LithoNodeTest {
 
   @Test
   fun testMeasureMightNotCacheInternalNode_ContextWithoutLayoutStateContextOrStateHandler_returnsMeasurement() {
-    if (ComponentsConfiguration.enableLayoutCaching) {
+    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    if (c.shouldCacheLayouts()) {
       return
     }
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     c.setRenderStateContextForTests()
     val component =
         Column.create(c)
@@ -393,19 +406,19 @@ class LithoNodeTest {
 
     private fun isFlagSet(node: LithoNode, flagName: String): Boolean {
       val flagPosition = Whitebox.getInternalState<Long>(LithoNode::class.java, flagName)
-      val flags = Whitebox.getInternalState<Long>(node, "mPrivateFlags")
+      val flags = Whitebox.getInternalState<Long>(node, "privateFlags")
       return flags and flagPosition != 0L
     }
 
     private fun clearFlag(node: LithoNode, flagName: String) {
       val flagPosition = Whitebox.getInternalState<Long>(LithoNode::class.java, flagName)
-      var flags = Whitebox.getInternalState<Long>(node, "mPrivateFlags")
+      var flags = Whitebox.getInternalState<Long>(node, "privateFlags")
       flags = flags and flagPosition.inv()
-      Whitebox.setInternalState(node, "mPrivateFlags", flags)
+      Whitebox.setInternalState(node, "privateFlags", flags)
     }
 
     private fun assertEmptyFlags(node: LithoNode) {
-      assertThat(Whitebox.getInternalState<Any>(node, "mPrivateFlags") as Long).isEqualTo(0L)
+      assertThat(Whitebox.getInternalState<Any>(node, "privateFlags") as Long).isEqualTo(0L)
     }
   }
 }

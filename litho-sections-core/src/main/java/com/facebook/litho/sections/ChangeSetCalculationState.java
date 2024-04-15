@@ -27,11 +27,13 @@ import java.util.List;
  * this is local to a particular changeset calculation and is only active while the changeset is
  * being calculated.
  */
-class ChangeSetCalculationState {
+public class ChangeSetCalculationState {
 
   private @Nullable State mState = new State();
 
-  /** @return whether the associated changeset calculation is still in progress. */
+  /**
+   * @return whether the associated changeset calculation is still in progress.
+   */
   boolean isActive() {
     return mState != null;
   }

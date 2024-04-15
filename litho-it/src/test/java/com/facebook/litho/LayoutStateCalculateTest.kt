@@ -37,7 +37,6 @@ import com.facebook.litho.testing.TestSizeDependentComponent
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
-import com.facebook.litho.testing.logging.TestComponentsLogger
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentCaching
 import com.facebook.litho.widget.ItemCardComponent
@@ -74,7 +73,8 @@ import org.robolectric.shadows.ShadowAccessibilityManager
 @RunWith(LithoTestRunner::class)
 class LayoutStateCalculateTest {
 
-  val config = ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build()
+  val config =
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
 
   @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
   private lateinit var context: ComponentContext
@@ -109,7 +109,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
   }
 
   @Test
@@ -126,7 +126,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
   }
 
   @Test
@@ -156,7 +156,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(6)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(6)
     val layoutData = layoutState.getMountableOutputAt(4).layoutData as LithoLayoutData
     assertThat(layoutData.expandedTouchBounds).isEqualTo(Rect(5, 5, 5, 5))
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4)).nodeInfo
@@ -186,7 +186,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNotNull
@@ -214,7 +214,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNull()
@@ -243,7 +243,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNull()
@@ -272,7 +272,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNull()
@@ -300,7 +300,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.touchHandler).isNotNull
@@ -366,11 +366,11 @@ class LayoutStateCalculateTest {
     // 7) Text view component
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(8)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(8)
 
     // Check quantity of HostComponents.
     var totalHosts = 0
-    for (i in 0 until layoutState.mountableOutputCount) {
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       val mountedComponent = getComponentAt(layoutState, i)
       if (isHostComponent(mountedComponent)) {
         totalHosts++
@@ -490,11 +490,11 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(8)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(8)
 
     // Check quantity of HostComponents.
     var totalHosts = 0
-    for (i in 0 until layoutState.mountableOutputCount) {
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       val mountedComponent = getComponentAt(layoutState, i)
       if (isHostComponent(mountedComponent)) {
         totalHosts++
@@ -565,11 +565,11 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(18)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(18)
 
     // Check quantity of HostComponents.
     var totalHosts = 0
-    for (i in 0 until layoutState.mountableOutputCount) {
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       val mountedComponent = getComponentAt(layoutState, i)
       if (isHostComponent(mountedComponent)) {
         totalHosts++
@@ -664,9 +664,9 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
-    assertThat(sameComponentLayoutState.mountableOutputCount)
-        .isEqualTo(layoutState.mountableOutputCount)
-    for (i in 0 until layoutState.mountableOutputCount) {
+    assertThat(sameComponentLayoutState.getMountableOutputCount())
+        .isEqualTo(layoutState.getMountableOutputCount())
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       assertThat(sameComponentLayoutState.getMountableOutputAt(i).renderUnit.id)
           .isEqualTo(layoutState.getMountableOutputAt(i).renderUnit.id)
     }
@@ -763,9 +763,9 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY))
-    assertThat(sameComponentLayoutState.mountableOutputCount)
-        .isEqualTo(layoutState.mountableOutputCount)
-    for (i in 0 until layoutState.mountableOutputCount) {
+    assertThat(sameComponentLayoutState.getMountableOutputCount())
+        .isEqualTo(layoutState.getMountableOutputCount())
+    for (i in 0 until layoutState.getMountableOutputCount()) {
       assertThat(sameComponentLayoutState.getMountableOutputAt(i).renderUnit.id)
           .isEqualTo(layoutState.getMountableOutputAt(i).renderUnit.id)
     }
@@ -813,8 +813,8 @@ class LayoutStateCalculateTest {
         .isEqualTo(layoutState1.getMountableOutputAt(0).renderUnit.id)
     assertThat(layoutState2.getMountableOutputAt(1).renderUnit.id)
         .isEqualTo(layoutState1.getMountableOutputAt(1).renderUnit.id)
-    assertThat(layoutState1.mountableOutputCount).isEqualTo(3)
-    assertThat(layoutState2.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState1.getMountableOutputCount()).isEqualTo(3)
+    assertThat(layoutState2.getMountableOutputCount()).isEqualTo(4)
   }
 
   @Test
@@ -879,7 +879,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent::class.java)
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue
@@ -888,17 +888,17 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithSameSpecs() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val componentContext = componentTree.context
+    val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(componentContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, EXACTLY)
     val heightSpec = makeSizeSpec(100, EXACTLY)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    innerComponent.measure(componentContext, widthSpec, heightSpec, size)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
+    internalNode?.layoutOutput?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -926,17 +926,18 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val componentContext = componentTree.context
+
+    val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(componentContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, AT_MOST)
     val heightSpec = makeSizeSpec(100, AT_MOST)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    innerComponent.measure(componentContext, widthSpec, heightSpec, size)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
+    internalNode?.layoutOutput?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -964,17 +965,17 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecified() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val componentContext = componentTree.context
+    val resolveContext = componentContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(componentContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(0, UNSPECIFIED)
     val heightSpec = makeSizeSpec(0, UNSPECIFIED)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    innerComponent.measure(componentContext, widthSpec, heightSpec, size)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
+    internalNode?.layoutOutput?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -1000,17 +1001,17 @@ class LayoutStateCalculateTest {
   @Test
   fun testNoMeasureOnNestedComponentWithOldAndNewAtMost() {
     val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val c =
-        ComponentContextUtils.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).build())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val componentTree = ComponentTree.create(baseContext).build()
+    val treeContext = componentTree.context
+    val resolveContext = treeContext.setRenderStateContextForTests()
     val size = Size()
-    val innerComponent = TestDrawableComponent.create(c, 0, 0, true, true, false, false).build()
+    val innerComponent =
+        TestDrawableComponent.create(treeContext, 0, 0, true, true, false, false).build()
     val widthSpec = makeSizeSpec(100, AT_MOST)
     val heightSpec = makeSizeSpec(100, AT_MOST)
-    innerComponent.measure(c, widthSpec, heightSpec, size)
-    val internalNode: LithoLayoutResult? = resolveStateContext.cache.getCachedResult(innerComponent)
-    internalNode?.setSizeSpec(widthSpec, heightSpec)
+    innerComponent.measure(treeContext, widthSpec, heightSpec, size)
+    val internalNode: LithoLayoutResult? = resolveContext.cache.getCachedResult(innerComponent)
+    internalNode?.layoutOutput?.setSizeSpec(widthSpec, heightSpec)
     innerComponent.resetInteractions()
     val component: Component =
         object : InlineLayoutSpec() {
@@ -1056,7 +1057,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(5)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(5)
     val hostMarkerRoot = layoutState.getMountableOutputAt(0).renderUnit.id
     val hostMarkerOne = layoutState.getMountableOutputAt(1).renderUnit.id
 
@@ -1089,7 +1090,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
 
     // Host generated
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue
@@ -1121,7 +1122,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(9)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(9)
     val hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(0))
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(1))
     val hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(4))
@@ -1172,7 +1173,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(9)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(9)
     val hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(0))
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(1))
     val hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(4))
@@ -1207,7 +1208,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val rootOutput = layoutState.getMountableOutputAt(0)
     val hostOutput = layoutState.getMountableOutputAt(1)
     val drawableOutput = layoutState.getMountableOutputAt(2)
@@ -1237,7 +1238,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(
             LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).nodeInfo?.focusState)
@@ -1258,7 +1259,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0))
     assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1290,7 +1291,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(
             LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1))
@@ -1315,7 +1316,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(
             LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component.simpleName)
@@ -1352,7 +1353,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY))
 
     // Because the TestDrawableComponent is disabled, we don't wrap it in a host.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component)
         .isInstanceOf(HostComponent::class.java)
@@ -1380,7 +1381,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component)
         .isInstanceOf(HostComponent::class.java)
@@ -1420,7 +1421,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(6)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(6)
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).nodeInfo).isNull()
     assertThat(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).component)
         .isInstanceOf(HostComponent::class.java)
@@ -1510,7 +1511,7 @@ class LayoutStateCalculateTest {
     // 7) Drawable 3
     // 8) Host for drawable 4
     // 9) Drawable 4
-    assertThat(layoutState.mountableOutputCount).isEqualTo(10)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(10)
     val rootOutput = layoutState.getMountableOutputAt(0)
     val rowOneOutput = layoutState.getMountableOutputAt(1)
     val drawableOnetOutput = layoutState.getMountableOutputAt(2)
@@ -1583,7 +1584,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(8)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(8)
 
     // Breakdown of mountable output:
     // getMountableOutputAt(0) = inlineLayout
@@ -1654,7 +1655,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0))
     assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1684,7 +1685,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     val hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0))
     assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero)
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1710,7 +1711,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     assertThat(getComponentAt(layoutState, 0)).isInstanceOf(HostComponent::class.java)
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent::class.java)
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent::class.java)
@@ -1731,7 +1732,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1773,7 +1774,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1811,7 +1812,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1846,7 +1847,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1887,7 +1888,7 @@ class LayoutStateCalculateTest {
             makeSizeSpec(200, EXACTLY))
 
     // Check total layout outputs.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(4)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     var mountBounds = Rect()
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
@@ -1920,7 +1921,8 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(200, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(0)
+    // contains one root host
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(1)
   }
 
   @Test
@@ -1940,7 +1942,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(200, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(1)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(1)
     var mountBounds = Rect()
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue
     mountBounds = layoutState.getMountableOutputAt(0).bounds
@@ -1962,7 +1964,9 @@ class LayoutStateCalculateTest {
 
     val result = legacyLithoViewRule.committedLayoutState!!.mLayoutResult!!.getChildAt(0)!!
 
-    assertThat(result.node.tailComponent).isInstanceOf(MountSpecLifecycleTester::class.java)
+    assertThat(result is LithoLayoutResult).isTrue
+    assertThat((result as LithoLayoutResult).node.tailComponent)
+        .isInstanceOf(MountSpecLifecycleTester::class.java)
     assertThat(result.width).isEqualTo(width)
     assertThat(result.height).isEqualTo(height)
   }
@@ -2095,7 +2099,7 @@ class LayoutStateCalculateTest {
 
     // No layout output generated related with borders
     // if borderColor is supplied but not borderWidth.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
   }
 
   @Test
@@ -2118,7 +2122,7 @@ class LayoutStateCalculateTest {
 
     // No layout output generated related with borders
     // if borderWidth supplied but not borderColor.
-    assertThat(layoutState.mountableOutputCount).isEqualTo(2)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2)
   }
 
   @Test
@@ -2142,7 +2146,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
 
     // Output at index 1 is BorderColorDrawable component.
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(DrawableComponent::class.java)
@@ -2169,7 +2173,7 @@ class LayoutStateCalculateTest {
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3)
 
     // Output at index 1 is BorderColorDrawable component.
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(DrawableComponent::class.java)
@@ -2178,7 +2182,7 @@ class LayoutStateCalculateTest {
   @Test
   fun testWillRenderLayoutsOnce() {
     val c = legacyLithoViewRule.context
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val steps: MutableList<StepInfo> = ArrayList()
     val component =
         Column.create(c)
@@ -2188,57 +2192,57 @@ class LayoutStateCalculateTest {
     Component.willRender(c, component)
     assertThat(LifecycleStep.getSteps(steps)).containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT)
     steps.clear()
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
     assertThat(LifecycleStep.getSteps(steps)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
   }
 
   @Test
   fun testResolveLayoutUsesWillRenderResult() {
     var c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build()
     c = ComponentContext.withComponentScope(c, component, "global_key")
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
   }
 
   @Test
   fun testNewLayoutBuilderUsesWillRenderResult() {
     var c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build()
     c = ComponentContext.withComponentScope(c, component, "global_key")
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
   }
 
   @Test
   fun testCreateLayoutUsesWillRenderResult() {
     var c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build()
     c = ComponentContext.withComponentScope(c, component, "global_key")
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
-    val result = Resolver.resolve(resolveStateContext, c, component)
+    val result = Resolver.resolve(resolveContext, c, component)
     assertThat(result).isEqualTo(cachedLayout)
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull()
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isNull()
   }
 
   @Test
@@ -2259,45 +2263,19 @@ class LayoutStateCalculateTest {
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY))
     verify(componentSpy, times(1))
-        .render((anyOrNull<ResolveStateContext>()), (anyOrNull<ComponentContext>()), eq(0), eq(0))
+        .render((anyOrNull()), (anyOrNull<ComponentContext>()), eq(0), eq(0))
   }
 
   @Test
   fun testWillRenderTwiceDoesNotReCreateLayout() {
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = c.setRenderStateContextForTests()
+    val resolveContext = c.setRenderStateContextForTests()
     val component: Component = TestLayoutComponent.create(c, 0, 0, true, true, false).build()
     Component.willRender(c, component)
-    val cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext)
+    val cachedLayout = component.getLayoutCreatedInWillRender(resolveContext)
     assertThat(cachedLayout).isNotNull
     assertThat(Component.willRender(c, component)).isTrue
-    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isEqualTo(cachedLayout)
-  }
-
-  @Test
-  fun testComponentsLoggerCanReturnNullPerfEventsDuringLayout() {
-    val component: Component =
-        object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component? =
-              Column.create(c).child(TestDrawableComponent.create(c)).wrapInView().build()
-        }
-    val logger: ComponentsLogger =
-        object : TestComponentsLogger() {
-          override fun newPerformanceEvent(eventId: Int): PerfEvent? = null
-        }
-    val componentTree =
-        ComponentTree.create(legacyLithoViewRule.context)
-            .componentsConfiguration(config)
-            .logger(logger, "test")
-            .build()
-    val layoutState =
-        calculateLayoutState(
-            componentTree.context,
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY))
-    assertThat(layoutState.mountableOutputCount).isEqualTo(3)
+    assertThat(component.getLayoutCreatedInWillRender(resolveContext)).isEqualTo(cachedLayout)
   }
 
   @Test
@@ -2374,12 +2352,8 @@ class LayoutStateCalculateTest {
       assertThat(arguments).isNotNull
       assertThat(arguments).isNotEmpty
       view.set(arguments[0] as View)
-      null
     }
-    props.onCardActionsTouched = Function {
-      clicked.set(true)
-      null
-    }
+    props.onCardActionsTouched = Function { clicked.set(true) }
     props.areCardToolsDisabled = true
     val root = ItemCardComponent.create(c).body(Text.create(c).text("hello").build()).id(1).build()
     legacyLithoViewRule
@@ -2442,7 +2416,7 @@ class LayoutStateCalculateTest {
     val result =
         ResolveTreeFuture.resolve(context, component, TreeState(), -1, -1, null, null, null, null)
     return LayoutTreeFuture.layout(
-        result, widthSpec, heightSpec, -1, componentTreeId, false, null, null, null, null)
+        result, widthSpec, heightSpec, -1, componentTreeId, null, null, null, null)
   }
 
   companion object {

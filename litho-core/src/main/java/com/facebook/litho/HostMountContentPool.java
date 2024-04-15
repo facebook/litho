@@ -33,7 +33,7 @@ public class HostMountContentPool implements MountItemsPool.ItemPool {
 
   public HostMountContentPool(int maxSize, boolean isEnabled) {
     if (isEnabled) {
-      mPool = new MountItemsPool.DefaultItemPool(ComponentHost.class, maxSize, true);
+      mPool = new MountItemsPool.DefaultItemPool(ComponentHost.class, maxSize);
     } else {
       mPool = null;
     }
@@ -69,10 +69,6 @@ public class HostMountContentPool implements MountItemsPool.ItemPool {
       return false;
     }
 
-    if (contentAllocator.canPreallocate()) {
-      return mPool.maybePreallocateContent(c, contentAllocator);
-    } else {
-      return false;
-    }
+    return mPool.maybePreallocateContent(c, contentAllocator);
   }
 }

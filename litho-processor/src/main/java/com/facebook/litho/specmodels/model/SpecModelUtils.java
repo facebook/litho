@@ -22,6 +22,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.SimpleMemoizingSupplier;
+import com.google.common.base.Preconditions;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -128,21 +129,95 @@ public class SpecModelUtils {
             .equals(stateValue.getTypeName().box());
   }
 
+  /** Determines whether the given method parameter is a state value. */
   public static boolean isStateValue(SpecModel specModel, MethodParamModel methodParamModel) {
+    final StateParamModel stateValue =
+        SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName());
+    return isStateValueHolder(specModel, methodParamModel)
+        && doesStateValueTypeMatchState(
+            stateValue,
+            ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0));
+  }
+
+  /**
+   * Determines whether the given method parameter is a state value, when ignoring Kotlin variant
+   * types.
+   *
+   * <p>The expectation is that this function will return true for cases that fail {@link
+   * #isStateValue}, only due to covariance. Therefore, failing {@link #isStateValue} is an
+   * invariant of this function.
+   *
+   * @return true if the given method parameter is a state value, when ignoring Kotlin covariance.
+   */
+  public static boolean isStateValueOnlyIfIgnoringKotlinCovariance(
+      final SpecModel specModel, final MethodParamModel methodParamModel) {
+    if (!isStateValueHolder(specModel, methodParamModel)) {
+      return false;
+    }
+
+    final StateParamModel stateValue =
+        Preconditions.checkNotNull(
+            SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()));
+    final TypeName methodParamStateTypeName =
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0);
+
+    return !doesStateValueTypeMatchState(stateValue, methodParamStateTypeName)
+        && areTypesEqualIgnoringKotlinCovariance(
+            specModel, stateValue.getTypeName(), methodParamStateTypeName);
+  }
+
+  /**
+   * Determines if the given MethodParamModel is a state value holder (ie. of the type
+   * StateValue<T>).
+   *
+   * @param specModel the specific specModel from where the types are coming from
+   * @param methodParamModel the method param model to check
+   * @return true if the methodParamModel is a state value holder, otherwise false
+   */
+  static boolean isStateValueHolder(SpecModel specModel, MethodParamModel methodParamModel) {
     final StateParamModel stateValue =
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName());
     return stateValue != null
         && methodParamModel.getTypeName() instanceof ParameterizedTypeName
         && ((ParameterizedTypeName) methodParamModel.getTypeName())
             .rawType.equals(ClassNames.STATE_VALUE)
-        && ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1
-        && ((ParameterizedTypeName) methodParamModel.getTypeName())
-            .typeArguments
-            .get(0)
-            .equals(stateValue.getTypeName().box());
+        && ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1;
   }
 
-  /** @return the model for state/prop that this Diff is refering to. */
+  /**
+   * @param stateValue the state value to check against
+   * @param underlyingStateTypeName the underlying typename of the state value. (ie. T in
+   *     StateValue<T>)</T>
+   * @return true if the state value matches the underlying type, otherwise false.
+   */
+  static boolean doesStateValueTypeMatchState(
+      @Nullable final StateParamModel stateValue, final TypeName underlyingStateTypeName) {
+    return stateValue != null && underlyingStateTypeName.equals(stateValue.getTypeName().box());
+  }
+
+  /**
+   * Checks equality against two types, ignoring Kotlin covariance ie. List<? extends T> would equal
+   * List<T>.
+   *
+   * @param specModel the specific specModel from where the types are coming from
+   * @param typeName1 the first type to compare
+   * @param typeName2 the second type to compare
+   * @return if the specModel is a Kotlin spec, and the two types are equal after ignoring Kotlin
+   *     covariance.
+   */
+  public static boolean areTypesEqualIgnoringKotlinCovariance(
+      SpecModel specModel, TypeName typeName1, TypeName typeName2) {
+    final TypeName typeName1WithoutWildcards =
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(specModel, typeName1);
+    final TypeName typeName2WithoutWildcards =
+        KotlinSpecHelper.maybeRemoveWildcardFromContainerIfKotlinSpec(specModel, typeName2);
+
+    return typeName1WithoutWildcards.box().equals(typeName2WithoutWildcards.box());
+  }
+
+  /**
+   * @return the model for state/prop that this Diff is refering to.
+   */
   public static MethodParamModel getReferencedParamModelForDiff(
       SpecModel specModel, RenderDataDiffModel diffModel) {
     if (MethodParamModelUtils.isAnnotatedWith(diffModel, Prop.class)) {

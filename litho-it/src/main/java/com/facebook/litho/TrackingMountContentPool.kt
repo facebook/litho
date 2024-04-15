@@ -19,8 +19,8 @@ package com.facebook.litho
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountItemsPool
 
-class TrackingMountContentPool(maxSize: Int, sync: Boolean) :
-    MountItemsPool.DefaultItemPool(TrackingMountContentPool::class.java, maxSize, sync) {
+class TrackingMountContentPool(maxSize: Int) :
+    MountItemsPool.DefaultItemPool(TrackingMountContentPool::class.java, maxSize) {
 
   var acquireCount: Int = 0
     private set
@@ -28,7 +28,7 @@ class TrackingMountContentPool(maxSize: Int, sync: Boolean) :
   var releaseCount: Int = 0
     private set
 
-  override fun acquire(contentAllocator: ContentAllocator<*>?): Any? {
+  override fun acquire(contentAllocator: ContentAllocator<*>): Any? {
     val item = super.acquire(contentAllocator)
     acquireCount++
     return item

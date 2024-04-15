@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
-import com.facebook.rendercore.primitives.utils.equals
-import com.facebook.rendercore.primitives.utils.isEquivalentTo
+import com.facebook.rendercore.utils.equals
+import com.facebook.rendercore.utils.isEquivalentTo
 
 object NodeInfoUtils {
   @JvmStatic
@@ -47,6 +47,9 @@ object NodeInfoUtils {
       return false
     }
     if (!equals(x.contentDescription, y.contentDescription)) {
+      return false
+    }
+    if (!equals(x.tooltipText, y.tooltipText)) {
       return false
     }
     if (!isEquivalentTo(
@@ -103,11 +106,22 @@ object NodeInfoUtils {
     if (x.selectedState != y.selectedState) {
       return false
     }
+    if (x.keyboardNavigationClusterState != y.keyboardNavigationClusterState) {
+      return false
+    }
     if (!isEquivalentTo(x.sendAccessibilityEventHandler, y.sendAccessibilityEventHandler)) {
       return false
     }
     if (!isEquivalentTo(
         x.sendAccessibilityEventUncheckedHandler, y.sendAccessibilityEventUncheckedHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        x.onPerformActionForVirtualViewHandler, y.onPerformActionForVirtualViewHandler)) {
+      return false
+    }
+    if (!isEquivalentTo(
+        x.onVirtualViewKeyboardFocusChangedHandler, y.onVirtualViewKeyboardFocusChangedHandler)) {
       return false
     }
     if (x.shadowElevation != y.shadowElevation) {

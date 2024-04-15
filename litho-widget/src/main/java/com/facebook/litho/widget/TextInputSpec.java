@@ -18,9 +18,6 @@ package com.facebook.litho.widget;
 
 import static android.graphics.Color.TRANSPARENT;
 import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.Build.VERSION_CODES.M;
 import static android.view.View.TEXT_ALIGNMENT_GRAVITY;
 
@@ -42,10 +39,13 @@ import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
+import android.text.style.SuggestionRangeSpan;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -80,6 +80,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -156,12 +157,15 @@ import javax.annotation.Nullable;
  *     17 and above; it's up to you to handle earlier API levels by adjusting gravity.
  * @prop gravity Gravity for the text within its container.
  * @prop editable If set, allows the text to be editable.
+ * @prop cursorVisible Set whether the cursor is visible. The default is true.
  * @prop inputType Type of data being placed in a text field, used to help an input method decide
  *     how to let the user enter text. To add multiline use multiline(true) method.
  * @prop rawInputType Type of data being placed in a text field. Directly changes the content type
  *     integer of the text view, without modifying any other state. This prop will override
  *     inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
+ * @prop disableAutofill If set to true, disables autofill for this text input by setting the
+ *     underlying {@link EditText}'s autofillType to {@link android.view.View#AUTOFILL_TYPE_NONE}.
  * @prop inputFilters Used to filter the input to e.g. a max character count.
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
  *     passwords or numbers couldn't be multiline by definition.
@@ -195,6 +199,7 @@ import javax.annotation.Nullable;
       InputConnectionEvent.class,
     })
 class TextInputSpec {
+
   /**
    * Dummy drawable used for differentiating user-provided null background drawable from default
    * drawable of the spec
@@ -216,6 +221,7 @@ class TextInputSpec {
   @PropDefault protected static final int textAlignment = TEXT_ALIGNMENT_GRAVITY;
   @PropDefault protected static final int gravity = Gravity.CENTER_VERTICAL | Gravity.START;
   @PropDefault protected static final boolean editable = true;
+  @PropDefault protected static final boolean cursorVisible = true;
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
   @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
@@ -224,12 +230,14 @@ class TextInputSpec {
   @PropDefault protected static final int minLines = 1;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
   @PropDefault protected static final int importantForAutofill = 0;
+  @PropDefault protected static final boolean disableAutofill = false;
 
   @PropDefault
   protected static final MovementMethod movementMethod = ArrowKeyMovementMethod.getInstance();
 
   /** UI thread only; used in OnMount. */
   private static final Rect sBackgroundPaddingRect = new Rect();
+
   /** UI thread only; used in OnMount. */
   private static final InputFilter[] NO_FILTERS = new InputFilter[0];
 
@@ -275,6 +283,7 @@ class TextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -289,6 +298,7 @@ class TextInputSpec {
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
+      @Prop(optional = true) boolean disableAutofill,
       @State AtomicReference<CharSequence> savedText) {
     EditText forMeasure =
         TextInputSpec.createAndMeasureEditText(
@@ -311,6 +321,7 @@ class TextInputSpec {
             textAlignment,
             gravity,
             editable,
+            cursorVisible,
             inputType,
             rawInputType,
             keyListener,
@@ -325,6 +336,7 @@ class TextInputSpec {
             errorDrawable,
             importantForAutofill,
             autofillHints,
+            disableAutofill,
             // onMeasure happens:
             // 1. After initState before onMount: savedText = initText.
             // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -364,6 +376,7 @@ class TextInputSpec {
       int textAlignment,
       int gravity,
       boolean editable,
+      boolean cursorVisible,
       int inputType,
       int rawInputType,
       @Nullable KeyListener keyListener,
@@ -378,9 +391,10 @@ class TextInputSpec {
       Drawable errorDrawable,
       int importantForAutofill,
       @Nullable String[] autofillHints,
+      boolean disableAutofill,
       CharSequence text) {
     // The height should be the measured height of EditText with relevant params
-    final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
+    final ForMeasureEditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
     // If text contains Spans, we don't want it to be mutable for the measurement case
     if (text instanceof Spannable) {
       text = text.toString();
@@ -402,6 +416,7 @@ class TextInputSpec {
         textAlignment,
         gravity,
         editable,
+        cursorVisible,
         inputType,
         rawInputType,
         keyListener,
@@ -419,6 +434,7 @@ class TextInputSpec {
         true,
         importantForAutofill,
         autofillHints);
+    forMeasure.setDisableAutofill(disableAutofill);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
     return forMeasure;
@@ -440,6 +456,7 @@ class TextInputSpec {
       int textAlignment,
       int gravity,
       boolean editable,
+      boolean cursorVisible,
       int inputType,
       int rawInputType,
       @Nullable KeyListener keyListener,
@@ -492,11 +509,8 @@ class TextInputSpec {
     }
     editText.setHint(hint);
 
-    if (SDK_INT < JELLY_BEAN) {
-      editText.setBackgroundDrawable(background);
-    } else {
-      editText.setBackground(background);
-    }
+    editText.setBackground(background);
+
     // From the docs for setBackground:
     // "If the background has padding, this View's padding is set to the background's padding.
     // However, when a background is removed, this View's padding isn't touched. If setting the
@@ -511,7 +525,7 @@ class TextInputSpec {
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);
     editText.setLongClickable(editable);
-    editText.setCursorVisible(editable);
+    editText.setCursorVisible(cursorVisible);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
     if (highlightColor != null) {
@@ -531,7 +545,7 @@ class TextInputSpec {
     editText.setError(error, errorDrawable);
 
     if (cursorDrawableRes != -1) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (SDK_INT >= Build.VERSION_CODES.Q) {
         editText.setTextCursorDrawable(cursorDrawableRes);
       } else {
         try {
@@ -548,9 +562,8 @@ class TextInputSpec {
     }
 
     editText.setEllipsize(ellipsize);
-    if (SDK_INT >= JELLY_BEAN_MR1) {
-      editText.setTextAlignment(textAlignment);
-    }
+    editText.setTextAlignment(textAlignment);
+
     if (text != null && !ObjectsCompat.equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
       // Set the selection only when mounting because #setSelection does not affect measurement,
@@ -593,6 +606,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> textAlignment,
       @Prop(optional = true) Diff<Integer> gravity,
       @Prop(optional = true) Diff<Boolean> editable,
+      @Prop(optional = true) Diff<Boolean> cursorVisible,
       @Prop(optional = true) Diff<Integer> inputType,
       @Prop(optional = true) Diff<Integer> rawInputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
@@ -651,6 +665,9 @@ class TextInputSpec {
       return true;
     }
     if (!ObjectsCompat.equals(editable.getPrevious(), editable.getNext())) {
+      return true;
+    }
+    if (!ObjectsCompat.equals(cursorVisible.getPrevious(), cursorVisible.getNext())) {
       return true;
     }
     if (!ObjectsCompat.equals(inputType.getPrevious(), inputType.getNext())) {
@@ -747,15 +764,13 @@ class TextInputSpec {
       if (fa instanceof InputFilter.AllCaps && fb instanceof InputFilter.AllCaps) {
         continue; // equal, AllCaps has no configuration
       }
-      if (SDK_INT >= LOLLIPOP) { // getMax added in lollipop
-        if (fa instanceof InputFilter.LengthFilter && fb instanceof InputFilter.LengthFilter) {
-          if (((InputFilter.LengthFilter) fa).getMax()
-              != ((InputFilter.LengthFilter) fb).getMax()) {
-            return false;
-          }
-          continue; // equal, same max
+      if (fa instanceof InputFilter.LengthFilter && fb instanceof InputFilter.LengthFilter) {
+        if (((InputFilter.LengthFilter) fa).getMax() != ((InputFilter.LengthFilter) fb).getMax()) {
+          return false;
         }
+        continue; // equal, same max
       }
+
       // Best we can do in this case is call equals().
       if (!ObjectsCompat.equals(fa, fb)) {
         return false;
@@ -766,7 +781,12 @@ class TextInputSpec {
 
   @OnCreateMountContent
   protected static EditTextWithEventHandlers onCreateMountContent(Context c) {
-    return new EditTextWithEventHandlers(c);
+    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c);
+    // Setting a custom editable factory so we can catch and rethrow crashes from
+    // SpannableStringBuilder#setSpan with additional information. This should cause no
+    // functional changes.
+    editText.setEditableFactory(new SafeSetSpanEditableFactory());
+    return editText;
   }
 
   @OnMount
@@ -787,6 +807,7 @@ class TextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -802,6 +823,7 @@ class TextInputSpec {
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
+      @Prop(optional = true) boolean disableAutofill,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -822,6 +844,7 @@ class TextInputSpec {
         textAlignment,
         gravity,
         editable,
+        cursorVisible,
         inputType,
         rawInputType,
         keyListener,
@@ -842,6 +865,7 @@ class TextInputSpec {
         false,
         importantForAutofill,
         autofillHints);
+    editText.setDisableAutofill(disableAutofill);
     editText.setTextState(savedText);
   }
 
@@ -849,11 +873,15 @@ class TextInputSpec {
   static void onBind(
       final ComponentContext c,
       EditTextWithEventHandlers editText,
-      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
+      @Prop(optional = true) @Nullable ActionMode.Callback selectionActionModeCallback,
+      @Prop(optional = true) @Nullable ActionMode.Callback insertionActionModeCallback) {
     onBindEditText(
         c,
         editText,
         textWatchers,
+        selectionActionModeCallback,
+        insertionActionModeCallback,
         TextInput.getTextChangedEventHandler(c),
         TextInput.getSelectionChangedEventHandler(c),
         TextInput.getInputFocusChangedEventHandler(c),
@@ -867,6 +895,8 @@ class TextInputSpec {
       final ComponentContext c,
       EditTextWithEventHandlers editText,
       @Nullable List<TextWatcher> textWatchers,
+      @Nullable ActionMode.Callback selectionActionModeCallback,
+      @Nullable ActionMode.Callback insertionActionModeCallback,
       EventHandler textChangedEventHandler,
       EventHandler selectionChangedEventHandler,
       EventHandler inputFocusChangedEventHandler,
@@ -875,6 +905,10 @@ class TextInputSpec {
       EventHandler EditorActionEventHandler,
       EventHandler inputConnectionEventHandler) {
     editText.attachWatchers(textWatchers);
+    editText.setCustomSelectionActionModeCallback(selectionActionModeCallback);
+    if (SDK_INT >= M) {
+      editText.setCustomInsertionActionModeCallback(insertionActionModeCallback);
+    }
 
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(textChangedEventHandler);
@@ -897,6 +931,7 @@ class TextInputSpec {
       editText.setInputType(inputType); // Set the input type back to default.
     }
     editText.setTextState(null);
+    editText.removeOnWindowFocusChangeListener();
     mountedView.set(null);
   }
 
@@ -912,6 +947,10 @@ class TextInputSpec {
     editText.setKeyPreImeEventEventHandler(null);
     editText.setEditorActionEventHandler(null);
     editText.setInputConnectionEventHandler(null);
+    editText.setCustomSelectionActionModeCallback(null);
+    if (SDK_INT >= M) {
+      editText.setCustomInsertionActionModeCallback(null);
+    }
   }
 
   @Nullable
@@ -951,6 +990,24 @@ class TextInputSpec {
     if (view != null) {
       view.clearFocus();
       view.setSoftInputVisibility(false);
+    }
+  }
+
+  @OnTrigger(ShowCursorEvent.class)
+  static void showCursor(
+      ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    final EditTextWithEventHandlers view = mountedView.get();
+    if (view != null) {
+      view.setCursorVisible(true);
+    }
+  }
+
+  @OnTrigger(HideCursorEvent.class)
+  static void hideCursor(
+      ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    final EditTextWithEventHandlers view = mountedView.get();
+    if (view != null) {
+      view.setCursorVisible(false);
     }
   }
 
@@ -998,7 +1055,9 @@ class TextInputSpec {
 
     // If line count changes state update will be triggered by view
     editText.setText(text);
-    editText.setSelection(text != null ? text.length() : 0);
+    final @Nullable Editable editable = editText.getText();
+    final int length = editable != null ? editable.length() : 0;
+    editText.setSelection(length);
     return false;
   }
 
@@ -1074,6 +1133,10 @@ class TextInputSpec {
     private int mLineCount = UNMEASURED_LINE_COUNT;
     @Nullable private TextWatcher mTextWatcher;
     private boolean mIsSoftInputRequested = false;
+
+    private boolean mDisableAutofill = false;
+
+    @Nullable private ViewTreeObserver.OnWindowFocusChangeListener mOnWindowFocusChangeListener;
 
     public EditTextWithEventHandlers(Context context) {
       super(context);
@@ -1168,6 +1231,19 @@ class TextInputSpec {
       return inputConnection;
     }
 
+    @Override
+    public int getAutofillType() {
+      if (SDK_INT >= Build.VERSION_CODES.O && mDisableAutofill) {
+        return AUTOFILL_TYPE_NONE;
+      } else {
+        return super.getAutofillType();
+      }
+    }
+
+    void setDisableAutofill(Boolean value) {
+      mDisableAutofill = value;
+    }
+
     void setTextChangedEventHandler(
         @Nullable EventHandler<TextChangedEvent> textChangedEventHandler) {
       mTextChangedEventHandler = textChangedEventHandler;
@@ -1227,6 +1303,13 @@ class TextInputSpec {
       }
     }
 
+    void removeOnWindowFocusChangeListener() {
+      if (mOnWindowFocusChangeListener != null) {
+        getViewTreeObserver().removeOnWindowFocusChangeListener(mOnWindowFocusChangeListener);
+        mOnWindowFocusChangeListener = null;
+      }
+    }
+
     void setSoftInputVisibility(boolean visible) {
       final InputMethodManager imm =
           (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1235,30 +1318,62 @@ class TextInputSpec {
       }
 
       if (visible) {
-        if (imm.isActive(this)) {
-          imm.showSoftInput(this, 0);
-          mIsSoftInputRequested = false;
-        } else {
-          // Unfortunately, IMM and requesting focus has race conditions and there are cases where
-          // even though the focus request went through, IMM hasn't been updated yet (thus the
-          // isActive check). Posting a Runnable gives time for the Runnable the IMM Binder posts
-          // to run first and update the IMM.
-          post(
-              new Runnable() {
-                @Override
-                public void run() {
-                  if (mIsSoftInputRequested) {
-                    imm.showSoftInput(EditTextWithEventHandlers.this, 0);
-                  }
-                  mIsSoftInputRequested = false;
-                }
-              });
-          mIsSoftInputRequested = true;
-        }
+        showKeyboardWhenWindowIsFocused(imm);
       } else {
-        imm.hideSoftInputFromWindow(getWindowToken(), 0);
-        mIsSoftInputRequested = false;
+        hideKeyboard(imm);
       }
+    }
+
+    private void showKeyboardWhenWindowIsFocused(final InputMethodManager imm) {
+      if (hasWindowFocus()) {
+        showKeyboard(imm);
+      } else {
+        // We need to wait until the window gets focus.
+        // https://developer.android.com/develop/ui/views/touch-and-input/keyboard-input/visibility#ShowReliably
+        mOnWindowFocusChangeListener =
+            new ViewTreeObserver.OnWindowFocusChangeListener() {
+              @Override
+              public void onWindowFocusChanged(boolean hasFocus) {
+                if (hasFocus) {
+                  showKeyboard(imm);
+                  removeOnWindowFocusChangeListener();
+                }
+              }
+            };
+        getViewTreeObserver().addOnWindowFocusChangeListener(mOnWindowFocusChangeListener);
+      }
+    }
+
+    private void showKeyboard(final InputMethodManager imm) {
+      if (!isFocused()) {
+        return;
+      }
+
+      if (imm.isActive(this)) {
+        imm.showSoftInput(this, 0);
+        mIsSoftInputRequested = false;
+      } else {
+        // Unfortunately, IMM and requesting focus has race conditions and there are cases where
+        // even though the focus request went through, IMM hasn't been updated yet (thus the
+        // isActive check). Posting a Runnable gives time for the Runnable the IMM Binder posts
+        // to run first and update the IMM.
+        post(
+            new Runnable() {
+              @Override
+              public void run() {
+                if (mIsSoftInputRequested) {
+                  imm.showSoftInput(EditTextWithEventHandlers.this, 0);
+                }
+                mIsSoftInputRequested = false;
+              }
+            });
+        mIsSoftInputRequested = true;
+      }
+    }
+
+    private void hideKeyboard(final InputMethodManager imm) {
+      imm.hideSoftInputFromWindow(getWindowToken(), 0);
+      mIsSoftInputRequested = false;
     }
 
     void performAccessibilityFocus() {
@@ -1311,6 +1426,8 @@ class TextInputSpec {
    */
   static class ForMeasureEditText extends EditText {
 
+    private boolean mDisableAutofill = false;
+
     public ForMeasureEditText(Context context) {
       super(context);
     }
@@ -1326,14 +1443,80 @@ class TextInputSpec {
       }
       super.setBackground(background);
     }
+
+    @Override
+    public int getAutofillType() {
+      if (SDK_INT >= Build.VERSION_CODES.O && mDisableAutofill) {
+        return AUTOFILL_TYPE_NONE;
+      } else {
+        return super.getAutofillType();
+      }
+    }
+
+    public void setDisableAutofill(Boolean value) {
+      mDisableAutofill = value;
+    }
   }
 
   private static class Api26Utils {
+
     private static void setAutoFillProps(
         EditText editText, int importantForAutofill, @Nullable String[] autofillHints) {
       if (SDK_INT >= Build.VERSION_CODES.O) {
         editText.setImportantForAutofill(importantForAutofill);
         editText.setAutofillHints(autofillHints);
+      }
+    }
+  }
+
+  private static class SafeSetSpanEditableFactory extends Editable.Factory {
+
+    @Override
+    public Editable newEditable(CharSequence source) {
+      return new SpannableStringBuilder(source) {
+
+        @Override
+        public void setSpan(Object what, int start, int end, int flags) {
+          /*
+            Fix for a crash in the Android Framework when deleting a character while the spell checker popup shows.
+            Prevent setting a SuggestionRangeSpan with end past the Editable length using Math.min
+            (https://issuetracker.google.com/issues/314288203)
+          */
+          try {
+            final int spanEnd = shouldUseSafeSpanEnd(what) ? Math.min(end, length()) : end;
+            super.setSpan(what, start, spanEnd, flags);
+          } catch (IndexOutOfBoundsException e) {
+            /*
+             Catching and rethrowing IndexOutOfBoundsExceptions with additional info. One known source
+             of this crash is when using spell checker exceeds EditText maxLength
+             (https://issuetracker.google.com/issues/36944935)
+            */
+            throw new IndexOutOfBoundsException(
+                String.format(
+                    "%s | span=%s | flags=%d",
+                    e.getMessage(), what != null ? what.getClass() : "Unknown", flags));
+          }
+        }
+
+        private boolean shouldUseSafeSpanEnd(Object span) {
+          return SuggestionRangeSpanApi33Util.isSuggestionRangeSpan(span)
+              && ComponentsConfiguration.useSafeSpanEndInTextInputSpec;
+        }
+      };
+    }
+  }
+
+  private static class SuggestionRangeSpanApi33Util {
+
+    private static final String SUGGESTION_RANGE_SPAN_CLASS_NAME =
+        "android.text.style.SuggestionRangeSpan";
+
+    // SuggestionRangeSpan was made public in API 33, so check class name for lower API levels
+    private static boolean isSuggestionRangeSpan(Object span) {
+      if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        return span instanceof SuggestionRangeSpan;
+      } else {
+        return span != null && span.getClass().getName().equals(SUGGESTION_RANGE_SPAN_CLASS_NAME);
       }
     }
   }

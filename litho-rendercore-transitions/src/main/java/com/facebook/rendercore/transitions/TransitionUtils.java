@@ -117,15 +117,11 @@ public class TransitionUtils {
     return reference != null ? new TransitionId(type, reference, extraData) : null;
   }
 
-  public static void addTransitions(
-      Transition transition, List<Transition> outList, @Nullable String logContext) {
+  public static void addTransitions(Transition transition, List<Transition> outList) {
     if (transition instanceof Transition.BaseTransitionUnitsBuilder) {
       outList.addAll(((Transition.BaseTransitionUnitsBuilder) transition).getTransitionUnits());
     } else if (transition != null) {
       outList.add(transition);
-    } else {
-      throw new IllegalStateException(
-          "[" + logContext + "] Adding null to transition list is not allowed.");
     }
   }
 

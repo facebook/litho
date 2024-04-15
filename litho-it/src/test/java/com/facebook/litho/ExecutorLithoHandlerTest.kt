@@ -34,7 +34,7 @@ class ExecutorLithoHandlerTest {
 
   @Test
   fun testIsTracing_returnsFalse() {
-    assertThat(lithoHandler.isTracing).isFalse
+    assertThat(lithoHandler.isTracing()).isFalse
   }
 
   @Test

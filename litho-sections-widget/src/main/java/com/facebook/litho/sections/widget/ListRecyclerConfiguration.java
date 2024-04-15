@@ -145,7 +145,10 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
         RECYCLER_BINDER_CONFIGURATION;
     private LinearLayoutInfoFactory mLinearLayoutInfoFactory = LINEAR_LAYOUT_INFO_FACTORY;
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
-    private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
+    private int mSnapToStartFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
+
+    private int mSnapToStartOffset = 0;
+
     private @Nullable SnapHelper mSnapHelper;
 
     Builder() {}
@@ -201,8 +204,13 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
       return this;
     }
 
-    public Builder startSnapFlingOffset(int startSnapFlingOffset) {
-      mStartSnapFlingOffset = startSnapFlingOffset;
+    public Builder snapToStartFlingOffset(int snapToStartFlingOffset) {
+      mSnapToStartFlingOffset = snapToStartFlingOffset;
+      return this;
+    }
+
+    public Builder snapToStartOffset(int snapToStartOffset) {
+      mSnapToStartOffset = snapToStartOffset;
       return this;
     }
 
@@ -228,7 +236,8 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
       SnapHelper snapHelper =
           (mSnapHelper != null)
               ? mSnapHelper
-              : SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
+              : SnapUtil.getSnapHelper(
+                  mSnapMode, mDeltaJumpThreshold, mSnapToStartFlingOffset, mSnapToStartOffset);
       ListRecyclerConfiguration configuration =
           new ListRecyclerConfiguration(
               mOrientation,

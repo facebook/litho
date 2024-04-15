@@ -16,12 +16,11 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.helper.ComponentTestHelper
-import com.facebook.litho.testing.logging.TestComponentsLogger
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.TextInput
 import java.util.concurrent.CountDownLatch
@@ -42,7 +41,6 @@ class LithoStatsTest {
   private lateinit var context: ComponentContext
   private lateinit var testComponent: StateUpdateTestComponent
   private lateinit var componentTree: ComponentTree
-  private lateinit var componentsLogger: ComponentsLogger
   private lateinit var lithoView: LithoView
   private lateinit var testComponentKey: String
 
@@ -50,9 +48,7 @@ class LithoStatsTest {
 
   @Before
   fun setup() {
-    componentsLogger = TestComponentsLogger()
-    context =
-        ComponentContext(ApplicationProvider.getApplicationContext(), LOG_TAG, componentsLogger)
+    context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     resolveThreadShadowLooper = ComponentTestHelper.getDefaultResolveThreadShadowLooper()
     layoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper()
     testComponent = StateUpdateTestComponent()
@@ -129,9 +125,7 @@ class LithoStatsTest {
           // We have to do this inside another thread otherwise the execution of
           // mChangeSetThreadShadowLooper will happen on Main Thread
           runOneTask()
-          if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
-            runOneTask()
-          }
+          runOneTask()
           latch.countDown()
         }
         .start()
@@ -149,9 +143,5 @@ class LithoStatsTest {
     legacyLithoViewRule.attachToWindow().setRoot(component).measure().layout()
     val afterMountCount = LithoStats.getComponentMountCount()
     assertThat(afterMountCount - beforeMountCount).isEqualTo(1)
-  }
-
-  companion object {
-    private const val LOG_TAG = "logTag"
   }
 }

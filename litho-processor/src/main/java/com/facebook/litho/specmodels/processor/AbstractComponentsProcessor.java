@@ -16,9 +16,9 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import static com.facebook.litho.specmodels.processor.ProcessorUtils.getPackageName;
 import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
+import com.facebook.annotationprocessors.common.ProcessorBase;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -41,7 +40,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public abstract class AbstractComponentsProcessor extends AbstractProcessor {
+public abstract class AbstractComponentsProcessor extends ProcessorBase {
 
   @Nullable private final DependencyInjectionHelperFactory mDependencyInjectionHelperFactory;
   private final List<SpecModelFactory> mSpecModelFactories;
@@ -59,13 +58,13 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   protected AbstractComponentsProcessor(
       List<SpecModelFactory> specModelFactories,
-      DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
+      @Nullable DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
     this(specModelFactories, dependencyInjectionHelperFactory, true);
   }
 
   protected AbstractComponentsProcessor(
       List<SpecModelFactory> specModelFactories,
-      DependencyInjectionHelperFactory dependencyInjectionHelperFactory,
+      @Nullable DependencyInjectionHelperFactory dependencyInjectionHelperFactory,
       boolean shouldSavePropNames) {
     mSpecModelFactories = specModelFactories;
     mDependencyInjectionHelperFactory = dependencyInjectionHelperFactory;
@@ -88,7 +87,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   }
 
   @Override
-  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+  public boolean processImpl(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (roundEnv.processingOver()) {
       return false;
     }
@@ -137,7 +136,9 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   }
 
   protected void generate(SpecModel specModel, EnumSet<RunMode> runMode) throws IOException {
-    final String packageName = getPackageName(specModel.getComponentTypeName());
+    final String packageName =
+        com.facebook.litho.specmodels.processor.ProcessorUtils.getPackageName(
+            specModel.getComponentTypeName());
     JavaFile.builder(packageName, specModel.generate(runMode))
         .skipJavaLangImports(true)
         .build()

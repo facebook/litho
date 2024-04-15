@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -28,7 +29,7 @@ public class DelegatingEventHandler<E> extends EventHandler<E> {
   private final List<EventHandler<E>> mEventHandlers;
 
   protected DelegatingEventHandler(EventHandler<E> eventHandler1, EventHandler<E> eventHandler2) {
-    super(null, -1);
+    super(-1, EventHandlerRebindMode.NONE, new EventDispatchInfo(null, null), null);
 
     mEventHandlers = new ArrayList<>();
     mEventHandlers.add(eventHandler1);
@@ -36,10 +37,12 @@ public class DelegatingEventHandler<E> extends EventHandler<E> {
   }
 
   @Override
-  public void dispatchEvent(E event) {
+  public @Nullable Object dispatchEvent(E event) {
     for (int i = 0, length = mEventHandlers.size(); i < length; i++) {
       mEventHandlers.get(i).dispatchEvent(event);
     }
+
+    return null;
   }
 
   @Override

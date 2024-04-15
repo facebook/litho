@@ -79,8 +79,7 @@ class StoryFooterComponent : KComponent() {
                 style =
                     Style.widthPercent(33.3f)
                         .onClick { commentText.update(!commentText.value) }
-                        .testKey("like_button")
-                        .transitionKey(context, "icon_like", Transition.TransitionKeyType.GLOBAL)) {
+                        .testKey("like_button")) {
                   child(
                       Column(
                           style =

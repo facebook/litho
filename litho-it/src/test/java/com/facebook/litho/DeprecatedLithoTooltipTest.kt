@@ -19,8 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.yoga.YogaEdge
@@ -47,22 +45,20 @@ class DeprecatedLithoTooltipTest {
     MockitoAnnotations.initMocks(this)
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     component =
-        object : InlineLayoutSpec() {
-          @OnCreateLayout
-          override fun onCreateLayout(c: ComponentContext): Component =
-              Row.create(c)
-                  .marginPx(YogaEdge.LEFT, MARGIN_LEFT)
-                  .marginPx(YogaEdge.TOP, MARGIN_TOP)
-                  .child(
-                      SimpleMountSpecTester.create(c)
-                          .key(KEY_ANCHOR)
-                          .widthPx(ANCHOR_WIDTH)
-                          .heightPx(ANCHOR_HEIGHT))
-                  .build()
-        }
+        Row.create(context)
+            .child(
+                SimpleMountSpecTester.create(context)
+                    .key(KEY_ANCHOR)
+                    .marginPx(YogaEdge.LEFT, MARGIN_LEFT)
+                    .marginPx(YogaEdge.TOP, MARGIN_TOP)
+                    .widthPx(ANCHOR_WIDTH)
+                    .heightPx(ANCHOR_HEIGHT))
+            .build()
+
     componentTree = ComponentTree.create(context, component).build()
-    context = ComponentContextUtils.withComponentTree(context, componentTree)
-    context = ComponentContext.withComponentScope(context, component, component.key)
+
+    context = componentTree.context
+
     lithoView = getLithoView(componentTree)
     anchorGlobalKey =
         ComponentKeyUtils.getKeyWithSeparatorForTest(

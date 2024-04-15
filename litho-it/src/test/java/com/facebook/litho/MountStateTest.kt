@@ -187,9 +187,8 @@ class MountStateTest {
         .useComponentTree(
             ComponentTree.create(context)
                 .componentsConfiguration(
-                    ComponentsConfiguration.create()
-                        .shouldAddHostViewForRootComponent(true)
-                        .build())
+                    ComponentsConfiguration.defaultInstance.copy(
+                        shouldAddHostViewForRootComponent = true))
                 .build())
         .attachToWindow()
         .setRoot(root)
@@ -225,7 +224,7 @@ class MountStateTest {
         .measure()
         .layout()
     val lithoView = legacyLithoViewRule.lithoView
-    val mountDelegate = lithoView.mountDelegateTarget.mountDelegate
+    val mountDelegate = lithoView.mountDelegateTarget.getMountDelegate()
     var coordinator =
         Whitebox.getInternalState<LithoHostListenerCoordinator>(
             lithoView, "mLithoHostListenerCoordinator")
@@ -254,11 +253,6 @@ class MountStateTest {
    */
   @Test
   fun whenItemsAreMovedThenUnmountedInTheNextMountLoop_shouldUnmountTheCorrectItem() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val c = legacyLithoViewRule.context
     val initialComponent =
         Column.create(c)

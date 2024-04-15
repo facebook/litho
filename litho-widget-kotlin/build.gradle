@@ -43,13 +43,12 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    implementation project(':litho-core-kotlin')
-    api project(':litho-core')
+    implementation project(':litho-core')
     api project(':litho-widget')
     api project(':litho-sections-core')
     api project(':litho-sections-widget')
-    implementation project(':litho-mountable-canvas')
-    api project(':litho-mountable-utils')
+    implementation project(':litho-primitive-canvas')
+    api project(':litho-primitive-utils')
 
     compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')

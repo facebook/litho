@@ -21,7 +21,6 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
@@ -34,6 +33,7 @@ import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderTreeHostView;
 import com.facebook.rendercore.ResolveContext;
+import com.facebook.rendercore.ResolveResult;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.RootHostView;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -63,13 +63,13 @@ public class RenderCoreTestRule implements TestRule {
             Object nextState) {}
 
         @Override
-        public void commitToUI(RenderTree tree, Object o) {}
+        public void commitToUI(@Nullable RenderTree tree, @Nullable Object o, int frameVersion) {}
       };
 
   private Context context;
   private @Nullable RootHost rootHost;
   private @Nullable RenderTreeHost renderTreeHost;
-  private @Nullable RenderState<?, ?> renderState;
+  private @Nullable RenderState<?, ?, ?> renderState;
   private @Nullable Node<?> rootNode;
   private @Nullable RenderCoreExtension<?, ?>[] extensions;
   private int widthSpec = DEFAULT_WIDTH_SPEC;
@@ -119,7 +119,7 @@ public class RenderCoreTestRule implements TestRule {
     return renderTreeHost;
   }
 
-  public RenderState<?, ?> getRenderState() {
+  public RenderState<?, ?, ?> getRenderState() {
     if (renderState == null) {
       renderState = new RenderState(getContext(), DELEGATE, null, extensions);
     }
@@ -222,7 +222,7 @@ public class RenderCoreTestRule implements TestRule {
     final RenderResult renderResult =
         RenderResult.render(
             rootHost.getContext(),
-            new IdentityResolveFunc(getRootNode()),
+            new ResolveResult<>(getRootNode()),
             null,
             null,
             null,
@@ -263,12 +263,12 @@ public class RenderCoreTestRule implements TestRule {
     }
 
     @Override
-    public Pair<Node, Object> resolve(
+    public ResolveResult resolve(
         ResolveContext resolveContext,
         Node committedTree,
         Object committedState,
         List stateUpdatesToApply) {
-      return new Pair<>(root, null);
+      return new ResolveResult(root, null);
     }
   }
 }

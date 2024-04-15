@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
@@ -35,31 +34,35 @@ class HostComponent extends SpecGeneratedComponent {
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   private boolean mImplementsVirtualViews = false;
+  private final boolean mPoolingEnabled;
+  private final @Nullable ComponentHost.UnsafeModificationPolicy mUnsafeModificationPolicy;
 
-  protected HostComponent() {
+  protected HostComponent(
+      boolean recyclingEnabled,
+      @Nullable ComponentHost.UnsafeModificationPolicy unsafeModificationPolicy) {
     super("HostComponent");
+    mPoolingEnabled = recyclingEnabled;
+    mUnsafeModificationPolicy = unsafeModificationPolicy;
   }
 
   @Override
   public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new HostMountContentPool(
-        ComponentsConfiguration.hostComponentPoolSize,
-        ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled);
+    return new HostMountContentPool(ComponentsConfiguration.hostComponentPoolSize, mPoolingEnabled);
   }
 
   @Override
-  public boolean isRecyclingDisabled() {
-    return !ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled;
+  public boolean isPoolingDisabled() {
+    return !mPoolingEnabled;
   }
 
   @Override
   public boolean canPreallocate() {
-    return ComponentsConfiguration.isHostComponentPreallocationEnabled;
+    return mPoolingEnabled;
   }
 
   @Override
   protected Object onCreateMountContent(Context c) {
-    return new ComponentHost(c);
+    return new ComponentHost(c, mUnsafeModificationPolicy);
   }
 
   @Override
@@ -69,9 +72,9 @@ class HostComponent extends SpecGeneratedComponent {
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) convertContent;
 
-    if (Build.VERSION.SDK_INT >= 11) {
-      // We need to do this in case an external user of this ComponentHost has manually set alpha
-      // to 0, which will mean that it won't draw anything.
+    if (!ComponentsConfiguration.skipHostAlphaReset) {
+      // We need to do this in case an external user of this ComponentHost
+      // has manually set alpha to 0, which will mean that it won't draw anything.
       host.setAlpha(1.0f);
     }
 
@@ -111,8 +114,20 @@ class HostComponent extends SpecGeneratedComponent {
     return MountType.VIEW;
   }
 
-  static HostComponent create() {
-    return new HostComponent();
+  static HostComponent create(ComponentContext context) {
+    ComponentsConfiguration componentsConfiguration =
+        context.getLithoConfiguration().componentsConfig;
+
+    ComponentHost.UnsafeModificationPolicy policy =
+        componentsConfiguration.componentHostInvalidModificationPolicy;
+
+    /* If we are testing host recycling and no policy was set, then we override to be LOG */
+    if (policy != ComponentHost.UnsafeModificationPolicy.CRASH
+        && componentsConfiguration.componentHostRecyclingEnabled) {
+      policy = ComponentHost.UnsafeModificationPolicy.LOG;
+    }
+
+    return new HostComponent(componentsConfiguration.componentHostRecyclingEnabled, policy);
   }
 
   @Override
@@ -131,11 +146,7 @@ class HostComponent extends SpecGeneratedComponent {
       final @Nullable StateContainer previousStateContainer,
       final Component next,
       final @Nullable StateContainer nextStateContainer) {
-    if (ComponentsConfiguration.hostComponentAlwaysShouldUpdate) {
-      return true;
-    }
-    return ((HostComponent) previous).mImplementsVirtualViews
-        != ((HostComponent) next).mImplementsVirtualViews;
+    return true;
   }
 
   @Nullable

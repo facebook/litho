@@ -29,9 +29,9 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import com.facebook.litho.drawable.DrawableUtils
-import com.facebook.rendercore.primitives.utils.equals
-import com.facebook.rendercore.primitives.utils.isEquivalentTo
-import com.facebook.yoga.YogaDirection
+import com.facebook.litho.layout.LayoutDirection
+import com.facebook.rendercore.utils.equals
+import com.facebook.rendercore.utils.isEquivalentTo
 
 class ViewAttributes {
 
@@ -41,6 +41,7 @@ class ViewAttributes {
   var disableDrawableOutputs: Boolean = false
 
   var contentDescription: CharSequence? = null
+  var tooltipText: String? = null
   var viewId: Int = View.NO_ID
     set(value) {
       field = value
@@ -65,7 +66,7 @@ class ViewAttributes {
   var background: Drawable? = null
   var foreground: Drawable? = null
   var padding: Rect? = null
-  var layoutDirection: YogaDirection = YogaDirection.INHERIT
+  var layoutDirection: LayoutDirection = LayoutDirection.INHERIT
   var stateListAnimator: StateListAnimator? = null
   @DrawableRes var stateListAnimatorRes: Int = 0
   @LayerType var layerType: Int = LayerType.LAYER_TYPE_NOT_SET
@@ -155,6 +156,12 @@ class ViewAttributes {
       flags = flags or FLAG_SELECTED
     }
 
+  var isKeyboardNavigationCluster: Boolean = false
+    set(value) {
+      field = value
+      flags = flags or FLAG_KEYBOARD_NAVIGATION_CLUSTER
+    }
+
   var shadowElevation: Float = 0f
     set(value) {
       field = value
@@ -189,6 +196,9 @@ class ViewAttributes {
 
   val isSelectedSet: Boolean
     get() = flags and FLAG_SELECTED != 0
+
+  val isKeyboardNavigationClusterSet: Boolean
+    get() = flags and FLAG_KEYBOARD_NAVIGATION_CLUSTER != 0
 
   val isScaleSet: Boolean
     get() = flags and FLAG_SCALE != 0
@@ -225,6 +235,8 @@ class ViewAttributes {
   val paddingBottom: Int
     get() = padding?.bottom ?: 0
 
+  var systemGestureExclusionZones: List<(Rect) -> Rect>? = null
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is ViewAttributes) return false
@@ -240,6 +252,7 @@ class ViewAttributes {
     if (clipToOutline != other.clipToOutline) return false
     if (clipChildren != other.clipChildren) return false
     if (!equals(contentDescription, other.contentDescription)) return false
+    if (!equals(tooltipText, other.tooltipText)) return false
     if (isEnabled != other.isEnabled) return false
     if (!isEquivalentTo(focusChangeHandler, other.focusChangeHandler)) return false
     if (isFocusable != other.isFocusable) return false
@@ -251,6 +264,7 @@ class ViewAttributes {
     if (rotationY != other.rotationY) return false
     if (scale != other.scale) return false
     if (isSelected != other.isSelected) return false
+    if (isKeyboardNavigationCluster != other.isKeyboardNavigationCluster) return false
     if (isClickable != other.isClickable) return false
     if (shadowElevation != other.shadowElevation) return false
     if (ambientShadowColor != other.ambientShadowColor) return false
@@ -311,9 +325,11 @@ class ViewAttributes {
     result = 31 * result + isClickable.hashCode()
     result = 31 * result + isEnabled.hashCode()
     result = 31 * result + isSelected.hashCode()
+    result = 31 * result + isKeyboardNavigationCluster.hashCode()
     result = 31 * result + shadowElevation.hashCode()
     result = 31 * result + ambientShadowColor
     result = 31 * result + spotShadowColor
+    result = 31 * result + (tooltipText?.hashCode() ?: 0)
     return result
   }
 
@@ -324,6 +340,7 @@ class ViewAttributes {
     target.disableDrawableOutputs = disableDrawableOutputs
 
     contentDescription?.let { target.contentDescription = it }
+    tooltipText?.let { target.tooltipText = it }
     target.viewId = viewId
     viewTag?.let { target.viewTag = it }
     transitionName?.let { target.transitionName = it }
@@ -355,6 +372,8 @@ class ViewAttributes {
     if (isClickableSet) target.isClickable = isClickable
     if (isEnabledSet) target.isEnabled = isEnabled
     if (isSelectedSet) target.isSelected = isSelected
+    if (isKeyboardNavigationClusterSet)
+        target.isKeyboardNavigationCluster = isKeyboardNavigationCluster
     if (flags and FLAG_SHADOW_ELEVATION != 0) target.shadowElevation = shadowElevation
     if (flags and FLAG_AMBIENT_SHADOW_COLOR != 0) target.ambientShadowColor = ambientShadowColor
     if (flags and FLAG_SPOT_SHADOW_COLOR != 0) target.spotShadowColor = spotShadowColor
@@ -380,5 +399,7 @@ class ViewAttributes {
 
     private const val FLAG_VIEW_TAG = 1 shl 15
     private const val FLAG_VIEW_ID = 1 shl 16
+
+    private const val FLAG_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 17
   }
 }

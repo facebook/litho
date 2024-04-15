@@ -24,7 +24,6 @@ import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
-import com.facebook.litho.testing.logging.TestComponentsLogger
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import java.util.concurrent.CountDownLatch
@@ -36,7 +35,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.spy
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -48,7 +46,6 @@ open class StateUpdatesTest {
   private lateinit var context: ComponentContext
   private lateinit var testComponent: StateUpdateTestComponent
   private lateinit var componentTree: ComponentTree
-  private lateinit var componentsLogger: ComponentsLogger
   private lateinit var testComponentKey: String
 
   @JvmField
@@ -59,23 +56,13 @@ open class StateUpdatesTest {
 
   @Before
   fun setup() {
-    setup(false)
-  }
-
-  fun setup(enableComponentTreeSpy: Boolean) {
-    componentsLogger = TestComponentsLogger()
-    context =
-        ComponentContext(
-            ApplicationProvider.getApplicationContext<Context>(), LOG_TAG, componentsLogger)
+    context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     widthSpec = exactly(39)
     heightSpec = exactly(41)
     testComponent = StateUpdateTestComponent()
     testComponentKey = testComponent.key
     legacyLithoViewRule.setRoot(testComponent)
     componentTree = legacyLithoViewRule.componentTree
-    if (enableComponentTreeSpy) {
-      componentTree = spy(componentTree)
-    }
     legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(widthSpec, heightSpec)
   }
 
@@ -227,7 +214,6 @@ open class StateUpdatesTest {
 
   @Test
   fun testLazyUpdateState_doesNotTriggerRelayout() {
-    setup(true)
     componentTree.addMeasureListener { _, _, _, _ ->
       throw RuntimeException("Should not have computed a new layout!")
     }
@@ -366,8 +352,4 @@ open class StateUpdatesTest {
   private fun getPendingStateUpdatesForComponent(
       globalKey: String?
   ): List<StateContainer.StateUpdate>? = pendingStateUpdates?.get(globalKey)
-
-  companion object {
-    private const val LOG_TAG = "logTag"
-  }
 }

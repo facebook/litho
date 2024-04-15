@@ -16,13 +16,17 @@
 
 package com.facebook.litho.widget.collection
 
+import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.SnapUtil
 
 /**
@@ -34,15 +38,19 @@ import com.facebook.litho.widget.SnapUtil
  *   order @see [LinearLayoutManager#setReverseLayout]
  */
 abstract class CollectionLayout(
+    componentContext: ComponentContext,
     @RecyclerView.Orientation orientation: Int,
     reverse: Boolean,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean = false,
+    isReconciliationEnabled: Boolean =
+        componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
+    isIncrementalMountEnabled: Boolean =
+        componentContext.lithoConfiguration.componentsConfig.incrementalMountEnabled,
     hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
-    preallocationPerMountContentEnabled: Boolean
+    preAllocationHandler: PreAllocationHandler?,
 ) {
   internal abstract fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder
 
@@ -52,16 +60,17 @@ abstract class CollectionLayout(
           .reverseLayout(reverse)
           .recyclerBinderConfiguration(
               RecyclerBinderConfiguration.create()
-                  .apply {
-                    if (hasDynamicItemHeight) {
-                      hasDynamicItemHeight(hasDynamicItemHeight)
-                    }
-                    rangeRatio?.let { rangeRatio(it) }
-                  }
-                  .wrapContent(mainAxisWrapContent)
+                  .recyclerBinderConfig(
+                      RecyclerBinderConfig(
+                          hasDynamicItemHeight = hasDynamicItemHeight,
+                          componentsConfiguration =
+                              componentContext.lithoConfiguration.componentsConfig.copy(
+                                  isReconciliationEnabled = isReconciliationEnabled,
+                                  preAllocationHandler = preAllocationHandler,
+                                  incrementalMountEnabled = isIncrementalMountEnabled),
+                          rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO,
+                          wrapContent = mainAxisWrapContent))
                   .useBackgroundChangeSets(useBackgroundChangeSets)
-                  .isReconciliationEnabled(isReconciliationEnabled)
-                  .shouldPreallocatePerMountContent(preallocationPerMountContentEnabled)
                   .build())
           .build()
 
@@ -97,28 +106,34 @@ internal object CollectionLayouts {
    *
    * @param orientation @see CollectionLayout
    * @param snapMode @see CollectionLayout
+   * @param snapToStartOffset Attempt to offset the child by this number of pixels from the start of
+   *   the Collection when snapMode = SNAP_TO_START.
    * @param reverse @see CollectionLayout
    * @param crossAxisWrapMode Specify how the [Collection] will wrap its contents across the main
    *   axis.
    * @param mainAxisWrapContent If set, the size of the [Collection] along the main axis will match
    *   the size of its children
-   * @param preallocationPerMountContentEnabled - if set, it will attempt to preallocate the mount
-   *   content after the hierarchy is resolved. It will only do it if the root ComponentTree has set
-   *   a preallocation handler.
+   * @param preAllocationHandler - if set, it will attempt to preallocate the mount content after
+   *   the hierarchy is resolved. It will only do it if the root ComponentTree has set a
+   *   preallocation handler.
    */
   fun Linear(
+      componentContext: ComponentContext,
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+      @Px snapToStartOffset: Int = 0,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean = false,
+      isReconciliationEnabled: Boolean =
+          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
-      preallocationPerMountContentEnabled: Boolean,
+      preAllocationHandler: PreAllocationHandler?,
   ): CollectionLayout =
       object :
           CollectionLayout(
+              componentContext = componentContext,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
@@ -127,9 +142,11 @@ internal object CollectionLayouts {
               hasDynamicItemHeight = crossAxisWrapMode.hasDynamicItemHeight,
               canMeasureRecycler = crossAxisWrapMode.canMeasureRecycler,
               mainAxisWrapContent = mainAxisWrapContent,
-              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled) {
+              preAllocationHandler = preAllocationHandler) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            ListRecyclerConfiguration.create().snapMode(snapMode)
+            ListRecyclerConfiguration.create()
+                .snapMode(snapMode)
+                .snapToStartOffset(snapToStartOffset)
       }
 
   /**
@@ -139,30 +156,37 @@ internal object CollectionLayouts {
    * @param snapMode @see CollectionLayout
    * @param reverse @see CollectionLayout
    * @param columns Number of columns in the grid
-   * @param preallocationPerMountContentEnabled - if set, it will attempt to preallocate the mount
-   *   content after the hierarchy is resolved. It will only do it if the root ComponentTree has set
-   *   a preallocation handler.
+   * @param preAllocationHandler - if set, it will attempt to preallocate the mount content after
+   *   the hierarchy is resolved. It will only do it if the root ComponentTree has set a
+   *   preallocation handler.
    */
   fun Grid(
+      componentContext: ComponentContext,
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+      @Px snapToStartOffset: Int = 0,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean = false,
+      isReconciliationEnabled: Boolean =
+          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       columns: Int = 2,
-      preallocationPerMountContentEnabled: Boolean,
+      preAllocationHandler: PreAllocationHandler?,
   ): CollectionLayout =
       object :
           CollectionLayout(
+              componentContext = componentContext,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
-              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled) {
+              preAllocationHandler = preAllocationHandler) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            GridRecyclerConfiguration.create().snapMode(snapMode).numColumns(columns)
+            GridRecyclerConfiguration.create()
+                .snapMode(snapMode)
+                .snapToStartOffset(snapToStartOffset)
+                .numColumns(columns)
       }
 
   /**
@@ -173,28 +197,33 @@ internal object CollectionLayouts {
    * @param reverse @see CollectionLayout
    * @param spans Number of spans in the grid
    * @param gapStrategy @see [StaggeredGridLayoutManager#setGapStrategy]
-   * @param preallocationPerMountContentEnabled - if set, it will attempt to preallocate the mount
-   *   content after the hierarchy is resolved. It will only do it if the root ComponentTree has set
-   *   a preallocation handler.
+   * @param preAllocationHandler - if set, it will attempt to preallocate the mount content after
+   *   the hierarchy is resolved. It will only do it if the root ComponentTree has set a
+   *   preallocation handler.
    */
   fun StaggeredGrid(
+      componentContext: ComponentContext,
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean = false,
+      isReconciliationEnabled: Boolean =
+          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
+      isIncrementalMountEnabled: Boolean = true,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
-      preallocationPerMountContentEnabled: Boolean,
+      preAllocationHandler: PreAllocationHandler?,
   ): CollectionLayout =
       object :
           CollectionLayout(
+              componentContext = componentContext,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
-              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              isIncrementalMountEnabled = isIncrementalMountEnabled,
+              preAllocationHandler = preAllocationHandler,
           ) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)

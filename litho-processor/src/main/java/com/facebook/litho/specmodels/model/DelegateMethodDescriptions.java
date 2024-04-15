@@ -51,11 +51,13 @@ import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMeasureBaseline;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnPerformActionForVirtualView;
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
 import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.OnVirtualViewKeyboardFocusChanged;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -364,6 +366,39 @@ public final class DelegateMethodDescriptions {
                       .build()))
           .build();
 
+  public static final DelegateMethodDescription ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.BOOLEAN)
+          .name("onPerformActionForVirtualView")
+          .lifecycleMethodArguments(
+              ImmutableList.of(
+                  LifecycleMethodArgumentType.COMPONENT_CONTEXT,
+                  LifecycleMethodArgumentType.VIEW,
+                  LifecycleMethodArgumentType.ACCESSIBILITY_NODE,
+                  LifecycleMethodArgumentType.INT,
+                  LifecycleMethodArgumentType.INT,
+                  LifecycleMethodArgumentType.BUNDLE,
+                  LifecycleMethodArgumentType.INTER_STAGE_PROPS_CONTAINER))
+          .optionalParameterTypes(
+              ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
+          .interStageInputAnnotations(
+              ImmutableList.of(
+                  FromPrepare.class,
+                  FromMeasure.class,
+                  FromMeasureBaseline.class,
+                  FromBoundsDefined.class))
+          .extraMethods(
+              ImmutableList.of(
+                  MethodSpec.methodBuilder("implementsOnPerformActionForVirtualView")
+                      .addAnnotation(Override.class)
+                      .addModifiers(Modifier.PUBLIC)
+                      .returns(TypeName.BOOLEAN)
+                      .addStatement("return true")
+                      .build()))
+          .build();
+
   public static final DelegateMethodDescription ON_POPULATE_ACCESSIBILITY_NODE =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
@@ -387,6 +422,38 @@ public final class DelegateMethodDescriptions {
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("implementsAccessibility")
+                      .addAnnotation(Override.class)
+                      .addModifiers(Modifier.PUBLIC)
+                      .returns(TypeName.BOOLEAN)
+                      .addStatement("return true")
+                      .build()))
+          .build();
+
+  public static final DelegateMethodDescription ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("onVirtualViewKeyboardFocusChanged")
+          .lifecycleMethodArguments(
+              ImmutableList.of(
+                  LifecycleMethodArgumentType.COMPONENT_CONTEXT,
+                  LifecycleMethodArgumentType.VIEW,
+                  LifecycleMethodArgumentType.ACCESSIBILITY_NODE,
+                  LifecycleMethodArgumentType.INT,
+                  LifecycleMethodArgumentType.BOOLEAN,
+                  LifecycleMethodArgumentType.INTER_STAGE_PROPS_CONTAINER))
+          .optionalParameterTypes(
+              ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
+          .interStageInputAnnotations(
+              ImmutableList.of(
+                  FromPrepare.class,
+                  FromMeasure.class,
+                  FromMeasureBaseline.class,
+                  FromBoundsDefined.class))
+          .extraMethods(
+              ImmutableList.of(
+                  MethodSpec.methodBuilder("implementsKeyboardFocusChangeForVirtualViews")
                       .addAnnotation(Override.class)
                       .addModifiers(Modifier.PUBLIC)
                       .returns(TypeName.BOOLEAN)
@@ -563,6 +630,10 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(OnUnbind.class, ON_UNBIND);
     mountSpecDelegateMethodsMap.put(OnUnmount.class, ON_UNMOUNT);
     mountSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
+    mountSpecDelegateMethodsMap.put(
+        OnPerformActionForVirtualView.class, ON_PERFORM_ACTION_FOR_VIRTUAL_VIEW);
+    mountSpecDelegateMethodsMap.put(
+        OnVirtualViewKeyboardFocusChanged.class, ON_VIRTUAL_VIEW_KEYBOARD_FOCUS_CHANGED);
     mountSpecDelegateMethodsMap.put(
         OnPopulateAccessibilityNode.class, ON_POPULATE_ACCESSIBILITY_NODE);
     mountSpecDelegateMethodsMap.put(

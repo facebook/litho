@@ -15,7 +15,7 @@ add_compile_options(
     -fno-omit-frame-pointer
     -fexceptions
     -Wall
-    -std=c++11
+    -std=c++20
     -O3)
 
 file(GLOB_RECURSE yogacore_SRC yoga/*.cpp)

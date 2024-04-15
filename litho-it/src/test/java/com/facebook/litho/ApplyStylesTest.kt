@@ -40,7 +40,7 @@ class ApplyStylesTest {
   @Rule
   var legacyLithoViewRule: LegacyLithoViewRule =
       LegacyLithoViewRule(
-          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Test
   fun styles_withWidthHeightStyle_appliesWidthHeight() {

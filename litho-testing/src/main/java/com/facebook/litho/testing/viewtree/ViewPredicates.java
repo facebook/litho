@@ -16,10 +16,8 @@
 
 package com.facebook.litho.testing.viewtree;
 
-import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
 import com.facebook.litho.ComponentHost;
@@ -194,7 +192,9 @@ public final class ViewPredicates {
     return Predicates.and(isVisible(), hasDrawable(drawable));
   }
 
-  /** @return A Predicate which is true if the view is visible and has the given id. */
+  /**
+   * @return A Predicate which is true if the view is visible and has the given id.
+   */
   public static Predicate<View> hasVisibleId(final int viewId) {
     return Predicates.and(isVisible(), hasId(viewId));
   }
@@ -208,7 +208,6 @@ public final class ViewPredicates {
    *
    * @param view the view to draw
    */
-  @TargetApi(Build.VERSION_CODES.KITKAT)
   private static String getDrawnViewDescription(View view) {
     final Canvas canvas = new Canvas();
     view.draw(canvas);

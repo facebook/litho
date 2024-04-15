@@ -144,8 +144,9 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
         RECYCLER_BINDER_CONFIGURATION;
     private GridLayoutInfoFactory mGridLayoutInfoFactory = GRID_LAYOUT_INFO_FACTORY;
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
-    private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
+    private int mSnapToStartFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
     private @SnapMode int mSnapMode = SNAP_NONE;
+    private int mSnapToStartOffset = 0;
     private @Nullable SnapHelper mSnapHelper;
 
     Builder() {}
@@ -179,8 +180,13 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
       return this;
     }
 
-    public Builder startSnapFlingOffset(int startSnapFlingOffset) {
-      mStartSnapFlingOffset = startSnapFlingOffset;
+    public Builder snapToStartFlingOffset(int snapToStartFlingOffset) {
+      mSnapToStartFlingOffset = snapToStartFlingOffset;
+      return this;
+    }
+
+    public Builder snapToStartOffset(int snapToStartOffset) {
+      mSnapToStartOffset = snapToStartOffset;
       return this;
     }
 
@@ -243,7 +249,8 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
       final SnapHelper snapHelper =
           (mSnapHelper != null)
               ? mSnapHelper
-              : SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
+              : SnapUtil.getSnapHelper(
+                  mSnapMode, mDeltaJumpThreshold, mSnapToStartFlingOffset, mSnapToStartOffset);
       final GridRecyclerConfiguration configuration =
           new GridRecyclerConfiguration(
               mOrientation,

@@ -16,65 +16,81 @@
 
 package com.facebook.rendercore.sample
 
-import android.app.Activity
 import android.os.Bundle
-import android.util.Pair
-import com.facebook.rendercore.DefaultNode
-import com.facebook.rendercore.DefaultTextNode
+import androidx.activity.ComponentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderTree
+import com.facebook.rendercore.ResolveResult
 import com.facebook.rendercore.RootHostView
-import com.facebook.rendercore.YogaProps
-import com.facebook.rendercore.text.TextRenderUnit
-import com.facebook.rendercore.text.TextStyle
+import com.facebook.rendercore.StateUpdateReceiver
+import com.facebook.rendercore.sample.data.LayoutRepository
+import com.facebook.rendercore.sample.primitive.ProgressComponent
+import kotlinx.coroutines.launch
 
-class SampleActivity : Activity(), RenderState.Delegate<SurfaceData?> {
+class SampleData
 
-  var rootHostView: RootHostView? = null
+class SampleActivity : ComponentActivity(), RenderState.Delegate<SampleData?> {
 
-  var mCurrentState: SurfaceData? = null
-  var mCurrentRenderTree: RenderTree? = null
+  private val renderState: RenderState<SampleData?, Any?, StateUpdateReceiver.StateUpdate<Any?>> =
+      RenderState(this, this, null, null)
+
+  private var currentRenderTree: RenderTree? = null
+
+  init {
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+        // An API call to get the layout from remote sever
+        // This is the resolve step
+        val root = LayoutRepository.getLayout()
+
+        // Request a new render (can be called from any thread)
+        // This is requests the layout and reduce step which outputs a RenderTree to mount
+        // If the RenderState is set on a RootHostView it will mount the RenderTree
+        renderState.setTree { _, _, _, _ -> ResolveResult(root, null, null) }
+      }
+    }
+  }
 
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    val renderState: RenderState<SurfaceData?, Any?> =
-        RenderState<SurfaceData?, Any?>(
-            this,
-            this,
-            null,
-            null,
-        )
-
-    rootHostView =
+    val host =
         RootHostView(this).apply {
+
+          // The RenderState is behaves like the controller
+          // Request render via the ::setTree API
+          // The RenderState will mount the RenderTree in the
+          // RootHostView when a new RenderTree is committed
           setRenderState(renderState)
-          setContentView(this)
+
+          // Set a loading state
+          renderState.setTree { _, _, _, _ ->
+            ResolveResult(
+                ProgressComponent(
+                    id = LayoutRepository.getRenderUnitId(1 /* do not do this */),
+                    progress = 60,
+                ),
+                null,
+                null)
+          }
         }
-
-    renderState.setTree { _, _, _, _ ->
-      val textRenderUnit = TextRenderUnit(1)
-      val textStyle = TextStyle()
-      textStyle.setTextSize(48)
-      val root: DefaultNode =
-          DefaultTextNode(YogaProps(), "Hello World!", textRenderUnit, textStyle)
-
-      Pair(root, null)
-    }
+    setContentView(host)
   }
 
   override fun commit(
       layoutVersion: Int,
       current: RenderTree?,
-      next: RenderTree?,
-      currentState: SurfaceData?,
-      nextState: SurfaceData?
+      next: RenderTree,
+      currentState: SampleData?,
+      nextState: SampleData?
   ) {
-    mCurrentRenderTree = next
-    mCurrentState = nextState
+    currentRenderTree = next
   }
 
-  override fun commitToUI(tree: RenderTree?, state: SurfaceData?) {}
+  override fun commitToUI(tree: RenderTree?, state: SampleData?, frameId: Int) {
+    currentRenderTree = tree
+  }
 }
-
-class SurfaceData(val text: String)

@@ -63,6 +63,7 @@ public class PsiBindDynamicValuesMethodExtractor {
               ImmutableList.of(),
               ImmutableList.copyOf(methodParams),
               psiMethod,
+              null,
               null);
       methods.add(methodModel);
     }

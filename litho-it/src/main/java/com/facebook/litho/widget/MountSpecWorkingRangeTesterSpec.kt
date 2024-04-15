@@ -25,6 +25,7 @@ import com.facebook.litho.ComponentLayout
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.Size
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.MountSpec
 import com.facebook.litho.annotations.OnCreateMountContent
 import com.facebook.litho.annotations.OnEnteredRange
@@ -32,7 +33,9 @@ import com.facebook.litho.annotations.OnMeasure
 import com.facebook.litho.annotations.OnPrepare
 import com.facebook.litho.annotations.OnRegisterRanges
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 
+@ExcuseMySpec(reason = Reason.USES_WORKING_RANGES)
 @MountSpec
 internal object MountSpecWorkingRangeTesterSpec {
 

@@ -7,6 +7,7 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_JAVAPOET_TARGET",
     "LITHO_JSR_TARGET",
@@ -40,6 +41,7 @@ fb_java_library(
     target = "8",
     visibility = ["PUBLIC"],
     deps = [
+        LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_PROCESSOR_LIB_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
@@ -64,6 +66,7 @@ fb_java_library(
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
+        LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib-bare4idea"),

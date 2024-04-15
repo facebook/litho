@@ -24,12 +24,15 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
-import com.facebook.litho.LithoLifecycleProvider
+import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.LithoView
-import com.facebook.litho.TreeProps
+import com.facebook.litho.LithoVisibilityEventsController
+import com.facebook.litho.TreePropContainer
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
+import java.lang.Exception
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -61,19 +64,18 @@ class LithoViewRule
 constructor(
     val componentsConfiguration: ComponentsConfiguration? = null,
     val themeResId: Int? = null,
-    private val lithoLifecycleProvider: (() -> LithoLifecycleProvider)? = null
+    private val lithoVisibilityEventsController: (() -> LithoVisibilityEventsController)? = null
 ) : TestRule {
   lateinit var context: ComponentContext
   private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
 
   init {
-    ComponentsConfiguration.isDebugModeEnabled = true
+    LithoDebugConfigurations.isDebugModeEnabled = true
   }
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {
-        ensureThreadLooperType()
 
         try {
           if (themeResId != null) {
@@ -95,16 +97,6 @@ constructor(
     }
   }
 
-  private fun ensureThreadLooperType() {
-    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ThreadLooperController) {
-      threadLooperController = ResolveAndLayoutThreadLooperController()
-    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ResolveAndLayoutThreadLooperController) {
-      threadLooperController = ThreadLooperController()
-    }
-  }
-
   fun useContext(c: ComponentContext): LithoViewRule {
     context = c
     return this
@@ -112,9 +104,9 @@ constructor(
 
   /** Sets a new [TreeProp] for the next layout pass. */
   fun setTreeProp(klass: Class<*>, instance: Any?): LithoViewRule {
-    val props = context.treeProps ?: TreeProps()
+    val props = context.treePropContainer ?: TreePropContainer()
     props.put(klass, instance)
-    context.treeProps = props
+    context.treePropContainer = props
     return this
   }
 
@@ -132,7 +124,7 @@ constructor(
       componentFunction: (ComponentScope.() -> Component?)? = null
   ): TestLithoView {
     val testLithoView =
-        TestLithoView(context, componentsConfiguration, lithoLifecycleProvider?.invoke())
+        TestLithoView(context, componentsConfiguration, lithoVisibilityEventsController?.invoke())
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
     if (widthPx != null || heightPx != null) {
@@ -193,5 +185,26 @@ constructor(
   fun idle() {
     threadLooperController.runToEndOfTasksSync()
     shadowOf(Looper.getMainLooper()).idle()
+  }
+
+  /**
+   * Creates a ComponentTree that will propagate exceptions.
+   *
+   * ```
+   * val componentTree = lithoViewRule.withThrowOnErrorHandler()
+   * val lithoView = lithoViewRule.render(componentTree = componentTree)
+   * ```
+   */
+  fun withThrowOnErrorHandler(): ComponentTree {
+    return ComponentTree.create(context)
+        .componentsConfiguration(
+            context.lithoConfiguration.componentsConfig.copy(
+                errorEventHandler =
+                    object : ErrorEventHandler() {
+                      override fun onError(cc: ComponentContext, e: Exception): Component? {
+                        throw e
+                      }
+                    }))
+        .build()
   }
 }

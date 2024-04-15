@@ -38,7 +38,8 @@ public class SimpleNameDelegateValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   specModel.getRepresentedObject(),
-                  "simpleNameDelegate on a LayoutSpec must be a prop name for an @Prop that is a Component. @Prop '"
+                  "simpleNameDelegate on a LayoutSpec must be a prop name for an @Prop that is a"
+                      + " Component. @Prop '"
                       + delegate
                       + "' has type "
                       + prop.getTypeName()));
@@ -52,7 +53,8 @@ public class SimpleNameDelegateValidation {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),
-              "simpleNameDelegate on a LayoutSpec must be a prop name for an @Prop that is a Component. Did not find a @Prop named '"
+              "simpleNameDelegate on a LayoutSpec must be a prop name for an @Prop that is a"
+                  + " Component. Did not find a @Prop named '"
                   + delegate
                   + "'."));
     }

@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.util.Pair
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.ArrayList
 import org.assertj.core.api.Assertions.assertThat
@@ -49,11 +50,21 @@ class ComponentTreeEventHandlerTest {
     val eventHandlersController = componentTree.eventHandlersController
     val eventHandler1: EventHandler<*> =
         Component.newEventHandler<Any>(
-            component.javaClass, "TestComponent", scopedContext, 1, emptyArray())
+            component.javaClass,
+            "TestComponent",
+            scopedContext,
+            1,
+            emptyArray(),
+            EventHandlerRebindMode.REBIND)
     assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(0)
     val eventHandler2: EventHandler<*> =
         Component.newEventHandler<Any>(
-            component.javaClass, "TestComponent", scopedContext, 1, emptyArray())
+            component.javaClass,
+            "TestComponent",
+            scopedContext,
+            1,
+            emptyArray(),
+            EventHandlerRebindMode.REBIND)
     assertThat(eventHandlersController.dispatchInfos.size).isEqualTo(0)
     assertThat(eventHandler1.dispatchInfo).isNotSameAs(eventHandler2.dispatchInfo)
     val eventHandlers = ArrayList<Pair<String, EventHandler<*>>>()
@@ -90,10 +101,20 @@ class ComponentTreeEventHandlerTest {
     val eventHandlersController = componentTree.eventHandlersController
     val eventHandler1: EventHandler<*> =
         Component.newEventHandler<Any>(
-            component.javaClass, "TestComponent", scopedContext, 1, emptyArray())
+            component.javaClass,
+            "TestComponent",
+            scopedContext,
+            1,
+            emptyArray(),
+            EventHandlerRebindMode.REBIND)
     val eventHandler2: EventHandler<*> =
         Component.newEventHandler<Any>(
-            component2.javaClass, "TestComponent2", scopedContext2, 1, emptyArray())
+            component2.javaClass,
+            "TestComponent2",
+            scopedContext2,
+            1,
+            emptyArray(),
+            EventHandlerRebindMode.REBIND)
     val eventHandlers = ArrayList<Pair<String, EventHandler<*>>>()
     eventHandlers.add(Pair(componentGlobalKey1, eventHandler1))
     eventHandlers.add(Pair(componentGlobalKey2, eventHandler2))

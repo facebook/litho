@@ -33,7 +33,9 @@ public class ChangesInfo {
     mChanges = Collections.unmodifiableList(changes);
   }
 
-  /** @return a list of change in the visible range. */
+  /**
+   * @return a list of change in the visible range.
+   */
   public List<Change> getVisibleChanges(
       int firstVisibleIndex, int lastVisibleIndex, int globalOffset) {
     int globalFirstVisibleIndex = globalOffset + (firstVisibleIndex >= 0 ? firstVisibleIndex : 0);

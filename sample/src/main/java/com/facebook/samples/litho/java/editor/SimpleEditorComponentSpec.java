@@ -66,7 +66,8 @@ public class SimpleEditorComponentSpec {
             Text.create(c)
                 .textSizeSp(20)
                 .text(
-                    "Use Flipper (fbflipper.com) to experiment\nchanging Prop and State at runtime"))
+                    "Use Flipper (fbflipper.com) to experiment\n"
+                        + "changing Prop and State at runtime"))
         .child(
             Text.create(c)
                 .textSizeSp(12)

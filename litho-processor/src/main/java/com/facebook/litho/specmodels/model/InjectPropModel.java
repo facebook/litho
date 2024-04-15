@@ -89,7 +89,9 @@ public class InjectPropModel implements MethodParamModel {
     };
   }
 
-  /** @return a new {@link PropModel} instance with the given name overridden. */
+  /**
+   * @return a new {@link PropModel} instance with the given name overridden.
+   */
   public InjectPropModel withName(String name) {
     return new InjectPropModel(mParamModel) {
       @Override

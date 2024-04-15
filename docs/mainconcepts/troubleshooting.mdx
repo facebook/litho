@@ -7,7 +7,7 @@ A few issues may be encountered while using flexbox. This section discusses the 
 
 For debugging, the [Flipper layout inspector plugin](/docs/debugging/debugging-tips#layout-inspector-plugin) can be used to see the component hierarchy, and the flex properties can be updated in the plugin itself to understand how it affects layout.
 
-Another tool that can be used for understanding and playing around with flexbox properties is [Yoga Playground](https://yogalayout.com/playground).
+Another tool that can be used for understanding and playing around with flexbox properties is [Yoga Playground](https://yogalayout.dev/playground).
 
 ## Why is my text truncated?
 
@@ -37,8 +37,8 @@ For information on making components overlap each other, see [Absolutely positio
 
 Use the following to center components:
 
-* `[alignItems](#distribution-along-the-cross-axis) = CENTER` - to center components inside the `Row` along the vertical axis.
-* `[justifyContent](/docs/mainconcepts/flexbox-yoga#distribution-along-the-main-axis) = CENTER` - to center components inside the `Row` along the horizontal axis.
+* [`alignItems = CENTER`](#distribution-along-the-cross-axis) - to center components inside the `Row` along the vertical axis.
+* [`justifyContent = CENTER`](/docs/mainconcepts/flexbox-yoga#distribution-along-the-main-axis) - to center components inside the `Row` along the horizontal axis.
 
 If it is specific to `Text`, then consider using `verticalGravity`/`horizontalGravity` props of the `Text` component to keep it center-aligned:
 

@@ -16,9 +16,10 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.DESTROYED;
+import static com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle.DESTROYED;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
+import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -28,12 +29,11 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoLifecycleListener;
-import com.facebook.litho.LithoLifecycleProvider;
-import com.facebook.litho.LithoLifecycleProviderDelegate;
+import com.facebook.litho.LithoVisibilityEventsController;
+import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
 import com.facebook.litho.Size;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
@@ -50,16 +50,15 @@ import javax.annotation.concurrent.ThreadSafe;
  */
 @ThreadSafe
 public class ComponentTreeHolder {
+
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
-  private final boolean mIsReconciliationEnabled;
-  private final boolean mIsLayoutDiffingEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
-  private final @Nullable LithoLifecycleProvider mParentLifecycle;
-  private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
-  private final @Nullable ErrorEventHandler mErrorEventHandler;
-  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
+  private final @Nullable LithoVisibilityEventsController mParentLifecycle;
+  private @Nullable ComponentTreeHolderVisibilityEventsController
+      mComponentTreeHolderLifecycleProvider;
+  private final ComponentsConfiguration mComponentsConfiguration;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -69,6 +68,7 @@ public class ComponentTreeHolder {
   static final int RENDER_DRAWN = 2;
 
   interface ComponentTreeMeasureListenerFactory {
+
     @Nullable
     MeasureListener create(ComponentTreeHolder holder);
   }
@@ -76,16 +76,9 @@ public class ComponentTreeHolder {
   private @Nullable final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
   private final int mId;
-  private final @Nullable RunnableHandler mPreallocateMountContentHandler;
-  private final boolean mShouldPreallocatePerMountSpec;
-  private final boolean mIncrementalMount;
-  private final boolean mVisibilityProcessingEnabled;
 
   @GuardedBy("this")
   private boolean mIsTreeValid;
-
-  @GuardedBy("this")
-  private @Nullable RunnableHandler mResolveHandler;
 
   @GuardedBy("this")
   private @Nullable RunnableHandler mLayoutHandler;
@@ -114,41 +107,24 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private int mLastRequestedHeightSpec = UNINITIALIZED;
 
-  public static Builder create() {
-    return new Builder();
+  public static Builder create(ComponentsConfiguration configuration) {
+    return new Builder(configuration);
   }
 
   public static class Builder {
 
     private RenderInfo renderInfo;
-    private @Nullable ComponentsConfiguration componentsConfiguration;
-    private @Nullable RunnableHandler resolveHandler;
+    private final ComponentsConfiguration componentsConfiguration;
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private @Nullable RunnableHandler preallocateMountContentHandler;
-    private boolean shouldPreallocatePerMountSpec;
-    private boolean incrementalMount = true;
-    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
-    private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private int recyclingMode;
-    private boolean visibilityProcessingEnabled = true;
-    private @Nullable LithoLifecycleProvider parentLifecycle;
-    private @Nullable ErrorEventHandler errorEventHandler;
+    private @Nullable LithoVisibilityEventsController parentLifecycle;
 
-    private Builder() {}
+    private Builder(ComponentsConfiguration configuration) {
+      componentsConfiguration = configuration;
+    }
 
     public Builder renderInfo(RenderInfo renderInfo) {
       this.renderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
-      return this;
-    }
-
-    public Builder componentsConfiguration(@Nullable ComponentsConfiguration config) {
-      this.componentsConfiguration = config;
-      return this;
-    }
-
-    public Builder resolveHandler(@Nullable RunnableHandler resolveHandler) {
-      this.resolveHandler = resolveHandler;
       return this;
     }
 
@@ -163,49 +139,8 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder preallocateMountContentHandler(
-        @Nullable RunnableHandler preallocateMountContentHandler) {
-      this.preallocateMountContentHandler = preallocateMountContentHandler;
-      return this;
-    }
-
-    public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
-      this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
-      return this;
-    }
-
-    public Builder incrementalMount(boolean incrementalMount) {
-      this.incrementalMount = incrementalMount;
-      return this;
-    }
-
-    public Builder visibilityProcessingEnabled(boolean visibilityProcessingEnabled) {
-      this.visibilityProcessingEnabled = visibilityProcessingEnabled;
-      return this;
-    }
-
-    public Builder isReconciliationEnabled(boolean isEnabled) {
-      isReconciliationEnabled = isEnabled;
-      return this;
-    }
-
-    public Builder recyclingMode(int recyclingMode) {
-      this.recyclingMode = recyclingMode;
-      return this;
-    }
-
-    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
-      isLayoutDiffingEnabled = isEnabled;
-      return this;
-    }
-
-    public Builder parentLifecycleProvider(LithoLifecycleProvider parentLifecycle) {
+    public Builder parentLifecycleProvider(LithoVisibilityEventsController parentLifecycle) {
       this.parentLifecycle = parentLifecycle;
-      return this;
-    }
-
-    public Builder errorEventHandler(ErrorEventHandler errorEventHandler) {
-      this.errorEventHandler = errorEventHandler;
       return this;
     }
 
@@ -225,18 +160,10 @@ public class ComponentTreeHolder {
   @VisibleForTesting
   ComponentTreeHolder(Builder builder) {
     mRenderInfo = builder.renderInfo;
-    mResolveHandler = builder.resolveHandler;
     mLayoutHandler = builder.layoutHandler;
-    mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
-    mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mId = sIdGenerator.getAndIncrement();
-    mIncrementalMount = builder.incrementalMount;
-    mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
-    mIsReconciliationEnabled = builder.isReconciliationEnabled;
-    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mParentLifecycle = builder.parentLifecycle;
-    mErrorEventHandler = builder.errorEventHandler;
     mComponentsConfiguration = builder.componentsConfiguration;
   }
 
@@ -272,7 +199,7 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
-    final TreeProps treeProps;
+    final TreePropContainer treePropContainer;
 
     synchronized (this) {
       if (mRenderInfo.rendersView()) {
@@ -287,13 +214,13 @@ public class ComponentTreeHolder {
 
       componentTree = mComponentTree;
       component = mRenderInfo.getComponent();
-      treeProps =
+      treePropContainer =
           mRenderInfo instanceof TreePropsWrappedRenderInfo
-              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreeProps()
+              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreePropContainer()
               : null;
     }
 
-    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec, size, treeProps);
+    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec, size, treePropContainer);
 
     synchronized (this) {
       if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {
@@ -317,7 +244,7 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
-    final TreeProps treeProps;
+    final TreePropContainer treePropContainer;
 
     synchronized (this) {
       if (mRenderInfo.rendersView()) {
@@ -333,9 +260,9 @@ public class ComponentTreeHolder {
       componentTree = mComponentTree;
       component = mRenderInfo.getComponent();
 
-      treeProps =
+      treePropContainer =
           mRenderInfo instanceof TreePropsWrappedRenderInfo
-              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreeProps()
+              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreePropContainer()
               : null;
     }
 
@@ -343,7 +270,7 @@ public class ComponentTreeHolder {
       componentTree.addMeasureListener(measureListener);
     }
 
-    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treeProps);
+    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treePropContainer);
 
     synchronized (this) {
       if (mComponentTree == componentTree && component == mRenderInfo.getComponent()) {
@@ -393,13 +320,6 @@ public class ComponentTreeHolder {
     mRenderInfo = renderInfo;
   }
 
-  public synchronized void updateResolveHandler(@Nullable RunnableHandler resolveHandler) {
-    mResolveHandler = resolveHandler;
-    if (mComponentTree != null) {
-      mComponentTree.updateResolveThreadHandler(resolveHandler);
-    }
-  }
-
   public synchronized void updateLayoutHandler(@Nullable RunnableHandler layoutHandler) {
     mLayoutHandler = layoutHandler;
     if (mComponentTree != null) {
@@ -446,7 +366,9 @@ public class ComponentTreeHolder {
                 mLastRequestedWidthSpec, mLastRequestedHeightSpec));
   }
 
-  /** @return whether this ComponentTreeHolder has been inserted into the adapter yet. */
+  /**
+   * @return whether this ComponentTreeHolder has been inserted into the adapter yet.
+   */
   public synchronized boolean isInserted() {
     return mIsInserted;
   }
@@ -459,31 +381,40 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      if (mParentLifecycle != null) {
-        mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderLifecycleProvider();
+      ComponentTree.Builder builder;
+      if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+        builder = ComponentTree.create(context, mRenderInfo.getComponent(), mParentLifecycle);
+      } else {
+        if (mParentLifecycle != null) {
+          mComponentTreeHolderLifecycleProvider =
+              new ComponentTreeHolderVisibilityEventsController();
+        }
+        builder =
+            ComponentTree.create(
+                context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
       }
-      final ComponentTree.Builder builder =
-          ComponentTree.create(
-              context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
 
-      // if custom attributes are provided on RenderInfo, they will be preferred over builder values
-      applyCustomAttributesIfProvided(builder);
+      String renderInfoLogTag = mRenderInfo.getLogTag();
+
+      ComponentsConfiguration.Builder treeComponentsConfigurationBuilder =
+          ComponentsConfiguration.create(mComponentsConfiguration);
+
+      if (mRenderInfo.getLogTag() != null) {
+        treeComponentsConfigurationBuilder.logTag(renderInfoLogTag);
+      }
+
+      if (mRenderInfo.getComponentsLogger() != null) {
+        treeComponentsConfigurationBuilder.componentsLogger(mRenderInfo.getComponentsLogger());
+      }
 
       builder
-          .resolveThreadHandler(mResolveHandler)
+          .componentsConfiguration(treeComponentsConfigurationBuilder.build())
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
-          .preAllocateMountContentHandler(mPreallocateMountContentHandler)
-          .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
           .measureListener(
               mComponentTreeMeasureListenerFactory == null
                   ? null
-                  : mComponentTreeMeasureListenerFactory.create(this))
-          .incrementalMount(mIncrementalMount)
-          .visibilityProcessing(mVisibilityProcessingEnabled)
-          .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
-          .componentsConfiguration(mComponentsConfiguration)
-          .build();
+                  : mComponentTreeMeasureListenerFactory.create(this));
 
       mComponentTree = builder.build();
 
@@ -493,37 +424,43 @@ public class ComponentTreeHolder {
     }
   }
 
-  private void applyCustomAttributesIfProvided(ComponentTree.Builder builder) {
-    final Object isReconciliationEnabledAttr =
-        mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
-    final Object layoutDiffingEnabledAttr =
-        mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
+  /**
+   * We may need to wait until the corresponding view is detached before releasing the tree as the
+   * view might need to run an animation
+   */
+  @UiThread
+  public synchronized void releaseTreeImmediatelyOrOnViewDetached() {
+    if (mComponentTree != null) {
+      if (mComponentTree.getLithoView() != null
+          && mComponentTree.getLithoView().isAttachedToWindow()) {
+        mComponentTree
+            .getLithoView()
+            .addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                  @Override
+                  public void onViewAttachedToWindow(View view) {}
 
-    // If the custom attribute is NOT set, defer to the value from the builder.
-    if (isReconciliationEnabledAttr != null) {
-      builder.isReconciliationEnabled((boolean) isReconciliationEnabledAttr);
-    } else {
-      builder.isReconciliationEnabled(mIsReconciliationEnabled);
-    }
-
-    if (layoutDiffingEnabledAttr != null) {
-      builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
-    } else {
-      builder.layoutDiffing(mIsLayoutDiffingEnabled);
-    }
-
-    if (mErrorEventHandler != null) {
-      builder.errorHandler(mErrorEventHandler);
+                  @Override
+                  public void onViewDetachedFromWindow(View view) {
+                    releaseTree();
+                    view.removeOnAttachStateChangeListener(this);
+                  }
+                });
+      } else {
+        releaseTree();
+      }
     }
   }
 
   @UiThread
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
-      if (mComponentTreeHolderLifecycleProvider != null) {
-        mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
+      if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+        if (mComponentTreeHolderLifecycleProvider != null) {
+          mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
 
-        return;
+          return;
+        }
       }
 
       mComponentTree.release();
@@ -562,13 +499,16 @@ public class ComponentTreeHolder {
   }
 
   /** Lifecycle controlled by a ComponentTreeHolder. */
-  private class ComponentTreeHolderLifecycleProvider
-      implements LithoLifecycleProvider, LithoLifecycleListener, AOSPLifecycleOwnerProvider {
-    public LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
+  private class ComponentTreeHolderVisibilityEventsController
+      implements LithoVisibilityEventsController,
+          LithoLifecycleListener,
+          AOSPLifecycleOwnerProvider {
 
-    public ComponentTreeHolderLifecycleProvider() {
+    public LithoVisibilityEventsControllerDelegate mLithoLifecycleProviderDelegate;
+
+    public ComponentTreeHolderVisibilityEventsController() {
       mParentLifecycle.addListener(this);
-      mLithoLifecycleProviderDelegate = new LithoLifecycleProviderDelegate();
+      mLithoLifecycleProviderDelegate = new LithoVisibilityEventsControllerDelegate();
     }
 
     @Override

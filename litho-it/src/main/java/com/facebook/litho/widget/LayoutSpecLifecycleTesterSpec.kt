@@ -31,6 +31,7 @@ import com.facebook.litho.UnfocusedVisibleEvent
 import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
 import com.facebook.litho.annotations.CachedValue
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.FromEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnAttached
@@ -45,9 +46,11 @@ import com.facebook.litho.annotations.OnUpdateState
 import com.facebook.litho.annotations.OnUpdateStateWithTransition
 import com.facebook.litho.annotations.Param
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.events.EventWithoutAnnotation
 
+@ExcuseMySpec(reason = Reason.USES_ON_UPDATE_STATE_WITH_TRANSITION)
 @LayoutSpec(events = [EventWithoutAnnotation::class])
 object LayoutSpecLifecycleTesterSpec {
 

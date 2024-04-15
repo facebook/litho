@@ -85,7 +85,7 @@ public class TriggerGenerator {
             .addParameter(ParameterSpec.builder(OBJECT, "eventState", Modifier.FINAL).build())
             .addParameter(ArrayTypeName.of(TypeName.OBJECT), "params", Modifier.FINAL);
 
-    methodBuilder.addStatement("int id = eventTrigger.mId");
+    methodBuilder.addStatement("int id = eventTrigger.getId()");
     methodBuilder.beginControlFlow("switch($L)", "id");
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
@@ -105,8 +105,8 @@ public class TriggerGenerator {
       final CodeBlock.Builder eventTriggerParams =
           CodeBlock.builder()
               .indent()
-              .add("\n($L) eventTrigger.mComponentContext", specModel.getContextClass());
-      eventTriggerParams.add(",\n$L", "eventTrigger.mTriggerTarget");
+              .add("\n($L) eventTrigger.getComponentContext()", specModel.getContextClass());
+      eventTriggerParams.add(",\n$L", "eventTrigger.getTriggerTarget()");
 
       int paramIndex = 0;
       for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
@@ -150,8 +150,8 @@ public class TriggerGenerator {
       String trigger = ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
       methodBuilder
           .beginControlFlow("if ($L != null)", trigger)
-          .addStatement("$L.mComponentContext = c", trigger)
-          .addStatement("$L.mTriggerTarget = this", trigger)
+          .addStatement("$L.setComponentContext(c)", trigger)
+          .addStatement("$L.setTriggerTarget(this)", trigger)
           .addStatement("container.recordEventTrigger($L)", trigger)
           .endControlFlow();
     }
@@ -307,7 +307,8 @@ public class TriggerGenerator {
 
     triggerMethod
         .addJavadoc(
-            "@deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #$L(ComponentContext, Handle)}.\n",
+            "@deprecated Do not use this method to get a EventTrigger to use later. Instead give"
+                + " the component a Handle and use {@link #$L(ComponentContext, Handle)}.\n",
             eventMethodModel.name.toString())
         .addAnnotation(java.lang.Deprecated.class)
         .addParameter(contextClassName, "c")
@@ -427,7 +428,9 @@ public class TriggerGenerator {
           .addAnnotation(java.lang.Deprecated.class);
     } else if (triggerLookup == TriggerLookup.HANDLE) {
       triggerMethod.addJavadoc(
-          "This will send the $L trigger to the component with the given handle.\nFor more information about using triggers, see https://fblitho.com/docs/trigger-events\n",
+          "This will send the $L trigger to the component with the given handle.\n"
+              + "For more information about using triggers, see"
+              + " https://fblitho.com/docs/trigger-events\n",
           eventMethodModel.name.toString());
     }
 

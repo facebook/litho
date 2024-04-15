@@ -22,15 +22,18 @@ import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.dp
 
 /** A scrollable collection of components arranged in a grid */
 @Suppress("FunctionName")
 inline fun ResourcesScope.LazyGrid(
     @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
     @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
+    snapToStartOffset: Dimen = 0.dp,
     reverse: Boolean = false,
     columns: Int = 2,
     itemAnimator: RecyclerView.ItemAnimator? = null,
@@ -62,26 +65,30 @@ inline fun ResourcesScope.LazyGrid(
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean = false,
+    isReconciliationEnabled: Boolean =
+        context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
-    preallocationPerMountContentEnabled: Boolean =
-        context.lithoConfiguration.preallocationPerMountContentEnabled,
+    preAllocationHandler: PreAllocationHandler? =
+        context.lithoConfiguration.componentsConfig.preAllocationHandler,
+    shouldExcludeFromIncrementalMount: Boolean = false,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
   return LazyCollection(
       layout =
           CollectionLayouts.Grid(
+              componentContext = context,
               orientation = orientation,
               snapMode = snapMode,
+              snapToStartOffset = snapToStartOffset.toPixels(resourceResolver),
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
-              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              preAllocationHandler = preAllocationHandler,
               columns = columns),
       itemAnimator,
       itemDecoration,
@@ -114,5 +121,6 @@ inline fun ResourcesScope.LazyGrid(
       overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
+      shouldExcludeFromIncrementalMount,
       lazyGridScope.children)
 }

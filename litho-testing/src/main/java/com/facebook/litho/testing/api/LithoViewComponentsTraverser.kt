@@ -126,7 +126,7 @@ class LithoViewComponentsTraverser {
       "No ComponentTree/Committed Layout/Layout Root found. Please call render() first"
     }
 
-    return committedLayoutState?.rootLayoutResult
+    return committedLayoutState?.rootLayoutResult as? LithoLayoutResult
   }
 
   private val LithoLayoutResult.childResults: List<LithoLayoutResult>

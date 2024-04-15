@@ -23,6 +23,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
@@ -64,25 +65,30 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean = false,
+    isReconciliationEnabled: Boolean =
+        context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
+    isIncrementalMountEnabled: Boolean = true,
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
-    preallocationPerMountContentEnabled: Boolean =
-        context.lithoConfiguration.preallocationPerMountContentEnabled,
+    preAllocationHandler: PreAllocationHandler? =
+        context.lithoConfiguration.componentsConfig.preAllocationHandler,
+    shouldExcludeFromIncrementalMount: Boolean = false,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
   return LazyCollection(
       layout =
           CollectionLayouts.StaggeredGrid(
+              componentContext = context,
               orientation = orientation,
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
-              preallocationPerMountContentEnabled = preallocationPerMountContentEnabled,
+              isIncrementalMountEnabled = isIncrementalMountEnabled,
+              preAllocationHandler = preAllocationHandler,
               spans = spans,
               gapStrategy = gapStrategy),
       itemAnimator,
@@ -116,5 +122,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
       overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
+      shouldExcludeFromIncrementalMount,
       lazyStaggeredGridScope.children)
 }

@@ -47,7 +47,9 @@ public abstract class ValueNode {
   private float mValue;
   private long mTimeNs = 0;
 
-  /** @return the most recently calculated value from {@link #calculateValue}. */
+  /**
+   * @return the most recently calculated value from {@link #calculateValue}.
+   */
   public float getValue() {
     return mValue;
   }
@@ -64,7 +66,9 @@ public abstract class ValueNode {
    */
   protected abstract float calculateValue(long frameTimeNanos);
 
-  /** @return the input node for the given input name */
+  /**
+   * @return the input node for the given input name
+   */
   protected ValueNode getInput(String name) {
     final ValueNode input = getInputUnsafe(name);
     if (input == null) {
@@ -87,7 +91,9 @@ public abstract class ValueNode {
     return getInput(DEFAULT_INPUT);
   }
 
-  /** @return whether this node has an input with the given name */
+  /**
+   * @return whether this node has an input with the given name
+   */
   protected boolean hasInput(String name) {
     if (mInputs == null) {
       return false;

@@ -26,6 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnCalculateCachedValue {
 
-  /** @return the name of the {@link CachedValue} that is being calculated. */
+  /**
+   * @return the name of the {@link CachedValue} that is being calculated.
+   */
   String name();
 }

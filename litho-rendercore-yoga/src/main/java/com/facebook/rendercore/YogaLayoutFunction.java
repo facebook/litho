@@ -25,6 +25,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.rendercore.LayoutCache.CacheItem;
 import com.facebook.rendercore.utils.LayoutUtils;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaConstants;
@@ -83,8 +84,14 @@ public class YogaLayoutFunction {
             : DEFAULT_YOGA_CONFIG;
 
     final FlexboxLayoutResult layoutResult =
-        buildTree(context, node, pendingSubTrees, yogaConfig, yogaLayoutDataProvider);
-    layoutResult.setMeasureSpecs(widthSpec, heightSpec);
+        buildTree(
+            context,
+            node,
+            pendingSubTrees,
+            yogaConfig,
+            yogaLayoutDataProvider,
+            widthSpec,
+            heightSpec);
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("YogaLayoutFunction");
@@ -152,11 +159,18 @@ public class YogaLayoutFunction {
       final Node node,
       List<FlexboxLayoutResult> pendingSubtrees,
       YogaConfig yogaConfig,
-      YogaLayoutDataProvider yogaLayoutDataProvider) {
+      YogaLayoutDataProvider yogaLayoutDataProvider,
+      int widthSpec,
+      int heightSpec) {
 
-    final LayoutResult cachedResult = context.getLayoutCache().get(node);
-    if (cachedResult != null && cachedResult instanceof FlexboxLayoutResult) {
-      return buildTreeFromCache((FlexboxLayoutResult) cachedResult, context, pendingSubtrees);
+    final CacheItem cacheItem = context.getLayoutCache().get(node);
+    if (cacheItem != null && cacheItem.getLayoutResult() instanceof FlexboxLayoutResult) {
+      return buildTreeFromCache(
+          (FlexboxLayoutResult) cacheItem.getLayoutResult(),
+          context,
+          pendingSubtrees,
+          widthSpec,
+          heightSpec);
     }
 
     final FlexboxLayoutResult layoutResult;
@@ -195,13 +209,20 @@ public class YogaLayoutFunction {
               yogaNode,
               null,
               yogaLayoutDataProvider.getRenderUnitForNode(node, context));
-      context.getLayoutCache().put(node, layoutResult);
+      context.getLayoutCache().put(node, new CacheItem(layoutResult, widthSpec, heightSpec));
 
       final List<? extends Node> children = yogaLayoutDataProvider.getYogaChildren(node);
       for (int i = 0; i < children.size(); i++) {
         final Node child = children.get(i);
         final FlexboxLayoutResult childLayoutResult =
-            buildTree(context, child, pendingSubtrees, yogaConfig, yogaLayoutDataProvider);
+            buildTree(
+                context,
+                child,
+                pendingSubtrees,
+                yogaConfig,
+                yogaLayoutDataProvider,
+                widthSpec,
+                heightSpec);
         // We already checked if this node was NONE when we created it but we want to also check
         // here so that we don't add it to the hierarchy at all and it doesn't participate in
         // grow/shrink behaviours.
@@ -218,19 +239,23 @@ public class YogaLayoutFunction {
   private static FlexboxLayoutResult buildTreeFromCache(
       FlexboxLayoutResult cachedResult,
       LayoutContext layoutContext,
-      List<FlexboxLayoutResult> pendingSubtrees) {
+      List<FlexboxLayoutResult> pendingSubtrees,
+      int widthSpec,
+      int heightSpec) {
     RenderCoreSystrace.beginSection("CloneYogaTree");
     YogaNode clonedYogaNode = cachedResult.mYogaNode.cloneWithChildren();
     RenderCoreSystrace.endSection();
     return registerClonedNodesRecursively(
-        cachedResult, clonedYogaNode, layoutContext, pendingSubtrees);
+        cachedResult, clonedYogaNode, layoutContext, pendingSubtrees, widthSpec, heightSpec);
   }
 
   private static FlexboxLayoutResult registerClonedNodesRecursively(
       FlexboxLayoutResult cachedResult,
       YogaNode clonedYogaNode,
       LayoutContext layoutContext,
-      List<FlexboxLayoutResult> pendingSubtrees) {
+      List<FlexboxLayoutResult> pendingSubtrees,
+      int widthSpec,
+      int heightSpec) {
     final Node node = cachedResult.mNode;
     final FlexboxLayoutResult result =
         new FlexboxLayoutResult(
@@ -239,7 +264,7 @@ public class YogaLayoutFunction {
     // Re-cache this only if it's not a leaf. We want the leaves to rely on the delegate behavior
     // for caching.
     if (cachedResult.mMeasure == null) {
-      layoutContext.getLayoutCache().put(node, result);
+      layoutContext.getLayoutCache().put(node, new CacheItem(result, widthSpec, heightSpec));
       for (int i = 0; i < cachedResult.getChildrenCount(); i++) {
         LayoutResult childResult = cachedResult.getChildAt(i);
         FlexboxLayoutResult child =
@@ -247,7 +272,9 @@ public class YogaLayoutFunction {
                 (FlexboxLayoutResult) childResult,
                 clonedYogaNode.getChildAt(i),
                 layoutContext,
-                pendingSubtrees);
+                pendingSubtrees,
+                widthSpec,
+                heightSpec);
 
         result.addChild(child);
       }
@@ -305,8 +332,6 @@ public class YogaLayoutFunction {
     @Nullable private final RenderUnit mRenderUnit;
     private final YogaNode mYogaNode;
     private final List<LayoutResult> mChildren;
-    private int mWidthSpec;
-    private int mHeightSpec;
     private boolean mIsRoot;
     @Nullable private LayoutResult mDelegate;
     @Nullable private final MeasureImpl mMeasure;
@@ -443,28 +468,6 @@ public class YogaLayoutFunction {
 
     public void addChild(LayoutResult layoutResult) {
       mChildren.add(layoutResult);
-    }
-
-    public void setMeasureSpecs(int widthSpec, int heightSpec) {
-      mIsRoot = true;
-      mWidthSpec = widthSpec;
-      mHeightSpec = heightSpec;
-    }
-
-    @Override
-    public int getWidthSpec() {
-      return mIsRoot
-          ? mWidthSpec
-          : View.MeasureSpec.makeMeasureSpec(
-              (int) mYogaNode.getLayoutWidth(), View.MeasureSpec.EXACTLY);
-    }
-
-    @Override
-    public int getHeightSpec() {
-      return mIsRoot
-          ? mHeightSpec
-          : View.MeasureSpec.makeMeasureSpec(
-              (int) mYogaNode.getLayoutHeight(), View.MeasureSpec.EXACTLY);
     }
 
     public void measureIfNeeded() {

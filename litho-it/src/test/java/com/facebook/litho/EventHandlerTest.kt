@@ -16,8 +16,11 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.annotations.EventHandlerRebindMode
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
@@ -25,40 +28,47 @@ import org.mockito.kotlin.mock
 @RunWith(LithoTestRunner::class)
 class EventHandlerTest {
 
+  @JvmField @Rule val lithoViewRule = LithoViewRule()
+
   private val hasEventDispatcher = mock<HasEventDispatcher>()
 
   @Test
   fun testIsEquivalentToWithNullHandler() {
-    val eventHandler: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
+    val eventHandler: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
     assertThat(eventHandler.isEquivalentTo(null)).isFalse
   }
 
   @Test
   fun testIsEquivalentToWithSameHandler() {
-    val eventHandler: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
+    val eventHandler: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
     assertThat(eventHandler.isEquivalentTo(eventHandler)).isTrue
   }
 
   @Test
   fun testIsEquivalentToWithDifferentIds() {
-    val eventHandler1: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
-    val eventHandler2: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 2)
+    val eventHandler1: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
+    val eventHandler2: EventHandler<*> = EventHandlerTestUtil.create<Any?>(2, hasEventDispatcher)
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
 
   @Test
   fun testIsEquivalentToWithOneNullParams() {
-    val eventHandler1: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
-    val eventHandler2: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1, arrayOfNulls(0))
+    val eventHandler1: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
+    val eventHandler2: EventHandler<*> =
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOfNulls(0))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
 
   @Test
   fun testIsEquivalentToWithBothNullParams() {
-    val eventHandler1: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
-    val eventHandler2: EventHandler<*> = EventHandler<Any?>(hasEventDispatcher, 1)
+    val eventHandler1: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
+    val eventHandler2: EventHandler<*> = EventHandlerTestUtil.create<Any?>(1, hasEventDispatcher)
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isTrue
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isTrue
   }
@@ -66,9 +76,17 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithDifferentLengthParams() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2, 3))
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
@@ -76,9 +94,17 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithDifferentParams() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2, 3))
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 3, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 3, 3))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
@@ -86,9 +112,17 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithFirstParamDifferent() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(1, 2, 3))
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(hasEventDispatcher, 1, arrayOf<Any>(2, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(hasEventDispatcher, null),
+            arrayOf<Any>(2, 2, 3))
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse
   }
@@ -96,9 +130,23 @@ class EventHandlerTest {
   @Test
   fun testIsEquivalentToWithDifferentHasEventDispatchInfos() {
     val eventHandler1: EventHandler<*> =
-        EventHandler<Any?>(1, EventDispatchInfo(mock(), mock()), arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(
+                Wrapper.create(lithoViewRule.context).delegate(EmptyComponent()).build(),
+                lithoViewRule.context),
+            arrayOf<Any>(1, 2, 3),
+        )
     val eventHandler2: EventHandler<*> =
-        EventHandler<Any?>(1, EventDispatchInfo(mock(), mock()), arrayOf<Any>(1, 2, 3))
+        EventHandler<Any?>(
+            1,
+            EventHandlerRebindMode.REBIND,
+            EventDispatchInfo(
+                Wrapper.create(lithoViewRule.context).delegate(EmptyComponent()).build(),
+                lithoViewRule.context),
+            arrayOf<Any>(1, 2, 3),
+        )
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isTrue
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isTrue
   }

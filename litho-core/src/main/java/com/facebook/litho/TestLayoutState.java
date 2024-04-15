@@ -45,7 +45,7 @@ import java.util.List;
 public class TestLayoutState {
 
   public static @Nullable LithoNode createAndMeasureTreeForComponent(
-      ResolveStateContext resolveStateContext,
+      ResolveContext resolveContext,
       ComponentContext context,
       Component component,
       int widthSpec,
@@ -53,35 +53,35 @@ public class TestLayoutState {
 
     final ComponentContext c =
         Resolver.createScopedContext(
-            resolveStateContext,
+            resolveContext,
             context,
             component,
             ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component),
             null);
 
     final LithoNode root =
-        createImmediateLayout(resolveStateContext, c, widthSpec, heightSpec, component);
+        createImmediateLayout(resolveContext, c, widthSpec, heightSpec, component);
 
     c.clearCalculationStateContext();
 
-    if (root == null || resolveStateContext.isLayoutInterrupted()) {
+    if (root == null || resolveContext.isLayoutInterrupted()) {
       return root;
     }
 
-    final LayoutStateContext lsc =
-        new LayoutStateContext(
-            resolveStateContext.getTreeId(),
-            resolveStateContext.getCache(),
+    final LithoLayoutContext lsc =
+        new LithoLayoutContext(
+            resolveContext.getTreeId(),
+            resolveContext.getCache(),
             c,
-            resolveStateContext.getTreeState(),
-            resolveStateContext.getLayoutVersion(),
-            resolveStateContext.getRootComponentId(),
-            resolveStateContext.isAccessibilityEnabled(),
+            resolveContext.getTreeState(),
+            resolveContext.getLayoutVersion(),
+            resolveContext.getRootComponentId(),
+            resolveContext.isAccessibilityEnabled(),
             new LayoutCache(),
             null,
             null);
 
-    c.setLayoutStateContext(lsc);
+    c.setLithoLayoutContext(lsc);
 
     Layout.measureTree(lsc, c.getAndroidContext(), root, widthSpec, heightSpec, null);
 
@@ -91,7 +91,7 @@ public class TestLayoutState {
   }
 
   public static @Nullable LithoNode newImmediateLayoutBuilder(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext c,
       final int widthSpec,
       final int heightSpec,
@@ -103,11 +103,11 @@ public class TestLayoutState {
     }
 
     if (component instanceof SpecGeneratedComponent
-        && ((SpecGeneratedComponent) component).canResolve()) {
+        && canResolve((SpecGeneratedComponent) component)) {
       if (component instanceof Wrapper) {
-        return createImmediateLayout(resolveStateContext, c, widthSpec, heightSpec, component);
+        return createImmediateLayout(resolveContext, c, widthSpec, heightSpec, component);
       }
-      return create(resolveStateContext, c, widthSpec, heightSpec, component);
+      return create(resolveContext, c, widthSpec, heightSpec, component);
     }
 
     final LithoNode node = createInternalNode();
@@ -129,7 +129,7 @@ public class TestLayoutState {
    * shallow child resolution.
    */
   private static @Nullable LithoNode resolve(
-      ResolveStateContext resolveStateContext,
+      ResolveContext resolveContext,
       ComponentContext c,
       int widthSpec,
       int heightSpec,
@@ -168,17 +168,17 @@ public class TestLayoutState {
 
     if (children != null) {
       for (Component child : children) {
-        if (resolveStateContext.isFutureReleased()) {
+        if (resolveContext.isFutureReleased()) {
           return null;
         }
 
-        if (resolveStateContext.isLayoutInterrupted()) {
+        if (resolveContext.isLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
           if (child != null) {
             node.child(
                 TestLayoutState.newImmediateLayoutBuilder(
-                    resolveStateContext, c, widthSpec, heightSpec, child));
+                    resolveContext, c, widthSpec, heightSpec, child));
           }
         }
       }
@@ -188,7 +188,7 @@ public class TestLayoutState {
   }
 
   private static @Nullable LithoNode createImmediateLayout(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext c,
       final int widthSpec,
       final int heightSpec,
@@ -201,15 +201,17 @@ public class TestLayoutState {
 
     final LithoNode node;
     final LithoNode layoutCreatedInWillRender =
-        component.consumeLayoutCreatedInWillRender(resolveStateContext, c);
+        component.consumeLayoutCreatedInWillRender(resolveContext, c);
 
     if (layoutCreatedInWillRender != null) {
       return layoutCreatedInWillRender;
     }
 
     if (component instanceof SpecGeneratedComponent) {
-      final TreeProps treeProps = c.getTreeProps();
-      c.setTreeProps(((SpecGeneratedComponent) component).getTreePropsForChildren(c, treeProps));
+      final TreePropContainer treePropContainer = c.getTreePropContainer();
+      c.setTreePropContainer(
+          ((SpecGeneratedComponent) component)
+              .getTreePropContainerForChildren(c, treePropContainer));
     }
 
     if (component instanceof Wrapper) {
@@ -217,26 +219,28 @@ public class TestLayoutState {
       if (delegate == null) {
         return null;
       } else {
-        return newImmediateLayoutBuilder(resolveStateContext, c, widthSpec, heightSpec, delegate);
+        return newImmediateLayoutBuilder(resolveContext, c, widthSpec, heightSpec, delegate);
       }
     } else if (component instanceof SpecGeneratedComponent
-        && ((SpecGeneratedComponent) component).canResolve()) {
-      c.setTreeProps(c.getTreePropsCopy());
+        && canResolve((SpecGeneratedComponent) component)) {
+      c.setTreePropContainer(c.getTreePropContainerCopy());
       if (component instanceof Column || component instanceof Row) {
-        node = resolve(resolveStateContext, c, widthSpec, heightSpec, component);
+        node = resolve(resolveContext, c, widthSpec, heightSpec, component);
       } else {
-        node = component.resolve(resolveStateContext, c);
+        node =
+            ((SpecGeneratedComponent) component)
+                .resolve(resolveContext, new ScopedComponentInfo(component, c, null), 0, 0, null)
+                .lithoNode;
       }
     } else if (isMountSpec(component)) {
       node = createInternalNode();
     } else {
-      final RenderResult renderResult =
-          component.render(resolveStateContext, c, widthSpec, heightSpec);
+      final RenderResult renderResult = component.render(resolveContext, c, widthSpec, heightSpec);
       final Component root = renderResult.component;
       if (root == null || root.getId() <= 0) {
         node = null;
       } else {
-        node = resolveImmediateSubTree(resolveStateContext, c, widthSpec, heightSpec, root);
+        node = resolveImmediateSubTree(resolveContext, c, widthSpec, heightSpec, root);
       }
     }
 
@@ -262,13 +266,15 @@ public class TestLayoutState {
     ScopedComponentInfo scopedComponentInfo = c.getScopedComponentInfo();
     scopedComponentInfo.setCommonProps(commonProps);
     node.appendComponent(scopedComponentInfo);
-    component.prepare(resolveStateContext, c);
+    if (component instanceof SpecGeneratedComponent) {
+      ((SpecGeneratedComponent) component).onPrepare(c);
+    }
 
     return node;
   }
 
   static @Nullable LithoNode resolveImmediateSubTree(
-      ResolveStateContext resolveStateContext,
+      ResolveContext resolveContext,
       final ComponentContext c,
       final int widthSpec,
       final int heightSpec,
@@ -284,11 +290,11 @@ public class TestLayoutState {
       if (delegate == null) {
         node = null;
       } else {
-        node = newImmediateLayoutBuilder(resolveStateContext, c, widthSpec, heightSpec, delegate);
+        node = newImmediateLayoutBuilder(resolveContext, c, widthSpec, heightSpec, delegate);
       }
     } else if (component instanceof SpecGeneratedComponent
-        && ((SpecGeneratedComponent) component).canResolve()) {
-      node = create(resolveStateContext, c, widthSpec, heightSpec, component);
+        && canResolve((SpecGeneratedComponent) component)) {
+      node = create(resolveContext, c, widthSpec, heightSpec, component);
     } else {
 
       node = createInternalNode();
@@ -309,14 +315,14 @@ public class TestLayoutState {
     return new LithoNode();
   }
 
-  private static LithoNode createNestedTreeHolder(@Nullable TreeProps treeProps) {
-    return new NestedTreeHolder(treeProps);
+  private static LithoNode createNestedTreeHolder(@Nullable TreePropContainer treePropContainer) {
+    return new NestedTreeHolder(treePropContainer);
   }
 
   // Mimicks implementation of Layout.create but uses a custom InternalNode for shallow child
   // resolution.
   private static @Nullable LithoNode create(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ComponentContext parent,
       final int widthSpec,
       final int heightSpec,
@@ -335,8 +341,7 @@ public class TestLayoutState {
     try {
 
       // 1. Consume the layout created in `willrender`.
-      final LithoNode cached =
-          component.consumeLayoutCreatedInWillRender(resolveStateContext, parent);
+      final LithoNode cached = component.consumeLayoutCreatedInWillRender(resolveContext, parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
@@ -345,7 +350,7 @@ public class TestLayoutState {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = Resolver.createScopedContext(resolveStateContext, parent, component, null, null);
+      c = Resolver.createScopedContext(resolveContext, parent, component, null, null);
       globalKey = c.getGlobalKey();
 
       scopedComponentInfo = c.getScopedComponentInfo();
@@ -355,18 +360,21 @@ public class TestLayoutState {
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
-        node = createNestedTreeHolder(c.getTreeProps());
+        node = createNestedTreeHolder(c.getTreePropContainer());
       }
 
       // If the component can resolve itself resolve it.
       else if (component instanceof SpecGeneratedComponent
-          && ((SpecGeneratedComponent) component).canResolve()) {
+          && canResolve((SpecGeneratedComponent) component)) {
 
         // Resolve the component into an InternalNode.
         if (component instanceof Column || component instanceof Row) {
-          node = resolve(resolveStateContext, c, widthSpec, heightSpec, component);
+          node = resolve(resolveContext, c, widthSpec, heightSpec, component);
         } else {
-          node = component.resolve(resolveStateContext, c);
+          node =
+              ((SpecGeneratedComponent) component)
+                  .resolve(resolveContext, new ScopedComponentInfo(component, c, null), 0, 0, null)
+                  .lithoNode;
         }
       }
 
@@ -382,16 +390,11 @@ public class TestLayoutState {
       else if (isLayoutSpec(component)) {
 
         final RenderResult renderResult =
-            component.render(resolveStateContext, c, widthSpec, heightSpec);
+            component.render(resolveContext, c, widthSpec, heightSpec);
         final Component root = renderResult.component;
 
         if (root != null) {
-          // TODO: (T57741374) this step is required because of a bug in redex.
-          if (root == component) {
-            node = root.resolve(resolveStateContext, c);
-          } else {
-            node = create(resolveStateContext, c, widthSpec, heightSpec, root);
-          }
+          node = create(resolveContext, c, widthSpec, heightSpec, root);
         } else {
           node = null;
         }
@@ -473,7 +476,7 @@ public class TestLayoutState {
     // 13. Call onPrepare for MountSpecs.
     if (isMountSpec(component)) {
       try {
-        component.prepare(resolveStateContext, c);
+        ((SpecGeneratedComponent) component).onPrepare(c);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(parent, component, e);
       }
@@ -534,5 +537,11 @@ public class TestLayoutState {
     } else {
       return object.getClass();
     }
+  }
+
+  static boolean canResolve(SpecGeneratedComponent component) {
+    // for legacy reasons this method enumerates components which returned true from canResolve()
+    // until TestLayoutState is further refactored
+    return component instanceof Row || component instanceof Column || component instanceof Wrapper;
   }
 }

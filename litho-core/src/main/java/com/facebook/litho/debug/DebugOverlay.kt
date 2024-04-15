@@ -59,14 +59,14 @@ class DebugOverlay(private val isMainThreadLayouts: List<Boolean>) : Drawable() 
     @Synchronized
     fun updateLayoutHistory(id: Int) {
       val history: MutableList<Boolean> = layoutThreadHistory.getOrPut(id) { mutableListOf() }
-      history.add(ThreadUtils.isMainThread())
+      history.add(ThreadUtils.isMainThread)
     }
 
     @JvmStatic
     @Synchronized
     fun updateResolveHistory(id: Int) {
       val history: MutableList<Boolean> = resolveThreadHistory.getOrPut(id) { mutableListOf() }
-      history.add(ThreadUtils.isMainThread())
+      history.add(ThreadUtils.isMainThread)
     }
 
     @JvmStatic

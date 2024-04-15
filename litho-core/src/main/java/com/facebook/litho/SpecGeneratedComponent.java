@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.debug.LithoDebugEvent.ComponentPrepared;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.beginTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.endTrace;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.generateTraceIdentifier;
@@ -24,6 +23,7 @@ import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
 import androidx.annotation.AttrRes;
@@ -39,7 +39,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
@@ -224,7 +224,7 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Override
   protected RenderResult render(
-      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+      ResolveContext resolveContext, ComponentContext c, int widthSpec, int heightSpec) {
     if (Component.isLayoutSpecWithSizeSpec(this)) {
       return new RenderResult(onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec));
     } else {
@@ -232,30 +232,15 @@ public abstract class SpecGeneratedComponent extends Component
     }
   }
 
-  @Nullable
-  @Override
-  protected final PrepareResult prepare(
-      ResolveStateContext resolveStateContext, ComponentContext c) {
-    onPrepare(c);
-    return null;
-  }
-
-  /**
-   * Indicate that this component implements its own {@link #resolve(LayoutStateContext,
-   * ComponentContext)} logic instead of going through {@link #render(ComponentContext)}.
-   */
-  boolean canResolve() {
-    return false;
-  }
-
   @Override
   protected ComponentResolveResult resolve(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
       final int parentHeightSpec,
       final @Nullable ComponentsLogger componentsLogger) {
 
+    final Integer traceId = generateTraceIdentifier(LithoDebugEvent.ComponentRendered);
     final boolean isTracing = ComponentsSystrace.isTracing();
     final ComponentContext c = scopedComponentInfo.getContext();
     LithoNode node = null;
@@ -265,55 +250,67 @@ public abstract class SpecGeneratedComponent extends Component
       node = new LithoNode();
       node.flexDirection(YogaFlexDirection.COLUMN);
 
-      // Call onPrepare for MountSpecs
-      PerfEvent prepareEvent =
-          Resolver.createPerformanceEvent(
-              this, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE);
-
-      Integer componentPrepareTraceIdentifier = generateTraceIdentifier(ComponentPrepared);
-      if (componentPrepareTraceIdentifier != null) {
+      if (traceId != null) {
         HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put(LithoDebugEventAttributes.RunsOnMainThread, ThreadUtils.isMainThread());
         attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
-
         beginTrace(
-            componentPrepareTraceIdentifier,
-            ComponentPrepared,
-            String.valueOf(resolveStateContext.getTreeId()),
+            traceId,
+            LithoDebugEvent.ComponentRendered,
+            String.valueOf(resolveContext.getTreeId()),
             attributes);
       }
 
       if (isTracing) {
-        ComponentsSystrace.beginSection("prepare:" + getSimpleName());
+        ComponentsSystrace.beginSection("render:" + getSimpleName());
       }
 
       try {
-        prepare(resolveStateContext, scopedComponentInfo.getContext());
+        onPrepare(scopedComponentInfo.getContext());
       } finally {
-        if (prepareEvent != null && componentsLogger != null) {
-          componentsLogger.logPerfEvent(prepareEvent);
+        if (isTracing) {
+          ComponentsSystrace.endSection();
         }
-
-        if (componentPrepareTraceIdentifier != null) {
-          endTrace(componentPrepareTraceIdentifier);
+        if (traceId != null) {
+          endTrace(traceId);
         }
-      }
-
-      if (isTracing) {
-        // end of prepare
-        ComponentsSystrace.endSection();
       }
     }
 
     // If the component is a LayoutSpec.
     else if (Component.isLayoutSpec(this)) {
 
-      final RenderResult renderResult =
-          render(resolveStateContext, c, parentWidthSpec, parentHeightSpec);
+      if (traceId != null) {
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
+        beginTrace(
+            traceId,
+            LithoDebugEvent.ComponentRendered,
+            String.valueOf(resolveContext.getTreeId()),
+            attributes);
+      }
+
+      final RenderResult renderResult;
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("render:" + getSimpleName());
+      }
+
+      try {
+        renderResult = render(resolveContext, c, parentWidthSpec, parentHeightSpec);
+      } finally {
+        if (isTracing) {
+          // end of prepare
+          ComponentsSystrace.endSection();
+        }
+        if (traceId != null) {
+          endTrace(traceId);
+        }
+      }
+
       final Component root = renderResult.component;
 
       if (root != null) {
-        node = Resolver.resolve(resolveStateContext, c, root);
+        node = Resolver.resolve(resolveContext, c, root);
       } else {
         node = new NullNode();
       }
@@ -363,8 +360,8 @@ public abstract class SpecGeneratedComponent extends Component
     try {
       return acceptTriggerEventImpl(eventTrigger, eventState, params);
     } catch (Exception e) {
-      if (eventTrigger.mComponentContext != null) {
-        ComponentUtils.handle(eventTrigger.mComponentContext, e);
+      if (eventTrigger.getComponentContext() != null) {
+        ComponentUtils.handle(eventTrigger.getComponentContext(), e);
         return null;
       } else {
         throw e;
@@ -458,9 +455,47 @@ public abstract class SpecGeneratedComponent extends Component
    * @param accessibilityNode node to populate
    */
   protected void onPopulateAccessibilityNode(
+      final @Nullable ComponentContext c,
+      final View host,
+      final AccessibilityNodeInfoCompat accessibilityNode,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
+
+  /**
+   * Respond to an attempt to perform an AccessibilityAction on a virtual view.
+   *
+   * @param host host View containing the virtual view
+   * @param accessibilityNode node to populate
+   * @param virtualViewId ID of virtual view
+   * @param action ID of AccessibilityAction performed
+   * @param arguments a Bundle of arguments passed along with the AccessibilityAction
+   * @param interStagePropsContainer
+   */
+  protected boolean onPerformActionForVirtualView(
       final ComponentContext c,
       final View host,
       final AccessibilityNodeInfoCompat accessibilityNode,
+      final int virtualViewId,
+      final int action,
+      final @Nullable Bundle arguments,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    return false;
+  }
+
+  /**
+   * Respond to an attempt to perform an AccessibilityAction on a virtual view.
+   *
+   * @param host host View containing the virtual view
+   * @param accessibilityNode node to populate
+   * @param virtualViewId ID of virtual view
+   * @param hasFocus whether ther virtual view has focus
+   * @param interStagePropsContainer
+   */
+  protected void onVirtualViewKeyboardFocusChanged(
+      final ComponentContext c,
+      final View host,
+      final @Nullable AccessibilityNodeInfoCompat accessibilityNode,
+      final int virtualViewId,
+      final boolean hasFocus,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   /**
@@ -473,7 +508,7 @@ public abstract class SpecGeneratedComponent extends Component
    * @param interStagePropsContainer
    */
   protected void onPopulateExtraAccessibilityNode(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final AccessibilityNodeInfoCompat accessibilityNode,
       final int extraNodeIndex,
       final int componentBoundsX,
@@ -489,7 +524,7 @@ public abstract class SpecGeneratedComponent extends Component
    *     ExploreByTouchHelper#INVALID_ID}
    */
   protected int getExtraAccessibilityNodeAt(
-      final ComponentContext c,
+      final @Nullable ComponentContext c,
       final int x,
       final int y,
       final @Nullable InterStagePropsContainer InterStagePropsContainer) {
@@ -503,7 +538,8 @@ public abstract class SpecGeneratedComponent extends Component
    * @return the number of extra nodes
    */
   protected int getExtraAccessibilityNodesCount(
-      final ComponentContext c, final @Nullable InterStagePropsContainer interStagePropsContainer) {
+      final @Nullable ComponentContext c,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     return 0;
   }
 
@@ -519,9 +555,9 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
-  protected @Nullable TreeProps getTreePropsForChildren(
-      ComponentContext c, @Nullable TreeProps treeProps) {
-    return treeProps;
+  protected @Nullable TreePropContainer getTreePropContainerForChildren(
+      ComponentContext c, @Nullable TreePropContainer treePropContainer) {
+    return treePropContainer;
   }
 
   /**
@@ -540,7 +576,9 @@ public abstract class SpecGeneratedComponent extends Component
     return false;
   }
 
-  /** @return true if the Component is using state, false otherwise. */
+  /**
+   * @return true if the Component is using state, false otherwise.
+   */
   protected boolean hasState() {
     return false;
   }
@@ -572,7 +610,28 @@ public abstract class SpecGeneratedComponent extends Component
     return false;
   }
 
-  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
+  /**
+   * Whether this component will attempt to perform any AccessibilityActions on any virtual views
+   *
+   * @return true if the component implements {@link OnPerformActionForVirtualView} annotated method
+   */
+  protected boolean implementsOnPerformActionForVirtualView() {
+    return false;
+  }
+
+  /**
+   * Whether this component will attempt to change keyboard focus behavior for virtual views
+   *
+   * @return true if the component implements {@link OnVirtualViewKeyboardFocusChanged} annotated
+   *     method
+   */
+  protected boolean implementsKeyboardFocusChangeForVirtualViews() {
+    return false;
+  }
+
+  /**
+   * @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters.
+   */
   protected boolean isMountSizeDependent() {
     return false;
   }
@@ -708,7 +767,7 @@ public abstract class SpecGeneratedComponent extends Component
    * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
    * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
+  protected void populateTreePropContainer(@Nullable TreePropContainer parentTreePropContainer) {}
 
   protected @Nullable RenderData recordRenderData(
       ComponentContext c, @Nullable RenderData toRecycle) {
@@ -756,17 +815,19 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
-  public boolean isRecyclingDisabled() {
+  public boolean isPoolingDisabled() {
     return poolSize() == 0;
   }
 
   @Nullable
   @Override
-  public MountItemsPool.ItemPool createRecyclingPool() {
+  public MountItemsPool.ItemPool createRecyclingPool(int poolSize) {
     return onCreateMountContentPool();
   }
 
-  /** @return true if this component can be preallocated. */
+  /**
+   * @return true if this component can be preallocated.
+   */
   @Override
   public boolean canPreallocate() {
     return false;
@@ -777,10 +838,7 @@ public abstract class SpecGeneratedComponent extends Component
    */
   @Override
   public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new MountItemsPool.DefaultItemPool(
-        getPoolableContentType(),
-        poolSize(),
-        ComponentsConfiguration.getDefaultComponentsConfiguration().useSyncMountPools());
+    return new MountItemsPool.DefaultItemPool(getPoolableContentType(), poolSize());
   }
 
   @ThreadSafe
@@ -811,7 +869,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (mCommonProps == null) {
       return null;
     }
-    return mCommonProps.getCommonDynamicProps();
+    return mCommonProps.getOrCreateDynamicProps();
   }
 
   /**
@@ -820,7 +878,7 @@ public abstract class SpecGeneratedComponent extends Component
    * @see DynamicPropsManager
    */
   final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
-    return getOrCreateCommonProps().getOrCreateCommonDynamicProps();
+    return getOrCreateCommonProps().getOrCreateDynamicProps();
   }
 
   /**
@@ -856,8 +914,8 @@ public abstract class SpecGeneratedComponent extends Component
 
   public final boolean hasClickHandlerSet() {
     return mCommonProps != null
-        && mCommonProps.getNullableNodeInfo() != null
-        && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
+        && mCommonProps.getNodeInfo() != null
+        && mCommonProps.getNodeInfo().getClickHandler() != null;
   }
 
   @Override

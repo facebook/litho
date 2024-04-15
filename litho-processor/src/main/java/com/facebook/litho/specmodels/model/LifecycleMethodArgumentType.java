@@ -30,6 +30,18 @@ public class LifecycleMethodArgumentType {
   public static final LifecycleMethodArgumentType INTER_STAGE_PROPS_CONTAINER =
       new LifecycleMethodArgumentType(ClassNames.INTER_STAGE_PROPS_CONTAINER);
 
+  public static final LifecycleMethodArgumentType ACCESSIBILITY_NODE =
+      new LifecycleMethodArgumentType(ClassNames.ACCESSIBILITY_NODE);
+
+  public static final LifecycleMethodArgumentType VIEW =
+      new LifecycleMethodArgumentType(ClassNames.VIEW);
+
+  public static final LifecycleMethodArgumentType BUNDLE =
+      new LifecycleMethodArgumentType(ClassNames.BUNDLE);
+
+  public static final LifecycleMethodArgumentType BOOLEAN =
+      new LifecycleMethodArgumentType(TypeName.BOOLEAN);
+
   public final TypeName type;
   public final @Nullable String argumentName;
 

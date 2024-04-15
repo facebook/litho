@@ -14,7 +14,6 @@ load(
     "LITHO_SECTIONS_CONFIG_TARGET",
     "LITHO_SECTIONS_PROCESSOR_TARGET",
     "LITHO_SECTIONS_TARGET",
-    "LITHO_UTILS_TARGET",
     "LITHO_WIDGET_TARGET",
     "litho_android_library",
     "make_dep_path",
@@ -45,7 +44,6 @@ litho_android_library(
         LITHO_SECTIONS_CONFIG_TARGET,
         LITHO_SECTIONS_TARGET,
         LITHO_PERF_LOGGER,
-        LITHO_UTILS_TARGET,
         LITHO_WIDGET_TARGET,
     ],
 )

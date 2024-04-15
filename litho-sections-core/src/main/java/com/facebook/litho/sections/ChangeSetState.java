@@ -481,13 +481,17 @@ public class ChangeSetState {
     return mChangeSet;
   }
 
-  /** @return the {@link Section} that was used as current root for this ChangeSet computation. */
+  /**
+   * @return the {@link Section} that was used as current root for this ChangeSet computation.
+   */
   @Nullable
   Section getCurrentRoot() {
     return mCurrentRoot;
   }
 
-  /** @return the {@link Section} that was used as new root for this ChangeSet computation. */
+  /**
+   * @return the {@link Section} that was used as new root for this ChangeSet computation.
+   */
   @Nullable
   Section getNewRoot() {
     return mNewRoot;

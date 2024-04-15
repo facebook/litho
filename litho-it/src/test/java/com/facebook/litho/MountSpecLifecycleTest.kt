@@ -17,6 +17,8 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.exactly
@@ -322,8 +324,10 @@ class MountSpecLifecycleTest {
     val looper = ShadowLooper.getLooperForThread(Thread.currentThread())
     val tree =
         ComponentTree.create(legacyLithoViewRule.context)
-            .shouldPreallocateMountContentPerMountSpec(true)
-            .preAllocateMountContentHandler(RunnableHandler.DefaultHandler(looper))
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(
+                    preAllocationHandler =
+                        PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
             .build()
     legacyLithoViewRule.useComponentTree(tree)
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -347,8 +351,10 @@ class MountSpecLifecycleTest {
     val looper = ShadowLooper.getLooperForThread(Thread.currentThread())
     val tree =
         ComponentTree.create(legacyLithoViewRule.context)
-            .shouldPreallocateMountContentPerMountSpec(true)
-            .preAllocateMountContentHandler(RunnableHandler.DefaultHandler(looper))
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(
+                    preAllocationHandler =
+                        PreAllocationHandler.Custom(RunnableHandler.DefaultHandler(looper))))
             .build()
     legacyLithoViewRule.useComponentTree(tree)
     val info: List<StepInfo> = ArrayList<StepInfo>()
@@ -365,7 +371,7 @@ class MountSpecLifecycleTest {
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_ATTACHED)
-    assertThat(MountItemsPool.getMountItemPools().size)
+    assertThat(MountItemsPool.mountItemPools.size)
         .describedAs("Should contain only 1 content pool")
         .isEqualTo(1)
   }
@@ -422,8 +428,7 @@ class MountSpecLifecycleTest {
             .child(
                 SimpleStateUpdateEmulator.create(legacyLithoViewRule.context).caller(stateUpdater))
             .build()
-    legacyLithoViewRule.useComponentTree(
-        ComponentTree.create(legacyLithoViewRule.context).isReconciliationEnabled(false).build())
+    legacyLithoViewRule.useComponentTree(ComponentTree.create(legacyLithoViewRule.context).build())
     legacyLithoViewRule.setRoot(root).attachToWindow().measure().layout()
     val mountDelegateTarget = legacyLithoViewRule.lithoView.getMountDelegateTarget()
     assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1)
@@ -482,8 +487,9 @@ class MountSpecLifecycleTest {
     // tree so that new ids match the current one
     val newComponentTree =
         ComponentTree.create(c, newComponent)
-            .overrideRenderUnitIdMap(initialComponentTree)
-            .overrideComponentTreeId(initialComponentTree.mId)
+            .overrideRenderUnitIdMap(
+                initialComponentTree.lithoConfiguration.renderUnitIdGenerator,
+                initialComponentTree.mId)
             .build()
     lithoView.componentTree = newComponentTree
 

@@ -28,7 +28,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
-import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 

@@ -24,6 +24,7 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import org.robolectric.shadows.ShadowLooper;
@@ -173,9 +174,11 @@ public final class StateUpdatesTestHelper {
     Whitebox.invokeMethod(component, "setKey", "bogusKeyForTest");
     final ComponentTree componentTree =
         ComponentTree.create(context, component)
-            .incrementalMount(incrementalMountEnabled)
-            .visibilityProcessing(visibilityProcessingEnabled)
-            .layoutDiffing(false)
+            .componentsConfiguration(
+                ComponentsConfiguration.create(context.mLithoConfiguration.componentsConfig)
+                    .incrementalMountEnabled(incrementalMountEnabled)
+                    .enableVisibilityProcessing(visibilityProcessingEnabled)
+                    .build())
             .build();
 
     final LithoView lithoView = new LithoView(context);

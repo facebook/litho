@@ -1,0 +1,24 @@
+load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET",
+    "LITHO_PROGUARD_ANNOTATIONS_TARGET",
+    "fb_android_library",
+)
+
+fb_android_library(
+    name = "utils",
+    srcs = glob(
+        ["src/main/java/**/*.kt"],
+    ),
+    autoglob = False,
+    feature = FBApp_UIFrameworks_Litho,
+    labels = [],
+    provided_deps = [
+        LITHO_PROGUARD_ANNOTATIONS_TARGET,
+        LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)

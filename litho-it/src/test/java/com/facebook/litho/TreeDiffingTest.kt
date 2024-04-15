@@ -56,7 +56,7 @@ class TreeDiffingTest {
   @Rule
   val legacyLithoViewRule =
       LegacyLithoViewRule(
-          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Before
   @Throws(Exception::class)
@@ -67,26 +67,7 @@ class TreeDiffingTest {
   }
 
   @Test
-  fun testDiffTreeDisabled() {
-    val component: Component =
-        object : InlineLayoutSpec() {
-          override fun onCreateLayout(c: ComponentContext): Component {
-            return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(Column.create(c).child(TestDrawableComponent.create(c)))
-                .build()
-          }
-        }
-    val layoutState =
-        calculateLayoutState(
-            legacyLithoViewRule.componentTree.context, component, exactly(350), exactly(200))
-
-    // Check diff tree is null.
-    assertThat(layoutState.diffTree).isNull()
-  }
-
-  @Test
-  fun testDiffTreeEnabled() {
+  fun testLayoutStateDiffing() {
     val component: Component =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component {
@@ -115,8 +96,8 @@ class TreeDiffingTest {
     val component1: Component = Text.create(c).text("hello-world").build()
     legacyLithoViewRule.setRoot(component1).layout().measure()
     val result = legacyLithoViewRule.currentRootNode
-    assertThat(result?.width).isEqualTo(diffNode?.lastMeasuredWidth?.toInt())
-    assertThat(result?.height).isEqualTo(diffNode?.lastMeasuredHeight?.toInt())
+    assertThat(result?.width).isEqualTo(diffNode?.lastMeasuredWidth)
+    assertThat(result?.height).isEqualTo(diffNode?.lastMeasuredHeight)
   }
 
   @Test
@@ -148,8 +129,8 @@ class TreeDiffingTest {
             .build()
     legacyLithoViewRule.setRoot(component1).layout().measure()
     val result = legacyLithoViewRule.currentRootNode
-    assertThat(result?.getChildAt(0)?.areCachedMeasuresValid()).isTrue
-    assertThat(result?.getChildAt(1)?.areCachedMeasuresValid()).isTrue
+    assertThat(result?.getChildAt(0)?.cachedMeasuresValid).isTrue
+    assertThat(result?.getChildAt(1)?.cachedMeasuresValid).isTrue
   }
 
   @Test
@@ -168,8 +149,8 @@ class TreeDiffingTest {
             .build()
     legacyLithoViewRule.setRoot(component1).layout().measure()
     val result = legacyLithoViewRule.currentRootNode
-    assertThat(result?.getChildAt(0)?.areCachedMeasuresValid()).isTrue
-    assertThat(result?.getChildAt(1)?.areCachedMeasuresValid()).isFalse
+    assertThat(result?.getChildAt(0)?.cachedMeasuresValid).isTrue
+    assertThat(result?.getChildAt(1)?.cachedMeasuresValid).isFalse
   }
 
   @Test
@@ -205,9 +186,10 @@ class TreeDiffingTest {
             exactly(350),
             exactly(200),
             prevLayoutState)
-    assertThat(layoutState.mountableOutputCount).isEqualTo(prevLayoutState.mountableOutputCount)
+    assertThat(layoutState.getMountableOutputCount())
+        .isEqualTo(prevLayoutState.getMountableOutputCount())
     var i = 0
-    val count = prevLayoutState.mountableOutputCount
+    val count = prevLayoutState.getMountableOutputCount()
     while (i < count) {
       assertThat(layoutState.getMountableOutputAt(i).renderUnit.id)
           .isEqualTo(prevLayoutState.getMountableOutputAt(i).renderUnit.id)
@@ -250,9 +232,10 @@ class TreeDiffingTest {
             exactly(200),
             prevLayoutState)
     Assert.assertNotEquals(
-        prevLayoutState.mountableOutputCount.toLong(), layoutState.mountableOutputCount.toLong())
+        prevLayoutState.getMountableOutputCount().toLong(),
+        layoutState.getMountableOutputCount().toLong())
     var i = 0
-    val count = prevLayoutState.mountableOutputCount
+    val count = prevLayoutState.getMountableOutputCount()
     while (i < count) {
       assertThat(layoutState.getMountableOutputAt(i).renderUnit.id)
           .describedAs("Output $i")
@@ -262,7 +245,7 @@ class TreeDiffingTest {
   }
 
   private fun assertCachedMeasurementsNotDefined(node: LithoLayoutResult) {
-    assertThat(node.areCachedMeasuresValid()).isFalse
+    assertThat(node.cachedMeasuresValid).isFalse
   }
 
   private fun checkAllComponentsHaveMeasureCache(node: LithoLayoutResult) {
@@ -360,10 +343,10 @@ class TreeDiffingTest {
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
     legacyLithoViewRule.setRoot(component2)
     val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
-    assertThat(secondState?.mountableOutputCount).isEqualTo(4)
+    assertThat(secondState?.getMountableOutputCount()).isEqualTo(4)
     legacyLithoViewRule.setRoot(component3)
     val thirdState = legacyLithoViewRule.componentTree.mainThreadLayoutState
-    assertThat(thirdState?.mountableOutputCount).isEqualTo(4)
+    assertThat(thirdState?.getMountableOutputCount()).isEqualTo(4)
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState?.getMountableOutputAt(2))))
@@ -418,7 +401,7 @@ class TreeDiffingTest {
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
     legacyLithoViewRule.setRoot(component2)
     val secondState = legacyLithoViewRule.componentTree.mainThreadLayoutState
-    assertThat(6).isEqualTo(secondState?.mountableOutputCount)
+    assertThat(6).isEqualTo(secondState?.getMountableOutputCount())
     assertThat(MountSpecLithoRenderUnit.STATE_DIRTY)
         .isEqualTo(
             MountSpecLithoRenderUnit.getUpdateState(
@@ -663,8 +646,7 @@ class TreeDiffingTest {
     ): LayoutState {
       val result =
           ResolveTreeFuture.resolve(context, component, TreeState(), -1, -1, null, null, null, null)
-      return LayoutTreeFuture.layout(
-          result, widthSpec, heightSpec, -1, -1, false, null, null, null, null)
+      return LayoutTreeFuture.layout(result, widthSpec, heightSpec, -1, -1, null, null, null, null)
     }
 
     private fun calculateLayoutStateWithDiffing(
@@ -683,7 +665,6 @@ class TreeDiffingTest {
           heightSpec,
           -1,
           -1,
-          true,
           previousLayoutState,
           previousLayoutState?.diffTree,
           null,
@@ -695,7 +676,7 @@ class TreeDiffingTest {
           .isEqualTo(
               MountSpecLithoRenderUnit.getUpdateState(
                   requireNotNull(layoutState?.getMountableOutputAt(0))))
-      for (i in 1 until (layoutState?.mountableOutputCount ?: 0)) {
+      for (i in 1 until (layoutState?.getMountableOutputCount() ?: 0)) {
         assertThat(state)
             .isEqualTo(
                 MountSpecLithoRenderUnit.getUpdateState(
@@ -704,18 +685,34 @@ class TreeDiffingTest {
     }
 
     private fun assertCachedMeasurementsDefined(node: LithoLayoutResult) {
-      val diffHeight: Float = node.diffNode?.lastMeasuredHeight ?: -1f
-      val diffWidth: Float = node.diffNode?.lastMeasuredWidth ?: -1f
-      assertThat(diffHeight != -1f).isTrue
-      assertThat(diffWidth != -1f).isTrue
-      assertThat(node.areCachedMeasuresValid()).isTrue
+      val diffHeight: Int = node.diffNode?.lastMeasuredHeight ?: -1
+      val diffWidth: Int = node.diffNode?.lastMeasuredWidth ?: -1
+      assertThat(diffHeight != -1).isTrue
+      assertThat(diffWidth != -1).isTrue
+      assertThat(node.cachedMeasuresValid).isTrue
     }
 
     private fun createNode(component: Component): RenderTreeNode {
       val unit: LithoRenderUnit =
           MountSpecLithoRenderUnit.create(
               0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN, null)
-      return create(unit, Rect(), LithoLayoutData(0, 0, 0, 0, null, null), null)
+      return create(
+          unit,
+          Rect(),
+          LithoLayoutData(
+              0,
+              0,
+              0,
+              0,
+              null,
+              null,
+              if (component is SpecGeneratedComponent) {
+                component.isMountSizeDependent
+              } else {
+                false
+              },
+              null),
+          null)
     }
   }
 }

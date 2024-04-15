@@ -39,7 +39,7 @@ class NodeInfoTest {
 
   @Test
   fun testClickHandler() {
-    val clickHandler = EventHandler<ClickEvent>(null, 1)
+    val clickHandler = EventHandlerTestUtil.create<ClickEvent>(1, null)
     nodeInfo.clickHandler = clickHandler
     assertThat(clickHandler).isSameAs(nodeInfo.clickHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -48,7 +48,7 @@ class NodeInfoTest {
 
   @Test
   fun testTouchHandler() {
-    val touchHandler = EventHandler<TouchEvent>(null, 1)
+    val touchHandler = EventHandlerTestUtil.create<TouchEvent>(1, null)
     nodeInfo.touchHandler = touchHandler
     assertThat(touchHandler).isSameAs(nodeInfo.touchHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -57,7 +57,7 @@ class NodeInfoTest {
 
   @Test
   fun testFocusChangeHandler() {
-    val focusChangeHandler = EventHandler<FocusChangedEvent>(null, 1)
+    val focusChangeHandler = EventHandlerTestUtil.create<FocusChangedEvent>(1, null)
     nodeInfo.focusChangeHandler = focusChangeHandler
     assertThat(focusChangeHandler).isSameAs(nodeInfo.focusChangeHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -66,7 +66,7 @@ class NodeInfoTest {
 
   @Test
   fun testInterceptTouchHandler() {
-    val interceptTouchHandler = EventHandler<InterceptTouchEvent>(null, 1)
+    val interceptTouchHandler = EventHandlerTestUtil.create<InterceptTouchEvent>(1, null)
     nodeInfo.interceptTouchHandler = interceptTouchHandler
     assertThat(interceptTouchHandler).isSameAs(nodeInfo.interceptTouchHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -115,7 +115,7 @@ class NodeInfoTest {
 
   @Test
   fun testDispatchPopulateAccessibilityEventHandler() {
-    val handler = EventHandler<DispatchPopulateAccessibilityEventEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<DispatchPopulateAccessibilityEventEvent>(1, null)
     nodeInfo.dispatchPopulateAccessibilityEventHandler = handler
     assertThat(handler).isSameAs(nodeInfo.dispatchPopulateAccessibilityEventHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -124,7 +124,7 @@ class NodeInfoTest {
 
   @Test
   fun testOnInitializeAccessibilityEventHandler() {
-    val handler = EventHandler<OnInitializeAccessibilityEventEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<OnInitializeAccessibilityEventEvent>(1, null)
     nodeInfo.onInitializeAccessibilityEventHandler = handler
     assertThat(handler).isSameAs(nodeInfo.onInitializeAccessibilityEventHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -133,7 +133,7 @@ class NodeInfoTest {
 
   @Test
   fun testOnPopulateAccessibilityEventHandler() {
-    val handler = EventHandler<OnPopulateAccessibilityEventEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<OnPopulateAccessibilityEventEvent>(1, null)
     nodeInfo.onPopulateAccessibilityEventHandler = handler
     assertThat(handler).isSameAs(nodeInfo.onPopulateAccessibilityEventHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -142,7 +142,7 @@ class NodeInfoTest {
 
   @Test
   fun testOnPopulateAccessibilityNodeHandler() {
-    val handler = EventHandler<OnPopulateAccessibilityNodeEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<OnPopulateAccessibilityNodeEvent>(1, null)
     nodeInfo.onPopulateAccessibilityNodeHandler = handler
     assertThat(handler).isSameAs(nodeInfo.onPopulateAccessibilityNodeHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -151,7 +151,7 @@ class NodeInfoTest {
 
   @Test
   fun testOnInitializeAccessibilityNodeInfoHandler() {
-    val handler = EventHandler<OnInitializeAccessibilityNodeInfoEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<OnInitializeAccessibilityNodeInfoEvent>(1, null)
     nodeInfo.onInitializeAccessibilityNodeInfoHandler = handler
     assertThat(handler).isSameAs(nodeInfo.onInitializeAccessibilityNodeInfoHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -160,7 +160,7 @@ class NodeInfoTest {
 
   @Test
   fun testOnRequestSendAccessibilityEventHandler() {
-    val handler = EventHandler<OnRequestSendAccessibilityEventEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<OnRequestSendAccessibilityEventEvent>(1, null)
     nodeInfo.onRequestSendAccessibilityEventHandler = handler
     assertThat(handler).isSameAs(nodeInfo.onRequestSendAccessibilityEventHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -169,7 +169,7 @@ class NodeInfoTest {
 
   @Test
   fun testPerformAccessibilityActionHandler() {
-    val handler = EventHandler<PerformAccessibilityActionEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<PerformAccessibilityActionEvent>(1, null)
     nodeInfo.performAccessibilityActionHandler = handler
     assertThat(handler).isSameAs(nodeInfo.performAccessibilityActionHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -178,7 +178,7 @@ class NodeInfoTest {
 
   @Test
   fun testSendAccessibilityEventHandler() {
-    val handler = EventHandler<SendAccessibilityEventEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<SendAccessibilityEventEvent>(1, null)
     nodeInfo.sendAccessibilityEventHandler = handler
     assertThat(handler).isSameAs(nodeInfo.sendAccessibilityEventHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -187,7 +187,7 @@ class NodeInfoTest {
 
   @Test
   fun testSendAccessibilityEventUncheckedHandler() {
-    val handler = EventHandler<SendAccessibilityEventUncheckedEvent>(null, 1)
+    val handler = EventHandlerTestUtil.create<SendAccessibilityEventUncheckedEvent>(1, null)
     nodeInfo.sendAccessibilityEventUncheckedHandler = handler
     assertThat(handler).isSameAs(nodeInfo.sendAccessibilityEventUncheckedHandler)
     nodeInfo.copyInto(updatedNodeInfo)
@@ -195,20 +195,38 @@ class NodeInfoTest {
   }
 
   @Test
+  fun testOnPerformActionForVirtualViewHandler() {
+    val handler = EventHandlerTestUtil.create<PerformActionForVirtualViewEvent>(1, null)
+    nodeInfo.onPerformActionForVirtualViewHandler = handler
+    assertThat(handler).isSameAs(nodeInfo.onPerformActionForVirtualViewHandler)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(handler).isSameAs(updatedNodeInfo.onPerformActionForVirtualViewHandler)
+  }
+
+  @Test
+  fun testOnVirtualViewKeyboardFocusChangedHandler() {
+    val handler = EventHandlerTestUtil.create<VirtualViewKeyboardFocusChangedEvent>(1, null)
+    nodeInfo.onVirtualViewKeyboardFocusChangedHandler = handler
+    assertThat(handler).isSameAs(nodeInfo.onVirtualViewKeyboardFocusChangedHandler)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(handler).isSameAs(updatedNodeInfo.onVirtualViewKeyboardFocusChangedHandler)
+  }
+
+  @Test
   fun testClickHandlerFlag() {
-    nodeInfo.clickHandler = EventHandler(null, 1)
+    nodeInfo.clickHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_CLICK_HANDLER_IS_SET")
   }
 
   @Test
   fun testLongClickHandlerFlag() {
-    nodeInfo.longClickHandler = EventHandler(null, 1)
+    nodeInfo.longClickHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_LONG_CLICK_HANDLER_IS_SET")
   }
 
   @Test
   fun testFocusChangeHandlerFlag() {
-    nodeInfo.focusChangeHandler = EventHandler(null, 1)
+    nodeInfo.focusChangeHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_FOCUS_CHANGE_HANDLER_IS_SET")
   }
 
@@ -216,6 +234,12 @@ class NodeInfoTest {
   fun testContentDescriptionFlag() {
     nodeInfo.contentDescription = "test"
     testFlagIsSetThenClear(nodeInfo, "PFLAG_CONTENT_DESCRIPTION_IS_SET")
+  }
+
+  @Test
+  fun testTooltipTextFlag() {
+    nodeInfo.tooltipText = "test"
+    testFlagIsSetThenClear(nodeInfo, "PFLAG_TOOLTIP_TEXT_IS_SET")
   }
 
   @Test
@@ -232,55 +256,55 @@ class NodeInfoTest {
 
   @Test
   fun testDispatchPopulateAccessibilityEventHandlerFlag() {
-    nodeInfo.dispatchPopulateAccessibilityEventHandler = EventHandler(null, 1)
+    nodeInfo.dispatchPopulateAccessibilityEventHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET")
   }
 
   @Test
   fun testOnInitializeAccessibilityEventHandlerFlag() {
-    nodeInfo.onInitializeAccessibilityEventHandler = EventHandler(null, 1)
+    nodeInfo.onInitializeAccessibilityEventHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_ON_INITIALIZE_ACCESSIBILITY_EVENT_HANDLER_IS_SET")
   }
 
   @Test
   fun testOnPopulateAccessibilityEventHandlerFlag() {
-    nodeInfo.onPopulateAccessibilityEventHandler = EventHandler(null, 1)
+    nodeInfo.onPopulateAccessibilityEventHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET")
   }
 
   @Test
   fun testOnPopulateAccessibilityNodeHandlerFlag() {
-    nodeInfo.onPopulateAccessibilityNodeHandler = EventHandler(null, 1)
+    nodeInfo.onPopulateAccessibilityNodeHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET")
   }
 
   @Test
   fun testOnInitializeAccessibilityNodeInfoHandlerFlag() {
-    nodeInfo.onInitializeAccessibilityNodeInfoHandler = EventHandler(null, 1)
+    nodeInfo.onInitializeAccessibilityNodeInfoHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_ON_INITIALIZE_ACCESSIBILITY_NODE_INFO_HANDLER_IS_SET")
   }
 
   @Test
   fun testOnRequestSendAccessibilityEventHandlerFlag() {
-    nodeInfo.onRequestSendAccessibilityEventHandler = EventHandler(null, 1)
+    nodeInfo.onRequestSendAccessibilityEventHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET")
   }
 
   @Test
   fun testPerformAccessibilityActionHandlerFlag() {
-    nodeInfo.performAccessibilityActionHandler = EventHandler(null, 1)
+    nodeInfo.performAccessibilityActionHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_PERFORM_ACCESSIBILITY_ACTION_HANDLER_IS_SET")
   }
 
   @Test
   fun testSendAccessibilityEventHandlerFlag() {
-    nodeInfo.sendAccessibilityEventHandler = EventHandler(null, 1)
+    nodeInfo.sendAccessibilityEventHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET")
   }
 
   @Test
   fun testSendAccessibilityEventUncheckedHandlerFlag() {
-    nodeInfo.sendAccessibilityEventUncheckedHandler = EventHandler(null, 1)
+    nodeInfo.sendAccessibilityEventUncheckedHandler = EventHandlerTestUtil.create(1, null)
     testFlagIsSetThenClear(nodeInfo, "PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET")
   }
 
@@ -340,6 +364,30 @@ class NodeInfoTest {
     assertThat(nodeInfo.enabledState).isEqualTo(NodeInfo.ENABLED_SET_FALSE)
   }
 
+  @Test
+  fun testKeyboardNavigationClusterTrue() {
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_UNSET)
+    nodeInfo.setKeyboardNavigationCluster(true)
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(updatedNodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_TRUE)
+  }
+
+  @Test
+  fun testKeyboardNavigationClusterFalse() {
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_UNSET)
+    nodeInfo.setKeyboardNavigationCluster(false)
+    assertThat(nodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE)
+    nodeInfo.copyInto(updatedNodeInfo)
+    assertThat(updatedNodeInfo.keyboardNavigationClusterState)
+        .isEqualTo(NodeInfo.KEYBOARD_NAVIGATION_CLUSTER_SET_FALSE)
+  }
+
   companion object {
     private fun testFlagIsSetThenClear(nodeInfo: NodeInfo?, flagName: String) {
       assertThat(isFlagSet(nodeInfo, flagName)).isTrue
@@ -348,20 +396,20 @@ class NodeInfoTest {
     }
 
     private fun isFlagSet(nodeInfo: NodeInfo?, flagName: String): Boolean {
-      val flagPosition = Whitebox.getInternalState<Int>(NodeInfo::class.java, flagName)
-      val flags = Whitebox.getInternalState<Int>(nodeInfo, "mPrivateFlags")
-      return flags and flagPosition != 0
+      val flagPosition = Whitebox.getInternalState<Long>(NodeInfo::class.java, flagName)
+      val flags = nodeInfo?.flags ?: 0
+      return flags and flagPosition != 0L
     }
 
     private fun clearFlag(nodeInfo: NodeInfo?, flagName: String) {
-      val flagPosition = Whitebox.getInternalState<Int>(NodeInfo::class.java, flagName)
-      var flags = Whitebox.getInternalState<Int>(nodeInfo, "mPrivateFlags")
+      val flagPosition = Whitebox.getInternalState<Long>(NodeInfo::class.java, flagName)
+      var flags = nodeInfo?.flags ?: 0
       flags = flags and flagPosition.inv()
-      Whitebox.setInternalState(nodeInfo, "mPrivateFlags", flags)
+      Whitebox.setInternalState(nodeInfo, "flags", flags)
     }
 
     private fun assertEmptyFlags(nodeInfo: NodeInfo?) {
-      assertThat(Whitebox.getInternalState<Any>(nodeInfo, "mPrivateFlags") as Int == 0).isTrue
+      assertThat(nodeInfo?.flags as Long == 0L).isTrue
     }
   }
 }

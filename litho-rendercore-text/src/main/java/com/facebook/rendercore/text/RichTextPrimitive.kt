@@ -35,12 +35,20 @@ fun RichTextPrimitive(id: Long, text: CharSequence, style: TextStyle): Primitive
   return Primitive(
       layoutBehavior = RichTextLayoutBehavior(text, style),
       mountBehavior =
-          MountBehavior(id = id, contentAllocator = ViewAllocator { c -> RCTextView(c) }) {
-            bindWithLayoutData<TextLayout>(Unit) { content, textLayout ->
-              content.mount(textLayout)
-              onUnbind { content.unmount() }
-            }
-          })
+          MountBehavior(
+              id = id,
+              contentAllocator =
+                  ViewAllocator(
+                      canPreallocate = RichTextPrimitiveConfig.canPreallocation,
+                      poolSize = RichTextPrimitiveConfig.poolSize,
+                  ) { c ->
+                    RCTextView(c)
+                  }) {
+                bindWithLayoutData<TextLayout>(Unit) { content, textLayout ->
+                  content.mount(textLayout)
+                  onUnbind { content.unmount() }
+                }
+              })
 }
 
 private class RichTextLayoutBehavior(val text: CharSequence, val style: TextStyle) :
@@ -59,4 +67,9 @@ private class RichTextLayoutBehavior(val text: CharSequence, val style: TextStyl
         height = max(size.height(), sizeConstraints.minHeight),
         layoutData = textLayout)
   }
+}
+
+object RichTextPrimitiveConfig {
+  val canPreallocation: Boolean = true
+  val poolSize: Int = 10
 }

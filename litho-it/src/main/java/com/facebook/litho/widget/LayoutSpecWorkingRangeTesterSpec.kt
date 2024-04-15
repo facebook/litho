@@ -22,12 +22,15 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEnteredRange
 import com.facebook.litho.annotations.OnRegisterRanges
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 
+@ExcuseMySpec(reason = Reason.USES_WORKING_RANGES)
 @LayoutSpec
 internal object LayoutSpecWorkingRangeTesterSpec {
 

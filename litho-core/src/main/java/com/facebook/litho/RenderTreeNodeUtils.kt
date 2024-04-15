@@ -24,7 +24,7 @@ import com.facebook.rendercore.RenderTreeNode
 fun create(
     unit: LithoRenderUnit,
     bounds: Rect,
-    layoutData: LithoLayoutData?,
-    parent: RenderTreeNode?
+    layoutData: LithoLayoutData? = null,
+    parent: RenderTreeNode? = null
 ): RenderTreeNode =
     RenderTreeNode(parent, unit, layoutData, bounds, null, parent?.childrenCount ?: 0)

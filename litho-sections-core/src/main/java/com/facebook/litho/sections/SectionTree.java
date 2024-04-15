@@ -19,6 +19,13 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.Stack;
+import static com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet.SET_ROOT_ASYNC;
+import static com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet.UPDATE_STATE_ASYNC;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Async;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Id;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.os.HandlerThread;
@@ -43,8 +50,9 @@ import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugInfo;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugListener;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
@@ -59,17 +67,16 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
-import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
+import kotlin.Unit;
 
 /**
  * Represents a tree of {@link Section} and manages their lifecycle. {@link SectionTree} takes a
@@ -141,7 +148,9 @@ public class SectionTree {
     /** Request focus on the item with the given id, plus some additional offset. */
     void requestFocusWithOffset(Object id, int offset);
 
-    /** @return whether this target supports applying change sets from a background thread. */
+    /**
+     * @return whether this target supports applying change sets from a background thread.
+     */
     boolean supportsBackgroundChangeSets();
 
     /** Notify this target that a new set of configurations is applied. */
@@ -159,7 +168,10 @@ public class SectionTree {
 
   private static final String EMPTY_STRING = "";
   private static final String INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE =
-      "Index out of bounds while applying a new section. This indicates a bad diff was sent to the RecyclerBinder. See https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception for more information. Debug info: ";
+      "Index out of bounds while applying a new section. This indicates a bad diff was sent to the"
+          + " RecyclerBinder. See"
+          + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception"
+          + " for more information. Debug info: ";
 
   @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
@@ -404,12 +416,17 @@ public class SectionTree {
     final @Nullable Integer traceId =
         DebugEventDispatcher.generateTraceIdentifier(DebugEvents.SET_ROOT);
     if (traceId != null) {
-      final Map<String, Object> attributes = new LinkedHashMap<>();
-      attributes.put(DebugEventAttribute.Id, hashCode());
-      attributes.put(
-          DebugEventAttribute.Name, (section != null ? section.getSimpleName() : "null"));
-      attributes.put(DebugEventAttribute.Async, mAsyncPropUpdates && !isFirstSetRoot);
-      DebugEventDispatcher.beginTrace(traceId, DebugEvents.SET_ROOT, "-1", attributes);
+      DebugEventDispatcher.beginTrace(
+          traceId,
+          DebugEvents.SET_ROOT,
+          "-1",
+          attributes -> {
+            attributes.put(Id, hashCode());
+            attributes.put(Name, (section != null ? section.getSimpleName() : "null"));
+            attributes.put(Async, mAsyncPropUpdates && !isFirstSetRoot);
+            attributes.put(Stack, LithoDebugEvent.generateStateTrace());
+            return Unit.INSTANCE;
+          });
     }
 
     try {
@@ -418,11 +435,10 @@ public class SectionTree {
             mChangesetDebug == null
                 ? null
                 : new ChangesetDebugInfo(
-                    ApplyNewChangeSet.SET_ROOT_ASYNC,
+                    SET_ROOT_ASYNC,
                     section.getSimpleName(),
                     Thread.currentThread().getStackTrace());
-        mCalculateChangeSetRunnable.ensurePosted(
-            ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
+        mCalculateChangeSetRunnable.ensurePosted(SET_ROOT_ASYNC, null, changesetDebugInfo);
       } else {
         final ChangesetDebugInfo changesetDebugInfo =
             mChangesetDebug == null
@@ -469,11 +485,8 @@ public class SectionTree {
         mChangesetDebug == null
             ? null
             : new ChangesetDebugInfo(
-                ApplyNewChangeSet.SET_ROOT_ASYNC,
-                section.getSimpleName(),
-                Thread.currentThread().getStackTrace());
-    mCalculateChangeSetRunnable.ensurePosted(
-        ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
+                SET_ROOT_ASYNC, section.getSimpleName(), Thread.currentThread().getStackTrace());
+    mCalculateChangeSetRunnable.ensurePosted(SET_ROOT_ASYNC, null, changesetDebugInfo);
   }
 
   /**
@@ -1027,12 +1040,8 @@ public class SectionTree {
           mChangesetDebug == null
               ? null
               : new ChangesetDebugInfo(
-                  ApplyNewChangeSet.UPDATE_STATE_ASYNC,
-                  attribution,
-                  key,
-                  Thread.currentThread().getStackTrace());
-      mCalculateChangeSetRunnable.ensurePosted(
-          ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution, changesetDebugInfo);
+                  UPDATE_STATE_ASYNC, attribution, key, Thread.currentThread().getStackTrace());
+      mCalculateChangeSetRunnable.ensurePosted(UPDATE_STATE_ASYNC, attribution, changesetDebugInfo);
 
       LithoStats.incrementSectionStateUpdateAsyncCount();
     }
@@ -1105,7 +1114,8 @@ public class SectionTree {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
           STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD,
-          "Large number of state updates detected which indicates an infinite loop leading to unresponsive apps");
+          "Large number of state updates detected which indicates an infinite loop leading to"
+              + " unresponsive apps");
     }
   }
 
@@ -1135,16 +1145,18 @@ public class SectionTree {
     final @Nullable Integer traceId =
         DebugEventDispatcher.generateTraceIdentifier(DebugEvents.CALCULATE_CHANGE_SET);
     if (traceId != null) {
-      final Map<String, Object> attributes = new LinkedHashMap<>();
-      attributes.put(DebugEventAttribute.Id, hashCode());
-      attributes.put(
-          DebugEventAttribute.source,
-          SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
-      attributes.put(
-          DebugEventAttribute.Async,
-          source == ApplyNewChangeSet.SET_ROOT_ASYNC
-              || source == ApplyNewChangeSet.UPDATE_STATE_ASYNC);
-      DebugEventDispatcher.beginTrace(traceId, DebugEvents.CALCULATE_CHANGE_SET, "-1", attributes);
+
+      DebugEventDispatcher.beginTrace(
+          traceId,
+          DebugEvents.CALCULATE_CHANGE_SET,
+          "-1",
+          attributes -> {
+            attributes.put(Id, hashCode());
+            attributes.put(Source, SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
+            attributes.put(Async, source == SET_ROOT_ASYNC || source == UPDATE_STATE_ASYNC);
+            attributes.put(Stack, LithoDebugEvent.generateStateTrace());
+            return Unit.INSTANCE;
+          });
     }
 
     if (SectionsDebug.ENABLED) {
@@ -1281,9 +1293,9 @@ public class SectionTree {
       }
 
       final LithoStartupLogger startupLogger =
-          mContext.getTreeProps() == null
+          mContext.getTreePropContainer() == null
               ? null
-              : mContext.getTreeProps().get(LithoStartupLogger.class);
+              : mContext.getTreePropContainer().get(LithoStartupLogger.class);
       if (LithoStartupLogger.isEnabled(startupLogger)) {
         startupLogger.markPoint(LithoStartupLogger.CHANGESET_CALCULATION, LithoStartupLogger.END);
       }
@@ -1750,12 +1762,16 @@ public class SectionTree {
         DebugEventDispatcher.generateTraceIdentifier(DebugEvents.CREATE_CHILDREN);
 
     if (traceId != null) {
-      final Map<String, Object> attributes = new LinkedHashMap<>();
-      attributes.put(
-          DebugEventAttribute.Id,
-          context.getSectionTree() != null ? context.getSectionTree().hashCode() : -1);
-      attributes.put(DebugEventAttribute.Name, nextRoot.getSimpleName());
-      DebugEventDispatcher.beginTrace(traceId, DebugEvents.CREATE_CHILDREN, "-1", attributes);
+      DebugEventDispatcher.beginTrace(
+          traceId,
+          DebugEvents.CREATE_CHILDREN,
+          "-1",
+          attributes -> {
+            int id = context.getSectionTree() != null ? context.getSectionTree().hashCode() : -1;
+            attributes.put(Id, id);
+            attributes.put(Name, nextRoot.getSimpleName());
+            return Unit.INSTANCE;
+          });
     }
 
     try {
@@ -1766,7 +1782,7 @@ public class SectionTree {
 
       final boolean isNextRootDiffSection = nextRoot.isDiffSectionSpec();
       if (!isNextRootDiffSection) {
-        nextRoot.populateTreeProps(context.getTreeProps());
+        nextRoot.populateTreePropContainer(context.getTreePropContainer());
       }
 
       final boolean shouldTransferState =
@@ -1817,8 +1833,9 @@ public class SectionTree {
                 ? null
                 : Section.acquireChildrenMap(currentRoot);
 
-        final TreeProps parentTreeProps = context.getTreeProps();
-        context.setTreeProps(nextRoot.getTreePropsForChildren(context, parentTreeProps));
+        final TreePropContainer parentTreePropContainer = context.getTreePropContainer();
+        context.setTreePropContainer(
+            nextRoot.getTreePropContainerForChildren(context, parentTreePropContainer));
 
         nextRoot.setChildren(nextRoot.createChildren(nextRoot.getScopedContext()));
 
@@ -1854,9 +1871,9 @@ public class SectionTree {
               sectionTreeTag);
         }
 
-        final TreeProps contextTreeProps = context.getTreeProps();
-        if (contextTreeProps != parentTreeProps) {
-          context.setTreeProps(parentTreeProps);
+        final TreePropContainer contextTreeProps = context.getTreePropContainer();
+        if (contextTreeProps != parentTreePropContainer) {
+          context.setTreePropContainer(parentTreePropContainer);
         }
       }
     } finally {
@@ -1998,7 +2015,9 @@ public class SectionTree {
       return this;
     }
 
-    /** @return the {@link SectionTree}. */
+    /**
+     * @return the {@link SectionTree}.
+     */
     public SectionTree build() {
       return new SectionTree(this);
     }

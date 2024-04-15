@@ -170,17 +170,12 @@ public class EventGenerator {
           .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
     }
 
-    eventDispatcherMethod.addStatement(
-        "$T _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher()",
-        ClassNames.EVENT_DISPATCHER);
-
     if (eventDeclaration.returnType.equals(TypeName.VOID)) {
-      eventDispatcherMethod.addStatement("_dispatcher.dispatchOnEvent(_eventHandler, _eventState)");
+      eventDispatcherMethod.addStatement("_eventHandler.dispatchEvent(_eventState)");
     } else {
       eventDispatcherMethod
           .addStatement(
-              "return ($T) _dispatcher.dispatchOnEvent(_eventHandler, _eventState)",
-              eventDeclaration.returnType)
+              "return ($T) _eventHandler.dispatchEvent(_eventState)", eventDeclaration.returnType)
           .returns(eventDeclaration.returnType);
     }
 
@@ -334,7 +329,9 @@ public class EventGenerator {
     return methodSpec.build();
   }
 
-  /** @return the name of the defined ComponentContext param on this event method. */
+  /**
+   * @return the name of the defined ComponentContext param on this event method.
+   */
   static String getContextParamName(SpecModel specModel, SpecMethodModel eventMethodModel) {
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final ImmutableList<MethodParamModel> models = eventMethodModel.methodParams;
@@ -418,11 +415,14 @@ public class EventGenerator {
     }
 
     builder.addStatement(
-        "return newEventHandler($L.class, \"$L\", c, $L, $L)",
+        "return newEventHandler($L.class, \"$L\", c, $L, $L, $L)",
         componentName,
         componentName,
         eventMethodModel.name.toString().hashCode(),
-        paramsBlock.build());
+        paramsBlock.build(),
+        eventMethodModel.specMethod.mode.getClass().getName()
+            + "."
+            + eventMethodModel.specMethod.mode);
 
     return builder.build();
   }

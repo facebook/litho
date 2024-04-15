@@ -19,6 +19,7 @@ package com.facebook.litho.sections.common;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.widget.RenderInfo;
 
 /**
@@ -36,7 +37,7 @@ import com.facebook.litho.widget.RenderInfo;
  * @param model the edge model object.
  * @param loggingExtras a bundle of logging extras we want to expose to the rendered component.
  */
-@Event(returnType = RenderInfo.class)
+@Event(returnType = RenderInfo.class, mode = EventHandlerRebindMode.NONE)
 public class RenderEvent<T> {
   public int index;
   public T model;

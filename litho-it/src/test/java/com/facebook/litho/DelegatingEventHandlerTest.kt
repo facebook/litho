@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.annotations.EventHandlerRebindMode
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -27,8 +28,20 @@ import org.mockito.kotlin.verify
 class DelegatingEventHandlerTest {
 
   private val hasEventDispatcher: HasEventDispatcher = mock()
-  private val eventHandler1: EventHandler<Any> = EventHandler(hasEventDispatcher, 1)
-  private val eventHandler2: EventHandler<Any> = EventHandler(hasEventDispatcher, 2)
+  private val eventHandler1: EventHandler<Any> =
+      EventHandler(
+          1,
+          EventHandlerRebindMode.REBIND,
+          EventDispatchInfo(hasEventDispatcher, null),
+          null,
+      )
+  private val eventHandler2: EventHandler<Any> =
+      EventHandler(
+          2,
+          EventHandlerRebindMode.REBIND,
+          EventDispatchInfo(hasEventDispatcher, null),
+          null,
+      )
   private val mockEventHandler1: EventHandler<Any> = mock()
   private val mockEventHandler2: EventHandler<Any> = mock()
 

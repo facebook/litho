@@ -185,7 +185,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
     Assertions.assertThat(path)
         .overridingErrorMessage(
-            "Found content description \"%s\" in view hierarchy:%n%s while the content description should not exist. ",
+            "Found content description \"%s\" in view hierarchy:%n%s while the content description"
+                + " should not exist. ",
             contentDescription,
             actual.makeString(ViewExtractors.GET_CONTENT_DESCRIPTION_FUNCTION),
             path)

@@ -213,7 +213,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     }
     return model instanceof DataDiffModelName
         ? ((DataDiffModelName) model).getName()
-        : model.getClass().getSimpleName();
+        : "<cls>" + model.getClass().getName() + "</cls>";
   }
 
   /** Emit a soft error if the size between mPlaceholders and mNextData aren't the same. */

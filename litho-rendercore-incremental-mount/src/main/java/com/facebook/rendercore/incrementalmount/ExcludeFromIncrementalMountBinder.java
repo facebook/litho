@@ -27,7 +27,7 @@ import com.facebook.rendercore.RenderUnit.Binder;
  * Incremental Mount. If this is true then the Component will not be involved in Incremental Mount.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ExcludeFromIncrementalMountBinder implements Binder<RenderUnit<?>, Object, Void> {
+public class ExcludeFromIncrementalMountBinder implements Binder<RenderUnit<?>, Object, Object> {
 
   public static final ExcludeFromIncrementalMountBinder INSTANCE =
       new ExcludeFromIncrementalMountBinder();
@@ -44,7 +44,8 @@ public class ExcludeFromIncrementalMountBinder implements Binder<RenderUnit<?>, 
   }
 
   @Override
-  public Void bind(
+  @Nullable
+  public Object bind(
       Context context, Object o, RenderUnit<?> renderUnit, @Nullable Object layoutData) {
     return null;
   }
@@ -55,5 +56,5 @@ public class ExcludeFromIncrementalMountBinder implements Binder<RenderUnit<?>, 
       Object o,
       RenderUnit<?> renderUnit,
       @Nullable Object layoutData,
-      Void bindData) {}
+      @Nullable Object bindData) {}
 }

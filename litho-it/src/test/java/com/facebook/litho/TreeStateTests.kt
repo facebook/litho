@@ -32,14 +32,14 @@ import org.robolectric.annotation.LooperMode
 class TreeStateTests {
 
   private lateinit var context: ComponentContext
-  private lateinit var testComponent: Component
+  private lateinit var testComponent: StateUpdateTestComponent
   private lateinit var testComponentKey: String
 
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     testComponent = StateUpdateTestComponent()
-    testComponentKey = testComponent.getKey()
+    testComponentKey = testComponent.key
   }
 
   @Test
@@ -166,5 +166,88 @@ class TreeStateTests {
     assertThat(renderKeysForPendingUpdates).contains(testComponentKey)
     val layoutKeysForPendingUpdates = treeState.keysForPendingLayoutStateUpdates
     assertThat(layoutKeysForPendingUpdates).contains(anotherTestComponentKey)
+  }
+
+  @Test
+  fun `queueDuplicateStateUpdates disabled - StateUpdate is not enqueued if it is a duplicate`() {
+    val treeState = TreeState(fromState = null)
+
+    treeState.createOrGetStateContainerForComponent(context, testComponent, testComponentKey)
+
+    treeState.assertThatTestStateContainerHasValue(4)
+
+    // increment
+    val update1Enqueued =
+        treeState.queueStateUpdate(
+            key = testComponentKey,
+            stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
+            isLazyStateUpdate = false,
+            isNestedTree = false,
+            queueDuplicateStateUpdates = false)
+
+    assertThat(update1Enqueued).isTrue
+    assertThat(treeState.hasUncommittedUpdates()).isTrue
+
+    treeState.applyStateUpdatesEarly(context, testComponent, null, false)
+    treeState.assertThatTestStateContainerHasValue(5)
+
+    // update with the same value (duplicate)
+    val duplicateUpdateEnqueued =
+        treeState.queueStateUpdate(
+            key = testComponentKey,
+            stateUpdate = StateUpdateTestComponent.createValueStateUpdate(5),
+            isLazyStateUpdate = false,
+            isNestedTree = false,
+            queueDuplicateStateUpdates = false)
+
+    assertThat(duplicateUpdateEnqueued).isFalse
+    assertThat(treeState.hasUncommittedUpdates()).isFalse
+    treeState.assertThatTestStateContainerHasValue(5)
+  }
+
+  @Test
+  fun `queueDuplicateStateUpdates enabled - StateUpdate is enqueued if it is a duplicate`() {
+    val treeState = TreeState(fromState = null)
+
+    treeState.createOrGetStateContainerForComponent(context, testComponent, testComponentKey)
+
+    treeState.assertThatTestStateContainerHasValue(4)
+
+    // increment
+    val update1Enqueued =
+        treeState.queueStateUpdate(
+            key = testComponentKey,
+            stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
+            isLazyStateUpdate = false,
+            isNestedTree = false,
+            queueDuplicateStateUpdates = true)
+
+    assertThat(update1Enqueued).isTrue
+    assertThat(treeState.hasUncommittedUpdates()).isTrue
+
+    treeState.applyStateUpdatesEarly(context, testComponent, null, false)
+    treeState.assertThatTestStateContainerHasValue(5)
+
+    // update with the same value (duplicate)
+    val duplicateUpdateEnqueued =
+        treeState.queueStateUpdate(
+            key = testComponentKey,
+            stateUpdate = StateUpdateTestComponent.createValueStateUpdate(5),
+            isLazyStateUpdate = false,
+            isNestedTree = false,
+            queueDuplicateStateUpdates = true)
+
+    assertThat(duplicateUpdateEnqueued).isTrue
+    assertThat(treeState.hasUncommittedUpdates()).isTrue
+    treeState.applyStateUpdatesEarly(context, testComponent, null, false)
+    treeState.assertThatTestStateContainerHasValue(5)
+  }
+
+  private fun TreeState.assertThatTestStateContainerHasValue(value: Int) {
+    assertThat(
+            (getStateContainer(testComponentKey, false)
+                    as StateUpdateTestComponent.TestStateContainer)
+                .count)
+        .isEqualTo(value)
   }
 }

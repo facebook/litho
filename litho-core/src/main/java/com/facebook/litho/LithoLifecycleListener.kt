@@ -16,9 +16,9 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
 
-/** Can observe lifecycle changes that a LithoLifecycleProvider goes through. */
+/** Can observe lifecycle changes that a LithoVisibilityEventsController goes through. */
 fun interface LithoLifecycleListener {
   fun onMovedToState(state: LithoLifecycle)
 }

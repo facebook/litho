@@ -8,7 +8,7 @@ In this section of the tutorial, you'll become familiar with building layouts us
 
 ## Yoga and Flexbox
 
-To **measure** and **layout** on-screen components, Litho uses the [Yoga](https://yogalayout.com/) library, which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/).
+To **measure** and **layout** on-screen components, Litho uses the [Yoga](https://yogalayout.dev/) library, which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/).
 
 To learn more about Flexbox, see the [Layout System with Flexbox](../mainconcepts/flexbox-yoga.mdx) page in the 'Main Concepts' section.
 

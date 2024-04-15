@@ -29,8 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ErrorEventHandler;
-import com.facebook.litho.LithoLifecycleProvider;
+import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.Size;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -78,19 +77,11 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              RunnableHandler resolveHandler,
               RunnableHandler layoutHandler,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
-              boolean incrementalMountEnabled,
-              boolean visibilityProcessing,
-              boolean isReconciliationEnabled,
-              boolean isLayoutDiffingEnabled,
-              RunnableHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
-              @Nullable LithoLifecycleProvider lifecycleProvider,
-              @Nullable ErrorEventHandler errorEventHandler) {
+              @Nullable LithoVisibilityEventsController lifecycleProvider) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 
@@ -100,7 +91,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
     mLayoutInfo = mock(LayoutInfo.class);
     mRecyclerBinderBuilder =
         new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
             .layoutInfo(mLayoutInfo)
             .componentTreeHolderFactory(componentTreeHolderFactory);
     mRecyclerBinder = mRecyclerBinderBuilder.build(mComponentContext);

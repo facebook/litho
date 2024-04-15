@@ -17,9 +17,9 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Comparable;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.Equivalence;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -70,11 +70,7 @@ public class ComponentUtils {
       return true;
     }
 
-    if (stateContainer1 == null && stateContainer2 != null) {
-      return false;
-    }
-
-    if (stateContainer1 != null && stateContainer2 == null) {
+    if (stateContainer1 == null || stateContainer2 == null) {
       return false;
     }
 
@@ -113,12 +109,9 @@ public class ComponentUtils {
         throw new IllegalStateException("Unable to get fields by reflection.", e);
       }
 
-      boolean intermediateResult =
-          ComponentsConfiguration.disableGetAnnotationUsage
-              ? isEquivalentUtilWithoutGetAnnotation(field, classType, val1, val2)
-              : isEquivalentUtil(field, classType, val1, val2);
+      boolean intermediateResult = isEquivalentUtil(field, classType, val1, val2);
       if (!intermediateResult) {
-        return intermediateResult;
+        return false;
       }
     }
 
@@ -131,7 +124,7 @@ public class ComponentUtils {
     try {
       comparableType = field.getAnnotation(Comparable.class).type();
     } catch (IncompatibleClassChangeError | NullPointerException ignore) {
-      /**
+      /*
        * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
        * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
        *
@@ -219,62 +212,6 @@ public class ComponentUtils {
     return true;
   }
 
-  private static boolean isEquivalentUtilWithoutGetAnnotation(
-      Field field, Class<?> classType, @Nullable Object val1, @Nullable Object val2) {
-
-    final Type type = field.getGenericType();
-
-    if (classType.isArray()) {
-      if (!areArraysEquals(classType, val1, val2)) {
-        return false;
-      }
-
-    } else if (Double.TYPE.isAssignableFrom(classType)) {
-      if (Double.compare((Double) val1, (Double) val2) != 0) {
-        return false;
-      }
-
-    } else if (Float.TYPE.isAssignableFrom(classType)) {
-      if (Float.compare((Float) val1, (Float) val2) != 0) {
-        return false;
-      }
-
-    } else if (ComparableDrawable.class.isAssignableFrom(classType)) {
-      if (val1 != null
-          ? !((ComparableDrawable) val1).isEquivalentTo((ComparableDrawable) val2)
-          : val2 != null) {
-        return false;
-      }
-
-    } else if (Collection.class.isAssignableFrom(classType)) {
-      return areCollectionsEquals(type, (Collection) val1, (Collection) val2);
-
-    } else if (Component.class.isAssignableFrom(classType)) {
-      if (val1 != null ? !((Component) val1).isEquivalentTo((Component) val2) : val2 != null) {
-        return false;
-      }
-
-      // Sections implement Equivalence interface.
-    } else if (Equivalence.class.isAssignableFrom(classType)) {
-      if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
-        return false;
-      }
-
-    } else if (EventHandler.class.isAssignableFrom(classType)
-        || (type instanceof ParameterizedType
-            && EventHandler.class.isAssignableFrom(
-                (Class) ((ParameterizedType) type).getRawType()))) {
-      if (val1 != null
-          ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
-          : val2 != null) {
-        return false;
-      }
-    } else if (val1 != null ? !val1.equals(val2) : val2 != null) {
-      return false;
-    }
-    return true;
-  }
-
   /**
    * Calculate the level of the target Component/Section. The level here means how many bracket
    * pairs are needed to break until reaching the component type. For example, the level of
@@ -309,42 +246,22 @@ public class ComponentUtils {
   static boolean areArraysEquals(Class<?> classType, Object val1, Object val2) {
     final Class<?> innerClassType = classType.getComponentType();
     if (Byte.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((byte[]) val1, (byte[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((byte[]) val1, (byte[]) val2);
     } else if (Short.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((short[]) val1, (short[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((short[]) val1, (short[]) val2);
     } else if (Character.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((char[]) val1, (char[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((char[]) val1, (char[]) val2);
     } else if (Integer.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((int[]) val1, (int[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((int[]) val1, (int[]) val2);
     } else if (Long.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((long[]) val1, (long[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((long[]) val1, (long[]) val2);
     } else if (Float.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((float[]) val1, (float[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((float[]) val1, (float[]) val2);
     } else if (Double.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((double[]) val1, (double[]) val2)) {
-        return false;
-      }
+      return Arrays.equals((double[]) val1, (double[]) val2);
     } else if (Boolean.TYPE.isAssignableFrom(innerClassType)) {
-      if (!Arrays.equals((boolean[]) val1, (boolean[]) val2)) {
-        return false;
-      }
-    } else if (!Arrays.equals((Object[]) val1, (Object[]) val2)) {
-      return false;
-    }
-
-    return true;
+      return Arrays.equals((boolean[]) val1, (boolean[]) val2);
+    } else return Arrays.equals((Object[]) val1, (Object[]) val2);
   }
 
   static boolean areCollectionsEquals(Type type, @Nullable Collection c1, @Nullable Collection c2) {
@@ -420,7 +337,8 @@ public class ComponentUtils {
         for (int index = 0; index < level - 1; index++) {
           isLast = iterator.next() == null;
           if (!isLast) {
-            while (iterator.next() != null) ;
+            while (iterator.next() != null)
+              ;
           }
           builder.append(isLast ? ' ' : "\u2502").append(' ');
         }
@@ -615,6 +533,7 @@ public class ComponentUtils {
         && ((SpecGeneratedComponent) component).hasOwnErrorHandler()) {
       return new EventHandler<>(
           Component.ERROR_EVENT_HANDLER_ID,
+          EventHandlerRebindMode.NONE,
           new EventDispatchInfo((SpecGeneratedComponent) component, scopedContext),
           null);
     } else {

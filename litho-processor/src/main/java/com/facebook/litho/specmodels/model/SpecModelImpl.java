@@ -280,7 +280,9 @@ public final class SpecModelImpl implements SpecModel {
     return mProps;
   }
 
-  /** @return the list of injected props without name cache adjustments. */
+  /**
+   * @return the list of injected props without name cache adjustments.
+   */
   @Override
   public ImmutableList<InjectPropModel> getRawInjectProps() {
     return mRawInjectProps;

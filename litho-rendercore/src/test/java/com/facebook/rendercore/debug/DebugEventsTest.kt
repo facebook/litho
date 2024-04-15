@@ -62,7 +62,7 @@ class DebugEventsTest {
     assertThat(event).isNotNull
     assertThat(event?.type).isEqualTo(TestEvent)
     assertThat(event?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(event?.attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(event?.attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(event?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
   }
 
@@ -85,13 +85,13 @@ class DebugEventsTest {
     assertThat(eventToSub1).isNotNull
     assertThat(eventToSub1?.type).isEqualTo(TestEvent)
     assertThat(eventToSub1?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(eventToSub1?.attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(eventToSub1?.attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(eventToSub1?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
 
     assertThat(eventToSub2).isNotNull
     assertThat(eventToSub2?.type).isEqualTo(TestEvent)
     assertThat(eventToSub2?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(eventToSub2?.attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(eventToSub2?.attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(eventToSub2?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
 
     assertThat(eventToSub1).isSameAs(eventToSub2)
@@ -186,13 +186,13 @@ class DebugEventsTest {
     assertThat(events.size).isEqualTo(2)
     assertThat(events[0].type).isEqualTo(TestEvent)
     assertThat(events[0].renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(events[0].attribute<Long>(DebugEventAttribute.timestamp)).isEqualTo(timestamp)
+    assertThat(events[0].attribute<Long>(DebugEventAttribute.Timestamp)).isEqualTo(timestamp)
     assertThat(events[0].attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
 
     assertThat(events).isNotEmpty
     assertThat(events[1].type).isEqualTo(TestEvent)
     assertThat(events[1].renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(events[1].attribute<Long>(DebugEventAttribute.timestamp)).isGreaterThan(timestamp)
+    assertThat(events[1].attribute<Long>(DebugEventAttribute.Timestamp)).isGreaterThan(timestamp)
     assertThat(events[1].attribute<String>(TestAttr)).isEqualTo("{$TestAttrValue}_1")
   }
 
@@ -250,8 +250,8 @@ class DebugEventsTest {
     assertThat(event).isNotNull
     assertThat(event?.type).isEqualTo(TestEvent)
     assertThat(event?.renderStateId).isEqualTo(TestRenderStateId)
-    assertThat(event?.attribute<Long>(DebugEventAttribute.timestamp)).isGreaterThan(timestamp)
-    assertThat(event?.attribute<Duration>(DebugEventAttribute.duration)?.value).isGreaterThan(0)
+    assertThat(event?.attribute<Long>(DebugEventAttribute.Timestamp)).isGreaterThan(timestamp)
+    assertThat(event?.attribute<Duration>(DebugEventAttribute.Duration)?.value).isGreaterThan(0)
     assertThat(event?.attribute<Int>(TestAttr)).isEqualTo(TestAttrValue)
     assertThat(event?.attribute<String>(traceTestAttr)).isEqualTo(traceTestAttrValue)
   }
@@ -375,6 +375,88 @@ class DebugEventsTest {
     assertThat(event.attribute<Int>(TestAttr)).isEqualTo(1)
   }
 
+  @Test
+  fun `filtered debug event subscriber should only handle filtered events`() {
+    val events = mutableListOf<DebugEvent>()
+    var subscriber: DebugEventSubscriber
+
+    subscriber = FilteredDebugEventSubscriber(DebugEvent.ViewOnLayout) { events.add(it) }
+
+    DebugEventBus.subscribe(subscriber)
+
+    DebugEventDispatcher.dispatch(type = DebugEvent.MountItemMount, renderStateId = { "-1" })
+
+    assertThat(events).hasSize(0)
+
+    DebugEventDispatcher.dispatch(type = DebugEvent.ViewOnLayout, renderStateId = { "-1" })
+
+    assertThat(events).hasSize(1)
+
+    DebugEventBus.unsubscribe(subscriber)
+    events.clear()
+
+    subscriber =
+        FilteredDebugEventSubscriber(
+            DebugEvent.ViewOnLayout,
+            DebugEvent.ViewOnLayout + ":start",
+            matcher = StringAttributeMatcher(DebugEventAttribute.Name to "ViewGroup"),
+        ) {
+          events.add(it)
+        }
+
+    DebugEventBus.subscribe(subscriber)
+
+    DebugEventDispatcher.dispatch(type = DebugEvent.ViewOnLayout, renderStateId = { "-1" }) {
+      it[DebugEventAttribute.Name] = "Drawable"
+    }
+
+    assertThat(events).hasSize(0)
+
+    DebugEventDispatcher.dispatch(
+        type = DebugEvent.ViewOnLayout + ":start", renderStateId = { "-1" }) {
+          it[DebugEventAttribute.Name] = "ViewGroup"
+        }
+
+    assertThat(events).hasSize(1)
+  }
+
+  @Test
+  fun `trace event should be dispatched to trace listeners`() {
+    val traceListener0 = TestTraceListener("random")
+    DebugEventBus.subscribe(traceListener0)
+
+    val traceListener1 = TestTraceListener()
+    DebugEventBus.subscribe(traceListener1)
+
+    DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener0.records.size).isEqualTo(0)
+    assertThat(traceListener1.records.size).isEqualTo(1)
+
+    val traceListener2 = TestTraceListener()
+    DebugEventBus.subscribe(traceListener2)
+
+    DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener0.records.size).isEqualTo(0)
+    assertThat(traceListener1.records.size).isEqualTo(2)
+    assertThat(traceListener2.records.size).isEqualTo(1)
+
+    DebugEventBus.unsubscribe(traceListener1)
+
+    DebugEventDispatcher.trace(type = TestEvent, renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener0.records.size).isEqualTo(0)
+    assertThat(traceListener1.records.size).isEqualTo(2)
+    assertThat(traceListener2.records.size).isEqualTo(2)
+
+    DebugEventDispatcher.trace(type = "random", renderStateId = { TestRenderStateId }) {}
+
+    assertThat(traceListener0.records.size).isEqualTo(1)
+    assertThat(traceListener1.records.size).isEqualTo(2)
+    assertThat(traceListener2.records.size).isEqualTo(2)
+  }
+
   class TestEventSubscriber(val listener: (DebugEvent) -> Unit) : DebugEventSubscriber(TestEvent) {
     override fun onEvent(event: DebugEvent) {
       listener(event)
@@ -387,6 +469,28 @@ class DebugEventsTest {
   ) : DebugEventSubscriber(*events) {
     override fun onEvent(event: DebugEvent) {
       listener(event)
+    }
+  }
+
+  class TestTraceListener(
+      vararg events: String = arrayOf(TestEvent),
+  ) : TraceListener<Int>, DebugEventSubscriber(*events) {
+
+    val records = mutableListOf<Any>()
+
+    private var counter = 0
+
+    override fun onEvent(event: DebugEvent): Unit = Unit
+
+    override fun onTraceStart(type: String): Int {
+      records.add(type)
+      val token = counter
+      counter++
+      return token
+    }
+
+    override fun onTraceEnd(token: Int, event: DebugProcessEvent) {
+      assertThat(records[token]).isEqualTo(event.type)
     }
   }
 }

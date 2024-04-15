@@ -68,7 +68,9 @@ public class LithoPluginIntellijTest {
     private final String testPath;
     private CodeInsightTestFixture fixture;
 
-    /** @param testPath in the form "testdata/dir" */
+    /**
+     * @param testPath in the form "testdata/dir"
+     */
     TestHelper(String testPath) {
       this.testPath = new File(testPath).getAbsolutePath();
     }

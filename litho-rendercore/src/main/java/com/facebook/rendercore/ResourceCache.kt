@@ -29,12 +29,14 @@ abstract class ResourceCache protected constructor(private val configuration: Co
 
     @JvmStatic
     @Synchronized
-    fun getLatest(configuration: Configuration): ResourceCache? {
-      if (latest?.configuration != configuration) {
-        latest = LruResourceCache(Configuration(configuration))
+    fun getLatest(configuration: Configuration): ResourceCache {
+      var localLatestCache = latest
+      if (localLatestCache == null || localLatestCache.configuration != configuration) {
+        localLatestCache = LruResourceCache(Configuration(configuration))
+        latest = localLatestCache
       }
 
-      return latest
+      return localLatestCache
     }
   }
 }

@@ -32,6 +32,8 @@ public abstract class AccessibleClickableSpan extends ClickableSpan {
   private @Nullable String mAccessibilityDescription;
   private @Nullable String mRoleDescription;
 
+  private boolean mIsKeyboardFocused = false;
+
   @AccessibilityRole.AccessibilityRoleType @Nullable private String mAccessibilityRole;
 
   public @Nullable String getAccessibilityDescription() {
@@ -58,6 +60,18 @@ public abstract class AccessibleClickableSpan extends ClickableSpan {
   public void setAccessibilityRole(
       @AccessibilityRole.AccessibilityRoleType String accessibilityRole) {
     mAccessibilityRole = accessibilityRole;
+  }
+
+  public boolean isKeyboardFocused() {
+    return mIsKeyboardFocused;
+  }
+
+  public void setKeyboardFocused(boolean isKeyboardFocused) {
+    mIsKeyboardFocused = isKeyboardFocused;
+  }
+
+  public AccessibleClickableSpan() {
+    this(null, null);
   }
 
   public AccessibleClickableSpan(@Nullable String accessibilityDescription) {

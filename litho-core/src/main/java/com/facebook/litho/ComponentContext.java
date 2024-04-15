@@ -22,7 +22,6 @@ import static com.facebook.litho.StateContainer.StateUpdate;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.os.Looper;
 import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorRes;
@@ -31,22 +30,24 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.ComponentTree.LithoConfiguration;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
-import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
  * information used internally in the library.
  */
-public class ComponentContext implements Cloneable {
+@Nullsafe(Nullsafe.Mode.LOCAL)
+public class ComponentContext {
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
+
   private final Context mContext;
 
   public LithoConfiguration mLithoConfiguration;
@@ -54,6 +55,7 @@ public class ComponentContext implements Cloneable {
   private @Nullable String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
+  @Nullable
   @ThreadConfined(ThreadConfined.ANY)
   private Component mComponentScope;
 
@@ -65,10 +67,10 @@ public class ComponentContext implements Cloneable {
   private final ResourceResolver mResourceResolver;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable TreeProps mTreeProps;
+  private @Nullable TreePropContainer mTreePropContainer;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable TreeProps mParentTreeProps;
+  private @Nullable TreePropContainer mParentTreePropContainer;
 
   @ThreadConfined(ThreadConfined.ANY)
   private boolean mIsParentTreePropsCloned;
@@ -76,7 +78,7 @@ public class ComponentContext implements Cloneable {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LithoTree mLithoTree;
 
-  private @Nullable LithoLifecycleProvider mLifecycleProvider;
+  private @Nullable LithoVisibilityEventsController mLifecycleProvider;
 
   // Used to hold styling information applied to components
   @StyleRes
@@ -91,89 +93,72 @@ public class ComponentContext implements Cloneable {
 
   private boolean isNestedTreeContext;
 
-  private final ThreadLocal<CalculationStateContext> mCalculationStateContextThreadLocal;
+  private final ThreadLocal<CalculationContext> mCalculationStateContextThreadLocal;
 
+  /**
+   * This constructors takes a {@link Context}. This should only be used to create {@link
+   * ComponentTree}
+   */
   public ComponentContext(Context context) {
     this(context, null, null);
   }
 
-  /**
-   * Constructor that can be used to receive log data from components. Check {@link
-   * ComponentsLogger} for the type of events you can listen for.
-   *
-   * @param context Android context.
-   * @param logTag a log tag to be used with the logger.
-   * @param logger a lifecycle logger to be used.
-   */
-  public ComponentContext(
-      Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
-    this(context, logTag, logger, null);
-  }
-
   public ComponentContext(
       Context context,
-      @Nullable String logTag,
-      @Nullable ComponentsLogger logger,
-      @Nullable TreeProps treeProps) {
-    this(
-        context,
-        treeProps,
-        buildDefaultLithoConfiguration(context, null, logTag, logger, -1),
-        null);
-  }
-
-  public ComponentContext(
-      Context androidContext,
-      @Nullable TreeProps treeProps,
-      LithoConfiguration lithoConfiguration,
-      LithoTree lithoTree,
-      @Nullable String globalKey,
-      @Nullable LithoLifecycleProvider lifecycleProvider,
-      @Nullable Component componentScope,
-      @Nullable TreeProps parentTreeProps) {
-    this(androidContext, treeProps, lithoConfiguration, lithoTree);
-    mGlobalKey = globalKey;
-    mLifecycleProvider = lifecycleProvider;
-    mComponentScope = componentScope;
-    mParentTreeProps = parentTreeProps;
-  }
-
-  public ComponentContext(
-      Context context,
-      @Nullable TreeProps treeProps,
       @Nullable LithoConfiguration lithoConfiguration,
-      @Nullable LithoTree lithoTree) {
+      @Nullable TreePropContainer treePropContainer) {
+    this(context, treePropContainer, lithoConfiguration, null, null, null, null, null);
+  }
+
+  ComponentContext(
+      Context androidContext,
+      @Nullable TreePropContainer treePropContainer,
+      @Nullable LithoConfiguration lithoConfiguration,
+      @Nullable LithoTree lithoTree,
+      @Nullable String globalKey,
+      @Nullable LithoVisibilityEventsController lifecycleProvider,
+      @Nullable Component componentScope,
+      @Nullable TreePropContainer parentTreePropContainer) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
     mContext =
-        Preconditions.checkNotNull(context, "ComponentContext requires a non null Android Context");
+        Preconditions.checkNotNull(
+            androidContext, "ComponentContext requires a non null Android Context");
     mResourceResolver =
         new ResourceResolver(
-            context, ResourceCache.getLatest(context.getResources().getConfiguration()));
-    mTreeProps = treeProps;
+            androidContext,
+            ResourceCache.getLatest(androidContext.getResources().getConfiguration()));
+    mTreePropContainer = treePropContainer;
     mLithoConfiguration =
         lithoConfiguration != null
             ? lithoConfiguration
-            : buildDefaultLithoConfiguration(mContext, null, null, null, -1);
+            : buildDefaultLithoConfiguration(
+                mContext, ComponentsConfiguration.defaultInstance, null, null);
 
-    if (mLithoConfiguration.logger != null && mLithoConfiguration.logTag == null) {
+    if (mLithoConfiguration.componentsConfig.componentsLogger != null
+        && mLithoConfiguration.componentsConfig.logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
 
     mLithoTree = lithoTree;
+    mGlobalKey = globalKey;
+    mLifecycleProvider = lifecycleProvider;
+    mComponentScope = componentScope;
+    mParentTreePropContainer = parentTreePropContainer;
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mTreeProps);
+    this(context, context.mTreePropContainer);
   }
 
-  public ComponentContext(ComponentContext context, @Nullable TreeProps treeProps) {
+  protected ComponentContext(
+      ComponentContext context, @Nullable TreePropContainer treePropContainer) {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
     mLifecycleProvider = context.mLifecycleProvider;
     mLithoTree = context.mLithoTree;
-    mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
-    mParentTreeProps = context.mParentTreeProps;
+    mTreePropContainer = treePropContainer != null ? treePropContainer : context.mTreePropContainer;
+    mParentTreePropContainer = context.mParentTreePropContainer;
     mGlobalKey = context.mGlobalKey;
     mCalculationStateContextThreadLocal = context.mCalculationStateContextThreadLocal;
     mLithoConfiguration = context.mLithoConfiguration;
@@ -198,7 +183,7 @@ public class ComponentContext implements Cloneable {
     ComponentContext componentContext = parentContext.makeNewCopy();
     componentContext.mComponentScope = scope;
     componentContext.mGlobalKey = globalKey;
-    componentContext.mParentTreeProps = parentContext.mTreeProps;
+    componentContext.mParentTreePropContainer = parentContext.mTreePropContainer;
     // TODO: T124275447 make these Component Context fields final
     // Either this component is nested tree or descendant of nested tree component
     componentContext.isNestedTreeContext =
@@ -212,7 +197,9 @@ public class ComponentContext implements Cloneable {
     return componentContext;
   }
 
-  /** @deprecated introduced for legacy test cases - don't add new callers */
+  /**
+   * @deprecated introduced for legacy test cases - don't add new callers
+   */
   @VisibleForTesting
   @Deprecated
   public static ComponentContext createScopedComponentContextWithStateForTest(
@@ -238,20 +225,24 @@ public class ComponentContext implements Cloneable {
   public static ComponentContext makeCopyForNestedTree(ComponentContext parentTreeContext) {
     return new ComponentContext(
         parentTreeContext.getAndroidContext(),
-        parentTreeContext.getTreePropsCopy(),
+        parentTreeContext.getTreePropContainerCopy(),
         parentTreeContext.mLithoConfiguration,
+        null,
+        null,
+        null,
+        null,
         null);
   }
 
   /** Returns the current calculate state context */
   @Nullable
-  CalculationStateContext getCalculationStateContext() {
+  CalculationContext getCalculationStateContext() {
     return mCalculationStateContextThreadLocal.get();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setLayoutStateContext(LayoutStateContext layoutStateContext) {
-    mCalculationStateContextThreadLocal.set(layoutStateContext);
+  public void setLithoLayoutContext(LithoLayoutContext lithoLayoutContext) {
+    mCalculationStateContextThreadLocal.set(lithoLayoutContext);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -261,8 +252,8 @@ public class ComponentContext implements Cloneable {
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setLayoutStateContextForTesting() {
-    setLayoutStateContext(
-        new LayoutStateContext(
+    setLithoLayoutContext(
+        new LithoLayoutContext(
             -1,
             new MeasuredResultCache(),
             this,
@@ -281,9 +272,9 @@ public class ComponentContext implements Cloneable {
    * calculation (i.e., including willRender, Layout API, caching, etc).
    */
   @VisibleForTesting
-  public ResolveStateContext setRenderStateContextForTests() {
-    final ResolveStateContext resolveStateContext =
-        new ResolveStateContext(
+  public ResolveContext setRenderStateContextForTests() {
+    final ResolveContext resolveContext =
+        new ResolveContext(
             -1,
             new MeasuredResultCache(),
             new TreeState(),
@@ -294,13 +285,13 @@ public class ComponentContext implements Cloneable {
             null,
             null,
             getLogger());
-    setRenderStateContext(resolveStateContext);
+    setRenderStateContext(resolveContext);
 
-    return resolveStateContext;
+    return resolveContext;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setRenderStateContext(ResolveStateContext renderStateContext) {
+  public void setRenderStateContext(@Nullable ResolveContext renderStateContext) {
     mCalculationStateContextThreadLocal.set(renderStateContext);
   }
 
@@ -308,7 +299,7 @@ public class ComponentContext implements Cloneable {
    * Sets the calculation state context (either a RenderStateContext or LayoutStateContext) on a
    * thread local, making it unique per ComponentTree, per Thread.
    */
-  void setCalculationStateContext(@Nullable CalculationStateContext context) {
+  void setCalculationStateContext(@Nullable CalculationContext context) {
     mCalculationStateContextThreadLocal.set(context);
   }
 
@@ -333,26 +324,40 @@ public class ComponentContext implements Cloneable {
     return mResourceResolver;
   }
 
-  public final Looper getMainLooper() {
-    return mContext.getMainLooper();
-  }
-
   public CharSequence getText(@StringRes int resId) {
-    return mContext.getResources().getText(resId);
+    CharSequence text = mResourceResolver.resolveText(resId);
+    if (text == null) {
+      throw new RuntimeException(
+          "String resource not found for ID #0x" + Integer.toHexString(resId));
+    }
+    return text;
   }
 
   public String getString(@StringRes int resId) {
-    return mContext.getResources().getString(resId);
+    String text = mResourceResolver.resolveStringRes(resId);
+    if (text == null) {
+      throw new RuntimeException(
+          "String resource not found for ID #0x" + Integer.toHexString(resId));
+    }
+
+    return text;
   }
 
   public String getString(@StringRes int resId, Object... formatArgs) {
-    return mContext.getResources().getString(resId, formatArgs);
+    String text = mResourceResolver.resolveStringRes(resId, formatArgs);
+    if (text == null) {
+      throw new RuntimeException(
+          "String resource not found for ID #0x" + Integer.toHexString(resId));
+    }
+
+    return text;
   }
 
   public int getColor(@ColorRes int id) {
-    return mContext.getResources().getColor(id);
+    return mResourceResolver.resolveColorRes(id);
   }
 
+  @Nullable
   public Component getComponentScope() {
     return mComponentScope;
   }
@@ -363,6 +368,9 @@ public class ComponentContext implements Cloneable {
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
     }
 
+    if (mGlobalKey == null) {
+      return "undefined";
+    }
     return mGlobalKey;
   }
 
@@ -375,27 +383,23 @@ public class ComponentContext implements Cloneable {
           return errorEventHandler;
         }
       } catch (IllegalStateException e) {
-        return mLithoConfiguration.errorEventHandler;
+        return mLithoConfiguration.componentsConfig.errorEventHandler;
       }
     }
 
-    return mLithoConfiguration.errorEventHandler;
+    return mLithoConfiguration.componentsConfig.errorEventHandler;
   }
 
   @Nullable
   @VisibleForTesting
   public TreeFuture getLayoutStateFuture() {
     return mCalculationStateContextThreadLocal.get() != null
-        ? mCalculationStateContextThreadLocal.get().getLayoutStateFuture()
+        ? mCalculationStateContextThreadLocal.get().getTreeFuture()
         : null;
   }
 
   public LithoConfiguration getLithoConfiguration() {
     return mLithoConfiguration;
-  }
-
-  ComponentsConfiguration getComponentsConfiguration() {
-    return mLithoConfiguration.mComponentsConfiguration;
   }
 
   /**
@@ -469,7 +473,7 @@ public class ComponentContext implements Cloneable {
         .updateHookStateAsync(
             globalKey,
             updateBlock,
-            scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
+            scope != null ? scope.getSimpleName() : "hook",
             isCreateLayoutInProgress(),
             isNestedTreeContext());
   }
@@ -535,12 +539,12 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public String getLogTag() {
-    return mLithoConfiguration.logTag;
+    return mLithoConfiguration.componentsConfig.logTag;
   }
 
   @Nullable
   public ComponentsLogger getLogger() {
-    return mLithoConfiguration.logger;
+    return mLithoConfiguration.componentsConfig.componentsLogger;
   }
 
   /**
@@ -562,7 +566,8 @@ public class ComponentContext implements Cloneable {
 
     if (mLithoTree == null) {
       throw new RuntimeException(
-          "Calling findViewWithTag on a ComponentContext which isn't associated with a Tree. Make sure it's one received in `render` or `onCreateLayout`");
+          "Calling findViewWithTag on a ComponentContext which isn't associated with a Tree. Make"
+              + " sure it's one received in `render` or `onCreateLayout`");
     }
     final View mountedView = mLithoTree.getMountedViewReference().getMountedView();
     // The tree isn't mounted
@@ -574,6 +579,9 @@ public class ComponentContext implements Cloneable {
   }
 
   public @Nullable ErrorComponentReceiver getErrorComponentReceiver() {
+    if (mLithoTree == null) {
+      return null;
+    }
     return mLithoTree.getErrorComponentReceiver();
   }
 
@@ -602,56 +610,58 @@ public class ComponentContext implements Cloneable {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-  public void setTreeProps(@Nullable TreeProps treeProps) {
-    mTreeProps = treeProps;
+  public void setTreePropContainer(@Nullable TreePropContainer treePropContainer) {
+    mTreePropContainer = treePropContainer;
   }
 
-  public void setParentTreeProps(@Nullable TreeProps treeProps) {
-    mParentTreeProps = treeProps;
+  public void setParentTreePropContainer(@Nullable TreePropContainer treePropContainer) {
+    mParentTreePropContainer = treePropContainer;
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-  public @Nullable TreeProps getTreeProps() {
-    return mTreeProps;
+  public @Nullable TreePropContainer getTreePropContainer() {
+    return mTreePropContainer;
   }
 
-  public @Nullable TreeProps getParentTreeProps() {
-    return mParentTreeProps;
+  public @Nullable TreePropContainer getParentTreePropContainer() {
+    return mParentTreePropContainer;
   }
 
   /**
    * @return true if parent's TreeProps are cloned and assigned to mTreeProps. Notice this method
    *     should be accessed by Kotlin API only.
    */
-  protected boolean isParentTreePropsCloned() {
+  protected boolean isParentTreePropContainerCloned() {
     return mIsParentTreePropsCloned;
   }
 
-  protected void setParentTreePropsCloned(boolean isParentTreePropsCloned) {
+  protected void setParentTreePropContainerCloned(boolean isParentTreePropsCloned) {
     mIsParentTreePropsCloned = isParentTreePropsCloned;
   }
 
   @Nullable
   public <T> T getTreeProp(Class<T> key) {
-    return mTreeProps == null ? null : mTreeProps.get(key);
+    return mTreePropContainer == null ? null : mTreePropContainer.get(key);
+  }
+
+  <T> T getTreeProp(TreeProp<T> key) {
+    return mTreePropContainer == null ? key.getDefaultValue() : mTreePropContainer.get(key);
   }
 
   @Nullable
   public <T> T getParentTreeProp(Class<T> key) {
-    return mParentTreeProps == null ? null : mParentTreeProps.get(key);
+    return mParentTreePropContainer == null ? null : mParentTreePropContainer.get(key);
   }
 
   /** Obtain a copy of the tree props currently held by this context. */
   @Nullable
-  public TreeProps getTreePropsCopy() {
-    return TreeProps.copy(mTreeProps);
+  public TreePropContainer getTreePropContainerCopy() {
+    return TreePropContainer.copy(mTreePropContainer);
   }
 
   public int getLayoutVersion() {
-    final CalculationStateContext calculationStateContext =
-        mCalculationStateContextThreadLocal.get();
-    if (calculationStateContext != null) {
-      return calculationStateContext.getLayoutVersion();
+    final CalculationContext calculationContext = mCalculationStateContextThreadLocal.get();
+    if (calculationContext != null) {
+      return calculationContext.getLayoutVersion();
     }
 
     throw new IllegalStateException(
@@ -664,10 +674,12 @@ public class ComponentContext implements Cloneable {
     return mResourceResolver.getResourceCache();
   }
 
+  /** TODO: Add rebind mode to this API. */
   EventHandler newEventHandler(int id) {
     return newEventHandler(id, null);
   }
 
+  /** TODO: Add rebind mode to this API. */
   public <E> EventHandler<E> newEventHandler(int id, @Nullable Object[] params) {
     if (mComponentScope == null || !(mComponentScope instanceof HasEventDispatcher)) {
       ComponentsReporter.emitMessage(
@@ -678,26 +690,33 @@ public class ComponentContext implements Cloneable {
     }
 
     return new EventHandler<>(
-        id, new EventDispatchInfo((HasEventDispatcher) mComponentScope, this), params);
+        id,
+        EventHandlerRebindMode.REBIND,
+        new EventDispatchInfo((HasEventDispatcher) mComponentScope, this),
+        params);
   }
 
   @Nullable
-  public Object getCachedValue(Object cachedValueInputs) {
+  public Object getCachedValue(String globalKey, int index, Object cachedValueInputs) {
     if (mLithoTree == null) {
       return null;
     }
-    return mLithoTree.getStateUpdater().getCachedValue(cachedValueInputs, isNestedTreeContext());
+    return mLithoTree
+        .getStateUpdater()
+        .getCachedValue(globalKey, index, cachedValueInputs, isNestedTreeContext());
   }
 
-  public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+  public void putCachedValue(
+      String globalKey, int index, Object cachedValueInputs, @Nullable Object cachedValue) {
     if (mLithoTree == null) {
       return;
     }
     mLithoTree
         .getStateUpdater()
-        .putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
+        .putCachedValue(globalKey, index, cachedValueInputs, cachedValue, isNestedTreeContext());
   }
 
+  @Nullable
   StateUpdater getStateUpdater() {
     return mLithoTree != null ? mLithoTree.getStateUpdater() : null;
   }
@@ -724,36 +743,36 @@ public class ComponentContext implements Cloneable {
    * static to avoid polluting the ComponentContext API.
    */
   public static boolean isIncrementalMountEnabled(ComponentContext c) {
-    return c.mLithoConfiguration.incrementalMountEnabled;
-  }
-
-  public static @Nullable RunnableHandler getMountContentPreallocationHandler(ComponentContext c) {
-    return c.mLithoConfiguration.mountContentPreallocationHandler;
+    return c.mLithoConfiguration.componentsConfig.incrementalMountEnabled;
   }
 
   public static boolean isVisibilityProcessingEnabled(ComponentContext c) {
-    return c.mLithoConfiguration.isVisibilityProcessingEnabled;
+    return c.mLithoConfiguration.componentsConfig.visibilityProcessingEnabled;
   }
 
   public boolean isReconciliationEnabled() {
-    return mLithoConfiguration.isReconciliationEnabled;
+    return mLithoConfiguration.componentsConfig.isReconciliationEnabled;
+  }
+
+  public boolean isPrimitiveVerticalScrollEnabled() {
+    return false; // TODO: wire up with config
   }
 
   @Nullable
-  public LayoutStateContext getLayoutStateContext() {
-    final CalculationStateContext stateContext = mCalculationStateContextThreadLocal.get();
-    if (stateContext instanceof LayoutStateContext) {
-      return (LayoutStateContext) stateContext;
+  public LithoLayoutContext getLayoutStateContext() {
+    final CalculationContext stateContext = mCalculationStateContextThreadLocal.get();
+    if (stateContext instanceof LithoLayoutContext) {
+      return (LithoLayoutContext) stateContext;
     }
 
     return null;
   }
 
   @Nullable
-  public ResolveStateContext getRenderStateContext() {
-    final CalculationStateContext stateContext = mCalculationStateContextThreadLocal.get();
-    if (stateContext instanceof ResolveStateContext) {
-      return (ResolveStateContext) stateContext;
+  public ResolveContext getRenderStateContext() {
+    final CalculationContext stateContext = mCalculationStateContextThreadLocal.get();
+    if (stateContext instanceof ResolveContext) {
+      return (ResolveContext) stateContext;
     }
 
     return null;
@@ -763,29 +782,17 @@ public class ComponentContext implements Cloneable {
     return Preconditions.checkNotNull(mScopedComponentInfo);
   }
 
-  @Override
-  protected ComponentContext clone() {
-    try {
-      return (ComponentContext) super.clone();
-    } catch (CloneNotSupportedException e) {
-      // Should not be possible!
-      throw new RuntimeException(e);
-    }
+  public boolean shouldCacheLayouts() {
+    return isReconciliationEnabled()
+        && mLithoConfiguration.componentsConfig.getShouldCacheLayouts();
   }
 
-  boolean shouldCacheLayouts() {
-    if (isNestedTreeContext()) {
-      return isReconciliationEnabled()
-          && mLithoConfiguration.mComponentsConfiguration.shouldCacheNestedLayouts();
-    } else {
-      return isReconciliationEnabled()
-          && mLithoConfiguration.mComponentsConfiguration.shouldCacheLayouts();
-    }
+  public boolean shouldEnableDefaultAOSPLithoLifecycleProvider() {
+    return mLithoConfiguration.componentsConfig.getShouldEnableDefaultAOSPLithoLifecycleProvider();
   }
 
-  boolean shouldReuseOutputs() {
-    return shouldCacheLayouts()
-        && mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
+  public final boolean shouldUseNonRebindingEventHandlers() {
+    return mLithoConfiguration.componentsConfig.getUseNonRebindingEventHandlers();
   }
 
   boolean isNestedTreeContext() {
@@ -808,8 +815,12 @@ public class ComponentContext implements Cloneable {
   }
 
   @Nullable
-  public LithoLifecycleProvider getLifecycleProvider() {
-    return mLifecycleProvider;
+  public LithoVisibilityEventsController getLifecycleProvider() {
+    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      return null;
+    } else {
+      return mLifecycleProvider;
+    }
   }
 
   @VisibleForTesting
@@ -833,6 +844,6 @@ public class ComponentContext implements Cloneable {
   }
 
   static ComponentsConfiguration getComponentsConfig(ComponentContext c) {
-    return c.mLithoConfiguration.mComponentsConfiguration;
+    return c.mLithoConfiguration.componentsConfig;
   }
 }

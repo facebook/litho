@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.graphics.Color
 import com.facebook.litho.TreeFuture.FutureExecutionListener
 import com.facebook.litho.TreeFuture.FutureExecutionType
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.ThreadTestingUtils
@@ -106,7 +105,7 @@ class SplitFuturesTest {
 
     // Set new size specs. Only measure steps should occur
     legacyLithoViewRule.setSizeSpecs(widthSpec2, heightSpec2).measure().layout()
-    if (ComponentsConfiguration.enableLayoutCaching) {
+    if (legacyLithoViewRule.context.shouldCacheLayouts()) {
       // SHOULD_UPDATE happens after ON_MEASURE with layout caching
       assertThat(tracker.steps)
           .describedAs("Changing width and height triggers only re-measure steps")
@@ -875,9 +874,9 @@ class SplitFuturesTest {
     val output = Size()
 
     // Define tree-props on the CT
-    val treeProps = TreeProps()
+    val treePropContainer = TreePropContainer()
     legacyLithoViewRule.componentTree.setRootAndSizeSpecSync(
-        component, exactly(100), exactly(100), output, treeProps) // Set new tree props.
+        component, exactly(100), exactly(100), output, treePropContainer) // Set new tree props.
 
     // Ensure render and measure happened once, and the output is set correctly
     assertThat(counter.renderCount).isEqualTo(1)
@@ -889,7 +888,7 @@ class SplitFuturesTest {
 
     // Set the same root again, with the same tree-props, but different size-specs
     legacyLithoViewRule.componentTree.setRootAndSizeSpecSync(
-        component, exactly(150), exactly(150), output, treeProps) // Use the same tree props
+        component, exactly(150), exactly(150), output, treePropContainer) // Use the same tree props
 
     // Same component, so render count should still be 1.
     // Measure should increment, and the output should be equal to the new values.

@@ -52,7 +52,7 @@ public class TextStylesAttributeHelper {
   private static final WeakHashMap<Resources.Theme, TextStyle> sThemedRenderUnitCache =
       new WeakHashMap<>();
 
-  public static TextStyle createThemedTextStyle(Context c) {
+  private static TextStyle getThemedTextStyleFromCache(Context c) {
     final Resources.Theme theme = c.getTheme();
     TextStyle textStyle;
 
@@ -71,7 +71,15 @@ public class TextStylesAttributeHelper {
       }
     }
 
-    return textStyle.makeCopy();
+    return textStyle;
+  }
+
+  public static void addThemedTextStyleForContext(Context c) {
+    getThemedTextStyleFromCache(c);
+  }
+
+  public static TextStyle createThemedTextStyle(Context c) {
+    return getThemedTextStyleFromCache(c).makeCopy();
   }
 
   public static void warmTextForTheme(Context c) {

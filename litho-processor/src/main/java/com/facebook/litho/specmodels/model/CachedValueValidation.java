@@ -38,9 +38,9 @@ public class CachedValueValidation {
                   cachedValues.get(i).getRepresentedObject(),
                   "The cached value "
                       + cachedValues.get(i).getName()
-                      + " is defined differently in different "
-                      + "methods. Ensure that each instance of this cached value is declared in the same "
-                      + "way (this means having the same type)."));
+                      + " is defined differently in different methods. Ensure that each instance of"
+                      + " this cached value is declared in the same way (this means having the same"
+                      + " type)."));
         }
       }
     }
@@ -53,7 +53,8 @@ public class CachedValueValidation {
         validationErrors.add(
             new SpecModelValidationError(
                 cachedValue.getRepresentedObject(),
-                "Cached values must not be Components, since Components are stateful. Just create the Component as normal."));
+                "Cached values must not be Components, since Components are stateful. Just create"
+                    + " the Component as normal."));
       }
 
       final SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod =
@@ -68,11 +69,17 @@ public class CachedValueValidation {
           .getTypeName()
           .box()
           .equals(onCalculateCachedValueMethod.returnType.box())) {
+        final String errorMessage =
+            SpecModelUtils.areTypesEqualIgnoringKotlinCovariance(
+                    specModel, cachedValue.getTypeName(), onCalculateCachedValueMethod.returnType)
+                ? "CachedValue params for collections in Kotlin Specs need to add"
+                    + " @JvmSuppressWildCards such as CollectionType<@JvmSuppressWildcards T>."
+                    + " Add the annotation for @CachedValue params."
+                : "CachedValue param types and the return type of the corresponding "
+                    + "@OnCalculateCachedValue method must be the same.";
+
         validationErrors.add(
-            new SpecModelValidationError(
-                cachedValue.getRepresentedObject(),
-                "CachedValue param types and the return type of the corresponding "
-                    + "@OnCalculateCachedValue method must be the same."));
+            new SpecModelValidationError(cachedValue.getRepresentedObject(), errorMessage));
       }
     }
 
@@ -80,6 +87,7 @@ public class CachedValueValidation {
         onCalculateCachedValueMethods) {
       for (MethodParamModel param : onCalculateCachedValueMethod.methodParams) {
         if (!(MethodParamModelUtils.isComponentContextParam(param))
+            && !(MethodParamModelUtils.isSectionContextParam(param))
             && !(param instanceof TreePropModel)
             && !(param instanceof PropModel)
             && !(param instanceof StateParamModel)
@@ -87,7 +95,8 @@ public class CachedValueValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   param.getRepresentedObject(),
-                  "@OnCalculateCachedValue methods may only take ComponentContext, @Prop, @TreeProp, @InjectProp and @State as params."));
+                  "@OnCalculateCachedValue methods may only take ComponentContext, @Prop,"
+                      + " @TreeProp, @InjectProp and @State as params."));
         }
       }
     }

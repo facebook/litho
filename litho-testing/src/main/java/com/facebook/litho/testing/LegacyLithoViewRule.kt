@@ -33,11 +33,12 @@ import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.StateHandler
-import com.facebook.litho.TreeProps
+import com.facebook.litho.TreePropContainer
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.rendercore.MountItemsPool
@@ -79,14 +80,18 @@ constructor(
 ) : TestRule {
 
   init {
-    ComponentsConfiguration.isDebugModeEnabled = true
+    LithoDebugConfigurations.isDebugModeEnabled = true
   }
 
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
-        _componentTree =
-            ComponentTree.create(context).componentsConfiguration(componentsConfiguration).build()
+        val builder = ComponentTree.create(context)
+
+        if (componentsConfiguration != null) {
+          builder.componentsConfiguration(componentsConfiguration)
+        }
+        _componentTree = builder.build()
       }
       return _componentTree ?: throw AssertionError("Set to null by another thread")
     }
@@ -108,8 +113,7 @@ constructor(
     get() = componentTree.committedLayoutState
 
   val currentRootNode: LithoLayoutResult?
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    get() = committedLayoutState?.rootLayoutResult
+    get() = committedLayoutState?.rootLayoutResult as? LithoLayoutResult
 
   var widthSpec = DEFAULT_WIDTH_SPEC
   var heightSpec = DEFAULT_HEIGHT_SPEC
@@ -123,8 +127,6 @@ constructor(
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {
-        ensureThreadLooperType()
-
         try {
           if (themeResId != null) {
             val activity = Robolectric.buildActivity(Activity::class.java).create().get()
@@ -146,16 +148,6 @@ constructor(
           heightSpec = DEFAULT_HEIGHT_SPEC
         }
       }
-    }
-  }
-
-  private fun ensureThreadLooperType() {
-    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ThreadLooperController) {
-      threadLooperController = ResolveAndLayoutThreadLooperController()
-    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
-        threadLooperController is ResolveAndLayoutThreadLooperController) {
-      threadLooperController = ThreadLooperController()
     }
   }
 
@@ -240,9 +232,9 @@ constructor(
 
   /** Sets a new [TreeProp] for the next layout pass. */
   fun setTreeProp(klass: Class<*>, instance: Any?): LegacyLithoViewRule {
-    val props = context.treeProps ?: TreeProps()
+    val props = context.treePropContainer ?: TreePropContainer()
     props.put(klass, instance)
-    context.treeProps = props
+    context.treePropContainer = props
     return this
   }
 

@@ -43,7 +43,8 @@ import org.robolectric.annotation.LooperMode
 class MountStateRemountTest {
 
   private val config =
-      ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build()
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
+
   private lateinit var context: ComponentContext
 
   @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
@@ -96,7 +97,7 @@ class MountStateRemountTest {
     assertThat(component4.isMounted).isFalse
     val mountDelegateTarget = legacyLithoViewRule.lithoView.mountDelegateTarget
     val components: MutableList<Component> = ArrayList()
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       mountDelegateTarget.getMountItemAt(i)?.let { mountItem ->
         components.add(LithoRenderUnit.getRenderUnit(mountItem).component)
       }
@@ -214,7 +215,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .layoutDiffing(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -266,7 +266,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .layoutDiffing(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup
@@ -312,7 +311,6 @@ class MountStateRemountTest {
         ComponentTree.create(context, oldComponent)
             .componentsConfiguration(config)
             .incrementalMount(false)
-            .layoutDiffing(true)
             .build()
     ComponentTestHelper.mountComponent(lithoView, componentTree, exactly(400), exactly(400))
     val oldHost = lithoView.getChildAt(0) as ViewGroup

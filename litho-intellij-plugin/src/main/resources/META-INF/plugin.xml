@@ -27,7 +27,7 @@
     <ul>
       <li>Command-click on a Section or Component takes you to Spec</li>
       <li>Component usages in the search results</li>
-      <li>MountSpec, LayoutSpec, and GroupSectionSpec templates under File -> New menu</li>
+      <li>PrimitiveComponent, KComponent, and GroupSectionSpec templates under File -> New menu</li>
       <li>Completion for valid method annotations in LayoutSpec</li>
       <li>Completion for ClickEvent handler</li>
       <li>Completion for component builder</li>
@@ -38,7 +38,7 @@
     </ul>
   ]]>
   </description>
-  <version>1.8.8-SNAPSHOT</version>
+  <version>1.8.9-SNAPSHOT</version>
   <change-notes>
     <![CDATA[
     <h3>1.8.5</h3>
@@ -67,8 +67,6 @@
   <depends>org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.facebook.litho.intellij">
-    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.LayoutSpecTemplateProvider"/>
-    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.MountSpecTemplateProvider"/>
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.GroupSectionSpecTemplateProvider"/>
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.EventTemplateProvider"/>
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.KotlinComponentTemplateProvider"/>

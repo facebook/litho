@@ -95,6 +95,7 @@ class ParentComponentSendsEventToChildSpec {
   static void onUpdateCounterForChildComponent(StateValue<Integer> counterForChildComponentText) {
     counterForChildComponentText.set(counterForChildComponentText.get() + 1);
   }
+
   // end_update_prop
 
   // start_trigger

@@ -172,10 +172,10 @@ class ViewCompatComponentTest {
     assertThat(compatComponent.typeId).isNotEqualTo(differentCompatComponent.typeId)
   }
 
-  private inner class CustomViewCreator constructor(private val text: String) :
+  private inner class CustomViewCreator constructor(private val input: String) :
       ViewCreator<TextView> {
-    override fun createView(c: Context, parent: ViewGroup): TextView {
-      return TextView(c).apply { this.text = text }
+    override fun createView(c: Context, parent: ViewGroup?): TextView {
+      return TextView(c).apply { text = input }
     }
   }
 }

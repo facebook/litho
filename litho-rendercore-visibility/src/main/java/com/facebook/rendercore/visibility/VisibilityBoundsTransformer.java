@@ -27,4 +27,10 @@ public interface VisibilityBoundsTransformer {
   Rect getTransformedLocalVisibleRect(ViewGroup host);
 
   int getViewportArea(View view);
+
+  int getViewportWidth(View view);
+
+  int getViewportHeight(View view);
+
+  boolean shouldUseTransformedVisibleRect(VisibilityOutput visibilityOutput);
 }

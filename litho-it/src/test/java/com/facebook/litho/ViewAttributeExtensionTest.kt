@@ -16,11 +16,19 @@
 
 package com.facebook.litho
 
+import android.graphics.Color
 import android.graphics.Rect
 import android.view.View
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
+import com.facebook.litho.kotlin.widget.SolidColor
+import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.viewTag
+import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.MountSpecLifecycleTester
+import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -85,5 +93,35 @@ class ViewAttributeExtensionTest {
     assertThat(lithoViewRule.lithoView.alpha)
         .describedAs("alpha should be restored to the default value")
         .isEqualTo(1f)
+  }
+
+  @Test
+  fun `when view attributes are set on a drawable no view attributes should be created`() {
+    lithoViewRule.render {
+      Column {
+        child(
+            SolidColor(
+                color = Color.BLACK,
+                style = Style.width(10.px).height(10.px).viewTag("test-tag"),
+            ))
+      }
+    }
+
+    val viewAttributes = lithoViewRule.committedLayoutState!!.viewAttributes
+
+    assertThat(viewAttributes.size).isEqualTo(2)
+    assertThat(viewAttributes.values).doesNotContainNull()
+  }
+
+  @Test
+  fun `when component is force wrapped then no duplicate view attributes should be created`() {
+    lithoViewRule.render {
+      Column { child(TextInput(initialText = "hello world", style = Style.wrapInView())) }
+    }
+
+    val viewAttributes = lithoViewRule.committedLayoutState!!.viewAttributes
+
+    assertThat(viewAttributes.size).isEqualTo(2)
+    assertThat(viewAttributes.values).doesNotContainNull()
   }
 }

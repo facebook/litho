@@ -22,6 +22,7 @@ import android.view.View
 import android.widget.TextView
 import com.facebook.litho.LithoRenderUnit.Companion.getRenderUnit
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.visibility.VisibilityMountExtension
 import com.facebook.rendercore.visibility.VisibilityOutput
 
@@ -38,9 +39,10 @@ private constructor(
     private val result: LithoLayoutResult,
     private val node: LithoNode,
     private val componentIndex: Int,
+    private val x: Int,
+    private val y: Int,
     private val xOffset: Int,
     private val yOffset: Int,
-    val componentTreeTimeMachine: ComponentTreeTimeMachine?,
 ) {
 
   interface Overrider {
@@ -60,8 +62,8 @@ private constructor(
     get() = result.context
 
   /** @return The litho view hosting this component. */
-  val lithoView: LithoView?
-    get() = result.context?.mountedView as LithoView?
+  val lithoView: BaseMountingView?
+    get() = result.context?.mountedView as BaseMountingView?
 
   /** @return If this debug component represents a layout node, return it. */
   val layoutNode: DebugLayoutNode?
@@ -109,13 +111,19 @@ private constructor(
     get() = node.getComponentInfoAt(componentIndex).stateContainer
 
   private val xFromRoot: Int
-    get() = result.x + xOffset
+    get() = x + xOffset
 
   private val yFromRoot: Int
-    get() = result.y + yOffset
+    get() = y + yOffset
 
   private val isNotTailComponent: Boolean
     get() = componentIndex != 0
+
+  val widthSpec: String
+    get() = SizeSpec.toSimpleString(result.widthSpec)
+
+  val heightSpec: String
+    get() = SizeSpec.toSimpleString(result.heightSpec)
 
   fun setOverrider(overrider: Overrider) {
     overriders[globalKey] = overrider
@@ -129,21 +137,33 @@ private constructor(
    */
   val childComponents: List<DebugComponent>
     get() {
-      return when {
-        isNotTailComponent -> getImmediateDescendantAsChild()
-        result is NestedTreeHolderResult -> {
-          val nestedResult = result.nestedResult ?: return emptyList()
-          if (nestedResult.mNode.componentCount == 1) {
-            when (nestedResult.childCount) {
-              0 -> return emptyList()
-              else -> getChildren(nestedResult, xFromRoot, yFromRoot)
+      if (result is NullLithoLayoutResult) {
+        return emptyList()
+      } else {
+        return when {
+          isNotTailComponent -> getImmediateDescendantAsChild()
+          result is NestedTreeHolderResult -> {
+            val nestedResult = result.nestedResult ?: return emptyList()
+            if (nestedResult.node.componentCount == 1) {
+              return when (nestedResult.childCount) {
+                0 -> emptyList()
+                else -> getChildren(nestedResult, xFromRoot, yFromRoot)
+              }
             }
+            val index = (nestedResult.node.componentCount - 2).coerceAtLeast(0)
+            val component =
+                getInstance(
+                    nestedResult,
+                    index,
+                    result.getXForChildAtIndex(0),
+                    result.getYForChildAtIndex(0),
+                    xFromRoot,
+                    yFromRoot,
+                )
+            listOfNotNull(component)
           }
-          val index = (nestedResult.node.componentCount - 2).coerceAtLeast(0)
-          val component = getInstance(nestedResult, index, xFromRoot, yFromRoot, null)
-          listOfNotNull(component)
+          else -> getChildren(result, xFromRoot, yFromRoot)
         }
-        else -> getChildren(result, xFromRoot, yFromRoot)
       }
     }
 
@@ -152,7 +172,7 @@ private constructor(
     if (index < 0) {
       return emptyList()
     }
-    val component = getInstance(result, index, xOffset, yOffset, null)
+    val component = getInstance(result, index, x, y, xOffset, yOffset)
     return listOfNotNull(component)
   }
 
@@ -178,8 +198,6 @@ private constructor(
   /** @return The bounds of this component relative to its parent. */
   val bounds: Rect
     get() {
-      val x = result.x
-      val y = result.y
       return Rect(x, y, x + result.width, y + result.height)
     }
   /**
@@ -210,11 +228,17 @@ private constructor(
        * another DebugComponent instance.
        */
       val isHeadComponent = componentIndex == node.componentCount - 1
-      val nestedResult = (result as? NestedTreeHolderResult)?.nestedResult
-      val xFromNestedResult = nestedResult?.x ?: 0
-      val yFromNestedResult = nestedResult?.y ?: 0
-      val x = if (isHeadComponent) result.x + xFromNestedResult else 0
-      val y = if (isHeadComponent) result.y + yFromNestedResult else 0
+      val xFromNestedResult: Int
+      val yFromNestedResult: Int
+      if (result is NestedTreeHolderResult) {
+        xFromNestedResult = result.getXForChildAtIndex(0)
+        yFromNestedResult = result.getYForChildAtIndex(0)
+      } else {
+        xFromNestedResult = 0
+        yFromNestedResult = 0
+      }
+      val x = if (isHeadComponent) x + xFromNestedResult else 0
+      val y = if (isHeadComponent) y + yFromNestedResult else 0
       return Rect(x, y, x + result.width, y + result.height)
     }
 
@@ -228,7 +252,7 @@ private constructor(
   val allTextContent: String?
     get() = buildString {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.mountItemCount) {
+      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
         val mountItem = mountDelegateTarget.getMountItemAt(i)
         val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
         if (mountItemComponent != null) {
@@ -249,7 +273,7 @@ private constructor(
   val textContent: String?
     get() {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.mountItemCount) {
+      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
         val mountItem = mountDelegateTarget.getMountItemAt(i)
         val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
         if (mountItemComponent?.id == component.id) {
@@ -272,7 +296,7 @@ private constructor(
   val componentHost: ComponentHost?
     get() {
       val mountDelegateTarget = lithoView?.mountDelegateTarget ?: return null
-      for (i in 0 until mountDelegateTarget.mountItemCount) {
+      for (i in 0 until mountDelegateTarget.getMountItemCount()) {
         val mountItem = mountDelegateTarget.getMountItemAt(i)
         val mountItemComponent = mountItem?.let { getRenderUnit(it).component }
         if (mountItemComponent?.isEquivalentTo(component) == true) {
@@ -283,11 +307,12 @@ private constructor(
     }
 
   fun rerender() {
-    lithoView?.forceRelayout()
+    (lithoView as? LithoView)?.forceRelayout()
   }
 
   fun canResolve(): Boolean {
-    return component is SpecGeneratedComponent && (component as SpecGeneratedComponent).canResolve()
+    return component is SpecGeneratedComponent &&
+        TestLayoutState.canResolve(component as SpecGeneratedComponent)
   }
 
   val mountedContent: Any?
@@ -297,7 +322,7 @@ private constructor(
       }
       val mountDelegateTarget = lithoView?.mountDelegateTarget
       if (mountDelegateTarget != null) {
-        for (i in 0 until mountDelegateTarget.mountItemCount) {
+        for (i in 0 until mountDelegateTarget.getMountItemCount()) {
           val mountItem = mountDelegateTarget.getMountItemAt(i)
           val component = mountItem?.let { getRenderUnit(it).component }
           if (component != null && component === node.tailComponent) {
@@ -316,22 +341,24 @@ private constructor(
     fun getInstance(
         result: LithoLayoutResult,
         componentIndex: Int,
+        x: Int,
+        y: Int,
         xOffset: Int,
         yOffset: Int,
-        componentTree: ComponentTree?
     ): DebugComponent? {
       val node = result.node
       val context = result.context
-      if (componentIndex >= node.componentCount) {
+      if (result is NullLithoLayoutResult || componentIndex >= node.componentCount) {
         return null
       }
       val componentKey = node.getGlobalKeyAt(componentIndex)
       return DebugComponent(
-              componentTreeTimeMachine = componentTree?.timeMachine,
               globalKey = generateGlobalKey(context, componentKey),
               result = result,
               node = result.node,
               componentIndex = componentIndex,
+              x = x,
+              y = y,
               xOffset = xOffset,
               yOffset = yOffset,
           )
@@ -339,34 +366,60 @@ private constructor(
     }
 
     @JvmStatic
-    fun getRootInstance(view: LithoView): DebugComponent? = getRootInstance(view.componentTree)
+    fun getRootInstance(view: BaseMountingView): DebugComponent? =
+        getRootInstance(view.currentLayoutState)
+
+    fun getRootInstance(componentTree: ComponentTree?): DebugComponent? =
+        if (componentTree == null) null else getRootInstance(componentTree.mainThreadLayoutState)
 
     @JvmStatic
-    fun getRootInstance(componentTree: ComponentTree?): DebugComponent? {
-      val layoutState = componentTree?.mainThreadLayoutState
-      val root = layoutState?.rootLayoutResult ?: return null
+    fun getRootInstance(
+        layoutState: LayoutState?,
+    ): DebugComponent? {
+      val root = layoutState?.rootLayoutResult
+      if (root == null || root is NullLithoLayoutResult) {
+        return null
+      }
+      check(root is LithoLayoutResult) { "Expected root to be a LithoLayoutResult" }
       val node = root.node
       val outerWrapperComponentIndex = (node.componentCount - 1).coerceAtLeast(0)
-      return getInstance(root, outerWrapperComponentIndex, 0, 0, componentTree)?.apply {
-        isRoot = true
-      }
+      return getInstance(root, outerWrapperComponentIndex, 0, 0, 0, 0)?.apply { isRoot = true }
     }
 
     @JvmStatic
-    fun getInstance(result: LithoLayoutResult): DebugComponent? {
+    fun getInstance(result: LithoLayoutResult, x: Int, y: Int): DebugComponent? {
       val rootNode = result.node
       val outerWrapperComponentIndex = (rootNode.componentCount - 1).coerceAtLeast(0)
-      return getInstance(result, outerWrapperComponentIndex, 0, 0, null)
+      return getInstance(result, outerWrapperComponentIndex, x, y, 0, 0)
+    }
+
+    /**
+     * Returns whether this Component should be considered to be mounted, even outside of
+     * incremental mount.
+     *
+     * @see SpecGeneratedComponent.excludeFromIncrementalMount
+     */
+    @JvmStatic
+    fun isExcludedFromIncrementalMount(
+        debugComponent: DebugComponent,
+        layoutState: LayoutState
+    ): Boolean {
+      val renderUnit = getRenderUnit(debugComponent, layoutState)
+      val component = debugComponent.component
+
+      val shouldExcludePrimitiveFromIncrementalMount: Boolean =
+          renderUnit?.findAttachBinderByClass(ExcludeFromIncrementalMountBinder::class.java) != null
+      val shouldExcludeSpecGeneratedComponentFromIncrementalMount: Boolean =
+          component is SpecGeneratedComponent && component.excludeFromIncrementalMount()
+
+      return shouldExcludePrimitiveFromIncrementalMount ||
+          shouldExcludeSpecGeneratedComponentFromIncrementalMount
     }
 
     @JvmStatic
-    fun getRenderUnit(
-        debugComponent: DebugComponent,
-        componentTree: ComponentTree
-    ): RenderUnit<*>? {
+    fun getRenderUnit(debugComponent: DebugComponent, layoutState: LayoutState): RenderUnit<*>? {
       val component = debugComponent.component
-      val layoutState = componentTree.mainThreadLayoutState ?: return null
-      for (i in 0 until layoutState.mountableOutputCount) {
+      for (i in 0 until layoutState.getMountableOutputCount()) {
         val renderTreeNode = layoutState.getMountableOutputAt(i)
         val lithoRenderUnit = renderTreeNode.renderUnit as LithoRenderUnit
         if (lithoRenderUnit.componentContext?.componentScope === component) {
@@ -379,10 +432,9 @@ private constructor(
     @JvmStatic
     fun getVisibilityOutput(
         debugComponent: DebugComponent,
-        componentTree: ComponentTree
+        layoutState: LayoutState
     ): VisibilityOutput? {
       val componentGlobalKey = debugComponent.componentGlobalKey
-      val layoutState = componentTree.mainThreadLayoutState ?: return null
       for (i in 0 until layoutState.visibilityOutputCount) {
         val visibilityOutput = layoutState.getVisibilityOutputAt(i)
         if (visibilityOutput.id == componentGlobalKey) {
@@ -393,17 +445,18 @@ private constructor(
     }
 
     @JvmStatic
-    fun isVisible(debugComponent: DebugComponent, lithoView: LithoView): Boolean {
+    fun isVisible(debugComponent: DebugComponent, lithoView: BaseMountingView): Boolean {
       val componentGlobalKey = debugComponent.componentGlobalKey
-      val visibilityState = lithoView.visibilityExtensionState
-      return VisibilityMountExtension.isVisible(visibilityState, componentGlobalKey)
+      return lithoView.visibilityExtensionState?.let {
+        VisibilityMountExtension.isVisible(it, componentGlobalKey)
+      } ?: false
     }
 
-    private fun generateGlobalKey(context: ComponentContext, componentKey: String): String =
+    private fun generateGlobalKey(context: ComponentContext, componentKey: String?): String =
         generateGlobalKey(context.lithoTree?.id, componentKey)
 
     @JvmStatic
-    fun generateGlobalKey(treeId: Int?, globalKey: String): String =
+    fun generateGlobalKey(treeId: Int?, globalKey: String?): String =
         "${treeId?: "notree"}:${globalKey}"
 
     @JvmStatic
@@ -430,11 +483,19 @@ private constructor(
       overrider?.applyLayoutOverrides(key, DebugLayoutNodeEditor(node))
     }
 
-    private fun getChildren(result: LithoLayoutResult, x: Int, y: Int) = buildList {
+    private fun getChildren(result: LithoLayoutResult, xOffset: Int, yOffset: Int) = buildList {
       for (i in 0 until result.childCount) {
         val childNode = result.getChildAt(i)
         val index = (childNode.node.componentCount - 1).coerceAtLeast(0)
-        getInstance(childNode, index, x, y, null)?.let { add(it) }
+        getInstance(
+                childNode,
+                index,
+                result.getXForChildAtIndex(i),
+                result.getYForChildAtIndex(i),
+                xOffset,
+                yOffset,
+            )
+            ?.let { add(it) }
       }
     }
   }

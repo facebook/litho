@@ -38,7 +38,6 @@ import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
-import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
@@ -86,6 +85,7 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) pullToRefreshEnabled: Boolean,
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
       @Prop(optional = true) sectionsViewLogger: SectionsRecyclerViewLogger?,
+      @Prop(optional = true) shouldExcludeFromIncrementalMount: Boolean,
       @State internalRecyclerEventsController: RecyclerEventsController?,
       @State binder: Binder<RecyclerView>,
       @State sectionTree: SectionTree
@@ -111,6 +111,7 @@ object CollectionRecyclerSpec {
         .touchInterceptor(touchInterceptor)
         .onItemTouchListener(itemTouchListener)
         .binder(binder)
+        .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
         .touchHandler(recyclerTouchEventHandler)
         .sectionsViewLogger(sectionsViewLogger)
         .apply {
@@ -146,29 +147,7 @@ object CollectionRecyclerSpec {
         RecyclerBinder.Builder()
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
             .startupLogger(startupLogger)
-            .shouldPreallocatePerMountSpec(binderConfiguration.shouldPreallocatePerMountContent())
-            .apply {
-              with(binderConfiguration) {
-                rangeRatio(rangeRatio)
-                layoutHandlerFactory(layoutHandlerFactory)
-                wrapContent(isWrapContent)
-                enableStableIds(enableStableIds)
-                invalidStateLogParamsList(invalidStateLogParamsList)
-                threadPoolConfig(threadPoolConfiguration)
-                hscrollAsyncMode(hScrollAsyncMode)
-                isCircular(isCircular)
-                hasDynamicItemHeight(hasDynamicItemHeight())
-                componentsConfiguration(componentsConfiguration)
-                isReconciliationEnabled(isReconciliationEnabled)
-                isLayoutDiffingEnabled(isLayoutDiffingEnabled)
-                componentWarmer(componentWarmer)
-                lithoViewFactory(lithoViewFactory)
-                errorEventHandler(errorEventHandler)
-                if (estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
-                  estimatedViewportCount(estimatedViewportCount)
-                }
-              }
-            }
+            .recyclerBinderConfig(binderConfiguration.recyclerBinderConfig)
             .build(c)
 
     val targetBinder =

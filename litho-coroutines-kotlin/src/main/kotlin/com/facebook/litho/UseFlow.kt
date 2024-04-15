@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.Hook
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -28,34 +27,24 @@ import kotlinx.coroutines.flow.StateFlow
  */
 @Hook
 fun <T> ComponentScope.useFlow(stateFlow: StateFlow<T>): T =
-    useFlow(initialValue = { stateFlow.value }, stateFlow)
+    useProducer(initialValue = { stateFlow.value }, stateFlow) { stateFlow.collect { update(it) } }
 
 /**
- * Uses the collection of a given [flow] in a Litho Kotlin component, with a provided initial value.
+ * Uses the collection of a StateFlow that is dynamically supplied by [flowBlock], which will be
+ * executed whenever the given [keys] change.
  *
- * The flow will be collected on the CoroutineScope given by [getTreeProp], and will be canceled
- * when this component is detached.
- */
-@Hook
-fun <T> ComponentScope.useFlow(initialValue: () -> T, flow: Flow<T>): T =
-    useProducer(initialValue, flow) { flow.collect { update(it) } }
-
-/**
- * Uses the collection of a flow that is dynamically supplied by [flowBlock], which will be executed
- * whenever the given [keys] change.
- *
- * The flow will be collected on the CoroutineScope given by [getTreeProp], and will be canceled
- * when this component is detached or if any [keys] change.
+ * The state flow will be collected on the CoroutineScope given by [getTreeProp], and will be
+ * canceled when this component is detached or if any [keys] change.
  */
 @Hook
 fun <T> ComponentScope.useFlow(
     initialValue: () -> T,
     vararg keys: Any?,
-    flowBlock: () -> Flow<T>,
+    flowBlock: suspend () -> StateFlow<T>,
 ): T = useProducer(initialValue, *keys) { flowBlock().collect { update(it) } }
 
 /**
- * Uses the collection of a flow that is dynamically supplied by [flowBlock].
+ * Uses the collection of a StateFlow that is dynamically supplied by [flowBlock].
  *
  * It is an error to call [ComponentScope.useFlow] without keys parameter.
  */
@@ -64,7 +53,7 @@ fun <T> ComponentScope.useFlow(
 @Deprecated(USE_FLOW_NO_KEYS_ERROR, level = DeprecationLevel.ERROR)
 @Suppress("unused", "UNUSED_PARAMETER")
 @Hook
-fun <T> ComponentScope.useFlow(initialValue: () -> T, flowBlock: () -> Flow<T>): Unit =
+fun <T> ComponentScope.useFlow(initialValue: () -> T, flowBlock: suspend () -> StateFlow<T>): Unit =
     throw IllegalStateException(USE_FLOW_NO_KEYS_ERROR)
 
 private const val USE_FLOW_NO_KEYS_ERROR =

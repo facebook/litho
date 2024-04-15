@@ -22,7 +22,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -44,7 +45,7 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 class LithoRecyclerBinderLifecycleProviderTest {
 
-  private lateinit var lithoLifecycleProviderDelegate: LithoLifecycleProviderDelegate
+  private lateinit var lithoLifecycleProviderDelegate: LithoVisibilityEventsControllerDelegate
   private lateinit var recyclerBinder: RecyclerBinder
   private lateinit var recyclerView: RecyclerView
 
@@ -52,7 +53,7 @@ class LithoRecyclerBinderLifecycleProviderTest {
 
   @Before
   fun setup() {
-    lithoLifecycleProviderDelegate = LithoLifecycleProviderDelegate()
+    lithoLifecycleProviderDelegate = LithoVisibilityEventsControllerDelegate()
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     recyclerView = RecyclerView(ApplicationProvider.getApplicationContext())
     recyclerView.layoutParams = ViewGroup.LayoutParams(10, 100)
@@ -75,23 +76,29 @@ class LithoRecyclerBinderLifecycleProviderTest {
     Shadows.shadowOf(Looper.getMainLooper()).idle()
   }
 
+  // All nested Lithoviews are not yet created, so there are not lifecycleproviders are created
+  // either
   @Test
   fun lithoLifecycleProviderDelegateRecyclerBinderVisibleTest() {
-    lithoLifecycleProviderDelegate.moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
-    for (j in 0..19) {
-      assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
-          .describedAs("Visible event is expected to be dispatched")
-          .isEqualTo(LithoLifecycle.HINT_VISIBLE)
+    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      lithoLifecycleProviderDelegate.moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
+      for (j in 0..19) {
+        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
+            .describedAs("Visible event is expected to be dispatched")
+            .isEqualTo(LithoLifecycle.HINT_VISIBLE)
+      }
     }
   }
 
   @Test
   fun lithoLifecycleProviderDelegateRecyclerBinderInvisibleTest() {
-    lithoLifecycleProviderDelegate.moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
-    for (j in 0..19) {
-      assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
-          .describedAs("Invisible event is expected to be dispatched")
-          .isEqualTo(LithoLifecycle.HINT_INVISIBLE)
+    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      lithoLifecycleProviderDelegate.moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
+      for (j in 0..19) {
+        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
+            .describedAs("Invisible event is expected to be dispatched")
+            .isEqualTo(LithoLifecycle.HINT_INVISIBLE)
+      }
     }
   }
 }

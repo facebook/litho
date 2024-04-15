@@ -19,7 +19,7 @@ package com.facebook.samples.litho.java.lifecycle
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import com.facebook.litho.AOSPLithoLifecycleProvider
+import com.facebook.litho.AOSPLithoVisibilityEventsController
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.facebook.samples.litho.NavigatableDemoActivity
@@ -76,7 +76,7 @@ class LifecycleDelegateActivity : NavigatableDemoActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
     // start_example_lifecycleprovider
-    val lifecycleProvider = AOSPLithoLifecycleProvider(this)
+    val lifecycleProvider = AOSPLithoVisibilityEventsController(this)
     val componentContext = ComponentContext(this)
     lithoView =
         LithoView.create(
@@ -86,7 +86,7 @@ class LifecycleDelegateActivity : NavigatableDemoActivity() {
                 .delegateListener(delegateListener)
                 .consoleDelegateListener(consoleDelegateListener)
                 .build(),
-            lifecycleProvider /* The LithoLifecycleProvider for this LithoView */)
+            lifecycleProvider /* The LithoVisibilityEventsController for this LithoView */)
     // end_example_lifecycleprovider
     val params1 =
         LinearLayout.LayoutParams(

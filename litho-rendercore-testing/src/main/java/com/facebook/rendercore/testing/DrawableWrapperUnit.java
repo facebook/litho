@@ -59,7 +59,7 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   }
 
   @Override
-  public boolean isRecyclingDisabled() {
+  public boolean isPoolingDisabled() {
     return true;
   }
 }

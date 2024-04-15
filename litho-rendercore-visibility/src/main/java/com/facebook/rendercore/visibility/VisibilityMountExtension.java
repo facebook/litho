@@ -17,7 +17,7 @@
 package com.facebook.rendercore.visibility;
 
 import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
-import static com.facebook.rendercore.debug.DebugEventAttribute.GlobalKey;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Key;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
@@ -168,7 +168,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     state.mPreviousLocalVisibleRect.setEmpty();
   }
 
-  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  /**
+   * @deprecated Only used for Litho's integration. Marked for removal.
+   */
   @Deprecated
   public static void setRootHost(
       ExtensionState<VisibilityMountExtensionState> extensionState, Host root) {
@@ -241,11 +243,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
       final @Nullable VisibilityBoundsTransformer transformer =
           extensionState.getState().mVisibilityBoundsTransformer;
+      @Nullable Rect transformedLocalVisibleRect = null;
       if (transformer != null) {
-        Rect transformed = transformer.getTransformedLocalVisibleRect(extensionState.getRootHost());
-        if (transformed != null) {
-          localVisibleRect = transformed;
-        }
+        transformedLocalVisibleRect =
+            transformer.getTransformedLocalVisibleRect(extensionState.getRootHost());
       }
 
       final boolean isTracing = RenderCoreSystrace.isTracing();
@@ -264,8 +265,14 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
         final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
+        final boolean shouldUseTransformedVisibleRect =
+            transformer != null && transformer.shouldUseTransformedVisibleRect(visibilityOutput);
         final boolean boundsIntersect =
-            intersection.setIntersect(visibilityOutputBounds, localVisibleRect);
+            intersection.setIntersect(
+                visibilityOutputBounds,
+                shouldUseTransformedVisibleRect && transformedLocalVisibleRect != null
+                    ? transformedLocalVisibleRect
+                    : localVisibleRect);
         final boolean isFullyVisible =
             boundsIntersect && intersection.equals(visibilityOutputBounds);
         final String visibilityOutputId = visibilityOutput.getId();
@@ -382,7 +389,11 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
           // Check if the component has entered or exited the focused range.
           if (focusedHandler != null || unfocusedHandler != null) {
-            if (isInFocusedRange(extensionState, visibilityOutputBounds, intersection)) {
+            if (isInFocusedRange(
+                extensionState,
+                visibilityOutputBounds,
+                intersection,
+                shouldUseTransformedVisibleRect)) {
               if (!visibilityItem.isInFocusedRange()) {
                 visibilityItem.setFocusedRange(true);
                 if (focusedHandler != null) {
@@ -413,6 +424,15 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             final int visibleHeight = getVisibleHeight(intersection);
             int rootHostViewWidth = getRootHostViewWidth(extensionState);
             int rootHostViewHeight = getRootHostViewHeight(extensionState);
+            if (shouldUseTransformedVisibleRect && transformer != null) {
+              final Host host = getRootHost(extensionState);
+              if (host != null && (host.getParent() instanceof View)) {
+                final View parent = (View) host.getParent();
+                rootHostViewWidth = transformer.getViewportWidth(parent);
+                rootHostViewHeight = transformer.getViewportHeight(parent);
+              }
+            }
+
             VisibilityUtils.dispatchOnVisibilityChanged(
                 visibilityChangedHandler,
                 getVisibleTop(visibilityOutputBounds, intersection),
@@ -452,7 +472,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     attributes.put(RenderUnitId, visibilityItem.getRenderUnitId());
     attributes.put(Name, visibilityItem.getComponentName());
     attributes.put(Bounds, visibilityItem.getBounds());
-    attributes.put(GlobalKey, visibilityItem.getKey());
+    attributes.put(Key, visibilityItem.getKey());
     return attributes;
   }
 
@@ -500,7 +520,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   private static boolean isInFocusedRange(
       ExtensionState<VisibilityMountExtensionState> extensionState,
       Rect componentBounds,
-      Rect componentVisibleBounds) {
+      Rect componentVisibleBounds,
+      boolean shouldUseTransformedVisibleRect) {
     final Host host = getRootHost(extensionState);
     if (host == null) {
       return false;
@@ -515,11 +536,11 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
     final @Nullable VisibilityBoundsTransformer transformer =
         extensionState.getState().mVisibilityBoundsTransformer;
-    final int halfViewportArea =
-        (transformer != null
-                ? transformer.getViewportArea(parent)
-                : parent.getWidth() * parent.getHeight())
-            / 2;
+    int halfViewportArea = parent.getWidth() * parent.getHeight() / 2;
+    if (shouldUseTransformedVisibleRect && transformer != null) {
+      halfViewportArea = transformer.getViewportArea(parent) / 2;
+    }
+
     final int totalComponentArea = computeRectArea(componentBounds);
     final int visibleComponentArea = computeRectArea(componentVisibleBounds);
 
@@ -631,7 +652,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     private @Nullable VisibilityBoundsTransformer mVisibilityBoundsTransformer;
     private @Nullable VisibilityExtensionInput mInput;
 
-    /** @deprecated Only used for Litho's integration. Marked for removal. */
+    /**
+     * @deprecated Only used for Litho's integration. Marked for removal.
+     */
     @Deprecated private @Nullable Host mRootHost;
 
     private VisibilityMountExtensionState() {}

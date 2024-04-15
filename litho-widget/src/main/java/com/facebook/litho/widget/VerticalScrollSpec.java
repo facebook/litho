@@ -22,7 +22,6 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
@@ -37,9 +36,11 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Wrapper;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
@@ -78,18 +79,20 @@ public class VerticalScrollSpec {
   static void onCreateInitialState(
       ComponentContext context,
       StateValue<LithoScrollView.ScrollPosition> scrollPosition,
-      StateValue<ComponentTree> childComponentTree,
-      @Prop Component childComponent,
-      @Prop(optional = true) int initialScrollOffsetPixels,
-      @Prop(optional = true) boolean incrementalMountEnabled) {
+      @Prop(optional = true) int initialScrollOffsetPixels) {
     LithoScrollView.ScrollPosition initialScrollPosition = new LithoScrollView.ScrollPosition();
     initialScrollPosition.y = initialScrollOffsetPixels;
     scrollPosition.set(initialScrollPosition);
+  }
 
-    childComponentTree.set(
-        ComponentTree.createNestedComponentTree(context, childComponent)
-            .incrementalMount(incrementalMountEnabled)
-            .build());
+  @OnCalculateCachedValue(name = "childComponentTree")
+  static ComponentTree ensureComponentTree(
+      final ComponentContext c, final @Prop(optional = true) boolean incrementalMountEnabled) {
+    // The parent ComponentTree(CT) in context may be released and re-created. In this case, the
+    // child CT will be re-created here because the cache in the new created parent CT return null
+    return ComponentTree.createNestedComponentTree(c)
+        .incrementalMount(incrementalMountEnabled)
+        .build();
   }
 
   @OnMeasure
@@ -101,7 +104,7 @@ public class VerticalScrollSpec {
       Size size,
       @Prop Component childComponent,
       @Prop(optional = true) boolean fillViewport,
-      @State ComponentTree childComponentTree,
+      @CachedValue ComponentTree childComponentTree,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
     int horizontalPadding = layout.getPaddingLeft() + layout.getPaddingRight();
@@ -123,10 +126,9 @@ public class VerticalScrollSpec {
       ComponentLayout layout,
       @Prop Component childComponent,
       @Prop(optional = true) boolean fillViewport,
-      @State ComponentTree childComponentTree,
+      @CachedValue ComponentTree childComponentTree,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight) {
-
     final int layoutWidth = layout.getWidth() - layout.getPaddingLeft() - layout.getPaddingRight();
     final int layoutHeight =
         layout.getHeight() - layout.getPaddingTop() - layout.getPaddingBottom();
@@ -157,6 +159,14 @@ public class VerticalScrollSpec {
       ComponentTree childComponentTree,
       Component childComponent,
       boolean fillViewport) {
+    if (childComponentTree.isReleased()) {
+      if (size != null) {
+        size.width = Math.max(0, size.width);
+        size.height = Math.max(0, size.height);
+      }
+      return;
+    }
+
     // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
     if (fillViewport) {
       childComponent =
@@ -204,7 +214,6 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
       @Prop(optional = true) boolean nestedScrollingEnabled,
-      @Prop(optional = true) boolean incrementalMountEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @Nullable VerticalScrollEventsController eventsController,
@@ -214,22 +223,15 @@ public class VerticalScrollSpec {
       // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
       @Prop(optional = true) @Nullable
           LithoScrollView.OnInterceptTouchListener onInterceptTouchListener,
-      @State ComponentTree childComponentTree,
+      @CachedValue ComponentTree childComponentTree,
       @State final LithoScrollView.ScrollPosition scrollPosition) {
+
     lithoScrollView.mount(childComponentTree, scrollPosition, scrollStateListener);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
     lithoScrollView.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
     lithoScrollView.setFadingEdgeLength(fadingEdgeLength);
-
-    // On older versions we need to disable the vertical scroll bar as otherwise we run into an NPE
-    // that was only fixed in Lollipop - see
-    // https://github.com/aosp-mirror/platform_frameworks_base/commit/6c8fef7fb866d244486a962dd82f4a6f26505f16#diff-7c8b4c8147fbbbf69293775bca384f31.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      lithoScrollView.setVerticalScrollBarEnabled(false);
-    } else {
-      lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
-    }
+    lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     lithoScrollView.setOnScrollChangeListener(onScrollChangeListener);
     lithoScrollView.setOnInterceptTouchListener(onInterceptTouchListener);
     lithoScrollView.setOverScrollMode(overScrollMode);
@@ -244,6 +246,7 @@ public class VerticalScrollSpec {
       ComponentContext context,
       LithoScrollView lithoScrollView,
       @Prop(optional = true) @Nullable VerticalScrollEventsController eventsController) {
+
     if (eventsController != null) {
       eventsController.setScrollView(null);
     }

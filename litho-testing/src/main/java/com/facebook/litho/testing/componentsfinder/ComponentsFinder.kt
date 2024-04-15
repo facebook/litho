@@ -21,6 +21,7 @@ import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoNode
 import com.facebook.litho.LithoView
 import com.facebook.litho.NestedTreeHolderResult
+import com.facebook.litho.NullLithoLayoutResult
 import com.facebook.litho.ScopedComponentInfo
 import kotlin.reflect.KClass
 
@@ -138,11 +139,11 @@ fun findAllComponentsInLithoView(
 }
 
 private fun getLayoutRoot(lithoView: LithoView): LithoLayoutResult? {
-  val commitedLayoutState =
+  val committedLayoutState =
       lithoView.componentTree?.committedLayoutState
           ?: throw IllegalStateException(
               "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
-  return commitedLayoutState.rootLayoutResult
+  return committedLayoutState.rootLayoutResult as? LithoLayoutResult
 }
 
 /**
@@ -201,6 +202,10 @@ private inline fun componentBreadthFirstSearch(
 
   while (queue.isNotEmpty()) {
     val current = queue.removeFirst()
+    if (current is NullLithoLayoutResult) {
+      continue
+    }
+
     onHandleScopedComponents(getOrderedScopedComponentInfos(current.node).map { it.component })
 
     if (current is NestedTreeHolderResult) {

@@ -50,8 +50,10 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
+import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import java.util.List;
 
 /**
@@ -83,6 +85,7 @@ class RecyclerSpec {
   @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
   @PropDefault static final int recyclerViewId = View.NO_ID;
   @PropDefault static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
+
   @PropDefault static final int refreshProgressBarColor = Color.BLACK;
   @PropDefault static final boolean clipToPadding = true;
   @PropDefault static final boolean clipChildren = true;
@@ -95,6 +98,12 @@ class RecyclerSpec {
   // This is the default value for refresh spinner background from
   // SwipeRefreshLayout.CIRCLE_BG_LIGHT which is unfortunately private.
   static final int DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = 0xFFFAFAFA;
+
+  @ShouldExcludeFromIncrementalMount
+  static boolean shouldExcludeFromIncrementalMount(
+      @Prop(optional = true) boolean shouldExcludeFromIncrementalMount) {
+    return shouldExcludeFromIncrementalMount;
+  }
 
   @OnMeasure
   static void onMeasure(
@@ -151,6 +160,7 @@ class RecyclerSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
+      @Prop(optional = true) @Nullable RecyclerView.EdgeEffectFactory edgeEffectFactory,
       @Nullable @Prop(optional = true, isCommonProp = true) CharSequence contentDescription,
       @Prop(optional = true) @Nullable ItemAnimator itemAnimator) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
@@ -179,6 +189,9 @@ class RecyclerSpec {
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
     recyclerView.setOverScrollMode(overScrollMode);
+    if (edgeEffectFactory != null) {
+      recyclerView.setEdgeEffectFactory(edgeEffectFactory);
+    }
     if (refreshProgressBarBackgroundColor != null) {
       sectionsRecycler.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor);
     }
@@ -209,7 +222,7 @@ class RecyclerSpec {
       @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) @Nullable RecyclerView.OnItemTouchListener onItemTouchListener,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler,
-      @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger) {
+      @Prop(optional = true) @Nullable SectionsRecyclerViewLogger sectionsViewLogger) {
 
     sectionsRecycler.setSectionsRecyclerViewLogger(sectionsViewLogger);
 
@@ -237,7 +250,9 @@ class RecyclerSpec {
 
     if (onScrollListeners != null) {
       for (OnScrollListener onScrollListener : onScrollListeners) {
-        recyclerView.addOnScrollListener(onScrollListener);
+        if (onScrollListener != null) {
+          recyclerView.addOnScrollListener(onScrollListener);
+        }
       }
     }
 
@@ -297,7 +312,9 @@ class RecyclerSpec {
 
     if (onScrollListeners != null) {
       for (OnScrollListener onScrollListener : onScrollListeners) {
-        recyclerView.removeOnScrollListener(onScrollListener);
+        if (onScrollListener != null) {
+          recyclerView.removeOnScrollListener(onScrollListener);
+        }
       }
     }
 
@@ -317,6 +334,7 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Nullable @Prop(optional = true, varArg = "itemDecoration")
           List<RecyclerView.ItemDecoration> itemDecorations,
+      @Nullable @Prop(optional = true) RecyclerView.EdgeEffectFactory edgeEffectFactory,
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
       @Nullable @Prop(optional = true) SnapHelper snapHelper) {
@@ -339,6 +357,10 @@ class RecyclerSpec {
       for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
         recyclerView.removeItemDecoration(itemDecoration);
       }
+    }
+
+    if (edgeEffectFactory != null) {
+      recyclerView.setEdgeEffectFactory(sectionsRecycler.getDefaultEdgeEffectFactory());
     }
 
     binder.unmount(recyclerView);

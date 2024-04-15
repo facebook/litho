@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
+import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -99,6 +100,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int textAlignment = TextInputSpec.textAlignment;
   @PropDefault protected static final int gravity = TextInputSpec.gravity;
   @PropDefault protected static final boolean editable = TextInputSpec.editable;
+  @PropDefault protected static final boolean cursorVisible = TextInputSpec.cursorVisible;
   @PropDefault protected static final int inputType = TextInputSpec.inputType;
   @PropDefault protected static final int rawInputType = TextInputSpec.rawInputType;
   @PropDefault protected static final int imeOptions = TextInputSpec.imeOptions;
@@ -113,6 +115,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int editTextEndPadding = UNSET;
   @PropDefault protected static final int editTextBottomPadding = UNSET;
   @PropDefault protected static final int importantForAutofill = 0;
+  @PropDefault protected static final boolean disableAutofill = false;
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -151,6 +154,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -172,6 +176,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
+      @Prop(optional = true) boolean disableAutofill,
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
@@ -195,6 +200,7 @@ class MaterialTextInputSpec {
             textAlignment,
             gravity,
             editable,
+            cursorVisible,
             inputType,
             rawInputType,
             keyListener,
@@ -209,6 +215,7 @@ class MaterialTextInputSpec {
             errorDrawable,
             importantForAutofill,
             autofillHints,
+            disableAutofill,
             savedText.get());
     MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
     setParams(
@@ -249,6 +256,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) Diff<Integer> textAlignment,
       @Prop(optional = true) Diff<Integer> gravity,
       @Prop(optional = true) Diff<Boolean> editable,
+      @Prop(optional = true) Diff<Boolean> cursorVisible,
       @Prop(optional = true) Diff<Integer> inputType,
       @Prop(optional = true) Diff<Integer> rawInputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
@@ -289,6 +297,7 @@ class MaterialTextInputSpec {
             textAlignment,
             gravity,
             editable,
+            cursorVisible,
             inputType,
             rawInputType,
             imeOptions,
@@ -346,6 +355,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) boolean cursorVisible,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
@@ -390,6 +400,7 @@ class MaterialTextInputSpec {
         textAlignment,
         gravity,
         editable,
+        cursorVisible,
         inputType,
         rawInputType,
         keyListener,
@@ -467,13 +478,17 @@ class MaterialTextInputSpec {
   static void onBind(
       final ComponentContext c,
       MountableTextInputLayout textInputLayout,
-      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
+      @Prop(optional = true) @Nullable ActionMode.Callback selectionActionModeCallback,
+      @Prop(optional = true) @Nullable ActionMode.Callback insertionActionModeCallback) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onBindEditText(
         c,
         editText,
         textWatchers,
+        selectionActionModeCallback,
+        insertionActionModeCallback,
         MaterialTextInput.getTextChangedEventHandler(c),
         MaterialTextInput.getSelectionChangedEventHandler(c),
         MaterialTextInput.getInputFocusChangedEventHandler(c),

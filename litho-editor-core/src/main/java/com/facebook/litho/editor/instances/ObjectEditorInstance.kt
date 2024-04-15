@@ -40,7 +40,8 @@ class ObjectEditorInstance : Editor {
               val editorValue =
                   when (val value = field[dataClassInstance]) {
                     null -> EditorValue.string("null")
-                    else -> EditorRegistry.readValueThatIsNotAField(value.javaClass, value)
+                    else ->
+                        EditorRegistry.readValueThatIsNotAField(value.javaClass, value)
                             ?: EditorValue.string(value.javaClass.toString())
                   }
               field.name to editorValue

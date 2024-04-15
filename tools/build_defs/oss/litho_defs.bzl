@@ -1,3 +1,23 @@
+JDK_COMPILER_ARGS = [
+    "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+    "--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+    "--add-opens=jdk.compiler/com.sun.source.util=ALL-UNNAMED",
+    "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+    "--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+    "--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED",
+    "--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
+    "--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+]
+
 LITHO_ROOT = "//"
 
 LITHO_VISIBILITY = [
@@ -28,14 +48,6 @@ LITHO_JAVA_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho:l
 
 LITHO_ANNOTATIONS_TARGET = make_dep_path("litho-annotations/src/main/java/com/facebook/litho/annotations:annotations")
 
-LITHO_CONFIG_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/config:config")
-
-LITHO_PERFBOOST_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/perfboost:perfboost")
-
-LITHO_VIEWCOMPAT_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompat:viewcompat")
-
-LITHO_UTILS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils")
-
 LITHO_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget/accessibility:accessibility")
 
 LITHO_WIDGET_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget")
@@ -45,10 +57,6 @@ LITHO_WIDGET_MATERIAL_TARGET = make_dep_path("litho-widget-material/src/main/jav
 LITHO_WIDGET_RES_TARGET = make_dep_path("litho-widget:res")
 
 LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebook/litho/fresco:fresco")
-
-LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/stats:stats")
-
-LITHO_YOGA_FACTORY_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/yoga:yoga")
 
 LITHO_EDITOR_CORE_TARGET = make_dep_path("litho-editor-core/src/main/java/com/facebook/litho/editor:editor")
 
@@ -166,8 +174,6 @@ LITHO_COMPILE_TESTING_TARGET = make_dep_path("lib/compile-testing:compile-testin
 
 LITHO_TRUTH_TARGET = make_dep_path("lib/truth:truth")
 
-LITHO_MOCKITO_TARGET = make_dep_path("lib/mockito:mockito")
-
 LITHO_MOCKITO_V2_TARGET = make_dep_path("lib/mockito2:mockito2")
 
 LITHO_POWERMOCK_MOCKITO_V2_TARGET = make_dep_path("lib/powermock2:powermock-mockito2")
@@ -196,9 +202,9 @@ LITHO_RENDERCORE_VISIBILITY_TARGET = make_dep_path("litho-rendercore-visibility:
 
 LITHO_RENDERCORE_TRANSITIONS_TARGET = make_dep_path("litho-rendercore-transitions:rendercore-transitions-stub")
 
-LITHO_RENDERCORE_MOUNTABLE_CANVAS_TARGET = make_dep_path("litho-rendercore-mountables/mountable-canvas:mountable-canvas")
+LITHO_RENDERCORE_PRIMITIVE_COMPONENTS_CANVAS_TARGET = make_dep_path("litho-rendercore-primitive-components/canvas:canvas")
 
-LITHO_RENDERCORE_MOUNTABLE_UTILS_TARGET = make_dep_path("litho-rendercore-mountables/mountable-utils:mountable-utils")
+LITHO_RENDERCORE_PRIMITIVE_COMPONENTS_UTILS_TARGET = make_dep_path("litho-rendercore-primitive-components/utils:utils")
 
 LITHO_RENDERCORE_PRIMITIVES_TARGET = make_dep_path("litho-rendercore-primitives:rendercore-primitives")
 
@@ -217,6 +223,8 @@ LITHO_JUNIT_TARGET = make_dep_path("lib/junit:junit")
 LITHO_HAMCREST_TARGET = make_dep_path("lib/hamcrest:hamcrest")
 
 # Annotation processors
+LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/annotationprocessors/common:common")
+
 LITHO_PROCESSOR_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor")
 
 LITHO_PROCESSOR_LIB_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib")
@@ -394,7 +402,7 @@ def define_yogajni_targets():
             "-fexceptions",
             "-Wall",
             "-O3",
-            "-std=c++11",  # FIXME
+            "-std=c++20",  # FIXME
         ],
         soname = "libyoga.$(ext)",
         visibility = LITHO_VISIBILITY,
@@ -428,7 +436,7 @@ def define_cpp_yoga_targets():
             "-fno-omit-frame-pointer",
             "-fexceptions",
             "-Wall",
-            "-std=c++11",  # FIXME
+            "-std=c++20",  # FIXME
             "-O3",
         ],
         force_static = True,

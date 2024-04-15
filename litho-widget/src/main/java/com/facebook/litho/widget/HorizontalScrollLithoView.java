@@ -37,7 +37,8 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
   private final LithoView mLithoView;
 
   private int mComponentWidth;
-  private int mComponentHeight;;
+  private int mComponentHeight;
+  ;
 
   @Nullable private ScrollPosition mScrollPosition;
   @Nullable private OnScrollChangeListener mOnScrollChangeListener;

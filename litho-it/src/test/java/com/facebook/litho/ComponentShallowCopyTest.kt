@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.LithoTree.Companion.create
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
@@ -38,11 +39,10 @@ class ComponentShallowCopyTest {
 
   @Test
   fun testShallowCopyCachedLayoutSameLayoutState() {
-    context =
-        ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
+    context = context.makeNewCopy()
     val c = ComponentContext(context)
-    val resolveStateContext = c.setRenderStateContextForTests()
-    val resultCache = resolveStateContext.cache
+    val resolveContext = c.setRenderStateContextForTests()
+    val resultCache = resolveContext.cache
     val component = SimpleMountSpecTester.create(context).build()
     component.measure(c, 100, 100, Size())
     assertThat(resultCache.getCachedResult(component)).isNotNull
@@ -54,10 +54,12 @@ class ComponentShallowCopyTest {
 
   @Test
   fun testShallowCopyCachedLayoutOtherLayoutStateCacheLayoutState() {
-    context =
-        ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
-    val c1 = ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
-    val c2 = ComponentContextUtils.withComponentTree(context, ComponentTree.create(context).build())
+    val componentTree = ComponentTree.create(context).build()
+    context = fromComponentTree(componentTree)
+
+    val c1 = fromComponentTree(componentTree)
+    val c2 = fromComponentTree(componentTree)
+
     val rsc1 = c1.setRenderStateContextForTests()
     val rsc2 = c2.setRenderStateContextForTests()
     val resultCache1 = rsc1.cache
@@ -77,5 +79,18 @@ class ComponentShallowCopyTest {
     val shallowCopy = component.makeShallowCopy()
     assertThat(shallowCopy.key).isEqualTo("manual_key")
     assertThat(shallowCopy.hasManualKey()).isTrue
+  }
+
+  private fun fromComponentTree(componentTree: ComponentTree): ComponentContext {
+    val c = componentTree.context
+    return ComponentContext(
+        c.androidContext,
+        c.treePropContainer,
+        componentTree.lithoConfiguration,
+        create(componentTree),
+        c.mGlobalKey,
+        c.lifecycleProvider,
+        null,
+        c.parentTreePropContainer)
   }
 }

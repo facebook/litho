@@ -18,7 +18,9 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
+import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.RenderTreeNode
+import com.facebook.rendercore.utils.isEqualOrEquivalentTo
 
 /**
  * This object will host the data associated with the component which is generated during the
@@ -33,8 +35,20 @@ class LithoLayoutData(
     @field:JvmField val currentLayoutStateId: Int,
     @field:JvmField val previousLayoutStateId: Int,
     @field:JvmField val expandedTouchBounds: Rect?,
-    @field:JvmField val layoutData: Any?
-) {
+    @field:JvmField val layoutData: Any?,
+    @field:JvmField val isSizeDependant: Boolean,
+    val debugHierarchy: DebugHierarchy.Node?,
+) : Equivalence<LithoLayoutData> {
+
+  override fun isEquivalentTo(other: LithoLayoutData): Boolean {
+    // check if the size has changed if the components were size dependant
+    if ((isSizeDependant && other.isSizeDependant) &&
+        (width != other.width || height != other.height)) {
+      return false
+    }
+    return isEqualOrEquivalentTo(layoutData, other.layoutData)
+  }
+
   companion object {
     /**
      * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData

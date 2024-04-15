@@ -47,7 +47,7 @@ interface TextContent {
 
     val fontLineHeight: Float
 
-    val typeface: Typeface
+    val typeface: Typeface?
 
     val color: Int
 

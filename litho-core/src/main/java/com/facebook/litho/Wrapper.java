@@ -33,11 +33,6 @@ public final class Wrapper extends SpecGeneratedComponent {
     super("Wrapper");
   }
 
-  @Override
-  protected boolean canResolve() {
-    return true;
-  }
-
   public static Builder create(ComponentContext context) {
     return create(context, 0, 0);
   }
@@ -51,24 +46,22 @@ public final class Wrapper extends SpecGeneratedComponent {
     return this;
   }
 
-  @Override
-  protected @Nullable LithoNode resolve(
-      ResolveStateContext resolveStateContext, ComponentContext c) {
+  private @Nullable LithoNode resolve(ResolveContext resolveContext, ComponentContext c) {
     if (delegate == null) {
       return null;
     }
 
-    return Resolver.resolve(resolveStateContext, c, delegate);
+    return Resolver.resolve(resolveContext, c, delegate);
   }
 
   @Override
   protected ComponentResolveResult resolve(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
       final int parentHeightSpec,
       final @Nullable ComponentsLogger componentsLogger) {
-    LithoNode lithoNode = resolve(resolveStateContext, scopedComponentInfo.getContext());
+    LithoNode lithoNode = resolve(resolveContext, scopedComponentInfo.getContext());
     return new ComponentResolveResult(lithoNode, getCommonProps());
   }
 

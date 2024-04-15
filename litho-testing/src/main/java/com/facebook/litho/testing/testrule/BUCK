@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_CONFIG_TARGET",
+    "LITHO_JAVA_TARGET",
     "LITHO_JUNIT_TARGET",
     "fb_core_android_library",
 )
@@ -14,7 +14,7 @@ fb_core_android_library(
     srcs = glob(["*.java"]),
     visibility = ["PUBLIC"],
     deps = [
-        LITHO_CONFIG_TARGET,
+        LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
     ],
 )

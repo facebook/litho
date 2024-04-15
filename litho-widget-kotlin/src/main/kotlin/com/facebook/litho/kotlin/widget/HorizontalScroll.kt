@@ -28,6 +28,7 @@ import com.facebook.rendercore.Dimen
 inline fun ResourcesScope.HorizontalScroll(
     initialScrollPosition: Dimen? = null,
     scrollbarEnabled: Boolean = true,
+    wrapContent: Boolean = false,
     fillViewport: Boolean = false,
     eventsController: HorizontalScrollEventsController? = null,
     noinline onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
@@ -39,6 +40,7 @@ inline fun ResourcesScope.HorizontalScroll(
         .contentProps(child())
         .apply { initialScrollPosition?.let { initialScrollPosition(it.toPixels()) } }
         .scrollbarEnabled(scrollbarEnabled)
+        .wrapContent(wrapContent)
         .fillViewport(fillViewport)
         .eventsController(eventsController)
         .onScrollChangeListener(onScrollChange)

@@ -19,7 +19,7 @@ package com.facebook.samples.litho;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import com.facebook.litho.AOSPLithoLifecycleProvider;
+import com.facebook.litho.AOSPLithoVisibilityEventsController;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.SectionContext;
@@ -42,6 +42,6 @@ public class SampleRootActivity extends AppCompatActivity {
                         .dataModels(Demos.DEMOS))
                 .backgroundColor(Color.WHITE)
                 .build(),
-            new AOSPLithoLifecycleProvider(this)));
+            new AOSPLithoVisibilityEventsController(this)));
   }
 }

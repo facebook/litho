@@ -16,7 +16,6 @@
 
 package com.facebook.litho.testing;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -30,22 +29,11 @@ public class BackgroundLayoutLooperRule implements TestRule {
 
   BaseThreadLooperController threadLooperController = new ThreadLooperController();
 
-  private void ensureThreadLooperType() {
-    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers()
-        && threadLooperController instanceof ThreadLooperController) {
-      threadLooperController = new ResolveAndLayoutThreadLooperController();
-    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers()
-        && threadLooperController instanceof ResolveAndLayoutThreadLooperController) {
-      threadLooperController = new ThreadLooperController();
-    }
-  }
-
   @Override
   public Statement apply(final Statement base, Description description) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        ensureThreadLooperType();
         threadLooperController.init();
         try {
           base.evaluate();
@@ -58,18 +46,15 @@ public class BackgroundLayoutLooperRule implements TestRule {
 
   /** Runs one task on the background thread, blocking until it completes. */
   public void runOneTaskSync() {
-    ensureThreadLooperType();
     threadLooperController.runOneTaskSync();
   }
 
   /** Runs through all tasks on the background thread, blocking until it completes. */
   public void runToEndOfTasksSync() {
-    ensureThreadLooperType();
     threadLooperController.runToEndOfTasksSync();
   }
 
   public TimeOutSemaphore runToEndOfTasksAsync() {
-    ensureThreadLooperType();
     return threadLooperController.runToEndOfTasksAsync();
   }
 }

@@ -17,7 +17,6 @@
 package com.facebook.samples.litho.java.animations.commondynamicprops;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.view.ViewOutlineProvider;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -95,12 +94,10 @@ class CommonDynamicPropAnimationsComponentSpec {
         builder.rotation(dynamicRotation);
         break;
       case ELEVATION:
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          // By default the shadow is cast by the View's background
-          // We need to override this behaviour as the LithoView's background is unset and drawn
-          // by a child component.
-          builder.outlineProvider(ViewOutlineProvider.PADDED_BOUNDS);
-        }
+        // By default the shadow is cast by the View's background
+        // We need to override this behaviour as the LithoView's background is unset and drawn
+        // by a child component.
+        builder.outlineProvider(ViewOutlineProvider.PADDED_BOUNDS);
         builder.shadowElevation(dynamicElevation);
         break;
     }

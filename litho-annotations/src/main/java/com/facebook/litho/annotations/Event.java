@@ -22,4 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.CLASS)
 public @interface Event {
   Class<?> returnType() default void.class;
+
+  EventHandlerRebindMode mode() default EventHandlerRebindMode.REBIND;
 }

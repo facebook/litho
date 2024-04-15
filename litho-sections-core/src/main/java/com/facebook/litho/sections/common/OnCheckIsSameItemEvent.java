@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.common;
 
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 
 /**
  * This event is triggered by {@link DataDiffSectionSpec} when it needs to verify whether two model
@@ -25,7 +26,7 @@ import com.facebook.litho.annotations.Event;
  * <p>todo(t16485443): The generic type declaration(OnCheckIsSameItemEvent<TEdgeModel>) is
  * temporarily removed until the bug in the attached task is fixed.
  */
-@Event(returnType = Boolean.class)
+@Event(returnType = Boolean.class, mode = EventHandlerRebindMode.NONE)
 public class OnCheckIsSameItemEvent<T> {
   public T previousItem;
   public T nextItem;

@@ -56,7 +56,7 @@ object AttachDetachTesterSpec {
       }
     }
     if (extraThreadInfo != null) {
-      extraThreadInfo[IS_MAIN_THREAD_LAYOUT] = ThreadUtils.isMainThread()
+      extraThreadInfo[IS_MAIN_THREAD_LAYOUT] = ThreadUtils.isMainThread
     }
     return containerBuilder.build()
   }
@@ -81,7 +81,7 @@ object AttachDetachTesterSpec {
     }
     steps.add("${name}:${ON_ATTACHED}")
     if (extraThreadInfo != null) {
-      extraThreadInfo[IS_MAIN_THREAD_ON_ATTACHED] = ThreadUtils.isMainThread()
+      extraThreadInfo[IS_MAIN_THREAD_ON_ATTACHED] = ThreadUtils.isMainThread
     }
   }
 

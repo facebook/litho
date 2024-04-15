@@ -71,6 +71,7 @@ public class PsiEventMethodExtractor {
               ImmutableList.copyOf(getTypeVariables(psiMethod)),
               ImmutableList.copyOf(methodParams),
               psiMethod,
+              null,
               PsiEventDeclarationsExtractor.getEventDeclarationModel(accessExpression));
       delegateMethods.add(eventMethod);
     }

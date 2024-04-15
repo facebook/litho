@@ -62,7 +62,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    api project(':litho-core-kotlin')
+    api project(':litho-core')
 
     // Annotations
     compileOnly deps.jsr305

@@ -1,10 +1,42 @@
 # Changelog
 
-## Version 0.49.0-SNAPSHOT
+## Version 0.51.0-SNAPSHOT
 
-_TBD_
+_release-date_
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.48.0...master).
+* TBD
+
+## Version 0.50.0
+
+* [BREAKING] All the nested BUCK modules under litho-core deleted
+* Exposed `androidContext` inside of `bind{}` blocks in Primitive API
+* Converted more code to Kotlin
+* Numerous bug fixes.
+
+
+## Version 0.49.1
+_2024-03-13_
+
+* [BREAKING] move litho-core-kotlin to litho-core module
+* Converted more code to Kotlin
+
+## Version 0.49.0
+
+_2024-02-01_
+
+* Converted more code to Kotlin.
+* [NEW] Added debug event APIs for better debugging and integration with Flipper's new UI Debugger.
+* [NEW] Added layout caching to improve performance.
+* [BREAKING] Moved several configs from LithoConfiguration to ComponentsConfiguration.
+* [BREAKING] Merged several configs from RecyclerBinderConfig and RecyclerBinderConfiguration.
+* [BREAKING] Removed `Component.canResolve()` and `Component.resolve(ResolveContext, ComponentContext)` methods. All classes extending Component must now implement the new `Component.resolve(ResolveContext, ScopedComponentInfo, int, int, ComponentsLogger)` method which is always used in the resolution flow.
+* [BREAKING] Rename `Style.performAccessibilityAction`, `Style.sendAccessibilityEvent` and `Style.sendAccessibilityEventUnchecked` methods.
+* [BREAKING] Yoga updated to use C++ 20.
+* [BREAKING] Deletes several public constructors of EventHandler.
+* Overhauled the render pipeline to support custom layout systems.
+* Numerous bug fixes.
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.48.0...v0.49.0).
 
 ## Version 0.48.0
 
@@ -15,6 +47,7 @@ _2023-08-25_
 * [NEW] Bumps compile, min, target SDK, and builds tools versions.
 * [NEW] Bumps Yoga to version 2.0.0.
 * [NEW] Add litho-rendercore-glide package.
+* [NEW] Fixes RenderCore sample app.
 * [BREAKING] Removed `ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTree.canInterruptAndMoveLayoutsBetweenThreads`, `RecyclerBinder.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTreeHolder.canInterruptAndMoveLayoutsBetweenThreads`. ComponentTrees can no longer exempt themselves from interrupt and move layouts between threads operation.
 * [BREAKING] Removed `usePersistentEffect` and made deps parameter required in `useEffect`, `useCoroutine`, `useFlow`. The equivalent of `usePersistentEffect {}` is `useEffect(Unit) {}`, and the equivalent of `useEffect {}` without arguments is `useEffect(Any()) {}`.
 * [BREAKING] Removed deprecated APIs of GridRecyclerConfiguration.

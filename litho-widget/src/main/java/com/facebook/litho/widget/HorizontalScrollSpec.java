@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import static android.view.View.OVER_SCROLL_IF_CONTENT_SCROLLS;
+import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
@@ -25,6 +26,7 @@ import android.content.res.TypedArray;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import androidx.annotation.Nullable;
+import androidx.core.view.OneShotPreDrawListener;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -34,10 +36,12 @@ import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnLoadStyle;
@@ -48,6 +52,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaDirection;
 
 /**
@@ -82,6 +87,16 @@ class HorizontalScrollSpec {
     a.recycle();
   }
 
+  @OnCalculateCachedValue(name = "childComponentTree")
+  static ComponentTree ensureComponentTree(
+      final ComponentContext c, final @Prop(optional = true) boolean incrementalMountEnabled) {
+    // The parent ComponentTree(CT) in context may be released and re-created. In this case, the
+    // child CT will be re-created here because the cache in the new created parent CT return null
+    return ComponentTree.createNestedComponentTree(c)
+        .incrementalMount(incrementalMountEnabled)
+        .build();
+  }
+
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
@@ -89,11 +104,20 @@ class HorizontalScrollSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @Prop(optional = true) boolean wrapContent, // TODO:T182959582
       @Prop Component contentProps,
-      @State ComponentTree childComponentTree,
+      @CachedValue ComponentTree childComponentTree,
       Output<Integer> measuredComponentWidth,
       Output<Integer> measuredComponentHeight) {
-
+    if (childComponentTree.isReleased()) {
+      if (size != null) {
+        measuredComponentWidth.set(0);
+        measuredComponentHeight.set(0);
+        size.width = Math.max(0, size.width);
+        size.height = Math.max(0, size.height);
+      }
+      return;
+    }
     final int measuredWidth;
     final int measuredHeight;
 
@@ -110,10 +134,15 @@ class HorizontalScrollSpec {
     measuredComponentWidth.set(measuredWidth);
     measuredComponentHeight.set(measuredHeight);
 
-    // If size constraints were not explicitly defined, just fallback to the
-    // component dimensions instead.
-    size.width =
-        SizeSpec.getMode(widthSpec) == UNSPECIFIED ? measuredWidth : SizeSpec.getSize(widthSpec);
+    final int sizeSpecMode = SizeSpec.getMode(widthSpec);
+    final int sizeSpecWidth = SizeSpec.getSize(widthSpec);
+    if (sizeSpecMode == UNSPECIFIED) {
+      size.width = measuredWidth;
+    } else if (sizeSpecMode == AT_MOST && wrapContent) {
+      size.width = Math.min(measuredWidth, sizeSpecWidth);
+    } else {
+      size.width = sizeSpecWidth;
+    }
     size.height = measuredHeight;
   }
 
@@ -123,13 +152,12 @@ class HorizontalScrollSpec {
       ComponentLayout layout,
       @Prop Component contentProps,
       @Prop(optional = true) boolean fillViewport,
-      @State ComponentTree childComponentTree,
+      @CachedValue ComponentTree childComponentTree,
       @Nullable @FromMeasure Integer measuredComponentWidth,
       @Nullable @FromMeasure Integer measuredComponentHeight,
       Output<Integer> componentWidth,
       Output<Integer> componentHeight,
       Output<YogaDirection> layoutDirection) {
-
     final int layoutWidth = layout.getWidth() - layout.getPaddingLeft() - layout.getPaddingRight();
 
     // If onMeasure() has been called, this means the content component already
@@ -138,6 +166,11 @@ class HorizontalScrollSpec {
       componentWidth.set(Math.max(measuredComponentWidth, fillViewport ? layoutWidth : 0));
       componentHeight.set(measuredComponentHeight);
     } else {
+      if (childComponentTree.isReleased()) {
+        componentWidth.set(0);
+        componentHeight.set(0);
+        return;
+      }
       final int measuredWidth;
       final int measuredHeight;
 
@@ -177,7 +210,7 @@ class HorizontalScrollSpec {
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) int fadingEdgeLength,
       @State final HorizontalScrollLithoView.ScrollPosition lastScrollPosition,
-      @State ComponentTree childComponentTree,
+      @CachedValue ComponentTree childComponentTree,
       @Nullable @FromBoundsDefined Integer componentWidth,
       @Nullable @FromBoundsDefined Integer componentHeight,
       @FromBoundsDefined final YogaDirection layoutDirection) {
@@ -193,13 +226,10 @@ class HorizontalScrollSpec {
         componentHeight != null ? componentHeight : 0,
         onScrollChangeListener,
         scrollStateListener);
-    final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
-    viewTreeObserver.addOnPreDrawListener(
-        new ViewTreeObserver.OnPreDrawListener() {
+    Runnable preDrawRunnable =
+        new Runnable() {
           @Override
-          public boolean onPreDraw() {
-            horizontalScrollLithoView.getViewTreeObserver().removeOnPreDrawListener(this);
-
+          public void run() {
             if (lastScrollPosition.x == LAST_SCROLL_POSITION_UNSET) {
               if (layoutDirection == YogaDirection.RTL) {
                 horizontalScrollLithoView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
@@ -208,10 +238,22 @@ class HorizontalScrollSpec {
             } else {
               horizontalScrollLithoView.setScrollX(lastScrollPosition.x);
             }
-
-            return true;
           }
-        });
+        };
+    if (ComponentsConfiguration.useOneShotPreDrawListener) {
+      OneShotPreDrawListener.add(horizontalScrollLithoView, preDrawRunnable);
+    } else {
+      final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
+      viewTreeObserver.addOnPreDrawListener(
+          new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+              horizontalScrollLithoView.getViewTreeObserver().removeOnPreDrawListener(this);
+              preDrawRunnable.run();
+              return true;
+            }
+          });
+    }
 
     if (eventsController != null) {
       eventsController.setScrollableView(horizontalScrollLithoView);
@@ -235,15 +277,8 @@ class HorizontalScrollSpec {
   static void onCreateInitialState(
       ComponentContext c,
       StateValue<HorizontalScrollLithoView.ScrollPosition> lastScrollPosition,
-      StateValue<ComponentTree> childComponentTree,
-      @Prop Component contentProps,
-      @Prop(optional = true) int initialScrollPosition,
-      @Prop(optional = true) boolean incrementalMountEnabled) {
+      @Prop(optional = true) int initialScrollPosition) {
 
     lastScrollPosition.set(new HorizontalScrollLithoView.ScrollPosition(initialScrollPosition));
-    childComponentTree.set(
-        ComponentTree.createNestedComponentTree(c, contentProps)
-            .incrementalMount(incrementalMountEnabled)
-            .build());
   }
 }

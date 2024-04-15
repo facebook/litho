@@ -68,6 +68,7 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
         LayoutInflater inflater,
         @Nullable ViewGroup container,
         @Nullable Bundle savedInstanceState) {
+      postponeEnterTransition();
 
       Activity activity = getActivity();
       if (activity == null) {
@@ -110,6 +111,14 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
           new ViewGroup.LayoutParams(
               ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
       layout.addView(boxInLithoView);
+      LithoView.OnDirtyMountListener dirtyMountListener =
+          new LithoView.OnDirtyMountListener() {
+            @Override
+            public void onDirtyMount(LithoView view) {
+              startPostponedEnterTransition();
+            }
+          };
+      boxInLithoView.setOnDirtyMountListener(dirtyMountListener);
 
       layout.addView(new View(activity), 200, 200);
       TextView componentHostTitle = new TextView(activity);
@@ -123,8 +132,8 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
           new ViewGroup.LayoutParams(
               ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
       layout.addView(boxInComponentHost);
-
       layout.setClipChildren(false);
+      boxInComponentHost.setOnDirtyMountListener(dirtyMountListener);
 
       return layout;
     }
@@ -156,6 +165,7 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
           .beginTransaction()
           .addSharedElement(view, transitionName)
           .replace(CONTENT_VIEW_ID, fragment)
+          .setReorderingAllowed(true)
           .addToBackStack(null)
           .commit();
     }
@@ -209,8 +219,13 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
             }
           };
       lithoView.setOnDirtyMountListener(dirtyMountListener);
-
-      return lithoView;
+      // We can not set LithoView as the root view of Fragment because the enforement of alpha
+      // value in HostComponent.onMount causes the transition to fail. A workaround is
+      // to wrap the LithoView in a FrameLayout.
+      // TODO: T183183765
+      final FrameLayout frameLayout = new FrameLayout(activity);
+      frameLayout.addView(lithoView);
+      return frameLayout;
     }
   }
 }

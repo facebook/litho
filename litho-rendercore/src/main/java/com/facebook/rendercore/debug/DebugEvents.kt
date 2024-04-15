@@ -18,6 +18,8 @@ package com.facebook.rendercore.debug
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.rendercore.LogLevel
+import com.facebook.rendercore.debug.DebugEvent.Companion.All
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -28,7 +30,7 @@ sealed class DebugEvent(
     val renderStateId: String,
     val threadName: String = Thread.currentThread().name,
     val logLevel: LogLevel = LogLevel.DEBUG,
-    private val attributes: Map<String, Any?> = emptyMap()
+    val attributes: Map<String, Any?> = emptyMap()
 ) {
 
   companion object {
@@ -43,6 +45,10 @@ sealed class DebugEvent(
     const val RenderUnitOnVisible = "RenderCore.RenderUnit.OnVisible"
     const val RenderUnitOnInvisible = "RenderCore.RenderUnit.OnInvisible"
     const val ViewOnLayout = "RenderCore.View.OnLayout"
+    const val IncrementalMountStart = "RenderCore.IncrementalMount.Start"
+    const val IncrementalMountEnd = "RenderCore.IncrementalMount.End"
+    const val RenderTreeMountStart = "RenderCore.RenderTreeMount.Start"
+    const val RenderTreeMountEnd = "RenderCore.RenderTreeMount.End"
   }
 
   /** Returns the value of attribute with [name]. */
@@ -63,12 +69,14 @@ sealed class DebugEvent(
       |  type = '$type',
       |  renderStateId = '$renderStateId',
       |  thread = '$threadName',
-      |  attributes = ${attributes.entries.joinToString(
-        prefix = "{\n",
-        separator = ",\n",
-        postfix = "\n|  }",
-        transform = { e -> "|    ${e.key} = ${e.value}" }
-    )}
+      |  attributes = ${
+      attributes.entries.joinToString(
+          prefix = "{\n",
+          separator = ",\n",
+          postfix = "\n|  }",
+          transform = { e -> "|    ${e.key} = ${e.value}" }
+      )
+    }
     """
         .trimMargin()
   }
@@ -77,14 +85,15 @@ sealed class DebugEvent(
 /** Collection of attributes */
 object DebugEventAttribute {
   const val Id = "id"
-  const val timestamp = "timestamp"
-  const val duration = "duration"
-  const val version = "version"
-  const val width = "width"
-  const val height = "height"
-  const val widthSpec = "widthSpec"
-  const val heightSpec = "heightSpec"
-  const val source = "source"
+  const val Timestamp = "timestamp"
+  const val Duration = "duration"
+  const val Version = "version"
+  const val Width = "width"
+  const val Height = "height"
+  const val WidthSpec = "widthSpec"
+  const val HeightSpec = "heightSpec"
+  const val SizeConstraints = "sizeConstraints"
+  const val Source = "source"
   const val Async = "async"
   const val RenderUnitId = "renderUnitId"
   const val Description = "description"
@@ -92,7 +101,13 @@ object DebugEventAttribute {
   const val Bounds = "bounds"
   const val RootHostHashCode = "rootHostHashCode"
   const val Name = "name"
-  const val GlobalKey = "globalKey"
+  const val Key = "key"
+  const val VisibleRect = "visibleRect"
+  const val BoundsVisible = "areBoundsVisible"
+  const val NumMountableOutputs = "numMountableOutputs"
+  const val NumItemsMounted = "numItemsMounted"
+  const val NumItemsUnmounted = "numItemsUnmounted"
+  const val WasInterrupted = "wasInterrupted"
 }
 
 /** Base class for marker events */
@@ -111,7 +126,7 @@ class DebugMarkerEvent(
         logLevel = logLevel,
         attributes =
             buildMap {
-              put(DebugEventAttribute.timestamp, timestamp)
+              put(DebugEventAttribute.Timestamp, timestamp)
               putAll(attributes)
             })
 
@@ -132,14 +147,28 @@ class DebugProcessEvent(
         logLevel = logLevel,
         attributes =
             buildMap {
-              put(DebugEventAttribute.timestamp, timestamp)
-              put(DebugEventAttribute.duration, duration)
+              put(DebugEventAttribute.Timestamp, timestamp)
+              put(DebugEventAttribute.Duration, duration)
               putAll(attributes)
             })
 
 /** Base class for event subscribers */
 abstract class DebugEventSubscriber(vararg val events: String) {
   abstract fun onEvent(event: DebugEvent)
+}
+
+/**
+ * Any [DebugEventSubscriber] that implements this interface will receive callbacks just before and
+ * right after the a trace event. The subscriber can return a token from [onTraceStart] and the
+ * dispatcher will return the token in [onTraceEnd].
+ */
+interface TraceListener<T : Any?> {
+
+  // Called right before trace event starts
+  fun onTraceStart(type: String): T
+
+  // Called after the trace event ends
+  fun onTraceEnd(payload: T, event: DebugProcessEvent)
 }
 
 /** Object to dispatch debug events */
@@ -155,7 +184,7 @@ object DebugEventDispatcher {
       minLogLevelRef.set(value)
     }
 
-  private val mutableSubscribers: MutableSet<DebugEventSubscriber> = mutableSetOf()
+  private val mutableSubscribers: MutableSet<DebugEventSubscriber> = CopyOnWriteArraySet()
 
   val subscribers: Set<DebugEventSubscriber>
     @Synchronized get() = mutableSubscribers
@@ -168,7 +197,7 @@ object DebugEventDispatcher {
       logLevel: LogLevel = LogLevel.DEBUG,
       attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
   ) {
-    if (logLevel < this.minLogLevel) {
+    if (logLevel < minLogLevel || subscribers.isEmpty()) {
       return
     }
 
@@ -231,11 +260,27 @@ object DebugEventDispatcher {
    */
   @JvmStatic
   fun generateTraceIdentifier(type: String): Int? =
-      if (subscribers.any { type in it.events || DebugEvent.All in it.events }) {
+      if (subscribers.isNotEmpty() && subscribers.any { type in it.events || All in it.events }) {
         lastTraceIdentifier.getAndIncrement()
       } else {
         null
       }
+
+  @JvmStatic
+  fun beginTrace(
+      traceIdentifier: Int,
+      type: String,
+      renderStateId: String,
+      attributes: (MutableMap<String, Any?>) -> Unit = {},
+  ) {
+    val attrs = LinkedHashMap<String, Any?>()
+    attributes.invoke(attrs)
+    beginTrace(
+        traceIdentifier = traceIdentifier,
+        type = type,
+        renderStateId = renderStateId,
+        attributes = attrs)
+  }
 
   /**
    * Starts recording a trace block for the given [type].
@@ -276,6 +321,10 @@ object DebugEventDispatcher {
     val last = traceIdsToEvents.remove(traceIdentifier) ?: return
     val type = last.type
 
+    if (subscribers.isEmpty()) {
+      return
+    }
+
     // find the subscribers listening for this event
     val subscribersToNotify =
         subscribers.filter { subscriber ->
@@ -304,10 +353,20 @@ object DebugEventDispatcher {
       attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
       block: (TraceScope?) -> T,
   ): T {
+
+    if (subscribers.isEmpty()) {
+      return block(null)
+    }
+
     // find the subscribers listening for this event
+    val traceListeners = mutableListOf<TraceListener<Any?>>()
     val subscribersToNotify =
         subscribers.filter { subscriber ->
-          subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)
+          val matches = subscriber.events.contains(type) || subscriber.events.contains(All)
+          if (matches && subscriber is TraceListener<*>) {
+            traceListeners.add(subscriber as TraceListener<Any?>)
+          }
+          return@filter matches
         }
 
     // run the block if there are no subscribers
@@ -318,6 +377,7 @@ object DebugEventDispatcher {
     val attributes = LinkedHashMap<String, Any?>()
     attributesAccumulator(attributes)
 
+    val payloads: List<Any?> = traceListeners.map { it.onTraceStart(type) }
     val timestamp = System.currentTimeMillis()
     val startTime = System.nanoTime()
     val res = block(TraceScope(attributes = attributes))
@@ -332,12 +392,14 @@ object DebugEventDispatcher {
             attributes = attributes,
         )
 
+    traceListeners.forEachIndexed { i, it -> it.onTraceEnd(payload = payloads[i], event = event) }
     subscribersToNotify.forEach { it.onEvent(event) }
 
     return res
   }
 
   @Synchronized
+  @JvmStatic
   fun subscribe(subscriber: DebugEventSubscriber) {
     mutableSubscribers.add(subscriber)
   }

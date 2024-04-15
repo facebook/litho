@@ -31,6 +31,7 @@ import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.RenderInfo
 
 /**
@@ -51,7 +52,8 @@ object DynamicHeightHscrollComponentSpec {
             ListRecyclerConfiguration.create()
                 .recyclerBinderConfiguration(
                     RecyclerBinderConfiguration.create()
-                        .hasDynamicItemHeight(true) // This enables dynamic height measurement.
+                        // This enables dynamic height measurement.
+                        .recyclerBinderConfig(RecyclerBinderConfig(hasDynamicItemHeight = true))
                         .build())
                 .orientation(OrientationHelper.HORIZONTAL)
                 .build())

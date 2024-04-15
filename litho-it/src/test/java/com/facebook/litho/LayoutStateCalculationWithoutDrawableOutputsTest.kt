@@ -49,28 +49,29 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     componentTree =
         ComponentTree.create(context)
             .componentsConfiguration(
-                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(false).build())
+                ComponentsConfiguration.defaultInstance.copy(
+                    shouldAddHostViewForRootComponent = false))
             .build()
-    lithoView!!.componentTree = componentTree
+    lithoView.componentTree = componentTree
     attach()
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(false).build())
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state?.mountableOutputCount).isEqualTo(7)
+    assertThat(state.getMountableOutputCount()).isEqualTo(7)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(0)) // root host view
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1)) // background 1
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2)) // text 1
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3)) // foreground 1
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4)) // background 2
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(5)) // text 2
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(6)) // foreground 2
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
   }
 
   @Test
@@ -79,32 +80,33 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     componentTree =
         ComponentTree.create(context)
             .componentsConfiguration(
-                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(false).build())
+                ComponentsConfiguration.defaultInstance.copy(
+                    shouldAddHostViewForRootComponent = false))
             .build()
-    lithoView!!.componentTree = componentTree
+    lithoView.componentTree = componentTree
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(true).build())
     attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state.mountableOutputCount).isEqualTo(9)
+    assertThat(state.getMountableOutputCount()).isEqualTo(9)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(0)) // root host view
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1)) // host view 1
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2)) // background 1
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3)) // text 1
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4)) // foreground 1
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(5)) // host view 2
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(6)) // background 2
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(7)) // text 2
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(8)) // foreground 2
-    assertThat(output?.component).isOfAnyClassIn(DrawableComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(DrawableComponent::class.java)
   }
 
   @Test
@@ -114,22 +116,23 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     componentTree =
         ComponentTree.create(context)
             .componentsConfiguration(
-                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+                ComponentsConfiguration.defaultInstance.copy(
+                    shouldAddHostViewForRootComponent = true))
             .build()
-    lithoView!!.componentTree = componentTree
+    lithoView.componentTree = componentTree
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(false).build())
     attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state.mountableOutputCount).isEqualTo(5) // 2 bg and fg lesser.
+    assertThat(state.getMountableOutputCount()).isEqualTo(5) // 2 bg and fg lesser.
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1))
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2))
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3))
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4))
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
   }
 
   @Test
@@ -139,22 +142,23 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     componentTree =
         ComponentTree.create(context)
             .componentsConfiguration(
-                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+                ComponentsConfiguration.defaultInstance.copy(
+                    shouldAddHostViewForRootComponent = true))
             .build()
-    lithoView!!.componentTree = componentTree
+    lithoView.componentTree = componentTree
     componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(true).build())
     attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
-    assertThat(state.mountableOutputCount).isEqualTo(5) // 2 bg and fg lesser.
+    assertThat(state.getMountableOutputCount()).isEqualTo(5) // 2 bg and fg lesser.
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(1))
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(2))
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(3))
-    assertThat(output?.component).isOfAnyClassIn(HostComponent::class.java)
+    assertThat(output.component).isOfAnyClassIn(HostComponent::class.java)
     output = LithoRenderUnit.getRenderUnit(state.getMountableOutputAt(4))
-    assertThat(output?.component).isOfAnyClassIn(Text::class.java)
+    assertThat(output.component).isOfAnyClassIn(Text::class.java)
   }
 
   private fun attach() {

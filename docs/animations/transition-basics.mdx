@@ -32,6 +32,10 @@ The following section shows how to replace this 'jump' with a transition animati
 
 ## Bounds transitions
 
+:::caution
+`Transition.allLayout()` may cause unexpected transitions because it adds transitions to ALL components present in the layout tree, which may include components higher than the target component in the hierarchy. Please use it carefully.
+:::
+
 To add bounds animations to all transitioning components between tree changes, use the following:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleAllLayoutTransitionComponent.kt start=transition_start end=transition_end

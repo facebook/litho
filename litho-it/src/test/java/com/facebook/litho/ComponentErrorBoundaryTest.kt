@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
@@ -55,8 +56,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.robolectric.annotation.LooperMode
 
 /**
@@ -67,7 +68,15 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ComponentErrorBoundaryTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule
+  @JvmField
+  val lithoViewRule =
+      LegacyLithoViewRule(
+          componentsConfiguration =
+              ComponentsConfiguration.create()
+                  // Disable reconciliation so that the onCreateLayout is called for layout.
+                  .isReconciliationEnabled(false)
+                  .build())
 
   @Rule @JvmField val expectedException = ExpectedException.none()
 
@@ -76,20 +85,15 @@ class ComponentErrorBoundaryTest {
 
   @Before
   fun assumeDebugAndChangeConfig() {
-    currentReconciliationValue = ComponentsConfiguration.isReconciliationEnabled
-    // Disable reconciliation so that the onCreateLayout is called for layout.
-    ComponentsConfiguration.isReconciliationEnabled = false
     ComponentsConfiguration.isAnimationDisabled = false
     assumeThat(
         "These tests can only be run in debug mode.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        LithoDebugConfigurations.isDebugModeEnabled,
         Is.`is`(true))
   }
 
   @After
   fun adjustConfigs() {
-    // Reset the the values of the config.
-    ComponentsConfiguration.isReconciliationEnabled = currentReconciliationValue
     ComponentsConfiguration.isAnimationDisabled = true
   }
 
@@ -181,11 +185,16 @@ class ComponentErrorBoundaryTest {
     val errorEventHandler = Mockito.mock(ErrorEventHandler::class.java)
     val component = ThrowExceptionGrandChildTester.create(lithoViewRule.context).build()
     val componentTreeBuilder = ComponentTree.create(lithoViewRule.context)
-    val componentTree = componentTreeBuilder.errorHandler(errorEventHandler).build()
+    val componentTree =
+        componentTreeBuilder
+            .componentsConfiguration(
+                lithoViewRule.context.lithoConfiguration.componentsConfig.copy(
+                    errorEventHandler = errorEventHandler))
+            .build()
     componentTree.root = component
     lithoViewRule.useComponentTree(componentTree)
     lithoViewRule.attachToWindow().measure().layout()
-    Mockito.verify(errorEventHandler).onError(ArgumentMatchers.any(), ArgumentMatchers.any())
+    Mockito.verify(errorEventHandler).onError(any(), any())
   }
 
   @Test
@@ -414,20 +423,22 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnEventInvisibleCrashWithTestErrorBoundary() {
+    val c = lithoViewRule.context
     val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
-    val crashingComponent =
-        TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
-            .crashFromStep(LifecycleStep.ON_EVENT_INVISIBLE)
-            .caller(caller)
-            .widthPx(10)
-            .heightPx(5)
-            .marginPx(YogaEdge.TOP, 5)
-            .build()
+
     val errorOutput: List<Exception> = ArrayList()
     val component =
-        TestErrorBoundary.create(lithoViewRule.context)
-            .errorOutput(errorOutput)
-            .child(crashingComponent)
+        Column.create(c)
+            .child(
+                TestErrorBoundary.create(c)
+                    .errorOutput(errorOutput)
+                    .child(
+                        TestCrashFromEachLayoutLifecycleMethod.create(c)
+                            .crashFromStep(LifecycleStep.ON_EVENT_INVISIBLE)
+                            .caller(caller)
+                            .widthPx(10)
+                            .heightPx(5)
+                            .marginPx(YogaEdge.TOP, 5)))
             .build()
     lithoViewRule
         .setRoot(component)
@@ -667,7 +678,7 @@ class ComponentErrorBoundaryTest {
     if (crashFromStep == LifecycleStep.ON_PREPARE ||
         crashFromStep == LifecycleStep.ON_MEASURE ||
         crashFromStep == LifecycleStep.ON_BOUNDS_DEFINED) {
-      val count = lithoViewRule.lithoView.mountDelegateTarget.renderUnitCount
+      val count = lithoViewRule.lithoView.mountDelegateTarget.getRenderUnitCount()
       for (i in 0 until count) {
         val item = lithoViewRule.lithoView.mountDelegateTarget.getMountItemAt(i)
         item?.renderTreeNode?.let {

@@ -45,13 +45,13 @@ import com.facebook.rendercore.transitions.TransitionRenderUnit;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.utils.BoundsUtils;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /** Extension for performing transitions. */
 public class TransitionsExtension
@@ -254,7 +254,8 @@ public class TransitionsExtension
       final ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
-      final @Nullable Object layoutData) {
+      final @Nullable Object layoutData,
+      boolean changed) {
     final @Nullable TransitionsExtensionInput input = extensionState.getState().mInput;
     if (input != null
         && input.isIncrementalMountEnabled()
@@ -444,14 +445,20 @@ public class TransitionsExtension
     }
   }
 
-  /** @return whether we should animate transitions. */
+  /**
+   * @return whether we should animate transitions.
+   */
   private static boolean shouldAnimateTransitions(
       final TransitionsExtensionState state, TransitionsExtensionInput input) {
-    return (state.mLastMountedTreeId == input.getTreeId()
-        || state.mInput.needsToRerunTransitions());
+    return input != null
+        && state.mInput != null
+        && (state.mLastMountedTreeId == input.getTreeId()
+            || state.mInput.needsToRerunTransitions());
   }
 
-  /** @return whether we have any transitions to animate for the current mount */
+  /**
+   * @return whether we have any transitions to animate for the current mount
+   */
   private static boolean hasTransitionsToAnimate(final TransitionsExtensionState state) {
     return state.mRootTransition != null;
   }
@@ -515,7 +522,7 @@ public class TransitionsExtension
     List<Transition> transitions = input.getMountTimeTransitions();
     if (transitions != null) {
       for (Transition transition : transitions) {
-        TransitionUtils.addTransitions(transition, outList, input.getRootName());
+        TransitionUtils.addTransitions(transition, outList);
       }
     }
   }
@@ -1033,7 +1040,7 @@ public class TransitionsExtension
   private static void recursivelyNotifyVisibleBoundsChanged(View view) {
     assertMainThread();
 
-    final Stack<View> viewStack = new Stack<>();
+    final ArrayDeque<View> viewStack = new ArrayDeque<>();
     viewStack.push(view);
 
     while (!viewStack.isEmpty()) {

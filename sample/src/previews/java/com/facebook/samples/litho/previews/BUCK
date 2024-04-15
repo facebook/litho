@@ -1,7 +1,6 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_JAVA_TARGET",
-    "LITHO_KOTLIN_TARGET",
     "LITHO_MOCKITO_KOTLIN_V2_TARGET",
     "LITHO_SAMPLE",
     "LITHO_WIDGET_KOTLIN_TARGET",
@@ -20,7 +19,6 @@ litho_android_library(
         LITHO_MOCKITO_KOTLIN_V2_TARGET,
         LITHO_SAMPLE,
         LITHO_JAVA_TARGET,
-        LITHO_KOTLIN_TARGET,
         LITHO_YOGA_TARGET,
         LITHO_WIDGET_KOTLIN_TARGET,
     ],

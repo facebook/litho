@@ -54,8 +54,8 @@ public abstract class Transition {
    * Spring-driven animator with values of {@link SpringConfig#DEFAULT_TENSION} and {@link
    * SpringConfig#DEFAULT_FRICTION} that has overshooting behavior. Spring physics implementation is
    * taken from Rebound library and we recommend to use demo provided at <a
-   * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
-   * better sense of how friction and tension values work together.
+   * href="https://facebookarchive.github.io/rebound/">https://facebookarchive.github.io/rebound</a>
+   * to have a better sense of how friction and tension values work together.
    */
   public static final TransitionAnimator SPRING_WITH_OVERSHOOT =
       new SpringTransitionAnimator(SpringConfig.defaultConfig);
@@ -64,8 +64,8 @@ public abstract class Transition {
    * Spring-driven animator that can be used as alternative to {@link #SPRING_WITH_OVERSHOOT} if
    * overshoot is not desired. Spring physics implementation is taken from Rebound library and we
    * recommend to use demo provided at <a
-   * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
-   * better sense of how friction and tension values work together.
+   * href="https://facebookarchive.github.io/rebound/">https://facebookarchive.github.io/rebound</a>
+   * to have a better sense of how friction and tension values work together.
    */
   public static final TransitionAnimator SPRING_WITHOUT_OVERSHOOT =
       new SpringTransitionAnimator(SpringConfig.noOvershootConfig);
@@ -249,8 +249,8 @@ public abstract class Transition {
   /**
    * Creates a {@link SpringTransition} with the given tension and friction. Spring physics
    * implementation is taken from Rebound library and we recommend to use demo provided at <a
-   * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
-   * better sense of how friction and tension values work together.
+   * href="https://facebookarchive.github.io/rebound/">https://facebookarchive.github.io/rebound</a>
+   * to have a better sense of how friction and tension values work together.
    */
   public static TransitionAnimator springWithConfig(final double tension, final double friction) {
     return new SpringTransitionAnimator(tension, friction);
@@ -597,8 +597,8 @@ public abstract class Transition {
     /**
      * Create spring-driven animator with given tension and friction values. Spring physics
      * implementation is taken from Rebound library and we recommend to use demo provided at <a
-     * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
-     * better sense of how friction and tension values work together.
+     * href="https://facebookarchive.github.io/rebound/">https://facebookarchive.github.io/rebound</a>
+     * to have a better sense of how friction and tension values work together.
      */
     public SpringTransitionAnimator(final double tension, final double friction) {
       mSpringConfig = new SpringConfig(tension, friction);
@@ -607,8 +607,8 @@ public abstract class Transition {
     /**
      * Create spring-driven animator with given {@link SpringConfig}. Spring physics implementation
      * is taken from Rebound library and we recommend to use demo provided at <a
-     * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
-     * better sense of how friction and tension values work together.
+     * href="https://facebookarchive.github.io/rebound/">https://facebookarchive.github.io/rebound</a>
+     * to have a better sense of how friction and tension values work together.
      */
     public SpringTransitionAnimator(SpringConfig springConfig) {
       mSpringConfig = springConfig;
@@ -680,7 +680,9 @@ public abstract class Transition {
         .resolve(resolver, new PropertyHandle(rootTransitionId, property));
   }
 
-  /** @return {@code true} iff a and b are equal. */
+  /**
+   * @return {@code true} iff a and b are equal.
+   */
   static boolean equals(@Nullable Object a, @Nullable Object b) {
     if (a == b) {
       return true;

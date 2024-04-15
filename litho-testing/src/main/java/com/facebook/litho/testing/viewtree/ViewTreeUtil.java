@@ -22,7 +22,9 @@ import androidx.test.core.app.ApplicationProvider;
 /** Utility methods for {@link ViewTreeAssert}. */
 public final class ViewTreeUtil {
 
-  /** @return the resource name or "<undefined>" */
+  /**
+   * @return the resource name or "<undefined>"
+   */
   public static String getResourceName(final int resourceId) {
     try {
       return ApplicationProvider.getApplicationContext()

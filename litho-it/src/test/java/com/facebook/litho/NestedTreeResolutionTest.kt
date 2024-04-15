@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.stateupdates.ComponentWithMeasureCall
 import com.facebook.litho.testing.LegacyLithoViewRule
@@ -63,7 +64,7 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat((holder.node as NestedTreeHolder).mNestedTreePadding?.get(YogaEdge.ALL))
+    assertThat((holder.node as NestedTreeHolder).nestedTreePadding?.get(YogaEdge.ALL))
         .isEqualTo(5.0f)
     assertThat(holder.nestedResult?.paddingTop).isEqualTo(5)
   }
@@ -108,8 +109,8 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat(holder.yogaNode.layoutDirection).isEqualTo(YogaDirection.LTR)
-    assertThat(holder.nestedResult?.yogaNode?.layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.getYogaNode().layoutDirection).isEqualTo(YogaDirection.LTR)
+    assertThat(holder.nestedResult?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
   }
 
   @Test
@@ -133,8 +134,8 @@ class NestedTreeResolutionTest {
     assertThat(root).isNotNull
     assertThat(root?.getChildAt(1)).isInstanceOf(NestedTreeHolderResult::class.java)
     val holder = root?.getChildAt(1) as NestedTreeHolderResult
-    assertThat(holder.yogaNode.layoutDirection).isEqualTo(YogaDirection.RTL)
-    assertThat(holder.nestedResult?.yogaNode?.layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.getYogaNode().layoutDirection).isEqualTo(YogaDirection.RTL)
+    assertThat(holder.nestedResult?.getYogaNode()?.layoutDirection).isEqualTo(YogaDirection.RTL)
   }
 
   @Test

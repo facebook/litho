@@ -12,7 +12,6 @@ load(
     "LITHO_COMPONENTS_TARGET_VISIBILITY",
     "LITHO_COROUTINES_KOTLIN_TARGET",
     "LITHO_JAVA_TARGET",
-    "LITHO_KOTLIN_TARGET",
     "LITHO_PERF_LOGGER",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
     "LITHO_SECTIONS_COMMON_TARGET",
@@ -64,7 +63,7 @@ litho_android_library(
     ],
     exported_deps = [
         ":components",
-        LITHO_KOTLIN_TARGET,
+        LITHO_JAVA_TARGET,
     ],
 )
 
@@ -76,7 +75,7 @@ litho_android_library(
     ],
     exported_deps = [
         LITHO_TOOLING,
-        LITHO_KOTLIN_TARGET,
+        LITHO_JAVA_TARGET,
     ],
 )
 

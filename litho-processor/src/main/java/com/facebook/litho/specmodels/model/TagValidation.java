@@ -24,11 +24,13 @@ public class TagValidation {
 
   @VisibleForTesting
   static final String NON_EMPTY_ERROR_MESSAGE =
-      "%s: Spec classes use interfaces as component tags. Tags cannot be non-empty interfaces like '%s'.";
+      "%s: Spec classes use interfaces as component tags. Tags cannot be non-empty interfaces like"
+          + " '%s'.";
 
   @VisibleForTesting
   static final String EXTEND_INTERFACE_ERROR_MESSAGE =
-      "%s: Spec classes use interfaces as component tags. Tags cannot extend other interfaces like '%s'.";
+      "%s: Spec classes use interfaces as component tags. Tags cannot extend other interfaces like"
+          + " '%s'.";
 
   static List<SpecModelValidationError> validate(SpecModel specModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();

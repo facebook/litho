@@ -4,6 +4,11 @@ title: Animating All Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+
+:::caution
+`Transition.allLayout()` may cause unexpected transitions because it adds transitions to ALL components present in the layout tree, which may include components higher than the target component in the hierarchy. Please use it carefully.
+:::
+
 The [`Transition.allLayout()`](pathname:///javadoc/com/facebook/litho/Transition.html#allLayout--) method enables all layout changes to be easily animated without having to assign `transitionKey`s to all components:
 
 ```kotlin

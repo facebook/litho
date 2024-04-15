@@ -46,7 +46,7 @@ class LayoutStateSpecTest {
     val result =
         ResolveTreeFuture.resolve(context, component, TreeState(), 1, 1, null, null, null, null)
     layoutState =
-        LayoutTreeFuture.layout(result, widthSpec, heightSpec, 1, 1, false, null, null, null, null)
+        LayoutTreeFuture.layout(result, widthSpec, heightSpec, 1, 1, null, null, null, null)
   }
 
   @Test

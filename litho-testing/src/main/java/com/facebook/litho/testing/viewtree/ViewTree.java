@@ -40,7 +40,9 @@ public final class ViewTree {
     mView = view;
   }
 
-  /** @return the view group used to generate this tree */
+  /**
+   * @return the view group used to generate this tree
+   */
   public View getRoot() {
     return mView;
   }

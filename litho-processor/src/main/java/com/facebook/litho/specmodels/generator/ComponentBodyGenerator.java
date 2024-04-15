@@ -44,6 +44,7 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
+import com.facebook.litho.specmodels.model.KotlinSpecHelper;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PrepareInterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -566,7 +567,7 @@ public class ComponentBodyGenerator {
   static MethodSpec generateIsEqualivalentTreePropsMethod(
       SpecModel specModel, EnumSet<RunMode> runMode) {
     MethodSpec.Builder isEquivalentBuilder =
-        MethodSpec.methodBuilder("isEqualivalentTreeProps")
+        MethodSpec.methodBuilder("isEqualivalentTreePropContainer")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PROTECTED)
             .returns(TypeName.BOOLEAN)
@@ -575,7 +576,7 @@ public class ComponentBodyGenerator {
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       isEquivalentBuilder.addCode(
           getCompareStatement(
-              "isEqualivalentTreeProps",
+              "isEqualivalentTreePropContainer",
               treeProp,
               "current.getParentTreeProp("
                   + TreePropGenerator.findTypeByTypeName(treeProp.getTypeName())

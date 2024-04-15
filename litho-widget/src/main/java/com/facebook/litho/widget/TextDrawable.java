@@ -31,6 +31,7 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
@@ -41,7 +42,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DoNotInline;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
@@ -59,6 +62,7 @@ import javax.annotation.Nullable;
 public class TextDrawable extends Drawable implements Touchable, TextContent, Drawable.Callback {
 
   private @Nullable Layout mLayout;
+  private float mLayoutTranslationX;
   private float mLayoutTranslationY;
   private boolean mClipToBounds;
   private boolean mShouldHandleTouch;
@@ -66,6 +70,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private ColorStateList mColorStateList;
   private int mUserColor;
   private int mHighlightColor;
+  private float mOutlineWidth;
+  private int mOutlineColor;
   private ClickableSpan[] mClickableSpans;
   private ImageSpan[] mImageSpans;
 
@@ -102,14 +108,49 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (mClipToBounds) {
       canvas.clipRect(bounds);
     }
-    canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
+    canvas.translate(bounds.left + mLayoutTranslationX, bounds.top + mLayoutTranslationY);
     try {
+      maybeDrawOutline(canvas);
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
     } catch (IndexOutOfBoundsException e) {
-      throw new IndexOutOfBoundsException(e.getMessage() + getDebugInfo());
+      RuntimeException withDebugInfo =
+          new RuntimeException("Debug info for IOOB: " + getDebugInfo(), e);
+      withDebugInfo.setStackTrace(new StackTraceElement[] {});
+      throw withDebugInfo;
     }
 
     canvas.restoreToCount(saveCount);
+  }
+
+  /**
+   * All texts drawn on top of images and videos need contrast outlines and shadows to be more
+   * visible against busy backgrounds. Standard Android shadows do not produce the separation of
+   * intensity needed, so the Litho library Text Component provides a special outline attribute that
+   * draws contrast outlines usually combined with shadows. These outlines are drawn outside the
+   * contours to avoid reducing the visible surface of character glyphs. However, since Android has
+   * no mode for drawing outside strokes, they need to be drawn twice: the first pass draws strokes,
+   * and the second pass draws inner filled shapes. This method performs the first outlining pass if
+   * needed.
+   *
+   * @param canvas - A canvas to draw on.
+   */
+  private void maybeDrawOutline(Canvas canvas) {
+    if (mOutlineWidth > 0f) {
+      Paint p = mLayout.getPaint();
+      int savedColor = p.getColor();
+      Paint.Style savedStyle = p.getStyle();
+      float savedStrokeWidth = p.getStrokeWidth();
+      Paint.Join savedJoin = p.getStrokeJoin();
+      p.setStrokeJoin(Paint.Join.ROUND);
+      p.setColor(mOutlineColor != 0 ? mOutlineColor : p.getShadowLayerColor());
+      p.setStyle(Paint.Style.STROKE);
+      p.setStrokeWidth(mOutlineWidth);
+      mLayout.draw(canvas);
+      p.setStrokeWidth(savedStrokeWidth);
+      p.setStyle(savedStyle);
+      p.setColor(savedColor);
+      p.setStrokeJoin(savedJoin);
+    }
   }
 
   private String getDebugInfo() {
@@ -298,9 +339,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         text,
         layout,
         0,
+        0,
         false,
         null,
         userColor,
+        0,
+        0f,
         0,
         clickableSpans,
         null,
@@ -318,10 +362,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         text,
         layout,
         0,
+        0,
         false,
         null,
         userColor,
         highlightColor,
+        0f,
+        0,
         null,
         null,
         null,
@@ -345,10 +392,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         text,
         layout,
         0,
+        0,
         false,
         null,
         userColor,
         highlightColor,
+        0f,
+        0,
         clickableSpans,
         null,
         null,
@@ -363,11 +413,14 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   public void mount(
       CharSequence text,
       Layout layout,
+      float layoutTranslationX,
       float layoutTranslationY,
       boolean clipToBounds,
       ColorStateList colorStateList,
       int userColor,
       int highlightColor,
+      float outlineWidth,
+      int outlineColor,
       @Nullable ClickableSpan[] clickableSpans,
       @Nullable ImageSpan[] imageSpans,
       @Nullable ClickableSpanListener spanListener,
@@ -378,6 +431,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       float clickableSpanExpandedOffset,
       String contextLogTag) {
     mLayout = layout;
+    mLayoutTranslationX = layoutTranslationX;
     mLayoutTranslationY = layoutTranslationY;
     mClipToBounds = clipToBounds;
     mText = text;
@@ -390,6 +444,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mTextOffsetOnTouchListener = textOffsetOnTouchListener;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
+    setOutline(outlineWidth, outlineColor);
     mClickableSpanExpandedOffset = clickableSpanExpandedOffset;
     if (userColor != 0) {
       mColorStateList = null;
@@ -427,6 +482,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       mLayout.getPaint().setColor(textColor);
     }
     invalidateSelf();
+  }
+
+  public void setOutline(float outlineWidth, @ColorInt int outlineColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      AndroidQImpl.setOutline(this, outlineWidth, outlineColor);
+    }
   }
 
   private static boolean containsLongClickableSpan(@Nullable ClickableSpan[] clickableSpans) {
@@ -542,15 +603,23 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
        * {@link Layout#getLineLeft} and {@link Layout#getLineRight} do NOT properly account for
        * paragraph margins on non-centered text, so we need an alternative.
        *
-       * <p>To determine the actual bounds of the line, we need the line's direction, leading
-       * margin, and extent, but only the first is available directly. The margin is given by either
-       * {@link Layout#getParagraphLeft} or {@link Layout#getParagraphRight} depending on line
-       * direction, and {@link Layout#getLineMax} gives the extent *plus* the leading margin, so we
-       * can figure out the rest from there.
+       * <p>To determine the actual bounds of the line, we need the line's direction and alignment,
+       * leading margin, and extent, but only the first is available directly. The margin is given
+       * by either {@link Layout#getParagraphLeft} or {@link Layout#getParagraphRight} depending on
+       * line direction, and {@link Layout#getLineMax} gives the extent *plus* the leading margin,
+       * so we can figure out the rest from there.
        */
-      final boolean rtl = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-      left = rtl ? mLayout.getWidth() - mLayout.getLineMax(line) : mLayout.getParagraphLeft(line);
-      right = rtl ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
+      final int direction = mLayout.getParagraphDirection(line);
+      final Layout.Alignment alignment = mLayout.getParagraphAlignment(line);
+      final boolean rightAligned =
+          (direction == Layout.DIR_RIGHT_TO_LEFT && alignment == Layout.Alignment.ALIGN_NORMAL)
+              || (direction == Layout.DIR_LEFT_TO_RIGHT
+                  && alignment == Layout.Alignment.ALIGN_OPPOSITE);
+      left =
+          rightAligned
+              ? mLayout.getWidth() - mLayout.getLineMax(line)
+              : mLayout.getParagraphLeft(line);
+      right = rightAligned ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
     }
 
     if (x < left || x > right) {
@@ -782,10 +851,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   }
 
   interface TextOffsetOnTouchListener {
+
     void textOffsetOnTouch(int textOffset);
   }
 
   private class LongClickRunnable implements Runnable {
+
     private LongClickableSpan longClickableSpan;
     private View longClickableSpanView;
 
@@ -800,6 +871,19 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
           (mSpanListener != null
                   && mSpanListener.onLongClick(longClickableSpan, longClickableSpanView))
               || longClickableSpan.onLongClick(longClickableSpanView);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private static class AndroidQImpl {
+
+    private AndroidQImpl() {}
+
+    @DoNotInline
+    static void setOutline(TextDrawable drawable, float outlineWidth, @ColorInt int outlineColor) {
+      drawable.mOutlineWidth = outlineWidth;
+      drawable.mOutlineColor = outlineColor;
+      drawable.invalidateSelf();
     }
   }
 }

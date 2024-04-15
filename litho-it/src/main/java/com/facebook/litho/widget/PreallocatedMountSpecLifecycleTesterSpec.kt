@@ -85,7 +85,7 @@ object PreallocatedMountSpecLifecycleTesterSpec {
   @JvmStatic
   @UiThread
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(): MountItemsPool.ItemPool = TrackingMountContentPool(1, true)
+  fun onCreateMountContentPool(): MountItemsPool.ItemPool = TrackingMountContentPool(1)
 
   @JvmStatic
   @UiThread

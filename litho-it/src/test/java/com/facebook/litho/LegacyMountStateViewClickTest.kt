@@ -103,9 +103,9 @@ class LegacyMountStateViewClickTest {
     parent.addView(lithoView)
     lithoView.componentTree =
         ComponentTree.create(context, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .visibilityProcessing(false)
+            .componentsConfiguration(
+                context.lithoConfiguration.componentsConfig.copy(
+                    incrementalMountEnabled = false, visibilityProcessingEnabled = false))
             .build()
   }
 

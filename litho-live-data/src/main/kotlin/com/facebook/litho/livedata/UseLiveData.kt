@@ -19,13 +19,13 @@ package com.facebook.litho.livedata
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.facebook.litho.AOSPLithoLifecycleProvider
+import com.facebook.litho.AOSPLithoVisibilityEventsController
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoView
 import com.facebook.litho.State
 import com.facebook.litho.annotations.Hook
-import com.facebook.litho.getTreeProp
+import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
 import com.facebook.litho.onCleanup
 import com.facebook.litho.useEffect
 import com.facebook.litho.useState
@@ -33,9 +33,9 @@ import com.facebook.litho.useState
 /**
  * Uses the current value of a given [LiveData] in a Litho Kotlin component.
  *
- * The live data will be observed following the [AOSPLithoLifecycleProvider] lifecycle definition,
- * and it's usage requires the [LithoView] or [ComponentTree] to be using the
- * [AOSPLithoLifecycleProvider]
+ * The live data will be observed following the [AOSPLithoVisibilityEventsController] lifecycle
+ * definition, and it's usage requires the [LithoView] or [ComponentTree] to be using the
+ * [AOSPLithoVisibilityEventsController]
  */
 @Hook
 fun <T> ComponentScope.useLiveData(liveData: LiveData<T>): T? {
@@ -45,9 +45,9 @@ fun <T> ComponentScope.useLiveData(liveData: LiveData<T>): T? {
 /**
  * Uses the current value of a given [LiveData] in a Litho Kotlin component.
  *
- * The live data will be observed following the [AOSPLithoLifecycleProvider] lifecycle definition,
- * and it's usage requires the [LithoView] or [ComponentTree] to be using the
- * [AOSPLithoLifecycleProvider].
+ * The live data will be observed following the [AOSPLithoVisibilityEventsController] lifecycle
+ * definition, and it's usage requires the [LithoView] or [ComponentTree] to be using the
+ * [AOSPLithoVisibilityEventsController].
  *
  * This observation will also be canceled whenever [deps] change.
  */
@@ -58,9 +58,9 @@ fun <T> ComponentScope.useLiveData(
     initialValue: () -> T?
 ): T? {
   val lifecycleOwner: LifecycleOwner =
-      getTreeProp<LifecycleOwner>()
+      LifecycleOwnerTreeProp.value
           ?: error(
-              "There is no lifecycle owner. Make you created your LithoView with an AOSPLithoLifecycleProvider.")
+              "There is no lifecycle owner. Make you created your LithoView with an AOSPLithoVisibilityEventsController.")
 
   val state: State<T?> = useState { initialValue() }
 

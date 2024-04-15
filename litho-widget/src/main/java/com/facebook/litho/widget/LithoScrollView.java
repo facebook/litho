@@ -22,15 +22,22 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import androidx.annotation.Nullable;
+import androidx.core.view.OneShotPreDrawListener;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.BaseMountingView;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
+import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoMetadataExceptionWrapper;
+import com.facebook.litho.LithoRenderTreeView;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.TreeState;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.utils.CommonUtils;
 import java.util.List;
 
 /**
@@ -39,15 +46,22 @@ import java.util.List;
  */
 public class LithoScrollView extends NestedScrollView implements HasLithoViewChildren {
 
-  private final LithoView mLithoView;
+  private final BaseMountingView mLithoView;
 
   @Nullable private ScrollPosition mScrollPosition;
   @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
   @Nullable private OnInterceptTouchListener mOnInterceptTouchListener;
   @Nullable private ScrollStateDetector mScrollStateDetector;
 
+  private @Nullable String mCurrentRootComponent;
+  private @Nullable String mCurrentLogTag;
+
   public LithoScrollView(Context context) {
-    this(context, null);
+    this(context, new LithoView(context));
+  }
+
+  public LithoScrollView(Context context, BaseMountingView view) {
+    this(context, view, null, 0);
   }
 
   public LithoScrollView(Context context, @Nullable AttributeSet attrs) {
@@ -55,9 +69,21 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   }
 
   public LithoScrollView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    this(context, new LithoView(context), attrs, defStyleAttr);
+  }
+
+  public LithoScrollView(
+      final Context context,
+      final BaseMountingView view,
+      final @Nullable AttributeSet attrs,
+      final int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    mLithoView = new LithoView(context);
+    mLithoView = view;
     addView(mLithoView);
+  }
+
+  public BaseMountingView getRenderTreeView() {
+    return mLithoView;
   }
 
   @Override
@@ -88,20 +114,15 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
         mScrollStateDetector.onDraw();
       }
     } catch (Throwable t) {
-      final ComponentTree ct = mLithoView.getComponentTree();
-      if (ct != null) {
-        ErrorReporter.getInstance()
-            .report(
-                LogLevel.ERROR,
-                "LITHO:NPE:LITHO_SCROLL_VIEW_DRAW",
-                "Root component: " + ct.getSimpleName(),
-                t,
-                0,
-                null);
-        throw new LithoMetadataExceptionWrapper(ct, t);
-      } else {
-        throw t;
-      }
+      ErrorReporter.getInstance()
+          .report(
+              LogLevel.ERROR,
+              "LITHO:NPE:LITHO_SCROLL_VIEW_DRAW",
+              "Root component: " + (mCurrentRootComponent != null ? mCurrentRootComponent : "null"),
+              t,
+              0,
+              null);
+      throw new LithoMetadataExceptionWrapper(null, mCurrentRootComponent, mCurrentLogTag, t);
     }
   }
 
@@ -152,28 +173,88 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     lithoViews.add(mLithoView);
   }
 
+  public void setScrollStateListener(final @Nullable ScrollStateListener scrollStateListener) {
+    if (scrollStateListener != null) {
+      if (mScrollStateDetector == null) {
+        mScrollStateDetector = new ScrollStateDetector(this);
+      }
+      mScrollStateDetector.setListener(scrollStateListener);
+    } else if (mScrollStateDetector != null) {
+      mScrollStateDetector.setListener(null);
+    }
+  }
+
+  public void setScrollPosition(final @Nullable ScrollPosition scrollPosition) {
+    if (scrollPosition != null) {
+      if (ComponentsConfiguration.useOneShotPreDrawListener) {
+        mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
+      } else {
+        final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
+            new ViewTreeObserver.OnPreDrawListener() {
+              @Override
+              public boolean onPreDraw() {
+                setScrollY(scrollPosition.y);
+                ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
+                if (currentViewTreeObserver.isAlive()) {
+                  currentViewTreeObserver.removeOnPreDrawListener(this);
+                }
+                return true;
+              }
+            };
+        getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
+
+        mOnPreDrawListener = onPreDrawListener;
+      }
+    } else {
+      setScrollY(0);
+      getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
+      mOnPreDrawListener = null;
+    }
+  }
+
+  public void mount(final @Nullable LayoutState layoutState, final @Nullable TreeState state) {
+    if (layoutState != null && state != null && mLithoView instanceof LithoRenderTreeView) {
+      mCurrentRootComponent = layoutState.getRootName();
+      mCurrentLogTag = layoutState.getComponentContext().getLogTag();
+      ((LithoRenderTreeView) mLithoView).setLayoutState(layoutState, state);
+    }
+  }
+
   public void mount(
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
       ScrollStateListener scrollStateListener) {
-    mLithoView.setComponentTree(contentComponentTree);
+    if (!(mLithoView instanceof LithoView)) {
+      throw new UnsupportedOperationException("API can only be invoked from Vertical Scroll Spec");
+    }
+
+    if (contentComponentTree != null) {
+      final @Nullable Component component = contentComponentTree.getRoot();
+      mCurrentRootComponent = component != null ? component.getSimpleName() : "null";
+      mCurrentLogTag = contentComponentTree.getLogTag();
+    }
+    ((LithoView) mLithoView).setComponentTree(contentComponentTree);
 
     mScrollPosition = scrollPosition;
-    final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
-        new ViewTreeObserver.OnPreDrawListener() {
-          @Override
-          public boolean onPreDraw() {
-            setScrollY(scrollPosition.y);
-            ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
-            if (currentViewTreeObserver.isAlive()) {
-              currentViewTreeObserver.removeOnPreDrawListener(this);
+    if (ComponentsConfiguration.useOneShotPreDrawListener) {
+      mOnPreDrawListener = OneShotPreDrawListener.add(this, () -> setScrollY(scrollPosition.y));
+    } else {
+      final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
+          new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+              setScrollY(scrollPosition.y);
+              ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
+              if (currentViewTreeObserver.isAlive()) {
+                currentViewTreeObserver.removeOnPreDrawListener(this);
+              }
+              return true;
             }
-            return true;
-          }
-        };
-    getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
+          };
+      getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
 
-    mOnPreDrawListener = onPreDrawListener;
+      mOnPreDrawListener = onPreDrawListener;
+    }
     if (scrollStateListener != null) {
       if (mScrollStateDetector == null) {
         mScrollStateDetector = new ScrollStateDetector(this);
@@ -183,7 +264,12 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   }
 
   public void unmount() {
-    mLithoView.setComponentTree(null, false);
+    if (!(mLithoView instanceof LithoView)) {
+      throw new UnsupportedOperationException("API can only be invoked from Vertical Scroll Spec");
+    }
+
+    ((LithoView) mLithoView).setComponentTree(null, false);
+
     mScrollPosition = null;
     getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     mOnPreDrawListener = null;
@@ -192,7 +278,18 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     }
   }
 
+  public void release() {
+    if (mLithoView instanceof LithoRenderTreeView) {
+      ((LithoRenderTreeView) mLithoView).clean();
+    } else {
+      throw new UnsupportedOperationException(
+          "This operation is only support for LithoRenderTreeView but it was : "
+              + CommonUtils.getSectionNameForTracing(mLithoView.getClass()));
+    }
+  }
+
   public static class ScrollPosition {
+
     public int y;
 
     public ScrollPosition() {
@@ -201,6 +298,19 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
     public ScrollPosition(int initialScrollOffsetPixels) {
       y = initialScrollOffsetPixels;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      ScrollPosition that = (ScrollPosition) o;
+      return y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+      return y;
     }
   }
 

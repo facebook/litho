@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
@@ -24,10 +25,12 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.OnItemCallbacks;
+import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class DynamicPropsExtension
-    extends MountExtension<Void, DynamicPropsExtension.DynamicPropsExtensionState>
+    extends MountExtension<
+        DynamicPropsExtensionInput, DynamicPropsExtension.DynamicPropsExtensionState>
     implements OnItemCallbacks<DynamicPropsExtension.DynamicPropsExtensionState> {
 
   private static final DynamicPropsExtension sInstance = new DynamicPropsExtension();
@@ -44,19 +47,50 @@ public class DynamicPropsExtension
   }
 
   @Override
+  public void beforeMount(
+      ExtensionState<DynamicPropsExtensionState> extensionState,
+      @Nullable DynamicPropsExtensionInput dynamicPropsExtensionInput,
+      @Nullable Rect localVisibleRect) {
+    final DynamicPropsExtensionState state = extensionState.getState();
+
+    state.mPreviousInput = state.mCurrentInput;
+    state.mCurrentInput =
+        dynamicPropsExtensionInput != null
+            ? dynamicPropsExtensionInput.getDynamicValueOutputs()
+            : null;
+  }
+
+  @Override
+  public void onUnmount(ExtensionState<DynamicPropsExtensionState> extensionState) {
+    extensionState.releaseAllAcquiredReferences();
+    final DynamicPropsExtensionState state = extensionState.getState();
+    state.mCurrentInput = null;
+    state.mPreviousInput = null;
+  }
+
+  @Override
+  public void afterMount(ExtensionState<DynamicPropsExtensionState> extensionState) {
+    final DynamicPropsExtensionState state = extensionState.getState();
+    state.mPreviousInput = null;
+  }
+
+  @Override
   public void onBindItem(
       final ExtensionState<DynamicPropsExtensionState> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
-    if (renderUnit instanceof LithoRenderUnit) {
-      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final DynamicPropsExtensionState state = extensionState.getState();
+    final DynamicPropsExtensionState state = extensionState.getState();
 
+    @Nullable
+    final DynamicValueOutput dynamicValueOutput =
+        state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
+
+    if (dynamicValueOutput != null) {
       state.mDynamicPropsManager.onBindComponentToContent(
-          lithoRenderUnit.getComponent(),
-          lithoRenderUnit.componentContext,
-          lithoRenderUnit.commonDynamicProps,
+          dynamicValueOutput.getComponent(),
+          dynamicValueOutput.getScopedContext(),
+          dynamicValueOutput.getCommonDynamicProps(),
           content);
     }
   }
@@ -67,12 +101,17 @@ public class DynamicPropsExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
-    if (renderUnit instanceof LithoRenderUnit) {
-      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final DynamicPropsExtensionState state = extensionState.getState();
+    final DynamicPropsExtensionState state = extensionState.getState();
 
+    @Nullable
+    final DynamicValueOutput dynamicValueOutput =
+        state.mPreviousInput != null
+            ? state.mPreviousInput.get(renderUnit.getId())
+            : state.mCurrentInput != null ? state.mCurrentInput.get(renderUnit.getId()) : null;
+
+    if (dynamicValueOutput != null) {
       state.mDynamicPropsManager.onUnbindComponent(
-          lithoRenderUnit.getComponent(), lithoRenderUnit.commonDynamicProps, content);
+          dynamicValueOutput.getComponent(), dynamicValueOutput.getCommonDynamicProps(), content);
     }
   }
 
@@ -111,10 +150,15 @@ public class DynamicPropsExtension
       ExtensionState<DynamicPropsExtensionState> extensionState,
       RenderUnit<?> renderUnit,
       Object content,
-      @Nullable Object layoutData) {}
+      @Nullable Object layoutData,
+      boolean changed) {}
 
   static class DynamicPropsExtensionState {
     private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
+
+    @Nullable private Map<Long, DynamicValueOutput> mCurrentInput;
+
+    @Nullable private Map<Long, DynamicValueOutput> mPreviousInput;
 
     @VisibleForTesting
     public DynamicPropsManager getDynamicPropsManager() {

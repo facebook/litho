@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentContextUtils;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
@@ -39,12 +38,13 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.ResolveStateContext;
+import com.facebook.litho.ResolveContext;
 import com.facebook.litho.TestComponent;
 import com.facebook.litho.TestLayoutState;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
@@ -192,9 +192,11 @@ public final class ComponentTestHelper {
     return mountComponent(
         lithoView,
         ComponentTree.create(context, component)
-            .incrementalMount(incrementalMountEnabled)
-            .layoutDiffing(false)
-            .visibilityProcessing(visibilityProcessingEnabled)
+            .componentsConfiguration(
+                ComponentsConfiguration.create(context.mLithoConfiguration.componentsConfig)
+                    .incrementalMountEnabled(incrementalMountEnabled)
+                    .enableVisibilityProcessing(visibilityProcessingEnabled)
+                    .build())
             .build(),
         makeMeasureSpec(width, EXACTLY),
         makeMeasureSpec(height, EXACTLY));
@@ -404,7 +406,7 @@ public final class ComponentTestHelper {
 
   @Deprecated
   private static LithoNode resolveImmediateSubtree(
-      ResolveStateContext resolveStateContext,
+      ResolveContext resolveContext,
       ComponentContext c,
       Component component,
       int widthSpec,
@@ -412,7 +414,7 @@ public final class ComponentTestHelper {
 
     LithoNode node =
         TestLayoutState.createAndMeasureTreeForComponent(
-            resolveStateContext, c, component, widthSpec, heightSpec);
+            resolveContext, c, component, widthSpec, heightSpec);
 
     return node;
   }
@@ -447,11 +449,10 @@ public final class ComponentTestHelper {
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
 
     ComponentTree tree = ComponentTree.create(context).build();
-    ComponentContext c =
-        new ComponentContext(
-            ComponentContextUtils.withComponentTree(new ComponentContext(context), tree));
+    ComponentContext treeContext = tree.getContext();
 
-    final ResolveStateContext rsc = c.setRenderStateContextForTests();
+    ComponentContext c = new ComponentContext(treeContext);
+    final ResolveContext rsc = c.setRenderStateContextForTests();
 
     LithoNode root = resolveImmediateSubtree(rsc, c, component, widthSpec, heightSpec);
 
@@ -596,17 +597,17 @@ public final class ComponentTestHelper {
    * (unless a child overwrites its).
    */
   public static void setTreeProp(ComponentContext context, Class propClass, Object prop) {
-    TreeProps treeProps;
+    TreePropContainer treePropContainer;
     try {
-      treeProps = Whitebox.invokeMethod(context, "getTreeProps");
-      if (treeProps == null) {
-        treeProps = new TreeProps();
-        Whitebox.invokeMethod(context, "setTreeProps", treeProps);
+      treePropContainer = Whitebox.invokeMethod(context, "getTreePropContainer");
+      if (treePropContainer == null) {
+        treePropContainer = new TreePropContainer();
+        Whitebox.invokeMethod(context, "setTreePropContainer", treePropContainer);
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    treeProps.put(propClass, prop);
+    treePropContainer.put(propClass, prop);
   }
 
   /**
@@ -614,17 +615,17 @@ public final class ComponentTestHelper {
    * (unless a child overwrites its).
    */
   public static void setParentTreeProp(ComponentContext context, Class propClass, Object prop) {
-    TreeProps treeProps;
+    TreePropContainer treePropContainer;
     try {
-      treeProps = Whitebox.invokeMethod(context, "getParentTreeProps");
-      if (treeProps == null) {
-        treeProps = new TreeProps();
-        Whitebox.invokeMethod(context, "setParentTreeProps", treeProps);
+      treePropContainer = Whitebox.invokeMethod(context, "getParentTreePropContainer");
+      if (treePropContainer == null) {
+        treePropContainer = new TreePropContainer();
+        Whitebox.invokeMethod(context, "setParentTreePropContainer", treePropContainer);
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    treeProps.put(propClass, prop);
+    treePropContainer.put(propClass, prop);
   }
 
   /**

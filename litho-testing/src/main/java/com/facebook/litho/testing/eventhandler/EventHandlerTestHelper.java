@@ -20,9 +20,10 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.facebook.litho.EventDispatchInfo;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -74,13 +75,6 @@ public class EventHandlerTestHelper {
             });
 
     return new EventHandler<>(
-        new HasEventDispatcher() {
-          @Override
-          public EventDispatcher getEventDispatcher() {
-            return dispatcher;
-          }
-        },
-        0,
-        null);
+        0, EventHandlerRebindMode.REBIND, new EventDispatchInfo(() -> dispatcher, null), null);
   }
 }

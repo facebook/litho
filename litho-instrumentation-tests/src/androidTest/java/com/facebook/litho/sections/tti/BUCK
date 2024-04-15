@@ -10,6 +10,8 @@ load(
     "make_dep_path",
 )
 
+oncall("litho_components_for_android")
+
 instrumentation_test(
     name = "tti",
     srcs = glob(["*Test.java"]),

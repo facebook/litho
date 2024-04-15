@@ -21,7 +21,7 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
 
   private static final String DEFAULT_ERROR_EVENT_HANDLER = "DefaultErrorEventHandler";
 
-  static final DefaultErrorEventHandler INSTANCE = new DefaultErrorEventHandler();
+  public static final DefaultErrorEventHandler INSTANCE = new DefaultErrorEventHandler();
 
   @Override
   public Component onError(ComponentContext cc, Exception e) {

@@ -17,7 +17,6 @@ Add the following into the `dependencies` block of the `build.gradle` file:
 dependencies {
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
-  implementation 'com.facebook.litho:litho-core-kotlin:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-widget-kotlin:{{site.lithoVersion}}'
   kapt 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'
@@ -44,7 +43,7 @@ apply plugin: 'kotlin-kapt'
 
 ## 3. Wire up native libs
 
-Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/)[^1].
+Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.dev/docs/)[^1].
 
 [^1]: Yoga is a cross-platform (usable on Android, iOS, and other platforms) implementation of the Flexbox layout system used in web browsers. Litho uses Yoga to enable layouts (positioning of elements in the screen) to be specified via the Flexbox layouting system.
 

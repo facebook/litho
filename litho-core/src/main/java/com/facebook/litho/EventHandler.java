@@ -16,41 +16,37 @@
 
 package com.facebook.litho;
 
+import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
+
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.LithoDebugEvent;
+import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.Function;
-import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
+import com.facebook.rendercore.utils.CommonUtils;
+import kotlin.Unit;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 
+  public static final String UnboundEventHandler = "UnboundEventHandler";
+
   public final int id;
+  public final EventHandlerRebindMode mode;
   public EventDispatchInfo dispatchInfo;
   public final @Nullable Object[] params;
 
-  protected EventHandler(@Nullable HasEventDispatcher hasEventDispatcher, int id) {
-    this(hasEventDispatcher, id, null);
-  }
-
   public EventHandler(
-      @Nullable HasEventDispatcher hasEventDispatcher, int id, @Nullable Object[] params) {
+      final int id,
+      final EventHandlerRebindMode mode,
+      final EventDispatchInfo dispatchInfo,
+      final @Nullable Object[] params) {
     this.id = id;
-    this.dispatchInfo = new EventDispatchInfo(hasEventDispatcher, null);
-    this.params = params;
-  }
-
-  /**
-   * The EventDispatchInfo ctors are used to construct EventHandlers from generated code. The
-   * HasEventDispatcher ones above are mostly from manual construction of EventHandlers, e.g. in
-   * tests.
-   */
-  public EventHandler(int id, EventDispatchInfo dispatchInfo) {
-    this.id = id;
-    this.dispatchInfo = dispatchInfo;
-    this.params = null;
-  }
-
-  public EventHandler(int id, EventDispatchInfo dispatchInfo, @Nullable Object[] params) {
-    this.id = id;
+    this.mode = mode;
     this.dispatchInfo = dispatchInfo;
     this.params = params;
   }
@@ -61,17 +57,40 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
     return null;
   }
 
-  public void dispatchEvent(E event) {
+  public @Nullable Object dispatchEvent(E event) {
+
+    // Log unbound event handler dispatches
+    if (ComponentsConfiguration.isEventHandlerRebindLoggingEnabled) {
+      final EventDispatchInfo info = dispatchInfo;
+      final boolean isUnbound = (info == null) || !info.isBound;
+      if (isUnbound && mode != EventHandlerRebindMode.NONE) {
+        DebugEventDispatcher.dispatch(
+            LithoDebugEvent.DebugInfo,
+            () -> "-1",
+            LogLevel.DEBUG,
+            (attribute) -> {
+              attribute.put(Name, UnboundEventHandler);
+              attribute.put("event", CommonUtils.getSectionNameForTracing(event.getClass()));
+              attribute.put(Source, this.toString());
+              attribute.put("hasDispatchInfo", info != null);
+              return Unit.INSTANCE;
+            });
+      }
+    }
+
     boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("onEvent:" + this);
     }
-    Preconditions.checkNotNull(dispatchInfo.hasEventDispatcher)
-        .getEventDispatcher()
-        .dispatchOnEvent(this, event);
+    final @Nullable Object result =
+        Preconditions.checkNotNull(dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher()
+            .dispatchOnEvent(this, event);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+
+    return result;
   }
 
   @Override
@@ -89,6 +108,18 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
     }
 
     if (id != other.id) {
+      return false;
+    }
+
+    if (mode != other.mode) {
+      return false;
+    }
+
+    final boolean useNonRebindingEventHandlers =
+        dispatchInfo != null
+            && dispatchInfo.componentContext != null
+            && dispatchInfo.componentContext.shouldUseNonRebindingEventHandlers();
+    if (useNonRebindingEventHandlers && dispatchInfo != other.dispatchInfo) {
       return false;
     }
 
@@ -120,8 +151,9 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   @Override
   public String toString() {
     final HasEventDispatcher hasEventDispatcher = dispatchInfo.hasEventDispatcher;
-    return hasEventDispatcher != null && hasEventDispatcher != this
-        ? hasEventDispatcher.toString()
-        : super.toString();
+    return CommonUtils.getSectionNameForTracing(
+        hasEventDispatcher != null && hasEventDispatcher != this
+            ? hasEventDispatcher.getClass()
+            : getClass());
   }
 }

@@ -125,7 +125,9 @@ class FocusDispatcher {
     mWaitForDataBound = waitForDataBound;
   }
 
-  /** @return true if the data fetching has been completed. */
+  /**
+   * @return true if the data fetching has been completed.
+   */
   @UiThread
   boolean isLoadingCompleted() {
     return mLoadingState == null

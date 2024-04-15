@@ -56,7 +56,7 @@ class MountUiDebugger(private val view: LithoView) :
   }
 
   private fun onRenderTreeMounted(event: DebugEvent) {
-    val duration: Duration = event.attribute(DebugEventAttribute.duration)
+    val duration: Duration = event.attribute(DebugEventAttribute.Duration)
 
     val color =
         when {

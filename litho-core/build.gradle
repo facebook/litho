@@ -55,6 +55,7 @@ dependencies {
     // Project dependencies
     api project(':litho-annotations')
     api project(':litho-perf-logger')
+    api project(':litho-flexlayout')
     api project(':litho-rendercore')
     api project(':litho-rendercore-incremental-mount')
     api project(':litho-rendercore-primitives')
@@ -71,9 +72,13 @@ dependencies {
 
     // Android Support Library
     compileOnly deps.supportAnnotations
+    implementation deps.supportFragment
+    implementation deps.supportCollection
     implementation deps.supportCore
     implementation deps.supportCustomView
     implementation deps.supportViewPager
+    implementation deps.supportDynamicAnimations
+    implementation deps.lifecycle
 
     // First-party dependencies
     if (project.isRelease()) {
@@ -86,6 +91,12 @@ dependencies {
     testImplementation deps.junit
     testImplementation deps.robolectric
     testImplementation deps.mockitokotlin
+    testImplementation deps.robolectric
+    testImplementation deps.supportRecyclerView
+    testImplementation deps.supportTestJunit
+    testImplementation project(':litho-rendercore-testing')
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-widget-kotlin')
 }
 
 apply plugin: "com.vanniktech.maven.publish"

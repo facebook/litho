@@ -16,9 +16,9 @@
 
 package com.facebook.litho.processor.integration.resources;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StringRes;
@@ -30,7 +30,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
-import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
@@ -43,7 +42,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Prop;
@@ -68,7 +67,6 @@ import javax.annotation.Nullable;
  * @prop-required prop8 long
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
-@TargetApi(17)
 @Generated
 public final class TestMount<S extends View> extends SpecGeneratedComponent implements TestTag {
   @Prop(resType = ResType.NONE, optional = false)
@@ -173,7 +171,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
+  protected boolean isEqualivalentTreePropContainer(
+      ComponentContext current, ComponentContext next) {
     if (current.getParentTreeProp(
                 com.facebook.litho.processor.integration.resources.TestTreeProp.class)
             != null
@@ -212,20 +211,24 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected void populateTreeProps(TreeProps treeProps) {
-    if (treeProps == null) {
+  protected void populateTreePropContainer(TreePropContainer treePropContainer) {
+    if (treePropContainer == null) {
       return;
     }
-    treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
+    treeProp =
+        treePropContainer.get(
+            com.facebook.litho.processor.integration.resources.TestTreeProp.class);
   }
 
   @Override
-  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
-    final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
-    childTreeProps.put(
+  protected TreePropContainer getTreePropContainerForChildren(
+      ComponentContext c, TreePropContainer parentTreePropContainer) {
+    final TreePropContainer childTreePropContainer =
+        TreePropContainer.acquire(parentTreePropContainer);
+    childTreePropContainer.put(
         com.facebook.litho.processor.integration.resources.TestTreeProp.class,
         TestMountSpec.onCreateFeedPrefetcherProp((ComponentContext) c, prop6));
-    return childTreeProps;
+    return childTreePropContainer;
   }
 
   @SuppressWarnings("unchecked")
@@ -338,6 +341,56 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Override
   public boolean implementsAccessibility() {
+    return true;
+  }
+
+  @Override
+  protected boolean onPerformActionForVirtualView(
+      ComponentContext c,
+      View host,
+      AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      int action,
+      Bundle arguments,
+      InterStagePropsContainer _6) {
+    boolean _result;
+    _result =
+        (boolean)
+            TestMountSpec.onPerformActionForVirtualView(
+                (ComponentContext) c,
+                (View) host,
+                (AccessibilityNodeInfoCompat) node,
+                (int) virtualViewId,
+                (int) action,
+                (Bundle) arguments,
+                (CharSequence) prop7);
+    return _result;
+  }
+
+  @Override
+  public boolean implementsOnPerformActionForVirtualView() {
+    return true;
+  }
+
+  @Override
+  protected void onVirtualViewKeyboardFocusChanged(
+      ComponentContext c,
+      View host,
+      AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      boolean hasFocus,
+      InterStagePropsContainer _5) {
+    TestMountSpec.onVirtualViewKeyboardFocusChanged(
+        (ComponentContext) c,
+        (View) host,
+        (AccessibilityNodeInfoCompat) node,
+        (int) virtualViewId,
+        (boolean) hasFocus,
+        (CharSequence) prop7);
+  }
+
+  @Override
+  public boolean implementsKeyboardFocusChangeForVirtualViews() {
     return true;
   }
 
@@ -477,9 +530,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
-    EventDispatcher _dispatcher =
-        _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();
-    _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
+    _eventHandler.dispatchEvent(_eventState);
   }
 
   private void testLayoutEvent(
@@ -504,7 +555,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         1328162206,
         new Object[] {
           param1,
-        });
+        },
+        com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);
   }
 
   @Override
@@ -572,7 +624,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(ComponentContext c, String key, View view) {
     int methodId = -830639048;
@@ -585,7 +639,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(EventTrigger trigger, View view) {
     ClickEvent _eventState = new ClickEvent();
@@ -593,7 +649,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   static void onClickEventTrigger(ComponentContext c, View view) {
     TestMount component = (TestMount) c.getComponentScope();
@@ -603,14 +661,14 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected Object acceptTriggerEventImpl(
       final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
-    int id = eventTrigger.mId;
+    int id = eventTrigger.getId();
     switch (id) {
       case -830639048:
         {
           ClickEvent _event = (ClickEvent) eventState;
           onClickEventTrigger(
-              (com.facebook.litho.ComponentContext) eventTrigger.mComponentContext,
-              eventTrigger.mTriggerTarget,
+              (com.facebook.litho.ComponentContext) eventTrigger.getComponentContext(),
+              eventTrigger.getTriggerTarget(),
               _event.view);
           return null;
         }
@@ -622,8 +680,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   public void recordEventTrigger(ComponentContext c, EventTriggersContainer container) {
     if (onClickEventTriggerTrigger != null) {
-      onClickEventTriggerTrigger.mComponentContext = c;
-      onClickEventTriggerTrigger.mTriggerTarget = this;
+      onClickEventTriggerTrigger.setComponentContext(c);
+      onClickEventTriggerTrigger.setTriggerTarget(this);
       container.recordEventTrigger(onClickEventTriggerTrigger);
     }
   }
@@ -690,10 +748,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     String globalKey = c.getGlobalKey();
     final CachedInputs inputs =
         new CachedInputs(globalKey, prop3, prop5, getStateContainerImpl(c).state1);
-    Integer cached = (Integer) c.getCachedValue(inputs);
+    Integer cached = (Integer) c.getCachedValue(globalKey, 0, inputs);
     if (cached == null) {
       cached = TestMountSpec.onCalculateCached(prop3, prop5, getStateContainerImpl(c).state1);
-      c.putCachedValue(inputs, cached);
+      c.putCachedValue(globalKey, 0, inputs, cached);
     }
     return cached;
   }
@@ -932,7 +990,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         return false;
       }
       CachedInputs cachedValueInputs = (CachedInputs) other;
-      if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(
+      if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(
           globalKey, cachedValueInputs.globalKey)) {
         return false;
       }

@@ -25,7 +25,6 @@ import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
 import androidx.collection.SparseArrayCompat
-import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
@@ -71,7 +70,7 @@ class ComponentHostTest {
     viewComponent = TestViewComponent.create(context).key(viewComponentKey).build()
     drawableComponent = SimpleMountSpecTester.create(context).key(drawableComponentKey).build()
     host = TestableComponentHost(context)
-    viewGroupHost = HostComponent.create()
+    viewGroupHost = HostComponent.create(context)
   }
 
   private val dummyMotionEvent =
@@ -264,8 +263,7 @@ class ComponentHostTest {
 
   @Test
   fun testMoveTouchExpansionItem() {
-    val view = mock<View>()
-    whenever(view.context).thenReturn(ApplicationProvider.getApplicationContext())
+    val view = View(context.androidContext)
     val mountItem = mountTouchExpansionItem(0, view)
     host.moveItem(mountItem, 0, 1)
     unmount(1, mountItem)
@@ -449,39 +447,6 @@ class ComponentHostTest {
     host.moveItem(mountItem3, 1, 3)
     assertThat(host.getChildDrawingOrder(host.childCount, 0)).isEqualTo(0)
     assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(1)
-  }
-
-  @Test
-  fun testTemporaryChildClippingDisabling() {
-    val componentHost = ComponentHost(context)
-    assertThat(componentHost.clipChildren).isTrue
-
-    // 1. Testing disable > restore
-    componentHost.temporaryDisableChildClipping()
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isTrue
-
-    // 2. Testing disable > set > restore
-    componentHost.temporaryDisableChildClipping()
-    componentHost.clipChildren = true
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isTrue
-
-    // 3. Same as 1 (disable > restore), but starting with clipping tuned off initially
-    componentHost.clipChildren = false
-    componentHost.temporaryDisableChildClipping()
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isFalse
-
-    // 4. Same as 2 (disable > set > restore), with reverted values
-    componentHost.temporaryDisableChildClipping()
-    componentHost.clipChildren = true
-    assertThat(componentHost.clipChildren).isFalse
-    componentHost.restoreChildClipping()
-    assertThat(componentHost.clipChildren).isTrue
   }
 
   @Test
@@ -701,10 +666,6 @@ class ComponentHostTest {
   }
 
   private fun mountTouchExpansionItem(index: Int, content: Any): MountItem {
-    val result = mock<LithoLayoutResult>()
-    val node = mock<LithoNode>()
-    whenever(result.node).thenReturn(node)
-    whenever(node.hasTouchExpansion()).thenReturn(true)
     val viewMountItem =
         MountItemTestHelper.create(
             viewComponent,
@@ -733,7 +694,7 @@ class ComponentHostTest {
 
     constructor(context: ComponentContext?) : super(context)
 
-    constructor(context: Context?) : super(context)
+    constructor(context: Context?) : super(context, null)
 
     override fun invalidate(dirty: Rect) {
       super.invalidate(dirty)

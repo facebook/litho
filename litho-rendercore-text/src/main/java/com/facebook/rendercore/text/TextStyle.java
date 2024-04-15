@@ -29,6 +29,7 @@ import androidx.core.text.TextDirectionHeuristicCompat;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 
 public class TextStyle implements Cloneable {
+
   static final int UNSET = -1;
   @Nullable TextUtils.TruncateAt ellipsize;
   @Nullable CharSequence customEllipsisText;
@@ -284,7 +285,16 @@ public class TextStyle implements Cloneable {
     this.roundedBackgroundProps = roundedBackgroundProps;
   }
 
+  public void setLetterSpacing(float letterSpacing) {
+    this.letterSpacing = letterSpacing;
+  }
+
+  public static void addThemedTextStyleForContextToCache(Context context) {
+    TextStylesAttributeHelper.addThemedTextStyleForContext(context);
+  }
+
   public static class RoundedBackgroundProps {
+
     final RectF padding;
     final float cornerRadius;
     final @ColorInt int backgroundColor;

@@ -56,10 +56,16 @@ public class StateValidation {
 
         if (thisStateValue.getName().equals(thatStateValue.getName())) {
           if (!thisStateValue.getTypeName().box().equals(thatStateValue.getTypeName().box())) {
+            final String errorMessage =
+                SpecModelUtils.areTypesEqualIgnoringKotlinCovariance(
+                        specModel, thisStateValue.getTypeName(), thatStateValue.getTypeName())
+                    ? "State values for collections in Kotlin specs need to add"
+                        + " @JvmSuppressWildcards such as CollectionType<@JvmSuppressWildcards"
+                        + " T>. Add the annotation for both @State and StateValue types."
+                    : "State values with the same name must have the same type.";
+
             validationErrors.add(
-                new SpecModelValidationError(
-                    thatStateValue.getRepresentedObject(),
-                    "State values with the same name must have the same type."));
+                new SpecModelValidationError(thatStateValue.getRepresentedObject(), errorMessage));
           }
 
           if (thisStateValue.canUpdateLazily() != thatStateValue.canUpdateLazily()) {
@@ -230,7 +236,8 @@ public class StateValidation {
                 model.getRepresentedObject(),
                 "The parameter with name "
                     + model.getName()
-                    + " annotated with @State is colliding with another inter-stage prop param with the same name."));
+                    + " annotated with @State is colliding with another inter-stage prop param with"
+                    + " the same name."));
       }
     }
   }
@@ -247,7 +254,8 @@ public class StateValidation {
                 model.getRepresentedObject(),
                 "The parameter with name "
                     + model.getName()
-                    + " annotated with @State is colliding with another inter-stage prop param with the same name."));
+                    + " annotated with @State is colliding with another inter-stage prop param with"
+                    + " the same name."));
       }
     }
   }

@@ -55,7 +55,7 @@ private constructor(
         getRenderType(component),
         context,
         debugKey),
-    ContentAllocator<Any?> {
+    ContentAllocator<Any> {
 
   private var isShouldUpdateCachingEnabled = false
   private var isShouldUpdateResultCached = false
@@ -75,7 +75,7 @@ private constructor(
     isShouldUpdateResultCached = false
   }
 
-  override fun createRecyclingPool(): ItemPool? {
+  override fun createRecyclingPool(poolSizeOverride: Int): ItemPool? {
     return try {
       if (component is SpecGeneratedComponent) {
         component.createRecyclingPool()
@@ -98,21 +98,14 @@ private constructor(
     return renderContentType
   }
 
-  override fun isRecyclingDisabled(): Boolean {
-    return (component is SpecGeneratedComponent && component.isRecyclingDisabled)
-  }
+  override val isPoolingDisabled: Boolean
+    get() = (component is SpecGeneratedComponent && component.isPoolingDisabled)
 
-  override fun getDescription(): String {
-    return component.simpleName
-  }
+  override val description: String = component.simpleName
 
-  override fun getContentAllocator(): ContentAllocator<Any?> {
-    return this
-  }
+  override val contentAllocator: ContentAllocator<Any> = this
 
-  override fun getRenderContentType(): Class<*> {
-    return component.javaClass
-  }
+  override val renderContentType: Class<*> = component.javaClass
 
   companion object {
 
@@ -120,8 +113,8 @@ private constructor(
     const val STATE_UPDATED = 1
     const val STATE_DIRTY = 2
 
-    val mountBinder: Binder<MountSpecLithoRenderUnit, Any, Any?> =
-        object : Binder<MountSpecLithoRenderUnit, Any, Any?> {
+    val mountBinder: Binder<MountSpecLithoRenderUnit, Any, Any> =
+        object : Binder<MountSpecLithoRenderUnit, Any, Any> {
           override fun shouldUpdate(
               current: MountSpecLithoRenderUnit,
               next: MountSpecLithoRenderUnit,
@@ -165,8 +158,8 @@ private constructor(
           }
         }
 
-    val binderBinder: Binder<MountSpecLithoRenderUnit, Any, Any?> =
-        object : Binder<MountSpecLithoRenderUnit, Any, Any?> {
+    val binderBinder: Binder<MountSpecLithoRenderUnit, Any, Any> =
+        object : Binder<MountSpecLithoRenderUnit, Any, Any> {
           override fun shouldUpdate(
               current: MountSpecLithoRenderUnit,
               next: MountSpecLithoRenderUnit,

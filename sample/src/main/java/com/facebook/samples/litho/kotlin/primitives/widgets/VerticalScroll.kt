@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.primitives.widgets
 
-import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -30,6 +29,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Size
 import com.facebook.litho.Style
 import com.facebook.litho.Wrapper
+import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.litho.widget.VerticalScrollEventsController
@@ -105,21 +105,21 @@ class VerticalScroll(
       LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
     }
 
-    val componentTree = useState {
-      ComponentTree.createNestedComponentTree(context, child)
+    val componentTree = useCached {
+      ComponentTree.createNestedComponentTree(context)
           .incrementalMount(incrementalMountEnabled)
           .build()
     }
 
     return LithoPrimitive(
-        layoutBehavior = VerticalScrollLayoutBehavior(child, fillViewport, componentTree.value),
+        layoutBehavior = VerticalScrollLayoutBehavior(child, fillViewport, componentTree),
         mountBehavior =
             MountBehavior(ViewAllocator { context -> LithoScrollView(context) }) {
               doesMountRenderTreeHosts = true
 
-              bind(componentTree.value, scrollPosition.value, onScrollStateChange) { content ->
+              bind(componentTree, scrollPosition.value, onScrollStateChange) { content ->
                 content.mount(
-                    componentTree.value,
+                    componentTree,
                     scrollPosition.value,
                     onScrollStateChange,
                 )
@@ -141,15 +141,7 @@ class VerticalScroll(
                       .scaledFadingEdgeLength) // todo check default
 
               bind(scrollbarEnabled) { content ->
-                // On older versions we need to disable the vertical scroll bar as otherwise we run
-                // into an NPE
-                // that was only fixed in Lollipop - see
-                // https://github.com/aosp-mirror/platform_frameworks_base/commit/6c8fef7fb866d244486a962dd82f4a6f26505f16#diff-7c8b4c8147fbbbf69293775bca384f31.
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                  content.isVerticalScrollBarEnabled = false
-                } else {
-                  content.isVerticalScrollBarEnabled = scrollbarEnabled
-                }
+                content.isVerticalScrollBarEnabled = scrollbarEnabled
                 onUnbind {
                   content.isVerticalScrollBarEnabled = false // todo check default
                 }
@@ -195,6 +187,10 @@ internal class VerticalScrollLayoutBehavior(
     private val componentTree: ComponentTree
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    if (componentTree.isReleased) {
+      return PrimitiveLayoutResult(
+          width = 0, height = 0, layoutData = VerticalScrollLayoutData(0, 0))
+    }
     // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
     val actualComponent =
         if (fillViewport) {

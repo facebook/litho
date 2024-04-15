@@ -19,6 +19,7 @@
 package com.facebook.litho
 
 import android.os.Handler
+import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LruResourceCache
 import com.facebook.rendercore.MountItemsPool
@@ -31,7 +32,6 @@ import com.facebook.rendercore.primitives.AspectRatioLayoutBehavior
 import com.facebook.rendercore.primitives.BindScope
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.EqualDimensionsLayoutBehavior
-import com.facebook.rendercore.primitives.Equivalence
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 import com.facebook.rendercore.primitives.FillLayoutBehavior
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
@@ -79,8 +79,8 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 DelegatingEventHandler::class.java,
                 StateValue::class.java,
                 Output::class.java,
-                LithoLifecycleProviderDelegate::class.java,
-                LithoLifecycleProvider::class.java,
+                LithoVisibilityEventsControllerDelegate::class.java,
+                LithoVisibilityEventsController::class.java,
                 Diff::class.java,
                 LayoutThreadPoolConfigurationImpl::class.java,
                 WorkingRange::class.java,
@@ -88,7 +88,6 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 LithoLayoutResult::class.java,
                 ComponentLayout::class.java,
                 NodeConfig::class.java,
-                LithoRenderContext::class.java,
                 DefaultDiffNode::class.java,
                 LithoRenderUnit::class.java,
                 LithoLayoutData::class.java,
@@ -111,7 +110,6 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 ImageContent::class.java,
                 AttachDetachHandler::class.java,
                 ComponentClickListener::class.java,
-                CommonUtils::class.java,
                 MatrixDrawable::class.java,
                 VisibleEvent::class.java,
                 FullImpressionVisibleEvent::class.java,
@@ -141,17 +139,17 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 StateHandler::class.java,
                 IncrementalMountHelper::class.java,
                 DefaultComponentsSystrace::class.java,
-                LayoutStateContext::class.java,
+                LithoLayoutContext::class.java,
                 AccessibilityUtils::class.java,
                 Layout::class.java,
-                TreeProps::class.java,
+                TreePropContainer::class.java,
                 ThreadUtils::class.java,
                 RenderResult::class.java,
                 ComponentKeyUtils::class.java,
                 ThreadPoolLayoutHandler::class.java,
                 LayoutThreadPoolExecutor::class.java,
                 LayoutThreadFactory::class.java,
-                InternalNodeUtils::class.java,
+                LithoNodeUtils::class.java,
                 SizeSpec::class.java,
                 TransitionId::class.java,
                 OutputUnitsAffinityGroup::class.java,

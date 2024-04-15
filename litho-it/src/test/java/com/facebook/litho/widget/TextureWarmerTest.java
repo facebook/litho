@@ -39,10 +39,11 @@ import org.robolectric.shadows.ShadowLooper;
 /** Tests {@link TextureWarmer}. */
 @LooperMode(LooperMode.Mode.LEGACY)
 @Config(
-    shadows = TextureWarmerTest.ShadowPicture.class,
-    sdk = {Build.VERSION_CODES.KITKAT})
+    shadows = {TextureWarmerTest.ShadowPicture.class},
+    sdk = {Build.VERSION_CODES.LOLLIPOP})
 @RunWith(LithoTestRunner.class)
 public class TextureWarmerTest {
+
   private ShadowLooper mShadowLooper;
   private TextureWarmer mTextureWarmer;
 
@@ -73,13 +74,13 @@ public class TextureWarmerTest {
   public static class ShadowPicture {
 
     @Implementation
-    public void __constructor__(int nativePicture, boolean fromStream) {}
+    protected void __constructor__() {}
 
     @Implementation
-    public void __constructor__(int nativePicture) {}
+    protected void __constructor__(Picture picture) {}
 
     @Implementation
-    public void __constructor__() {}
+    protected void __constructor__(long nativePicture) {}
 
     @Implementation
     public Canvas beginRecording(int width, int height) {

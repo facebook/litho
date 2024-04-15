@@ -23,10 +23,13 @@ import kotlin.jvm.JvmField
  * latest version of the owning component or section by [EventHandlersController].
  */
 class EventDispatchInfo(
-    // These should only be null for manually created EventHandlers (i.e. not using
-    // Component.newEventHandler
-    @JvmField var hasEventDispatcher: HasEventDispatcher?,
-    @JvmField var componentContext: ComponentContext?
+    /**
+     * These should only be null for manually created EventHandlers (i.e. not create by the
+     * *::newEventHandler() API)
+     */
+    @JvmField var hasEventDispatcher: HasEventDispatcher? = null,
+    @JvmField var componentContext: ComponentContext? = null,
 ) {
+  @JvmField var isBound: Boolean = false
   @JvmField var tag: String? = null
 }

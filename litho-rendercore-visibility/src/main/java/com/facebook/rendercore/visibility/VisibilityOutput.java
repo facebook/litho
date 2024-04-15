@@ -46,12 +46,15 @@ public class VisibilityOutput {
 
   private float mFocusedRatio;
 
+  private final @Nullable String mTag;
+
   public VisibilityOutput(
       final String id,
       final String key,
       final Rect bounds,
       final float visibleHeightRatio,
       final float visibleWidthRatio,
+      final @Nullable String tag,
       final @Nullable Function<Void> visibleEventHandler,
       final @Nullable Function<Void> invisibleEventHandler,
       final @Nullable Function<Void> focusedEventHandler,
@@ -66,6 +69,7 @@ public class VisibilityOutput {
         0L,
         visibleHeightRatio,
         visibleWidthRatio,
+        tag,
         visibleEventHandler,
         invisibleEventHandler,
         focusedEventHandler,
@@ -82,6 +86,7 @@ public class VisibilityOutput {
       final long renderUnitId,
       final float visibleHeightRatio,
       final float visibleWidthRatio,
+      final @Nullable String tag,
       final @Nullable Function<Void> visibleEventHandler,
       final @Nullable Function<Void> invisibleEventHandler,
       final @Nullable Function<Void> focusedEventHandler,
@@ -95,6 +100,7 @@ public class VisibilityOutput {
     mRenderUnitId = renderUnitId;
     mVisibleHeightRatio = visibleHeightRatio;
     mVisibleWidthRatio = visibleWidthRatio;
+    mTag = tag;
     mVisibleEventHandler = visibleEventHandler;
     mInvisibleEventHandler = invisibleEventHandler;
     mFocusedEventHandler = focusedEventHandler;
@@ -215,6 +221,10 @@ public class VisibilityOutput {
 
   public @Nullable Function<Void> getVisibilityChangedEventHandler() {
     return mVisibilityChangedEventHandler;
+  }
+
+  public @Nullable String getTag() {
+    return mTag;
   }
 
   /**

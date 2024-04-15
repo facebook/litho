@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import com.facebook.rendercore.LayoutResult
-import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.visibility.VisibilityOutput
 import java.util.ArrayList
@@ -36,10 +35,9 @@ internal constructor(
   override var borderOutput: LithoRenderUnit? = null
   override var hostOutput: LithoRenderUnit? = null
   override var visibilityOutput: VisibilityOutput? = null
-  override var mountable: Mountable<*>? = null
   override var primitive: Primitive? = null
-  override var lastMeasuredWidth: Float = 0f
-  override var lastMeasuredHeight: Float = 0f
+  override var lastMeasuredWidth: Int = 0
+  override var lastMeasuredHeight: Int = 0
   override var lastWidthSpec: Int = 0
   override var lastHeightSpec: Int = 0
   override var delegate: LayoutResult? = null

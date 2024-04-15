@@ -46,6 +46,12 @@ object MountItemTestHelper {
                 0,
                 null,
                 null,
+                if (component is SpecGeneratedComponent) {
+                  component.isMountSizeDependent
+                } else {
+                  false
+                },
+                null,
             ),
             null,
         )

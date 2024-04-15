@@ -17,12 +17,13 @@
 package com.facebook.litho.sections.common;
 
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 
 /**
  * This event is triggered by {@link HideableDataDiffSectionSpec} when it needs to get a unique
  * identifier for the edge model provided.
  */
-@Event(returnType = Object.class)
+@Event(returnType = Object.class, mode = EventHandlerRebindMode.NONE)
 public class GetUniqueIdentifierEvent {
   public Object model;
 }

@@ -21,18 +21,18 @@ import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.litho.LithoRenderUnit.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,16 +45,18 @@ import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.MountState;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.transitions.DisappearingHost;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import kotlin.Unit;
 
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used by
@@ -66,8 +68,6 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   @IdRes public static final int COMPONENT_NODE_INFO_ID = R.id.component_node_info;
 
-  public static final String TEXTURE_TOO_BIG = "TextureTooBig";
-  public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
   public static final String PARTIAL_ALPHA_TEXTURE_TOO_BIG = "PartialAlphaTextureTooBig";
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
@@ -106,17 +106,9 @@ public class ComponentHost extends Host implements DisappearingHost {
   private TouchExpansionDelegate mTouchExpansionDelegate;
 
   interface ExceptionLogMessageProvider {
+
     StringBuilder getLogMessage();
   }
-
-  /**
-   * {@link ViewGroup#getClipChildren()} was only added in API 18, will need to keep track of this
-   * flag ourselves on the lower versions
-   */
-  private boolean mClipChildren = true;
-
-  private boolean mClippingTemporaryDisabled = false;
-  private boolean mClippingToRestore = false;
 
   /**
    * Is {@code true} if and only if any accessible mounted child content has extra A11Y nodes. This
@@ -124,16 +116,21 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   private boolean mImplementsVirtualViews = false;
 
-  public ComponentHost(Context context) {
-    this(context, null);
+  public ComponentHost(
+      Context context, @Nullable UnsafeModificationPolicy unsafeModificationPolicy) {
+    this(context, null, unsafeModificationPolicy);
   }
 
   public ComponentHost(ComponentContext context) {
-    this(context.getAndroidContext(), null);
+    this(context.getAndroidContext(), null, null);
   }
 
-  public ComponentHost(Context context, @Nullable AttributeSet attrs) {
+  public ComponentHost(
+      Context context,
+      @Nullable AttributeSet attrs,
+      @Nullable UnsafeModificationPolicy unsafeModificationPolicy) {
     super(context, attrs);
+    mUnsafeModificationPolicy = unsafeModificationPolicy;
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
@@ -315,13 +312,17 @@ public class ComponentHost extends Host implements DisappearingHost {
     mTouchExpansionDelegate.unregisterTouchExpansion(index);
   }
 
-  /** @return number of {@link MountItem}s that are currently mounted in the host. */
+  /**
+   * @return number of {@link MountItem}s that are currently mounted in the host.
+   */
   @Override
   public int getMountItemCount() {
     return mMountItems.size();
   }
 
-  /** @return the {@link MountItem} that was mounted with the given index. */
+  /**
+   * @return the {@link MountItem} that was mounted with the given index.
+   */
   @Override
   public MountItem getMountItemAt(int index) {
     return mMountItems.valueAt(index);
@@ -346,7 +347,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return null;
   }
 
-  /** @return list of drawables that are mounted on this host. */
+  /**
+   * @return list of drawables that are mounted on this host.
+   */
   public List<Drawable> getDrawables() {
     final int size = mDrawableMountItems.size();
     if (size == 0) {
@@ -362,7 +365,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return drawables;
   }
 
-  /** @return list of names of content mounted on this host. */
+  /**
+   * @return list of names of content mounted on this host.
+   */
   public List<String> getContentNames() {
     final int contentSize = mMountItems.size();
     if (contentSize == 0) {
@@ -377,7 +382,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return contentNames;
   }
 
-  /** @return the text content that is mounted on this host. */
+  /**
+   * @return the text content that is mounted on this host.
+   */
   @DoNotStrip
   public List<TextContent> getTextContent() {
     return ComponentHostUtils.extractTextContent(ComponentHostUtils.extractContent(mMountItems));
@@ -403,12 +410,16 @@ public class ComponentHost extends Host implements DisappearingHost {
     return textList;
   }
 
-  /** @return the image content that is mounted on this host. */
+  /**
+   * @return the image content that is mounted on this host.
+   */
   public ImageContent getImageContent() {
     return ComponentHostUtils.extractImageContent(ComponentHostUtils.extractContent(mMountItems));
   }
 
-  /** @return the content descriptons that are set on content mounted on this host */
+  /**
+   * @return the content descriptons that are set on content mounted on this host
+   */
   @Nullable
   @Override
   public CharSequence getContentDescription() {
@@ -424,14 +435,12 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   @Override
   public void setContentDescription(@Nullable CharSequence contentDescription) {
-    if (ComponentsConfiguration.shouldDelegateContentDescriptionChangeEvent) {
-      if (mContentDescription == null) {
-        if (contentDescription == null) {
-          return;
-        }
-      } else if (mContentDescription.equals(contentDescription)) {
+    if (mContentDescription == null) {
+      if (contentDescription == null) {
         return;
       }
+    } else if (mContentDescription.equals(contentDescription)) {
+      return;
     }
     mContentDescription = contentDescription;
 
@@ -440,8 +449,7 @@ public class ComponentHost extends Host implements DisappearingHost {
             == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       ViewCompat.setImportantForAccessibility(this, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
-    if (ComponentsConfiguration.shouldDelegateContentDescriptionChangeEvent
-        && !TextUtils.isEmpty(contentDescription)) {
+    if (!TextUtils.isEmpty(contentDescription)) {
       // To fix the issue that the TYPE_WINDOW_CONTENT_CHANGED event doesn't get triggered.
       // More details at here: https://fburl.com/aoa2apq5
       super.setContentDescription(contentDescription);
@@ -559,10 +567,15 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   void setComponentLongClickListener(ComponentLongClickListener listener) {
     mOnLongClickListener = listener;
+    boolean prevSafeModification = mIsSafeViewModificationsEnabled;
+    setSafeViewModificationsEnabled(true);
     this.setOnLongClickListener(listener);
+    setSafeViewModificationsEnabled(prevSafeModification);
   }
 
-  /** @return The previously set long click listener */
+  /**
+   * @return The previously set long click listener
+   */
   @Nullable
   ComponentLongClickListener getComponentLongClickListener() {
     return mOnLongClickListener;
@@ -575,10 +588,15 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   void setComponentFocusChangeListener(ComponentFocusChangeListener listener) {
     mOnFocusChangeListener = listener;
+    boolean prevSafeModification = mIsSafeViewModificationsEnabled;
+    setSafeViewModificationsEnabled(true);
     this.setOnFocusChangeListener(listener);
+    setSafeViewModificationsEnabled(prevSafeModification);
   }
 
-  /** @return The previously set focus change listener */
+  /**
+   * @return The previously set focus change listener
+   */
   ComponentFocusChangeListener getComponentFocusChangeListener() {
     return mOnFocusChangeListener;
   }
@@ -590,7 +608,10 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   void setComponentTouchListener(ComponentTouchListener listener) {
     mOnTouchListener = listener;
+    boolean prevSafeModification = mIsSafeViewModificationsEnabled;
+    setSafeViewModificationsEnabled(true);
     setOnTouchListener(listener);
+    setSafeViewModificationsEnabled(prevSafeModification);
   }
 
   /**
@@ -613,7 +634,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     return super.onInterceptTouchEvent(ev);
   }
 
-  /** @return The previous set touch listener. */
+  /**
+   * @return The previous set touch listener.
+   */
   @Nullable
   public ComponentTouchListener getComponentTouchListener() {
     return mOnTouchListener;
@@ -641,11 +664,6 @@ public class ComponentHost extends Host implements DisappearingHost {
     Component component = renderUnit.getComponent();
     if (view instanceof ComponentHost) {
       // We already registered the accessibility delegate when building the host.
-      return;
-    }
-
-    if (component instanceof SpecGeneratedComponent) {
-      // Do not change the current behavior we have for SpecGeneratedComponents.
       return;
     }
 
@@ -701,6 +719,23 @@ public class ComponentHost extends Host implements DisappearingHost {
             && mImplementsVirtualViews
             && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
         || super.dispatchHoverEvent(event);
+  }
+
+  @Override
+  public final void onFocusChanged(
+      boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    if (mComponentAccessibilityDelegate != null && mImplementsVirtualViews) {
+      mComponentAccessibilityDelegate.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    return (mComponentAccessibilityDelegate != null
+            && mImplementsVirtualViews
+            && mComponentAccessibilityDelegate.dispatchKeyEvent(event))
+        || super.dispatchKeyEvent(event);
   }
 
   public List<CharSequence> getContentDescriptions() {
@@ -867,7 +902,6 @@ public class ComponentHost extends Host implements DisappearingHost {
   @Override
   protected final void onLayout(boolean changed, int l, int t, int r, int b) {
     mInLayout = true;
-    maybeEmitLayoutError(r - l, b - t);
     performLayout(changed, l, t, r, b);
     mInLayout = false;
   }
@@ -993,70 +1027,6 @@ public class ComponentHost extends Host implements DisappearingHost {
     // delegate that we receive here. Instead, we'll set this to true at the point that we set that
     // delegate explicitly.
     mIsComponentAccessibilityDelegateSet = false;
-  }
-
-  @Override
-  public void setClipChildren(boolean clipChildren) {
-    if (mClippingTemporaryDisabled) {
-      mClippingToRestore = clipChildren;
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18, will keep track this way
-      mClipChildren = clipChildren;
-    }
-    super.setClipChildren(clipChildren);
-  }
-
-  @Override
-  public boolean getClipChildren() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18
-      return mClipChildren;
-    } else {
-      return super.getClipChildren();
-    }
-  }
-
-  /**
-   * Temporary disables child clipping, the previous state could be restored by calling {@link
-   * #restoreChildClipping()}. While clipping is disabled calling {@link #setClipChildren(boolean)}
-   * would have no immediate effect, but the restored state would reflect the last set value
-   */
-  void temporaryDisableChildClipping() {
-    if (mClippingTemporaryDisabled) {
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      mClippingToRestore = getClipChildren();
-    } else {
-      mClippingToRestore = mClipChildren;
-    }
-
-    // The order here is crucial, we first need to set clipping then update
-    // mClippingTemporaryDisabled flag
-    setClipChildren(false);
-
-    mClippingTemporaryDisabled = true;
-  }
-
-  /**
-   * Restores child clipping to the state it was in when {@link #temporaryDisableChildClipping()}
-   * was called, unless there were attempts to set a new value, while the clipping was disabled,
-   * then would be restored to the last set value
-   */
-  void restoreChildClipping() {
-    if (!mClippingTemporaryDisabled) {
-      return;
-    }
-
-    // The order here is crucial, we first need to update mClippingTemporaryDisabled flag then set
-    // clipping
-    mClippingTemporaryDisabled = false;
-
-    setClipChildren(mClippingToRestore);
   }
 
   /**
@@ -1457,96 +1427,6 @@ public class ComponentHost extends Host implements DisappearingHost {
     }
   }
 
-  private void maybeEmitLayoutError(int width, int height) {
-    final @Nullable String category = getLayoutErrorCategory(width, height);
-    if (category == null) {
-      return;
-    }
-
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.ERROR,
-        category,
-        "abnormally sized litho layout (" + width + ", " + height + ")",
-        /* take default */ 0,
-        getLayoutErrorMetadata(width, height));
-  }
-
-  protected Map<String, Object> getLayoutErrorMetadata(int width, int height) {
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("uptimeMs", SystemClock.uptimeMillis());
-    metadata.put("identity", Integer.toHexString(System.identityHashCode(this)));
-    metadata.put("width", width);
-    metadata.put("height", height);
-    metadata.put("layerType", layerTypeToString(getLayerType()));
-    final Map<String, Object>[] mountItems = new Map[getMountItemCount()];
-    for (int i = 0; i < getMountItemCount(); i++) {
-      mountItems[i] = getMountInfo(getMountItemAt(i));
-    }
-    metadata.put("mountItems", mountItems);
-
-    ViewParent parent = this;
-    StringBuilder ancestorString = new StringBuilder();
-    while (parent != null) {
-      ancestorString.append(parent.getClass().getName());
-      ancestorString.append(',');
-      if (parent instanceof LithoView && !metadata.containsKey("lithoViewDimens")) {
-        LithoView lithoView = (LithoView) parent;
-        metadata.put(
-            "lithoViewDimens", "(" + lithoView.getWidth() + ", " + lithoView.getHeight() + ")");
-      }
-      parent = parent.getParent();
-    }
-    metadata.put("ancestors", ancestorString.toString());
-
-    return metadata;
-  }
-
-  private static String layerTypeToString(int layerType) {
-    switch (layerType) {
-      case LAYER_TYPE_NONE:
-        return "none";
-      case LAYER_TYPE_SOFTWARE:
-        return "sw";
-      case LAYER_TYPE_HARDWARE:
-        return "hw";
-      default:
-        return "unknown";
-    }
-  }
-
-  private @Nullable String getLayoutErrorCategory(int width, int height) {
-    if (height <= 0 || width <= 0) {
-      if (ComponentsConfiguration.emitMessageForZeroSizedTexture) {
-        return TEXTURE_ZERO_DIM;
-      }
-    } else if (height >= ComponentsConfiguration.textureSizeWarningLimit
-        || width >= ComponentsConfiguration.textureSizeWarningLimit) {
-      return TEXTURE_TOO_BIG;
-    }
-
-    return null;
-  }
-
-  @SuppressLint({"BadMethodUse-java.lang.Class.getName", "ReflectionMethodUse"})
-  private Map<String, Object> getMountInfo(MountItem mountItem) {
-    final Object content = mountItem.getContent();
-    final Rect bounds = mountItem.getRenderTreeNode().getBounds();
-
-    final Map<String, Object> mountInfo = new HashMap<>();
-    mountInfo.put("class", content.getClass().getName());
-    mountInfo.put("identity", Integer.toHexString(System.identityHashCode(content)));
-    if (content instanceof View) {
-      final int layerType = ((View) content).getLayerType();
-      mountInfo.put("layerType", layerTypeToString(layerType));
-    }
-    mountInfo.put("left", bounds.left);
-    mountInfo.put("right", bounds.right);
-    mountInfo.put("top", bounds.top);
-    mountInfo.put("bottom", bounds.bottom);
-
-    return mountInfo;
-  }
-
   @Override
   public void setAlpha(float alpha) {
     if (alpha != 0 && alpha != 1) {
@@ -1583,5 +1463,126 @@ public class ComponentHost extends Host implements DisappearingHost {
   @Override
   public void unsetInLayout() {
     mInLayout = false;
+  }
+
+  private final @Nullable UnsafeModificationPolicy mUnsafeModificationPolicy;
+
+  /**
+   * This flag is used to understand if a view property (e.g, click listener) was modified under the
+   * context of a Litho operation or not. It is used to detect unsafe modifications and log them.
+   *
+   * @see {@link LithoViewAttributesExtension}
+   */
+  private boolean mIsSafeViewModificationsEnabled;
+
+  public void setSafeViewModificationsEnabled(boolean enabled) {
+    mIsSafeViewModificationsEnabled = enabled;
+  }
+
+  private void checkUnsafeViewModification() {
+    if (!mIsSafeViewModificationsEnabled && mUnsafeModificationPolicy != null) {
+      switch (mUnsafeModificationPolicy) {
+        case LOG:
+          DebugEventDispatcher.dispatch(
+              LithoDebugEvent.DebugInfo,
+              () -> "-1",
+              LogLevel.DEBUG,
+              (attribute) -> {
+                attribute.put(Name, "unsafe-component-host-modification");
+                return Unit.INSTANCE;
+              });
+          break;
+        case CRASH:
+          throw new ComponentHostInvalidModification(
+              "Should not modify component host outside of the Litho View Attributes Extensions."
+                  + " Let us know if your use case is valid");
+      }
+    }
+  }
+
+  @Override
+  public void setOnClickListener(@Nullable OnClickListener l) {
+    checkUnsafeViewModification();
+    super.setOnClickListener(l);
+  }
+
+  @Override
+  public void setOnLongClickListener(@Nullable OnLongClickListener l) {
+    checkUnsafeViewModification();
+    super.setOnLongClickListener(l);
+  }
+
+  @Override
+  public void setOnTouchListener(OnTouchListener l) {
+    checkUnsafeViewModification();
+    super.setOnTouchListener(l);
+  }
+
+  @Override
+  public void setTag(Object tag) {
+    checkUnsafeViewModification();
+    super.setTag(tag);
+  }
+
+  @Override
+  public void setEnabled(boolean enabled) {
+    checkUnsafeViewModification();
+    super.setEnabled(enabled);
+  }
+
+  @Override
+  public void setOnFocusChangeListener(OnFocusChangeListener l) {
+    checkUnsafeViewModification();
+    super.setOnFocusChangeListener(l);
+  }
+
+  /**
+   * This determines what is the actions to take if we detected an invalid modification of a {@link
+   * ComponentHost}.
+   *
+   * <p>This can happen for example if a client sets a click listener outside of a Litho specific
+   * codepath.
+   *
+   * <p>This method demonstrates how to use a Column with a specific style.
+   *
+   * <p>Example Kotlin code:
+   *
+   * <pre>{@code
+   * Column(style = Style
+   *    .onVisible { event ->
+   *      val view = event.content as? ComponentHost
+   *      if(view != null) view.setOnClickListener { ... } // This an invalid usage
+   *    }
+   * }</pre>
+   */
+  public enum UnsafeModificationPolicy {
+    LOG("log"),
+    CRASH("crash");
+
+    private String mKey;
+
+    public String getKey() {
+      return mKey;
+    }
+
+    UnsafeModificationPolicy(String key) {
+      mKey = key;
+    }
+  }
+
+  /**
+   * This exception is to allow us to identify potential wrong modifications of a {@link
+   * ComponentHost}. This can happen if clients get access to them (e.g. onVisibility callbacks) and
+   * then perform modifications such as setting click listeners/modifying alpha. It is important to
+   * identify these situations since it can break other behaviors such as host recycling.
+   *
+   * <p>There might be valid cases where this happens, but we will defer that evaluation to once
+   * they are identified.
+   */
+  public static class ComponentHostInvalidModification extends RuntimeException {
+
+    public ComponentHostInvalidModification(String message) {
+      super(message);
+    }
   }
 }

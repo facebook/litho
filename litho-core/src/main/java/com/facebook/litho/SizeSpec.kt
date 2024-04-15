@@ -42,16 +42,19 @@ object SizeSpec {
    * Size specification mode: The parent has not imposed any constraint on the child. It can be
    * whatever size it wants.
    */
-  const val UNSPECIFIED = View.MeasureSpec.UNSPECIFIED
+  const val UNSPECIFIED: Int = View.MeasureSpec.UNSPECIFIED
 
   /**
    * Size specification mode: The parent has determined an exact size for the child. The child is
    * going to be given those bounds regardless of how big it wants to be.
    */
-  const val EXACTLY = View.MeasureSpec.EXACTLY
+  const val EXACTLY: Int = View.MeasureSpec.EXACTLY
 
   /** Size specification mode: The child can be as large as it wants up to the specified size. */
-  const val AT_MOST = View.MeasureSpec.AT_MOST
+  const val AT_MOST: Int = View.MeasureSpec.AT_MOST
+
+  /** Size specification is not specified. */
+  const val NONE: Int = -1
 
   /**
    * Creates a size specification based on the supplied size and mode.
@@ -105,6 +108,10 @@ object SizeSpec {
    */
   @JvmStatic
   fun toSimpleString(sizeSpec: Int): String {
+    if (sizeSpec == NONE) {
+      return "NONE"
+    }
+
     val mode = getMode(sizeSpec)
     val size = getSize(sizeSpec)
     return buildString {

@@ -48,7 +48,6 @@ class LayoutStateSizeTest {
             makeSizeSpec(HEIGHT, SizeSpec.EXACTLY),
             1,
             1,
-            false,
             null,
             null,
             null,

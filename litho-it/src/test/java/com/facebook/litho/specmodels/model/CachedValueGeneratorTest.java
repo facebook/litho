@@ -183,7 +183,8 @@ public class CachedValueGeneratorTest {
                 + "      return false;\n"
                 + "    }\n"
                 + "    ExpensiveValueInputs cachedValueInputs = (ExpensiveValueInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    return true;\n"
@@ -206,17 +207,19 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "expensiveValue")
+                "expensiveValue",
+                0)
             .toString();
     assertThat(expensiveValueMethod)
         .isEqualTo(
             "private java.lang.String getExpensiveValue(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final ExpensiveValueInputs inputs = new ExpensiveValueInputs(globalKey);\n"
-                + "  java.lang.String expensiveValue = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  java.lang.String expensiveValue = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 0, inputs);\n"
                 + "  if (expensiveValue == null) {\n"
                 + "    expensiveValue = CachedValueTestSpec.onCreateExpensiveValue();\n"
-                + "    c.putCachedValue(inputs, expensiveValue);\n"
+                + "    c.putCachedValue(globalKey, 0, inputs, expensiveValue);\n"
                 + "  }\n"
                 + "  return expensiveValue;\n"
                 + "}\n");
@@ -258,11 +261,14 @@ public class CachedValueGeneratorTest {
                 + "    if (this == other) {\n"
                 + "      return true;\n"
                 + "    }\n"
-                + "    if (other == null || !(other instanceof ExpensiveValueWithContextInputs)) {\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithContextInputs))"
+                + " {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    ExpensiveValueWithContextInputs cachedValueInputs = (ExpensiveValueWithContextInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    ExpensiveValueWithContextInputs cachedValueInputs ="
+                + " (ExpensiveValueWithContextInputs) other;\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    return true;\n"
@@ -286,17 +292,22 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "expensiveValueWithContext")
+                "expensiveValueWithContext",
+                1)
             .toString();
     assertThat(expensiveValue)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithContext(com.facebook.litho.ComponentContext c) {\n"
+            "private java.lang.String"
+                + " getExpensiveValueWithContext(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final ExpensiveValueWithContextInputs inputs = new ExpensiveValueWithContextInputs(globalKey);\n"
-                + "  java.lang.String expensiveValueWithContext = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  final ExpensiveValueWithContextInputs inputs = new"
+                + " ExpensiveValueWithContextInputs(globalKey);\n"
+                + "  java.lang.String expensiveValueWithContext = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 1, inputs);\n"
                 + "  if (expensiveValueWithContext == null) {\n"
-                + "    expensiveValueWithContext = CachedValueTestSpec.onCreateExpensiveValueWithContext(c);\n"
-                + "    c.putCachedValue(inputs, expensiveValueWithContext);\n"
+                + "    expensiveValueWithContext ="
+                + " CachedValueTestSpec.onCreateExpensiveValueWithContext(c);\n"
+                + "    c.putCachedValue(globalKey, 1, inputs, expensiveValueWithContext);\n"
                 + "  }\n"
                 + "  return expensiveValueWithContext;\n"
                 + "}\n");
@@ -321,7 +332,8 @@ public class CachedValueGeneratorTest {
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
             "@com.facebook.litho.annotations.Generated\n"
-                + "private static class ExpensiveValueWithGenericInputs<E extends java.lang.CharSequence> {\n"
+                + "private static class ExpensiveValueWithGenericInputs<E extends"
+                + " java.lang.CharSequence> {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final E genericArg;\n"
@@ -333,7 +345,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public int hashCode() {\n"
-                + "    return com.facebook.litho.CommonUtils.hash(globalKey, genericArg, getClass());\n"
+                + "    return com.facebook.litho.CommonUtils.hash(globalKey, genericArg,"
+                + " getClass());\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
@@ -341,14 +354,18 @@ public class CachedValueGeneratorTest {
                 + "    if (this == other) {\n"
                 + "      return true;\n"
                 + "    }\n"
-                + "    if (other == null || !(other instanceof ExpensiveValueWithGenericInputs)) {\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithGenericInputs))"
+                + " {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    ExpensiveValueWithGenericInputs cachedValueInputs = (ExpensiveValueWithGenericInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    ExpensiveValueWithGenericInputs cachedValueInputs ="
+                + " (ExpensiveValueWithGenericInputs) other;\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) : cachedValueInputs.genericArg != null) {\n"
+                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) :"
+                + " cachedValueInputs.genericArg != null) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    return true;\n"
@@ -371,17 +388,22 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "expensiveValueWithGeneric")
+                "expensiveValueWithGeneric",
+                4)
             .toString();
     assertThat(valueWithGeneric)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithGeneric(com.facebook.litho.ComponentContext c) {\n"
+            "private java.lang.String"
+                + " getExpensiveValueWithGeneric(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final ExpensiveValueWithGenericInputs inputs = new ExpensiveValueWithGenericInputs(globalKey,genericArg);\n"
-                + "  java.lang.String expensiveValueWithGeneric = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  final ExpensiveValueWithGenericInputs inputs = new"
+                + " ExpensiveValueWithGenericInputs(globalKey,genericArg);\n"
+                + "  java.lang.String expensiveValueWithGeneric = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 4, inputs);\n"
                 + "  if (expensiveValueWithGeneric == null) {\n"
-                + "    expensiveValueWithGeneric = CachedValueTestSpec.onCreateExpensiveValueWithGeneric(genericArg);\n"
-                + "    c.putCachedValue(inputs, expensiveValueWithGeneric);\n"
+                + "    expensiveValueWithGeneric ="
+                + " CachedValueTestSpec.onCreateExpensiveValueWithGeneric(genericArg);\n"
+                + "    c.putCachedValue(globalKey, 4, inputs, expensiveValueWithGeneric);\n"
                 + "  }\n"
                 + "  return expensiveValueWithGeneric;\n"
                 + "}\n");
@@ -406,14 +428,16 @@ public class CachedValueGeneratorTest {
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
             "@com.facebook.litho.annotations.Generated\n"
-                + "private static class ExpensiveValueWithMoreGenericsInputs<E extends java.lang.CharSequence> {\n"
+                + "private static class ExpensiveValueWithMoreGenericsInputs<E extends"
+                + " java.lang.CharSequence> {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final E genericArg;\n"
                 + "\n"
                 + "  private final E genericArg2;\n"
                 + "\n"
-                + "  ExpensiveValueWithMoreGenericsInputs(String globalKey, E genericArg, E genericArg2) {\n"
+                + "  ExpensiveValueWithMoreGenericsInputs(String globalKey, E genericArg, E"
+                + " genericArg2) {\n"
                 + "    this.globalKey = globalKey;\n"
                 + "    this.genericArg = genericArg;\n"
                 + "    this.genericArg2 = genericArg2;\n"
@@ -421,7 +445,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public int hashCode() {\n"
-                + "    return com.facebook.litho.CommonUtils.hash(globalKey, genericArg, genericArg2, getClass());\n"
+                + "    return com.facebook.litho.CommonUtils.hash(globalKey, genericArg,"
+                + " genericArg2, getClass());\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
@@ -429,17 +454,22 @@ public class CachedValueGeneratorTest {
                 + "    if (this == other) {\n"
                 + "      return true;\n"
                 + "    }\n"
-                + "    if (other == null || !(other instanceof ExpensiveValueWithMoreGenericsInputs)) {\n"
+                + "    if (other == null || !(other instanceof"
+                + " ExpensiveValueWithMoreGenericsInputs)) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    ExpensiveValueWithMoreGenericsInputs cachedValueInputs = (ExpensiveValueWithMoreGenericsInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    ExpensiveValueWithMoreGenericsInputs cachedValueInputs ="
+                + " (ExpensiveValueWithMoreGenericsInputs) other;\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) : cachedValueInputs.genericArg != null) {\n"
+                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) :"
+                + " cachedValueInputs.genericArg != null) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    if (genericArg2 != null ? !genericArg2.equals(cachedValueInputs.genericArg2) : cachedValueInputs.genericArg2 != null) {\n"
+                + "    if (genericArg2 != null ? !genericArg2.equals(cachedValueInputs.genericArg2)"
+                + " : cachedValueInputs.genericArg2 != null) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    return true;\n"
@@ -462,17 +492,22 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "expensiveValueWithMoreGenerics")
+                "expensiveValueWithMoreGenerics",
+                5)
             .toString();
     assertThat(valueWithMoreGenerics)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithMoreGenerics(com.facebook.litho.ComponentContext c) {\n"
+            "private java.lang.String"
+                + " getExpensiveValueWithMoreGenerics(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final ExpensiveValueWithMoreGenericsInputs inputs = new ExpensiveValueWithMoreGenericsInputs(globalKey,genericArg,genericArg2);\n"
-                + "  java.lang.String expensiveValueWithMoreGenerics = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  final ExpensiveValueWithMoreGenericsInputs inputs = new"
+                + " ExpensiveValueWithMoreGenericsInputs(globalKey,genericArg,genericArg2);\n"
+                + "  java.lang.String expensiveValueWithMoreGenerics = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 5, inputs);\n"
                 + "  if (expensiveValueWithMoreGenerics == null) {\n"
-                + "    expensiveValueWithMoreGenerics = CachedValueTestSpec.onCreateExpensiveValueWithMoreGenerics(genericArg,genericArg2);\n"
-                + "    c.putCachedValue(inputs, expensiveValueWithMoreGenerics);\n"
+                + "    expensiveValueWithMoreGenerics ="
+                + " CachedValueTestSpec.onCreateExpensiveValueWithMoreGenerics(genericArg,genericArg2);\n"
+                + "    c.putCachedValue(globalKey, 5, inputs, expensiveValueWithMoreGenerics);\n"
                 + "  }\n"
                 + "  return expensiveValueWithMoreGenerics;\n"
                 + "}\n");
@@ -498,14 +533,16 @@ public class CachedValueGeneratorTest {
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
             "@com.facebook.litho.annotations.Generated\n"
-                + "private static class ExpensiveValueWithMoreGenericsAndContextInputs<E extends java.lang.CharSequence> {\n"
+                + "private static class ExpensiveValueWithMoreGenericsAndContextInputs<E extends"
+                + " java.lang.CharSequence> {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final E genericArg;\n"
                 + "\n"
                 + "  private final E genericArg2;\n"
                 + "\n"
-                + "  ExpensiveValueWithMoreGenericsAndContextInputs(String globalKey, E genericArg, E genericArg2) {\n"
+                + "  ExpensiveValueWithMoreGenericsAndContextInputs(String globalKey, E genericArg,"
+                + " E genericArg2) {\n"
                 + "    this.globalKey = globalKey;\n"
                 + "    this.genericArg = genericArg;\n"
                 + "    this.genericArg2 = genericArg2;\n"
@@ -513,7 +550,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public int hashCode() {\n"
-                + "    return com.facebook.litho.CommonUtils.hash(globalKey, genericArg, genericArg2, getClass());\n"
+                + "    return com.facebook.litho.CommonUtils.hash(globalKey, genericArg,"
+                + " genericArg2, getClass());\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
@@ -521,17 +559,22 @@ public class CachedValueGeneratorTest {
                 + "    if (this == other) {\n"
                 + "      return true;\n"
                 + "    }\n"
-                + "    if (other == null || !(other instanceof ExpensiveValueWithMoreGenericsAndContextInputs)) {\n"
+                + "    if (other == null || !(other instanceof"
+                + " ExpensiveValueWithMoreGenericsAndContextInputs)) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    ExpensiveValueWithMoreGenericsAndContextInputs cachedValueInputs = (ExpensiveValueWithMoreGenericsAndContextInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    ExpensiveValueWithMoreGenericsAndContextInputs cachedValueInputs ="
+                + " (ExpensiveValueWithMoreGenericsAndContextInputs) other;\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) : cachedValueInputs.genericArg != null) {\n"
+                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) :"
+                + " cachedValueInputs.genericArg != null) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    if (genericArg2 != null ? !genericArg2.equals(cachedValueInputs.genericArg2) : cachedValueInputs.genericArg2 != null) {\n"
+                + "    if (genericArg2 != null ? !genericArg2.equals(cachedValueInputs.genericArg2)"
+                + " : cachedValueInputs.genericArg2 != null) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    return true;\n"
@@ -555,18 +598,23 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "expensiveValueWithMoreGenericsAndContext")
+                "expensiveValueWithMoreGenericsAndContext",
+                6)
             .toString();
     assertThat(valueWithMoreGenericsAndContext)
         .isEqualTo(
             "private java.lang.String getExpensiveValueWithMoreGenericsAndContext(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final ExpensiveValueWithMoreGenericsAndContextInputs inputs = new ExpensiveValueWithMoreGenericsAndContextInputs(globalKey,genericArg,genericArg2);\n"
-                + "  java.lang.String expensiveValueWithMoreGenericsAndContext = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  final ExpensiveValueWithMoreGenericsAndContextInputs inputs = new"
+                + " ExpensiveValueWithMoreGenericsAndContextInputs(globalKey,genericArg,genericArg2);\n"
+                + "  java.lang.String expensiveValueWithMoreGenericsAndContext = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 6, inputs);\n"
                 + "  if (expensiveValueWithMoreGenericsAndContext == null) {\n"
-                + "    expensiveValueWithMoreGenericsAndContext = CachedValueTestSpec.onCreateExpensiveValueWithMoreGenericsAndContext(c,genericArg,genericArg2);\n"
-                + "    c.putCachedValue(inputs, expensiveValueWithMoreGenericsAndContext);\n"
+                + "    expensiveValueWithMoreGenericsAndContext ="
+                + " CachedValueTestSpec.onCreateExpensiveValueWithMoreGenericsAndContext(c,genericArg,genericArg2);\n"
+                + "    c.putCachedValue(globalKey, 6, inputs,"
+                + " expensiveValueWithMoreGenericsAndContext);\n"
                 + "  }\n"
                 + "  return expensiveValueWithMoreGenericsAndContext;\n"
                 + "}\n");
@@ -606,7 +654,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public int hashCode() {\n"
-                + "    return com.facebook.litho.CommonUtils.hash(globalKey, arg0, arg1, getClass());\n"
+                + "    return com.facebook.litho.CommonUtils.hash(globalKey, arg0, arg1,"
+                + " getClass());\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
@@ -617,8 +666,10 @@ public class CachedValueGeneratorTest {
                 + "    if (other == null || !(other instanceof MoreExpensiveValueInputs)) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    MoreExpensiveValueInputs cachedValueInputs = (MoreExpensiveValueInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    MoreExpensiveValueInputs cachedValueInputs = (MoreExpensiveValueInputs)"
+                + " other;\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    if (arg0 != cachedValueInputs.arg0) {\n"
@@ -647,17 +698,22 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "moreExpensiveValue")
+                "moreExpensiveValue",
+                2)
             .toString();
     assertThat(moreExpensiveValue)
         .isEqualTo(
-            "private java.lang.String getMoreExpensiveValue(com.facebook.litho.ComponentContext c) {\n"
+            "private java.lang.String getMoreExpensiveValue(com.facebook.litho.ComponentContext c)"
+                + " {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final MoreExpensiveValueInputs inputs = new MoreExpensiveValueInputs(globalKey,arg0,getStateContainerImpl(c).arg1);\n"
-                + "  java.lang.String moreExpensiveValue = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  final MoreExpensiveValueInputs inputs = new"
+                + " MoreExpensiveValueInputs(globalKey,arg0,getStateContainerImpl(c).arg1);\n"
+                + "  java.lang.String moreExpensiveValue = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 2, inputs);\n"
                 + "  if (moreExpensiveValue == null) {\n"
-                + "    moreExpensiveValue = CachedValueTestSpec.onCreateMoreExpensiveValue(arg0,getStateContainerImpl(c).arg1);\n"
-                + "    c.putCachedValue(inputs, moreExpensiveValue);\n"
+                + "    moreExpensiveValue ="
+                + " CachedValueTestSpec.onCreateMoreExpensiveValue(arg0,getStateContainerImpl(c).arg1);\n"
+                + "    c.putCachedValue(globalKey, 2, inputs, moreExpensiveValue);\n"
                 + "  }\n"
                 + "  return moreExpensiveValue;\n"
                 + "}\n");
@@ -689,7 +745,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  private final int arg1;\n"
                 + "\n"
-                + "  MoreExpensiveValueWithContextInputs(String globalKey, boolean arg0, int arg1) {\n"
+                + "  MoreExpensiveValueWithContextInputs(String globalKey, boolean arg0, int arg1)"
+                + " {\n"
                 + "    this.globalKey = globalKey;\n"
                 + "    this.arg0 = arg0;\n"
                 + "    this.arg1 = arg1;\n"
@@ -697,7 +754,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public int hashCode() {\n"
-                + "    return com.facebook.litho.CommonUtils.hash(globalKey, arg0, arg1, getClass());\n"
+                + "    return com.facebook.litho.CommonUtils.hash(globalKey, arg0, arg1,"
+                + " getClass());\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
@@ -705,11 +763,14 @@ public class CachedValueGeneratorTest {
                 + "    if (this == other) {\n"
                 + "      return true;\n"
                 + "    }\n"
-                + "    if (other == null || !(other instanceof MoreExpensiveValueWithContextInputs)) {\n"
+                + "    if (other == null || !(other instanceof"
+                + " MoreExpensiveValueWithContextInputs)) {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    MoreExpensiveValueWithContextInputs cachedValueInputs = (MoreExpensiveValueWithContextInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    MoreExpensiveValueWithContextInputs cachedValueInputs ="
+                + " (MoreExpensiveValueWithContextInputs) other;\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    if (arg0 != cachedValueInputs.arg0) {\n"
@@ -738,17 +799,22 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "moreExpensiveValueWithContext")
+                "moreExpensiveValueWithContext",
+                3)
             .toString();
     assertThat(moreExpensiveValueWithContext)
         .isEqualTo(
-            "private java.lang.String getMoreExpensiveValueWithContext(com.facebook.litho.ComponentContext c) {\n"
+            "private java.lang.String"
+                + " getMoreExpensiveValueWithContext(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final MoreExpensiveValueWithContextInputs inputs = new MoreExpensiveValueWithContextInputs(globalKey,arg0,getStateContainerImpl(c).arg1);\n"
-                + "  java.lang.String moreExpensiveValueWithContext = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  final MoreExpensiveValueWithContextInputs inputs = new"
+                + " MoreExpensiveValueWithContextInputs(globalKey,arg0,getStateContainerImpl(c).arg1);\n"
+                + "  java.lang.String moreExpensiveValueWithContext = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 3, inputs);\n"
                 + "  if (moreExpensiveValueWithContext == null) {\n"
-                + "    moreExpensiveValueWithContext = CachedValueTestSpec.onCreateMoreExpensiveValueWithContext(arg0,getStateContainerImpl(c).arg1,c);\n"
-                + "    c.putCachedValue(inputs, moreExpensiveValueWithContext);\n"
+                + "    moreExpensiveValueWithContext ="
+                + " CachedValueTestSpec.onCreateMoreExpensiveValueWithContext(arg0,getStateContainerImpl(c).arg1,c);\n"
+                + "    c.putCachedValue(globalKey, 3, inputs, moreExpensiveValueWithContext);\n"
                 + "  }\n"
                 + "  return moreExpensiveValueWithContext;\n"
                 + "}\n");
@@ -780,7 +846,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  private final long arg6;\n"
                 + "\n"
-                + "  ExpensiveValueWithTreePropInputs(String globalKey, boolean arg0, long arg6) {\n"
+                + "  ExpensiveValueWithTreePropInputs(String globalKey, boolean arg0, long arg6)"
+                + " {\n"
                 + "    this.globalKey = globalKey;\n"
                 + "    this.arg0 = arg0;\n"
                 + "    this.arg6 = arg6;\n"
@@ -788,7 +855,8 @@ public class CachedValueGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public int hashCode() {\n"
-                + "    return com.facebook.litho.CommonUtils.hash(globalKey, arg0, arg6, getClass());\n"
+                + "    return com.facebook.litho.CommonUtils.hash(globalKey, arg0, arg6,"
+                + " getClass());\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
@@ -796,11 +864,14 @@ public class CachedValueGeneratorTest {
                 + "    if (this == other) {\n"
                 + "      return true;\n"
                 + "    }\n"
-                + "    if (other == null || !(other instanceof ExpensiveValueWithTreePropInputs)) {\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithTreePropInputs))"
+                + " {\n"
                 + "      return false;\n"
                 + "    }\n"
-                + "    ExpensiveValueWithTreePropInputs cachedValueInputs = (ExpensiveValueWithTreePropInputs) other;\n"
-                + "    if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "    ExpensiveValueWithTreePropInputs cachedValueInputs ="
+                + " (ExpensiveValueWithTreePropInputs) other;\n"
+                + "    if (!com.facebook.rendercore.utils.EquivalenceUtils.equals(globalKey,"
+                + " cachedValueInputs.globalKey)) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    if (arg0 != cachedValueInputs.arg0) {\n"
@@ -829,17 +900,22 @@ public class CachedValueGeneratorTest {
                 mLayoutSpecModel,
                 specMethodModel,
                 CachedValueGenerator.getCachedValueInputs(specMethodModel),
-                "expensiveValueWithTreeProp")
+                "expensiveValueWithTreeProp",
+                7)
             .toString();
     assertThat(expensiveValueWithTreeProp)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithTreeProp(com.facebook.litho.ComponentContext c) {\n"
+            "private java.lang.String"
+                + " getExpensiveValueWithTreeProp(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final ExpensiveValueWithTreePropInputs inputs = new ExpensiveValueWithTreePropInputs(globalKey,arg0,(c.getParentTreeProp(long.class)));\n"
-                + "  java.lang.String expensiveValueWithTreeProp = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  final ExpensiveValueWithTreePropInputs inputs = new"
+                + " ExpensiveValueWithTreePropInputs(globalKey,arg0,(c.getParentTreeProp(long.class)));\n"
+                + "  java.lang.String expensiveValueWithTreeProp = (java.lang.String)"
+                + " c.getCachedValue(globalKey, 7, inputs);\n"
                 + "  if (expensiveValueWithTreeProp == null) {\n"
-                + "    expensiveValueWithTreeProp = CachedValueTestSpec.onCreateExpensiveValueWithTreeProp(arg0,(c.getParentTreeProp(long.class)));\n"
-                + "    c.putCachedValue(inputs, expensiveValueWithTreeProp);\n"
+                + "    expensiveValueWithTreeProp ="
+                + " CachedValueTestSpec.onCreateExpensiveValueWithTreeProp(arg0,(c.getParentTreeProp(long.class)));\n"
+                + "    c.putCachedValue(globalKey, 7, inputs, expensiveValueWithTreeProp);\n"
                 + "  }\n"
                 + "  return expensiveValueWithTreeProp;\n"
                 + "}\n");

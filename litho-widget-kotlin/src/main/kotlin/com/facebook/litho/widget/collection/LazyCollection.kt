@@ -23,7 +23,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.ChangesInfo
@@ -90,6 +90,7 @@ class LazyCollection(
     private val overlayRenderCount: Boolean = false,
     private val alwaysDetectDuplicates: Boolean = false,
     private val fadingEdgeLength: Dimen? = null,
+    private val shouldExcludeFromIncrementalMount: Boolean = false,
     private val lazyCollectionChildren: LazyCollectionChildren
 ) : KComponent() {
 
@@ -151,13 +152,14 @@ class LazyCollection(
 
     val section =
         CollectionGroupSection.create(sectionContext)
-            .childrenBuilder(
-                Children.create()
-                    .child(
-                        createDataDiffSection(
-                            sectionContext,
-                            lazyCollectionChildren.collectionChildren,
-                            alwaysDetectDuplicates)))
+            .childrenBuilder { context ->
+              Children.create()
+                  .child(
+                      createDataDiffSection(
+                          context,
+                          lazyCollectionChildren.collectionChildren,
+                          alwaysDetectDuplicates))
+            }
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
             .onPullToRefresh(onPullToRefresh)
@@ -190,6 +192,7 @@ class LazyCollection(
         .onScrollListener(onScrollListener)
         .onScrollListeners(onScrollListeners)
         .lazyCollectionController(lazyCollectionController)
+        .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
         .apply {
           val fadingEdgeLengthPx = fadingEdgeLength?.toPixels()
           if (fadingEdgeLengthPx != null && fadingEdgeLengthPx > 0) {
@@ -218,7 +221,8 @@ class LazyCollection(
               val item = renderEvent.model
               val component =
                   item.component
-                      ?: item.componentFunction?.invoke() ?: return@eventHandlerWithReturn null
+                      ?: item.componentFunction?.invoke()
+                      ?: return@eventHandlerWithReturn null
               ComponentRenderInfo.create()
                   .apply {
                     if (item.isSticky) {
@@ -229,9 +233,15 @@ class LazyCollection(
                     }
                     item.spanSize?.let { spanSize(it) }
                     customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
+                    if (item.parentWidthPercent in 0.0f..100.0f) {
+                      parentWidthPercent(item.parentWidthPercent)
+                    }
+                    if (item.parentHeightPercent in 0.0f..100.0f) {
+                      parentHeightPercent(item.parentHeightPercent)
+                    }
                   }
                   .component(
-                      if (ComponentsConfiguration.isDebugModeEnabled && overlayRenderCount)
+                      if (LithoDebugConfigurations.isDebugModeEnabled && overlayRenderCount)
                           component.overlayRenderCount
                       else component)
                   .build()

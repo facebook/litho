@@ -44,7 +44,6 @@ android {
 dependencies {
     compileOnly project(':litho-sections-annotations')
     implementation project(':litho-core')
-    implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-widget-kotlin')
     implementation project(':litho-sections-core')
@@ -74,6 +73,10 @@ dependencies {
 
     kaptTest project(':litho-processor')
     testImplementation deps.supportTestJunit
+}
+
+tasks.withType(Javadoc).all {
+    enabled = false
 }
 
 apply plugin: "com.vanniktech.maven.publish"

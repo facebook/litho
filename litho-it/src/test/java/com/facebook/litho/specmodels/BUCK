@@ -12,13 +12,16 @@ load(
     "LITHO_GUAVA_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JUNIT_TARGET",
-    "LITHO_MOCKITO_TARGET",
+    "LITHO_MOCKITO_KOTLIN_V2_TARGET",
+    "LITHO_MOCKITO_V2_TARGET",
     "LITHO_PROCESSOR_LIB_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_SECTIONS_TARGET",
     "litho_robolectric4_test",
     "make_dep_path",
 )
+
+oncall("litho_components_for_android")
 
 litho_robolectric4_test(
     name = "specmodels",
@@ -32,6 +35,10 @@ litho_robolectric4_test(
     contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "11",
     target = "11",
+    target_sdk_levels = ["33"],
+    vm_args = [
+        "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+    ],
     deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
@@ -41,7 +48,8 @@ litho_robolectric4_test(
         LITHO_GUAVA_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
-        LITHO_MOCKITO_TARGET,
+        LITHO_MOCKITO_KOTLIN_V2_TARGET,
+        LITHO_MOCKITO_V2_TARGET,
         LITHO_PROCESSOR_LIB_TARGET,
         LITHO_SECTIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),

@@ -16,11 +16,13 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaNode
 import com.facebook.yoga.YogaPositionType
@@ -30,7 +32,9 @@ import kotlin.jvm.JvmField
 open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
 
   @JvmField var isPaddingSet: Boolean = false
+
   @JvmField var widthFromStyle: Float = YogaConstants.UNDEFINED
+
   @JvmField var heightFromStyle: Float = YogaConstants.UNDEFINED
 
   override fun widthPx(width: Int) {
@@ -93,8 +97,8 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     node.setMaxHeightPercent(heightFromStyle)
   }
 
-  override fun layoutDirection(direction: YogaDirection) {
-    node.setDirection(direction)
+  override fun layoutDirection(direction: LayoutDirection) {
+    node.setDirection(direction.toYogaDirection())
   }
 
   override fun alignSelf(alignSelf: YogaAlign) {
@@ -169,35 +173,52 @@ open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
     }
   }
 
-  override fun heightAuto() {
-    node.setHeightAuto()
-  }
-
-  override fun widthAuto() {
-    node.setWidthAuto()
-  }
-
-  override fun flexBasisAuto() {
-    node.setFlexBasisAuto()
-  }
-
   override fun setBorderWidth(edge: YogaEdge, borderWidth: Float) {
     node.setBorder(edge, borderWidth)
   }
 
-  fun flexDirection(direction: YogaFlexDirection) {
+  override fun gap(gutter: YogaGutter, length: Int) {
+    node.setGap(gutter, length.toFloat())
+  }
+
+  open fun flexDirection(direction: YogaFlexDirection) {
     node.flexDirection = direction
   }
 
-  fun wrap(wrap: YogaWrap) {
+  open fun wrap(wrap: YogaWrap) {
     node.wrap = wrap
   }
 
-  fun justifyContent(justify: YogaJustify) {
+  open fun justifyContent(justify: YogaJustify) {
     node.justifyContent = justify
   }
 
-  fun alignItems(align: YogaAlign) {
+  open fun alignItems(align: YogaAlign) {
     node.alignItems = align
+  }
+
+  companion object {
+    @JvmStatic
+    fun setLayoutDirection(commonProps: CommonProps, direction: YogaDirection) {
+      commonProps.layoutDirection(direction.toLayoutDirection())
+    }
+  }
+}
+
+fun YogaDirection.toLayoutDirection(): LayoutDirection {
+  return when (this) {
+    YogaDirection.LTR -> LayoutDirection.LTR
+    YogaDirection.RTL -> LayoutDirection.RTL
+    YogaDirection.INHERIT -> LayoutDirection.INHERIT
+    else -> throw IllegalArgumentException("Unknown YogaDirection $this")
+  }
+}
+
+fun LayoutDirection.toYogaDirection(): YogaDirection {
+  return when (this) {
+    LayoutDirection.LTR -> YogaDirection.LTR
+    LayoutDirection.RTL -> YogaDirection.RTL
+    LayoutDirection.INHERIT -> YogaDirection.INHERIT
+    else -> throw IllegalArgumentException("Unknown LayoutDirection $this")
   }
 }

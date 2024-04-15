@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import kotlin.Unit;
 
 /**
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
@@ -45,6 +46,8 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
+
+  private final RecyclerView.EdgeEffectFactory mDefaultEdgeEffectFactory;
   private @Nullable SectionsRecyclerViewLogger mSectionsRecyclerViewLogger;
   private boolean mIsFirstLayout = true;
 
@@ -53,6 +56,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
    * relayout its children eventually.
    */
   private boolean mHasBeenDetachedFromWindow = false;
+
   /**
    * When we set an ItemAnimator during mount, we want to store the one that was already set on the
    * RecyclerView so that we can reset it during unmount.
@@ -63,6 +67,8 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     super(context);
 
     mRecyclerView = recyclerView;
+    // Get the default edge effect factory (at least the default one in the initialized recycler)
+    mDefaultEdgeEffectFactory = mRecyclerView.getEdgeEffectFactory();
 
     // We need to draw first visible item on top of other children to support sticky headers
     mRecyclerView.setChildDrawingOrderCallback(
@@ -89,7 +95,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     addView(mStickyHeader);
   }
 
-  public void setSectionsRecyclerViewLogger(SectionsRecyclerViewLogger lithoViewLogger) {
+  public void setSectionsRecyclerViewLogger(@Nullable SectionsRecyclerViewLogger lithoViewLogger) {
     mSectionsRecyclerViewLogger = lithoViewLogger;
   }
 
@@ -110,6 +116,10 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   public LithoView getStickyHeader() {
     return mStickyHeader;
+  }
+
+  public RecyclerView.EdgeEffectFactory getDefaultEdgeEffectFactory() {
+    return mDefaultEdgeEffectFactory;
   }
 
   public void setStickyHeaderVerticalOffset(int verticalOffset) {
@@ -181,6 +191,15 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+
+    DebugEventDispatcher.dispatch(
+        DebugEvent.ViewOnLayout + ":start",
+        () -> "-1",
+        attrs -> {
+          attrs.put(DebugEventAttribute.Id, hashCode());
+          attrs.put(DebugEventAttribute.Name, "SectionsRecyclerView");
+          return Unit.INSTANCE;
+        });
 
     final @Nullable Integer traceId =
         DebugEventDispatcher.generateTraceIdentifier(DebugEvent.ViewOnLayout);
@@ -276,6 +295,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   /** Pass to a SectionsRecyclerView to do custom logging. */
   public interface SectionsRecyclerViewLogger {
+
     void onLayoutStarted(boolean isFirstLayoutAfterRecycle);
 
     void onLayoutEnded(boolean isFirstLayoutAfterRecycle);

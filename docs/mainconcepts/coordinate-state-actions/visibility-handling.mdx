@@ -60,16 +60,16 @@ For the example above, a 'Visible' event is dispatched when at least 80% of the 
 ## Changing LithoView visibility
 
 There are cases when the visibility callback needs to be invoked on the LithoView components because the LithoView's visibility changed but did not receive any callbacks to inform it of this change.
-For example, when an activity is added to the back stack, covering the current UI. For such cases, Litho provides the [LithoLifecycleProvider API](#litholifecycleprovider-api) to notify LithoView about changes in its visibility, and to dispatch correct events to components inside.
+For example, when an activity is added to the back stack, covering the current UI. For such cases, Litho provides the [LithoVisibilityEventsController API](#LithoVisibilityEventsController-api) to notify LithoView about changes in its visibility, and to dispatch correct events to components inside.
 
-### LithoLifecycleProvider API
+### LithoVisibilityEventsController API
 
-The `LithoLifecycleProvider` API can be used to inform LithoView about  changes in its visibility state.
+The `LithoVisibilityEventsController` API can be used to inform LithoView about  changes in its visibility state.
 
-The `LithoLifecycleProvider.moveToLifecycle()` method should be called from the `Fragment.setUserVisibleHint()` or `onResume()/onPause()` methods of `Activity` or `Fragment`.
+The `LithoVisibilityEventsController.moveToLifecycle()` method should be called from the `Fragment.setUserVisibleHint()` or `onResume()/onPause()` methods of `Activity` or `Fragment`.
 
 ```kotlin
-interface LithoLifecycleProvider {
+interface LithoVisibilityEventsController {
 
   // Should be called to inform Litho that its visibility state has changed
   fun moveToLifecycle(lithoLifecycle: LithoLifecycle)
@@ -77,7 +77,7 @@ interface LithoLifecycleProvider {
 }
 ```
 
-#### Valid LithoLifecycleProvider states
+#### Valid LithoVisibilityEventsController states
 
 * `HINT_INVISIBLE` - indicates that the lifecycle provider is considered to be not visible on screen.
   * Lifecycle observers can perform operations that are associated with invisibility status.
@@ -92,36 +92,38 @@ interface LithoLifecycleProvider {
   * An example of moving to the `DESTROYED` state is when the hosting Activity is destroyed. The `ComponentTree` associated with the `LithoView` will be released.
   * **Invisible** events will be dispatched to all components that were visible, and all content will be unmounted.
 
-#### Listening to a `LithoLifecycleProvider` state changes
+#### Listening to a `LithoVisibilityEventsController` state changes
 
-A `LithoView` can be registered to listen to state changes of a `LithoLifecycleProvider` instance when created:
+A `LithoView` can be registered to listen to state changes of a `LithoVisibilityEventsController` instance when created:
 
 ```kotlin
-val lithoView = LithoView.create(c, component, lithoLifecycleProvider)
+val lithoView = LithoView.create(c, component, LithoVisibilityEventsController)
 ```
 
 ### Android AOSP implementation
 
-This is an implementation of `LithoLifecycleProvider` which has the state tied to that of an AOSP [LifecycleOwner](https://developer.android.com/topic/libraries/architecture/lifecycle#lco).
+This is an implementation of `LithoVisibilityEventsController` which has the state tied to that of an AOSP [LifecycleOwner](https://developer.android.com/topic/libraries/architecture/lifecycle#lco).
 
-* `LifecycleOwner` in `ON_PAUSE` state moves the `AOSPLithoLifecycleProvider` to `HINT_INVISIBLE` state
-* `LifecycleOwner` in `ON_RESUME` state moves the `AOSPLithoLifecycleProvider` to `HINT_VISIBLE` state
-* `LifecycleOwner` in `ON_DESTROY` state moves the `AOSPLithoLifecycleProvider` to `DESTROYED` state
+* `LifecycleOwner` in `ON_PAUSE` state moves the `AOSPLithoVisibilityEventsController` to `HINT_INVISIBLE` state
+* `LifecycleOwner` in `ON_RESUME` state moves the `AOSPLithoVisibilityEventsController` to `HINT_VISIBLE` state
+* `LifecycleOwner` in `ON_DESTROY` state moves the `AOSPLithoVisibilityEventsController` to `DESTROYED` state
 
-Use `AOSPLithoLifecycleProvider` to associate a LithoView's visibility status with the lifecycle of a Fragment, Activity or custom LifecycleOwner, where **Resumed** means the LithoView is on screen and **Paused** means the LithoView is hidden.
+Use `AOSPLithoVisibilityEventsController` to associate a LithoView's visibility status with the lifecycle of a Fragment, Activity or custom LifecycleOwner, where **Resumed** means the LithoView is on screen and **Paused** means the LithoView is hidden.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/java/lifecycle/LifecycleDelegateActivity.kt start=start_example_lifecycleprovider end=end_example_lifecycleprovider
 ```
 
 ### Handling custom state changes
 
-`AOSPLithoLifecycleProvider` covers most of the common cases, but there are scenarios where a LifecycleOwner's state doesn't match what we see on screen, as shown in the following examples:
+`AOSPLithoVisibilityEventsController` covers most of the common cases, but there are scenarios where a LifecycleOwner's state doesn't match what we see on screen, as shown in the following examples:
 
 * Fragments in a ViewPager, where Fragments for the previous and next pages are prepared and in a **Resumed** state before they're actually visible.
 
 * Adding a Fragment on top of another Fragment doesn't move the first Fragment to a **Paused** state, and there's no indication that it's no longer visible to the user.
 
-When state changes need to be handled manually, use `LithoLifecycleProviderDelegate`, a generic `LithoLifecycleProvider` implementation, to change state when appropriate.
+When state changes need to be handled manually, use `AOSPLithoVisibilityEventsController.moveToLifecycle(LithoLifecycle)` to change state when appropriate.
+
+The following examples uses `LithoVisibilityEventsControllerDelegate`, a generic `LithoVisibilityEventsController` implementation, to change state, but the idea also works for `AOSPLithoVisibilityEventsController`.
 
 #### ViewPager example
 
@@ -140,10 +142,10 @@ The Litho components for building Lists (`LazyCollection`s, `Section`s, `Vertica
 * A ComponentTree at the root of the hierarchy, encapsulating the entire list (associated with a root LithoView)
 * A ComponentTree for each item in the List (associated with a LithoView child of the root LithoView)
 
-If the root LithoView is subscribed to listen to a `LithoLifecycleProvider`, then all nested Component Trees / child LithoViews will listen to the outer `LithoLifecycleProvider` too and will receive the correct information about visibility/destroyed state.
+If the root LithoView is subscribed to listen to a `LithoVisibilityEventsController`, then all nested Component Trees / child LithoViews will listen to the outer `LithoVisibilityEventsController` too and will receive the correct information about visibility/destroyed state.
 
 :::info
-The section below contains information about deprecated APIs. Please consider using `LithoLifecycleProvider` for manually informing a `LithoView` about visibility changes.
+The section below contains information about deprecated APIs. Please consider using `LithoVisibilityEventsController` for manually informing a `LithoView` about visibility changes.
 :::
 
 ## (Deprecated) setVisibilityHint

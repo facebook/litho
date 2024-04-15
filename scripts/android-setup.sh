@@ -46,7 +46,9 @@ function installsdk() {
   if [[ ! -z "$HTTPS_PROXY" ]]; then
     PROXY_HOST="$(echo "$HTTPS_PROXY" | cut -d : -f 1,1)"
     PROXY_PORT="$(echo "$HTTPS_PROXY" | cut -d : -f 2,2)"
-    PROXY_ARGS="--proxy=http --proxy_host=$PROXY_HOST --proxy_port=$PROXY_PORT"
+    # --no_https avoids
+    # javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: No trusted certificate found
+    PROXY_ARGS="--proxy=http --proxy_host=$PROXY_HOST --proxy_port=$PROXY_PORT --no_https"
   fi
 
   echo y | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" $PROXY_ARGS "$@"
@@ -78,5 +80,5 @@ function installAndroidSDK {
   echo > "$ANDROID_HOME/licenses/android-sdk-license"
   echo -n 24333f8a63b6825ea9c5514f83c2829b004d1fee > "$ANDROID_HOME/licenses/android-sdk-license"
 
-  installsdk 'platforms;android-30' 'cmake;3.6.4111459' 'build-tools;30.0.2'
+  installsdk 'platforms;android-33' 'cmake;3.18.1' 'build-tools;33.0.2' 'ndk;26.1.10909125'
 }

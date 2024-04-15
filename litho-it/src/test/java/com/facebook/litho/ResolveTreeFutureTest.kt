@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.ResolveTreeFutureTest.BlockedRenderComponent
 import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -36,8 +35,9 @@ class ResolveTreeFutureTest {
 
   @Before
   fun setup() {
-    val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    componentContext = ComponentContextUtils.withComponentTree(c, ComponentTree.create(c).build())
+    val baseContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
+    val componentTree = ComponentTree.create(baseContext).build()
+    componentContext = componentTree.context
   }
 
   /**
@@ -164,7 +164,7 @@ class ResolveTreeFutureTest {
     assertThat(renderResult).isNotNull
     val layoutTreeFuture =
         LayoutTreeFuture(
-            renderResult,
+            renderResult!!,
             null,
             null,
             null,
@@ -172,7 +172,6 @@ class ResolveTreeFutureTest {
             heightSpec,
             -1,
             0,
-            true,
             RenderSource.SET_ROOT_SYNC)
     val layoutState = layoutTreeFuture.runAndGet(RenderSource.SET_ROOT_SYNC).result
     assertThat(layoutState).isNotNull
@@ -190,7 +189,7 @@ class ResolveTreeFutureTest {
       private val renderCountHolder: IntArray
   ) : SpecGeneratedComponent("BlockedRenderComponent") {
     override fun render(
-        resolveStateContext: ResolveStateContext,
+        resolveContext: ResolveContext,
         c: ComponentContext,
         widthSpec: Int,
         heightSpec: Int

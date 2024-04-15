@@ -17,12 +17,12 @@
 package com.facebook.litho
 
 import com.facebook.infer.annotation.ThreadConfined
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.jvm.JvmField
 
 /** Represents a pointer to the Tree that a ComponentContext is attached to */
 class LithoTree
-private constructor(
+constructor(
     @field:ThreadConfined(ThreadConfined.ANY) val stateUpdater: StateUpdater,
     @field:ThreadConfined(ThreadConfined.UI) val mountedViewReference: MountedViewReference,
     val errorComponentReceiver: ErrorComponentReceiver,
@@ -35,7 +35,20 @@ private constructor(
 
   companion object {
 
+    private val IdGenerator = AtomicInteger(0)
+
     fun create(componentTree: ComponentTree): LithoTree =
-        LithoTree(componentTree, componentTree, componentTree, componentTree, componentTree.mId)
+        LithoTree(
+            componentTree,
+            componentTree,
+            componentTree,
+            componentTree,
+            componentTree.mId,
+        )
+
+    @JvmStatic
+    fun generateComponentTreeId(): Int {
+      return IdGenerator.getAndIncrement()
+    }
   }
 }

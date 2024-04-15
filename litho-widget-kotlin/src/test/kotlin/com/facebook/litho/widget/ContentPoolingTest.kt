@@ -31,7 +31,6 @@ import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TrackedItemPool
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountItemsPool
-import com.facebook.rendercore.MountItemsPool.getMountItemPools
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
@@ -70,7 +69,7 @@ class ContentPoolingTest {
     }
 
     // Should create 1 Pool for TestDrawablePrimitiveComponent
-    assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(1)
+    assertThat(MountItemsPool.mountItemPools.size).isEqualTo(1)
 
     // Mount multiple Image components, and a TestTextViewPrimitiveComponent
     val lithoView =
@@ -91,7 +90,7 @@ class ContentPoolingTest {
             .lithoView
 
     // Should now have 2 Pools; one for the Image, and one for the Vertical Scroll component.
-    assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(2)
+    assertThat(MountItemsPool.mountItemPools.size).isEqualTo(2)
 
     // Unmount all content to release all the content to the pools
     lithoView.unmountAllItems()
@@ -119,7 +118,7 @@ class ContentPoolingTest {
         .lithoView
         .unmountAllItems()
 
-    assertThat(getMountItemPools().size).isEqualTo(1)
+    assertThat(MountItemsPool.mountItemPools.size).isEqualTo(1)
     assertThat(createContentInvocationCount).isEqualTo(40)
 
     createContentInvocationCount = 0
@@ -140,7 +139,7 @@ class ContentPoolingTest {
         .lithoView
         .unmountAllItems()
 
-    assertThat(getMountItemPools().size).isEqualTo(1)
+    assertThat(MountItemsPool.mountItemPools.size).isEqualTo(1)
     // Create content should be called 30 times because 10 components were in the pool
     assertThat(createContentInvocationCount).isEqualTo(30)
   }
@@ -151,16 +150,16 @@ class ContentPoolingTest {
         createPoolFactory(TestTextViewPrimitiveComponent.ALLOCATOR.poolSize()))
 
     // initially there is no pool
-    assertThat(getMountItemPools().size).isEqualTo(0)
+    assertThat(MountItemsPool.mountItemPools.size).isEqualTo(0)
 
     // preallocate 40 Text components
     MountItemsPool.prefillMountContentPool(
         lithoViewRule.context.androidContext, 40, TestTextViewPrimitiveComponent.ALLOCATOR)
 
     // Should create 1 Pool for TestTextViewPrimitiveComponent
-    assertThat(getMountItemPools().size).isEqualTo(1)
+    assertThat(MountItemsPool.mountItemPools.size).isEqualTo(1)
     // There should be 10 items in the pool
-    assertThat((getMountItemPools()[0] as TrackedItemPool).currentSize).isEqualTo(10)
+    assertThat((MountItemsPool.mountItemPools[0] as TrackedItemPool).currentSize).isEqualTo(10)
   }
 }
 

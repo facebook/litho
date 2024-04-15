@@ -34,6 +34,7 @@ import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
@@ -56,15 +57,19 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceResolver;
-import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.utils.CommonUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaPositionType;
@@ -77,6 +82,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Represents a unique instance of a component. To create new {@link Component} instances, use the
@@ -201,11 +207,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   /**
    * Invokes the Component-specific render implementation, returning a RenderResult. The
    * RenderResult will have the Component this Component rendered to (which will then need to be
-   * render()'ed or {@link #resolve(LayoutStateContext, ComponentContext)}'ed), as well as other
+   * render()'ed or {@link #resolve(LithoLayoutContext, ComponentContext)}'ed), as well as other
    * metadata from that render call such as transitions that should be applied.
    */
   protected RenderResult render(
-      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+      ResolveContext resolveContext, ComponentContext c, int widthSpec, int heightSpec) {
     throw new RuntimeException(
         "Render should not be called on a component which hasn't implemented render! "
             + getSimpleName());
@@ -222,36 +228,24 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
   }
 
-  protected @Nullable PrepareResult prepare(
-      ResolveStateContext resolveStateContext, ComponentContext c) {
-    // default implementation runs onPrepare(), MountableComponents will override to return a
-    // Mountable
-    return null;
-  }
-
-  /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected @Nullable LithoNode resolve(
-      final ResolveStateContext resolveStateContext, final ComponentContext c) {
-    return Resolver.resolve(resolveStateContext, c, this);
-  }
-
   /**
    * Invokes the Component-specific resolve implementation, returning a ComponentResolveResult. The
    * ComponentResolveResult will have the {@link LithoNode} and {@link CommonProps} for the resolved
    * component.
    */
   protected ComponentResolveResult resolve(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       final ScopedComponentInfo scopedComponentInfo,
       final int parentWidthSpec,
       final int parentHeightSpec,
       final @Nullable ComponentsLogger componentsLogger) {
     throw new RuntimeException(
-        "resolveWithResult should not be called on a component which hasn't implemented it! "
+        "resolve should not be called on a component which hasn't implemented it! "
             + getSimpleName());
   }
 
-  protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
+  protected boolean isEqualivalentTreePropContainer(
+      ComponentContext current, ComponentContext next) {
     return true;
   }
 
@@ -276,7 +270,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
           || (previousScopedContext != null
               && nextScopedContext != null
               && currentComponent != null
-              && !currentComponent.isEqualivalentTreeProps(
+              && !currentComponent.isEqualivalentTreePropContainer(
                   previousScopedContext, nextScopedContext));
     }
 
@@ -318,7 +312,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
-    if (c.getComponentScope() == null) {
+    if (c.getComponentScope() == null || c.getStateUpdater() == null) {
       return null;
     }
 
@@ -339,7 +333,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final String className,
       final ComponentContext c,
       final int id,
-      final Object[] params) {
+      final Object[] params,
+      final EventHandlerRebindMode mode) {
     if (c == null
         || c.getComponentScope() == null
         || !(c.getComponentScope() instanceof HasEventDispatcher)) {
@@ -359,10 +354,16 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
     final EventHandler eventHandler =
         new EventHandler<>(
-            id, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
-    final CalculationStateContext calculationStateContext = c.getCalculationStateContext();
-    if (calculationStateContext != null) {
-      calculationStateContext.recordEventHandler(c.getGlobalKey(), eventHandler);
+            id, mode, new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c), params);
+    final CalculationContext calculationContext = c.getCalculationStateContext();
+    if (calculationContext != null) {
+      if (c.shouldUseNonRebindingEventHandlers()) {
+        if (mode == EventHandlerRebindMode.REBIND) {
+          calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
+        }
+      } else {
+        calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
+      }
     }
     return eventHandler;
   }
@@ -390,7 +391,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     NONE,
     DRAWABLE,
     VIEW,
-    MOUNTABLE, /* For internal use only. Used only by Kotlin MountableComponent */
     PRIMITIVE /* For internal use only. Used only by Kotlin PrimitiveComponent */
   }
 
@@ -403,7 +403,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   public interface RenderData {}
 
   public String getSimpleName() {
-    return getClass().getSimpleName();
+    return CommonUtils.getSectionNameForTracing(getClass());
   }
 
   /**
@@ -473,9 +473,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final Size outputSize,
       final boolean shouldCacheResult) {
 
-    final CalculationStateContext calculationStateContext = c.getCalculationStateContext();
+    final CalculationContext calculationContext = c.getCalculationStateContext();
 
-    if (calculationStateContext == null) {
+    if (calculationContext == null) {
       if (shouldCacheResult) {
         throw new IllegalStateException(
             getSimpleName()
@@ -489,15 +489,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       }
     }
 
-    final int layoutVersion = calculationStateContext.getLayoutVersion();
-    final int rootComponentId = calculationStateContext.getRootComponentId();
+    final int layoutVersion = calculationContext.getLayoutVersion();
+    final int rootComponentId = calculationContext.getRootComponentId();
     final MeasuredResultCache resultCache =
-        shouldCacheResult ? calculationStateContext.getCache() : new MeasuredResultCache();
-    final TreeState treeState = calculationStateContext.getTreeState();
-    final ResolveStateContext mainRsc =
-        calculationStateContext instanceof ResolveStateContext
-            ? (ResolveStateContext) calculationStateContext
-            : null;
+        shouldCacheResult ? calculationContext.getCache() : new MeasuredResultCache();
+    final TreeState treeState = calculationContext.getTreeState();
+    final ResolveContext mainRsc =
+        calculationContext instanceof ResolveContext ? (ResolveContext) calculationContext : null;
 
     LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
 
@@ -508,22 +506,22 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
             lastMeasuredLayout.getHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       resultCache.clearCache(this);
 
-      final CalculationStateContext prevContext = calculationStateContext;
+      final CalculationContext prevContext = calculationContext;
 
       try {
         final LithoNode node;
 
-        if (lastMeasuredLayout != null && lastMeasuredLayout.mNode != null) {
-          node = lastMeasuredLayout.mNode;
+        if (lastMeasuredLayout != null && lastMeasuredLayout.getNode() != null) {
+          node = lastMeasuredLayout.getNode();
         } else {
-          final ResolveStateContext nestedRsc =
-              new ResolveStateContext(
-                  calculationStateContext.getTreeId(),
+          final ResolveContext nestedRsc =
+              new ResolveContext(
+                  calculationContext.getTreeId(),
                   resultCache,
                   treeState,
                   layoutVersion,
                   rootComponentId,
-                  calculationStateContext.isAccessibilityEnabled(),
+                  calculationContext.isAccessibilityEnabled(),
                   null,
                   null,
                   null,
@@ -539,15 +537,15 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
           return;
         }
 
-        final LayoutStateContext nestedLsc =
-            new LayoutStateContext(
-                calculationStateContext.getTreeId(),
+        final LithoLayoutContext nestedLsc =
+            new LithoLayoutContext(
+                calculationContext.getTreeId(),
                 resultCache,
                 c,
                 treeState,
                 layoutVersion,
                 rootComponentId,
-                calculationStateContext.isAccessibilityEnabled(),
+                calculationContext.isAccessibilityEnabled(),
                 new LayoutCache(),
                 null,
                 null);
@@ -565,7 +563,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       }
 
       // Add the cached result.
-      resultCache.addCachedResult(this, lastMeasuredLayout.mNode, lastMeasuredLayout);
+      resultCache.addCachedResult(this, lastMeasuredLayout.getNode(), lastMeasuredLayout);
     }
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();
@@ -595,7 +593,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   @Deprecated
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    final CalculationStateContext prevContext = c.getCalculationStateContext();
+    final CalculationContext prevContext = c.getCalculationStateContext();
 
     if (prevContext != null && !prevContext.isFutureReleased()) {
       measure(c, widthSpec, heightSpec, outputSize);
@@ -611,13 +609,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
         // we could be using a treeless context here as well. Might be worth revisiting later.
         ComponentTree ct = ComponentTree.create(c).build();
         componentTreeId = ct.mId;
-        c = ComponentContextUtils.withComponentTree(c, ct);
+
+        c =
+            new ComponentContext(
+                c.getAndroidContext(),
+                c.getTreePropContainer(),
+                ct.getLithoConfiguration(),
+                LithoTree.Companion.create(ct),
+                c.mGlobalKey,
+                c.getLifecycleProvider(),
+                null,
+                c.getParentTreePropContainer());
       } else {
         componentTreeId = lithoTree.getId();
       }
 
-      final ResolveStateContext tempRsc =
-          new ResolveStateContext(
+      final ResolveContext tempRsc =
+          new ResolveContext(
               componentTreeId,
               new MeasuredResultCache(),
               new TreeState(),
@@ -646,25 +654,25 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
   @Nullable
   final LithoNode consumeLayoutCreatedInWillRender(
-      final @Nullable ResolveStateContext resolveStateContext, @Nullable ComponentContext context) {
+      final @Nullable ResolveContext resolveContext, @Nullable ComponentContext context) {
     LithoNode layout;
 
-    if (context == null || resolveStateContext == null) {
+    if (context == null || resolveContext == null) {
       return null;
     }
 
-    return resolveStateContext.consumeLayoutCreatedInWillRender(mId);
+    return resolveContext.consumeLayoutCreatedInWillRender(mId);
   }
 
   @VisibleForTesting
   @Nullable
-  final LithoNode getLayoutCreatedInWillRender(final ResolveStateContext resolveStateContext) {
-    return resolveStateContext.getLayoutCreatedInWillRender(mId);
+  final LithoNode getLayoutCreatedInWillRender(final ResolveContext resolveContext) {
+    return resolveContext.getLayoutCreatedInWillRender(mId);
   }
 
   private void setLayoutCreatedInWillRender(
-      final ResolveStateContext resolveStateContext, final @Nullable LithoNode newValue) {
-    resolveStateContext.setLayoutCreatedInWillRender(mId, newValue);
+      final ResolveContext resolveContext, final @Nullable LithoNode newValue) {
+    resolveContext.setLayoutCreatedInWillRender(mId, newValue);
   }
 
   /**
@@ -685,7 +693,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mErrorEventHandler = errorHandler;
   }
 
-  /** @return a handle that is unique to this component. */
+  /**
+   * @return a handle that is unique to this component.
+   */
   @Nullable
   public final Handle getHandle() {
     return mHandle;
@@ -700,7 +710,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mHandle = handle;
   }
 
-  /** @return a key that is local to the component's parent. */
+  /**
+   * @return a key that is local to the component's parent.
+   */
   final String getKey() {
     if (mKey == null) {
       if (mHasManualKey) {
@@ -725,12 +737,16 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     mKey = key;
   }
 
-  /** @return if has a handle set */
+  /**
+   * @return if has a handle set
+   */
   final boolean hasHandle() {
     return mHandle != null;
   }
 
-  /** @return if has a manually set key */
+  /**
+   * @return if has a manually set key
+   */
   final boolean hasManualKey() {
     return mHasManualKey;
   }
@@ -751,8 +767,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return getSimpleName();
   }
 
-  private boolean hasCachedNode(final ResolveStateContext resolveStateContext) {
-    final MeasuredResultCache resultCache = resolveStateContext.getCache();
+  private boolean hasCachedNode(final ResolveContext resolveContext) {
+    final MeasuredResultCache resultCache = resolveContext.getCache();
     return resultCache.hasCachedNode(this);
   }
 
@@ -769,24 +785,21 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return false;
     }
 
-    final ResolveStateContext resolveStateContext =
-        Preconditions.checkNotNull(c.getRenderStateContext());
+    final ResolveContext resolveContext = Preconditions.checkNotNull(c.getRenderStateContext());
 
     final LithoNode componentLayoutCreatedInWillRender =
-        component.getLayoutCreatedInWillRender(resolveStateContext);
+        component.getLayoutCreatedInWillRender(resolveContext);
     if (componentLayoutCreatedInWillRender != null) {
-      return willRender(resolveStateContext, c, component, componentLayoutCreatedInWillRender);
+      return willRender(resolveContext, c, component, componentLayoutCreatedInWillRender);
     }
 
-    final LithoNode newLayoutCreatedInWillRender =
-        Resolver.resolve(resolveStateContext, c, component);
-    boolean willRender =
-        willRender(resolveStateContext, c, component, newLayoutCreatedInWillRender);
+    final LithoNode newLayoutCreatedInWillRender = Resolver.resolve(resolveContext, c, component);
+    boolean willRender = willRender(resolveContext, c, component, newLayoutCreatedInWillRender);
 
     // will render will return false for a null node but the
     // node still needs to be cached for reconciliation.
     if (willRender || newLayoutCreatedInWillRender instanceof NullNode) {
-      component.setLayoutCreatedInWillRender(resolveStateContext, newLayoutCreatedInWillRender);
+      component.setLayoutCreatedInWillRender(resolveContext, newLayoutCreatedInWillRender);
     }
     return willRender;
   }
@@ -809,10 +822,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return (component != null && component.getMountType() != MountType.NONE);
   }
 
-  static boolean isMountable(@Nullable Component component) {
-    return (component != null && component.getMountType() == MountType.MOUNTABLE);
-  }
-
   static boolean isPrimitive(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.PRIMITIVE);
   }
@@ -821,11 +830,13 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     return isLayoutSpecWithSizeSpec(component);
   }
 
-  static boolean hasCachedNode(final ResolveStateContext context, final Component component) {
+  static boolean hasCachedNode(final ResolveContext context, final Component component) {
     return component.hasCachedNode(context);
   }
 
-  /** @return whether the given component is a pure render component. */
+  /**
+   * @return whether the given component is a pure render component.
+   */
   @VisibleForTesting
   public static boolean isPureRender(@Nullable Component component) {
     return component != null && component.isPureRender();
@@ -848,7 +859,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   }
 
   private static boolean willRender(
-      final ResolveStateContext resolveStateContext,
+      final ResolveContext resolveContext,
       ComponentContext context,
       Component component,
       @Nullable LithoNode node) {
@@ -861,7 +872,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
       component.consumeLayoutCreatedInWillRender(
-          resolveStateContext, context); // Clear the layout created in will render
+          resolveContext, context); // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
@@ -995,12 +1006,12 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * Controls how a child aligns in the cross direction, overriding the alignItems of the parent.
      * See <a
-     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
+     * href="https://yogalayout.dev/docs/align-items">https://yogalayout.dev/docs/align-items</a>
      * for more information.
      *
      * <p>Default: {@link YogaAlign#AUTO}
      */
-    public T alignSelf(@Nullable YogaAlign alignSelf) {
+    public T alignSelf(YogaAlign alignSelf) {
       mComponent.getOrCreateCommonProps().alignSelf(alignSelf);
       return getThis();
     }
@@ -1023,7 +1034,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * Defined as the ratio between the width and the height of a node. See <a
-     * href="https://yogalayout.com/docs/aspect-ratio">https://yogalayout.com/docs/aspect-ratio</a>
+     * href="https://yogalayout.dev/docs/aspect-ratio">https://yogalayout.dev/docs/aspect-ratio</a>
      * for more information
      */
     public T aspectRatio(float aspectRatio) {
@@ -1203,7 +1214,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * <p>When flex is -1, the component is normally sized according width and height. However, if
      * there's not enough space, the component will shrink to its minWidth and minHeight.
      *
-     * <p>See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for
+     * <p>See <a href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for
      * more information.
      *
      * <p>Default: 0
@@ -1213,24 +1224,30 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisAttr(@AttrRes int resId) {
       return flexBasisAttr(resId, 0);
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisDip(@Dimension(unit = DP) float flexBasis) {
       return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
     }
 
     /**
-     * @see #flexBasisPx
      * @param percent a value between 0 and 100.
+     * @see #flexBasisPx
      */
     public T flexBasisPercent(float percent) {
       mComponent.getOrCreateCommonProps().flexBasisPercent(percent);
@@ -1244,7 +1261,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * parent is a container with FlexDirection = column. The FlexBasis of an item is the default
      * size of that item, the size of the item before any FlexGrow and FlexShrink calculations are
      * performed. See <a
-     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for more
      * information.
      *
      * <p>Default: 0
@@ -1254,7 +1271,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     */
     public T flexBasisRes(@DimenRes int resId) {
       return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -1263,7 +1282,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * If the sum of childrens' main axis dimensions is less than the minimum size, how much should
      * this component grow? This value represents the "flex grow factor" and determines how much
      * this component should grow along the main axis in relation to any other flexible children.
-     * See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * See <a href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for more
      * information.
      *
      * <p>Default: 0
@@ -1276,7 +1295,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * The FlexShrink property describes how to shrink children along the main axis in the case that
      * the total size of the children overflow the size of the container on the main axis. See <a
-     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * href="https://yogalayout.dev/docs/flex">https://yogalayout.dev/docs/flex</a> for more
      * information.
      *
      * <p>Default: 1
@@ -1370,17 +1389,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return mComponent.hasClickHandlerSet();
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightAttr(@AttrRes int resId) {
       return heightAttr(resId, 0);
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightDip(@Dimension(unit = DP) float height) {
       return heightPx(mResourceResolver.dipsToPixels(height));
     }
@@ -1390,8 +1415,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * parent has unspecified height (e.g. it is a RecyclerView), then setting this will have no
      * effect.
      *
-     * @see #heightPx
      * @param percent a value between 0 and 100.
+     * @see #heightPx
      */
     public T heightPercent(float percent) {
       mComponent.getOrCreateCommonProps().heightPercent(percent);
@@ -1400,7 +1425,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * Specifies the height of the element's content area. See <a
-     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * href="https://yogalayout.dev/docs/width-height">https://yogalayout.dev/docs/width-height</a>
      * for more information
      */
     public T heightPx(@Px int height) {
@@ -1408,7 +1433,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #heightPx */
+    /**
+     * @see #heightPx
+     */
     public T heightRes(@DimenRes int resId) {
       return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -1459,8 +1486,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      *
      * <p>Default: {@link YogaDirection#INHERIT}
      */
-    public T layoutDirection(@Nullable YogaDirection layoutDirection) {
-      mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);
+    public T layoutDirection(YogaDirection direction) {
+      YogaLayoutProps.setLayoutDirection(mComponent.getOrCreateCommonProps(), direction);
       return getThis();
     }
 
@@ -1469,32 +1496,40 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #marginPx */
-    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    /**
+     * @see #marginPx
+     */
+    public T marginAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #marginPx */
-    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
-      return marginAttr(edge, resId, 0);
-    }
-
-    /** @see #marginPx */
-    public T marginAuto(@Nullable YogaEdge edge) {
-      mComponent.getOrCreateCommonProps().marginAuto(edge);
-      return getThis();
-    }
-
-    /** @see #marginPx */
-    public T marginDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float margin) {
-      return marginPx(edge, mResourceResolver.dipsToPixels(margin));
     }
 
     /**
      * @see #marginPx
-     * @param percent a value between 0 and 100.
      */
-    public T marginPercent(@Nullable YogaEdge edge, float percent) {
+    public T marginAttr(YogaEdge edge, @AttrRes int resId) {
+      return marginAttr(edge, resId, 0);
+    }
+
+    /**
+     * @see #marginPx
+     */
+    public T marginAuto(YogaEdge edge) {
+      mComponent.getOrCreateCommonProps().marginAuto(edge);
+      return getThis();
+    }
+
+    /**
+     * @see #marginPx
+     */
+    public T marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
+      return marginPx(edge, mResourceResolver.dipsToPixels(margin));
+    }
+
+    /**
+     * @param percent a value between 0 and 100.
+     * @see #marginPx
+     */
+    public T marginPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
       return getThis();
     }
@@ -1502,142 +1537,180 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * Effects the spacing around the outside of a node. A node with margin will offset itself from
      * the bounds of its parent but also offset the location of any siblings. See <a
-     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a>
      * for more information
      */
-    public T marginPx(@Nullable YogaEdge edge, @Px int margin) {
+    public T marginPx(YogaEdge edge, @Px int margin) {
       mComponent.getOrCreateCommonProps().marginPx(edge, margin);
       return getThis();
     }
 
-    /** @see #marginPx */
-    public T marginRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    /**
+     * @see #marginPx
+     */
+    public T marginRes(YogaEdge edge, @DimenRes int resId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightAttr(@AttrRes int resId) {
       return maxHeightAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightDip(@Dimension(unit = DP) float maxHeight) {
       return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T maxHeightPercent(float percent) {
       mComponent.getOrCreateCommonProps().maxHeightPercent(percent);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightPx(@Px int maxHeight) {
       mComponent.getOrCreateCommonProps().maxHeightPx(maxHeight);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxHeightRes(@DimenRes int resId) {
       return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthAttr(@AttrRes int resId) {
       return maxWidthAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthDip(@Dimension(unit = DP) float maxWidth) {
       return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T maxWidthPercent(float percent) {
       mComponent.getOrCreateCommonProps().maxWidthPercent(percent);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthPx(@Px int maxWidth) {
       mComponent.getOrCreateCommonProps().maxWidthPx(maxWidth);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T maxWidthRes(@DimenRes int resId) {
       return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightAttr(@AttrRes int resId) {
       return minHeightAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightDip(@Dimension(unit = DP) float minHeight) {
       return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T minHeightPercent(float percent) {
       mComponent.getOrCreateCommonProps().minHeightPercent(percent);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightPx(@Px int minHeight) {
       mComponent.getOrCreateCommonProps().minHeightPx(minHeight);
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minHeightRes(@DimenRes int resId) {
       return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthAttr(@AttrRes int resId) {
       return minWidthAttr(resId, 0);
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthDip(@Dimension(unit = DP) float minWidth) {
       return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
     }
 
     /**
-     * @see #minWidthPx
      * @param percent a value between 0 and 100.
+     * @see #minWidthPx
      */
     public T minWidthPercent(float percent) {
       mComponent.getOrCreateCommonProps().minWidthPercent(percent);
@@ -1646,7 +1719,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * This property has higher priority than all other properties and will always be respected. See
-     * <a href="https://yogalayout.com/docs/min-max/">https://yogalayout.com/docs/min-max/</a> for
+     * <a href="https://yogalayout.dev/docs/min-max/">https://yogalayout.dev/docs/min-max/</a> for
      * more information
      */
     public T minWidthPx(@Px int minWidth) {
@@ -1654,7 +1727,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #minWidthPx */
+    /**
+     * @see #minWidthPx
+     */
     public T minWidthRes(@DimenRes int resId) {
       return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -1703,26 +1778,32 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #paddingPx */
-    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    /**
+     * @see #paddingPx
+     */
+    public T paddingAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #paddingPx */
-    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
-      return paddingAttr(edge, resId, 0);
-    }
-
-    /** @see #paddingPx */
-    public T paddingDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float padding) {
-      return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
     }
 
     /**
      * @see #paddingPx
-     * @param percent a value between 0 and 100.
      */
-    public T paddingPercent(@Nullable YogaEdge edge, float percent) {
+    public T paddingAttr(YogaEdge edge, @AttrRes int resId) {
+      return paddingAttr(edge, resId, 0);
+    }
+
+    /**
+     * @see #paddingPx
+     */
+    public T paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
+      return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
+    }
+
+    /**
+     * @param percent a value between 0 and 100.
+     * @see #paddingPx
+     */
+    public T paddingPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
       return getThis();
     }
@@ -1730,16 +1811,18 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * Affects the size of the node it is applied to. Padding will not add to the total size of an
      * element if it has an explicit size set. See <a
-     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * href="https://yogalayout.dev/docs/margins-paddings-borders">https://yogalayout.dev/docs/margins-paddings-borders</a>
      * for more information
      */
-    public T paddingPx(@Nullable YogaEdge edge, @Px int padding) {
+    public T paddingPx(YogaEdge edge, @Px int padding) {
       mComponent.getOrCreateCommonProps().paddingPx(edge, padding);
       return getThis();
     }
 
-    /** @see #paddingPx */
-    public T paddingRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    /**
+     * @see #paddingPx
+     */
+    public T paddingRes(YogaEdge edge, @DimenRes int resId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
@@ -1751,26 +1834,32 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #positionPx */
-    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    /**
+     * @see #positionPx
+     */
+    public T positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #positionPx */
-    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
-      return positionAttr(edge, resId, 0);
-    }
-
-    /** @see #positionPx */
-    public T positionDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float position) {
-      return positionPx(edge, mResourceResolver.dipsToPixels(position));
     }
 
     /**
      * @see #positionPx
-     * @param percent a value between 0 and 100.
      */
-    public T positionPercent(@Nullable YogaEdge edge, float percent) {
+    public T positionAttr(YogaEdge edge, @AttrRes int resId) {
+      return positionAttr(edge, resId, 0);
+    }
+
+    /**
+     * @see #positionPx
+     */
+    public T positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
+      return positionPx(edge, mResourceResolver.dipsToPixels(position));
+    }
+
+    /**
+     * @param percent a value between 0 and 100.
+     * @see #positionPx
+     */
+    public T positionPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().positionPercent(edge, percent);
       return getThis();
     }
@@ -1778,27 +1867,29 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * When used in combination with {@link #positionType} of {@link YogaPositionType#ABSOLUTE},
      * allows the component to specify how it should be positioned within its parent. See <a
-     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * href="https://yogalayout.dev/docs/absolute-relative-layout">https://yogalayout.dev/docs/absolute-relative-layout</a>
      * for more information.
      */
-    public T positionPx(@Nullable YogaEdge edge, @Px int position) {
+    public T positionPx(YogaEdge edge, @Px int position) {
       mComponent.getOrCreateCommonProps().positionPx(edge, position);
       return getThis();
     }
 
-    /** @see #positionPx */
-    public T positionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    /**
+     * @see #positionPx
+     */
+    public T positionRes(YogaEdge edge, @DimenRes int resId) {
       return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     /**
      * Controls how this component will be positioned within its parent. See <a
-     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * href="https://yogalayout.dev/docs/absolute-relative-layout">https://yogalayout.dev/docs/absolute-relative-layout</a>
      * for more details.
      *
      * <p>Default: {@link YogaPositionType#RELATIVE}
      */
-    public T positionType(@Nullable YogaPositionType positionType) {
+    public T positionType(YogaPositionType positionType) {
       mComponent.getOrCreateCommonProps().positionType(positionType);
       return getThis();
     }
@@ -1893,6 +1984,25 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
+    public T onPerformActionForVirtualViewHandler(
+        @Nullable
+            EventHandler<PerformActionForVirtualViewEvent> onPerformActionForVirtualViewHandler) {
+      mComponent
+          .getOrCreateCommonProps()
+          .onPerformActionForVirtualViewHandler(onPerformActionForVirtualViewHandler);
+      return getThis();
+    }
+
+    public T onVirtualViewKeyboardFocusChangedHandler(
+        @Nullable
+            EventHandler<VirtualViewKeyboardFocusChangedEvent>
+                onVirtualViewKeyboardFocusChangedHandler) {
+      mComponent
+          .getOrCreateCommonProps()
+          .onVirtualViewKeyboardFocusChangedHandler(onVirtualViewKeyboardFocusChangedHandler);
+      return getThis();
+    }
+
     public T shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
@@ -1924,9 +2034,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * @param value controller for the elevation value
      */
     public T shadowElevation(DynamicValue<Float> value) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonDynamicProps().put(KEY_ELEVATION, value);
-      }
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_ELEVATION, value);
       return getThis();
     }
 
@@ -1938,9 +2046,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * into a view
      */
     public T stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonProps().stateListAnimator(stateListAnimator);
-      }
+      mComponent.getOrCreateCommonProps().stateListAnimator(stateListAnimator);
       return getThis();
     }
 
@@ -1952,16 +2058,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * into a view
      */
     public T stateListAnimatorRes(@DrawableRes int resId) {
-      if (Build.VERSION.SDK_INT >= 26) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // We cannot do it on the versions prior to Android 8.0 since there is a possible race
         // condition when loading state list animators, thus we will avoid doing it off the UI
         // thread
         return stateListAnimator(
             AnimatorInflater.loadStateListAnimator(mContext.getAndroidContext(), resId));
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonProps().stateListAnimatorRes(resId);
-      }
+      mComponent.getOrCreateCommonProps().stateListAnimatorRes(resId);
       return getThis();
     }
 
@@ -1975,26 +2079,24 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    public T touchExpansionAttr(
-        @Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    public T touchExpansionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+    public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId) {
       return touchExpansionAttr(edge, resId, 0);
     }
 
-    public T touchExpansionDip(
-        @Nullable YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
+    public T touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
       return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
-    public T touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
+    public T touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
       mComponent.getOrCreateCommonProps().touchExpansionPx(edge, touchExpansion);
       return getThis();
     }
 
-    public T touchExpansionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+    public T touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
       return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
@@ -2061,6 +2163,11 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
+    public T viewId(int id) {
+      mComponent.getOrCreateCommonProps().viewId(id);
+      return getThis();
+    }
+
     public T viewTag(@Nullable Object viewTag) {
       mComponent.getOrCreateCommonProps().viewTag(viewTag);
       return getThis();
@@ -2092,17 +2199,23 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthAttr(@AttrRes int resId) {
       return widthAttr(resId, 0);
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthDip(@Dimension(unit = DP) float width) {
       return widthPx(mResourceResolver.dipsToPixels(width));
     }
@@ -2111,8 +2224,8 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * Sets the width of the Component to be a percentage of its parent's width. Note that if the
      * parent has unspecified width (e.g. it is an HScroll), then setting this will have no effect.
      *
-     * @see #widthPx
      * @param percent a value between 0 and 100.
+     * @see #widthPx
      */
     public T widthPercent(float percent) {
       mComponent.getOrCreateCommonProps().widthPercent(percent);
@@ -2121,7 +2234,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     /**
      * Specifies the width of the element's content area. See <a
-     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * href="https://yogalayout.dev/docs/width-height">https://yogalayout.dev/docs/width-height</a>
      * for more information
      */
     public T widthPx(@Px int width) {
@@ -2129,7 +2242,9 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    /** @see #widthPx */
+    /**
+     * @see #widthPx
+     */
     public T widthRes(@DimenRes int resId) {
       return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
@@ -2141,6 +2256,27 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
 
     public T layerType(@LayerType int type, @Nullable Paint paint) {
       mComponent.getOrCreateCommonProps().layerType(type, paint);
+      return getThis();
+    }
+
+    public T keyboardNavigationCluster(boolean isKeyboardNavigationCluster) {
+      mComponent.getOrCreateCommonProps().keyboardNavigationCluster(isKeyboardNavigationCluster);
+      return getThis();
+    }
+
+    public T addSystemGestureExclusionZone(Function1<Rect, Rect> exclusion) {
+      mComponent.getOrCreateCommonProps().addSystemGestureExclusionZone(exclusion);
+      return getThis();
+    }
+
+    public T tooltipText(@Nullable String tooltipText) {
+      mComponent.getOrCreateCommonProps().tooltipText(tooltipText);
+      return getThis();
+    }
+
+    @Deprecated
+    public T visibilityOutputTag(@Nullable String visibilityOutputTag) {
+      mComponent.getOrCreateCommonProps().visibilityOutputTag(visibilityOutputTag);
       return getThis();
     }
 
@@ -2191,7 +2327,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * The AlignSelf property has the same options and effect as AlignItems but instead of affecting
      * the children within a container, you can apply this property to a single child to change its
      * alignment within its parent. See <a
-     * href="https://yogalayout.com/docs/align-content">https://yogalayout.com/docs/align-content</a>
+     * href="https://yogalayout.dev/docs/align-content">https://yogalayout.dev/docs/align-content</a>
      * for more information.
      *
      * <p>Default: {@link YogaAlign#AUTO}
@@ -2202,7 +2338,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * The AlignItems property describes how to align children along the cross axis of their
      * container. AlignItems is very similar to JustifyContent but instead of applying to the main
      * axis, it applies to the cross axis. See <a
-     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
+     * href="https://yogalayout.dev/docs/align-items">https://yogalayout.dev/docs/align-items</a>
      * for more information.
      *
      * <p>Default: {@link YogaAlign#STRETCH}
@@ -2218,7 +2354,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * container. For example, you can use this property to center a child horizontally within a
      * container with FlexDirection = Row or vertically within one with FlexDirection = Column. See
      * <a
-     * href="https://yogalayout.com/docs/justify-content">https://yogalayout.com/docs/justify-content</a>
+     * href="https://yogalayout.dev/docs/justify-content">https://yogalayout.dev/docs/justify-content</a>
      * for more information.
      *
      * <p>Default: {@link YogaJustify#FLEX_START}
@@ -2236,17 +2372,26 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * <p>The next line will have the same FlexDirection as the first line and will appear next to
      * the first line along the cross axis - below it if using FlexDirection = Column and to the
      * right if using FlexDirection = Row. See <a
-     * href="https://yogalayout.com/docs/flex-wrap">https://yogalayout.com/docs/flex-wrap</a> for
+     * href="https://yogalayout.dev/docs/flex-wrap">https://yogalayout.dev/docs/flex-wrap</a> for
      * more information.
      *
      * <p>Default: {@link YogaWrap#NO_WRAP}
      */
     public abstract T wrap(@Nullable YogaWrap wrap);
+
+    /**
+     * The Gap property is set on containers and spaces children evenly by a given length along a
+     * given axis
+     */
+    public abstract T gapDip(YogaGutter gutter, float dip);
+
+    public abstract T gapPx(YogaGutter gutter, int px);
   }
 
   @Nullable
-  public static <T> T getTreePropFromParent(TreeProps parentTreeProps, Class<T> key) {
-    return parentTreeProps == null ? null : parentTreeProps.get(key);
+  public static <T> T getTreePropFromParent(
+      TreePropContainer parentTreePropContainer, Class<T> key) {
+    return parentTreePropContainer == null ? null : parentTreePropContainer.get(key);
   }
 
   static LinkedList<String> generateHierarchy(String globalKey) {
@@ -2271,7 +2416,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    */
   @Nullable
   private final AttributesHolder mDebugAttributesHolder =
-      ComponentsConfiguration.isDebugModeEnabled ? new AttributesHolder() : null;
+      LithoDebugConfigurations.isDebugModeEnabled ? new AttributesHolder() : null;
 
   @Override
   public <T> void setDebugAttributeKey(AttributeKey<T> attributeKey, T value) {

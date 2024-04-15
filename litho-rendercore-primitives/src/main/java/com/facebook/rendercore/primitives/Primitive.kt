@@ -37,11 +37,9 @@ import com.facebook.rendercore.SizeConstraints
  */
 class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: MountBehavior<*>) :
     Node<Any?> {
-  /** Lazily creates and returns a [RenderUnit] configured with [mountBehavior]. */
+  /** Returns a [RenderUnit] configured with [mountBehavior]. */
   val renderUnit: PrimitiveRenderUnit<*>
-    get() {
-      return mountBehavior.renderUnit
-    }
+    get() = mountBehavior.renderUnit
 
   override fun calculateLayout(
       context: LayoutContext<Any?>,
@@ -52,7 +50,7 @@ class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: M
     return with(layoutBehavior) {
       layoutScope
           .layout(SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
-          .toNodeLayoutResult(widthSpec, heightSpec, renderUnit)
+          .toNodeLayoutResult(renderUnit)
     }
   }
 }

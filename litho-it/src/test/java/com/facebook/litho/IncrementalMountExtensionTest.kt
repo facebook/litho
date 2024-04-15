@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.MountDelegateInput
@@ -64,7 +65,7 @@ class IncrementalMountExtensionTest {
     mountDelegate.registerMountExtension(extension)
     val incrementalMountExtensionInput = TestInput(10)
     extension.beforeMount(extensionState, incrementalMountExtensionInput, Rect(0, 0, 10, 50))
-    for (i in 0 until incrementalMountExtensionInput.mountableOutputCount) {
+    for (i in 0 until incrementalMountExtensionInput.getMountableOutputCount()) {
       val node = incrementalMountExtensionInput.getMountableOutputAt(i)
       extension.beforeMountItem(extensionState, node, i)
     }
@@ -73,7 +74,7 @@ class IncrementalMountExtensionTest {
     assertThat(IncrementalMountExtension.getPreviousTopsIndex(state)).isEqualTo(5)
     val incrementalMountExtensionInput2 = TestInput(3)
     extension.beforeMount(extensionState, incrementalMountExtensionInput2, Rect(0, 0, 0, 0))
-    for (i in 0 until incrementalMountExtensionInput2.mountableOutputCount) {
+    for (i in 0 until incrementalMountExtensionInput2.getMountableOutputCount()) {
       val node = incrementalMountExtensionInput2.getMountableOutputAt(i)
       extension.beforeMountItem(extensionState, node, i)
     }
@@ -98,7 +99,7 @@ class IncrementalMountExtensionTest {
     mountDelegate.registerMountExtension(extension)
     val incrementalMountExtensionInput = TestInput(10)
     extension.beforeMount(extensionState, incrementalMountExtensionInput, Rect(0, 0, 10, 50))
-    for (i in 0 until incrementalMountExtensionInput.mountableOutputCount) {
+    for (i in 0 until incrementalMountExtensionInput.getMountableOutputCount()) {
       val node = incrementalMountExtensionInput.getMountableOutputAt(i)
       extension.beforeMountItem(extensionState, node, i)
     }
@@ -107,7 +108,7 @@ class IncrementalMountExtensionTest {
     assertThat(IncrementalMountExtension.getPreviousTopsIndex(state)).isEqualTo(5)
     val incrementalMountExtensionInput2 = TestInput(3)
     extension.beforeMount(extensionState, incrementalMountExtensionInput2, Rect(0, 0, 10, 0))
-    for (i in 0 until incrementalMountExtensionInput2.mountableOutputCount) {
+    for (i in 0 until incrementalMountExtensionInput2.getMountableOutputCount()) {
       val node = incrementalMountExtensionInput2.getMountableOutputAt(i)
       extension.beforeMountItem(extensionState, node, i)
     }
@@ -150,7 +151,8 @@ class IncrementalMountExtensionTest {
         val renderTreeNode = mock<RenderTreeNode>()
         whenever(renderTreeNode.layoutData).thenReturn(mock<LithoAnimtableItem>())
         whenever(renderTreeNode.getAbsoluteBounds(anyOrNull<Rect>())).thenReturn(bounds)
-        val renderUnit: RenderUnit<*> = DrawableWrapperUnit(ColorDrawable(Color.BLACK), i.toLong())
+        val renderUnit: RenderUnit<Drawable> =
+            DrawableWrapperUnit(ColorDrawable(Color.BLACK), i.toLong())
         whenever(renderTreeNode.renderUnit).thenReturn(renderUnit)
         mountableOutputs.add(renderTreeNode)
         val incrementalMountOutput =

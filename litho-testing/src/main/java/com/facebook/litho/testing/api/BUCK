@@ -1,8 +1,8 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
+    "LITHO_JAVA_TARGET",
     "LITHO_JUNIT_TARGET",
-    "LITHO_KOTLIN_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_SECTIONS_TARGET",
     "LITHO_TESTING_COMPONENTS_FINDER_TARGET",
@@ -23,7 +23,7 @@ litho_android_test_library(
         "//fbandroid/libraries/components/litho-testing/src/test/java/com/facebook/litho/testing/api:api",
     ],
     deps = [
-        LITHO_KOTLIN_TARGET,
+        LITHO_JAVA_TARGET,
         LITHO_WIDGET_KOTLIN_TARGET,
         LITHO_WIDGET_KOTLIN_COLLECTION_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,

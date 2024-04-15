@@ -31,6 +31,7 @@ import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoStatsRule
 import com.facebook.litho.testing.TestDrawableComponent
@@ -40,8 +41,10 @@ import com.facebook.litho.testing.ThreadTestingUtils
 import com.facebook.litho.testing.TimeOutSemaphore
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.atMost
+import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.ComponentTreeTester
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -59,6 +62,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -191,9 +195,7 @@ class ComponentTreeTest {
 
     // Now the background thread run the queued task.
     runOneTask()
-    if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
-      runOneTask()
-    }
+    runOneTask()
     postSizeSpecChecks(componentTree)
   }
 
@@ -205,14 +207,15 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(scopedContext, root).build()
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     runOneTask()
-    if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
-      runOneTask()
-    }
+    runOneTask()
     val layoutState = componentTree.mainThreadLayoutState
     val c = componentTree.context
     assertThat(c).isNotEqualTo(scopedContext)
     assertNull(c.componentScope)
-    assertThat(layoutState?.rootLayoutResult?.context).isNotEqualTo(scopedContext)
+    layoutState?.rootLayoutResult?.let { layoutResult ->
+      assertThat(layoutResult is LithoLayoutResult).isTrue
+      assertThat((layoutResult as LithoLayoutResult).context).isNotEqualTo(scopedContext)
+    }
   }
 
   private class MeasureListener : ComponentTree.MeasureListener {
@@ -397,17 +400,16 @@ class ComponentTreeTest {
   fun testSetRootAndSizeSpecWithTreeProps() {
     val componentTree = ComponentTree.create(context, component).build()
     val size = Size()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         size,
-        treeProps)
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
-    assertThat(c.treeProps).isSameAs(treeProps)
+        treePropContainer)
+    val c = componentTree.mainThreadLayoutState!!.componentContext
+    assertThat(c.treePropContainer).isSameAs(treePropContainer)
   }
 
   @Test
@@ -425,20 +427,21 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.measure(
         makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), IntArray(2), false)
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    val c = componentTree.mainThreadLayoutState!!.componentContext
+
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test
@@ -446,19 +449,19 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.setSizeSpec(makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY))
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    val c = componentTree.mainThreadLayoutState!!.componentContext
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test
@@ -466,22 +469,22 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
     componentTree.attach()
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     assertThat(componentTree.committedLayoutState).isNull()
     componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(context).build(),
         makeSizeSpec(200, EXACTLY),
         makeSizeSpec(200, EXACTLY))
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    val c = componentTree.mainThreadLayoutState!!.componentContext
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test
@@ -498,19 +501,19 @@ class ComponentTreeTest {
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         Size())
-    val treeProps = TreeProps()
-    treeProps.put(Any::class.java, "hello world")
+    val treePropContainer = TreePropContainer()
+    treePropContainer.put(Any::class.java, "hello world")
     componentTree.setRootAndSizeSpecAsync(
         SimpleStateUpdateEmulator.create(context).caller(caller).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
-        treeProps)
+        treePropContainer)
     caller.increment()
     ShadowLooper.runUiThreadTasks()
-    val c =
-        Whitebox.getInternalState<ComponentContext>(componentTree.mainThreadLayoutState, "mContext")
-    assertThat(c.treeProps).isNotNull
-    assertThat(c.treeProps?.get(Any::class.java)).isEqualTo(treeProps.get(Any::class.java))
+    val c = componentTree.mainThreadLayoutState!!.componentContext
+    assertThat(c.treePropContainer).isNotNull
+    assertThat(c.treePropContainer?.get(Any::class.java))
+        .isEqualTo(treePropContainer.get(Any::class.java))
   }
 
   @Test
@@ -1276,10 +1279,10 @@ class ComponentTreeTest {
   @Test
   fun testCachedValues() {
     val componentTree = ComponentTree.create(context, component).build()
-    assertThat(componentTree.getCachedValue("key1", false)).isNull()
-    componentTree.putCachedValue("key1", "value1", false)
-    assertThat(componentTree.getCachedValue("key1", false)).isEqualTo("value1")
-    assertThat(componentTree.getCachedValue("key2", false)).isNull()
+    assertThat(componentTree.getCachedValue("globalKey", 0, "key1", false)).isNull()
+    componentTree.putCachedValue("globalKey", 0, "key1", "value1", false)
+    assertThat(componentTree.getCachedValue("globalKey", 0, "key1", false)).isEqualTo("value1")
+    assertThat(componentTree.getCachedValue("globalKey", 0, "key2", false)).isNull()
   }
 
   @Test
@@ -1323,6 +1326,38 @@ class ComponentTreeTest {
           componentTree.clearLithoView()
         }
     componentTree.setRootAndSizeSpecSync(this.component, widthSpec, heightSpec)
+  }
+
+  @Test
+  fun testSwapComponentTreeOnLithoViewWhileComponentTreeAttached() {
+    class TestComponent(val text: String) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row { child(Text(style = Style.viewTag(text), text = text)) }
+      }
+    }
+
+    fun measureLayoutLithoView(lithoView: LithoView) {
+      lithoView.onAttachedToWindow()
+      lithoView.measure(exactly(1000), exactly(1000))
+      lithoView.layout(0, 0, 1000, 1000)
+    }
+
+    val lithoView = LithoView(context)
+    val componentTree1 = ComponentTree.create(context, TestComponent(text = "First text")).build()
+    val componentTree2 = ComponentTree.create(context, TestComponent(text = "Second text")).build()
+    lithoView.componentTree = componentTree1
+    measureLayoutLithoView(lithoView)
+
+    assertThat(lithoView.findViewWithTag("First text") as? View).isNotNull
+
+    lithoView.onDetachedFromWindow()
+    // Simulate ComponentTree staying attached due to being in a bad state (e.g. due to error
+    // boundary)
+    componentTree1.attach()
+    lithoView.componentTree = componentTree2
+    measureLayoutLithoView(lithoView)
+
+    assertThat(lithoView.findViewWithTag("Second text") as? View).isNotNull
   }
 
   @Test

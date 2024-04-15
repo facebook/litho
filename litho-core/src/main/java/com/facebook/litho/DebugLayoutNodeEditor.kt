@@ -61,7 +61,7 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   }
 
   fun setLayoutDirection(yogaDirection: YogaDirection) {
-    node.debugLayoutEditor.layoutDirection(yogaDirection)
+    node.debugLayoutEditor?.layoutDirection(yogaDirection.toLayoutDirection())
   }
 
   fun setFlexDirection(direction: YogaFlexDirection) {
@@ -77,124 +77,124 @@ class DebugLayoutNodeEditor(private val node: LithoNode) {
   }
 
   fun setAlignSelf(yogaAlign: YogaAlign) {
-    node.debugLayoutEditor.alignSelf(yogaAlign)
+    node.debugLayoutEditor?.alignSelf(yogaAlign)
   }
 
-  fun setAlignContent(yogaAlign: YogaAlign?) {
+  fun setAlignContent(yogaAlign: YogaAlign) {
     node.alignContent(yogaAlign)
   }
 
   fun setPositionType(yogaPositionType: YogaPositionType) {
-    node.debugLayoutEditor.positionType(yogaPositionType)
+    node.debugLayoutEditor?.positionType(yogaPositionType)
   }
 
   fun setFlexGrow(value: Float) {
-    node.debugLayoutEditor.flexGrow(value)
+    node.debugLayoutEditor?.flexGrow(value)
   }
 
   fun setFlexShrink(value: Float) {
-    node.debugLayoutEditor.flexShrink(value)
+    node.debugLayoutEditor?.flexShrink(value)
   }
 
   fun setFlexBasis(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.flexBasisAuto()
-      YogaUnit.PERCENT -> node.debugLayoutEditor.flexBasisPercent(value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.flexBasisPx(value.value.toInt())
+      YogaUnit.AUTO -> {} // no ops for auto
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.flexBasisPercent(value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.flexBasisPx(value.value.toInt())
     }
   }
 
   fun setWidth(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.widthAuto()
-      YogaUnit.PERCENT -> node.debugLayoutEditor.widthPercent(value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.widthPx(value.value.toInt())
+      YogaUnit.AUTO -> {} // no ops for auto
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.widthPercent(value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.widthPx(value.value.toInt())
     }
   }
 
   fun setMinWidth(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.minWidthPx(Int.MIN_VALUE)
-      YogaUnit.PERCENT -> node.debugLayoutEditor.minWidthPercent(value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.minWidthPx(value.value.toInt())
+      YogaUnit.AUTO -> node.debugLayoutEditor?.minWidthPx(Int.MIN_VALUE)
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.minWidthPercent(value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.minWidthPx(value.value.toInt())
     }
   }
 
   fun setMaxWidth(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.maxWidthPx(Int.MAX_VALUE)
-      YogaUnit.PERCENT -> node.debugLayoutEditor.maxWidthPercent(value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.maxWidthPx(value.value.toInt())
+      YogaUnit.AUTO -> node.debugLayoutEditor?.maxWidthPx(Int.MAX_VALUE)
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.maxWidthPercent(value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.maxWidthPx(value.value.toInt())
     }
   }
 
   fun setHeight(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.heightAuto()
-      YogaUnit.PERCENT -> node.debugLayoutEditor.heightPercent(value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.heightPx(value.value.toInt())
+      YogaUnit.AUTO -> {} // no ops for auto
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.heightPercent(value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.heightPx(value.value.toInt())
     }
   }
 
   fun setMinHeight(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.minHeightPx(Int.MIN_VALUE)
-      YogaUnit.PERCENT -> node.debugLayoutEditor.minHeightPercent(value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.minHeightPx(value.value.toInt())
+      YogaUnit.AUTO -> node.debugLayoutEditor?.minHeightPx(Int.MIN_VALUE)
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.minHeightPercent(value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.minHeightPx(value.value.toInt())
     }
   }
 
   fun setMaxHeight(value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.maxHeightPx(Int.MAX_VALUE)
-      YogaUnit.PERCENT -> node.debugLayoutEditor.maxHeightPercent(value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.maxHeightPx(value.value.toInt())
+      YogaUnit.AUTO -> node.debugLayoutEditor?.maxHeightPx(Int.MAX_VALUE)
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.maxHeightPercent(value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.maxHeightPx(value.value.toInt())
     }
   }
 
   fun setAspectRatio(aspectRatio: Float) {
-    node.debugLayoutEditor.aspectRatio(aspectRatio)
+    node.debugLayoutEditor?.aspectRatio(aspectRatio)
   }
 
   fun setMargin(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
-      YogaUnit.UNDEFINED -> node.debugLayoutEditor.marginPx(edge, 0)
-      YogaUnit.AUTO -> node.debugLayoutEditor.marginAuto(edge)
-      YogaUnit.PERCENT -> node.debugLayoutEditor.marginPercent(edge, value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.marginPx(edge, value.value.toInt())
+      YogaUnit.UNDEFINED -> node.debugLayoutEditor?.marginPx(edge, 0)
+      YogaUnit.AUTO -> node.debugLayoutEditor?.marginAuto(edge)
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.marginPercent(edge, value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.marginPx(edge, value.value.toInt())
     }
   }
 
   fun setPadding(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.paddingPx(edge, 0)
-      YogaUnit.PERCENT -> node.debugLayoutEditor.paddingPercent(edge, value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.paddingPx(edge, value.value.toInt())
+      YogaUnit.AUTO -> node.debugLayoutEditor?.paddingPx(edge, 0)
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.paddingPercent(edge, value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.paddingPx(edge, value.value.toInt())
     }
   }
 
   fun setPosition(edge: YogaEdge, value: YogaValue) {
     when (value.unit) {
       YogaUnit.UNDEFINED,
-      YogaUnit.AUTO -> node.debugLayoutEditor.positionPercent(edge, YogaConstants.UNDEFINED)
-      YogaUnit.PERCENT -> node.debugLayoutEditor.positionPercent(edge, value.value)
-      YogaUnit.POINT -> node.debugLayoutEditor.positionPx(edge, value.value.toInt())
+      YogaUnit.AUTO -> node.debugLayoutEditor?.positionPercent(edge, YogaConstants.UNDEFINED)
+      YogaUnit.PERCENT -> node.debugLayoutEditor?.positionPercent(edge, value.value)
+      YogaUnit.POINT -> node.debugLayoutEditor?.positionPx(edge, value.value.toInt())
     }
   }
 
   fun isReferenceBaseline(isReferenceBaseline: Boolean) {
-    node.debugLayoutEditor.isReferenceBaseline(isReferenceBaseline)
+    node.debugLayoutEditor?.isReferenceBaseline(isReferenceBaseline)
   }
 
   fun setBorderWidth(edge: YogaEdge, value: Float) {
-    node.debugLayoutEditor.setBorderWidth(edge, value.toInt().toFloat())
+    node.debugLayoutEditor?.setBorderWidth(edge, value.toInt().toFloat())
   }
 }

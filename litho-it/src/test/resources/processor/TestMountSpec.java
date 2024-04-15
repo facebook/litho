@@ -18,12 +18,11 @@ package com.facebook.litho.processor.integration.resources;
 
 import static com.facebook.litho.annotations.ResType.STRING;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.litho.ClickEvent;
@@ -53,11 +52,13 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnPerformActionForVirtualView;
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
 import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.OnVirtualViewKeyboardFocusChanged;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
@@ -68,7 +69,6 @@ import com.facebook.litho.annotations.TreeProp;
 import com.facebook.rendercore.MountItemsPool;
 import javax.annotation.Nullable;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @MountSpec(
     events = TestEvent.class,
     isPureRender = true,
@@ -132,6 +132,27 @@ public class TestMountSpec<S extends View> implements TestTag {
       AccessibilityNodeInfoCompat node,
       @Prop(resType = STRING) @Nullable CharSequence prop7) {}
 
+  @OnPerformActionForVirtualView
+  static boolean onPerformActionForVirtualView(
+      ComponentContext c,
+      View host,
+      AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      int action,
+      @Nullable Bundle arguments,
+      @Prop(resType = STRING) @Nullable CharSequence prop7) {
+    return true;
+  }
+
+  @OnVirtualViewKeyboardFocusChanged
+  static void onVirtualViewKeyboardFocusChanged(
+      ComponentContext c,
+      View host,
+      @Nullable AccessibilityNodeInfoCompat node,
+      int virtualViewId,
+      boolean hasFocus,
+      @Prop(resType = STRING) @Nullable CharSequence prop7) {}
+
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
       ComponentContext c,
@@ -193,7 +214,7 @@ public class TestMountSpec<S extends View> implements TestTag {
 
   @OnCreateMountContentPool
   static MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new MountItemsPool.DefaultItemPool(TestMountSpec.class, 3, true);
+    return new MountItemsPool.DefaultItemPool(TestMountSpec.class, 3);
   }
 
   @OnCalculateCachedValue(name = "cached")

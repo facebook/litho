@@ -29,7 +29,7 @@ public interface ClassNames {
   ClassName EXCEPTION = ClassName.bestGuess("java.lang.Exception");
   ClassName COMMON_UTILS = ClassName.bestGuess("com.facebook.litho.CommonUtils");
   ClassName EQUIVALENCE_UTILS =
-      ClassName.bestGuess("com.facebook.rendercore.primitives.utils.EquivalenceUtils");
+      ClassName.bestGuess("com.facebook.rendercore.utils.EquivalenceUtils");
   ClassName NULLABLE = ClassName.bestGuess("androidx.annotation.Nullable");
 
   String VIEW_NAME = "android.view.View";
@@ -96,7 +96,7 @@ public interface ClassNames {
   ClassName COMPARABLE_DRAWABLE =
       ClassName.bestGuess("com.facebook.litho.drawable.ComparableDrawable");
 
-  ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.litho.TreeProps");
+  ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.litho.TreePropContainer");
 
   ClassName STATE_VALUE = ClassName.bestGuess("com.facebook.litho.StateValue");
   ClassName COMPONENT_STATE_UPDATE =
@@ -145,4 +145,6 @@ public interface ClassNames {
   ClassName DYNAMIC_VALUE = ClassName.bestGuess("com.facebook.litho.DynamicValue");
 
   ClassName HANDLE = ClassName.bestGuess("com.facebook.litho.Handle");
+
+  ClassName BUNDLE = ClassName.bestGuess("android.os.Bundle");
 }

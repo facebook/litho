@@ -98,5 +98,6 @@ public class NestedLithoViewsExtension extends MountExtension<Void, Void>
       ExtensionState<Void> extensionState,
       RenderUnit<?> renderUnit,
       Object content,
-      @Nullable Object layoutData) {}
+      @Nullable Object layoutData,
+      boolean changed) {}
 }

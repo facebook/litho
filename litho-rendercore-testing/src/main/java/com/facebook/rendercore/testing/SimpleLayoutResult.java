@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.testing;
 
-import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderUnit;
@@ -148,16 +147,6 @@ public class SimpleLayoutResult implements LayoutResult {
   @Override
   public int getPaddingLeft() {
     return paddingLeft;
-  }
-
-  @Override
-  public int getWidthSpec() {
-    return View.MeasureSpec.makeMeasureSpec(mWidth, View.MeasureSpec.EXACTLY);
-  }
-
-  @Override
-  public int getHeightSpec() {
-    return View.MeasureSpec.makeMeasureSpec(mHeight, View.MeasureSpec.EXACTLY);
   }
 
   public static SimpleLayoutResult.Builder create() {

@@ -17,8 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.config.ComponentsConfiguration.isIncrementalMountGloballyDisabled
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -28,6 +27,8 @@ import com.facebook.litho.visibility.onVisible
 import com.facebook.rendercore.px
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,13 +36,17 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LithoViewVisibilityProcessingTest {
 
-  @get:Rule
-  val lithoViewRule =
-      LithoViewRule(
-          componentsConfiguration =
-              ComponentsConfiguration.getDefaultComponentsConfiguration().apply {
-                isIncrementalMountGloballyDisabled = true
-              })
+  @get:Rule val lithoViewRule = LithoViewRule()
+
+  @Before
+  fun setup() {
+    LithoDebugConfigurations.isIncrementalMountGloballyDisabled = true
+  }
+
+  @After
+  fun teardown() {
+    LithoDebugConfigurations.isIncrementalMountGloballyDisabled = false
+  }
 
   @Test
   fun `should process visibility outputs with the current visible rect when mount state is dirty and incremental mount disabled`() {

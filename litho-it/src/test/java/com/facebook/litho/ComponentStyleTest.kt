@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.YogaLayoutOutput.Companion.getYogaNode
 import com.facebook.litho.it.R
 import com.facebook.litho.it.R.attr.testAttrLargePadding
 import com.facebook.litho.it.R.attr.testAttrLargeText
@@ -75,7 +76,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(dimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(dimen)
   }
 
   @Test
@@ -88,7 +89,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
   }
 
   @Test
@@ -110,7 +111,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
   }
 
   @Test
@@ -123,7 +124,7 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(2 * dimen)
   }
 
   @Test
@@ -138,6 +139,6 @@ class ComponentStyleTest {
     val result =
         LegacyLithoViewRule.getRootLayout(
             legacyLithoViewRule, component, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
-    assertThat(result?.yogaNode?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
+    assertThat(result?.getYogaNode()?.getPadding(YogaEdge.LEFT)).isEqualTo(largeDimen)
   }
 }

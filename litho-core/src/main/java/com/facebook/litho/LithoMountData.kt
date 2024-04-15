@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.view.View
+import androidx.core.view.ViewCompat
 import com.facebook.rendercore.MountItem
 import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
@@ -40,6 +41,7 @@ class LithoMountData(content: Any?) {
     private const val FLAG_VIEW_SELECTED = 1 shl 4
     private const val FLAG_VIEW_LAYER_TYPE_0 = 1 shl 5
     private const val FLAG_VIEW_LAYER_TYPE_1 = 1 shl 6
+    private const val FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 7
 
     /** @return Whether the view associated with this MountItem is clickable. */
     @JvmStatic
@@ -61,6 +63,11 @@ class LithoMountData(content: Any?) {
     /** @return Whether the view associated with this MountItem is setSelected. */
     @JvmStatic
     fun isViewSelected(flags: Int): Boolean = flags and FLAG_VIEW_SELECTED == FLAG_VIEW_SELECTED
+
+    /** @return Whether the view associated with this MountItem is setSelected. */
+    @JvmStatic
+    fun isViewKeyboardNavigationCluster(flags: Int): Boolean =
+        flags and FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER == FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER
 
     @JvmStatic
     @LayerType
@@ -97,6 +104,9 @@ class LithoMountData(content: Any?) {
         }
         if (content.isSelected) {
           flags = flags or FLAG_VIEW_SELECTED
+        }
+        if (ViewCompat.isKeyboardNavigationCluster(content)) {
+          flags = flags or FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER
         }
         when (content.layerType) {
           View.LAYER_TYPE_NONE -> {}

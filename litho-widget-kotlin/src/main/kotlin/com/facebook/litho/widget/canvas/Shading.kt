@@ -19,13 +19,13 @@ package com.facebook.litho.widget.canvas
 import android.graphics.Shader
 import androidx.annotation.ColorInt
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.mountable.canvas.model.CanvasGradient
-import com.facebook.mountable.canvas.model.CanvasGradientShading
-import com.facebook.mountable.canvas.model.CanvasLinearGradient
-import com.facebook.mountable.canvas.model.CanvasRadialGradient
-import com.facebook.mountable.canvas.model.CanvasShadingModel
-import com.facebook.mountable.canvas.model.CanvasSolidColorShading
-import com.facebook.mountable.utils.types.Point
+import com.facebook.primitive.canvas.model.CanvasGradient
+import com.facebook.primitive.canvas.model.CanvasGradientShading
+import com.facebook.primitive.canvas.model.CanvasLinearGradient
+import com.facebook.primitive.canvas.model.CanvasRadialGradient
+import com.facebook.primitive.canvas.model.CanvasShadingModel
+import com.facebook.primitive.canvas.model.CanvasSolidColorShading
+import com.facebook.primitive.utils.types.Point
 
 @JvmInline
 value class Shading

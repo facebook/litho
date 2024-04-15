@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
@@ -35,8 +35,8 @@ class ComponentTreeDumpingHelperTest {
   @Before
   fun skipIfRelease() {
     Assume.assumeTrue(
-        "These tests cover debug functionality and can only be run for internal builds.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD)
+        "These tests cover debug functionality and can only be run for debug mode.",
+        LithoDebugConfigurations.isDebugModeEnabled)
   }
 
   @Test
@@ -46,11 +46,12 @@ class ComponentTreeDumpingHelperTest {
           override fun onCreateLayout(c: ComponentContext): Component? =
               SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build()
         }
-    var componentContext: ComponentContext =
-        ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val componentTree = ComponentTree.create(componentContext, component).build()
-    componentContext = ComponentContextUtils.withComponentTree(componentContext, componentTree)
-    val lithoView = LithoView(ApplicationProvider.getApplicationContext<Context>())
+
+    val androidContext = ApplicationProvider.getApplicationContext<Context>()
+    val baseContext = ComponentContext(androidContext)
+    val componentTree = ComponentTree.create(baseContext, component).build()
+    val lithoView = LithoView(androidContext)
+
     lithoView.componentTree = componentTree
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

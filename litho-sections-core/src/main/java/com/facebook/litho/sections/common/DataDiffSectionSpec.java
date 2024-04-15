@@ -31,6 +31,7 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
@@ -112,7 +113,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DataDiffSectionSpec<T> {
 
   public static final String DUPLICATES_EXIST_MSG =
-      "Detected duplicates in data passed to DataDiffSection. Read more here: https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception";
+      "Detected duplicates in data passed to DataDiffSection. Read more here:"
+          + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception";
 
   public static final String RENDER_INFO_RETURNS_NULL_MSG =
       "RenderInfo has returned null. Returning ComponentRenderInfo.createEmpty() as default.";
@@ -219,7 +221,7 @@ public class DataDiffSectionSpec<T> {
    */
   private static boolean isDetectDuplicatesEnabled(@Nullable Diff<Boolean> alwaysDetectDuplicates) {
     if (alwaysDetectDuplicates == null || alwaysDetectDuplicates.getNext() == null) {
-      return ComponentsConfiguration.isDebugModeEnabled;
+      return LithoDebugConfigurations.isDebugModeEnabled;
     }
     return alwaysDetectDuplicates.getNext();
   }
@@ -246,7 +248,7 @@ public class DataDiffSectionSpec<T> {
               mChangeSet.insert(
                   operation.getIndex(),
                   components.get(0).getRenderInfo(),
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   dataHolders.get(0).getNext());
             } else {
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
@@ -254,7 +256,7 @@ public class DataDiffSectionSpec<T> {
                   operation.getIndex(),
                   opSize,
                   renderInfos,
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   extractNextData(dataHolders));
             }
             break;
@@ -279,7 +281,7 @@ public class DataDiffSectionSpec<T> {
               mChangeSet.update(
                   operation.getIndex(),
                   components.get(0).getRenderInfo(),
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   dataHolders.get(0).getPrevious(),
                   dataHolders.get(0).getNext());
             } else {
@@ -288,7 +290,7 @@ public class DataDiffSectionSpec<T> {
                   operation.getIndex(),
                   opSize,
                   renderInfos,
-                  c.getTreePropsCopy(),
+                  c.getTreePropContainerCopy(),
                   extractPrevData(dataHolders),
                   extractNextData(dataHolders));
             }
@@ -353,7 +355,7 @@ public class DataDiffSectionSpec<T> {
         renderInfo = ComponentRenderInfo.createEmpty();
       }
 
-      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+      if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
         renderInfo.addDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, mSectionContext.getSectionScope());
       }
 
@@ -437,17 +439,14 @@ public class DataDiffSectionSpec<T> {
         } else {
           isSameItemEventState = mIsSameItemEventStates.get();
         }
-        if (ComponentsConfiguration.reduceMemorySpikeDataDiffSection()
+        if (ComponentsConfiguration.reduceMemorySpikeDataDiffSection
             && hasEventDispatcher != null
             && isSameItemEventState != null
             && isSameItemEventState.previousItem == sDummy.previousItem) {
           isSameItemEventState.previousItem = previous;
           isSameItemEventState.nextItem = next;
           try {
-            Object result =
-                hasEventDispatcher
-                    .getEventDispatcher()
-                    .dispatchOnEvent(mIsSameItemEventHandler, isSameItemEventState);
+            Object result = mIsSameItemEventHandler.dispatchEvent(isSameItemEventState);
             if (result == null) {
               return false;
             } else {

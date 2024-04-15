@@ -116,7 +116,9 @@ public @interface MountSpec {
    */
   int poolSize() default 3;
 
-  /** @return whether the component generated from this MountSpec will be preallocated. */
+  /**
+   * @return whether the component generated from this MountSpec will be preallocated.
+   */
   boolean canPreallocate() default false;
 
   /**

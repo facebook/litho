@@ -3,13 +3,11 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_JAVA_TARGET",
-    "LITHO_KOTLIN_TARGET",
 )
 
 fb_android_library(
     name = "componentsfinder",
     deps = [
-        LITHO_KOTLIN_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_JAVA_TARGET,
     ],

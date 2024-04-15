@@ -31,11 +31,24 @@ import java.lang.Long.toHexString
  * - For a value resolved from a resource, use [dimenRes], e.g. `dimenRes(R.dimen.my_dimen)`
  */
 @JvmInline
-value class Dimen(val encodedValue: Long) {
+value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
 
   /** Converts the given Dimen to pixels. */
   fun toPixels(resourceResolver: ResourceResolver): Int =
       convertEncodedValueToPixels(resourceResolver, encodedValue)
+
+  override fun toString(): String {
+    return when {
+      // DP case
+      encodedValue and NAN_MASK != NAN_MASK -> "${longBitsToDouble(encodedValue).toFloat()} dp"
+      // PX case
+      encodedValue and PX_FLAG == PX_FLAG -> "${(encodedValue and PAYLOAD_MASK).toInt()} px"
+      // SP case
+      encodedValue and SP_FLAG == SP_FLAG ->
+          "${intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt())} sp"
+      else -> "NaN"
+    }
+  }
 }
 
 /** Creates a Dimen with a constant dp (density-independent pixels) value. */

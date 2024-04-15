@@ -5,12 +5,13 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "JDK_COMPILER_ARGS",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_COMPILE_TESTING_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JUNIT_TARGET",
-    "LITHO_MOCKITO_TARGET",
+    "LITHO_MOCKITO_V2_TARGET",
     "LITHO_PROCESSOR_LIB_TARGET",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
     "LITHO_SECTIONS_TARGET",
@@ -18,12 +19,15 @@ load(
     "make_dep_path",
 )
 
+oncall("litho_components_for_android")
+
 fb_java_test(
     name = "processor",
     srcs = glob(["*.java"]),
     contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "11",
     target = "11",
+    vm_args = JDK_COMPILER_ARGS,
     deps = [
         LITHO_ANNOTATIONS_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
@@ -31,7 +35,7 @@ fb_java_test(
         LITHO_COMPILE_TESTING_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
-        LITHO_MOCKITO_TARGET,
+        LITHO_MOCKITO_V2_TARGET,
         LITHO_PROCESSOR_LIB_TARGET,
         LITHO_SECTIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),

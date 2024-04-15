@@ -71,6 +71,10 @@ public class MethodParamModelUtils {
     return methodParamModel.getTypeName().equals(ClassNames.COMPONENT_CONTEXT);
   }
 
+  public static boolean isSectionContextParam(MethodParamModel methodParamModel) {
+    return methodParamModel.getTypeName().equals(ClassNames.SECTION_CONTEXT);
+  }
+
   public static List<TypeVariableName> getTypeVariables(MethodParamModel methodParam) {
     return getTypeVariables(methodParam.getTypeName());
   }

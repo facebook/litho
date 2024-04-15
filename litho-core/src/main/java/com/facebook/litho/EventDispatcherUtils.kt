@@ -34,8 +34,7 @@ internal object EventDispatcherUtils {
     ThreadUtils.assertMainThread()
     val clickEvent = ClickEvent()
     clickEvent.view = view
-    val eventDispatcher = checkNotNull(clickHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(clickHandler, clickEvent)
+    clickHandler.dispatchEvent(clickEvent)
   }
 
   @JvmStatic
@@ -48,9 +47,7 @@ internal object EventDispatcherUtils {
     val focusChangedEvent = FocusChangedEvent()
     focusChangedEvent.view = view
     focusChangedEvent.hasFocus = hasFocus
-    val eventDispatcher =
-        checkNotNull(focusChangeHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(focusChangeHandler, focusChangedEvent)
+    focusChangeHandler.dispatchEvent(focusChangedEvent)
   }
 
   @JvmStatic
@@ -58,10 +55,8 @@ internal object EventDispatcherUtils {
     ThreadUtils.assertMainThread()
     val longClickEvent = LongClickEvent()
     longClickEvent.view = view
-    val eventDispatcher =
-        checkNotNull(longClickHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    val returnValue = eventDispatcher.dispatchOnEvent(longClickHandler, longClickEvent)
-    return returnValue != null && returnValue as Boolean
+    val returnValue = longClickHandler.dispatchEvent(longClickEvent)
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -74,9 +69,8 @@ internal object EventDispatcherUtils {
     val touchEvent = TouchEvent()
     touchEvent.view = view
     touchEvent.motionEvent = event
-    val eventDispatcher = checkNotNull(touchHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    val returnValue = eventDispatcher.dispatchOnEvent(touchHandler, touchEvent)
-    return returnValue != null && returnValue as Boolean
+    val returnValue = touchHandler.dispatchEvent(touchEvent)
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -89,10 +83,8 @@ internal object EventDispatcherUtils {
     val interceptTouchEvent = InterceptTouchEvent()
     interceptTouchEvent.motionEvent = event
     interceptTouchEvent.view = view
-    val eventDispatcher =
-        checkNotNull(interceptTouchHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    val returnValue = eventDispatcher.dispatchOnEvent(interceptTouchHandler, interceptTouchEvent)
-    return returnValue != null && returnValue as Boolean
+    val returnValue = interceptTouchHandler.dispatchEvent(interceptTouchEvent)
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -107,10 +99,8 @@ internal object EventDispatcherUtils {
     dispatchPopulateAccessibilityEventEvent.host = host
     dispatchPopulateAccessibilityEventEvent.event = event
     dispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    val returnValue =
-        eventDispatcher.dispatchOnEvent(eventHandler, dispatchPopulateAccessibilityEventEvent)
-    return returnValue != null && returnValue as Boolean
+    val returnValue = eventHandler.dispatchEvent(dispatchPopulateAccessibilityEventEvent)
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -125,8 +115,7 @@ internal object EventDispatcherUtils {
     onInitializeAccessibilityEventEvent.host = host
     onInitializeAccessibilityEventEvent.event = event
     onInitializeAccessibilityEventEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(eventHandler, onInitializeAccessibilityEventEvent)
+    eventHandler.dispatchEvent(onInitializeAccessibilityEventEvent)
   }
 
   @JvmStatic
@@ -141,8 +130,7 @@ internal object EventDispatcherUtils {
     onInitializeAccessibilityNodeInfoEvent.host = host
     onInitializeAccessibilityNodeInfoEvent.info = info
     onInitializeAccessibilityNodeInfoEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(eventHandler, onInitializeAccessibilityNodeInfoEvent)
+    eventHandler.dispatchEvent(onInitializeAccessibilityNodeInfoEvent)
   }
 
   @JvmStatic
@@ -157,8 +145,7 @@ internal object EventDispatcherUtils {
     onPopulateAccessibilityEventEvent.host = host
     onPopulateAccessibilityEventEvent.event = event
     onPopulateAccessibilityEventEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(eventHandler, onPopulateAccessibilityEventEvent)
+    eventHandler.dispatchEvent(onPopulateAccessibilityEventEvent)
   }
 
   @JvmStatic
@@ -171,8 +158,7 @@ internal object EventDispatcherUtils {
     val onPopulateAccessibilityNodeEvent = OnPopulateAccessibilityNodeEvent()
     onPopulateAccessibilityNodeEvent.host = host
     onPopulateAccessibilityNodeEvent.accessibilityNode = info
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(eventHandler, onPopulateAccessibilityNodeEvent)
+    eventHandler.dispatchEvent(onPopulateAccessibilityNodeEvent)
   }
 
   @JvmStatic
@@ -189,10 +175,8 @@ internal object EventDispatcherUtils {
     onRequestSendAccessibilityEventEvent.child = child
     onRequestSendAccessibilityEventEvent.event = event
     onRequestSendAccessibilityEventEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    val returnValue =
-        eventDispatcher.dispatchOnEvent(eventHandler, onRequestSendAccessibilityEventEvent)
-    return returnValue != null && returnValue as Boolean
+    val returnValue = eventHandler.dispatchEvent(onRequestSendAccessibilityEventEvent)
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -209,9 +193,8 @@ internal object EventDispatcherUtils {
     performAccessibilityActionEvent.action = action
     performAccessibilityActionEvent.args = args
     performAccessibilityActionEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    val returnValue = eventDispatcher.dispatchOnEvent(eventHandler, performAccessibilityActionEvent)
-    return returnValue != null && returnValue as Boolean
+    val returnValue = eventHandler.dispatchEvent(performAccessibilityActionEvent)
+    return returnValue is Boolean && returnValue
   }
 
   @JvmStatic
@@ -226,8 +209,7 @@ internal object EventDispatcherUtils {
     sendAccessibilityEventEvent.host = host
     sendAccessibilityEventEvent.eventType = eventType
     sendAccessibilityEventEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(eventHandler, sendAccessibilityEventEvent)
+    eventHandler.dispatchEvent(sendAccessibilityEventEvent)
   }
 
   @JvmStatic
@@ -242,7 +224,36 @@ internal object EventDispatcherUtils {
     sendAccessibilityEventUncheckedEvent.host = host
     sendAccessibilityEventUncheckedEvent.event = event
     sendAccessibilityEventUncheckedEvent.superDelegate = superDelegate
-    val eventDispatcher = checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher).eventDispatcher
-    eventDispatcher.dispatchOnEvent(eventHandler, sendAccessibilityEventUncheckedEvent)
+    eventHandler.dispatchEvent(sendAccessibilityEventUncheckedEvent)
+  }
+
+  @JvmStatic
+  fun dispatchVirtualViewKeyboardFocusChanged(
+      eventHandler: EventHandler<VirtualViewKeyboardFocusChangedEvent>,
+      host: View,
+      nodeInfo: AccessibilityNodeInfoCompat?,
+      virtualViewId: Int,
+      hasFocus: Boolean,
+      superDelegate: AccessibilityDelegateCompat
+  ) {
+    ThreadUtils.assertMainThread()
+    val event =
+        VirtualViewKeyboardFocusChangedEvent(host, nodeInfo, virtualViewId, hasFocus, superDelegate)
+    eventHandler.dispatchEvent(event)
+  }
+
+  @JvmStatic
+  fun dispatchPerformActionForVirtualView(
+      eventHandler: EventHandler<PerformActionForVirtualViewEvent>,
+      host: View,
+      nodeInfo: AccessibilityNodeInfoCompat,
+      virtualViewId: Int,
+      action: Int,
+      arguments: Bundle?
+  ): Boolean {
+    ThreadUtils.assertMainThread()
+    val event = PerformActionForVirtualViewEvent(host, nodeInfo, virtualViewId, action, arguments)
+    val returnValue = eventHandler.dispatchEvent(event)
+    return returnValue is Boolean && returnValue
   }
 }

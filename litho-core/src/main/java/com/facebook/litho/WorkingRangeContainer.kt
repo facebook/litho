@@ -173,7 +173,7 @@ class WorkingRangeContainer {
   }
 
   /** A tuple that stores raw data of a working range registration. */
-  internal class Registration(
+  class Registration(
       @JvmField val name: String,
       @JvmField val workingRange: WorkingRange,
       @JvmField val scopedComponentInfo: ScopedComponentInfo

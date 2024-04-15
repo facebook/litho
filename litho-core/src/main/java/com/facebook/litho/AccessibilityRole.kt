@@ -28,7 +28,7 @@ import androidx.annotation.StringDef
  */
 object AccessibilityRole {
 
-  const val NONE = ""
+  const val NONE = "android.view.View"
   const val BUTTON = "android.widget.Button"
   const val CHECK_BOX = "android.widget.CompoundButton"
   const val DROP_DOWN_LIST = "android.widget.Spinner"

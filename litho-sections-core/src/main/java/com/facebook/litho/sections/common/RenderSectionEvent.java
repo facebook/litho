@@ -18,6 +18,7 @@ package com.facebook.litho.sections.common;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.sections.Children;
 
 /**
@@ -25,7 +26,7 @@ import com.facebook.litho.sections.Children;
  * com.facebook.litho.sections.annotations.GroupSectionSpec} to render the section of the {@link
  * com.facebook.litho.sections.fb.datasources.GraphQLRootQuerySectionSpec} result.
  */
-@Event(returnType = Children.class)
+@Event(returnType = Children.class, mode = EventHandlerRebindMode.NONE)
 public class RenderSectionEvent {
 
   public enum FetchState {

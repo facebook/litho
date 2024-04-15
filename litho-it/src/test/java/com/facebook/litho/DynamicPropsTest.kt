@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.View
@@ -30,14 +31,17 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.widget.DynamicPropsResetValueTester
 import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec
 import com.facebook.rendercore.MountItem
 import com.facebook.rendercore.primitives.ExactSizeConstraintsLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
+import com.facebook.yoga.YogaAlign
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -52,7 +56,8 @@ class DynamicPropsTest {
 
   private lateinit var context: ComponentContext
 
-  val config = ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build()
+  val config =
+      ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true)
 
   @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
 
@@ -329,7 +334,7 @@ class DynamicPropsTest {
     val mountDelegateTarget = legacyLithoViewRule.lithoView.mountDelegateTarget
     var text1HostId: Long = -1
     var text2HostId: Long = -1
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       if (mountItem != null) {
         val unit = LithoRenderUnit.getRenderUnit(mountItem)
@@ -347,7 +352,7 @@ class DynamicPropsTest {
     lateinit var text2HostComponent: HostComponent
     lateinit var text1Host: ComponentHost
     lateinit var text2Host: ComponentHost
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       if (mountItem != null) {
         val unit = LithoRenderUnit.getRenderUnit(mountItem)
@@ -370,7 +375,7 @@ class DynamicPropsTest {
     lateinit var stateUpdateText2HostComponent: HostComponent
     lateinit var stateUpdateText1Host: ComponentHost
     lateinit var stateUpdateText2Host: ComponentHost
-    for (i in 0 until mountDelegateTarget.mountItemCount) {
+    for (i in 0 until mountDelegateTarget.getMountItemCount()) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
       if (mountItem != null) {
         val unit = LithoRenderUnit.getRenderUnit(mountItem)
@@ -434,15 +439,273 @@ class DynamicPropsTest {
     alphaDV.set(1f)
     assertThat(hostView.alpha).isEqualTo(1f)
   }
+
+  @Test
+  fun testCommonPropsDontDisappearAfterUpdateFromSpecGeneratedComponentUsingWrapperWithDynamicProps() {
+    val alphaDV = DynamicValue(0.5f)
+    val component1 =
+        Wrapper.create(context)
+            .delegate(
+                Row.create(context)
+                    .alignContent(YogaAlign.CENTER)
+                    .widthPx(80)
+                    .heightPx(80)
+                    .backgroundColor(Color.RED)
+                    .build())
+            .kotlinStyle(Style.alpha(alphaDV))
+            .build()
+    val component2 =
+        Wrapper.create(context)
+            .delegate(
+                Row.create(context)
+                    .alignContent(YogaAlign.STRETCH)
+                    .widthPx(80)
+                    .heightPx(80)
+                    .backgroundColor(Color.RED)
+                    .build())
+            .kotlinStyle(Style.alpha(alphaDV))
+            .build()
+    legacyLithoViewRule
+        .setRoot(component1)
+        .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
+        .attachToWindow()
+        .measure()
+        .layout()
+    val lithoView = legacyLithoViewRule.lithoView
+
+    // Ensure we have one view.
+    assertThat(lithoView.childCount).isEqualTo(1)
+    var hostView = lithoView.getChildAt(0)
+
+    // Ensure alpha DV is correct
+    assertThat(hostView.alpha).isEqualTo(0.5f)
+
+    // Ensure background attribute is present and has the correct value.
+    assertThat(hostView.background).isNotNull
+    assertThat((hostView.background as ColorDrawable).color).isEqualTo(Color.RED)
+
+    // Mount component2, which is identical to component1, except with a different yoga align,
+    // invoking an update sequence.
+    legacyLithoViewRule.setRoot(component2)
+
+    // Grab the host again
+    hostView = lithoView.getChildAt(0)
+
+    // Ensure the DV is properly applied on the view
+    assertThat(hostView.alpha).isEqualTo(0.5f)
+
+    // Ensure background attribute is present and has the correct value.
+    assertThat(hostView.background).isNotNull
+    assertThat((hostView.background as ColorDrawable).color).isEqualTo(Color.RED)
+  }
+
+  @Test
+  fun testCommonPropsDontDisappearAfterUpdateFromPrimitiveComponentUsingWrapperWithDynamicProps() {
+    val alphaDV = DynamicValue(0.5f)
+    val component1 =
+        Wrapper.create(context)
+            .delegate(
+                SimpleTestPrimitiveComponent(
+                    contentDescription = "A",
+                    style = Style.width(80.px).height(80.px).backgroundColor(Color.RED)))
+            .kotlinStyle(Style.alpha(alphaDV))
+            .build()
+    val component2 =
+        Wrapper.create(context)
+            .delegate(
+                SimpleTestPrimitiveComponent(
+                    contentDescription = "B",
+                    style = Style.width(80.px).height(80.px).backgroundColor(Color.RED)))
+            .kotlinStyle(Style.alpha(alphaDV))
+            .build()
+    legacyLithoViewRule
+        .setRoot(component1)
+        .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
+        .attachToWindow()
+        .measure()
+        .layout()
+    val lithoView = legacyLithoViewRule.lithoView
+
+    // Ensure we have one view.
+    assertThat(lithoView.childCount).isEqualTo(1)
+    var hostView = lithoView.getChildAt(0)
+
+    // Ensure alpha DV is correct
+    assertThat(hostView.alpha).isEqualTo(0.5f)
+
+    // Ensure background attribute is present and has the correct value.
+    assertThat(hostView.background).isNotNull
+    assertThat((hostView.background as ColorDrawable).color).isEqualTo(Color.RED)
+
+    // Mount component2, which is identical to component1, except with a different content
+    // description, invoking an update sequence.
+    legacyLithoViewRule.setRoot(component2)
+
+    // Grab the host again
+    hostView = lithoView.getChildAt(0)
+
+    // Ensure the DV is properly applied on the view
+    assertThat(hostView.alpha).isEqualTo(0.5f)
+
+    // Ensure background attribute is present and has the correct value.
+    assertThat(hostView.background).isNotNull
+    assertThat((hostView.background as ColorDrawable).color).isEqualTo(Color.RED)
+  }
+
+  @Test
+  fun testPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
+    val alphaDV1 = DynamicValue(1f)
+    var lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                SimpleTestPrimitiveComponent(
+                    style = Style.width(80.px).height(80.px).alpha(alphaDV1)))
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+
+    // simulate update
+    val alphaDV2 = DynamicValue(1f)
+    lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                SimpleTestPrimitiveComponent(
+                    style = Style.width(80.px).height(80.px).alpha(alphaDV2)))
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from the old DV and subscribe to the new DV
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+
+    lithoView.unmountAllItems()
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from all DVs
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+  }
+
+  @Test
+  fun testWrappedPrimitiveWithDynamicValueIsCorrectlyUnsubscribed() {
+    val alphaDV1 = DynamicValue(1f)
+    var lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                Wrapper.create(context)
+                    .delegate(
+                        SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
+                    .kotlinStyle(Style.alpha(alphaDV1))
+                    .build())
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+
+    // simulate update
+    val alphaDV2 = DynamicValue(1f)
+    lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                Wrapper.create(context)
+                    .delegate(
+                        SimpleTestPrimitiveComponent(style = Style.width(80.px).height(80.px)))
+                    .kotlinStyle(Style.alpha(alphaDV2))
+                    .build())
+            .measure()
+            .layout()
+            .lithoView
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from the old DV and subscribe to the new DV
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+
+    lithoView.unmountAllItems()
+    legacyLithoViewRule.idle()
+
+    // should unsubscribe from all DVs
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+  }
+
+  @Test
+  fun testDynamicValueIsCorrectlyUnsubscribedForIncrementalMount() {
+    val alphaDV1 = DynamicValue(1f)
+    val alphaDV2 = DynamicValue(1f)
+    val component =
+        object : KComponent() {
+          override fun ComponentScope.render(): Component? {
+            return Column {
+              child(
+                  SimpleTestPrimitiveComponent(
+                      style = Style.width(10.px).height(10.px).alpha(alphaDV1)))
+              child(Row(style = Style.width(10.px).height(10.px).alpha(alphaDV2)) {})
+            }
+          }
+        }
+    legacyLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(exactly(1_000), exactly(1_000))
+        .measure()
+        .layout()
+    val lithoView = legacyLithoViewRule.lithoView
+
+    // mount rect that is above both components so none of them is visible
+    lithoView.mountComponent(Rect(0, -50, 10, -20), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+
+    // mount that covers only the first of two components
+    lithoView.mountComponent(Rect(0, 0, 10, 5), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+
+    // mount rect that covers both components
+    lithoView.mountComponent(Rect(0, 5, 10, 15), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(1)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+
+    // mount rect that covers only the second of two components
+    lithoView.mountComponent(Rect(0, 15, 10, 20), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(1)
+
+    // mount rect that is below both components so none of them is visible
+    lithoView.mountComponent(Rect(0, 40, 10, 50), true)
+    assertThat(alphaDV1.numberOfListeners).isEqualTo(0)
+    assertThat(alphaDV2.numberOfListeners).isEqualTo(0)
+  }
 }
 
 private class SimpleTestPrimitiveComponent(
+    private val contentDescription: String? = null,
     private val style: Style? = null,
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
         layoutBehavior = ExactSizeConstraintsLayoutBehavior,
-        mountBehavior = MountBehavior(ViewAllocator { context -> View(context) }) {},
+        mountBehavior =
+            MountBehavior(ViewAllocator { context -> View(context) }) {
+              bind(contentDescription) { content ->
+                content.contentDescription = contentDescription
+                onUnbind { content.contentDescription = null }
+              }
+            },
         style)
   }
 }

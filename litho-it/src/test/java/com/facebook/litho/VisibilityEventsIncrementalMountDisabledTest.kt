@@ -66,7 +66,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleEvent() {
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -92,7 +92,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleEventWithHeightRatio() {
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -131,7 +131,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleEventWithWidthRatio() {
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -160,7 +160,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleEventWithHeightAndWidthRatio() {
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -202,7 +202,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testFocusedOccupiesHalfViewport() {
     val content = TestViewComponent.create(context).build()
-    val focusedEventHandler = EventHandler<FocusedVisibleEvent>(content, 2)
+    val focusedEventHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -229,7 +229,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testFocusedOccupiesLessThanHalfViewport() {
     val content = TestViewComponent.create(context).build()
-    val focusedEventHandler = EventHandler<FocusedVisibleEvent>(content, 2)
+    val focusedEventHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -256,8 +256,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testMultipleFocusAndUnfocusEvents() {
     val content = TestViewComponent.create(context).build()
-    val focusedHandler = EventHandler<FocusedVisibleEvent>(content, 2)
-    val unfocusedHandler = EventHandler<UnfocusedVisibleEvent>(content, 3)
+    val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(2, content)
+    val unfocusedHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(3, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -302,7 +302,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testFullImpressionEvent() {
     val content = TestViewComponent.create(context).build()
-    val fullImpressionVisibleEvent = EventHandler<FullImpressionVisibleEvent>(content, 2)
+    val fullImpressionVisibleEvent =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(2, content)
     ComponentTestHelper.mountComponent(
         context,
         lithoView,
@@ -325,7 +326,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibility1fTop() {
     val content = TestViewComponent.create(context).build()
-    val visibleEvent = EventHandler<VisibleEvent>(content, 2)
+    val visibleEvent = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     ComponentTestHelper.mountComponent(
         context,
         lithoView,
@@ -349,7 +350,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibility1fBottom() {
     val content = TestViewComponent.create(context).build()
-    val visibleEvent = EventHandler<VisibleEvent>(content, 2)
+    val visibleEvent = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     ComponentTestHelper.mountComponent(
         context,
         lithoView,
@@ -372,7 +373,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testInvisibleEvent() {
     val content = TestViewComponent.create(context).build()
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(content, 2)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -398,7 +399,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleRectChangedEventItemVisible() {
     val content = TestViewComponent.create(context).build()
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content, 3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -443,7 +444,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleRectChangedEventItemNotVisible() {
     val content = TestViewComponent.create(context).build()
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content, 3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -475,7 +476,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleRectChangedEventLargeView() {
     val content = TestViewComponent.create(context).build()
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content, 3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -520,8 +521,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testVisibleAndInvisibleEvents() {
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, content)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -561,10 +562,10 @@ class VisibilityEventsIncrementalMountDisabledTest {
     val content1 = TestViewComponent.create(context).build()
     val content2 = TestViewComponent.create(context).build()
     val content3 = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(content1, 1)
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(content2, 2)
-    val visibleEventHandler3 = EventHandler<VisibleEvent>(content3, 3)
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content3, 4)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, content1)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(2, content2)
+    val visibleEventHandler3 = EventHandlerTestUtil.create<VisibleEvent>(3, content3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(4, content3)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -628,12 +629,12 @@ class VisibilityEventsIncrementalMountDisabledTest {
     val content1 = TestViewComponent.create(context).build()
     val content2 = TestViewComponent.create(context).build()
     val content3 = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(content1, 1)
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(content2, 2)
-    val visibleEventHandler3 = EventHandler<VisibleEvent>(content3, 3)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(content1, 1)
-    val invisibleEventHandler2 = EventHandler<InvisibleEvent>(content2, 2)
-    val invisibleEventHandler3 = EventHandler<InvisibleEvent>(content3, 3)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, content1)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(2, content2)
+    val visibleEventHandler3 = EventHandlerTestUtil.create<VisibleEvent>(3, content3)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(1, content1)
+    val invisibleEventHandler2 = EventHandlerTestUtil.create<InvisibleEvent>(2, content2)
+    val invisibleEventHandler3 = EventHandlerTestUtil.create<InvisibleEvent>(3, content3)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -738,12 +739,12 @@ class VisibilityEventsIncrementalMountDisabledTest {
     val content1 = TestViewComponent.create(context).key("tc1").build()
     val content2 = TestViewComponent.create(context).key("tc2").build()
     val content3 = TestViewComponent.create(context).key("tc3").build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(content1, 1)
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(content2, 2)
-    val visibleEventHandler3 = EventHandler<VisibleEvent>(content3, 3)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(content1, 1)
-    val invisibleEventHandler2 = EventHandler<InvisibleEvent>(content2, 2)
-    val invisibleEventHandler3 = EventHandler<InvisibleEvent>(content3, 3)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, content1)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(2, content2)
+    val visibleEventHandler3 = EventHandlerTestUtil.create<VisibleEvent>(3, content3)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(1, content1)
+    val invisibleEventHandler2 = EventHandlerTestUtil.create<InvisibleEvent>(2, content2)
+    val invisibleEventHandler3 = EventHandlerTestUtil.create<InvisibleEvent>(3, content3)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -916,12 +917,12 @@ class VisibilityEventsIncrementalMountDisabledTest {
     val content1 = TestViewComponent.create(context).key("tc1").build()
     val content2 = TestViewComponent.create(context).key("tc2").build()
     val content3 = TestViewComponent.create(context).key("tc3").build()
-    val focusedEventHandler1 = EventHandler<FocusedVisibleEvent>(content1, 1)
-    val focusedEventHandler2 = EventHandler<FocusedVisibleEvent>(content2, 2)
-    val focusedEventHandler3 = EventHandler<FocusedVisibleEvent>(content3, 3)
-    val unfocusedEventHandler1 = EventHandler<UnfocusedVisibleEvent>(content1, 4)
-    val unfocusedEventHandler2 = EventHandler<UnfocusedVisibleEvent>(content2, 5)
-    val unfocusedEventHandler3 = EventHandler<UnfocusedVisibleEvent>(content3, 6)
+    val focusedEventHandler1 = EventHandlerTestUtil.create<FocusedVisibleEvent>(1, content1)
+    val focusedEventHandler2 = EventHandlerTestUtil.create<FocusedVisibleEvent>(2, content2)
+    val focusedEventHandler3 = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, content3)
+    val unfocusedEventHandler1 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(4, content1)
+    val unfocusedEventHandler2 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(5, content2)
+    val unfocusedEventHandler3 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(6, content3)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -993,7 +994,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testDetachWithReleasedTreeTriggersInvisibilityItems() {
     val content = TestViewComponent.create(context).build()
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(content, 2)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -1015,10 +1016,10 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testSetComponentWithDifferentKeyGeneratesVisibilityEvents() {
     val component1 = TestViewComponent.create(context).key("component1").build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(component1, 1)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(component1, 2)
-    val focusedEventHandler1 = EventHandler<FocusedVisibleEvent>(component1, 3)
-    val unfocusedEventHandler1 = EventHandler<UnfocusedVisibleEvent>(component1, 4)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, component1)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(2, component1)
+    val focusedEventHandler1 = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, component1)
+    val unfocusedEventHandler1 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(4, component1)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -1038,7 +1039,7 @@ class VisibilityEventsIncrementalMountDisabledTest {
     assertThat(component1.dispatchedEventHandlers).contains(visibleEventHandler1)
     assertThat(component1.dispatchedEventHandlers).contains(focusedEventHandler1)
     val component2 = TestViewComponent.create(context).key("component2").build()
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(component2, 3)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(3, component2)
     lithoView.componentTree =
         ComponentTree.create(
                 context,
@@ -1060,8 +1061,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testRemovingComponentTriggersInvisible() {
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, content)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
     val wrappedContent =
         Wrapper.create(context)
             .delegate(content)
@@ -1094,21 +1095,24 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testMultipleVisibilityEventsOnSameNode() {
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(content, 1)
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(content, 2)
-    val visibleEventHandler3 = EventHandler<VisibleEvent>(content, 3)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(content, 4)
-    val invisibleEventHandler2 = EventHandler<InvisibleEvent>(content, 5)
-    val invisibleEventHandler3 = EventHandler<InvisibleEvent>(content, 6)
-    val focusedEventHandler1 = EventHandler<FocusedVisibleEvent>(content, 7)
-    val focusedEventHandler2 = EventHandler<FocusedVisibleEvent>(content, 8)
-    val focusedEventHandler3 = EventHandler<FocusedVisibleEvent>(content, 9)
-    val unfocusedEventHandler1 = EventHandler<UnfocusedVisibleEvent>(content, 10)
-    val unfocusedEventHandler2 = EventHandler<UnfocusedVisibleEvent>(content, 11)
-    val unfocusedEventHandler3 = EventHandler<UnfocusedVisibleEvent>(content, 12)
-    val fullImpressionVisibleEventHandler1 = EventHandler<FullImpressionVisibleEvent>(content, 13)
-    val fullImpressionVisibleEventHandler2 = EventHandler<FullImpressionVisibleEvent>(content, 14)
-    val fullImpressionVisibleEventHandler3 = EventHandler<FullImpressionVisibleEvent>(content, 15)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, content)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(2, content)
+    val visibleEventHandler3 = EventHandlerTestUtil.create<VisibleEvent>(3, content)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(4, content)
+    val invisibleEventHandler2 = EventHandlerTestUtil.create<InvisibleEvent>(5, content)
+    val invisibleEventHandler3 = EventHandlerTestUtil.create<InvisibleEvent>(6, content)
+    val focusedEventHandler1 = EventHandlerTestUtil.create<FocusedVisibleEvent>(7, content)
+    val focusedEventHandler2 = EventHandlerTestUtil.create<FocusedVisibleEvent>(8, content)
+    val focusedEventHandler3 = EventHandlerTestUtil.create<FocusedVisibleEvent>(9, content)
+    val unfocusedEventHandler1 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(10, content)
+    val unfocusedEventHandler2 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(11, content)
+    val unfocusedEventHandler3 = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(12, content)
+    val fullImpressionVisibleEventHandler1 =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(13, content)
+    val fullImpressionVisibleEventHandler2 =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(14, content)
+    val fullImpressionVisibleEventHandler3 =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(15, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -1167,11 +1171,12 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testSetVisibilityHint() {
     val component = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(component, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(component, 2)
-    val focusedEventHandler = EventHandler<FocusedVisibleEvent>(component, 3)
-    val unfocusedEventHandler = EventHandler<UnfocusedVisibleEvent>(component, 4)
-    val fullImpressionHandler = EventHandler<FullImpressionVisibleEvent>(component, 5)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
+    val focusedEventHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, component)
+    val unfocusedEventHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(4, component)
+    val fullImpressionHandler =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(5, component)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -1207,8 +1212,9 @@ class VisibilityEventsIncrementalMountDisabledTest {
   fun testSetVisibilityHintRecursive() {
     // TODO(festevezga, T68365308) - replace with SimpleMountSpecTesterSpec
     val testComponentInner = TestDrawableComponent.create(context).build()
-    val visibleEventHandlerInner = EventHandler<VisibleEvent>(testComponentInner, 1)
-    val invisibleEventHandlerInner = EventHandler<InvisibleEvent>(testComponentInner, 2)
+    val visibleEventHandlerInner = EventHandlerTestUtil.create<VisibleEvent>(1, testComponentInner)
+    val invisibleEventHandlerInner =
+        EventHandlerTestUtil.create<InvisibleEvent>(2, testComponentInner)
     val mountedTestComponentInner: Component =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component? =
@@ -1248,10 +1254,10 @@ class VisibilityEventsIncrementalMountDisabledTest {
     val content1 = TestViewComponent.create(context).build()
     val content2 = TestViewComponent.create(context).build()
     val content3 = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(content1, 1)
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(content2, 2)
-    val visibleEventHandler3 = EventHandler<VisibleEvent>(content3, 3)
-    val visibilityChangedHandler = EventHandler<VisibilityChangedEvent>(content3, 4)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, content1)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(2, content2)
+    val visibleEventHandler3 = EventHandlerTestUtil.create<VisibleEvent>(3, content3)
+    val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(4, content3)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -1313,11 +1319,12 @@ class VisibilityEventsIncrementalMountDisabledTest {
   @Test
   fun testSetVisibilityHintIncrementalMountDisabled() {
     val component = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(component, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(component, 2)
-    val focusedEventHandler = EventHandler<FocusedVisibleEvent>(component, 3)
-    val unfocusedEventHandler = EventHandler<UnfocusedVisibleEvent>(component, 4)
-    val fullImpressionHandler = EventHandler<FullImpressionVisibleEvent>(component, 5)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
+    val focusedEventHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(3, component)
+    val unfocusedEventHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(4, component)
+    val fullImpressionHandler =
+        EventHandlerTestUtil.create<FullImpressionVisibleEvent>(5, component)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -1351,13 +1358,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
 
   @Test
   fun testVisibilityProcessingNoScrollChange() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val content = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(content, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val lithoView =
         ComponentTestHelper.mountComponent(
             context,
@@ -1383,13 +1385,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
 
   @Test
   fun visibilityProcessing_WhenViewIsFullyTranslatedOntoScreen_DispatchesFullImpressionEvent() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val content = TestViewComponent.create(context).build()
-    val fullImpressionHandler = EventHandler<FullImpressionVisibleEvent>(content, 2)
+    val fullImpressionHandler = EventHandlerTestUtil.create<FullImpressionVisibleEvent>(2, content)
     val parent = FrameLayout(context.androidContext)
     val lithoView = LithoView(context)
     val componentTree =
@@ -1404,8 +1401,8 @@ class VisibilityEventsIncrementalMountDisabledTest {
                             .heightPx(100))
                     .build())
             .incrementalMount(false)
-            .layoutDiffing(false)
-            .visibilityProcessing(true)
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(visibilityProcessingEnabled = true))
             .build()
     lithoView.componentTree = componentTree
     parent.addView(
@@ -1423,17 +1420,14 @@ class VisibilityEventsIncrementalMountDisabledTest {
       throw RuntimeException(e)
     }
 
-    // When self managing, LithoViews ignore translation when calculating the visible rect.
-    if (!ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
-      lithoView.translationY = -5f
-      assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
+    assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
+    lithoView.translationY = -5f
+    assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
 
-      // Note: there seems to be some bug where the local visible rect is off by 1px when using
-      // translation, thus this check will not work with -1
-      lithoView.translationY = -2f
-      assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
-    }
+    // Note: there seems to be some bug where the local visible rect is off by 1px when using
+    // translation, thus this check will not work with -1
+    lithoView.translationY = -2f
+    assertThat(content.dispatchedEventHandlers).doesNotContain(fullImpressionHandler)
     lithoView.translationY = 0f
     assertThat(content.dispatchedEventHandlers).contains(fullImpressionHandler)
   }

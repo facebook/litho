@@ -18,10 +18,12 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.testing.unspecified
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
-import com.facebook.yoga.YogaDirection
+import com.facebook.rendercore.SizeConstraints
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -33,31 +35,29 @@ class LithoNodeTouchExpansionTest {
 
   private lateinit var node: LithoNode
   lateinit var context: ComponentContext
-  private lateinit var layoutStateContext: LayoutStateContext
+  private lateinit var lithoLayoutContext: LithoLayoutContext
 
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    val resolveStateContext = context.setRenderStateContextForTests()
-    node =
-        requireNotNull(
-            Resolver.resolve(resolveStateContext, context, Column.create(context).build()))
-    node.mutableNodeInfo().touchHandler = EventHandler(null, 1)
-    layoutStateContext =
-        LayoutStateContext(
-            resolveStateContext.treeId,
-            resolveStateContext.cache,
+    val resolveContext = context.setRenderStateContextForTests()
+    node = requireNotNull(Resolver.resolve(resolveContext, context, Column.create(context).build()))
+    node.mutableNodeInfo().touchHandler = EventHandlerTestUtil.create(1, null)
+    lithoLayoutContext =
+        LithoLayoutContext(
+            resolveContext.treeId,
+            resolveContext.cache,
             context,
-            resolveStateContext.treeState,
-            resolveStateContext.layoutVersion,
-            resolveStateContext.rootComponentId,
-            resolveStateContext.isAccessibilityEnabled,
+            resolveContext.treeState,
+            resolveContext.layoutVersion,
+            resolveContext.rootComponentId,
+            resolveContext.isAccessibilityEnabled,
             LayoutCache(),
             null,
             null)
   }
 
-  private fun setDirection(direction: YogaDirection): LithoNodeTouchExpansionTest {
+  private fun setDirection(direction: LayoutDirection): LithoNodeTouchExpansionTest {
     node.layoutDirection(direction)
     return this
   }
@@ -68,10 +68,14 @@ class LithoNodeTouchExpansionTest {
   }
 
   private fun calculateLayout(): LithoLayoutResult? {
-    val context =
-        LayoutContext(
-            context.androidContext, LithoRenderContext(layoutStateContext), 0, LayoutCache(), null)
-    return node.calculateLayout(context, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
+    val context = LayoutContext(context.androidContext, lithoLayoutContext, 0, LayoutCache(), null)
+    return node.calculateLayout(
+        context,
+        SizeConstraints.fromMeasureSpecs(
+            widthSpec = unspecified(),
+            heightSpec = unspecified(),
+        ),
+    )
   }
 
   @Test
@@ -125,7 +129,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionLeftWithDefinedStartInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.START, 5)
             .touchExpansionPx(YogaEdge.LEFT, 10)
             .calculateLayout()
@@ -135,7 +139,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionLeftWithDefinedEndInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.END, 5)
             .touchExpansionPx(YogaEdge.LEFT, 10)
             .calculateLayout()
@@ -165,7 +169,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionRightWithDefinedStartInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.START, 5)
             .touchExpansionPx(YogaEdge.RIGHT, 10)
             .calculateLayout()
@@ -175,7 +179,7 @@ class LithoNodeTouchExpansionTest {
   @Test
   fun testTouchExpansionRightWithDefinedEndInRtl() {
     val result =
-        setDirection(YogaDirection.RTL)
+        setDirection(LayoutDirection.RTL)
             .touchExpansionPx(YogaEdge.END, 5)
             .touchExpansionPx(YogaEdge.RIGHT, 10)
             .calculateLayout()

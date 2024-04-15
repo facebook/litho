@@ -17,7 +17,6 @@
 package com.facebook.rendercore.testing;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.LayoutResult;
@@ -27,6 +26,7 @@ import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.ResolveContext;
+import com.facebook.rendercore.ResolveResult;
 import com.facebook.rendercore.RootHost;
 import java.util.List;
 
@@ -128,7 +128,8 @@ public class RendercoreTestDriver {
     public void render() {
       if (mRootHost == null) {
         throw new IllegalArgumentException(
-            "RootHost is null. If you're using RenderTreeHost, call renderWithRenderTree() instead.");
+            "RootHost is null. If you're using RenderTreeHost, call renderWithRenderTree()"
+                + " instead.");
       }
 
       View rootHostAsView = (View) mRootHost;
@@ -146,7 +147,8 @@ public class RendercoreTestDriver {
                     Object nextState) {}
 
                 @Override
-                public void commitToUI(RenderTree tree, Object o) {}
+                public void commitToUI(
+                    @Nullable RenderTree tree, @Nullable Object o, int frameVersion) {}
               },
               null,
               null);
@@ -172,7 +174,7 @@ public class RendercoreTestDriver {
       Context context = rootHostAsView.getContext();
       RenderResult renderResult =
           RenderResult.render(
-              context, createLazyTree(mRootNode), null, null, null, -1, mWidthSpec, mHeightSpec);
+              context, new ResolveResult(mRootNode), null, null, null, -1, mWidthSpec, mHeightSpec);
 
       mRenderTreeHost.setRenderTree(renderResult.getRenderTree());
 
@@ -184,12 +186,12 @@ public class RendercoreTestDriver {
     private static RenderState.ResolveFunc createLazyTree(final Node rootNode) {
       return new RenderState.ResolveFunc() {
         @Override
-        public Pair<Node, Object> resolve(
+        public ResolveResult resolve(
             ResolveContext resolveContext,
             @Nullable Node committedTree,
             @Nullable Object committedState,
             List stateUpdatesToApply) {
-          return new Pair<>(rootNode, null);
+          return new ResolveResult<>(rootNode, null);
         }
       };
     }

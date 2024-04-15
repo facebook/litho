@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnEvent;
@@ -151,7 +152,8 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "private <T extends java.lang.CharSequence> void testEventMethod1(\n"
-                + "    com.facebook.litho.HasEventDispatcher _abstract, com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.HasEventDispatcher _abstract,"
+                + " com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  TestStateContainer _state = getStateContainerImpl(c);\n"
@@ -170,7 +172,8 @@ public class EventGeneratorTest {
             "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstract,\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
-                + "  TestStateContainer _state = getStateContainerWithLazyStateUpdatesApplied(c, _ref);\n"
+                + "  TestStateContainer _state = getStateContainerWithLazyStateUpdatesApplied(c,"
+                + " _ref);\n"
                 + "  TestSpec.testEventMethod2(\n"
                 + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
@@ -187,21 +190,23 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(\n"
+            "public static <T extends java.lang.CharSequence>"
+                + " com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(\n"
                 + "    com.facebook.litho.ComponentContext c, java.lang.Object arg2, T arg3,\n"
                 + "    @androidx.annotation.Nullable T arg6) {\n"
                 + "  return newEventHandler(Test.class, \"Test\", c, -1400079064, new Object[] {\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
                 + "        arg6,\n"
-                + "      });\n"
+                + "      }, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, null);\n"
+                + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, null,"
+                + " com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -210,7 +215,8 @@ public class EventGeneratorTest {
     assertThat(EventGenerator.generateDispatchOnEventImpl(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected java.lang.Object dispatchOnEventImpl(final com.facebook.litho.EventHandler eventHandler,\n"
+                + "protected java.lang.Object dispatchOnEventImpl(final"
+                + " com.facebook.litho.EventHandler eventHandler,\n"
                 + "    final java.lang.Object eventState) {\n"
                 + "  int id = eventHandler.id;\n"
                 + "  switch (id) {\n"
@@ -219,7 +225,8 @@ public class EventGeneratorTest {
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "      testEventMethod1(\n"
                 + "            eventHandler.dispatchInfo.hasEventDispatcher,\n"
-                + "            (com.facebook.litho.ComponentContext) eventHandler.dispatchInfo.componentContext,\n"
+                + "            (com.facebook.litho.ComponentContext)"
+                + " eventHandler.dispatchInfo.componentContext,\n"
                 + "            (java.lang.Object) eventHandler.params[0],\n"
                 + "            (java.lang.CharSequence) eventHandler.params[1],\n"
                 + "            (java.lang.CharSequence) eventHandler.params[2]);\n"
@@ -230,12 +237,15 @@ public class EventGeneratorTest {
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "      testEventMethod2(\n"
                 + "            eventHandler.dispatchInfo.hasEventDispatcher,\n"
-                + "            (com.facebook.litho.ComponentContext) eventHandler.dispatchInfo.componentContext);\n"
+                + "            (com.facebook.litho.ComponentContext)"
+                + " eventHandler.dispatchInfo.componentContext);\n"
                 + "      return null;\n"
                 + "    }\n"
                 + "    // __internalOnErrorHandler\n"
                 + "    case -1048037474: {\n"
-                + "      dispatchErrorEvent((com.facebook.litho.ComponentContext) eventHandler.dispatchInfo.componentContext, (com.facebook.litho.ErrorEvent) eventState);\n"
+                + "      dispatchErrorEvent((com.facebook.litho.ComponentContext)"
+                + " eventHandler.dispatchInfo.componentContext, (com.facebook.litho.ErrorEvent)"
+                + " eventState);\n"
                 + "      return null;\n"
                 + "    }\n"
                 + "    default:\n"
@@ -252,7 +262,8 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@androidx.annotation.Nullable\n"
-                + "public static com.facebook.litho.EventHandler<java.lang.Object> getObjectHandler(\n"
+                + "public static com.facebook.litho.EventHandler<java.lang.Object>"
+                + " getObjectHandler(\n"
                 + "    com.facebook.litho.ComponentContext context) {\n"
                 + "  if (context.getComponentScope() == null) {\n"
                 + "    return null;\n"
@@ -268,13 +279,13 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs()).hasSize(1);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "static java.lang.Object dispatchObject(com.facebook.litho.EventHandler _eventHandler, int field1,\n"
+            "static java.lang.Object dispatchObject(com.facebook.litho.EventHandler _eventHandler,"
+                + " int field1,\n"
                 + "    int field2) {\n"
                 + "  final java.lang.Object _eventState = new java.lang.Object();\n"
                 + "  _eventState.field1 = field1;\n"
                 + "  _eventState.field2 = field2;\n"
-                + "  com.facebook.litho.EventDispatcher _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();\n"
-                + "  return (java.lang.Object) _dispatcher.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "  return (java.lang.Object) _eventHandler.dispatchEvent(_eventState);\n"
                 + "}\n");
   }
 
@@ -298,12 +309,12 @@ public class EventGeneratorTest {
     TypeSpecDataHolder dataHolder = EventGenerator.generateEventDispatchers(mMockSpecModel);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "static java.lang.Object dispatchObject(com.facebook.litho.EventHandler _eventHandler,\n"
+            "static java.lang.Object dispatchObject(com.facebook.litho.EventHandler"
+                + " _eventHandler,\n"
                 + "    java.util.List field1) {\n"
                 + "  final java.lang.Object _eventState = new java.lang.Object();\n"
                 + "  _eventState.field1 = field1;\n"
-                + "  com.facebook.litho.EventDispatcher _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();\n"
-                + "  return (java.lang.Object) _dispatcher.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "  return (java.lang.Object) _eventHandler.dispatchEvent(_eventState);\n"
                 + "}\n");
   }
 
@@ -323,12 +334,14 @@ public class EventGeneratorTest {
     assertThat(methodSpecs[0].toString())
         .isEqualTo(
             "static void dispatchCustomEvent(com.facebook.litho.EventHandler _eventHandler,\n"
-                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nullableObject) {\n"
-                + "  final com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent _eventState = new com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent();\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable"
+                + " java.lang.Object nullableObject) {\n"
+                + "  final com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent"
+                + " _eventState = new"
+                + " com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent();\n"
                 + "  _eventState.nonnullObject = nonnullObject;\n"
                 + "  _eventState.nullableObject = nullableObject;\n"
-                + "  com.facebook.litho.EventDispatcher _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();\n"
-                + "  _dispatcher.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "  _eventHandler.dispatchEvent(_eventState);\n"
                 + "}\n");
   }
 
@@ -380,6 +393,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -407,9 +421,11 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T extends FirstType, T0 extends SecondType> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(\n"
+            "public static <T extends FirstType, T0 extends SecondType>"
+                + " com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029,"
+                + " null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -460,6 +476,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -484,9 +501,11 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T extends FirstType> com.facebook.litho.EventHandler<EventClass<T>> onEvent(\n"
+            "public static <T extends FirstType> com.facebook.litho.EventHandler<EventClass<T>>"
+                + " onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029,"
+                + " null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -526,6 +545,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -555,7 +575,8 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T, T0> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029,"
+                + " null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -629,6 +650,7 @@ public class EventGeneratorTest {
             types,
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -659,11 +681,13 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T, P extends java.util.Set, F extends FirstType, S extends SecondType> com.facebook.litho.EventHandler<EventClass<F, S>> onEvent(\n"
+            "public static <T, P extends java.util.Set, F extends FirstType, S extends SecondType>"
+                + " com.facebook.litho.EventHandler<EventClass<F, S>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c, P param1) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029,"
+                + " new Object[] {\n"
                 + "        param1,\n"
-                + "      });\n"
+                + "      }, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 
@@ -706,6 +730,7 @@ public class EventGeneratorTest {
             ImmutableList.of(),
             params,
             new Object(),
+            new EventMethod(EventHandlerRebindMode.REBIND),
             eventModel);
 
     MethodSpec method =
@@ -730,9 +755,11 @@ public class EventGeneratorTest {
 
     assertThat(method.toString())
         .isEqualTo(
-            "public static <T extends java.lang.Integer> com.facebook.litho.EventHandler<EventClass<T>> onEvent(\n"
+            "public static <T extends java.lang.Integer>"
+                + " com.facebook.litho.EventHandler<EventClass<T>> onEvent(\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029,"
+                + " null, com.facebook.litho.annotations.EventHandlerRebindMode.REBIND);\n"
                 + "}\n");
   }
 }

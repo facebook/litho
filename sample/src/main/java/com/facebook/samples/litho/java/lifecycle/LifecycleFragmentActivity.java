@@ -25,8 +25,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 import com.facebook.samples.litho.R;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,8 +35,8 @@ public class LifecycleFragmentActivity extends NavigatableDemoActivity {
 
   private static final AtomicInteger mId = new AtomicInteger(0);
   private LithoView mLithoView;
-  private final LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate =
-      new LithoLifecycleProviderDelegate();
+  private final LithoVisibilityEventsControllerDelegate mLithoLifecycleProviderDelegate =
+      new LithoVisibilityEventsControllerDelegate();
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
 
   @Override

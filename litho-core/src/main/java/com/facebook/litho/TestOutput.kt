@@ -25,8 +25,7 @@ import androidx.annotation.VisibleForTesting
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 class TestOutput {
-  var testKey: String? = null
-  var hostMarker: Long = -1
+  var testKey: String = ""
   var layoutOutputId: Long = -1
   private val _bounds = Rect()
   var bounds: Rect

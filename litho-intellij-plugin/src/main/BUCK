@@ -8,18 +8,6 @@ load(
     "make_dep_path",
 )
 
-_CONFIG_AI222 = "fbsource//third-party/java/intellij:AI-222-config"
-
-_CONFIG_AI223 = "fbsource//third-party/java/intellij:AI-223-config"
-
-_JAVA_TARGET_SELECT = select(
-    {
-        _CONFIG_AI222: "11",
-        _CONFIG_AI223: "17",
-        "DEFAULT": "11",
-    },
-)
-
 fb_java_library(
     name = "main",
     srcs = glob(
@@ -30,10 +18,6 @@ fb_java_library(
         ],
     ),
     abi_generation_mode = "class",
-    javac = select({
-        _CONFIG_AI223: "fbcode//tools/build/buck/wrappers:javac17.sh",
-        "DEFAULT": None,
-    }),
     provided_deps = [
         ANDROID_STUDIO_PLUGIN_SDK,
     ],
@@ -42,8 +26,8 @@ fb_java_library(
         exclude = ["resources/META-INF/redsymbols.xml"],
     ),
     resources_root = "resources",
-    source = _JAVA_TARGET_SELECT,
-    target = _JAVA_TARGET_SELECT,
+    source = "17",
+    target = "17",
     visibility = ["PUBLIC"],
     deps = [
         LITHO_ANNOTATIONS_TARGET,

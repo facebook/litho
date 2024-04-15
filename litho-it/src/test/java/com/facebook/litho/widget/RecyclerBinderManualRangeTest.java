@@ -89,8 +89,8 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .estimatedViewportCount(1)
-            .rangeRatio(.5f)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().estimatedViewportCount(1).rangeRatio(0.5f).build())
             .build(mComponentContext);
 
     final List<RenderInfo> initialComponents = new ArrayList<>();
@@ -138,8 +138,8 @@ public class RecyclerBinderManualRangeTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .estimatedViewportCount(1)
-            .rangeRatio(.5f)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().estimatedViewportCount(1).rangeRatio(0.5f).build())
             .build(mComponentContext);
 
     recyclerBinder.measure(new Size(), widthSpec, heightSpec, null);
@@ -184,14 +184,16 @@ public class RecyclerBinderManualRangeTest {
   public void testCanMeasureIsUnsupported() {
     mExpectedException.expect(RuntimeException.class);
     mExpectedException.expectMessage(
-        "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to determine its size!");
+        "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to"
+            + " determine its size!");
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .estimatedViewportCount(1)
-            .rangeRatio(.5f)
-            .canMeasure(true)
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().estimatedViewportCount(1).rangeRatio(.05f).build())
             .build(mComponentContext);
+
+    recyclerBinder.setCanMeasure(true);
 
     recyclerBinder.measure(
         new Size(),

@@ -66,7 +66,9 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
     assertThat(holder.errorMessages).hasSize(1);
     assertThat(holder.errorMessages)
         .containsExactly(
-            "You need to have a method annotated with either @OnCreateLayout or @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout is what you want.");
+            "You need to have a method annotated with either @OnCreateLayout or"
+                + " @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout is"
+                + " what you want.");
   }
 
   @Test
@@ -95,7 +97,8 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
         .containsExactly(
             "All MountSpecs need to have a method annotated with @OnCreateMountContent.",
             "onCreateMountContent's return type should be either a View or a Drawable subclass.",
-            "MountSpecAnnotatorSpec does not define @OnCreateMountContent method which is required for all @MountSpecs.");
+            "MountSpecAnnotatorSpec does not define @OnCreateMountContent method which is required"
+                + " for all @MountSpecs.");
   }
 
   @Test
@@ -152,6 +155,7 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
     assertThat(holder.errorMessages)
         .containsExactly(
             "Methods in a spec must be static.",
-            "A method annotated with @OnDiff needs to return void. Note that even if your return value is a subclass of void, you should still use void as the return type.");
+            "A method annotated with @OnDiff needs to return void. Note that even if your return"
+                + " value is a subclass of void, you should still use void as the return type.");
   }
 }

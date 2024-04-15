@@ -16,8 +16,6 @@
 
 package com.facebook.litho
 
-import androidx.arch.core.util.Function
-
 /**
  * StateUpdater lets a [Component] rendered with a scoped [ComponentContext] interact with Litho's
  * state. An implementation of StateUpdater is responsible for collecting state update operations
@@ -40,7 +38,7 @@ interface StateUpdater {
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /**
@@ -52,7 +50,7 @@ interface StateUpdater {
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /**
@@ -62,7 +60,7 @@ interface StateUpdater {
   fun updateStateLazy(
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /** Same as updateStateAsync but for Hook State. */
@@ -71,7 +69,7 @@ interface StateUpdater {
       updateBlock: HookUpdater,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   /** Same as updateStateSync but for Hook State. */
@@ -80,39 +78,50 @@ interface StateUpdater {
       updateBlock: HookUpdater,
       attribution: String?,
       isCreateLayoutInProgress: Boolean,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   )
 
   fun applyLazyStateUpdatesForContainer(
       globalKey: String,
       container: StateContainer,
-      isNestedTreeContext: Boolean
-  ): StateContainer?
+      isLayoutState: Boolean
+  ): StateContainer
 
   /** Returns a Cached value that is accessible across all re-render operations. */
-  fun getCachedValue(cachedValueInputs: Any, isNestedTreeContext: Boolean): Any?
+  fun getCachedValue(
+      globalKey: String,
+      index: Int,
+      cachedValueInputs: Any,
+      isLayoutState: Boolean
+  ): Any?
 
   /** Stores a Cached value that will be accessible across all re-render operations. */
-  fun putCachedValue(cachedValueInputs: Any, cachedValue: Any?, isNestedTreeContext: Boolean)
+  fun putCachedValue(
+      globalKey: String,
+      index: Int,
+      cachedValueInputs: Any,
+      cachedValue: Any?,
+      isLayoutState: Boolean
+  )
 
   /**
    * Removes a state update that was previously enqueued if the state update has not been processed
    * yet.
    */
-  fun removePendingStateUpdate(key: String, isNestedTreeContext: Boolean)
+  fun removePendingStateUpdate(key: String, isLayoutState: Boolean)
 
   fun <T> canSkipStateUpdate(
       globalKey: String,
       hookStateIndex: Int,
       newValue: T?,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   ): Boolean
 
   fun <T> canSkipStateUpdate(
-      newValueFunction: Function<T, T>,
+      newValueFunction: (T) -> T,
       globalKey: String,
       hookStateIndex: Int,
-      isNestedTreeContext: Boolean
+      isLayoutState: Boolean
   ): Boolean
 
   fun getEventTrigger(key: String): EventTrigger<*>?

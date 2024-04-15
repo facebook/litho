@@ -43,6 +43,7 @@ import com.facebook.litho.widget.LithoViewFactory
 import com.facebook.litho.widget.MountSpecExcludeFromIncrementalMount
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecLifecycleTesterDrawable
+import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -85,7 +86,7 @@ class MountStateIncrementalMountTest {
   @Rule
   val legacyLithoViewRule =
       LegacyLithoViewRule(
-          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+          ComponentsConfiguration.defaultInstance.copy(shouldAddHostViewForRootComponent = true))
 
   @Before
   fun setup() {
@@ -180,7 +181,8 @@ class MountStateIncrementalMountTest {
             .build()
     legacyLithoViewRule.attachToWindow().setSizeSpecs(exactly(100), exactly(100)).measure()
     val info = ComponentRenderInfo.create().component(root).build()
-    val holder = ComponentTreeHolder.create().renderInfo(info).build()
+    val holder =
+        ComponentTreeHolder.create(ComponentsConfiguration.defaultInstance).renderInfo(info).build()
     holder.computeLayoutSync(context, exactly(100), exactly(100), Size())
     val lithoView = legacyLithoViewRule.lithoView
     lithoView.componentTree = holder.componentTree
@@ -606,14 +608,8 @@ class MountStateIncrementalMountTest {
    * the bounds of the component will be larger than the bounds of the view).
    */
   @Test
-  @Ignore("T146174263")
+  @Ignore("This has to be reviewed - we just ignored to unblock OSS release")
   fun testIncrementalMountVerticalDrawableStackNegativeMargin() {
-    // When self managing, LithoViews will not adhere to translation. Therefore components with
-    // negative margins + translations will not be mounted, hence this test is not relevant
-    // in this case.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
     parent.layout(0, 0, 10, 1_000)
@@ -649,13 +645,8 @@ class MountStateIncrementalMountTest {
   }
 
   @Test
-  @Ignore("T146174263")
+  @Ignore("This has to be reviewed - we just ignored to unblock OSS release")
   fun testIncrementalMountVerticalDrawableStackNegativeMargin_multipleUnmountedHosts() {
-    // When self managing, LithoViews do not adhere to translation, and so items set with negative
-    // margins won't be mounted.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val parent = FrameLayout(context.androidContext)
     parent.measure(exactly(10), exactly(1_000))
     parent.layout(0, 0, 10, 1_000)
@@ -817,11 +808,6 @@ class MountStateIncrementalMountTest {
 
   @Test
   fun testChildViewGroupIncrementallyMounted() {
-    // Incremental mounting works differently with self-managing LithoViews, so checking calls
-    // to notifyVisibleBoundsChanged is not needed.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val mountedView: ViewGroup = mock()
     whenever(mountedView.childCount).thenReturn(3)
     val childView1 = getMockLithoViewWithBounds(Rect(5, 10, 20, 30))
@@ -855,11 +841,6 @@ class MountStateIncrementalMountTest {
 
   @Test
   fun testChildViewGroupAllIncrementallyMountedNotProcessVisibilityOutputs() {
-    // Incremental mounting works differently with self-managing LithoViews, so checking calls
-    // to notifyVisibleBoundsChanged is not needed.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val mountedView: ViewGroup = mock()
     whenever(mountedView.left).thenReturn(0)
     whenever(mountedView.top).thenReturn(0)
@@ -1052,11 +1033,6 @@ class MountStateIncrementalMountTest {
    */
   @Test
   fun testIncrementalMountAfterLithoViewIsMounted() {
-    // Incremental mounting works differently with self-managing LithoViews, so checking calls
-    // to notifyVisibleBoundsChanged is not needed.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val lithoView: LithoView = mock()
     whenever(lithoView.isIncrementalMountEnabled).thenReturn(true)
     val viewGroup = ViewGroupWithLithoViewChildren(context.androidContext)
@@ -1130,11 +1106,6 @@ class MountStateIncrementalMountTest {
 
   @Test
   fun incrementalMount_dirtyMount_unmountItemsOffScreen_withTranslation() {
-    // When self-managing LithoViews, translation is ignored. Therefore, this test is redundant
-    // when the config is enabled.
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return
-    }
     val info_child1 = LifecycleTracker()
     val info_child2 = LifecycleTracker()
     val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
@@ -1171,8 +1142,8 @@ class MountStateIncrementalMountTest {
   fun incrementalMount_setVisibilityHintFalse_preventMount() {
     val child1 = TestViewComponent.create(context).build()
     val child2 = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandler<VisibleEvent>(child1, 1)
-    val invisibleEventHandler = EventHandler<InvisibleEvent>(child1, 2)
+    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, child1)
+    val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, child1)
     val root =
         Column.create(context)
             .child(
@@ -1218,8 +1189,8 @@ class MountStateIncrementalMountTest {
   @Test
   fun incrementalMount_setVisibilityHintTrue_mountIfNeeded() {
     val child1 = TestViewComponent.create(context).build()
-    val visibleEventHandler1 = EventHandler<VisibleEvent>(child1, 1)
-    val invisibleEventHandler1 = EventHandler<InvisibleEvent>(child1, 2)
+    val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, child1)
+    val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(2, child1)
     val root =
         Column.create(context)
             .child(
@@ -1240,8 +1211,8 @@ class MountStateIncrementalMountTest {
     assertThat(child1.dispatchedEventHandlers).contains(visibleEventHandler1)
     lithoView.setVisibilityHint(false, true)
     val child2 = TestViewComponent.create(context).build()
-    val visibleEventHandler2 = EventHandler<VisibleEvent>(child2, 3)
-    val invisibleEventHandler2 = EventHandler<InvisibleEvent>(child2, 4)
+    val visibleEventHandler2 = EventHandlerTestUtil.create<VisibleEvent>(3, child2)
+    val invisibleEventHandler2 = EventHandlerTestUtil.create<InvisibleEvent>(4, child2)
     val newRoot =
         Column.create(context)
             .child(
@@ -1285,7 +1256,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(10))
             .build()
     val binderConfig =
-        RecyclerBinderConfiguration.create().lithoViewFactory(lithoViewFactory).build()
+        RecyclerBinderConfiguration.create()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+            .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
     val rcc =
@@ -1355,7 +1329,10 @@ class MountStateIncrementalMountTest {
             .child(Wrapper.create(context).delegate(child3).widthPx(10).heightPx(CHILD_HEIGHT))
             .build()
     val binderConfig =
-        RecyclerBinderConfiguration.create().lithoViewFactory(lithoViewFactory).build()
+        RecyclerBinderConfiguration.create()
+            .recyclerBinderConfig(
+                RecyclerBinderConfig.create().lithoViewFactory(lithoViewFactory).build())
+            .build()
     val config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build()
     val sectionContext = SectionContext(context)

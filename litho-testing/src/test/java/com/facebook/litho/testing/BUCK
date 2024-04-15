@@ -20,7 +20,6 @@ load(
     "LITHO_SECTIONS_WIDGET_TARGET",
     "LITHO_TESTING_ASSERTJ_TARGET",
     "LITHO_TESTING_TARGET",
-    "LITHO_VIEWCOMPAT_TARGET",
     "LITHO_WIDGET_KOTLIN_COLLECTION_TARGET",
     "LITHO_WIDGET_KOTLIN_TARGET",
     "LITHO_WIDGET_TARGET",
@@ -28,6 +27,8 @@ load(
     "litho_robolectric4_test",
     "make_dep_path",
 )
+
+oncall("components_for_android")
 
 litho_robolectric4_test(
     name = "testing",
@@ -41,6 +42,7 @@ litho_robolectric4_test(
     language = "KOTLIN",
     source = "8",
     target = "8",
+    target_sdk_levels = ["33"],
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ASSERTJ_TARGET,
@@ -56,7 +58,6 @@ litho_robolectric4_test(
         LITHO_SECTIONS_WIDGET_KOTLIN_TARGET,
         LITHO_TESTING_ASSERTJ_TARGET,
         LITHO_TESTING_TARGET,
-        LITHO_VIEWCOMPAT_TARGET,
         LITHO_WIDGET_KOTLIN_COLLECTION_TARGET,
         LITHO_WIDGET_KOTLIN_TARGET,
         LITHO_WIDGET_TARGET,

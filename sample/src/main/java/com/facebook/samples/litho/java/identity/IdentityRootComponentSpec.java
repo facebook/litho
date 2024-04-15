@@ -30,6 +30,7 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
 class IdentityRootComponentSpec {
@@ -58,6 +59,7 @@ class IdentityRootComponentSpec {
                     .child(
                         Text.create(c)
                             .text("X")
+                            .paddingPx(YogaEdge.START, 16)
                             .clickHandler(IdentityRootComponent.onClickRemoveFirstChild(c)))
                     .build() // end_manual_key
                 : null)
@@ -69,6 +71,7 @@ class IdentityRootComponentSpec {
                     .child(
                         Text.create(c)
                             .text("X")
+                            .paddingPx(YogaEdge.START, 16)
                             .clickHandler(IdentityRootComponent.onClickRemoveSecondChild(c)))
                     .build()
                 : null)

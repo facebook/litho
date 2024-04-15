@@ -65,11 +65,11 @@ class LegacyTreeDiffingTest {
     assertOutputsState(state, MountSpecLithoRenderUnit.STATE_UNKNOWN)
     componentTree.root = component2
     val secondState = requireNotNull(componentTree.mainThreadLayoutState)
-    assertThat(5).isEqualTo(secondState.mountableOutputCount)
+    assertThat(5).isEqualTo(secondState.getMountableOutputCount())
     assertOutputsState(secondState, MountSpecLithoRenderUnit.STATE_UPDATED)
     componentTree.root = component3
     val thirdState = requireNotNull(componentTree.mainThreadLayoutState)
-    assertThat(5).isEqualTo(thirdState.mountableOutputCount)
+    assertThat(5).isEqualTo(thirdState.getMountableOutputCount())
     assertThat(
             MountSpecLithoRenderUnit.getUpdateState(
                 requireNotNull(thirdState.getMountableOutputAt(1))))
@@ -157,7 +157,7 @@ class LegacyTreeDiffingTest {
     ) {
       assertThat(STATE_DIRTY)
           .isEqualTo(MountSpecLithoRenderUnit.getUpdateState(layoutState.getMountableOutputAt(0)))
-      for (i in 1 until layoutState.mountableOutputCount) {
+      for (i in 1 until layoutState.getMountableOutputCount()) {
         assertThat(state)
             .isEqualTo(MountSpecLithoRenderUnit.getUpdateState(layoutState.getMountableOutputAt(i)))
       }
