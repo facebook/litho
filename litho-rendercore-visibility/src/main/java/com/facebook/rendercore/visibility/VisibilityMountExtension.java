@@ -387,13 +387,27 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             }
           }
 
+          Rect transformedViewportRect = null;
+          if (focusedHandler != null
+              || unfocusedHandler != null
+              || visibilityChangedHandler != null) {
+            if (shouldUseTransformedVisibleRect && transformer != null) {
+              final Host host = getRootHost(extensionState);
+              if (host != null && (host.getParent() instanceof View)) {
+                final View parent = (View) host.getParent();
+                transformedViewportRect = transformer.getViewportRect(parent);
+              }
+            }
+          }
+
           // Check if the component has entered or exited the focused range.
           if (focusedHandler != null || unfocusedHandler != null) {
             if (isInFocusedRange(
                 extensionState,
                 visibilityOutputBounds,
                 intersection,
-                shouldUseTransformedVisibleRect)) {
+                shouldUseTransformedVisibleRect,
+                transformedViewportRect)) {
               if (!visibilityItem.isInFocusedRange()) {
                 visibilityItem.setFocusedRange(true);
                 if (focusedHandler != null) {
@@ -424,13 +438,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             final int visibleHeight = getVisibleHeight(intersection);
             int rootHostViewWidth = getRootHostViewWidth(extensionState);
             int rootHostViewHeight = getRootHostViewHeight(extensionState);
-            if (shouldUseTransformedVisibleRect && transformer != null) {
-              final Host host = getRootHost(extensionState);
-              if (host != null && (host.getParent() instanceof View)) {
-                final View parent = (View) host.getParent();
-                rootHostViewWidth = transformer.getViewportWidth(parent);
-                rootHostViewHeight = transformer.getViewportHeight(parent);
-              }
+            if (shouldUseTransformedVisibleRect && transformedViewportRect != null) {
+              rootHostViewWidth = transformedViewportRect.width();
+              rootHostViewHeight = transformedViewportRect.height();
             }
 
             VisibilityUtils.dispatchOnVisibilityChanged(
@@ -521,7 +531,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       ExtensionState<VisibilityMountExtensionState> extensionState,
       Rect componentBounds,
       Rect componentVisibleBounds,
-      boolean shouldUseTransformedVisibleRect) {
+      boolean shouldUseTransformedVisibleRect,
+      @Nullable Rect transformedViewportRect) {
     final Host host = getRootHost(extensionState);
     if (host == null) {
       return false;
@@ -534,11 +545,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       return false;
     }
 
-    final @Nullable VisibilityBoundsTransformer transformer =
-        extensionState.getState().mVisibilityBoundsTransformer;
     int halfViewportArea = parent.getWidth() * parent.getHeight() / 2;
-    if (shouldUseTransformedVisibleRect && transformer != null) {
-      halfViewportArea = transformer.getViewportArea(parent) / 2;
+    if (shouldUseTransformedVisibleRect && transformedViewportRect != null) {
+      halfViewportArea = transformedViewportRect.width() * transformedViewportRect.height() / 2;
     }
 
     final int totalComponentArea = computeRectArea(componentBounds);
