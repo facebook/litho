@@ -99,8 +99,8 @@ ext {
     targetSdkVersion = latestSdkVersion
     compileSdkVersion = latestSdkVersion
     buildToolsVersion = '33.0.2'
-    sourceCompatibilityVersion = JavaVersion.VERSION_1_8
-    targetCompatibilityVersion = JavaVersion.VERSION_1_8
+    sourceCompatibilityVersion = JavaVersion.VERSION_11
+    targetCompatibilityVersion = JavaVersion.VERSION_11
 }
 
 ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')

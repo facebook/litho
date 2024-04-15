@@ -22,8 +22,8 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    targetCompatibility = targetCompatibilityVersion
-    sourceCompatibility = sourceCompatibilityVersion
+    targetCompatibility = rootProject.targetCompatibilityVersion
+    sourceCompatibility = rootProject.sourceCompatibilityVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
