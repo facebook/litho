@@ -38,11 +38,12 @@ android {
         release {
         }
     }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
+    namespace 'com.facebook.rendercore.visibility'
+    lint {
         abortOnError false
     }
+
+    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {
