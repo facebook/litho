@@ -122,11 +122,11 @@ private fun <T> ComponentScope.createTreeProp(prop: TreeProp<out T>, value: T) {
  * registered. Tree props are registered for a sub-hierarchy via [TreePropProvider] or
  * [com.facebook.litho.annotations.OnCreateTreeProp] in the Spec API.
  */
-inline fun <reified T : Any> ComponentScope.getTreeProp(): T? = context.getTreeProp(T::class.java)
+inline fun <reified T : Any> ResourcesScope.getTreeProp(): T? = context.getTreeProp(T::class.java)
 
 /**
  * Returns the instance registered for the type [T] in this hierarchy, throws if no value was
  * registered. Tree props are registered for a sub-hierarchy via [TreePropProvider] or
  * [com.facebook.litho.annotations.OnCreateTreeProp] in the Spec API.
  */
-inline fun <reified T : Any> ComponentScope.requireTreeProp(): T = checkNotNull(getTreeProp())
+inline fun <reified T : Any> ResourcesScope.requireTreeProp(): T = checkNotNull(getTreeProp())
