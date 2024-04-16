@@ -1,0 +1,524 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Builder</title>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../../index.html">
+                            Litho
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-flexlayout:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-flexlayout::com.facebook.flexlayout.styles/FlexItemStyle.Builder///PointingToDeclaration//1225161185">
+  <div class="breadcrumbs"><a href="../../../index.html">litho-flexlayout</a><span class="delimiter">/</span><a href="../../index.html">com.facebook.flexlayout.styles</a><span class="delimiter">/</span><a href="../index.html">FlexItemStyle</a><span class="delimiter">/</span><span class="current">Builder</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Builder</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">Builder</a></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1025139524%2FConstructors%2F1225161185" anchor-label="Builder" id="-1025139524%2FConstructors%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1025139524%2FConstructors%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1964361377%2FFunctions%2F1225161185" anchor-label="serialize" id="1964361377%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="serialize.html"><span><span>serialize</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1964361377%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="serialize.html"><span class="token function">serialize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1928470324%2FFunctions%2F1225161185" anchor-label="setAlignSelf" id="-1928470324%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-align-self.html"><span>set</span><wbr><span>Align</span><wbr><span><span>Self</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1928470324%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-align-self.html"><span class="token function">setAlignSelf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">alignSelf<span class="token operator">: </span><a href="../../-align-self/index.html">AlignSelf</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="92804835%2FFunctions%2F1225161185" anchor-label="setAspectRatio" id="92804835%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-aspect-ratio.html"><span>set</span><wbr><span>Aspect</span><wbr><span><span>Ratio</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="92804835%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-aspect-ratio.html"><span class="token function">setAspectRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">aspectRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="211402796%2FFunctions%2F1225161185" anchor-label="setDisplay" id="211402796%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-display.html"><span>set</span><wbr><span><span>Display</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="211402796%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-display.html"><span class="token function">setDisplay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">display<span class="token operator">: </span><a href="../../-display/index.html">Display</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1921341331%2FFunctions%2F1225161185" anchor-label="setFlex" id="-1921341331%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flex.html"><span>set</span><wbr><span><span>Flex</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1921341331%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flex.html"><span class="token function">setFlex</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">flex<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1429169551%2FFunctions%2F1225161185" anchor-label="setFlexBasis" id="-1429169551%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flex-basis.html"><span>set</span><wbr><span>Flex</span><wbr><span><span>Basis</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1429169551%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flex-basis.html"><span class="token function">setFlexBasis</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">flexBasis<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1968723014%2FFunctions%2F1225161185" anchor-label="setFlexBasisPercent" id="1968723014%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flex-basis-percent.html"><span>set</span><wbr><span>Flex</span><wbr><span>Basis</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1968723014%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flex-basis-percent.html"><span class="token function">setFlexBasisPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">flexBasisPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1336819162%2FFunctions%2F1225161185" anchor-label="setFlexGrow" id="1336819162%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flex-grow.html"><span>set</span><wbr><span>Flex</span><wbr><span><span>Grow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1336819162%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flex-grow.html"><span class="token function">setFlexGrow</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">flexGrow<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-754718620%2FFunctions%2F1225161185" anchor-label="setFlexShrink" id="-754718620%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-flex-shrink.html"><span>set</span><wbr><span>Flex</span><wbr><span><span>Shrink</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-754718620%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-flex-shrink.html"><span class="token function">setFlexShrink</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">flexShrink<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1305045377%2FFunctions%2F1225161185" anchor-label="setHeight" id="-1305045377%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-height.html"><span>set</span><wbr><span><span>Height</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1305045377%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-height.html"><span class="token function">setHeight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1731244936%2FFunctions%2F1225161185" anchor-label="setHeightPercent" id="-1731244936%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-height-percent.html"><span>set</span><wbr><span>Height</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1731244936%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-height-percent.html"><span class="token function">setHeightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">heightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1219769154%2FFunctions%2F1225161185" anchor-label="setMargin" id="1219769154%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-margin.html"><span>set</span><wbr><span><span>Margin</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1219769154%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-margin.html"><span class="token function">setMargin</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">edge<span class="token operator">: </span><a href="../../-edge/index.html">Edge</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2081156108%2FFunctions%2F1225161185" anchor-label="setMarginAuto" id="2081156108%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-margin-auto.html"><span>set</span><wbr><span>Margin</span><wbr><span><span>Auto</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2081156108%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-margin-auto.html"><span class="token function">setMarginAuto</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">edge<span class="token operator">: </span><a href="../../-edge/index.html">Edge</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2004409495%2FFunctions%2F1225161185" anchor-label="setMarginPercent" id="-2004409495%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-margin-percent.html"><span>set</span><wbr><span>Margin</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2004409495%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-margin-percent.html"><span class="token function">setMarginPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">edge<span class="token operator">: </span><a href="../../-edge/index.html">Edge</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-911838005%2FFunctions%2F1225161185" anchor-label="setMaxHeight" id="-911838005%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-max-height.html"><span>set</span><wbr><span>Max</span><wbr><span><span>Height</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-911838005%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-max-height.html"><span class="token function">setMaxHeight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">maxHeight<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="843251884%2FFunctions%2F1225161185" anchor-label="setMaxHeightPercent" id="843251884%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-max-height-percent.html"><span>set</span><wbr><span>Max</span><wbr><span>Height</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="843251884%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-max-height-percent.html"><span class="token function">setMaxHeightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">maxHeightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="807042820%2FFunctions%2F1225161185" anchor-label="setMaxWidth" id="807042820%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-max-width.html"><span>set</span><wbr><span>Max</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="807042820%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-max-width.html"><span class="token function">setMaxWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">maxWidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1311945811%2FFunctions%2F1225161185" anchor-label="setMaxWidthPercent" id="1311945811%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-max-width-percent.html"><span>set</span><wbr><span>Max</span><wbr><span>Width</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1311945811%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-max-width-percent.html"><span class="token function">setMaxWidthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">maxWidthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-879613027%2FFunctions%2F1225161185" anchor-label="setMinHeight" id="-879613027%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-min-height.html"><span>set</span><wbr><span>Min</span><wbr><span><span>Height</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-879613027%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-min-height.html"><span class="token function">setMinHeight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">minHeight<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1902814822%2FFunctions%2F1225161185" anchor-label="setMinHeightPercent" id="-1902814822%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-min-height-percent.html"><span>set</span><wbr><span>Min</span><wbr><span>Height</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1902814822%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-min-height-percent.html"><span class="token function">setMinHeightPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">minHeightPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-715938318%2FFunctions%2F1225161185" anchor-label="setMinWidth" id="-715938318%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-min-width.html"><span>set</span><wbr><span>Min</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-715938318%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-min-width.html"><span class="token function">setMinWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">minWidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="114984357%2FFunctions%2F1225161185" anchor-label="setMinWidthPercent" id="114984357%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-min-width-percent.html"><span>set</span><wbr><span>Min</span><wbr><span>Width</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="114984357%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-min-width-percent.html"><span class="token function">setMinWidthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">minWidthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1473735833%2FFunctions%2F1225161185" anchor-label="setPosition" id="-1473735833%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-position.html"><span>set</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1473735833%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-position.html"><span class="token function">setPosition</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">edge<span class="token operator">: </span><a href="../../-edge/index.html">Edge</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="317865892%2FFunctions%2F1225161185" anchor-label="setPositionPercent" id="317865892%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-position-percent.html"><span>set</span><wbr><span>Position</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="317865892%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-position-percent.html"><span class="token function">setPositionPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">edge<span class="token operator">: </span><a href="../../-edge/index.html">Edge</a><span class="token punctuation">, </span></span><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2146580544%2FFunctions%2F1225161185" anchor-label="setPositionType" id="2146580544%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-position-type.html"><span>set</span><wbr><span>Position</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2146580544%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-position-type.html"><span class="token function">setPositionType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">positionType<span class="token operator">: </span><a href="../../-position-type/index.html">PositionType</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1625642704%2FFunctions%2F1225161185" anchor-label="setWidth" id="1625642704%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-width.html"><span>set</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1625642704%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-width.html"><span class="token function">setWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1783086855%2FFunctions%2F1225161185" anchor-label="setWidthPercent" id="1783086855%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-width-percent.html"><span>set</span><wbr><span>Width</span><wbr><span><span>Percent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1783086855%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-width-percent.html"><span class="token function">setWidthPercent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="index.html">FlexItemStyle.Builder</a><span class="token punctuation">, </span></span><span class="parameter ">widthPercent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1648560649%2FFunctions%2F1225161185" anchor-label="toString" id="-1648560649%2FFunctions%2F1225161185" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":litho-flexlayout:dokkaHtmlPartial/release" data-filterable-set=":litho-flexlayout:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-string.html"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1648560649%2FFunctions%2F1225161185"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-flexlayout:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

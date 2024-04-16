@@ -28,6 +28,10 @@ com.facebook.litho.visibility
 com.facebook.litho.yoga
 module:litho-coroutines-kotlin
 com.facebook.litho
+module:litho-flexlayout
+com.facebook.flexlayout
+com.facebook.flexlayout.layoutoutput
+com.facebook.flexlayout.styles
 module:litho-testing
 com.facebook.litho
 com.facebook.litho.componentsfinder
