@@ -41,10 +41,10 @@ kapt {
 }
 
 dependencies {
-    implementation('com.facebook.litho:litho-core:0.48.0')
-    implementation('com.facebook.litho:litho-widget:0.48.0')
-    implementation('com.facebook.litho:litho-widget-kotlin:0.48.0')
-    kapt('com.facebook.litho:litho-processor:0.48.0')
+    implementation('com.facebook.litho:litho-core:0.49.1')
+    implementation('com.facebook.litho:litho-widget:0.49.1')
+    implementation('com.facebook.litho:litho-widget-kotlin:0.49.1')
+    kapt('com.facebook.litho:litho-processor:0.49.1')
 
     implementation deps.soloader
     implementation deps.supportFragment
