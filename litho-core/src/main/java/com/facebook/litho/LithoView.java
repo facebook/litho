@@ -570,7 +570,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
         mComponentTree.clearLifecycleProvider();
       } else {
         if (mComponentTree.shouldEnableDefaultAOSPLithoLifecycleProvider() && isAttached()) {
-          mLithoLifecycleProviderHolder.attachDefaultAOSPLithoLifecycleProvider(this);
+          mLithoLifecycleProviderHolder.attachDefaultAOSPLithoVisibilityEventsController(this);
         }
       }
     }
@@ -695,7 +695,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
       if (mComponentTree != null
           && mComponentTree.shouldEnableDefaultAOSPLithoLifecycleProvider()) {
-        mLithoLifecycleProviderHolder.attachDefaultAOSPLithoLifecycleProvider(this);
+        mLithoLifecycleProviderHolder.attachDefaultAOSPLithoVisibilityEventsController(this);
       }
       subscribeHolderToParentLifecycleProvider();
     }
@@ -718,7 +718,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
     mSuppressMeasureComponentTree = false;
 
     if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      mLithoLifecycleProviderHolder.detachDefaultAOSPLithoLifecycleProvider();
+      mLithoLifecycleProviderHolder.detachDefaultAOSPLithoVisibilityEventsController();
       unsubscribeHolderFromParentLifecycleProvider();
     }
   }

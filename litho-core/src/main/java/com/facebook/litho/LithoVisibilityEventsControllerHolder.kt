@@ -16,10 +16,7 @@
 
 package com.facebook.litho
 
-import android.content.Context
-import android.content.ContextWrapper
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
 
 /**
@@ -74,32 +71,19 @@ internal class LithoVisibilityEventsControllerHolder :
   }
 
   @Synchronized
-  fun attachDefaultAOSPLithoLifecycleProvider(lithoView: LithoView) {
+  fun attachDefaultAOSPLithoVisibilityEventsController(lithoView: LithoView) {
     if (lithoView.isAttached && !hasHeldLifecycleProvider) {
-      try {
-        setHeldLifecycleProvider(
-            AOSPLithoVisibilityEventsController(FragmentManager.findFragment(lithoView)), true)
-      } catch (e: IllegalStateException) {
-        val lifecycleOwner = getLifecycleOwnerFromContext(lithoView.context)
-        if (lifecycleOwner != null) {
-          setHeldLifecycleProvider(AOSPLithoVisibilityEventsController(lifecycleOwner), true)
-        }
+      val lifecycleOwner = lithoView.findViewTreeLifecycleOwner()
+      if (lifecycleOwner != null) {
+        setHeldLifecycleProvider(AOSPLithoVisibilityEventsController(lifecycleOwner), true)
       }
     }
   }
 
   @Synchronized
-  fun detachDefaultAOSPLithoLifecycleProvider() {
+  fun detachDefaultAOSPLithoVisibilityEventsController() {
     if (isDefaultLifecycleProvider) {
       setHeldLifecycleProvider(null)
-    }
-  }
-
-  private fun getLifecycleOwnerFromContext(context: Context): LifecycleOwner? {
-    return when (context) {
-      is LifecycleOwner -> context
-      is ContextWrapper -> getLifecycleOwnerFromContext(context.baseContext)
-      else -> null
     }
   }
 
