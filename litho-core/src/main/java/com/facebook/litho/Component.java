@@ -2015,10 +2015,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
     }
 
-    /**
-     * Shadow elevation and outline provider methods are only functional on {@link
-     * android.os.Build.VERSION_CODES#LOLLIPOP} and above.
-     */
     public T shadowElevationPx(float shadowElevation) {
       mComponent.getOrCreateCommonProps().shadowElevationPx(shadowElevation);
       return getThis();
