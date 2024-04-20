@@ -143,7 +143,7 @@ ext.deps = [
         soloader           : 'com.facebook.soloader:soloader:0.10.5',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.7.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
-        flipper            : 'com.facebook.flipper:flipper:0.183.0',
+        flipper            : 'com.facebook.flipper:flipper:0.250.0',
         flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.183.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
