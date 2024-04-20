@@ -17,8 +17,8 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = rootProject.sourceCompatibilityVersion
+targetCompatibility = rootProject.targetCompatibilityVersion
 
 dependencies {
     implementation project(':litho-annotations')

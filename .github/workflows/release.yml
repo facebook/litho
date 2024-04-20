@@ -66,7 +66,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'adopt'
-        java-version: '11'
+        java-version: 17
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
@@ -95,7 +95,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'adopt'
-        java-version: '11'
+        java-version: 17
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
@@ -120,7 +120,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'adopt'
-        java-version: '11'
+        java-version: 17
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
