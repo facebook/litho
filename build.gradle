@@ -23,7 +23,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath "com.vanniktech:gradle-maven-publish-plugin:${MAVEN_PUBLISH_PLUGIN}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${DOKKA_VERSION}"
@@ -70,6 +70,18 @@ subprojects {
         }
     }
 
+    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper) {
+        kotlin {
+            jvmToolchain(11)
+        }
+    }
+
+    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper) {
+        kotlin {
+            jvmToolchain(11)
+        }
+    }
+
     afterEvaluate {
         tasks.withType(Test) {
             it.dependsOn copyYogaLibs
@@ -99,8 +111,8 @@ ext {
     targetSdkVersion = latestSdkVersion
     compileSdkVersion = latestSdkVersion
     buildToolsVersion = '33.0.2'
-    sourceCompatibilityVersion = JavaVersion.VERSION_1_8
-    targetCompatibilityVersion = JavaVersion.VERSION_1_8
+    sourceCompatibilityVersion = JavaVersion.VERSION_11
+    targetCompatibilityVersion = JavaVersion.VERSION_11
 }
 
 ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')
@@ -144,7 +156,7 @@ ext.deps = [
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.7.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
         flipper            : 'com.facebook.flipper:flipper:0.250.0',
-        flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.183.0',
+        flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.250.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
