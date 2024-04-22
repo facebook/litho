@@ -373,6 +373,7 @@ void facebook::flexlayout::algo::AlgorithmBase::calculateLayout() {
     auto flexLine = FlexLine{};
     auto mainSizeConsumedOnLine = 0.0f;
 
+    flexLine.flexItems.reserve(flexItems.size() - i);
     auto innerIndex = i;
     for (; innerIndex < flexItems.size(); ++innerIndex) {
       const auto& flexItem = flexItems.at(innerIndex);
