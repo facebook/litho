@@ -761,7 +761,9 @@ void facebook::flexlayout::algo::AlgorithmBase::calculateLayout() {
 
       const auto mainSize = isMainAxisRow ? itemLayoutAt(flexItem.index).width
                                           : itemLayoutAt(flexItem.index).height;
-      flexLine.mainDim += betweenMainDim + mainSize +
+      // Only add the space between items if it isn't the last item
+      const auto isLastItem = flexItem.index == flexLine.flexItems.back().index;
+      flexLine.mainDim += (isLastItem ? 0 : betweenMainDim) + mainSize +
           flexItem.flexItemStyle.getMarginForAxis(
               mainAxis, availableInnerWidth);
 
