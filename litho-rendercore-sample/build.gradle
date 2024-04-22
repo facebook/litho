@@ -31,11 +31,12 @@ android {
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
+    namespace 'com.facebook.rendercore.sample'
+    lint {
         abortOnError false
     }
+
+    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {

@@ -27,6 +27,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
+    namespace 'com.facebook.rendercore.incrementalmount'
 }
 
 dependencies {

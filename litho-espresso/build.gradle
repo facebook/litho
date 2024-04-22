@@ -24,10 +24,11 @@ android {
         testInstrumentationRunner 'com.facebook.litho.testing.espresso.LithoEspressoTestRunner'
         minSdkVersion rootProject.minSdkVersion
     }
-
-    lintOptions {
+    namespace 'com.facebook.litho.testing.espresso'
+    lint {
         abortOnError false
     }
+
 }
 
 dependencies {

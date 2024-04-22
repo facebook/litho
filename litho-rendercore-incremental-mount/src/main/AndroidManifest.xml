@@ -15,6 +15,5 @@
   ~ limitations under the License.
   -->
 
-<manifest
-  package="com.facebook.rendercore.incrementalmount">
+<manifest>
 </manifest>

@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+    namespace 'com.facebook.yoga'
 
     ndkVersion '26.1.10909125'
 

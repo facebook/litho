@@ -16,9 +16,7 @@
   -->
 
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.facebook.litho.it"
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
   <!-- This is the version the BUCK tests will run against to when LithoTestRunner is not specified -->
   <uses-sdk

@@ -29,9 +29,6 @@ android {
     }
 
     // TODO(#62): Re-enable abort on error.
-    lintOptions {
-        abortOnError false
-    }
 
     dependencies {
         kapt project(':litho-processor')
@@ -62,6 +59,10 @@ android {
         testImplementation deps.supportTestCore
 
         kaptTest project(':litho-processor')
+    }
+    namespace 'com.facebook.litho.editor.flipper'
+    lint {
+        abortOnError false
     }
 }
 
