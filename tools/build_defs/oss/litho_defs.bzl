@@ -176,8 +176,6 @@ LITHO_TRUTH_TARGET = make_dep_path("lib/truth:truth")
 
 LITHO_MOCKITO_V2_TARGET = make_dep_path("lib/mockito2:mockito2")
 
-LITHO_POWERMOCK_MOCKITO_V2_TARGET = make_dep_path("lib/powermock2:powermock-mockito2")
-
 LITHO_JNI_TARGET = make_dep_path("lib/jni-hack:jni-hack")
 
 LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
@@ -304,8 +302,6 @@ def litho_robolectric4_test(
         *args,
         **kwargs
     )
-
-litho_robolectric4_powermock_test = litho_robolectric4_test
 
 def fb_java_test(*args, **kwargs):
     """Uses native java_test for OSS project."""
