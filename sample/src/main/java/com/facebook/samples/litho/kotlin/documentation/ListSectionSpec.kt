@@ -33,6 +33,7 @@ import com.facebook.litho.widget.Text
 
 // start_data_type
 class Model(val id: String, val field1: String, val field2: String)
+
 // end_data_type
 
 // start_example
@@ -66,6 +67,7 @@ object ListSectionSpec {
   ): Boolean =
       // highlight-start
       previousItem.id == nextItem.id
+
   // highlight-end
 
   @OnEvent(OnCheckIsSameContentEvent::class)

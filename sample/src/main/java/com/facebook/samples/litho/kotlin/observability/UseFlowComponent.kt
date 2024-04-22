@@ -40,6 +40,7 @@ internal class UseFlowComponent(private val viewModel: FakeFlowViewModel = FakeF
     }
   }
 }
+
 // end_example
 
 internal class FakeFlowViewModel {

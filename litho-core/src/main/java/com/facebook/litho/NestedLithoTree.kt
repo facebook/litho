@@ -305,6 +305,7 @@ class NestedStateUpdater(
     return state.getEventTrigger(handle = handle, methodId = id)
   }
 }
+
 // endregion NestedStateUpdater
 
 class NestedMountedViewReference : MountedViewReference {
@@ -348,6 +349,7 @@ class NestedLithoTreeLifecycleProvider : LithoTreeLifecycleProvider {
     listeners.clear()
   }
 }
+
 // endregion
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.KEEP)

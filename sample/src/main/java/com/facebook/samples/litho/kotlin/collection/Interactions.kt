@@ -42,6 +42,7 @@ class ScrollingExample() : KComponent() {
     }
   }
 }
+
 // end_scrolling_example
 
 // start_pull_to_refresh_example
@@ -58,7 +59,8 @@ class PullToRefreshExample(
           refresh()
           controller.setRefreshing(false)
         },
-    ) { /* Add children */}
+    ) { /* Add children */
+    }
   }
 }
 // end_pull_to_refresh_example

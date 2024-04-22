@@ -72,6 +72,7 @@ class NameList_UnnecessaryUpdate : KComponent() {
     child(NameComponent(Name("Mark", "Zuckerberg")))
   }
 }
+
 // end_name_list_unnecessary_update
 
 data class NameWithEquals(val firstName: String, val secondName: String)
@@ -90,6 +91,7 @@ class NameList_Fixed : KComponent() {
     child(deps = arrayOf()) { NameComponent(Name("Mark", "Zuckerberg")) }
   }
 }
+
 // end_name_list_fixed
 
 // start_drawable_unnecessary_update
@@ -98,6 +100,7 @@ class Drawable_UnnecessaryUpdate : KComponent() {
     child(Text("text", style = Style.background(ColorDrawable(Color.RED))))
   }
 }
+
 // end_drawable_unnecessary_update
 
 // start_drawable_fixed
@@ -110,6 +113,7 @@ class Drawable_Fixed : KComponent() {
     child(deps = arrayOf()) { Text("text", style = Style.background(ColorDrawable(Color.RED))) }
   }
 }
+
 // end_drawable_fixed
 
 // start_lambda_unnecessary_update
@@ -118,6 +122,7 @@ class Lambda_UnnecessaryUpdate(val name: String) : KComponent() {
     child(Text("text", style = Style.onClick { println("Hello $name") }))
   }
 }
+
 // end_lambda_unnecessary_update
 
 // start_lambda_fixed
@@ -127,6 +132,7 @@ class Lambda_Fixed(val name: String) : KComponent() {
     return LazyList { child(Text("text", style = Style.onClick(action = callBack))) }
   }
 }
+
 // end_lambda_fixed
 
 // start_shopping_list_example

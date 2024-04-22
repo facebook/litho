@@ -30,6 +30,7 @@ class HelloComponent(private val name: String) : KComponent() {
     return Text(text = "Hello $name!")
   }
 }
+
 // end_simple_example
 
 fun log(s: String) = Unit

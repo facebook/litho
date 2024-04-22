@@ -43,6 +43,7 @@ class LogOnceComponent : KComponent() {
         text = "I'll let you know when I'm visible, but only once!")
   }
 }
+
 // end_useref_example
 
 fun doLogVisible(c: Context) {

@@ -40,6 +40,7 @@ class LithoViewCreationFragment : Fragment() {
         requireContext(), SampleComponent(), AOSPLithoVisibilityEventsController(this))
   }
 }
+
 // end_example
 private class SampleComponent : KComponent() {
   override fun ComponentScope.render(): Component? {

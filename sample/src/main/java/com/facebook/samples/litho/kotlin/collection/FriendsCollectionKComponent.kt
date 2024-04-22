@@ -36,6 +36,7 @@ private val friends =
         Person("Joey Tribbiani", 5),
         Person("Chandler Bing", 6),
     )
+
 // end_data
 
 // start_column_example
@@ -44,6 +45,7 @@ class FriendsColumn(private val friends: List<Person>) : KComponent() {
     Column { friends.forEach { friend -> child(Text(friend.name)) } }
   }
 }
+
 // end_column_example
 
 class FriendsCollectionKComponent : KComponent() {

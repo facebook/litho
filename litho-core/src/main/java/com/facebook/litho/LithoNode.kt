@@ -281,6 +281,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       null
   val scopedComponentInfosNeedingPreviousRenderData: Map<String, ScopedComponentInfo>?
     get() = _scopedComponentInfosNeedingPreviousRenderData
+
   // endregion
 
   override fun calculateLayout(

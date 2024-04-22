@@ -72,7 +72,7 @@ class WidgetsExamplesComponent : KComponent() {
               initialText = "Initial text",
               multiline = true,
               inputType = InputType.TYPE_CLASS_TEXT,
-              inputFilter = InputFilter.LengthFilter(/* maxLength = */ 10))
+              inputFilter = InputFilter.LengthFilter(/* maxLength= */ 10))
           // end_textinput_widget_example
           )
       child(Text("Image Example"))

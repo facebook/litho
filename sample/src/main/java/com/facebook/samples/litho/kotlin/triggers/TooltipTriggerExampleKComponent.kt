@@ -74,6 +74,7 @@ class TooltipTriggerExampleKComponent : KComponent() {
     LithoTooltipController.showTooltipOnHandle(
         context, createTooltip("Example Tooltip"), anchorHandle, 0, 0)
   }
+
   // showing_tooltip_end
 
   private fun ComponentScope.createTooltip(tooltipText: String) =

@@ -200,6 +200,7 @@ private constructor(
     get() {
       return Rect(x, y, x + result.width, y + result.height)
     }
+
   /**
    * Many components can result in a single Lithonode/layout resut (from delegatation / custom
    * components) We want only the first component to 'take' the offset of the underlying layout node

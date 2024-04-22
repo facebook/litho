@@ -58,6 +58,7 @@ class FixedHeightHScroll : KComponent() {
         children(items = (0..10), id = { it }) { ListItem("$it") }
       }
 }
+
 // end_example
 
 class WrapFirstItemHeightHScroll : KComponent() {

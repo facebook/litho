@@ -50,6 +50,7 @@ class TemperatureConvertor : KComponent() {
     }
   }
 }
+
 // end_example
 
 fun toFahrenheit(degreesCelsius: Double): Double = degreesCelsius * 9 / 5 + 32

@@ -51,6 +51,7 @@ internal val PrimitiveComponentScope.SimpleImageViewPrimitive
                   onUnbind { imageView.setImageResource(0) }
                 }
               })
+
 // end_image_primitive_component_example
 
 // start_image_primitive_layout_behavior_example

@@ -40,6 +40,7 @@ class SimpleGroupMigration(private val title: String) : KComponent() {
     }
   }
 }
+
 // end_simple_group
 
 class Model(val id: String, val field1: String, val field2: String)
@@ -57,6 +58,7 @@ class ListMigration(private val models: List<Model>) : KComponent() {
     }
   }
 }
+
 // end_list
 
 // start_event_handler
@@ -73,6 +75,7 @@ class EventHandlerMigration : KComponent() {
     }
   }
 }
+
 // end_event_handler
 
 // start_state

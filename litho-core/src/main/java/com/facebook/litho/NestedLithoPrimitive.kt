@@ -233,7 +233,7 @@ data class NestedLithoResolveContext(
     val currentResolveResult: ResolveResult?,
     val stateUpdateRequest: StateUpdateRequester,
     val stateCommitListener: StateCommitListener? = null,
-    val errorComponent: ((Component?) -> Unit) = { /* TODO: provide default implementation */},
+    val errorComponent: ((Component?) -> Unit) = { /* TODO: provide default implementation */ },
     val rootHostReference: NestedMountedViewReference = NestedMountedViewReference(),
     val lifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider(),
     val usePreviousLayoutState: Boolean,

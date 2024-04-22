@@ -34,8 +34,10 @@ class LinearSpacingExample : KComponent() {
   override fun ComponentScope.render(): Component =
       LazyList(
           itemDecoration = LinearSpacing(start = 10.dp, between = 5.dp),
-      ) { /* Add children */}
+      ) { /* Add children */
+      }
 }
+
 // end_linear_spacing_example
 
 // start_fixed_height_hscroll_example
@@ -44,8 +46,10 @@ class HScrollFixedHeight : KComponent() {
       LazyList(
           orientation = RecyclerView.HORIZONTAL,
           style = Style.height(100.dp),
-      ) { /* Add children */}
+      ) { /* Add children */
+      }
 }
+
 // end_fixed_height_hscroll_example
 
 @RequiresApi(Build.VERSION_CODES.N)

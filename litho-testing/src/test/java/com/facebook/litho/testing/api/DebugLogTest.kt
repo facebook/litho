@@ -307,7 +307,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
 
   private class SimpleComponent : KComponent() {
     override fun ComponentScope.render(): Component {
-      return Text("Hello", style = Style.onClick { /* no-op */})
+      return Text("Hello", style = Style.onClick { /* no-op */ })
     }
   }
 
@@ -325,7 +325,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
         child(
             Row {
               child(Text("Hello world"))
-              child(Text("Info", style = Style.onClick { /* no-op */}))
+              child(Text("Info", style = Style.onClick { /* no-op */ }))
             })
 
         child(

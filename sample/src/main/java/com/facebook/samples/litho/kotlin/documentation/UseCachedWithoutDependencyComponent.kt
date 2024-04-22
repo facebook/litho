@@ -40,6 +40,7 @@ class UseCachedWithoutDependencyComponent : KComponent() {
       child(Text(text = expensiveValue))
     }
   }
+
   // end_example
   companion object {
     private fun expensiveRepeatFunc(prefix: String, num: Int = 20): String {

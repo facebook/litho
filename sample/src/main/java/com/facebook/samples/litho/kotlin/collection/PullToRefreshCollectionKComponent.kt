@@ -46,6 +46,7 @@ class PullToRefreshCollectionKComponent : KComponent() {
     }
   }
 }
+
 // end_example
 
 class Card(val suit: Suit, val value: Int) {

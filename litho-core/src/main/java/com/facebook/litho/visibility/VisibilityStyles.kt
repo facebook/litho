@@ -132,6 +132,7 @@ inline fun Style.onFullImpression(
 inline fun Style.onVisibilityChanged(
     noinline onVisibilityChanged: (VisibilityChangedEvent) -> Unit
 ): Style = this + VisibilityStyleItem(VisibilityField.ON_VISIBILITY_CHANGED, onVisibilityChanged)
+
 /**
  * Defines a ratio of the Component height for the visibility callback to be dispatched use together
  * with [onVisible] and/or with [onInvisible].

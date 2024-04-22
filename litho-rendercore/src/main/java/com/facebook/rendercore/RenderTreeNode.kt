@@ -37,6 +37,7 @@ class RenderTreeNode(
   fun child(renderTreeNode: RenderTreeNode) {
     children.add(renderTreeNode)
   }
+
   /**
    * Sets the absolutes bounds of this render tree node in [outRect]; i.e. returns the bounds of
    * this render tree node within its [RootHost].

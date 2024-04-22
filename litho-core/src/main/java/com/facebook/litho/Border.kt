@@ -84,6 +84,7 @@ class Border private constructor() : Equivalence<Border> {
       border.setEdgeWidth(edge, width)
       return this
     }
+
     /**
      * Specifies a width for a specific edge
      *
@@ -96,6 +97,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return widthPx(edge, resolver.dipsToPixels(width))
     }
+
     /**
      * Specifies a width for a specific edge
      *
@@ -108,6 +110,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return widthPx(edge, resolver.resolveDimenSizeRes(widthRes))
     }
+
     /**
      * Specifies a width for a specific edge
      *
@@ -120,6 +123,7 @@ class Border private constructor() : Equivalence<Border> {
       checkNotBuilt()
       return widthAttr(edge, attrId, 0)
     }
+
     /**
      * Specifies a width for a specific edge
      *
@@ -133,6 +137,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return widthPx(edge, resolver.resolveDimenSizeAttr(attrId, defaultResId))
     }
+
     /**
      * Specifies the border radius for all corners
      *
@@ -143,6 +148,7 @@ class Border private constructor() : Equivalence<Border> {
       border.radius.fill(radius.toFloat())
       return this
     }
+
     /**
      * Specifies the border radius for all corners
      *
@@ -152,6 +158,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return radiusPx(resolver.dipsToPixels(radius))
     }
+
     /**
      * Specifies the border radius for all corners
      *
@@ -161,6 +168,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return radiusPx(resolver.resolveDimenSizeRes(radiusRes))
     }
+
     /**
      * Specifies the border radius for all corners
      *
@@ -172,6 +180,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return radiusPx(resolver.resolveDimenSizeAttr(attrId, defaultResId))
     }
+
     /**
      * Specifies the border radius for the given corner
      *
@@ -185,6 +194,7 @@ class Border private constructor() : Equivalence<Border> {
       border.radius[corner] = radius.toFloat()
       return this
     }
+
     /**
      * Specifies the border radius for the given corner
      *
@@ -195,6 +205,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return radiusPx(corner, resolver.dipsToPixels(radius))
     }
+
     /**
      * Specifies the border radius for the given corner
      *
@@ -205,6 +216,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return radiusPx(corner, resolver.resolveDimenSizeRes(res))
     }
+
     /**
      * Specifies the border radius for the given corner
      *
@@ -220,6 +232,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return radiusPx(corner, resolver.resolveDimenSizeAttr(attrId, defaultResId))
     }
+
     /**
      * Specifies a color for a specific edge
      *
@@ -231,6 +244,7 @@ class Border private constructor() : Equivalence<Border> {
       border.setEdgeColor(edge, color)
       return this
     }
+
     /**
      * Specifies a color for a specific edge
      *
@@ -241,6 +255,7 @@ class Border private constructor() : Equivalence<Border> {
       val resolver = checkNotBuilt()
       return color(edge, resolver.resolveColorRes(colorRes))
     }
+
     /**
      * Applies a dash effect to the border
      *
@@ -257,6 +272,7 @@ class Border private constructor() : Equivalence<Border> {
       pathEffects[numPathEffects++] = DashPathEffect(intervals, phase)
       return this
     }
+
     /**
      * Applies a discrete effect to the border
      *
@@ -273,6 +289,7 @@ class Border private constructor() : Equivalence<Border> {
       pathEffects[numPathEffects++] = DiscretePathEffect(segmentLength, deviation)
       return this
     }
+
     /**
      * Applies a path dash effect to the border
      *
@@ -362,6 +379,7 @@ class Border private constructor() : Equivalence<Border> {
         else -> throw IllegalArgumentException("Given unknown edge index: $i")
       }
     }
+
     /**
      * @param values values pertaining to [YogaEdge]s
      * @return whether the values are equal for each edge

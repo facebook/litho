@@ -28,6 +28,7 @@ class Post(
     @DrawableRes val imageRes: Int,
     val text: String? = null
 )
+
 // end_example
 
 val BEN = User(username = "Ben", avatarRes = R.drawable.ic_launcher)

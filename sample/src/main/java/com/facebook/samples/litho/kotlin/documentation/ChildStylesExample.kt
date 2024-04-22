@@ -41,6 +41,7 @@ class InnerTextComponent(private val style: Style? = null) : KComponent() {
         text = "I accept style from a parent!")
   }
 }
+
 // end_combine_style_example
 // start_combine_java_kotlin_style_example
 class OuterStyleKComponent : KComponent() {

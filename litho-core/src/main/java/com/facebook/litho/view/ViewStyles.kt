@@ -601,6 +601,7 @@ inline fun Style.keyboardNavigationCluster(isKeyboardNavigationCluster: Boolean)
 inline fun Style.addSystemGestureExclusionZone(noinline exclusion: (bounds: Rect) -> Rect): Style {
   return this + ObjectStyleItem(ObjectField.ADD_TOUCH_EXCLUSION_ZONE, exclusion)
 }
+
 /**
  * Sets the tooltip text which will be displayed in a small popup next to the view.
  *

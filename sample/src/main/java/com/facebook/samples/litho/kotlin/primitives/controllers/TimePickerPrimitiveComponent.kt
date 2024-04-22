@@ -106,6 +106,7 @@ class TimePickerController(private var currentHour: Int, private var currentMinu
       }
 
   private var content: TimePicker? = null
+
   // end_primitive_controller_code_example
 
   // start_primitive_controller_bind_code_example

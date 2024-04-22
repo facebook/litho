@@ -69,6 +69,7 @@ class PagedExample(private val pagedList: PaginatedList<Item>) : KComponent() {
         }
       }
 }
+
 // end_example
 
 // A progress spinner centered in a Column

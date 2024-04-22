@@ -196,6 +196,7 @@ class TestTextViewPrimitiveComponent(val style: Style? = null) : PrimitiveCompon
     val ALLOCATOR = ViewAllocator(poolSize = 10) { context -> TextView(context) }
   }
 }
+
 // end_prefill_mount_content_pool_primitive_component_example
 
 private fun createPoolFactory(poolSize: Int): MountItemsPool.Factory {

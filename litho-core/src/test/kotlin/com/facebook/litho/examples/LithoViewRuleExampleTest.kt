@@ -62,6 +62,7 @@ import org.robolectric.annotation.LooperMode
 class LithoViewRuleExampleTest {
   // start_example
   @Rule @JvmField val lithoViewRule = LithoViewRule()
+
   // end_example
 
   @Test
@@ -506,6 +507,7 @@ class InnerComponent(
     return Row(style = style) { child(Text(text = value)) }
   }
 }
+
 // test_component_end
 
 private interface TestClickHandler {

@@ -41,6 +41,7 @@ internal class UseLiveDataComponent(
     }
   }
 }
+
 // end_example
 
 internal class FakeLiveDataViewModel {

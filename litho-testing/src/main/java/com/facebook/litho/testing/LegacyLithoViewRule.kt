@@ -334,6 +334,7 @@ constructor(
     return findViewWithTextOrNull(text)
         ?: throw RuntimeException("Did not find view with text '$text'")
   }
+
   /**
    * Finds the first [View] with the specified content description in the rendered hierarchy,
    * returning null if is doesn't exist.

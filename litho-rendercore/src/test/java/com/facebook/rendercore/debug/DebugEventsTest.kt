@@ -113,7 +113,7 @@ class DebugEventsTest {
     dispatchDebugEvent()
     assertThat(createdDebugEvent).isFalse
 
-    DebugEventBus.subscribe(TestEventSubscriber { /* do nothing */})
+    DebugEventBus.subscribe(TestEventSubscriber { /* do nothing */ })
     dispatchDebugEvent()
     assertThat(createdDebugEvent).isTrue
   }
@@ -138,7 +138,7 @@ class DebugEventsTest {
     assertThat(createdDebugEvent).isFalse
     assertThat(traceBlockRan).isTrue
 
-    DebugEventBus.subscribe(TestEventSubscriber { /* do nothing */})
+    DebugEventBus.subscribe(TestEventSubscriber { /* do nothing */ })
     runTrace()
     assertThat(createdDebugEvent).isTrue
     assertThat(traceBlockRan).isTrue
@@ -337,21 +337,21 @@ class DebugEventsTest {
   @Test
   fun `generateTraceIdentifier should generate a valid id if there is at least one subscriber listening to all events`() {
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNull()
-    DebugEventDispatcher.subscribe(TestEventsSubscriber(All, listener = { /* nothing */}))
+    DebugEventDispatcher.subscribe(TestEventsSubscriber(All, listener = { /* nothing */ }))
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNotNull()
   }
 
   @Test
   fun `generateTraceIdentifier should generate a valid id if there is at least one subscriber listens to that event`() {
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNull()
-    DebugEventDispatcher.subscribe(TestEventsSubscriber(TestEvent, listener = { /* nothing */}))
+    DebugEventDispatcher.subscribe(TestEventsSubscriber(TestEvent, listener = { /* nothing */ }))
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNotNull()
   }
 
   @Test
   fun `generateTraceIdentifier should generate different ids for each invocation as long as there are valid subscribers`() {
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isNull()
-    DebugEventDispatcher.subscribe(TestEventsSubscriber(TestEvent, listener = { /* nothing */}))
+    DebugEventDispatcher.subscribe(TestEventsSubscriber(TestEvent, listener = { /* nothing */ }))
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isEqualTo(1)
     assertThat(DebugEventDispatcher.generateTraceIdentifier(TestEvent)).isEqualTo(2)
   }
