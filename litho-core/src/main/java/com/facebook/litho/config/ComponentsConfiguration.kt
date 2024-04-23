@@ -100,7 +100,7 @@ internal constructor(
      * gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
      * layout.
      */
-    @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler.INSTANCE,
+    @JvmField val errorEventHandler: ErrorEventHandler = DefaultErrorEventHandler,
     @JvmField val componentsLogger: ComponentsLogger? = null,
     @JvmField val logTag: String? = if (componentsLogger == null) null else "null",
     /**
