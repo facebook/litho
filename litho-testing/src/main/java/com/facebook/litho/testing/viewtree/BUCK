@@ -25,7 +25,6 @@ litho_android_library(
     ],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
-        make_dep_path("litho-it-powermock/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
     ],
     visibility = [
         "PUBLIC",
