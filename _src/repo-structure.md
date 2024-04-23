@@ -44,7 +44,6 @@ parts of the framework they want to use. The available projects are as follows:
  * `litho-core` contains the core framework code.
  * `litho-fresco` contains components for the use with the Fresco image library.
  * `litho-it` contains integration tests for the framework. It is necessary to have a separate project for this as it to avoid circular dependencies.
- * `litho-it-powermock` contains integration tests for the framework that utilize PowerMock. Check out the README inside to learn more.
  * `litho-instrumentation-tests` contains *instrumentation* tests for the framework. They require a device (or emulator) to run.
  * `litho-processor` contains the stand-alone annotation processor.
  * `litho-testing` contains utilities to test Litho components.
