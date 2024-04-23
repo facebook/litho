@@ -19,6 +19,5 @@
   ~ limitations under the License.
   -->
 
-<manifest
-    package="com.facebook.rendercore.extensions">
+<manifest>
 </manifest>

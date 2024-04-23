@@ -27,9 +27,6 @@ android {
         minSdkVersion rootProject.minSdkVersion
     }
 
-    lintOptions {
-        disable "InvalidPackage", "NewApi"
-    }
 
     testOptions {
         unitTests.all {
@@ -38,6 +35,10 @@ android {
         }
 
         unitTests.includeAndroidResources = true
+    }
+    namespace 'com.facebook.litho.testing'
+    lint {
+        disable 'InvalidPackage', 'NewApi'
     }
 }
 

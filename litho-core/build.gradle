@@ -44,11 +44,12 @@ android {
             buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
     }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
+    namespace 'com.facebook.litho'
+    lint {
         abortOnError false
     }
+
+    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {
