@@ -16,11 +16,15 @@
 
 package com.facebook.samples.litho.kotlin.collection
 
+import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.useCallback
 import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
 
@@ -31,12 +35,14 @@ class ScrollingExample() : KComponent() {
     val controller = useState { LazyCollectionController() }.value
 
     // Use one of these lambdas to scroll, e.g. in an onClick callback
-    val scrollToTenth = controller.scrollToIndex(10)
-    val smoothScrollToEnd = controller.smoothScrollToId("End")
+    val scrollToTenth = useCallback<ClickEvent, Unit> { controller.scrollToIndex(index = 10) }
+    val smoothScrollToEnd = useCallback<ClickEvent, Unit> { controller.smoothScrollToId("End") }
 
     return LazyList(
         lazyCollectionController = controller,
     ) {
+      child(Text(style = Style.onClick(scrollToTenth), text = "Scroll to item 10"))
+      child(Text(style = Style.onClick(smoothScrollToEnd), text = "Smooth Scroll to End"))
       children(items = (0..20), id = { it }) { Text("$it") }
       child(id = "End", component = Text("End"))
     }
