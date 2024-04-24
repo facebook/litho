@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends BaseMountingView implements LithoLifecycleListener {
+public class LithoView extends BaseMountingView implements LithoVisibilityEventsListener {
 
   private static final String LITHO_LIFECYCLE_FOUND =
       "lithoView:LithoVisibilityEventsControllerFound";
@@ -556,7 +556,7 @@ public class LithoView extends BaseMountingView implements LithoLifecycleListene
   @Nullable
   LithoVisibilityEventsController.LithoVisibilityState getLifecycleStatus() {
     if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      return mLithoVisibilityEventsControllerHolder.getLifecycleStatus();
+      return mLithoVisibilityEventsControllerHolder.getVisibilityState();
     } else {
       return null;
     }

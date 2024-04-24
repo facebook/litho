@@ -17,8 +17,8 @@
 package com.facebook.litho
 
 /**
- * Manages a Litho ComponentTree lifecycle and informs subscribed LithoLifecycleListeners when a
- * lifecycle state occurs.
+ * Manages a Litho visibility events and informs subscribed LithoVisibilityEventsListener when a
+ * visibility state changes.
  */
 interface LithoVisibilityEventsController {
 
@@ -32,11 +32,11 @@ interface LithoVisibilityEventsController {
     override fun toString(): String = text
   }
 
-  fun moveToVisibilityState(lithoLifecycle: LithoVisibilityState)
+  fun moveToVisibilityState(newVisibilityState: LithoVisibilityState)
 
-  val lifecycleStatus: LithoVisibilityState
+  val visibilityState: LithoVisibilityState
 
-  fun addListener(listener: LithoLifecycleListener)
+  fun addListener(listener: LithoVisibilityEventsListener)
 
-  fun removeListener(listener: LithoLifecycleListener)
+  fun removeListener(listener: LithoVisibilityEventsListener)
 }

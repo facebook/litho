@@ -29,9 +29,9 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
+import com.facebook.litho.LithoVisibilityEventsListener;
 import com.facebook.litho.Size;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.TreeState;
@@ -501,7 +501,7 @@ public class ComponentTreeHolder {
   /** Lifecycle controlled by a ComponentTreeHolder. */
   private class ComponentTreeHolderVisibilityEventsController
       implements LithoVisibilityEventsController,
-          LithoLifecycleListener,
+          LithoVisibilityEventsListener,
           AOSPLifecycleOwnerProvider {
 
     public LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate;
@@ -512,8 +512,8 @@ public class ComponentTreeHolder {
     }
 
     @Override
-    public LithoVisibilityState getLifecycleStatus() {
-      return mLithoVisibilityEventsControllerDelegate.getLifecycleStatus();
+    public LithoVisibilityState getVisibilityState() {
+      return mLithoVisibilityEventsControllerDelegate.getVisibilityState();
     }
 
     @Override
@@ -546,12 +546,12 @@ public class ComponentTreeHolder {
     }
 
     @Override
-    public synchronized void addListener(LithoLifecycleListener listener) {
+    public synchronized void addListener(LithoVisibilityEventsListener listener) {
       mLithoVisibilityEventsControllerDelegate.addListener(listener);
     }
 
     @Override
-    public synchronized void removeListener(LithoLifecycleListener listener) {
+    public synchronized void removeListener(LithoVisibilityEventsListener listener) {
       mLithoVisibilityEventsControllerDelegate.removeListener(listener);
     }
 

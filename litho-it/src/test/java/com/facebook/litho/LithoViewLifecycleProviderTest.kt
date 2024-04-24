@@ -80,7 +80,7 @@ class LithoViewLifecycleProviderTest {
         }
 
     // testing initial state
-    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
+    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.visibilityState)
         .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
@@ -110,7 +110,7 @@ class LithoViewLifecycleProviderTest {
     testLithoView.layout()
 
     // testing initial state
-    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
+    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.visibilityState)
         .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
@@ -144,7 +144,7 @@ class LithoViewLifecycleProviderTest {
         lithoLifecycleProviderDelegate)
 
     // testing initial state
-    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
+    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.visibilityState)
         .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
@@ -174,7 +174,7 @@ class LithoViewLifecycleProviderTest {
     testLithoView.lithoView.componentTree?.subscribeToLifecycleProvider(
         lithoLifecycleProviderDelegate)
     // testing initial state
-    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
+    assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.visibilityState)
         .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 

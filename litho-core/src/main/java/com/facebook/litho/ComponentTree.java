@@ -110,7 +110,7 @@ import kotlin.jvm.functions.Function1;
  */
 @ThreadSafe
 public class ComponentTree
-    implements LithoLifecycleListener,
+    implements LithoVisibilityEventsListener,
         StateUpdater,
         MountedViewReference,
         ErrorComponentReceiver,
@@ -789,7 +789,7 @@ public class ComponentTree
     if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       currentStatus = view.isAttached() ? view.getLifecycleStatus() : null;
     } else if (mLifecycleProvider != null) {
-      currentStatus = mLifecycleProvider.getLifecycleStatus();
+      currentStatus = mLifecycleProvider.getVisibilityState();
     }
     if (currentStatus != null) {
       if (currentStatus == LithoVisibilityState.HINT_VISIBLE) {

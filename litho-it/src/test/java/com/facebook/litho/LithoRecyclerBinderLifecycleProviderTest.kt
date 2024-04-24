@@ -83,7 +83,7 @@ class LithoRecyclerBinderLifecycleProviderTest {
     if (!ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       lithoLifecycleProviderDelegate.moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE)
       for (j in 0..19) {
-        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
+        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.visibilityState)
             .describedAs("Visible event is expected to be dispatched")
             .isEqualTo(LithoVisibilityState.HINT_VISIBLE)
       }
@@ -95,7 +95,7 @@ class LithoRecyclerBinderLifecycleProviderTest {
     if (!ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       lithoLifecycleProviderDelegate.moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
       for (j in 0..19) {
-        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
+        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.visibilityState)
             .describedAs("Invisible event is expected to be dispatched")
             .isEqualTo(LithoVisibilityState.HINT_INVISIBLE)
       }

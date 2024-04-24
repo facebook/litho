@@ -30,9 +30,9 @@ import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
  * it automatically.
  */
 internal class LithoVisibilityEventsControllerHolder :
-    LithoVisibilityEventsController, LithoLifecycleListener {
+    LithoVisibilityEventsController, LithoVisibilityEventsListener {
 
-  private val lithoLifecycleListeners: MutableSet<LithoLifecycleListener> = HashSet()
+  private val lithoVisibilityEventsListeners: MutableSet<LithoVisibilityEventsListener> = HashSet()
 
   private var internalLifecycleProvider: LithoVisibilityEventsController =
       LithoVisibilityEventsControllerDelegate()
@@ -58,7 +58,7 @@ internal class LithoVisibilityEventsControllerHolder :
     if (internalLifecycleProvider == lifecycleProvider) {
       return
     }
-    lithoLifecycleListeners.forEach { listener ->
+    lithoVisibilityEventsListeners.forEach { listener ->
       internalLifecycleProvider.removeListener(listener)
     }
     // If lifecycleProvider is null, we re-create LithoVisibilityEventsControllerDelegate with
@@ -66,7 +66,9 @@ internal class LithoVisibilityEventsControllerHolder :
     internalLifecycleProvider = lifecycleProvider ?: LithoVisibilityEventsControllerDelegate()
     hasHeldLifecycleProvider = lifecycleProvider != null
 
-    lithoLifecycleListeners.forEach { listener -> internalLifecycleProvider.addListener(listener) }
+    lithoVisibilityEventsListeners.forEach { listener ->
+      internalLifecycleProvider.addListener(listener)
+    }
     isDefaultLifecycleProvider = isDefault
   }
 
@@ -115,18 +117,18 @@ internal class LithoVisibilityEventsControllerHolder :
     internalLifecycleProvider.moveToVisibilityState(lithoLifecycle)
   }
 
-  override val lifecycleStatus: LithoVisibilityState
-    get() = internalLifecycleProvider.lifecycleStatus
+  override val visibilityState: LithoVisibilityState
+    get() = internalLifecycleProvider.visibilityState
 
   @Synchronized
-  override fun addListener(listener: LithoLifecycleListener) {
+  override fun addListener(listener: LithoVisibilityEventsListener) {
     internalLifecycleProvider.addListener(listener)
-    lithoLifecycleListeners.add(listener)
+    lithoVisibilityEventsListeners.add(listener)
   }
 
   @Synchronized
-  override fun removeListener(listener: LithoLifecycleListener) {
+  override fun removeListener(listener: LithoVisibilityEventsListener) {
     internalLifecycleProvider.removeListener(listener)
-    lithoLifecycleListeners.remove(listener)
+    lithoVisibilityEventsListeners.remove(listener)
   }
 }

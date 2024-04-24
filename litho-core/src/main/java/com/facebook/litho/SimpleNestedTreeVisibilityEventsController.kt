@@ -25,12 +25,12 @@ import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
  */
 class SimpleNestedTreeVisibilityEventsController(
     parentLifecycleProvider: LithoVisibilityEventsController?
-) : LithoVisibilityEventsController, LithoLifecycleListener {
+) : LithoVisibilityEventsController, LithoVisibilityEventsListener {
 
   private val lithoLifecycleDelegate = LithoVisibilityEventsControllerDelegate()
 
-  override val lifecycleStatus: LithoVisibilityState
-    get() = lithoLifecycleDelegate.lifecycleStatus
+  override val visibilityState: LithoVisibilityState
+    get() = lithoLifecycleDelegate.visibilityState
 
   init {
     parentLifecycleProvider?.addListener(this)
@@ -40,11 +40,11 @@ class SimpleNestedTreeVisibilityEventsController(
     lithoLifecycleDelegate.moveToVisibilityState(lithoLifecycle)
   }
 
-  override fun addListener(listener: LithoLifecycleListener) {
+  override fun addListener(listener: LithoVisibilityEventsListener) {
     lithoLifecycleDelegate.addListener(listener)
   }
 
-  override fun removeListener(listener: LithoLifecycleListener) {
+  override fun removeListener(listener: LithoVisibilityEventsListener) {
     lithoLifecycleDelegate.removeListener(listener)
   }
 

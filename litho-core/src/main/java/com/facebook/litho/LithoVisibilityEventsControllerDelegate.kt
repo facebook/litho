@@ -30,8 +30,8 @@ import java.util.ArrayList
  */
 class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController {
 
-  private val lithoLifecycleListeners: MutableSet<LithoLifecycleListener> = HashSet()
-  override var lifecycleStatus = LithoVisibilityState.HINT_VISIBLE
+  private val lithoVisibilityEventsListeners: MutableSet<LithoVisibilityEventsListener> = HashSet()
+  override var visibilityState: LithoVisibilityState = LithoVisibilityState.HINT_VISIBLE
     private set
 
   @IntDef(
@@ -47,24 +47,24 @@ class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController 
   }
 
   @UiThread
-  override fun moveToVisibilityState(newLifecycleState: LithoVisibilityState) {
+  override fun moveToVisibilityState(newVisibilityState: LithoVisibilityState) {
     ThreadUtils.assertMainThread()
-    if (newLifecycleState === LithoVisibilityState.DESTROYED &&
-        lifecycleStatus === LithoVisibilityState.HINT_VISIBLE) {
+    if (newVisibilityState === LithoVisibilityState.DESTROYED &&
+        visibilityState === LithoVisibilityState.HINT_VISIBLE) {
       moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
     }
     @LifecycleTransitionStatus
-    val transitionStatus = getTransitionStatus(lifecycleStatus, newLifecycleState)
+    val transitionStatus = getTransitionState(visibilityState, newVisibilityState)
     if (transitionStatus == LifecycleTransitionStatus.INVALID) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           "LithoVisibilityEventsController",
-          "Cannot move from state $lifecycleStatus to state $newLifecycleState")
+          "Cannot move from state $visibilityState to state $newVisibilityState")
       return
     }
     if (transitionStatus == LifecycleTransitionStatus.VALID) {
-      lifecycleStatus = newLifecycleState
-      when (newLifecycleState) {
+      visibilityState = newVisibilityState
+      when (newVisibilityState) {
         LithoVisibilityState.HINT_VISIBLE -> {
           notifyOnResumeVisible()
           return
@@ -83,42 +83,48 @@ class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController 
   }
 
   @Synchronized
-  override fun addListener(listener: LithoLifecycleListener) {
-    lithoLifecycleListeners.add(listener)
+  override fun addListener(listener: LithoVisibilityEventsListener) {
+    lithoVisibilityEventsListeners.add(listener)
   }
 
   @Synchronized
-  override fun removeListener(listener: LithoLifecycleListener) {
-    lithoLifecycleListeners.remove(listener)
+  override fun removeListener(listener: LithoVisibilityEventsListener) {
+    lithoVisibilityEventsListeners.remove(listener)
   }
 
   private fun notifyOnResumeVisible() {
-    val lithoLifecycleListeners: List<LithoLifecycleListener>
-    synchronized(this) { lithoLifecycleListeners = ArrayList(this.lithoLifecycleListeners) }
-    for (lithoLifecycleListener in lithoLifecycleListeners) {
+    val lithoVisibilityEventsListeners: List<LithoVisibilityEventsListener>
+    synchronized(this) {
+      lithoVisibilityEventsListeners = ArrayList(this.lithoVisibilityEventsListeners)
+    }
+    for (lithoLifecycleListener in lithoVisibilityEventsListeners) {
       lithoLifecycleListener.onMovedToState(LithoVisibilityState.HINT_VISIBLE)
     }
   }
 
   private fun notifyOnPauseVisible() {
-    val lithoLifecycleListeners: List<LithoLifecycleListener>
-    synchronized(this) { lithoLifecycleListeners = ArrayList(this.lithoLifecycleListeners) }
-    for (lithoLifecycleListener in lithoLifecycleListeners) {
+    val lithoVisibilityEventsListeners: List<LithoVisibilityEventsListener>
+    synchronized(this) {
+      lithoVisibilityEventsListeners = ArrayList(this.lithoVisibilityEventsListeners)
+    }
+    for (lithoLifecycleListener in lithoVisibilityEventsListeners) {
       lithoLifecycleListener.onMovedToState(LithoVisibilityState.HINT_INVISIBLE)
     }
   }
 
   private fun notifyOnDestroy() {
-    val lithoLifecycleListeners: List<LithoLifecycleListener>
-    synchronized(this) { lithoLifecycleListeners = ArrayList(this.lithoLifecycleListeners) }
-    for (lithoLifecycleListener in lithoLifecycleListeners) {
+    val lithoVisibilityEventsListeners: List<LithoVisibilityEventsListener>
+    synchronized(this) {
+      lithoVisibilityEventsListeners = ArrayList(this.lithoVisibilityEventsListeners)
+    }
+    for (lithoLifecycleListener in lithoVisibilityEventsListeners) {
       lithoLifecycleListener.onMovedToState(LithoVisibilityState.DESTROYED)
     }
   }
 
   companion object {
     @LifecycleTransitionStatus
-    private fun getTransitionStatus(
+    private fun getTransitionState(
         currentState: LithoVisibilityState,
         nextState: LithoVisibilityState
     ): Int {
