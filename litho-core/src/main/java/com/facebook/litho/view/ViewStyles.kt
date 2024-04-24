@@ -325,6 +325,16 @@ inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
     this + ObjectStyleItem(ObjectField.FOREGROUND, ComparableColorDrawable.create(foregroundColor))
 
 /**
+ * Sets a listener that will invoke the given lambda when this Component's focus changes. Setting
+ * this property will cause the Component to be represented as a View at mount time if it wasn't
+ * going to already.
+ *
+ * See [android.view.View.OnFocusChangeListener]
+ */
+inline fun Style.onFocusedChanged(noinline action: (FocusChangedEvent) -> Unit): Style =
+    this + ObjectStyleItem(ObjectField.ON_FOCUS_CHANGED, action)
+
+/**
  * Sets a listener that will invoke the given lambda when this Component's focus changes but only if
  * [enabled] is true. If enabled, setting this property will cause the Component to be represented
  * as a View at mount time if it wasn't going to already.
@@ -332,17 +342,33 @@ inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
  * See [android.view.View.OnFocusChangeListener]
  */
 inline fun Style.onFocusedChanged(
-    enabled: Boolean = true,
+    enabled: Boolean,
     noinline action: (FocusChangedEvent) -> Unit
 ): Style = this + ObjectStyleItem(ObjectField.ON_FOCUS_CHANGED, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is clicked. Setting this
+ * property will cause the Component to be represented as a View at mount time if it wasn't going to
+ * already.
+ */
+inline fun Style.onClick(noinline action: (ClickEvent) -> Unit): Style =
+    this + ObjectStyleItem(ObjectField.ON_CLICK, action)
 
 /**
  * Sets a listener that will invoke the given lambda when this Component is clicked but only if
  * [enabled] is true. If enabled, setting this property will cause the Component to be represented
  * as a View at mount time if it wasn't going to already.
  */
-inline fun Style.onClick(enabled: Boolean = true, noinline action: (ClickEvent) -> Unit): Style =
+inline fun Style.onClick(enabled: Boolean, noinline action: (ClickEvent) -> Unit): Style =
     this + ObjectStyleItem(ObjectField.ON_CLICK, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is long clicked. Setting
+ * this property will cause the Component to be represented as a View at mount time if it wasn't
+ * going to already.
+ */
+inline fun Style.onLongClick(noinline action: (LongClickEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, action)
 
 /**
  * Sets a listener that will invoke the given lambda when this Component is long clicked but only if
@@ -350,17 +376,37 @@ inline fun Style.onClick(enabled: Boolean = true, noinline action: (ClickEvent) 
  * as a View at mount time if it wasn't going to already.
  */
 inline fun Style.onLongClick(
-    enabled: Boolean = true,
+    enabled: Boolean,
     noinline action: (LongClickEvent) -> Boolean
 ): Style = this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is touched. Setting this
+ * property will cause the Component to be represented as a View at mount time if it wasn't going to
+ * already.
+ */
+inline fun Style.onTouch(noinline action: (TouchEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_TOUCH, action)
 
 /**
  * Sets a listener that will invoke the given lambda when this Component is touched but only if
  * [enabled] is true. If enabled, setting this property will cause the Component to be represented
  * as a View at mount time if it wasn't going to already.
  */
-inline fun Style.onTouch(enabled: Boolean = true, noinline action: (TouchEvent) -> Boolean): Style =
+inline fun Style.onTouch(enabled: Boolean, noinline action: (TouchEvent) -> Boolean): Style =
     this + ObjectStyleItem(ObjectField.ON_TOUCH, if (enabled) action else null)
+
+/**
+ * Sets a listener that will intercept all touch screen motion events. This allows you to watch
+ * events as they are dispatched to your children, and take ownership of the current gesture at any
+ * point. Implementations should return true if they intercepted the event and wish to receive
+ * subsequent events, and false otherwise. Setting this property will cause the Component to be
+ * represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.ViewGroup.onInterceptTouchEvent]
+ */
+inline fun Style.onInterceptTouch(noinline action: (InterceptTouchEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, action)
 
 /**
  * Sets a listener that will intercept all touch screen motion events but only if [enabled] is true.
@@ -373,7 +419,7 @@ inline fun Style.onTouch(enabled: Boolean = true, noinline action: (TouchEvent) 
  * See [android.view.ViewGroup.onInterceptTouchEvent]
  */
 inline fun Style.onInterceptTouch(
-    enabled: Boolean = true,
+    enabled: Boolean,
     noinline action: (InterceptTouchEvent) -> Boolean
 ): Style = this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, if (enabled) action else null)
 
