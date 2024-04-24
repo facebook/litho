@@ -20,7 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 
 /**
  * This LithoVisibilityEventsController implementation dispatches to the registered observers the
@@ -47,10 +47,10 @@ open class AOSPLithoVisibilityEventsController(
 
   override fun onStateChanged(source: LifecycleOwner, event: Event) {
     when (event) {
-      Lifecycle.Event.ON_RESUME -> moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
-      Lifecycle.Event.ON_PAUSE -> moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
+      Lifecycle.Event.ON_RESUME -> moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE)
+      Lifecycle.Event.ON_PAUSE -> moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
       Lifecycle.Event.ON_DESTROY -> {
-        moveToLifecycle(LithoLifecycle.DESTROYED)
+        moveToVisibilityState(LithoVisibilityState.DESTROYED)
         lifecycleOwner.lifecycle.removeObserver(this)
       }
       else -> {}

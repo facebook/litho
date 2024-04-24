@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 
 /**
  * LithoVisibilityEventsController implementation that can be used to subscribe a nested
@@ -29,15 +29,15 @@ class SimpleNestedTreeVisibilityEventsController(
 
   private val lithoLifecycleDelegate = LithoVisibilityEventsControllerDelegate()
 
-  override val lifecycleStatus: LithoLifecycle
+  override val lifecycleStatus: LithoVisibilityState
     get() = lithoLifecycleDelegate.lifecycleStatus
 
   init {
     parentLifecycleProvider?.addListener(this)
   }
 
-  override fun moveToLifecycle(lithoLifecycle: LithoLifecycle) {
-    lithoLifecycleDelegate.moveToLifecycle(lithoLifecycle)
+  override fun moveToVisibilityState(lithoLifecycle: LithoVisibilityState) {
+    lithoLifecycleDelegate.moveToVisibilityState(lithoLifecycle)
   }
 
   override fun addListener(listener: LithoLifecycleListener) {
@@ -48,11 +48,12 @@ class SimpleNestedTreeVisibilityEventsController(
     lithoLifecycleDelegate.removeListener(listener)
   }
 
-  override fun onMovedToState(state: LithoLifecycle) {
+  override fun onMovedToState(state: LithoVisibilityState) {
     when (state) {
-      LithoLifecycle.HINT_VISIBLE -> moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
-      LithoLifecycle.HINT_INVISIBLE -> moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
-      LithoLifecycle.DESTROYED -> {}
+      LithoVisibilityState.HINT_VISIBLE -> moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE)
+      LithoVisibilityState.HINT_INVISIBLE ->
+          moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
+      LithoVisibilityState.DESTROYED -> {}
     }
   }
 }

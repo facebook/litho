@@ -65,7 +65,8 @@ class LifecycleFragment : Fragment(), View.OnClickListener {
     replaceFragment()
 
     // inform the LithoView
-    delegate.moveToLifecycle(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    delegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
   }
 
   override fun onCreateView(

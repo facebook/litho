@@ -65,8 +65,8 @@ class LithoVisibilityEventsControllerTest {
   @After
   fun resetViews() {
     steps.clear()
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.DESTROYED)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.DESTROYED)
   }
 
   @Test
@@ -78,14 +78,14 @@ class LithoVisibilityEventsControllerTest {
         .measure()
         .layout()
     legacyLithoViewRule.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 10, 10), true)
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE)
     steps.clear()
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
@@ -95,14 +95,14 @@ class LithoVisibilityEventsControllerTest {
   fun lithoLifecycleProviderDelegateInvisibleToInvisibleTest() {
     legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
     legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE)
     steps.clear()
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event is expected to be dispatched")
         .isEmpty()
@@ -112,14 +112,14 @@ class LithoVisibilityEventsControllerTest {
   fun lithoLifecycleProviderDelegateVisibleToVisibleTest() {
     legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
     legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE)
     steps.clear()
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event is expected to be dispatched")
         .isEmpty()
@@ -129,14 +129,14 @@ class LithoVisibilityEventsControllerTest {
   fun lithoLifecycleProviderDelegateVisibleToDestroyedTest() {
     legacyLithoViewRule.setRoot(mountableComponent).setSizeSpecs(exactly(10), exactly(5))
     legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(lifecycleTracker.steps)
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_MOUNT)
     lifecycleTracker.reset()
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.DESTROYED)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.DESTROYED)
     assertThat(lifecycleTracker.steps)
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_UNMOUNT)
@@ -146,11 +146,11 @@ class LithoVisibilityEventsControllerTest {
   fun lithoLifecycleProviderComponentTreeResetVisibilityFlags() {
     // In the new implementation, `setVisibilityHintNonRecursive` is always called in
     // `setLithoView`, so mHasVisibilityHint will be still true after set new Component Tree
-    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+    if (!ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
       legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-      lithoLifecycleProviderDelegate.moveToLifecycle(
-          LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+      lithoLifecycleProviderDelegate.moveToVisibilityState(
+          LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
       var hasVisibilityHint: Boolean =
           Whitebox.getInternalState<Boolean>(legacyLithoViewRule.lithoView, "mHasVisibilityHint")
       var pauseMountingWhileVisibilityHintFalse: Boolean =

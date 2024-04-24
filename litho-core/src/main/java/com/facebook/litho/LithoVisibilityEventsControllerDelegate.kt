@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import androidx.annotation.IntDef
 import androidx.annotation.UiThread
-import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 import java.lang.IllegalStateException
 import java.util.ArrayList
 
@@ -31,7 +31,7 @@ import java.util.ArrayList
 class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController {
 
   private val lithoLifecycleListeners: MutableSet<LithoLifecycleListener> = HashSet()
-  override var lifecycleStatus = LithoLifecycle.HINT_VISIBLE
+  override var lifecycleStatus = LithoVisibilityState.HINT_VISIBLE
     private set
 
   @IntDef(
@@ -47,33 +47,33 @@ class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController 
   }
 
   @UiThread
-  override fun moveToLifecycle(newLifecycleState: LithoLifecycle) {
+  override fun moveToVisibilityState(newLifecycleState: LithoVisibilityState) {
     ThreadUtils.assertMainThread()
-    if (newLifecycleState === LithoLifecycle.DESTROYED &&
-        lifecycleStatus === LithoLifecycle.HINT_VISIBLE) {
-      moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
+    if (newLifecycleState === LithoVisibilityState.DESTROYED &&
+        lifecycleStatus === LithoVisibilityState.HINT_VISIBLE) {
+      moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
     }
     @LifecycleTransitionStatus
     val transitionStatus = getTransitionStatus(lifecycleStatus, newLifecycleState)
     if (transitionStatus == LifecycleTransitionStatus.INVALID) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
-          "LithoLifecycleProvider",
+          "LithoVisibilityEventsController",
           "Cannot move from state $lifecycleStatus to state $newLifecycleState")
       return
     }
     if (transitionStatus == LifecycleTransitionStatus.VALID) {
       lifecycleStatus = newLifecycleState
       when (newLifecycleState) {
-        LithoLifecycle.HINT_VISIBLE -> {
+        LithoVisibilityState.HINT_VISIBLE -> {
           notifyOnResumeVisible()
           return
         }
-        LithoLifecycle.HINT_INVISIBLE -> {
+        LithoVisibilityState.HINT_INVISIBLE -> {
           notifyOnPauseVisible()
           return
         }
-        LithoLifecycle.DESTROYED -> {
+        LithoVisibilityState.DESTROYED -> {
           notifyOnDestroy()
           return
         }
@@ -96,7 +96,7 @@ class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController 
     val lithoLifecycleListeners: List<LithoLifecycleListener>
     synchronized(this) { lithoLifecycleListeners = ArrayList(this.lithoLifecycleListeners) }
     for (lithoLifecycleListener in lithoLifecycleListeners) {
-      lithoLifecycleListener.onMovedToState(LithoLifecycle.HINT_VISIBLE)
+      lithoLifecycleListener.onMovedToState(LithoVisibilityState.HINT_VISIBLE)
     }
   }
 
@@ -104,7 +104,7 @@ class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController 
     val lithoLifecycleListeners: List<LithoLifecycleListener>
     synchronized(this) { lithoLifecycleListeners = ArrayList(this.lithoLifecycleListeners) }
     for (lithoLifecycleListener in lithoLifecycleListeners) {
-      lithoLifecycleListener.onMovedToState(LithoLifecycle.HINT_INVISIBLE)
+      lithoLifecycleListener.onMovedToState(LithoVisibilityState.HINT_INVISIBLE)
     }
   }
 
@@ -112,36 +112,40 @@ class LithoVisibilityEventsControllerDelegate : LithoVisibilityEventsController 
     val lithoLifecycleListeners: List<LithoLifecycleListener>
     synchronized(this) { lithoLifecycleListeners = ArrayList(this.lithoLifecycleListeners) }
     for (lithoLifecycleListener in lithoLifecycleListeners) {
-      lithoLifecycleListener.onMovedToState(LithoLifecycle.DESTROYED)
+      lithoLifecycleListener.onMovedToState(LithoVisibilityState.DESTROYED)
     }
   }
 
   companion object {
     @LifecycleTransitionStatus
-    private fun getTransitionStatus(currentState: LithoLifecycle, nextState: LithoLifecycle): Int {
-      if (currentState === LithoLifecycle.DESTROYED) {
+    private fun getTransitionStatus(
+        currentState: LithoVisibilityState,
+        nextState: LithoVisibilityState
+    ): Int {
+      if (currentState === LithoVisibilityState.DESTROYED) {
         return LifecycleTransitionStatus.INVALID
       }
-      if (nextState === LithoLifecycle.DESTROYED) {
+      if (nextState === LithoVisibilityState.DESTROYED) {
         // You have to move through HINT_INVISIBLE before moving to DESTROYED.
-        return if (currentState === LithoLifecycle.HINT_INVISIBLE) LifecycleTransitionStatus.VALID
+        return if (currentState === LithoVisibilityState.HINT_INVISIBLE)
+            LifecycleTransitionStatus.VALID
         else LifecycleTransitionStatus.INVALID
       }
-      if (nextState === LithoLifecycle.HINT_VISIBLE) {
-        if (currentState === LithoLifecycle.HINT_VISIBLE) {
+      if (nextState === LithoVisibilityState.HINT_VISIBLE) {
+        if (currentState === LithoVisibilityState.HINT_VISIBLE) {
           return LifecycleTransitionStatus.NO_OP
         }
-        return if (currentState === LithoLifecycle.HINT_INVISIBLE) {
+        return if (currentState === LithoVisibilityState.HINT_INVISIBLE) {
           LifecycleTransitionStatus.VALID
         } else {
           LifecycleTransitionStatus.INVALID
         }
       }
-      if (nextState === LithoLifecycle.HINT_INVISIBLE) {
-        if (currentState === LithoLifecycle.HINT_INVISIBLE) {
+      if (nextState === LithoVisibilityState.HINT_INVISIBLE) {
+        if (currentState === LithoVisibilityState.HINT_INVISIBLE) {
           return LifecycleTransitionStatus.NO_OP
         }
-        return if (currentState === LithoLifecycle.HINT_VISIBLE) {
+        return if (currentState === LithoVisibilityState.HINT_VISIBLE) {
           LifecycleTransitionStatus.VALID
         } else {
           LifecycleTransitionStatus.INVALID

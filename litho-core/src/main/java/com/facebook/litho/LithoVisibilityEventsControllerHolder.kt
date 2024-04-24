@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import androidx.lifecycle.findViewTreeLifecycleOwner
-import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 
 /**
  * This is a holder to form listening chains for LithoVisibilityEventsController in LithoView
@@ -87,7 +87,7 @@ internal class LithoVisibilityEventsControllerHolder :
     }
   }
 
-  override fun onMovedToState(state: LithoLifecycle) {
+  override fun onMovedToState(state: LithoVisibilityState) {
     if (hasHeldLifecycleProvider) {
       // If this holder has a held LifecycleProvider, we don't need to move state here because it
       // should move state based on its LifecycleOwner
@@ -95,27 +95,27 @@ internal class LithoVisibilityEventsControllerHolder :
     }
 
     when (state) {
-      LithoLifecycle.HINT_VISIBLE -> {
-        internalLifecycleProvider.moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
+      LithoVisibilityState.HINT_VISIBLE -> {
+        internalLifecycleProvider.moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE)
         return
       }
-      LithoLifecycle.HINT_INVISIBLE -> {
-        internalLifecycleProvider.moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
+      LithoVisibilityState.HINT_INVISIBLE -> {
+        internalLifecycleProvider.moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
         return
       }
-      LithoLifecycle.DESTROYED -> {
-        internalLifecycleProvider.moveToLifecycle(LithoLifecycle.DESTROYED)
+      LithoVisibilityState.DESTROYED -> {
+        internalLifecycleProvider.moveToVisibilityState(LithoVisibilityState.DESTROYED)
         return
       }
       else -> throw IllegalStateException("Illegal state: $state")
     }
   }
 
-  override fun moveToLifecycle(lithoLifecycle: LithoLifecycle) {
-    internalLifecycleProvider.moveToLifecycle(lithoLifecycle)
+  override fun moveToVisibilityState(lithoLifecycle: LithoVisibilityState) {
+    internalLifecycleProvider.moveToVisibilityState(lithoLifecycle)
   }
 
-  override val lifecycleStatus: LithoLifecycle
+  override val lifecycleStatus: LithoVisibilityState
     get() = internalLifecycleProvider.lifecycleStatus
 
   @Synchronized

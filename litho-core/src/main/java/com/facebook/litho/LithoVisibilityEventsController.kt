@@ -22,7 +22,7 @@ package com.facebook.litho
  */
 interface LithoVisibilityEventsController {
 
-  enum class LithoLifecycle(private val text: String) {
+  enum class LithoVisibilityState(private val text: String) {
     HINT_VISIBLE("HINT_VISIBLE"),
     HINT_INVISIBLE("HINT_INVISIBLE"),
     DESTROYED("DESTROYED");
@@ -32,9 +32,9 @@ interface LithoVisibilityEventsController {
     override fun toString(): String = text
   }
 
-  fun moveToLifecycle(lithoLifecycle: LithoLifecycle)
+  fun moveToVisibilityState(lithoLifecycle: LithoVisibilityState)
 
-  val lifecycleStatus: LithoLifecycle
+  val lifecycleStatus: LithoVisibilityState
 
   fun addListener(listener: LithoLifecycleListener)
 

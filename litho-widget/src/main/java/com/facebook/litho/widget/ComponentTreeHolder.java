@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle.DESTROYED;
+import static com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState.DESTROYED;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.view.View;
@@ -382,7 +382,7 @@ public class ComponentTreeHolder {
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
       ComponentTree.Builder builder;
-      if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
         builder = ComponentTree.create(context, mRenderInfo.getComponent(), mParentLifecycle);
       } else {
         if (mParentLifecycle != null) {
@@ -455,9 +455,9 @@ public class ComponentTreeHolder {
   @UiThread
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
-      if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+      if (!ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
         if (mComponentTreeHolderLifecycleProvider != null) {
-          mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
+          mComponentTreeHolderLifecycleProvider.moveToVisibilityState(DESTROYED);
 
           return;
         }
@@ -504,29 +504,29 @@ public class ComponentTreeHolder {
           LithoLifecycleListener,
           AOSPLifecycleOwnerProvider {
 
-    public LithoVisibilityEventsControllerDelegate mLithoLifecycleProviderDelegate;
+    public LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate;
 
     public ComponentTreeHolderVisibilityEventsController() {
       mParentLifecycle.addListener(this);
-      mLithoLifecycleProviderDelegate = new LithoVisibilityEventsControllerDelegate();
+      mLithoVisibilityEventsControllerDelegate = new LithoVisibilityEventsControllerDelegate();
     }
 
     @Override
-    public LithoLifecycle getLifecycleStatus() {
-      return mLithoLifecycleProviderDelegate.getLifecycleStatus();
+    public LithoVisibilityState getLifecycleStatus() {
+      return mLithoVisibilityEventsControllerDelegate.getLifecycleStatus();
     }
 
     @Override
-    public void onMovedToState(LithoLifecycle state) {
+    public void onMovedToState(LithoVisibilityState state) {
       switch (state) {
         case HINT_VISIBLE:
-          moveToLifecycle(LithoLifecycle.HINT_VISIBLE);
+          moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE);
           return;
         case HINT_INVISIBLE:
-          moveToLifecycle(LithoLifecycle.HINT_INVISIBLE);
+          moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE);
           return;
         case DESTROYED:
-          moveToLifecycle(DESTROYED);
+          moveToVisibilityState(DESTROYED);
           return;
         default:
           throw new IllegalStateException("Illegal state: " + state);
@@ -535,9 +535,9 @@ public class ComponentTreeHolder {
 
     @Override
     @UiThread
-    public void moveToLifecycle(LithoLifecycle lithoLifecycle) {
+    public void moveToVisibilityState(LithoVisibilityState lithoLifecycle) {
       assertMainThread();
-      mLithoLifecycleProviderDelegate.moveToLifecycle(lithoLifecycle);
+      mLithoVisibilityEventsControllerDelegate.moveToVisibilityState(lithoLifecycle);
       if (lithoLifecycle == DESTROYED) {
         mParentLifecycle.removeListener(this);
         mComponentTree = null;
@@ -547,12 +547,12 @@ public class ComponentTreeHolder {
 
     @Override
     public synchronized void addListener(LithoLifecycleListener listener) {
-      mLithoLifecycleProviderDelegate.addListener(listener);
+      mLithoVisibilityEventsControllerDelegate.addListener(listener);
     }
 
     @Override
     public synchronized void removeListener(LithoLifecycleListener listener) {
-      mLithoLifecycleProviderDelegate.removeListener(listener);
+      mLithoVisibilityEventsControllerDelegate.removeListener(listener);
     }
 
     @Override

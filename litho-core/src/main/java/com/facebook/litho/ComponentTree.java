@@ -70,7 +70,7 @@ import androidx.core.util.Preconditions;
 import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle;
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.config.PreAllocationHandler;
@@ -315,7 +315,7 @@ public class ComponentTree
       builder.withRoot(root);
     }
 
-    return builder.withLithoLifecycleProvider(lifecycleProvider);
+    return builder.withLithoVisibilityEventsController(lifecycleProvider);
   }
 
   protected ComponentTree(Builder builder) {
@@ -372,7 +372,7 @@ public class ComponentTree
             config,
             LithoTree.Companion.create(this),
             "root",
-            ComponentsConfiguration.enableRefactorLithoLifecycleProvider
+            ComponentsConfiguration.enableRefactorLithoVisibilityEventsController
                 ? null
                 : getLifecycleProvider(),
             null,
@@ -413,7 +413,7 @@ public class ComponentTree
       }
     }
 
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       mLifecycleProvider = builder.mLifecycleProvider;
     } else {
       if (builder.mLifecycleProvider != null) {
@@ -785,16 +785,16 @@ public class ComponentTree
     if (mLithoView == view) {
       return;
     }
-    LithoLifecycle currentStatus = null;
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+    LithoVisibilityState currentStatus = null;
+    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       currentStatus = view.isAttached() ? view.getLifecycleStatus() : null;
     } else if (mLifecycleProvider != null) {
       currentStatus = mLifecycleProvider.getLifecycleStatus();
     }
     if (currentStatus != null) {
-      if (currentStatus == LithoLifecycle.HINT_VISIBLE) {
+      if (currentStatus == LithoVisibilityState.HINT_VISIBLE) {
         view.setVisibilityHintNonRecursive(true);
-      } else if (currentStatus == LithoLifecycle.HINT_INVISIBLE) {
+      } else if (currentStatus == LithoVisibilityState.HINT_INVISIBLE) {
         view.setVisibilityHintNonRecursive(false);
       }
     }
@@ -833,7 +833,7 @@ public class ComponentTree
     if (mIsAttached) {
       throw new IllegalStateException("Clearing the LithoView while the ComponentTree is attached");
     }
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider
+    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController
         || mLifecycleProvider != null) {
       mLithoView.resetVisibilityHint();
     }
@@ -1672,13 +1672,13 @@ public class ComponentTree
     mLifecycleProvider = null;
   }
 
-  boolean shouldEnableDefaultAOSPLithoLifecycleProvider() {
-    return mContext.shouldEnableDefaultAOSPLithoLifecycleProvider();
+  boolean shouldEnableDefaultAOSPLithoVisibilityEventsController() {
+    return mContext.shouldEnableDefaultAOSPLithoVisibilityEventsController();
   }
 
   public @Nullable LithoVisibilityEventsController getLifecycleProvider() {
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      return mLithoView != null ? mLithoView.getLithoLifecycleProvider() : null;
+    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
+      return mLithoView != null ? mLithoView.getLithoVisibilityEventsController() : null;
     } else {
       return mLifecycleProvider;
     }
@@ -1696,7 +1696,7 @@ public class ComponentTree
    */
   public static ComponentTree.Builder createNestedComponentTree(
       final ComponentContext parentContext, @Nullable Component component) {
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       return ComponentTree.create(ComponentContext.makeCopyForNestedTree(parentContext), component);
     } else {
       final SimpleNestedTreeVisibilityEventsController lifecycleProvider =
@@ -2758,7 +2758,7 @@ public class ComponentTree
 
   public synchronized void subscribeToLifecycleProvider(
       LithoVisibilityEventsController lifecycleProvider) {
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       if (mLithoView != null) {
         mLithoView.subscribeComponentTreeToLifecycleProvider(lifecycleProvider);
       } else {
@@ -2784,7 +2784,7 @@ public class ComponentTree
   }
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
-    if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
+    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
       return mLithoView != null && mLithoView.componentTreeHasLifecycleProvider();
     } else {
       return mLifecycleProvider != null;
@@ -2792,7 +2792,7 @@ public class ComponentTree
   }
 
   @Override
-  public void onMovedToState(LithoLifecycle state) {
+  public void onMovedToState(LithoVisibilityState state) {
     switch (state) {
       case HINT_VISIBLE:
         onMoveToStateHintVisible();
@@ -2823,7 +2823,7 @@ public class ComponentTree
   private void onMoveToStateDestroy() {
     // This will call setComponentTree(null) on the LithoView if any.
     release();
-    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider
+    if (!ComponentsConfiguration.enableRefactorLithoVisibilityEventsController
         && mLifecycleProvider != null) {
       mLifecycleProvider.removeListener(this);
       mLifecycleProvider = null;
@@ -3042,7 +3042,7 @@ public class ComponentTree
       return this;
     }
 
-    public Builder withLithoLifecycleProvider(
+    public Builder withLithoVisibilityEventsController(
         @Nullable LithoVisibilityEventsController lifecycleProvider) {
       mLifecycleProvider = lifecycleProvider;
       return this;

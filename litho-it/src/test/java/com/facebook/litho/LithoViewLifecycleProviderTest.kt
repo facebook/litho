@@ -49,14 +49,14 @@ class LithoViewLifecycleProviderTest {
 
   @Before
   fun setup() {
-    ComponentsConfiguration.enableRefactorLithoLifecycleProvider = true
+    ComponentsConfiguration.enableRefactorLithoVisibilityEventsController = true
     invisibleTags = mutableSetOf()
     lithoLifecycleProviderDelegate = LithoVisibilityEventsControllerDelegate()
   }
 
   @After
   fun breakdown() {
-    ComponentsConfiguration.enableRefactorLithoLifecycleProvider = false
+    ComponentsConfiguration.enableRefactorLithoVisibilityEventsController = false
   }
 
   @Test
@@ -81,17 +81,17 @@ class LithoViewLifecycleProviderTest {
 
     // testing initial state
     assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
-        .isEqualTo(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+        .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
     // move to invisible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(invisibleTags).isEqualTo((0 until 10).toSet())
 
     // move to visible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
   }
 
@@ -111,18 +111,18 @@ class LithoViewLifecycleProviderTest {
 
     // testing initial state
     assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
-        .isEqualTo(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+        .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
     // move to invisible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(invisibleTags).contains(1)
     assertThat(invisibleTags.size).isEqualTo(1)
 
     // move to visible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).doesNotContain(1)
     assertThat(invisibleTags).isEmpty()
   }
@@ -145,17 +145,17 @@ class LithoViewLifecycleProviderTest {
 
     // testing initial state
     assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
-        .isEqualTo(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+        .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
     // move to invisible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(invisibleTags).isEqualTo((0 until 10).toSet())
 
     // move to visible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
   }
 
@@ -175,17 +175,17 @@ class LithoViewLifecycleProviderTest {
         lithoLifecycleProviderDelegate)
     // testing initial state
     assertThat(testLithoView.lithoView.componentTree?.lifecycleProvider?.lifecycleStatus)
-        .isEqualTo(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+        .isEqualTo(LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
 
     // move to invisible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     assertThat(invisibleTags).isEqualTo((0 until 10).toSet())
 
     // move to visible
-    lithoLifecycleProviderDelegate.moveToLifecycle(
-        LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     assertThat(invisibleTags).isEmpty()
   }
 }

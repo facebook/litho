@@ -80,7 +80,7 @@ internal constructor(
       if (_componentTree == null) {
         val builder =
             ComponentTree.create(context)
-                .withLithoLifecycleProvider(lithoVisibilityEventsController)
+                .withLithoVisibilityEventsController(lithoVisibilityEventsController)
 
         if (componentsConfiguration != null) {
           builder.componentsConfiguration(componentsConfiguration)
