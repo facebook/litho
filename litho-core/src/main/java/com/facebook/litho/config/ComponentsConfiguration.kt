@@ -247,6 +247,7 @@ internal constructor(
     @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
     @JvmField var skipHostAlphaReset: Boolean = false
     @JvmField var useOneShotPreDrawListener: Boolean = false
+    @JvmField var useNewCacheValueLogic: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
