@@ -187,7 +187,7 @@ object DebugEventDispatcher {
   private val mutableSubscribers: MutableSet<DebugEventSubscriber> = CopyOnWriteArraySet()
 
   val subscribers: Set<DebugEventSubscriber>
-    @Synchronized get() = mutableSubscribers
+    get() = mutableSubscribers
 
   @JvmStatic
   inline fun dispatch(
@@ -202,7 +202,9 @@ object DebugEventDispatcher {
     }
 
     val subscribersToNotify =
-        subscribers.filter { it.events.contains(type) || it.events.contains(DebugEvent.All) }
+        subscribers.filterLikelyEmpty {
+          it.events.contains(type) || it.events.contains(DebugEvent.All)
+        }
     if (subscribersToNotify.isNotEmpty()) {
       val attributes = LinkedHashMap<String, Any?>()
       attributesAccumulator(attributes)
@@ -327,7 +329,7 @@ object DebugEventDispatcher {
 
     // find the subscribers listening for this event
     val subscribersToNotify =
-        subscribers.filter { subscriber ->
+        subscribers.filterLikelyEmpty { subscriber ->
           subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)
         }
 
@@ -359,20 +361,19 @@ object DebugEventDispatcher {
     }
 
     // find the subscribers listening for this event
-    val traceListeners = mutableListOf<TraceListener<Any?>>()
     val subscribersToNotify =
-        subscribers.filter { subscriber ->
-          val matches = subscriber.events.contains(type) || subscriber.events.contains(All)
-          if (matches && subscriber is TraceListener<*>) {
-            traceListeners.add(subscriber as TraceListener<Any?>)
-          }
-          return@filter matches
+        subscribers.filterLikelyEmpty { subscriber ->
+          subscriber.events.contains(type) || subscriber.events.contains(All)
         }
 
     // run the block if there are no subscribers
     if (subscribersToNotify.isEmpty()) {
       return block(null)
     }
+
+    val traceListeners =
+        subscribersToNotify.filterLikelyEmpty { it is TraceListener<*> }
+            as List<TraceListener<Any?>>
 
     val attributes = LinkedHashMap<String, Any?>()
     attributesAccumulator(attributes)
@@ -398,18 +399,15 @@ object DebugEventDispatcher {
     return res
   }
 
-  @Synchronized
   @JvmStatic
   fun subscribe(subscriber: DebugEventSubscriber) {
     mutableSubscribers.add(subscriber)
   }
 
-  @Synchronized
   internal fun unsubscribe(subscriber: DebugEventSubscriber) {
     mutableSubscribers.remove(subscriber)
   }
 
-  @Synchronized
   fun unsubscribeAll() {
     mutableSubscribers.clear()
   }
@@ -428,6 +426,24 @@ object DebugEventDispatcher {
       val timestamp: Long = System.currentTimeMillis(),
       val startTime: Long = System.nanoTime()
   )
+}
+
+/**
+ * Filter implementation that doesn't allocate a new list unless the predicate returns true for at
+ * least one item.
+ */
+@PublishedApi
+internal inline fun <T> Iterable<T>.filterLikelyEmpty(predicate: (T) -> Boolean): List<T> {
+  var result: ArrayList<T>? = null
+  forEach {
+    if (predicate(it)) {
+      if (result == null) {
+        result = ArrayList()
+      }
+      result?.add(it)
+    }
+  }
+  return result ?: listOf()
 }
 
 /** Object to subscribe to debug events */
