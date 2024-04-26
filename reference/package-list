@@ -20,6 +20,7 @@ com.facebook.litho.layout.flexlayout
 com.facebook.litho.lifecycle
 com.facebook.litho.perfboost
 com.facebook.litho.stats
+com.facebook.litho.tools.firstdraw
 com.facebook.litho.transition
 com.facebook.litho.utils
 com.facebook.litho.view
