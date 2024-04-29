@@ -28,6 +28,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -38,8 +39,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import androidx.annotation.DoNotInline;
+import androidx.annotation.FloatRange;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -64,7 +68,7 @@ import kotlin.Unit;
  * accordingly.
  */
 @DoNotStrip
-public class ComponentHost extends Host implements DisappearingHost {
+public class ComponentHost extends Host implements DisappearingHost, SupportsPivotTransform {
 
   @IdRes public static final int COMPONENT_NODE_INFO_ID = R.id.component_node_info;
 
@@ -72,6 +76,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
   private static boolean sHasWarnedAboutPartialAlpha = false;
+  private static final float UNSET = Float.MIN_VALUE;
 
   private final SparseArrayCompat<MountItem> mMountItems = new SparseArrayCompat<>();
   private SparseArrayCompat<MountItem> mScrapMountItemsArray;
@@ -104,6 +109,8 @@ public class ComponentHost extends Host implements DisappearingHost {
   private @Nullable EventHandler<InterceptTouchEvent> mOnInterceptTouchEventHandler;
 
   private TouchExpansionDelegate mTouchExpansionDelegate;
+  private float pivotXPercent = UNSET;
+  private float pivotYPercent = UNSET;
 
   interface ExceptionLogMessageProvider {
 
@@ -467,6 +474,31 @@ public class ComponentHost extends Host implements DisappearingHost {
         mComponentAccessibilityDelegate.setNodeInfo((NodeInfo) tag);
       }
     }
+  }
+
+  @Override
+  public void setTransformPivot(
+      @FloatRange(from = 0.0, to = 100.0) float pivotXPercent,
+      @FloatRange(from = 0.0, to = 100.0) float pivotYPercent) {
+    this.pivotXPercent = pivotXPercent;
+    this.pivotYPercent = pivotYPercent;
+    updatePivots();
+  }
+
+  @Override
+  public void resetTransformPivot() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      this.pivotXPercent = UNSET;
+      this.pivotYPercent = UNSET;
+      AndroidPImpl.resetPivot(this);
+    } else {
+      setTransformPivot(50f, 50f);
+    }
+  }
+
+  private void updatePivots() {
+    setPivotX(getWidth() * pivotXPercent / 100f);
+    setPivotY(getHeight() * pivotYPercent / 100f);
   }
 
   /**
@@ -904,6 +936,13 @@ public class ComponentHost extends Host implements DisappearingHost {
     mInLayout = true;
     performLayout(changed, l, t, r, b);
     mInLayout = false;
+  }
+
+  @Override
+  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    if (pivotXPercent != UNSET && pivotYPercent != UNSET) {
+      updatePivots();
+    }
   }
 
   @Override
@@ -1583,6 +1622,14 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     public ComponentHostInvalidModification(String message) {
       super(message);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.P)
+  private static class AndroidPImpl {
+    @DoNotInline
+    public static void resetPivot(View view) {
+      view.resetPivot();
     }
   }
 }

@@ -17,12 +17,15 @@
 package com.facebook.litho.view
 
 import android.animation.StateListAnimator
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.SparseArray
+import android.view.View
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.ClickEvent
@@ -35,11 +38,14 @@ import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
+import com.facebook.litho.SupportsPivotTransform
 import com.facebook.litho.TouchEvent
+import com.facebook.litho.binders.viewBinder
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.RenderUnit
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */
@@ -424,12 +430,74 @@ inline fun Style.onInterceptTouch(
 ): Style = this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, if (enabled) action else null)
 
 /**
+ * Sets the transform pivot of a View (used for scale and rotation transforms) to be centered at the
+ * given percentages of the View's width and height. The default pivot point is (50f, 50f).
+ *
+ * The Component this Style is applied to must render to a View which implements
+ * [SupportsPivotTransform]. Rows and Columns both render to ComponentHost which implements this
+ * interface. If you need to apply a pivot to a Component that doesn't render to a View that
+ * implements this interface, you can either implement this interface in the View it does render to,
+ * or wrap this Component in a Row or Column and apply the transform and pivot there instead.
+ *
+ * Note: Unlike [View.setPivotX] and [View.setPivotY], the value of this pivot is a percentage, not
+ * an absolute pixel value.
+ *
+ * @param pivotXPercent the percentage of the width to use as the pivotX
+ * @param pivotYPercent the percentage of the height to use as the pivotY
+ * @see SupportsPivotTransform
+ * @see android.view.View.setPivotX
+ * @see android.view.View.setPivotY
+ */
+inline fun Style.pivotPercent(
+    @FloatRange(0.0, 100.0) pivotXPercent: Float = 50f,
+    @FloatRange(0.0, 100.0) pivotYPercent: Float = 50f
+): Style {
+  check(pivotXPercent in 0f..100f && pivotYPercent in 0f..100f) {
+    "Pivot values must be between 0 and 100f. Got ($pivotXPercent, $pivotYPercent)."
+  }
+  return this + Style.viewBinder(PivotBinder, Pair(pivotXPercent, pivotYPercent))
+}
+
+@PublishedApi
+internal object PivotBinder : RenderUnit.Binder<Pair<Float, Float>, View, Unit> {
+
+  private const val BadPivotClassErrorMessage =
+      "Setting transform pivot is only supported on Views that implement SupportsPivotTransform. " +
+          "If it isn't possible to add this interface to the View in question, wrap this " +
+          "Component in a Row or Column and apply the transform and pivot there instead."
+
+  override fun shouldUpdate(
+      currentModel: Pair<Float, Float>,
+      newModel: Pair<Float, Float>,
+      currentLayoutData: Any?,
+      nextLayoutData: Any?
+  ): Boolean = currentModel != newModel
+
+  override fun bind(context: Context, content: View, model: Pair<Float, Float>, layoutData: Any?) {
+    check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
+    content.setTransformPivot(model.first, model.second)
+  }
+
+  override fun unbind(
+      context: Context,
+      content: View,
+      model: Pair<Float, Float>,
+      layoutData: Any?,
+      bindData: Unit?
+  ) {
+    check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
+    content.resetTransformPivot()
+  }
+}
+
+/**
  * Sets the degree that this component is rotated around the pivot point. Increasing the value
  * results in clockwise rotation. By default, the pivot point is centered on the component. Setting
  * this property will cause the Component to be represented as a View at mount time if it wasn't
  * going to already.
  *
- * See [android.view.View.setRotation]
+ * @see android.view.View.setRotation
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.rotation(rotation: Float): Style =
     this + FloatStyleItem(FloatField.ROTATION, rotation)
@@ -439,7 +507,8 @@ inline fun Style.rotation(rotation: Float): Style =
  * point. Setting this property will cause the Component to be represented as a View at mount time
  * if it wasn't going to already.
  *
- * See [android.view.View.setRotationX]
+ * @see android.view.View.setRotationX
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.rotationX(rotationX: Float): Style =
     this + FloatStyleItem(FloatField.ROTATION_X, rotationX)
@@ -449,7 +518,8 @@ inline fun Style.rotationX(rotationX: Float): Style =
  * Setting this property will cause the Component to be represented as a View at mount time if it
  * wasn't going to already.
  *
- * See [android.view.View.setRotationY]
+ * @see android.view.View.setRotationY
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.rotationY(rotationY: Float): Style =
     this + FloatStyleItem(FloatField.ROTATION_Y, rotationY)
@@ -460,7 +530,9 @@ inline fun Style.rotationY(rotationY: Float): Style =
  * standard layout properties to control the size of your component. Setting this property will
  * cause the Component to be represented as a View at mount time if it wasn't going to already.
  *
- * See [android.view.View.setScaleX] [android.view.View.setScaleY]
+ * @see android.view.View.setScaleX
+ * @see android.view.View.setScaleY
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.scale(scale: Float): Style = this + FloatStyleItem(FloatField.SCALE, scale)
 
