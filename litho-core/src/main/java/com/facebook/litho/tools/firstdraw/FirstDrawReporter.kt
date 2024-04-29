@@ -73,29 +73,42 @@ fun Style.reportFirstContentDraw(
 ): Style = if (isContentReady) this.viewBinder(reporter) else this
 
 class FirstDrawReporter internal constructor(private val onDrawn: () -> Unit) :
-    RenderUnit.Binder<Any?, View, Any> {
+    RenderUnit.Binder<Unit, View, ViewTreeObserver.OnDrawListener> {
 
   private var isReported = false
 
   override fun shouldUpdate(
-      currentModel: Any?,
-      newModel: Any?,
+      currentModel: Unit,
+      newModel: Unit,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
     return false
   }
 
-  override fun bind(context: Context, view: View, model: Any?, layoutData: Any?): Any? {
-    if (isReported) return null
+  override fun bind(
+      context: Context,
+      view: View,
+      model: Unit,
+      layoutData: Any?
+  ): ViewTreeObserver.OnDrawListener? {
+    if (isReported) {
+      return null
+    }
     val listener = OnDrawListener(view, onDrawn)
     view.viewTreeObserver.addOnDrawListener(listener)
     return listener
   }
 
-  override fun unbind(context: Context, view: View, model: Any?, layoutData: Any?, bindData: Any?) {
+  override fun unbind(
+      context: Context,
+      view: View,
+      model: Unit,
+      layoutData: Any?,
+      bindData: ViewTreeObserver.OnDrawListener?
+  ) {
     if (bindData != null && view.viewTreeObserver.isAlive) {
-      view.viewTreeObserver.removeOnDrawListener(bindData as ViewTreeObserver.OnDrawListener)
+      view.viewTreeObserver.removeOnDrawListener(bindData)
     }
   }
 

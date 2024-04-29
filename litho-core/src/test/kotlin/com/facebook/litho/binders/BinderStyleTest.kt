@@ -411,7 +411,7 @@ class BinderStyleTest {
   private abstract class TestBinder<T>(
       private val shouldUpdate: Boolean = false,
       private val extractor: (T) -> Class<*>
-  ) : RenderUnit.Binder<Any?, T, Any> {
+  ) : RenderUnit.Binder<Unit, T, Any> {
 
     private val bindContent: MutableList<Class<*>> = LinkedList()
     private var numBindInvocations = 0
@@ -420,13 +420,13 @@ class BinderStyleTest {
     private var numUnbindInvocations = 0
 
     override fun shouldUpdate(
-        currentModel: Any?,
-        newModel: Any?,
+        currentModel: Unit,
+        newModel: Unit,
         currentLayoutData: Any?,
         nextLayoutData: Any?
     ): Boolean = shouldUpdate
 
-    override fun bind(context: Context, content: T, model: Any?, layoutData: Any?): Any {
+    override fun bind(context: Context, content: T, model: Unit, layoutData: Any?): Any {
       numBindInvocations++
       bindContent.add(extractor(content))
       return Unit
@@ -435,7 +435,7 @@ class BinderStyleTest {
     override fun unbind(
         context: Context,
         content: T,
-        model: Any?,
+        model: Unit,
         layoutData: Any?,
         bindData: Any?
     ) {
