@@ -122,6 +122,7 @@ internal constructor(
     @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
     @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
+    @JvmField val enableRecyclerThreadPoolConfig: Boolean = true
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

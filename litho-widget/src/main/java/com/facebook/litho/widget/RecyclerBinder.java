@@ -738,7 +738,9 @@ public class RecyclerBinder
 
     mComponentsConfiguration = tempConfiguration;
 
-    if (mLayoutHandlerFactory == null && mRecyclerBinderConfig.threadPoolConfig != null) {
+    if (mLayoutHandlerFactory == null
+        && mRecyclerBinderConfig.threadPoolConfig != null
+        && mComponentsConfiguration.enableRecyclerThreadPoolConfig) {
       mThreadPoolConfig = mRecyclerBinderConfig.threadPoolConfig;
       mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
     } else {
