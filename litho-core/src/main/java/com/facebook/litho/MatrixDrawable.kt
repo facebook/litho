@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.annotation.TargetApi
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.Rect
@@ -24,6 +25,7 @@ import android.graphics.Region
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.RippleDrawable
+import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import com.facebook.rendercore.transitions.TransitionUtils.BoundsCallback
@@ -196,6 +198,7 @@ class MatrixDrawable<T : Drawable?> : Drawable(), Drawable.Callback, Touchable, 
     unscheduleSelf(what)
   }
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onTouchEvent(event: MotionEvent, host: View): Boolean {
     val bounds = bounds
     val x = event.x.toInt() - bounds.left
@@ -205,7 +208,8 @@ class MatrixDrawable<T : Drawable?> : Drawable(), Drawable.Callback, Touchable, 
   }
 
   override fun shouldHandleTouchEvent(event: MotionEvent): Boolean =
-      mountedDrawable is RippleDrawable &&
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+          mountedDrawable is RippleDrawable &&
           event.actionMasked == MotionEvent.ACTION_DOWN &&
           bounds.contains(event.x.toInt(), event.y.toInt())
 

@@ -16,8 +16,10 @@
 
 package com.facebook.litho.testing.viewtree;
 
+import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
 import com.facebook.litho.ComponentHost;
@@ -208,6 +210,7 @@ public final class ViewPredicates {
    *
    * @param view the view to draw
    */
+  @TargetApi(Build.VERSION_CODES.KITKAT)
   private static String getDrawnViewDescription(View view) {
     final Canvas canvas = new Canvas();
     view.draw(canvas);

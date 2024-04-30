@@ -17,8 +17,10 @@
 package com.facebook.litho
 
 import android.animation.StateListAnimator
+import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.util.SparseArray
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO
@@ -56,6 +58,7 @@ class CommonPropsTest {
   }
 
   @Test
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   fun testSetPropsAndBuild() {
     commonProps.layoutDirection(YogaDirection.INHERIT.toLayoutDirection())
     commonProps.alignSelf(YogaAlign.AUTO)
