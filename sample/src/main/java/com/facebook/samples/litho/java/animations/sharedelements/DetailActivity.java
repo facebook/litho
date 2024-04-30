@@ -18,6 +18,7 @@ package com.facebook.samples.litho.java.animations.sharedelements;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -47,19 +48,21 @@ public class DetailActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     boolean landLitho = getIntent().getBooleanExtra(INTENT_LAND_LITHO, true);
-    // This transition here is used only as an example, any provided/custom Android transition can
-    // be used here.
-    Slide slide = new Slide(Gravity.BOTTOM);
-    slide.setInterpolator(
-        AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in));
-    if (getWindow() != null) {
-      getWindow().setEnterTransition(slide);
-    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      // This transition here is used only as an example, any provided/custom Android transition can
+      // be used here.
+      Slide slide = new Slide(Gravity.BOTTOM);
+      slide.setInterpolator(
+          AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in));
+      if (getWindow() != null) {
+        getWindow().setEnterTransition(slide);
+      }
 
-    // When landing on an Activity that renders a LithoView we need to postpone the enter
-    // transition.
-    if (landLitho) {
-      postponeEnterTransition();
+      // When landing on an Activity that renders a LithoView we need to postpone the enter
+      // transition.
+      if (landLitho) {
+        postponeEnterTransition();
+      }
     }
 
     super.onCreate(savedInstanceState);
@@ -76,8 +79,10 @@ public class DetailActivity extends AppCompatActivity {
           new LithoView.OnDirtyMountListener() {
             @Override
             public void onDirtyMount(LithoView view) {
-              // Continue the transition after Litho finishes it's dirty mount.
-              startPostponedEnterTransition();
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // Continue the transition after Litho finishes it's dirty mount.
+                startPostponedEnterTransition();
+              }
             }
           };
       LithoView lithoView =

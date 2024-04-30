@@ -47,10 +47,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import androidx.annotation.DoNotInline;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.view.ViewCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -375,7 +372,12 @@ class EditTextSpec {
         // Padding from the background will be added to the layout separately, so does not need to
         // be a part of this measurement.
         editText.setPadding(0, 0, 0, 0);
-        editText.setBackground(null);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+          editText.setBackgroundDrawable(null);
+        } else {
+          editText.setBackground(null);
+        }
       }
     }
 
@@ -703,7 +705,7 @@ class EditTextSpec {
 
     if (cursorDrawableRes != -1) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        AndroidQImpl.setTextCursorDrawable(editText, cursorDrawableRes);
+        editText.setTextCursorDrawable(cursorDrawableRes);
       } else {
         try {
           // Uses reflection because there is no public API to change cursor color programmatically.
@@ -865,7 +867,7 @@ class EditTextSpec {
     }
 
     @Override
-    public void setBackground(@Nullable Drawable background) {
+    public void setBackground(Drawable background) {
       if (background != null) {
         background.mutate();
       }
@@ -929,15 +931,5 @@ class EditTextSpec {
         break;
     }
     return alignment;
-  }
-
-  @RequiresApi(Build.VERSION_CODES.Q)
-  private static class AndroidQImpl {
-    private AndroidQImpl() {}
-
-    @DoNotInline
-    static void setTextCursorDrawable(EditText editText, @DrawableRes int cursorDrawableRes) {
-      editText.setTextCursorDrawable(cursorDrawableRes);
-    }
   }
 }

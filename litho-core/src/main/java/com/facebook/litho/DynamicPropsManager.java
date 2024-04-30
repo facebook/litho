@@ -183,7 +183,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         break;
 
       case KEY_ELEVATION:
-        if (target.getElevation() != 0) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && target.getElevation() != 0) {
           target.setElevation(0);
         }
         break;
@@ -270,7 +270,9 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         break;
 
       case KEY_ELEVATION:
-        target.setElevation(DynamicPropsManager.<Float>resolve(value));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          target.setElevation(DynamicPropsManager.<Float>resolve(value));
+        }
         break;
 
       case KEY_BACKGROUND_COLOR:
