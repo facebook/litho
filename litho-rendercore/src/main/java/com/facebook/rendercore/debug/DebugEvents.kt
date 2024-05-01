@@ -108,6 +108,7 @@ object DebugEventAttribute {
   const val NumItemsMounted = "numItemsMounted"
   const val NumItemsUnmounted = "numItemsUnmounted"
   const val WasInterrupted = "wasInterrupted"
+  const val ThreadPriority = "threadPriority"
 }
 
 /** Base class for marker events */

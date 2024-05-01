@@ -16,6 +16,7 @@
 
 package com.facebook.litho.debug
 
+import android.os.Process
 import com.facebook.rendercore.debug.DebugEvent
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
@@ -90,6 +91,7 @@ object LithoDebugEvents {
     fun run(treeId: Int, name: String) {
       dispatch(type = LithoDebugEvent.TreeFutureRun, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
+        attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }
 
@@ -97,6 +99,7 @@ object LithoDebugEvents {
     fun wait(treeId: Int, name: String) {
       dispatch(type = LithoDebugEvent.TreeFutureWait, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
+        attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }
 
@@ -105,6 +108,7 @@ object LithoDebugEvents {
       dispatch(type = LithoDebugEvent.TreeFutureGet, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
         attrs[DebugEventAttribute.WasInterrupted] = wasInterrupted
+        attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }
 
@@ -112,6 +116,7 @@ object LithoDebugEvents {
     fun resume(treeId: Int, name: String) {
       dispatch(type = LithoDebugEvent.TreeFutureResume, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
+        attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }
 
@@ -119,6 +124,7 @@ object LithoDebugEvents {
     fun interrupt(treeId: Int, name: String) {
       dispatch(type = LithoDebugEvent.TreeFutureInterrupt, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
+        attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }
   }
