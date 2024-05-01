@@ -259,7 +259,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.postponeViewRecycle = enabled
   }
 
-  fun postponeViewRecycleDleayMs(delay: Int): RecyclerBinderConfigBuilder = also {
+  fun postponeViewRecycleDelayMs(delay: Int): RecyclerBinderConfigBuilder = also {
     this.postponeViewRecycleDelayMs = delay
   }
 
