@@ -30,7 +30,6 @@ load(
 
 litho_android_library(
     name = "widget",
-    enable_compilation_tracer = True,
     exported_provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
     ],

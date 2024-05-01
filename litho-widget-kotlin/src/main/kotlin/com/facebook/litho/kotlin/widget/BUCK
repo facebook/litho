@@ -32,7 +32,6 @@ load(
 
 litho_android_library(
     name = "widget",
-    enable_compilation_tracer = True,
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     plugins = [
