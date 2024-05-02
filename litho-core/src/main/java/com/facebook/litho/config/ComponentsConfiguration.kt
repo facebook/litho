@@ -95,6 +95,8 @@ internal constructor(
      * will process visibility events.
      */
     @JvmField val visibilityProcessingEnabled: Boolean = true,
+    /** Whether we use a Recycler based on a Primitive implementation. */
+    @JvmField val primitiveRecyclerEnabled: Boolean = false,
     /**
      * This class is an error event handler that clients can optionally set on a [ComponentTree] to
      * gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
@@ -235,10 +237,6 @@ internal constructor(
     @JvmField var layoutThreadKeepAliveTimeMs: Long = 1_000
     @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
-    @JvmField var enableMountableRecycler: Boolean = false
-    @JvmField var enableMountableTwoBindersRecycler: Boolean = false
-    @JvmField var enableSeparateAnimatorBinder: Boolean = false
-    @JvmField var enableMountableRecyclerInGroups: Boolean = false
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var enableRefactorLithoVisibilityEventsController: Boolean = false
     @JvmField var enableDefaultAOSPLithoVisibilityEventsControllerAPI: Boolean = false
@@ -295,6 +293,7 @@ internal constructor(
     private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
     private var unmountOnDetachedFromWindow = baseConfig.unmountOnDetachedFromWindow
+    private var primitiveRecyclerEnabled = baseConfig.primitiveRecyclerEnabled
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -376,6 +375,10 @@ internal constructor(
       this.unmountOnDetachedFromWindow = unmountOnDetachedFromWindow
     }
 
+    fun primitiveRecyclerEnabled(primitiveRecyclerEnabled: Boolean): Builder = also {
+      this.primitiveRecyclerEnabled = primitiveRecyclerEnabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -406,7 +409,8 @@ internal constructor(
           shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
           avoidRedundantPreAllocations = avoidRedundantPreAllocations,
-          unmountOnDetachedFromWindow = unmountOnDetachedFromWindow)
+          unmountOnDetachedFromWindow = unmountOnDetachedFromWindow,
+          primitiveRecyclerEnabled = primitiveRecyclerEnabled)
     }
   }
 }
