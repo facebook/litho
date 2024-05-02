@@ -61,4 +61,3 @@ com.facebook.litho.kotlin.widget
 com.facebook.litho.sections.widget
 com.facebook.litho.widget.canvas
 com.facebook.litho.widget.collection
-main.kotlin.com.facebook.litho.kotlin.widget
