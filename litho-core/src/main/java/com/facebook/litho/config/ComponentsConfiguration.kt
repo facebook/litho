@@ -83,7 +83,6 @@ internal constructor(
      * [MountItemsPool]
      */
     @JvmField val componentHostRecyclingEnabled: Boolean = false,
-    val shouldEnableDefaultAOSPLithoVisibilityEventsController: Boolean = false,
     /**
      * Controls whether we attempt to batch state updates to avoid running the render process for
      * every state update in a small time window. This has been proven to be an overall improvement
@@ -238,8 +237,6 @@ internal constructor(
     @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var shouldOverrideHasTransientState: Boolean = false
-    @JvmField var enableRefactorLithoVisibilityEventsController: Boolean = false
-    @JvmField var enableDefaultAOSPLithoVisibilityEventsControllerAPI: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
     @JvmField var disableReleaseComponentTreeInRecyclerBinder: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
@@ -279,8 +276,6 @@ internal constructor(
     private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
-    private var shouldEnableDefaultAOSPLithoVisibilityEventsController =
-        baseConfig.shouldEnableDefaultAOSPLithoVisibilityEventsController
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
     private var errorEventHandler = baseConfig.errorEventHandler
     private var componentHostInvalidModificationPolicy =
@@ -325,12 +320,6 @@ internal constructor(
 
     fun componentHostRecyclingEnabled(enabled: Boolean): Builder = also {
       componentHostRecyclingEnabled = enabled
-    }
-
-    fun shouldEnableDefaultAOSPLithoVisibilityEventsController(enabled: Boolean): Builder = also {
-      if (enableDefaultAOSPLithoVisibilityEventsControllerAPI) {
-        shouldEnableDefaultAOSPLithoVisibilityEventsController = enabled
-      }
     }
 
     fun enableStateUpdatesBatching(enabled: Boolean): Builder = also {
@@ -389,8 +378,6 @@ internal constructor(
           preAllocationHandler = preAllocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
           componentHostRecyclingEnabled = componentHostRecyclingEnabled,
-          shouldEnableDefaultAOSPLithoVisibilityEventsController =
-              shouldEnableDefaultAOSPLithoVisibilityEventsController,
           enableStateUpdatesBatching = enableStateUpdatesBatching,
           componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,

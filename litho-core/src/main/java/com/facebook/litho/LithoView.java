@@ -26,7 +26,6 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -41,17 +40,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends BaseMountingView implements LithoVisibilityEventsListener {
-
+public class LithoView extends BaseMountingView {
   private static final String LITHO_LIFECYCLE_FOUND =
       "lithoView:LithoVisibilityEventsControllerFound";
 
   private @Nullable ComponentTree mComponentTree;
   private final ComponentContext mComponentContext;
   private boolean mIsAttachedForTest;
-  // The bounds of the visible rect that was used for the previous incremental mount.
-  private final LithoVisibilityEventsControllerHolder mLithoVisibilityEventsControllerHolder =
-      new LithoVisibilityEventsControllerHolder();
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
@@ -116,13 +111,7 @@ public class LithoView extends BaseMountingView implements LithoVisibilityEvents
       Component component,
       LithoVisibilityEventsController lifecycleProvider) {
     final LithoView lithoView = new LithoView(context);
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      lithoView.setComponentTree(ComponentTree.create(context, component).build());
-      lithoView.setLifecycleProvider(lifecycleProvider);
-    } else {
-      lithoView.setComponentTree(
-          ComponentTree.create(context, component, lifecycleProvider).build());
-    }
+    lithoView.setComponentTree(ComponentTree.create(context, component, lifecycleProvider).build());
     return lithoView;
   }
 
@@ -160,10 +149,6 @@ public class LithoView extends BaseMountingView implements LithoVisibilityEvents
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      subscribeToLifecycleProviderHolder();
-    }
   }
 
   protected void forceRelayout() {
@@ -471,9 +456,6 @@ public class LithoView extends BaseMountingView implements LithoVisibilityEvents
       }
       mComponentTree.setLithoView(this);
 
-      if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-        subscribeHolderToLifecycleProviderFromComponentTree();
-      }
       if (isAttached()) {
         mComponentTree.attach();
       } else {
@@ -509,11 +491,7 @@ public class LithoView extends BaseMountingView implements LithoVisibilityEvents
    *     LithoVisibilityEventsController is set on it, false otherwise.
    */
   public synchronized boolean componentTreeHasLifecycleProvider() {
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      return mLithoVisibilityEventsControllerHolder.getHeldLifecycleProvider() != null;
-    } else {
-      return mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider();
-    }
+    return mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider();
   }
 
   /**
@@ -525,139 +503,16 @@ public class LithoView extends BaseMountingView implements LithoVisibilityEvents
    */
   public synchronized boolean subscribeComponentTreeToLifecycleProvider(
       LithoVisibilityEventsController lifecycleProvider) {
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      setLifecycleProvider(lifecycleProvider);
-      return true;
-    } else {
-      if (mComponentTree == null) {
-        return false;
-      }
-
-      if (mComponentTree.isSubscribedToLifecycleProvider()) {
-        return false;
-      }
-
-      mComponentTree.subscribeToLifecycleProvider(lifecycleProvider);
-      return true;
+    if (mComponentTree == null) {
+      return false;
     }
-  }
 
-  // It is preferred to call getLifecycleStatus() directly if you need the status of the
-  // LifecycleProvider
-  @Nullable
-  LithoVisibilityEventsController getLithoVisibilityEventsController() {
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      return mLithoVisibilityEventsControllerHolder;
-    } else {
-      return null;
+    if (mComponentTree.isSubscribedToLifecycleProvider()) {
+      return false;
     }
-  }
 
-  @Nullable
-  LithoVisibilityEventsController.LithoVisibilityState getLifecycleStatus() {
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      return mLithoVisibilityEventsControllerHolder.getVisibilityState();
-    } else {
-      return null;
-    }
-  }
-
-  private void subscribeHolderToLifecycleProviderFromComponentTree() {
-    if (mComponentTree != null) {
-      LithoVisibilityEventsController lifecycleProvider =
-          mComponentTree.getLifecycleProviderForLithoView();
-      if (lifecycleProvider != null) {
-        setLifecycleProvider(lifecycleProvider);
-        mComponentTree.clearLifecycleProvider();
-      } else {
-        if (mComponentTree.shouldEnableDefaultAOSPLithoVisibilityEventsController()
-            && isAttached()) {
-          mLithoVisibilityEventsControllerHolder.attachDefaultAOSPLithoVisibilityEventsController(
-              this);
-        }
-      }
-    }
-  }
-
-  private void subscribeToLifecycleProviderHolder() {
-    mLithoVisibilityEventsControllerHolder.addListener(this);
-  }
-
-  private void unsubscribeFromLifecycleProviderHolder() {
-    mLithoVisibilityEventsControllerHolder.removeListener(this);
-    mLithoVisibilityEventsControllerHolder.setHeldLifecycleProvider(null);
-  }
-
-  private void subscribeHolderToParentLifecycleProvider() {
-    LithoView parentLithoView = getParentLithoView();
-    if (parentLithoView != null) {
-      parentLithoView.mLithoVisibilityEventsControllerHolder.addListener(
-          mLithoVisibilityEventsControllerHolder);
-      if (parentLithoView.getLifecycleStatus() != null) {
-        mLithoVisibilityEventsControllerHolder.moveToVisibilityState(
-            parentLithoView.getLifecycleStatus());
-      }
-    }
-  }
-
-  private void unsubscribeHolderFromParentLifecycleProvider() {
-    LithoView parentLithoView = getParentLithoView();
-    if (parentLithoView != null) {
-      parentLithoView.mLithoVisibilityEventsControllerHolder.removeListener(
-          mLithoVisibilityEventsControllerHolder);
-    }
-  }
-
-  private synchronized void setLifecycleProvider(
-      LithoVisibilityEventsController lifecycleProvider) {
-    mLithoVisibilityEventsControllerHolder.setHeldLifecycleProvider(lifecycleProvider);
-    if (mComponentTree != null) {
-      mComponentTree.setLifecycleOwner(
-          mLithoVisibilityEventsControllerHolder.getHeldLifecycleProvider());
-    }
-  }
-
-  @Nullable
-  private LithoView getParentLithoView() {
-    ViewParent parent = this.getParent();
-    while (parent != null) {
-      if (parent instanceof LithoView) {
-        return (LithoView) parent;
-      }
-      parent = parent.getParent();
-    }
-    return null;
-  }
-
-  @Override
-  public void onMovedToState(LithoVisibilityEventsController.LithoVisibilityState state) {
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      switch (state) {
-        case HINT_VISIBLE:
-          onMoveToStateHintVisible();
-          return;
-        case HINT_INVISIBLE:
-          onMoveToStateHintInvisible();
-          return;
-        case DESTROYED:
-          onMoveToStateDestroy();
-          return;
-        default:
-          throw new IllegalStateException("Illegal state: " + state);
-      }
-    }
-  }
-
-  private void onMoveToStateHintVisible() {
-    setVisibilityHintNonRecursive(true);
-  }
-
-  private void onMoveToStateHintInvisible() {
-    setVisibilityHintNonRecursive(false);
-  }
-
-  private void onMoveToStateDestroy() {
-    unsubscribeFromLifecycleProviderHolder();
+    mComponentTree.subscribeToLifecycleProvider(lifecycleProvider);
+    return true;
   }
 
   @Override
@@ -698,15 +553,6 @@ public class LithoView extends BaseMountingView implements LithoVisibilityEvents
 
     AccessibilityManagerCompat.addAccessibilityStateChangeListener(
         mAccessibilityManager, mAccessibilityStateChangeListener);
-
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      if (mComponentTree != null
-          && mComponentTree.shouldEnableDefaultAOSPLithoVisibilityEventsController()) {
-        mLithoVisibilityEventsControllerHolder.attachDefaultAOSPLithoVisibilityEventsController(
-            this);
-      }
-      subscribeHolderToParentLifecycleProvider();
-    }
   }
 
   @Override
@@ -724,11 +570,6 @@ public class LithoView extends BaseMountingView implements LithoVisibilityEvents
         mAccessibilityManager, mAccessibilityStateChangeListener);
 
     mSuppressMeasureComponentTree = false;
-
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      mLithoVisibilityEventsControllerHolder.detachDefaultAOSPLithoVisibilityEventsController();
-      unsubscribeHolderFromParentLifecycleProvider();
-    }
   }
 
   @Override

@@ -787,11 +787,6 @@ public class ComponentContext {
         && mLithoConfiguration.componentsConfig.getShouldCacheLayouts();
   }
 
-  public boolean shouldEnableDefaultAOSPLithoVisibilityEventsController() {
-    return mLithoConfiguration.componentsConfig
-        .getShouldEnableDefaultAOSPLithoVisibilityEventsController();
-  }
-
   public final boolean shouldUseNonRebindingEventHandlers() {
     return mLithoConfiguration.componentsConfig.getUseNonRebindingEventHandlers();
   }
@@ -817,11 +812,7 @@ public class ComponentContext {
 
   @Nullable
   public LithoVisibilityEventsController getLifecycleProvider() {
-    if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      return null;
-    } else {
-      return mLifecycleProvider;
-    }
+    return mLifecycleProvider;
   }
 
   @VisibleForTesting

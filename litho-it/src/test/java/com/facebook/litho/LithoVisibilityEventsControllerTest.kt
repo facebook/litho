@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
@@ -146,28 +145,25 @@ class LithoVisibilityEventsControllerTest {
   fun lithoLifecycleProviderComponentTreeResetVisibilityFlags() {
     // In the new implementation, `setVisibilityHintNonRecursive` is always called in
     // `setLithoView`, so mHasVisibilityHint will be still true after set new Component Tree
-    if (!ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-      legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
-      legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
-      lithoLifecycleProviderDelegate.moveToVisibilityState(
-          LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
-      var hasVisibilityHint: Boolean =
-          Whitebox.getInternalState<Boolean>(legacyLithoViewRule.lithoView, "mHasVisibilityHint")
-      var pauseMountingWhileVisibilityHintFalse: Boolean =
-          Whitebox.getInternalState<Boolean>(
-              legacyLithoViewRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
-      assertThat(hasVisibilityHint).isTrue
-      assertThat(pauseMountingWhileVisibilityHintFalse).isTrue
+    legacyLithoViewRule.setRoot(component).setSizeSpecs(exactly(10), exactly(5))
+    legacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10)
+    lithoLifecycleProviderDelegate.moveToVisibilityState(
+        LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
+    var hasVisibilityHint: Boolean =
+        Whitebox.getInternalState<Boolean>(legacyLithoViewRule.lithoView, "mHasVisibilityHint")
+    var pauseMountingWhileVisibilityHintFalse: Boolean =
+        Whitebox.getInternalState<Boolean>(
+            legacyLithoViewRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
+    assertThat(hasVisibilityHint).isTrue
+    assertThat(pauseMountingWhileVisibilityHintFalse).isTrue
 
-      legacyLithoViewRule.useComponentTree(
-          ComponentTree.create(legacyLithoViewRule.context).build())
-      hasVisibilityHint =
-          Whitebox.getInternalState<Boolean>(legacyLithoViewRule.lithoView, "mHasVisibilityHint")
-      pauseMountingWhileVisibilityHintFalse =
-          Whitebox.getInternalState<Boolean>(
-              legacyLithoViewRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
-      assertThat(hasVisibilityHint).isFalse
-      assertThat(pauseMountingWhileVisibilityHintFalse).isFalse
-    }
+    legacyLithoViewRule.useComponentTree(ComponentTree.create(legacyLithoViewRule.context).build())
+    hasVisibilityHint =
+        Whitebox.getInternalState<Boolean>(legacyLithoViewRule.lithoView, "mHasVisibilityHint")
+    pauseMountingWhileVisibilityHintFalse =
+        Whitebox.getInternalState<Boolean>(
+            legacyLithoViewRule.lithoView, "mPauseMountingWhileVisibilityHintFalse")
+    assertThat(hasVisibilityHint).isFalse
+    assertThat(pauseMountingWhileVisibilityHintFalse).isFalse
   }
 }

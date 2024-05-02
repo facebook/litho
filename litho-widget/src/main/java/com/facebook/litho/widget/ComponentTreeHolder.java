@@ -382,17 +382,12 @@ public class ComponentTreeHolder {
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
       ComponentTree.Builder builder;
-      if (ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-        builder = ComponentTree.create(context, mRenderInfo.getComponent(), mParentLifecycle);
-      } else {
-        if (mParentLifecycle != null) {
-          mComponentTreeHolderLifecycleProvider =
-              new ComponentTreeHolderVisibilityEventsController();
-        }
-        builder =
-            ComponentTree.create(
-                context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
+      if (mParentLifecycle != null) {
+        mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderVisibilityEventsController();
       }
+      builder =
+          ComponentTree.create(
+              context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
 
       String renderInfoLogTag = mRenderInfo.getLogTag();
 
@@ -455,12 +450,11 @@ public class ComponentTreeHolder {
   @UiThread
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
-      if (!ComponentsConfiguration.enableRefactorLithoVisibilityEventsController) {
-        if (mComponentTreeHolderLifecycleProvider != null) {
-          mComponentTreeHolderLifecycleProvider.moveToVisibilityState(DESTROYED);
 
-          return;
-        }
+      if (mComponentTreeHolderLifecycleProvider != null) {
+        mComponentTreeHolderLifecycleProvider.moveToVisibilityState(DESTROYED);
+
+        return;
       }
 
       mComponentTree.release();
