@@ -42,7 +42,8 @@ module.exports = {
             'mainconcepts/use-ref',
             'mainconcepts/use-cached',
             'mainconcepts/use-error-boundary',
-            'mainconcepts/use-live-data'
+            'mainconcepts/use-live-data',
+            'mainconcepts/use-callback'
           ],
         },
         {
