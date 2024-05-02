@@ -123,7 +123,7 @@ class TestCollectionAssert(testCollection: TestCollection) :
   /** Assert visible views within the collection has the [textRes]'s text as its text. */
   fun hasVisibleText(@StringRes textRes: Int): TestCollectionAssert =
       hasVisibleText(
-          ApplicationProvider.getApplicationContext<Context>().getResources().getString(textRes))
+          ApplicationProvider.getApplicationContext<Context>().resources.getString(textRes))
 
   /** Assert visible views within the collection does not have the [text] as its text. */
   fun doesNotHaveVisibleText(text: String): TestCollectionAssert {
@@ -136,7 +136,7 @@ class TestCollectionAssert(testCollection: TestCollection) :
   /** Assert visible views within the collection does not have the [textRes]'s text as its text. */
   fun doesNotHaveVisibleText(@StringRes textRes: Int): TestCollectionAssert =
       doesNotHaveVisibleText(
-          ApplicationProvider.getApplicationContext<Context>().getResources().getString(textRes))
+          ApplicationProvider.getApplicationContext<Context>().resources.getString(textRes))
 
   private fun LithoView.hasVisibleText(text: String): Boolean {
     val viewTree = ViewTree.of(this)

@@ -35,7 +35,7 @@ class PropResourceTypeParentKComponent(
 
     if (!useResourceType) {
       // start_prop_without_resource_type_usage
-      val res: Resources = context.getResources()
+      val res: Resources = context.resources
       return PropWithoutResourceTypeKComponent(
           name = res.getString(R.string.name_string),
           size = dimenRes(R.dimen.primary_text_size),
