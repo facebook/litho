@@ -22,7 +22,6 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.facebook.litho.config.ComponentsConfiguration
 
 /**
@@ -52,14 +51,12 @@ class LithoRenderTreeView @JvmOverloads constructor(context: Context, attrs: Att
 
   var onClean: (() -> Unit)? = null
 
-  override fun onAttachedToWindow() {
-    super.onAttachedToWindow()
-    val lifecycleOwner = findViewTreeLifecycleOwner()
-    if (lifecycleOwner != null && currentLifecycleOwner != lifecycleOwner) {
-      currentLifecycleOwner?.lifecycle?.removeObserver(this)
-      lifecycleOwner.lifecycle.addObserver(this)
-      currentLifecycleOwner = lifecycleOwner
-    }
+  override fun onLifecycleOwnerChanged(
+      previousLifecycleOwner: LifecycleOwner?,
+      currentLifecycleOwner: LifecycleOwner?
+  ) {
+    previousLifecycleOwner?.lifecycle?.removeObserver(this)
+    currentLifecycleOwner?.lifecycle?.addObserver(this)
   }
 
   override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

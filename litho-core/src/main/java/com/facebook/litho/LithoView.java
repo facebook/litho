@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
+import androidx.lifecycle.LifecycleOwner;
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -347,6 +348,17 @@ public class LithoView extends BaseMountingView {
     }
   }
 
+  @Override
+  protected void onLifecycleOwnerChanged(
+      @Nullable LifecycleOwner previousLifecycleOwner,
+      @Nullable LifecycleOwner currentLifecycleOwner) {
+    if (ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
+      if (mComponentTree != null && currentLifecycleOwner != null) {
+        mComponentTree.setLifecycleOwnerTreeProp(currentLifecycleOwner);
+      }
+    }
+  }
+
   private static int adjustMeasureSpecForPadding(int measureSpec, int padding) {
     final int mode = MeasureSpec.getMode(measureSpec);
     if (mode == MeasureSpec.UNSPECIFIED) {
@@ -457,6 +469,11 @@ public class LithoView extends BaseMountingView {
       mComponentTree.setLithoView(this);
 
       if (isAttached()) {
+        if (ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
+          if (getLifecycleOwner() != null) {
+            mComponentTree.setLifecycleOwnerTreeProp(getLifecycleOwner());
+          }
+        }
         mComponentTree.attach();
       } else {
         requestLayout();

@@ -237,6 +237,7 @@ internal constructor(
     @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var shouldOverrideHasTransientState: Boolean = false
+    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
     @JvmField var disableReleaseComponentTreeInRecyclerBinder: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false

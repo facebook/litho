@@ -2725,14 +2725,18 @@ public class ComponentTree
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
 
-    setLifecycleOwner(lifecycleProvider);
+    if (!ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
+      if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
+        LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+        if (owner != null) {
+          setLifecycleOwnerTreeProp(owner);
+        }
+      }
+    }
   }
 
-  synchronized void setLifecycleOwner(@Nullable LithoVisibilityEventsController lifecycleProvider) {
-    if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-      LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
-      setInternalTreeProp(LifecycleOwnerTreeProp, owner);
-    }
+  synchronized void setLifecycleOwnerTreeProp(LifecycleOwner owner) {
+    setInternalTreeProp(LifecycleOwnerTreeProp, owner);
   }
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
