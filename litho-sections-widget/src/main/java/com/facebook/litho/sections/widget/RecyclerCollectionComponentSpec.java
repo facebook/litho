@@ -222,7 +222,9 @@ public class RecyclerCollectionComponentSpec {
       componentsConfiguration = c.mLithoConfiguration.componentsConfig;
     }
 
-    boolean isRecyclerPrimitiveEnabled = componentsConfiguration.primitiveRecyclerEnabled;
+    boolean isPrimitiveRecyclerEnabled =
+        recyclerConfiguration.getRecyclerBinderConfiguration().isPrimitiveRecyclerEnabled()
+            || componentsConfiguration.primitiveRecyclerEnabled;
 
     boolean shouldNotWrapContent =
         !binder.canMeasure()
@@ -238,7 +240,7 @@ public class RecyclerCollectionComponentSpec {
 
     Component recyclerComponent;
 
-    if (!isRecyclerPrimitiveEnabled) {
+    if (!isPrimitiveRecyclerEnabled) {
       final Recycler.Builder recycler =
           Recycler.create(c)
               .clipToPadding(clipToPadding)

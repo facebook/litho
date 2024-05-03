@@ -30,6 +30,12 @@ public class RecyclerBinderConfiguration {
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
 
+  /**
+   * Whether to use the primitive recycler API. This is an experimental feature and should not be
+   * used outside of the Litho team.
+   */
+  private final boolean mPrimitiveRecyclerEnabled;
+
   private final RecyclerBinderConfig mRecyclerBinderConfig;
 
   public static Builder create() {
@@ -44,11 +50,13 @@ public class RecyclerBinderConfiguration {
       RecyclerBinderConfig recyclerBinderConfig,
       boolean useBackgroundChangeSets,
       @Nullable RunnableHandler changeSetThreadHandler,
-      boolean postToFrontOfQueueForFirstChangeset) {
+      boolean postToFrontOfQueueForFirstChangeset,
+      boolean primitiveRecyclerEnabled) {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mRecyclerBinderConfig = recyclerBinderConfig;
+    mPrimitiveRecyclerEnabled = primitiveRecyclerEnabled;
   }
 
   public boolean getUseBackgroundChangeSets() {
@@ -67,12 +75,17 @@ public class RecyclerBinderConfiguration {
     return mRecyclerBinderConfig;
   }
 
+  public boolean isPrimitiveRecyclerEnabled() {
+    return mPrimitiveRecyclerEnabled;
+  }
+
   public static class Builder {
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mPostToFrontOfQueueForFirstChangeset;
+    private boolean mIsPrimitiveRecyclerEnabled = false;
 
     Builder() {}
 
@@ -82,6 +95,7 @@ public class RecyclerBinderConfiguration {
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
+      this.mIsPrimitiveRecyclerEnabled = configuration.mPrimitiveRecyclerEnabled;
     }
 
     /**
@@ -114,6 +128,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder isPrimitiveRecyclerEnabled(boolean isPrimitiveRecyclerEnabled) {
+      mIsPrimitiveRecyclerEnabled = isPrimitiveRecyclerEnabled;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       RecyclerBinderConfig builderRecyclerBinderConfig = mRecyclerBinderConfig;
 
@@ -123,7 +142,8 @@ public class RecyclerBinderConfiguration {
               : new RecyclerBinderConfig(),
           mUseBackgroundChangeSets,
           mChangeSetThreadHandler,
-          mPostToFrontOfQueueForFirstChangeset);
+          mPostToFrontOfQueueForFirstChangeset,
+          mIsPrimitiveRecyclerEnabled);
     }
   }
 }
