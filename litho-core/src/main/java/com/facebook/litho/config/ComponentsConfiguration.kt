@@ -123,7 +123,8 @@ internal constructor(
     @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
     @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
-    @JvmField val enableRecyclerThreadPoolConfig: Boolean = true
+    @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
+    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -237,7 +238,6 @@ internal constructor(
     @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var shouldOverrideHasTransientState: Boolean = false
-    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
     @JvmField var disableReleaseComponentTreeInRecyclerBinder: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
@@ -290,6 +290,8 @@ internal constructor(
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
     private var unmountOnDetachedFromWindow = baseConfig.unmountOnDetachedFromWindow
     private var primitiveRecyclerEnabled = baseConfig.primitiveRecyclerEnabled
+    private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
+        baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -369,6 +371,13 @@ internal constructor(
       this.primitiveRecyclerEnabled = primitiveRecyclerEnabled
     }
 
+    fun enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner(
+        enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean
+    ): Builder = also {
+      this.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
+          enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -398,7 +407,9 @@ internal constructor(
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
           avoidRedundantPreAllocations = avoidRedundantPreAllocations,
           unmountOnDetachedFromWindow = unmountOnDetachedFromWindow,
-          primitiveRecyclerEnabled = primitiveRecyclerEnabled)
+          primitiveRecyclerEnabled = primitiveRecyclerEnabled,
+          enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
+              enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner)
     }
   }
 }

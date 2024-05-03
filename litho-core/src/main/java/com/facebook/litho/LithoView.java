@@ -352,7 +352,8 @@ public class LithoView extends BaseMountingView {
   protected void onLifecycleOwnerChanged(
       @Nullable LifecycleOwner previousLifecycleOwner,
       @Nullable LifecycleOwner currentLifecycleOwner) {
-    if (ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
+    if (ComponentsConfiguration.defaultInstance
+        .enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
       if (mComponentTree != null && currentLifecycleOwner != null) {
         mComponentTree.setLifecycleOwnerTreeProp(currentLifecycleOwner);
       }
@@ -469,7 +470,8 @@ public class LithoView extends BaseMountingView {
       mComponentTree.setLithoView(this);
 
       if (isAttached()) {
-        if (ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
+        if (ComponentsConfiguration.defaultInstance
+            .enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
           if (getLifecycleOwner() != null) {
             mComponentTree.setLifecycleOwnerTreeProp(getLifecycleOwner());
           }

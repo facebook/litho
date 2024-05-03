@@ -2725,7 +2725,8 @@ public class ComponentTree
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
 
-    if (!ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
+    if (!ComponentsConfiguration.defaultInstance
+        .enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
       if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
         LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
         if (owner != null) {

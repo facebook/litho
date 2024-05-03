@@ -30,14 +30,11 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,28 +45,12 @@ import org.robolectric.annotation.LooperMode
 class UseLiveDataTest {
 
   private val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
-  private var prevEnableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner = false
   @get:Rule
   val rule: LithoViewRule =
       LithoViewRule(
           lithoVisibilityEventsController = {
             AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
           })
-
-  @Before
-  fun setup() {
-    prevEnableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
-        ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
-    if (ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner == true) {
-      ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner = false
-    }
-  }
-
-  @After
-  fun breakdown() {
-    ComponentsConfiguration.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
-        prevEnableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
-  }
 
   @Test
   fun `should observe initial live data value`() {
