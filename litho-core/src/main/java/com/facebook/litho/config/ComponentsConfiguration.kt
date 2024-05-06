@@ -124,7 +124,8 @@ internal constructor(
     @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
     @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
-    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false
+    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
+    @JvmField var skipHostAlphaReset: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -246,7 +247,6 @@ internal constructor(
     @JvmField var bindOnSameComponentTree: Boolean = true
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
     @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
-    @JvmField var skipHostAlphaReset: Boolean = false
     @JvmField var useOneShotPreDrawListener: Boolean = false
     @JvmField var useNewCacheValueLogic: Boolean = false
 
@@ -292,6 +292,7 @@ internal constructor(
     private var primitiveRecyclerEnabled = baseConfig.primitiveRecyclerEnabled
     private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
         baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
+    private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -378,6 +379,10 @@ internal constructor(
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
     }
 
+    fun skipHostAlphaReset(skipHostAlphaReset: Boolean): Builder = also {
+      this.skipHostAlphaReset = skipHostAlphaReset
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -409,7 +414,8 @@ internal constructor(
           unmountOnDetachedFromWindow = unmountOnDetachedFromWindow,
           primitiveRecyclerEnabled = primitiveRecyclerEnabled,
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
-              enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner)
+              enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
+          skipHostAlphaReset = skipHostAlphaReset)
     }
   }
 }
