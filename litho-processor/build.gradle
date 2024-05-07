@@ -18,8 +18,8 @@ import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'java'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = rootProject.sourceCompatibilityVersion
+targetCompatibility = rootProject.targetCompatibilityVersion
 
 dependencies {
     // We *generate* code based on these annotations, so we cannot just depend on them
@@ -37,8 +37,8 @@ dependencies {
     testImplementation deps.junit
     testImplementation deps.assertjCore
     compileJava {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = rootProject.sourceCompatibilityVersion
+        targetCompatibility = rootProject.targetCompatibilityVersion
     }
 }
 
