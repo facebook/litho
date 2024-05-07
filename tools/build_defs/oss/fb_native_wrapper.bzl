@@ -97,7 +97,5 @@ fb_native = struct(
     test_suite = native.test_suite,
     versioned_alias = native.versioned_alias,
     worker_tool = native.worker_tool,
-    xcode_postbuild_script = native.xcode_postbuild_script,
-    xcode_prebuild_script = native.xcode_prebuild_script,
     zip_file = native.zip_file,
 )
