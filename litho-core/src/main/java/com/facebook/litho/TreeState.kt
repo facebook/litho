@@ -352,7 +352,14 @@ class TreeState {
     applyPreviousRenderData(layoutState.scopedComponentInfosNeedingPreviousRenderData)
   }
 
+  @JvmName("getPreviousLayoutStateData")
+  internal fun getPreviousLayoutStateData(): LayoutStateLiteData {
+    return renderState.getPreviousLayoutStateData()
+  }
+
   fun recordRenderData(layoutState: LayoutState) {
+    renderState.recordLayoutStateData(
+        LayoutStateLiteData(layoutState.id, layoutState.transitionData?.transitionsWithDependency))
     val componentScopes = layoutState.scopedComponentInfosNeedingPreviousRenderData
     if (CollectionsUtils.isNullOrEmpty(componentScopes)) {
       return
