@@ -111,6 +111,25 @@ class IncrementalMountExtensionTest {
   }
 
   @Test
+  fun whenVisibleBoundsIsZeroAndShouldMountZeroBoundsContent_shouldMountEverything() {
+    val c = renderCoreTestRule.context
+    val extensions = arrayOf<RenderCoreExtension<*, *>>(IncrementalMountRenderCoreExtension(true))
+    val root: LayoutResult =
+        SimpleLayoutResult.create()
+            .renderUnit(ViewWrapperUnit(TextView(c), 1))
+            .width(100)
+            .height(100)
+            .build()
+    renderCoreTestRule
+        .useExtensions(extensions)
+        .useRootNode(LayoutResultWrappingNode(root))
+        .setSizePx(0, 0)
+        .render()
+    val host = renderCoreTestRule.rootHost as HostView
+    assertThat(host.getChildAt(0)).isInstanceOf(TextView::class.java)
+  }
+
+  @Test
   fun whenVisibleBoundsChangeWithBoundaryConditions_shouldMountAndUnMountCorrectly() {
     val c = renderCoreTestRule.context
     val parent = FrameLayout(c)
