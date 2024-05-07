@@ -28,8 +28,7 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
 fun <T> ComponentScope.useCached(vararg inputs: Any?, calculator: () -> T): T {
   val globalKey = context.globalKey
   val hookIndex = useCachedIndex++
-  val hookKey = "$globalKey:$hookIndex"
-  val cacheInputs = CachedInputs(hookKey, inputs)
+  val cacheInputs = CachedInputs(inputs)
   val result =
       context.getCachedValue(globalKey, hookIndex, cacheInputs)
           ?: calculator().also { context.putCachedValue(globalKey, hookIndex, cacheInputs, it) }
@@ -37,23 +36,16 @@ fun <T> ComponentScope.useCached(vararg inputs: Any?, calculator: () -> T): T {
   @Suppress("UNCHECKED_CAST") return result as T
 }
 
-internal class CachedInputs(val hookKey: String, val inputs: Array<out Any?>) {
+/**
+ * Wrapper class for the inputs to a [useCached].
+ *
+ * This class implements [equals] and [hashCode] that delegates to the appropriate implementations,
+ * to ensure correctness
+ */
+internal class CachedInputs(private val inputs: Array<*>) {
   override fun equals(other: Any?): Boolean {
-    if (this === other) {
-      return true
-    }
-    if (other == null || javaClass != other.javaClass) {
-      return false
-    }
-
-    other as CachedInputs
-
-    return hookKey == other.hookKey && areObjectsEquivalent(inputs, other.inputs)
+    return other is CachedInputs && areObjectsEquivalent(inputs, other.inputs)
   }
 
-  override fun hashCode(): Int {
-    var result = hookKey.hashCode()
-    result = 31 * result + inputs.contentHashCode()
-    return result
-  }
+  override fun hashCode(): Int = inputs.contentHashCode()
 }

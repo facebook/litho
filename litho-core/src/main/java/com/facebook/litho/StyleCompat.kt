@@ -40,6 +40,7 @@ import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.view.background
 import com.facebook.litho.view.clipChildren
+import com.facebook.litho.view.onTouch
 import com.facebook.litho.view.testKey
 import com.facebook.litho.view.wrapInView
 import com.facebook.rendercore.dp
@@ -198,6 +199,11 @@ object StyleCompat {
 
   /** @see [JavaStyle.border] */
   @JvmStatic fun border(border: Border): JavaStyle = JavaStyle().border(border)
+
+  /** @see [JavaStyle.touchHandler] */
+  @JvmStatic
+  fun touchHandler(touchHandler: EventHandler<TouchEvent>?): JavaStyle =
+      JavaStyle().touchHandler(touchHandler)
 }
 
 class JavaStyle {
@@ -321,6 +327,21 @@ class JavaStyle {
 
   fun border(border: Border): JavaStyle {
     style = style.border(border)
+    return this
+  }
+
+  fun touchHandler(touchHandler: EventHandler<TouchEvent>?): JavaStyle {
+    style =
+        style.plus(
+            if (touchHandler != null) {
+              Style.onTouch { touchEvent ->
+                touchHandler.dispatchEvent(touchEvent)
+                true
+              }
+            } else {
+              Style
+            })
+
     return this
   }
 

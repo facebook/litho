@@ -4,7 +4,7 @@
 
 _release-date_
 
-* TBD
+* [NEW] Add new `useFirstDrawReporter` hook together with `Style.reportFirstContentDraw` for executing actions when related Component is fully rendered on the screen. Can be used to mark the end of TTRC or TTI markers.
 
 ## Version 0.50.0
 

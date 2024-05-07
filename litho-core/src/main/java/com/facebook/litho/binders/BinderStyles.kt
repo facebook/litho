@@ -25,31 +25,56 @@ import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder
+import com.facebook.rendercore.RenderUnit.DelegateBinder.Companion.createDelegateBinder
 
 /**
- * Sets the given [binder] as a *Mount* binder for [View]. The usage of this binder will guarantee
- * that there will be an associated View to it (either because it is wrapping a Mounting View or by
- * creating a wrapping [ComponentHost].
+ * Creates a [Style] which will apply the given [RenderUnit.Binder] to the [View] rendered by the
+ * Component the Style is added to. This abstraction can be used to create higher-level Styles which
+ * can apply some property generically to any type of Component.
  *
- * Once associated, the binder [RenderUnit.Binder#bind] can be called at every *mount* of the render
- * unit associated with this [Style], while the [RenderUnit.Binder#unbind] can be called at every
- * unmount.
+ * The usage of this binder will guarantee that there will be an associated View to it by calling
+ * [Style.wrapInView].
  *
- * The result of the [RenderUnit.Binder.shouldUpdate] will determine if the [bind] and [unbind]
- * methods will be called for any iteration of the mount phase.
+ * Notes for implementing a [RenderUnit.Binder]:
  *
- * For example, if you want your binder to be called at first time the content is mount, and finally
- * the last time it is unmounted before going offscreen, you should set the
- * [RenderUnit.Binder.shouldUpdate] to `false`.
+ * The binder's [RenderUnit.Binder.bind] will be called by the framework with the current model to
+ * bind the model to the View content, and [RenderUnit.Binder.unbind] will be called with the
+ * current model to unbind the model from the View content. When the model changes in a new render
+ * pass, [RenderUnit.Binder.shouldUpdate] will be called with the old and new models before
+ * unbind/bind: if it returns true, unbind(oldModel)+bind(newModel) will be called. Otherwise, the
+ * update will be skipped.
+ *
+ * In some cases, you may want your binder's bind to be called only the first time the content is
+ * mounted, and unbind called the last time it is unmounted before going offscreen. In that case,
+ * you can unconditionally return false from [RenderUnit.Binder.shouldUpdate].
+ *
+ * Generally speaking, a [RenderUnit.Binder] should be static and unchanging, while the model may
+ * change between renders.
+ *
+ * @param binder the [RenderUnit.Binder] to be used to bind the model to the View content.
+ * @param model the current model to bind.
  */
-fun Style.viewBinder(binder: DelegateBinder<*, View, Any>): Style =
-    this + ObjectStyleItem(BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER, binder)
-
-fun Style.viewBinder(binder: RenderUnit.Binder<Any?, View, Any>): Style =
+inline fun <ModelT, BindDataT : Any> Style.viewBinder(
+    binder: RenderUnit.Binder<ModelT, View, BindDataT>,
+    model: ModelT
+): Style =
     this +
         ObjectStyleItem(
-            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
-            DelegateBinder.createDelegateBinder(Unit, binder))
+            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER, createDelegateBinder(model, binder))
+
+/**
+ * An overload of [Style.viewBinder] which takes a [RenderUnit.Binder] that does not require a
+ * model.
+ *
+ * @param binder the [RenderUnit.Binder] to be used to bind the model to the View content.
+ */
+inline fun <BindDataT : Any> Style.viewBinder(
+    binder: RenderUnit.Binder<Unit, View, BindDataT>
+): Style = this.viewBinder(binder, model = Unit)
+
+@Deprecated("use parameterized viewBinder methods above")
+fun Style.viewBinder(binder: DelegateBinder<*, View, Any>): Style =
+    this + ObjectStyleItem(BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER, binder)
 
 @PublishedApi
 internal enum class BinderObjectField : StyleItemField {

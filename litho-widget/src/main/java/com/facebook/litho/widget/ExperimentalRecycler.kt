@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.litho.widget
 
 import android.graphics.Color
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.facebook.litho.LithoPrimitive
@@ -29,13 +30,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Size
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
-import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.useState
-import com.facebook.litho.widget.Binder
-import com.facebook.litho.widget.LithoRecyclerView
-import com.facebook.litho.widget.RecyclerEventsController
-import com.facebook.litho.widget.SectionsRecyclerView
-import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -46,6 +41,11 @@ import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
 import kotlin.math.max
 
+/**
+ * This is an experimental version of the [RecyclerSpec] implemented with Primitives.
+ *
+ * Please do not use this code outside of Litho as this is still under experimentation.
+ */
 class ExperimentalRecycler(
     private val binder: Binder<RecyclerView>,
     private val hasFixedSize: Boolean = true,
@@ -54,29 +54,33 @@ class ExperimentalRecycler(
     private val topPadding: Int = 0,
     private val rightPadding: Int = 0,
     private val bottomPadding: Int = 0,
-    private @ColorInt val refreshProgressBarBackgroundColor: Int? = null,
-    private @ColorInt val refreshProgressBarColor: Int = Color.BLACK,
+    @ColorInt private val refreshProgressBarBackgroundColor: Int? = null,
+    @ColorInt private val refreshProgressBarColor: Int = Color.BLACK,
     private val isClipChildrenEnabled: Boolean = true,
     private val isNestedScrollingEnabled: Boolean = true,
     private val scrollBarStyle: Int = View.SCROLLBARS_INSIDE_OVERLAY,
-    private val itemDecoration: RecyclerView.ItemDecoration? = null,
+    private val itemDecorations: List<RecyclerView.ItemDecoration>? = null,
     private val isHorizontalFadingEdgeEnabled: Boolean = false,
     private val isVerticalFadingEdgeEnabled: Boolean = false,
-    private val fadingEdgeLength: Dimen = 0.dp,
-    private @IdRes val recyclerViewId: Int = View.NO_ID,
+    private val fadingEdgeLength: Int = 0,
+    private val edgeFactory: RecyclerView.EdgeEffectFactory? = null,
+    @IdRes private val recyclerViewId: Int = View.NO_ID,
     private val overScrollMode: Int = View.OVER_SCROLL_ALWAYS,
     private val contentDescription: CharSequence? = null,
-    private val itemAnimator: RecyclerView.ItemAnimator = DEFAULT_ITEM_ANIMATOR,
+    private val itemAnimator: RecyclerView.ItemAnimator? = DEFAULT_ITEM_ANIMATOR,
     private val recyclerEventsController: RecyclerEventsController? = null,
-    private val onScrollListeners: List<RecyclerView.OnScrollListener?> = emptyList(),
+    private val onScrollListeners: List<RecyclerView.OnScrollListener>? = null,
     private val snapHelper: SnapHelper? = null,
     private val isPullToRefreshEnabled: Boolean = true,
     private val touchInterceptor: LithoRecyclerView.TouchInterceptor? = null,
     private val onItemTouchListener: RecyclerView.OnItemTouchListener? = null,
     private val onRefresh: (() -> Unit)? = null,
     private val sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger? = null,
+    private val excludeFromIncrementalMount: Boolean = false,
+    private val paddingAdditionDisabled: Boolean = false,
     private val style: Style? = null
 ) : PrimitiveComponent() {
+
   companion object {
     val DEFAULT_ITEM_ANIMATOR: RecyclerView.ItemAnimator = NoUpdateItemAnimator()
 
@@ -95,6 +99,7 @@ class ExperimentalRecycler(
                   SectionsRecyclerView(context, LithoRecyclerView(context))
                 }) {
                   doesMountRenderTreeHosts = true
+                  shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
 
                   // RecyclerSpec's @OnMount and @OnUnmount
                   bind(
@@ -113,7 +118,7 @@ class ExperimentalRecycler(
                       refreshProgressBarBackgroundColor,
                       refreshProgressBarColor,
                       itemAnimator,
-                      itemDecoration) { sectionsRecyclerView ->
+                      itemDecorations) { sectionsRecyclerView ->
                         val recyclerView: RecyclerView =
                             sectionsRecyclerView.recyclerView
                                 ?: throw java.lang.IllegalStateException(
@@ -136,9 +141,15 @@ class ExperimentalRecycler(
                         recyclerView.scrollBarStyle = scrollBarStyle
                         recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
                         recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
-                        recyclerView.setFadingEdgeLength(fadingEdgeLength.toPixels())
+                        recyclerView.setFadingEdgeLength(fadingEdgeLength.dp.toPixels())
                         recyclerView.id = recyclerViewId
                         recyclerView.overScrollMode = overScrollMode
+                        edgeFactory?.let { recyclerView.edgeEffectFactory = it }
+
+                        if (!paddingAdditionDisabled) {
+                          ViewCompat.setPaddingRelative(
+                              recyclerView, leftPadding, topPadding, rightPadding, bottomPadding)
+                        }
 
                         if (refreshProgressBarBackgroundColor != null) {
                           sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
@@ -147,9 +158,7 @@ class ExperimentalRecycler(
 
                         sectionsRecyclerView.setColorSchemeColors(refreshProgressBarColor)
 
-                        if (itemDecoration != null) {
-                          recyclerView.addItemDecoration(itemDecoration)
-                        }
+                        itemDecorations?.forEach { recyclerView.addItemDecoration(it) }
 
                         sectionsRecyclerView.setItemAnimator(
                             if (itemAnimator !== DEFAULT_ITEM_ANIMATOR) itemAnimator
@@ -165,9 +174,7 @@ class ExperimentalRecycler(
                                 DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
                           }
 
-                          if (itemDecoration != null) {
-                            recyclerView.removeItemDecoration(itemDecoration)
-                          }
+                          itemDecorations?.forEach { recyclerView.removeItemDecoration(it) }
 
                           binder.unmount(recyclerView)
 
@@ -197,8 +204,10 @@ class ExperimentalRecycler(
                                 "RecyclerView not found, it should not be removed from SwipeRefreshLayout " +
                                     "before unmounting")
 
-                    for (i in onScrollListeners.indices) {
-                      onScrollListeners[i]?.let { recyclerView.addOnScrollListener(it) }
+                    if (onScrollListeners != null) {
+                      for (i in onScrollListeners.indices) {
+                        recyclerView.addOnScrollListener(onScrollListeners[i])
+                      }
                     }
 
                     if (touchInterceptor != null) {
@@ -237,8 +246,10 @@ class ExperimentalRecycler(
                         recyclerEventsController.snapHelper = null
                       }
 
-                      for (i in onScrollListeners.indices) {
-                        onScrollListeners[i]?.let { recyclerView.removeOnScrollListener(it) }
+                      if (onScrollListeners != null) {
+                        for (i in onScrollListeners.indices) {
+                          recyclerView.removeOnScrollListener(onScrollListeners[i])
+                        }
                       }
 
                       if (onItemTouchListener != null) {
@@ -252,6 +263,12 @@ class ExperimentalRecycler(
                   }
                 },
         style = style)
+  }
+
+  class NoUpdateItemAnimator : DefaultItemAnimator() {
+    init {
+      supportsChangeAnimations = false
+    }
   }
 }
 

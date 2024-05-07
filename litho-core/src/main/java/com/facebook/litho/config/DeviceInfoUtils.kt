@@ -16,6 +16,7 @@
 
 package com.facebook.litho.config
 
+import android.os.Build
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileFilter
@@ -48,6 +49,13 @@ object DeviceInfoUtils {
     get() {
       if (numCores != NUM_CORES_NOT_SET) {
         return numCores
+      }
+      if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        // Gingerbread doesn't support giving a single application access to both cores, but a
+        // handful of devices (Atrix 4G and Droid X2 for example) were released with a dual-core
+        // chipset and Gingerbread; that can let an app in the background run without impacting
+        // the foreground application. But for our purposes, it makes them single core.
+        return 1
       }
       var cores: Int
       try {

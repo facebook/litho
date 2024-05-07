@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle.DESTROYED;
+import static com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState.DESTROYED;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.view.View;
@@ -29,9 +29,9 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
+import com.facebook.litho.LithoVisibilityEventsListener;
 import com.facebook.litho.Size;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.TreeState;
@@ -382,17 +382,12 @@ public class ComponentTreeHolder {
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
       ComponentTree.Builder builder;
-      if (ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-        builder = ComponentTree.create(context, mRenderInfo.getComponent(), mParentLifecycle);
-      } else {
-        if (mParentLifecycle != null) {
-          mComponentTreeHolderLifecycleProvider =
-              new ComponentTreeHolderVisibilityEventsController();
-        }
-        builder =
-            ComponentTree.create(
-                context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
+      if (mParentLifecycle != null) {
+        mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderVisibilityEventsController();
       }
+      builder =
+          ComponentTree.create(
+              context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
 
       String renderInfoLogTag = mRenderInfo.getLogTag();
 
@@ -455,12 +450,11 @@ public class ComponentTreeHolder {
   @UiThread
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
-      if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-        if (mComponentTreeHolderLifecycleProvider != null) {
-          mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
 
-          return;
-        }
+      if (mComponentTreeHolderLifecycleProvider != null) {
+        mComponentTreeHolderLifecycleProvider.moveToVisibilityState(DESTROYED);
+
+        return;
       }
 
       mComponentTree.release();
@@ -501,32 +495,32 @@ public class ComponentTreeHolder {
   /** Lifecycle controlled by a ComponentTreeHolder. */
   private class ComponentTreeHolderVisibilityEventsController
       implements LithoVisibilityEventsController,
-          LithoLifecycleListener,
+          LithoVisibilityEventsListener,
           AOSPLifecycleOwnerProvider {
 
-    public LithoVisibilityEventsControllerDelegate mLithoLifecycleProviderDelegate;
+    public LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate;
 
     public ComponentTreeHolderVisibilityEventsController() {
       mParentLifecycle.addListener(this);
-      mLithoLifecycleProviderDelegate = new LithoVisibilityEventsControllerDelegate();
+      mLithoVisibilityEventsControllerDelegate = new LithoVisibilityEventsControllerDelegate();
     }
 
     @Override
-    public LithoLifecycle getLifecycleStatus() {
-      return mLithoLifecycleProviderDelegate.getLifecycleStatus();
+    public LithoVisibilityState getVisibilityState() {
+      return mLithoVisibilityEventsControllerDelegate.getVisibilityState();
     }
 
     @Override
-    public void onMovedToState(LithoLifecycle state) {
+    public void onMovedToState(LithoVisibilityState state) {
       switch (state) {
         case HINT_VISIBLE:
-          moveToLifecycle(LithoLifecycle.HINT_VISIBLE);
+          moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE);
           return;
         case HINT_INVISIBLE:
-          moveToLifecycle(LithoLifecycle.HINT_INVISIBLE);
+          moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE);
           return;
         case DESTROYED:
-          moveToLifecycle(DESTROYED);
+          moveToVisibilityState(DESTROYED);
           return;
         default:
           throw new IllegalStateException("Illegal state: " + state);
@@ -535,9 +529,9 @@ public class ComponentTreeHolder {
 
     @Override
     @UiThread
-    public void moveToLifecycle(LithoLifecycle lithoLifecycle) {
+    public void moveToVisibilityState(LithoVisibilityState lithoLifecycle) {
       assertMainThread();
-      mLithoLifecycleProviderDelegate.moveToLifecycle(lithoLifecycle);
+      mLithoVisibilityEventsControllerDelegate.moveToVisibilityState(lithoLifecycle);
       if (lithoLifecycle == DESTROYED) {
         mParentLifecycle.removeListener(this);
         mComponentTree = null;
@@ -546,13 +540,13 @@ public class ComponentTreeHolder {
     }
 
     @Override
-    public synchronized void addListener(LithoLifecycleListener listener) {
-      mLithoLifecycleProviderDelegate.addListener(listener);
+    public synchronized void addListener(LithoVisibilityEventsListener listener) {
+      mLithoVisibilityEventsControllerDelegate.addListener(listener);
     }
 
     @Override
-    public synchronized void removeListener(LithoLifecycleListener listener) {
-      mLithoLifecycleProviderDelegate.removeListener(listener);
+    public synchronized void removeListener(LithoVisibilityEventsListener listener) {
+      mLithoVisibilityEventsControllerDelegate.removeListener(listener);
     }
 
     @Override

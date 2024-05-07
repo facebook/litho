@@ -45,7 +45,6 @@ import org.robolectric.annotation.LooperMode
 class UseLiveDataTest {
 
   private val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
-
   @get:Rule
   val rule: LithoViewRule =
       LithoViewRule(

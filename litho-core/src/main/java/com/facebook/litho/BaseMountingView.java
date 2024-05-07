@@ -28,6 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewTreeLifecycleOwner;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeState.TreeMountInfo;
@@ -61,6 +63,7 @@ public abstract class BaseMountingView extends ComponentHost
   private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
   private static final String TAG = BaseMountingView.class.getSimpleName();
 
+  private @Nullable LifecycleOwner mLifecycleOwner;
   private final MountState mMountState;
   public final int mViewAttributeFlags;
   protected int mAnimatedWidth = -1;
@@ -195,6 +198,32 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void onBeforeLayout(int left, int top, int right, int bottom) {}
 
+  @Nullable
+  protected LifecycleOwner getLifecycleOwner() {
+    return mLifecycleOwner;
+  }
+
+  protected abstract void onLifecycleOwnerChanged(
+      @Nullable LifecycleOwner previousLifecycleOwner,
+      @Nullable LifecycleOwner currentLifecycleOwner);
+
+  private void attachLifecycleOwner() {
+    LifecycleOwner lifecycleOwner = ViewTreeLifecycleOwner.get(this);
+    if (lifecycleOwner != null && mLifecycleOwner != lifecycleOwner) {
+      LifecycleOwner previousLifecycleOwner = mLifecycleOwner;
+      mLifecycleOwner = lifecycleOwner;
+      onLifecycleOwnerChanged(previousLifecycleOwner, mLifecycleOwner);
+    }
+  }
+
+  private void detachLifecycleOwner() {
+    if (mLifecycleOwner != null) {
+      LifecycleOwner previousLifecycleOwner = mLifecycleOwner;
+      mLifecycleOwner = null;
+      onLifecycleOwnerChanged(previousLifecycleOwner, null);
+    }
+  }
+
   /**
    * Invoke this before the result of getCurrentLayoutState is about to change to a new non-null
    * tree.
@@ -231,6 +260,7 @@ public abstract class BaseMountingView extends ComponentHost
   private void onAttach() {
     if (!mIsAttached) {
       mIsAttached = true;
+      attachLifecycleOwner();
       onAttached();
     }
   }
@@ -243,6 +273,7 @@ public abstract class BaseMountingView extends ComponentHost
     if (mIsAttached) {
       mIsAttached = false;
       onDetached();
+      detachLifecycleOwner();
     }
   }
 

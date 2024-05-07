@@ -33,6 +33,7 @@ import com.facebook.rendercore.dp
 import com.facebook.rendercore.drawableRes
 import com.facebook.yoga.YogaJustify
 
+// start_example
 class SelectionCollectionKComponent : KComponent() {
 
   private val items = listOf("O-Ren Ishii", "Vernita Green", "Budd", "Elle Driver", "Bill")
@@ -76,6 +77,8 @@ class SelectionCollectionKComponent : KComponent() {
     }
   }
 }
+
+// end_example
 
 class Selectable(val item: String, val selected: Boolean, val onRowClick: (String) -> Unit) :
     KComponent() {

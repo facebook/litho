@@ -22,6 +22,7 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
@@ -231,7 +232,15 @@ public class VerticalScrollSpec {
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
     lithoScrollView.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
     lithoScrollView.setFadingEdgeLength(fadingEdgeLength);
-    lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
+
+    // On older versions we need to disable the vertical scroll bar as otherwise we run into an NPE
+    // that was only fixed in Lollipop - see
+    // https://github.com/aosp-mirror/platform_frameworks_base/commit/6c8fef7fb866d244486a962dd82f4a6f26505f16#diff-7c8b4c8147fbbbf69293775bca384f31.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      lithoScrollView.setVerticalScrollBarEnabled(false);
+    } else {
+      lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
+    }
     lithoScrollView.setOnScrollChangeListener(onScrollChangeListener);
     lithoScrollView.setOnInterceptTouchListener(onInterceptTouchListener);
     lithoScrollView.setOverScrollMode(overScrollMode);

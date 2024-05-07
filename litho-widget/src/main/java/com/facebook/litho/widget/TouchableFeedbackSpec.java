@@ -22,7 +22,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.RectShape;
+import android.os.Build;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Wrapper;
@@ -60,15 +62,29 @@ class TouchableFeedbackSpec {
   }
 
   public static Drawable getRippleDrawable(int normalColor, int pressedColor) {
-    return new RippleDrawable(
-        ColorStateList.valueOf(pressedColor),
-        new ColorDrawable(normalColor),
-        getRippleMask(pressedColor));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      return new RippleDrawable(
+          ColorStateList.valueOf(pressedColor),
+          new ColorDrawable(normalColor),
+          getRippleMask(pressedColor));
+    } else {
+      return getStateListDrawable(normalColor, pressedColor);
+    }
   }
 
   private static Drawable getRippleMask(int color) {
     final ShapeDrawable shapeDrawable = new ShapeDrawable(new RectShape());
     shapeDrawable.getPaint().setColor(color);
     return shapeDrawable;
+  }
+
+  public static StateListDrawable getStateListDrawable(int normalColor, int pressedColor) {
+    final StateListDrawable states = new StateListDrawable();
+    states.addState(new int[] {android.R.attr.state_pressed}, new ColorDrawable(pressedColor));
+    states.addState(new int[] {android.R.attr.state_focused}, new ColorDrawable(pressedColor));
+    states.addState(new int[] {android.R.attr.state_activated}, new ColorDrawable(pressedColor));
+    states.addState(new int[] {}, new ColorDrawable(normalColor));
+
+    return states;
   }
 }

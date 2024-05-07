@@ -70,10 +70,12 @@ class ScreenSlidePageFragment : Fragment(R.layout.screen_slide_fragment) {
     }
     if (isVisibleToUser) {
       wasVisible = true
-      delegate.moveToLifecycle(LithoVisibilityEventsController.LithoLifecycle.HINT_VISIBLE)
+      delegate.moveToVisibilityState(
+          LithoVisibilityEventsController.LithoVisibilityState.HINT_VISIBLE)
     } else {
       wasVisible = false
-      delegate.moveToLifecycle(LithoVisibilityEventsController.LithoLifecycle.HINT_INVISIBLE)
+      delegate.moveToVisibilityState(
+          LithoVisibilityEventsController.LithoVisibilityState.HINT_INVISIBLE)
     }
   }
 

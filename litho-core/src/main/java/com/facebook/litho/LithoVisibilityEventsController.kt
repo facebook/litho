@@ -17,12 +17,12 @@
 package com.facebook.litho
 
 /**
- * Manages a Litho ComponentTree lifecycle and informs subscribed LithoLifecycleListeners when a
- * lifecycle state occurs.
+ * Manages a Litho visibility events and informs subscribed LithoVisibilityEventsListener when a
+ * visibility state changes.
  */
 interface LithoVisibilityEventsController {
 
-  enum class LithoLifecycle(private val text: String) {
+  enum class LithoVisibilityState(private val text: String) {
     HINT_VISIBLE("HINT_VISIBLE"),
     HINT_INVISIBLE("HINT_INVISIBLE"),
     DESTROYED("DESTROYED");
@@ -32,11 +32,11 @@ interface LithoVisibilityEventsController {
     override fun toString(): String = text
   }
 
-  fun moveToLifecycle(lithoLifecycle: LithoLifecycle)
+  fun moveToVisibilityState(newVisibilityState: LithoVisibilityState)
 
-  val lifecycleStatus: LithoLifecycle
+  val visibilityState: LithoVisibilityState
 
-  fun addListener(listener: LithoLifecycleListener)
+  fun addListener(listener: LithoVisibilityEventsListener)
 
-  fun removeListener(listener: LithoLifecycleListener)
+  fun removeListener(listener: LithoVisibilityEventsListener)
 }

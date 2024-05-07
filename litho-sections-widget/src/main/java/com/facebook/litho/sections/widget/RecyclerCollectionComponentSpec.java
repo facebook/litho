@@ -36,8 +36,10 @@ import com.facebook.litho.Component;
 import com.facebook.litho.Component.ContainerBuilder;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.JavaStyle;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.StyleCompat;
 import com.facebook.litho.TouchEvent;
 import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.FromTrigger;
@@ -62,6 +64,7 @@ import com.facebook.litho.sections.SectionLifecycle;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.widget.Binder;
+import com.facebook.litho.widget.ExperimentalRecycler;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.LithoRecyclerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
@@ -73,7 +76,9 @@ import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
+import java.util.ArrayList;
 import java.util.List;
+import kotlin.Unit;
 
 /**
  * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree. See <a
@@ -207,56 +212,133 @@ public class RecyclerCollectionComponentSpec {
     final boolean canPTR =
         recyclerConfiguration.getOrientation() != OrientationHelper.HORIZONTAL && !disablePTR;
 
-    final Recycler.Builder recycler =
-        Recycler.create(c)
-            .clipToPadding(clipToPadding)
-            .leftPadding(leftPadding)
-            .rightPadding(rightPadding)
-            .topPadding(topPadding)
-            .bottomPadding(bottomPadding)
-            .disableAddingPadding(disableAddingPadding)
-            .clipChildren(clipChildren)
-            .nestedScrollingEnabled(nestedScrollingEnabled)
-            .scrollBarStyle(scrollBarStyle)
-            .recyclerViewId(recyclerViewId)
-            .overScrollMode(overScrollMode)
-            .edgeEffectFactory(edgeEffectFactory)
-            .recyclerEventsController(internalEventsController)
-            .refreshHandler(!canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
-            .pullToRefresh(canPTR)
-            .itemDecorations(itemDecorations)
-            .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
-            .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
-            .fadingEdgeLengthDip(fadingEdgeLength)
-            .onScrollListener(
-                new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo))
-            .onScrollListeners(onScrollListeners)
-            .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
-            .refreshProgressBarColor(refreshProgressBarColor)
-            .snapHelper(snapHelper)
-            .touchInterceptor(touchInterceptor)
-            .onItemTouchListener(itemTouchListener)
-            .binder(binder)
-            .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
-            .itemAnimator(
-                RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
-                    ? new NoUpdateItemAnimator()
-                    : itemAnimator)
-            .flexShrink(0)
-            .touchHandler(recyclerTouchEventHandler)
-            .sectionsViewLogger(sectionsViewLogger)
-            .contentDescription(recyclerContentDescription);
-
-    if (!binder.canMeasure()
-        && !recyclerConfiguration
+    ComponentsConfiguration componentsConfiguration =
+        recyclerConfiguration
             .getRecyclerBinderConfiguration()
             .getRecyclerBinderConfig()
-            .wrapContent) {
-      recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
+            .componentsConfiguration;
+
+    if (componentsConfiguration == null) {
+      componentsConfiguration = c.mLithoConfiguration.componentsConfig;
+    }
+
+    boolean isPrimitiveRecyclerEnabled =
+        recyclerConfiguration.getRecyclerBinderConfiguration().isPrimitiveRecyclerEnabled()
+            || componentsConfiguration.primitiveRecyclerEnabled;
+
+    boolean shouldNotWrapContent =
+        !binder.canMeasure()
+            && !recyclerConfiguration
+                .getRecyclerBinderConfiguration()
+                .getRecyclerBinderConfig()
+                .wrapContent;
+
+    ItemAnimator recyclerItemAnimator =
+        RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
+            ? new NoUpdateItemAnimator()
+            : itemAnimator;
+
+    Component recyclerComponent;
+
+    if (!isPrimitiveRecyclerEnabled) {
+      final Recycler.Builder recycler =
+          Recycler.create(c)
+              .clipToPadding(clipToPadding)
+              .leftPadding(leftPadding)
+              .rightPadding(rightPadding)
+              .topPadding(topPadding)
+              .bottomPadding(bottomPadding)
+              .disableAddingPadding(disableAddingPadding)
+              .clipChildren(clipChildren)
+              .nestedScrollingEnabled(nestedScrollingEnabled)
+              .scrollBarStyle(scrollBarStyle)
+              .recyclerViewId(recyclerViewId)
+              .overScrollMode(overScrollMode)
+              .edgeEffectFactory(edgeEffectFactory)
+              .recyclerEventsController(internalEventsController)
+              .refreshHandler(
+                  !canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
+              .pullToRefresh(canPTR)
+              .itemDecorations(itemDecorations)
+              .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
+              .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
+              .fadingEdgeLengthDip(fadingEdgeLength)
+              .onScrollListener(
+                  new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo))
+              .onScrollListeners(onScrollListeners)
+              .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
+              .refreshProgressBarColor(refreshProgressBarColor)
+              .snapHelper(snapHelper)
+              .touchInterceptor(touchInterceptor)
+              .onItemTouchListener(itemTouchListener)
+              .binder(binder)
+              .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
+              .itemAnimator(recyclerItemAnimator)
+              .flexShrink(0)
+              .touchHandler(recyclerTouchEventHandler)
+              .sectionsViewLogger(sectionsViewLogger)
+              .contentDescription(recyclerContentDescription);
+
+      if (shouldNotWrapContent) {
+        recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
+      }
+
+      recyclerComponent = recycler.build();
+    } else {
+      List<OnScrollListener> listenersToUse =
+          onScrollListeners != null ? new ArrayList<>(onScrollListeners) : new ArrayList<>();
+      listenersToUse.add(
+          new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo));
+
+      JavaStyle javaStyle = StyleCompat.touchHandler(recyclerTouchEventHandler).flexShrink(0f);
+
+      if (shouldNotWrapContent) {
+        javaStyle.positionType(ABSOLUTE).positionPx(ALL, 0);
+      }
+
+      recyclerComponent =
+          new ExperimentalRecycler(
+              binder,
+              true,
+              clipToPadding,
+              leftPadding,
+              topPadding,
+              rightPadding,
+              bottomPadding,
+              refreshProgressBarBackgroundColor,
+              refreshProgressBarColor,
+              clipChildren,
+              nestedScrollingEnabled,
+              scrollBarStyle,
+              itemDecorations,
+              horizontalFadingEdgeEnabled,
+              verticalFadingEdgeEnabled,
+              fadingEdgeLength,
+              edgeEffectFactory,
+              recyclerViewId,
+              overScrollMode,
+              recyclerContentDescription,
+              recyclerItemAnimator,
+              internalEventsController,
+              listenersToUse,
+              snapHelper,
+              canPTR,
+              touchInterceptor,
+              itemTouchListener,
+              canPTR
+                  ? () -> {
+                    RecyclerCollectionComponent.onRefresh(c, sectionTree);
+                    return Unit.INSTANCE;
+                  }
+                  : null,
+              sectionsViewLogger,
+              shouldExcludeFromIncrementalMount,
+              disableAddingPadding,
+              javaStyle.build());
     }
 
     final ContainerBuilder containerBuilder =
-        Column.create(c).flexShrink(0).alignContent(FLEX_START).child(recycler);
+        Column.create(c).flexShrink(0).alignContent(FLEX_START).child(recyclerComponent);
 
     if (loadingState == LoadingState.LOADING && loadingComponent != null) {
       containerBuilder.child(

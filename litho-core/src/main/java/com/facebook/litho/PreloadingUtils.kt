@@ -65,7 +65,7 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 LithoYogaMeasureFunction::class.java,
                 Size::class.java,
                 ComponentTree::class.java,
-                LithoLifecycleListener::class.java,
+                LithoVisibilityEventsListener::class.java,
                 DefaultErrorEventHandler::class.java,
                 ErrorEventHandler::class.java,
                 EventHandler::class.java,

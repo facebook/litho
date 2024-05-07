@@ -16,10 +16,9 @@
 
 package com.facebook.litho
 
-import android.graphics.drawable.Drawable
-import android.view.View
-import com.facebook.rendercore.RenderUnit
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 
-typealias ViewBinder = RenderUnit.Binder<Any?, View, Any?>
-
-typealias DrawableBinder = RenderUnit.Binder<Any?, Drawable, Any?>
+/** Can observe lifecycle changes that a LithoVisibilityEventsController goes through. */
+fun interface LithoVisibilityEventsListener {
+  fun onMovedToState(state: LithoVisibilityState)
+}

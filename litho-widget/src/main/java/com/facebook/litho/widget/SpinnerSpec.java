@@ -28,6 +28,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 import androidx.annotation.ColorInt;
+import androidx.annotation.RequiresApi;
 import com.facebook.litho.AccessibilityRole;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
@@ -78,6 +80,7 @@ import javax.annotation.Nullable;
  * @prop-optional selectedTextColor The text color of the selected value
  */
 @LayoutSpec(events = ItemSelectedEvent.class)
+@RequiresApi(Build.VERSION_CODES.HONEYCOMB)
 public class SpinnerSpec {
 
   private static final float MARGIN_SMALL = 8;

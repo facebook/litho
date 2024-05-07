@@ -17,12 +17,16 @@
 package com.facebook.litho.view
 
 import android.animation.StateListAnimator
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.SparseArray
+import android.view.View
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.ClickEvent
@@ -35,11 +39,14 @@ import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
+import com.facebook.litho.SupportsPivotTransform
 import com.facebook.litho.TouchEvent
+import com.facebook.litho.binders.viewBinder
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.RenderUnit
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */
@@ -325,6 +332,16 @@ inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
     this + ObjectStyleItem(ObjectField.FOREGROUND, ComparableColorDrawable.create(foregroundColor))
 
 /**
+ * Sets a listener that will invoke the given lambda when this Component's focus changes. Setting
+ * this property will cause the Component to be represented as a View at mount time if it wasn't
+ * going to already.
+ *
+ * See [android.view.View.OnFocusChangeListener]
+ */
+inline fun Style.onFocusedChanged(noinline action: (FocusChangedEvent) -> Unit): Style =
+    this + ObjectStyleItem(ObjectField.ON_FOCUS_CHANGED, action)
+
+/**
  * Sets a listener that will invoke the given lambda when this Component's focus changes but only if
  * [enabled] is true. If enabled, setting this property will cause the Component to be represented
  * as a View at mount time if it wasn't going to already.
@@ -332,17 +349,33 @@ inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
  * See [android.view.View.OnFocusChangeListener]
  */
 inline fun Style.onFocusedChanged(
-    enabled: Boolean = true,
+    enabled: Boolean,
     noinline action: (FocusChangedEvent) -> Unit
 ): Style = this + ObjectStyleItem(ObjectField.ON_FOCUS_CHANGED, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is clicked. Setting this
+ * property will cause the Component to be represented as a View at mount time if it wasn't going to
+ * already.
+ */
+inline fun Style.onClick(noinline action: (ClickEvent) -> Unit): Style =
+    this + ObjectStyleItem(ObjectField.ON_CLICK, action)
 
 /**
  * Sets a listener that will invoke the given lambda when this Component is clicked but only if
  * [enabled] is true. If enabled, setting this property will cause the Component to be represented
  * as a View at mount time if it wasn't going to already.
  */
-inline fun Style.onClick(enabled: Boolean = true, noinline action: (ClickEvent) -> Unit): Style =
+inline fun Style.onClick(enabled: Boolean, noinline action: (ClickEvent) -> Unit): Style =
     this + ObjectStyleItem(ObjectField.ON_CLICK, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is long clicked. Setting
+ * this property will cause the Component to be represented as a View at mount time if it wasn't
+ * going to already.
+ */
+inline fun Style.onLongClick(noinline action: (LongClickEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, action)
 
 /**
  * Sets a listener that will invoke the given lambda when this Component is long clicked but only if
@@ -350,17 +383,37 @@ inline fun Style.onClick(enabled: Boolean = true, noinline action: (ClickEvent) 
  * as a View at mount time if it wasn't going to already.
  */
 inline fun Style.onLongClick(
-    enabled: Boolean = true,
+    enabled: Boolean,
     noinline action: (LongClickEvent) -> Boolean
 ): Style = this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is touched. Setting this
+ * property will cause the Component to be represented as a View at mount time if it wasn't going to
+ * already.
+ */
+inline fun Style.onTouch(noinline action: (TouchEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_TOUCH, action)
 
 /**
  * Sets a listener that will invoke the given lambda when this Component is touched but only if
  * [enabled] is true. If enabled, setting this property will cause the Component to be represented
  * as a View at mount time if it wasn't going to already.
  */
-inline fun Style.onTouch(enabled: Boolean = true, noinline action: (TouchEvent) -> Boolean): Style =
+inline fun Style.onTouch(enabled: Boolean, noinline action: (TouchEvent) -> Boolean): Style =
     this + ObjectStyleItem(ObjectField.ON_TOUCH, if (enabled) action else null)
+
+/**
+ * Sets a listener that will intercept all touch screen motion events. This allows you to watch
+ * events as they are dispatched to your children, and take ownership of the current gesture at any
+ * point. Implementations should return true if they intercepted the event and wish to receive
+ * subsequent events, and false otherwise. Setting this property will cause the Component to be
+ * represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.ViewGroup.onInterceptTouchEvent]
+ */
+inline fun Style.onInterceptTouch(noinline action: (InterceptTouchEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, action)
 
 /**
  * Sets a listener that will intercept all touch screen motion events but only if [enabled] is true.
@@ -373,9 +426,70 @@ inline fun Style.onTouch(enabled: Boolean = true, noinline action: (TouchEvent) 
  * See [android.view.ViewGroup.onInterceptTouchEvent]
  */
 inline fun Style.onInterceptTouch(
-    enabled: Boolean = true,
+    enabled: Boolean,
     noinline action: (InterceptTouchEvent) -> Boolean
 ): Style = this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, if (enabled) action else null)
+
+/**
+ * Sets the transform pivot of a View (used for scale and rotation transforms) to be centered at the
+ * given percentages of the View's width and height. The default pivot point is (50f, 50f).
+ *
+ * The Component this Style is applied to must render to a View which implements
+ * [SupportsPivotTransform]. Rows and Columns both render to ComponentHost which implements this
+ * interface. If you need to apply a pivot to a Component that doesn't render to a View that
+ * implements this interface, you can either implement this interface in the View it does render to,
+ * or wrap this Component in a Row or Column and apply the transform and pivot there instead.
+ *
+ * Note: Unlike [View.setPivotX] and [View.setPivotY], the value of this pivot is a percentage, not
+ * an absolute pixel value.
+ *
+ * @param pivotXPercent the percentage of the width to use as the pivotX
+ * @param pivotYPercent the percentage of the height to use as the pivotY
+ * @see SupportsPivotTransform
+ * @see android.view.View.setPivotX
+ * @see android.view.View.setPivotY
+ */
+inline fun Style.pivotPercent(
+    @FloatRange(0.0, 100.0) pivotXPercent: Float = 50f,
+    @FloatRange(0.0, 100.0) pivotYPercent: Float = 50f
+): Style {
+  check(pivotXPercent in 0f..100f && pivotYPercent in 0f..100f) {
+    "Pivot values must be between 0 and 100f. Got ($pivotXPercent, $pivotYPercent)."
+  }
+  return this + Style.viewBinder(PivotBinder, Pair(pivotXPercent, pivotYPercent))
+}
+
+@PublishedApi
+internal object PivotBinder : RenderUnit.Binder<Pair<Float, Float>, View, Unit> {
+
+  private const val BadPivotClassErrorMessage =
+      "Setting transform pivot is only supported on Views that implement SupportsPivotTransform. " +
+          "If it isn't possible to add this interface to the View in question, wrap this " +
+          "Component in a Row or Column and apply the transform and pivot there instead."
+
+  override fun shouldUpdate(
+      currentModel: Pair<Float, Float>,
+      newModel: Pair<Float, Float>,
+      currentLayoutData: Any?,
+      nextLayoutData: Any?
+  ): Boolean = currentModel != newModel
+
+  override fun bind(context: Context, content: View, model: Pair<Float, Float>, layoutData: Any?) {
+    check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
+    content.setTransformPivot(model.first, model.second)
+  }
+
+  override fun unbind(
+      context: Context,
+      content: View,
+      model: Pair<Float, Float>,
+      layoutData: Any?,
+      bindData: Unit?
+  ) {
+    check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
+    content.resetTransformPivot()
+  }
+}
 
 /**
  * Sets the degree that this component is rotated around the pivot point. Increasing the value
@@ -383,7 +497,8 @@ inline fun Style.onInterceptTouch(
  * this property will cause the Component to be represented as a View at mount time if it wasn't
  * going to already.
  *
- * See [android.view.View.setRotation]
+ * @see android.view.View.setRotation
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.rotation(rotation: Float): Style =
     this + FloatStyleItem(FloatField.ROTATION, rotation)
@@ -393,7 +508,8 @@ inline fun Style.rotation(rotation: Float): Style =
  * point. Setting this property will cause the Component to be represented as a View at mount time
  * if it wasn't going to already.
  *
- * See [android.view.View.setRotationX]
+ * @see android.view.View.setRotationX
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.rotationX(rotationX: Float): Style =
     this + FloatStyleItem(FloatField.ROTATION_X, rotationX)
@@ -403,7 +519,8 @@ inline fun Style.rotationX(rotationX: Float): Style =
  * Setting this property will cause the Component to be represented as a View at mount time if it
  * wasn't going to already.
  *
- * See [android.view.View.setRotationY]
+ * @see android.view.View.setRotationY
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.rotationY(rotationY: Float): Style =
     this + FloatStyleItem(FloatField.ROTATION_Y, rotationY)
@@ -414,7 +531,9 @@ inline fun Style.rotationY(rotationY: Float): Style =
  * standard layout properties to control the size of your component. Setting this property will
  * cause the Component to be represented as a View at mount time if it wasn't going to already.
  *
- * See [android.view.View.setScaleX] [android.view.View.setScaleY]
+ * @see android.view.View.setScaleX
+ * @see android.view.View.setScaleY
+ * @see pivotPercent to set the pivot point to a percentage of the component's size
  */
 inline fun Style.scale(scale: Float): Style = this + FloatStyleItem(FloatField.SCALE, scale)
 
@@ -436,7 +555,11 @@ inline fun Style.selected(isSelected: Boolean): Style =
  * NOTE: This style will be ignored pre-API 21.
  */
 inline fun Style.stateListAnimator(stateListAnimator: StateListAnimator?): Style =
-    this + ObjectStyleItem(ObjectField.STATE_LIST_ANIMATOR, stateListAnimator)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      this + ObjectStyleItem(ObjectField.STATE_LIST_ANIMATOR, stateListAnimator)
+    } else {
+      this
+    }
 
 /**
  * Sets testKey on the View this Component mounts to. Setting this property will cause the Component

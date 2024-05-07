@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.litho.testing.testrunner
 
-import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
+import com.facebook.litho.config.ComponentsConfiguration
+import org.junit.runners.model.FrameworkMethod
 
-/** Can observe lifecycle changes that a LithoVisibilityEventsController goes through. */
-fun interface LithoLifecycleListener {
-  fun onMovedToState(state: LithoLifecycle)
+class UseNewCacheValueLogicConfiguration : LithoTestRunConfiguration {
+  override fun beforeTest(method: FrameworkMethod) {
+    ComponentsConfiguration.useNewCacheValueLogic = true
+  }
+
+  override fun afterTest(method: FrameworkMethod) {
+    ComponentsConfiguration.useNewCacheValueLogic = false
+  }
 }

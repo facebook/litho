@@ -29,6 +29,7 @@ public abstract class RCAccessibleClickableSpan extends ClickableSpan {
 
   private @Nullable String mAccessibilityLabel;
   private @Nullable String mAccessibilityRole;
+  private boolean mIsKeyboardFocused = false;
 
   public RCAccessibleClickableSpan(@Nullable String accessibilityLabel) {
     this(accessibilityLabel, null);
@@ -57,5 +58,13 @@ public abstract class RCAccessibleClickableSpan extends ClickableSpan {
 
   public void setAccessibilityRole(@Nullable String accessibilityRole) {
     mAccessibilityRole = accessibilityRole;
+  }
+
+  public boolean isKeyboardFocused() {
+    return mIsKeyboardFocused;
+  }
+
+  public void setKeyboardFocused(boolean isKeyboardFocused) {
+    mIsKeyboardFocused = isKeyboardFocused;
   }
 }

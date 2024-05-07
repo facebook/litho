@@ -42,9 +42,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.annotation.ColorInt;
-import androidx.annotation.DoNotInline;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
@@ -486,7 +484,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   public void setOutline(float outlineWidth, @ColorInt int outlineColor) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      AndroidQImpl.setOutline(this, outlineWidth, outlineColor);
+      mOutlineWidth = outlineWidth;
+      mOutlineColor = outlineColor;
+      invalidateSelf();
     }
   }
 
@@ -871,19 +871,6 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
           (mSpanListener != null
                   && mSpanListener.onLongClick(longClickableSpan, longClickableSpanView))
               || longClickableSpan.onLongClick(longClickableSpanView);
-    }
-  }
-
-  @RequiresApi(Build.VERSION_CODES.Q)
-  private static class AndroidQImpl {
-
-    private AndroidQImpl() {}
-
-    @DoNotInline
-    static void setOutline(TextDrawable drawable, float outlineWidth, @ColorInt int outlineColor) {
-      drawable.mOutlineWidth = outlineWidth;
-      drawable.mOutlineColor = outlineColor;
-      drawable.invalidateSelf();
     }
   }
 }

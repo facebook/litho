@@ -72,7 +72,7 @@ class HostComponent extends SpecGeneratedComponent {
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) convertContent;
 
-    if (!ComponentsConfiguration.skipHostAlphaReset) {
+    if (!ComponentsConfiguration.defaultInstance.skipHostAlphaReset) {
       // We need to do this in case an external user of this ComponentHost
       // has manually set alpha to 0, which will mean that it won't draw anything.
       host.setAlpha(1.0f);

@@ -28,6 +28,7 @@ import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentRenderInfo
+import com.facebook.litho.widget.ExperimentalRecycler
 import com.facebook.litho.widget.LinearLayoutInfo
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
@@ -109,7 +110,7 @@ class ExperimentaRecyclerTest {
         lithoViewRule.render {
           ExperimentalRecycler(
               binder = recyclerBinder,
-              itemDecoration = itemDecoration,
+              itemDecorations = listOf(itemDecoration),
               style = Style.width(100.px).height(100.px))
         }
 

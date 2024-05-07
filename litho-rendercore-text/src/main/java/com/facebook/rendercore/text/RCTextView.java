@@ -36,6 +36,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -457,6 +458,23 @@ public class RCTextView extends View {
         || super.dispatchHoverEvent(event);
   }
 
+  @Override
+  public final void onFocusChanged(
+      boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    if (mRCTextAccessibilityDelegate != null && mClickableSpans.length > 0) {
+      mRCTextAccessibilityDelegate.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    return (mRCTextAccessibilityDelegate != null
+            && mClickableSpans.length > 0
+            && mRCTextAccessibilityDelegate.dispatchKeyEvent(event))
+        || super.dispatchKeyEvent(event);
+  }
+
   public Layout getLayout() {
     return mLayout;
   }
@@ -565,7 +583,23 @@ public class RCTextView extends View {
     @Override
     protected boolean onPerformActionForVirtualView(
         int virtualViewId, int action, @Nullable Bundle arguments) {
+      if (action == AccessibilityNodeInfoCompat.ACTION_CLICK) {
+        mClickableSpans[virtualViewId].onClick(RCTextView.this);
+        return true;
+      }
       return false;
+    }
+
+    @Override
+    protected void onVirtualViewKeyboardFocusChanged(int virtualViewId, boolean hasFocus) {
+
+      if (mClickableSpans[virtualViewId] instanceof RCAccessibleClickableSpan) {
+        ((RCAccessibleClickableSpan) mClickableSpans[virtualViewId]).setKeyboardFocused(hasFocus);
+
+        // force redraw when focus changes, so that any visual changes get applied.
+        RCTextView.this.invalidate();
+      }
+      super.onVirtualViewKeyboardFocusChanged(virtualViewId, hasFocus);
     }
 
     @Override

@@ -73,7 +73,10 @@ public class LithoTestRunner extends RobolectricTestRunner {
    *     configurations.
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getGlobalConfigs() {
-    return Arrays.asList();
+    return Arrays.asList(
+        UseNewCacheValueLogicConfiguration.class,
+        PostponeViewRecycleConfigurationConfiguration.class,
+        PrimitiveRecyclerConfiguration.class);
   }
 
   @Override

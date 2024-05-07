@@ -35,7 +35,7 @@ public class LifecycleFragmentActivity extends NavigatableDemoActivity {
 
   private static final AtomicInteger mId = new AtomicInteger(0);
   private LithoView mLithoView;
-  private final LithoVisibilityEventsControllerDelegate mLithoLifecycleProviderDelegate =
+  private final LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate =
       new LithoVisibilityEventsControllerDelegate();
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
 
@@ -54,7 +54,7 @@ public class LifecycleFragmentActivity extends NavigatableDemoActivity {
                         .consoleDelegateListener(mConsoleDelegateListener)
                         .build())
                 .build(),
-            mLithoLifecycleProviderDelegate);
+            mLithoVisibilityEventsControllerDelegate);
     final LinearLayout.LayoutParams params1 =
         new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
     params1.weight = 1;

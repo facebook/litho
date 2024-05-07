@@ -676,7 +676,7 @@ constructor(
    * Represents a single bind function. Every bind has an equivalent unbind and a shouldUpdate
    * callback
    */
-  interface Binder<MODEL, CONTENT, BIND_DATA> {
+  interface Binder<MODEL, CONTENT, BIND_DATA : Any> {
     /**
      * Decides of the model should be re-bound to the content. If this method returns true, then
      * unbind will be called followed by bind.

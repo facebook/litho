@@ -22,8 +22,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.LithoVisibilityEventsController.LithoLifecycle
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -80,25 +79,21 @@ class LithoRecyclerBinderLifecycleProviderTest {
   // either
   @Test
   fun lithoLifecycleProviderDelegateRecyclerBinderVisibleTest() {
-    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      lithoLifecycleProviderDelegate.moveToLifecycle(LithoLifecycle.HINT_VISIBLE)
-      for (j in 0..19) {
-        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
-            .describedAs("Visible event is expected to be dispatched")
-            .isEqualTo(LithoLifecycle.HINT_VISIBLE)
-      }
+    lithoLifecycleProviderDelegate.moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE)
+    for (j in 0..19) {
+      assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.visibilityState)
+          .describedAs("Visible event is expected to be dispatched")
+          .isEqualTo(LithoVisibilityState.HINT_VISIBLE)
     }
   }
 
   @Test
   fun lithoLifecycleProviderDelegateRecyclerBinderInvisibleTest() {
-    if (!ComponentsConfiguration.enableRefactorLithoLifecycleProvider) {
-      lithoLifecycleProviderDelegate.moveToLifecycle(LithoLifecycle.HINT_INVISIBLE)
-      for (j in 0..19) {
-        assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.lifecycleStatus)
-            .describedAs("Invisible event is expected to be dispatched")
-            .isEqualTo(LithoLifecycle.HINT_INVISIBLE)
-      }
+    lithoLifecycleProviderDelegate.moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
+    for (j in 0..19) {
+      assertThat(recyclerBinder.getComponentAt(j)?.lifecycleProvider?.visibilityState)
+          .describedAs("Invisible event is expected to be dispatched")
+          .isEqualTo(LithoVisibilityState.HINT_INVISIBLE)
     }
   }
 }

@@ -83,7 +83,6 @@ internal constructor(
      * [MountItemsPool]
      */
     @JvmField val componentHostRecyclingEnabled: Boolean = false,
-    val shouldEnableDefaultAOSPLithoLifecycleProvider: Boolean = false,
     /**
      * Controls whether we attempt to batch state updates to avoid running the render process for
      * every state update in a small time window. This has been proven to be an overall improvement
@@ -95,6 +94,8 @@ internal constructor(
      * will process visibility events.
      */
     @JvmField val visibilityProcessingEnabled: Boolean = true,
+    /** Whether we use a Recycler based on a Primitive implementation. */
+    @JvmField val primitiveRecyclerEnabled: Boolean = false,
     /**
      * This class is an error event handler that clients can optionally set on a [ComponentTree] to
      * gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
@@ -122,6 +123,9 @@ internal constructor(
     @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
     @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
+    @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
+    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
+    @JvmField var skipHostAlphaReset: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -157,6 +161,10 @@ internal constructor(
 
     /** Indicates that the incremental mount helper is required for this build. */
     @JvmField val USE_INCREMENTAL_MOUNT_HELPER: Boolean = BuildConfig.USE_INCREMENTAL_MOUNT_HELPER
+
+    /** Whether we can access properties in Settings.Global for animations. */
+    val CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS: Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
 
     /** Whether we need to account for lack of synchronization while accessing Themes. */
     @JvmField
@@ -230,13 +238,7 @@ internal constructor(
     @JvmField var layoutThreadKeepAliveTimeMs: Long = 1_000
     @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
-    @JvmField var enableMountableRecycler: Boolean = false
-    @JvmField var enableMountableTwoBindersRecycler: Boolean = false
-    @JvmField var enableSeparateAnimatorBinder: Boolean = false
-    @JvmField var enableMountableRecyclerInGroups: Boolean = false
     @JvmField var shouldOverrideHasTransientState: Boolean = false
-    @JvmField var enableRefactorLithoLifecycleProvider: Boolean = false
-    @JvmField var enableDefaultAOSPLithoLifecycleProviderAPI: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
     @JvmField var disableReleaseComponentTreeInRecyclerBinder: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
@@ -245,8 +247,8 @@ internal constructor(
     @JvmField var bindOnSameComponentTree: Boolean = true
     @JvmField var isEventHandlerRebindLoggingEnabled: Boolean = false
     @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
-    @JvmField var skipHostAlphaReset: Boolean = false
     @JvmField var useOneShotPreDrawListener: Boolean = false
+    @JvmField var useNewCacheValueLogic: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
@@ -275,8 +277,6 @@ internal constructor(
     private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
-    private var shouldEnableDefaultAOSPLithoLifecycleProvider =
-        baseConfig.shouldEnableDefaultAOSPLithoLifecycleProvider
     private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
     private var errorEventHandler = baseConfig.errorEventHandler
     private var componentHostInvalidModificationPolicy =
@@ -289,6 +289,10 @@ internal constructor(
     private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
     private var unmountOnDetachedFromWindow = baseConfig.unmountOnDetachedFromWindow
+    private var primitiveRecyclerEnabled = baseConfig.primitiveRecyclerEnabled
+    private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
+        baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
+    private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -320,12 +324,6 @@ internal constructor(
 
     fun componentHostRecyclingEnabled(enabled: Boolean): Builder = also {
       componentHostRecyclingEnabled = enabled
-    }
-
-    fun shouldEnableDefaultAOSPLithoLifecycleProvider(enabled: Boolean): Builder = also {
-      if (enableDefaultAOSPLithoLifecycleProviderAPI) {
-        shouldEnableDefaultAOSPLithoLifecycleProvider = enabled
-      }
     }
 
     fun enableStateUpdatesBatching(enabled: Boolean): Builder = also {
@@ -370,6 +368,21 @@ internal constructor(
       this.unmountOnDetachedFromWindow = unmountOnDetachedFromWindow
     }
 
+    fun primitiveRecyclerEnabled(primitiveRecyclerEnabled: Boolean): Builder = also {
+      this.primitiveRecyclerEnabled = primitiveRecyclerEnabled
+    }
+
+    fun enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner(
+        enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean
+    ): Builder = also {
+      this.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
+          enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
+    }
+
+    fun skipHostAlphaReset(skipHostAlphaReset: Boolean): Builder = also {
+      this.skipHostAlphaReset = skipHostAlphaReset
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -380,8 +393,6 @@ internal constructor(
           preAllocationHandler = preAllocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
           componentHostRecyclingEnabled = componentHostRecyclingEnabled,
-          shouldEnableDefaultAOSPLithoLifecycleProvider =
-              shouldEnableDefaultAOSPLithoLifecycleProvider,
           enableStateUpdatesBatching = enableStateUpdatesBatching,
           componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
@@ -400,7 +411,11 @@ internal constructor(
           shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
           avoidRedundantPreAllocations = avoidRedundantPreAllocations,
-          unmountOnDetachedFromWindow = unmountOnDetachedFromWindow)
+          unmountOnDetachedFromWindow = unmountOnDetachedFromWindow,
+          primitiveRecyclerEnabled = primitiveRecyclerEnabled,
+          enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
+              enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
+          skipHostAlphaReset = skipHostAlphaReset)
     }
   }
 }

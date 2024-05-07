@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.util.Lists
@@ -157,6 +158,24 @@ class HooksStateHandlerTest {
     assertThat(firstStateUpdated?.states)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 7, bazState, "newValue"))
+  }
+
+  @Test
+  fun `when input changes and new cache value is evaluated then previous data is discarded`() {
+    val handler = StateHandler()
+    val input = "input"
+    val newInput = "new-input"
+    val value = "value"
+    val newValue = "new-value"
+    handler.putCachedValue(GLOBAL_KEY, 0, input, value)
+    assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isEqualTo(value)
+    handler.putCachedValue(GLOBAL_KEY, 0, newInput, newValue)
+    if (ComponentsConfiguration.useNewCacheValueLogic) {
+      assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isNull()
+    } else {
+      assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isNotNull()
+    }
+    assertThat(handler.getCachedValue(GLOBAL_KEY, 0, newInput)).isEqualTo(newValue)
   }
 
   companion object {
