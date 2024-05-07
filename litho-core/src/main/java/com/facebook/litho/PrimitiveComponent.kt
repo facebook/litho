@@ -96,6 +96,7 @@ abstract class PrimitiveComponent : Component() {
 
     Resolver.applyTransitionsAndUseEffectEntriesToNode(
         primitiveComponentScope.transitions,
+        primitiveComponentScope.transitionData,
         primitiveComponentScope.useEffectEntries,
         node,
     )

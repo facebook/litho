@@ -22,6 +22,7 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEvent.ComponentResolveStart
 import com.facebook.litho.debug.LithoDebugEventAttributes
+import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.debug.DebugEventDispatcher.trace
 import com.facebook.rendercore.transitions.TransitionUtils
@@ -401,8 +402,10 @@ object Resolver {
   }
 
   @JvmStatic
-  fun applyTransitionsAndUseEffectEntriesToNode(
+  @JvmName("applyTransitionsAndUseEffectEntriesToNode")
+  internal fun applyTransitionsAndUseEffectEntriesToNode(
       transitions: List<Transition>? = null,
+      transitionData: TransitionData? = null,
       useEffectEntries: List<Attachable>? = null,
       node: LithoNode
   ) {
@@ -410,6 +413,9 @@ object Resolver {
       for (transition in transitions) {
         node.addTransition(transition)
       }
+    }
+    if (transitionData != null) {
+      node.addTransitionData(transitionData)
     }
     if (useEffectEntries != null) {
       for (attachable in useEffectEntries) {
@@ -453,20 +459,26 @@ object Resolver {
     }
     val collectedAttachables: MutableList<Attachable> = ArrayList()
     val collectedTransitions: List<Transition> = ArrayList()
+    val collectedTransitionData = TransitionData()
     val collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo> =
         ArrayList()
     collectOutputs(
         node,
         collectedAttachables,
         collectedTransitions,
+        collectedTransitionData,
         collectedComponentsThatNeedPreviousRenderData)
     return if (collectedAttachables.isEmpty() &&
         collectedTransitions.isEmpty() &&
+        collectedTransitionData.isEmpty() &&
         collectedComponentsThatNeedPreviousRenderData.isEmpty()) {
       null
     } else {
       Outputs(
-          collectedAttachables, collectedTransitions, collectedComponentsThatNeedPreviousRenderData)
+          collectedAttachables,
+          collectedTransitions,
+          collectedTransitionData,
+          collectedComponentsThatNeedPreviousRenderData)
     }
   }
 
@@ -474,6 +486,7 @@ object Resolver {
       node: LithoNode,
       collectedAttachables: MutableList<Attachable>,
       collectedTransitions: List<Transition>,
+      collectedTransitionData: TransitionData,
       collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo>
   ) {
 
@@ -483,6 +496,7 @@ object Resolver {
           node.getChildAt(i),
           collectedAttachables,
           collectedTransitions,
+          collectedTransitionData,
           collectedComponentsThatNeedPreviousRenderData)
     }
 
@@ -497,6 +511,7 @@ object Resolver {
           TransitionUtils.addTransitions(transition, collectedTransitions)
         }
       }
+      node.transitionData?.let { transitionData -> collectedTransitionData.add(transitionData) }
 
       // collect components that need previous render data
       node.scopedComponentInfosNeedingPreviousRenderData?.let { components ->
@@ -688,6 +703,7 @@ object Resolver {
   internal constructor(
       @JvmField val attachables: List<Attachable>,
       @JvmField val transitions: List<Transition>,
+      @JvmField internal val transitionData: TransitionData?,
       @JvmField val componentsThatNeedPreviousRenderData: List<ScopedComponentInfo>
   )
 }

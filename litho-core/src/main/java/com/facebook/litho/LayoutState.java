@@ -31,6 +31,7 @@ import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.transition.TransitionData;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
@@ -122,6 +123,8 @@ public class LayoutState
   private @Nullable RenderTree mCachedRenderTree = null;
   private final @Nullable List<Attachable> mAttachables;
   private final @Nullable List<Transition> mTransitions;
+
+  private final @Nullable TransitionData mTransitionData;
   private final @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private final @Nullable WorkingRangeContainer mWorkingRangeContainer;
   final @Nullable Map<Object, Object> mLayoutCacheData;
@@ -170,6 +173,7 @@ public class LayoutState
     mMountableOutputBottoms = reductionState.getMountableOutputBottoms();
     mAttachables = reductionState.getAttachables();
     mTransitions = reductionState.getTransitions();
+    mTransitionData = reductionState.getTransitionData();
     mTestOutputs = reductionState.getTestOutputs();
     mScopedSpecComponentInfos = reductionState.getScopedSpecComponentInfos();
     mVisibilityOutputs = reductionState.getVisibilityOutputs();
@@ -531,6 +535,11 @@ public class LayoutState
   @Nullable
   public List<Transition> getTransitions() {
     return mTransitions;
+  }
+
+  @Nullable
+  TransitionData getTransitionData() {
+    return mTransitionData;
   }
 
   /** Gets a mapping from transition ids to a group of LayoutOutput. */

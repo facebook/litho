@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.view.View
+import com.facebook.litho.transition.TransitionData
 
 /**
  * The implicit receiver for [KComponent.render] call. This class exposes the ability to use hooks,
@@ -29,7 +30,9 @@ open class ComponentScope(
   // TODO: Extract into more generic container to track hooks when needed
   internal var useStateIndex = 0
   internal var useCachedIndex = 0
+  // TODO: Move transitions into TransitionData in a later diff
   internal var transitions: MutableList<Transition>? = null
+  internal var transitionData: TransitionData? = null
   internal var useEffectEntries: MutableList<Attachable>? = null
 
   /**
