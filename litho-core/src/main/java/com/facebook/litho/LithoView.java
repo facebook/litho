@@ -579,10 +579,6 @@ public class LithoView extends BaseMountingView {
     super.onDetached();
     if (mComponentTree != null) {
       mComponentTree.detach();
-
-      if (mComponentTree.getLithoConfiguration().componentsConfig.unmountOnDetachedFromWindow) {
-        unmountAllItems();
-      }
     }
 
     AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
