@@ -21,7 +21,10 @@ import com.facebook.litho.Diff
 import com.facebook.litho.Transition
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
+import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.internal.HookKey
 import com.facebook.rendercore.transitions.TransitionUtils
+import com.facebook.rendercore.utils.areObjectsEquivalent
 
 /** Defines one or more [Transition] animations for the given component */
 @Hook
@@ -86,6 +89,48 @@ interface UseTransitionScope {
    * @see useTransition
    */
   fun <T> diffOf(input: T): Diff<T>
+}
+
+internal class TransitionWithDependency(
+    val identityKey: HookKey,
+    private val dependencies: Array<*>,
+    private val createTransition: UseTransitionScope.() -> Transition?
+) {
+
+  private var diffInputs: List<Any?>? = null
+
+  fun createTransition(previousTransition: TransitionWithDependency?): Transition? {
+    return if (!areObjectsEquivalent(previousTransition?.dependencies, dependencies)) {
+      val transitionScope = UseTransitionScopeImpl(previousTransition?.diffInputs)
+      transitionScope.createTransition().also { transition ->
+        if (transition != null) TransitionUtils.setOwnerKey(transition, identityKey.globalKey)
+        if (diffInputs == null) {
+          diffInputs = transitionScope.inputs
+        } else if (LithoDebugConfigurations.isDebugModeEnabled) {
+          check(diffInputs == transitionScope.inputs) {
+            "Expected $diffInputs, but found ${transitionScope.inputs}"
+          }
+        }
+      }
+    } else null
+  }
+}
+
+private class UseTransitionScopeImpl(private val previousData: List<Any?>?) : UseTransitionScope {
+
+  private var _inputs: MutableList<Any?>? = null
+  val inputs: List<*>
+    get() = _inputs.orEmpty()
+
+  @Suppress("UNCHECKED_CAST")
+  override fun <T> diffOf(input: T): Diff<T> {
+    val inputs = _inputs ?: mutableListOf<Any?>().also { _inputs = it }
+    inputs.add(input)
+    // previousData is only null on the initial render
+    // Otherwise, we should be able to safely get by index and cast to T
+    val previous = if (previousData == null) null else previousData[inputs.lastIndex] as T
+    return Diff(previous, input)
+  }
 }
 
 private const val USE_TRANSITION_NO_DEPS_ERROR =
