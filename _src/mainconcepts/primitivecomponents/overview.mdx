@@ -5,9 +5,7 @@ title: Overview
 
 import {FbInternalOnly} from 'docusaurus-plugin-internaldocs-fb/internal'
 
-Primitive Components are used to render views or drawables and are a replacement for the old Specs API-based [Mount Specs](../../codegen/mount-specs.md). Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
-
-Primitive Components should only be created when you need to integrate your own views/drawables with Litho.
+Primitive Components are used to render views or drawables, and should only be created when you need to integrate your own views/drawables with Litho.
 
 The Primitive Components section contains the following pages:
 
@@ -18,7 +16,11 @@ The Primitive Components section contains the following pages:
 * [Content Pooling](primitive-preallocation.mdx) - details a strategy that can be used to populate the content pools to optimise first mount performance.
 * [Tracing](primitive-tracing.mdx) - shows how to customize [performance tracing](https://developer.android.com/topic/performance/tracing) information for Primitive Components.
 
+:::info
+Primitive Components are a replacement for the old Specs API-based [Mount Specs](../../codegen/mount-specs.md). Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
+
 Information and step-by-step explanations of how to migrate existing MountSpec components to Primitive Components can be found in [Migrating MountSpecs](../../kotlin/migrating-from-mountspecs-to-primitives.mdx) page.
+:::
 
 <FbInternalOnly>
 <p>Some of the above concepts have been explained in "Litho Primitives API: MountSpecs 2.0" talk presented during Mobile Developer Summit 2023:</p>
