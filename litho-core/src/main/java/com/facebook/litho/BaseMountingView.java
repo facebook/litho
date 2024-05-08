@@ -894,7 +894,16 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void setupMountExtensions() {
     if (mLithoHostListenerCoordinator == null) {
-      mLithoHostListenerCoordinator = new LithoHostListenerCoordinator(mMountState);
+      ComponentsConfiguration configuration = getConfiguration();
+      /*
+       * We want to allow the usage of the {@link ComponentsConfiguration#useFineGrainedViewAttributesExtension} whenever the {@link ComponentsConfiguration#componentHostRecyclingEnabled} is enabled because the bug was mainly visible when this was enabled.
+       */
+      mLithoHostListenerCoordinator =
+          new LithoHostListenerCoordinator(
+              mMountState,
+              configuration != null
+                  && (configuration.useFineGrainedViewAttributesExtension
+                      || configuration.componentHostRecyclingEnabled));
 
       mLithoHostListenerCoordinator.enableNestedLithoViewsExtension();
       mLithoHostListenerCoordinator.enableTransitions();

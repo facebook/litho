@@ -116,8 +116,28 @@ internal constructor(
     @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
     @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
-    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
-    @JvmField var skipHostAlphaReset: Boolean = false
+    @JvmField var skipHostAlphaReset: Boolean = false,
+    @JvmField val enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
+    /**
+     * LithoViewAttributesExtension is an extension for LithoView that allows setting custom view
+     * attributes on the underlying Android View or Drawable. This extension plays a crucial role
+     * when working with Litho components because it enables the modification of view properties not
+     * already exposed by the Litho framework. The proper functioning of this extension is vital for
+     * maintaining correct component behavior during mount and unmount processes, especially when
+     * controlled by animations.
+     *
+     * Prior to the introduction of
+     * [com.facebook.litho.LithoViewAttributesExtension.FineGrainedLithoViewAttributesState], an
+     * existing bug caused view attributes not to be correctly reset upon unmount due to the lack of
+     * information in the view attributes state about the corresponding render unit. This issue
+     * arose primarily during animations that controlled the mount/unmount cycle.
+     *
+     * This configuration aims then to allow you to enable the usage of
+     * [com.facebook.litho.LithoViewAttributesExtension.FineGrainedLithoViewAttributesState] to have
+     * a more reliable behavior. We are testing this currently to ensure there are no other
+     * performance regressions.
+     */
+    @JvmField val useFineGrainedViewAttributesExtension: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -284,6 +304,8 @@ internal constructor(
     private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
         baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
     private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
+    private var useFineGrainedViewAttributesExtension =
+        baseConfig.useFineGrainedViewAttributesExtension
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -370,6 +392,10 @@ internal constructor(
       this.skipHostAlphaReset = skipHostAlphaReset
     }
 
+    fun useFineGrainedViewAttributesExtension(enabled: Boolean): Builder = also {
+      useFineGrainedViewAttributesExtension = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -401,7 +427,8 @@ internal constructor(
           primitiveRecyclerEnabled = primitiveRecyclerEnabled,
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
               enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
-          skipHostAlphaReset = skipHostAlphaReset)
+          skipHostAlphaReset = skipHostAlphaReset,
+          useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension)
     }
   }
 }

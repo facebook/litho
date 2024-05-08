@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
+import androidx.collection.MutableScatterMap
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput
@@ -40,7 +41,8 @@ import com.facebook.rendercore.extensions.MountExtension
 import com.facebook.rendercore.extensions.OnItemCallbacks
 import com.facebook.rendercore.utils.equals
 
-class LithoViewAttributesExtension private constructor() :
+class LithoViewAttributesExtension
+private constructor(private val useFineGrainedAttributesState: Boolean) :
     MountExtension<ViewAttributesInput, LithoViewAttributesState>(),
     OnItemCallbacks<LithoViewAttributesState> {
 
@@ -48,7 +50,9 @@ class LithoViewAttributesExtension private constructor() :
     val viewAttributes: Map<Long, ViewAttributes>?
   }
 
-  override fun createState(): LithoViewAttributesState = DefaultLithoViewAttributesState()
+  override fun createState(): LithoViewAttributesState =
+      if (useFineGrainedAttributesState) FineGrainedLithoViewAttributesState()
+      else DefaultLithoViewAttributesState()
 
   interface LithoViewAttributesState {
 
@@ -114,6 +118,48 @@ class LithoViewAttributesExtension private constructor() :
     override fun onUnitUnmounted(id: Long) = Unit
   }
 
+  private class FineGrainedLithoViewAttributesState : LithoViewAttributesState {
+    private val _defaultViewAttributes: MutableMap<Long, Int> = HashMap()
+    private val currentUnits: MutableScatterMap<Long, ViewAttributes> = MutableScatterMap()
+    private var toBeCommittedUnits: Map<Long, ViewAttributes>? = null
+
+    override fun prepare(newUnitsAttributes: Map<Long, ViewAttributes>?) {
+      toBeCommittedUnits = newUnitsAttributes
+    }
+
+    override fun commit() {
+      toBeCommittedUnits?.let { currentUnits.putAll(it) }
+    }
+
+    override fun reset() {
+      currentUnits.clear()
+      toBeCommittedUnits = null
+    }
+
+    override fun setDefaultViewAttributes(renderUnitId: Long, flags: Int) {
+      _defaultViewAttributes[renderUnitId] = flags
+    }
+
+    override fun getDefaultViewAttributes(renderUnitId: Long): Int {
+      return _defaultViewAttributes[renderUnitId]
+          ?: throw IllegalStateException(
+              "View attributes not found, did you call onUnbindItem without onBindItem? | $renderUnitId")
+    }
+
+    override fun hasDefaultViewAttributes(renderUnitId: Long): Boolean =
+        _defaultViewAttributes.containsKey(renderUnitId)
+
+    override fun getCurrentViewAttributes(id: Long): ViewAttributes? = currentUnits[id]
+
+    override fun getNewViewAttributes(id: Long): ViewAttributes? = toBeCommittedUnits?.get(id)
+
+    override fun onUnitMounted(id: Long) = Unit
+
+    override fun onUnitUnmounted(id: Long) {
+      currentUnits.remove(id)
+    }
+  }
+
   override fun beforeMount(
       extensionState: ExtensionState<LithoViewAttributesState>,
       input: ViewAttributesInput?,
@@ -137,6 +183,7 @@ class LithoViewAttributesExtension private constructor() :
     val state = extensionState.state
     val id = renderUnit.id
     val viewAttributes = state.getNewViewAttributes(id)
+
     if (viewAttributes != null) {
       // Get the initial view attribute flags for the root LithoView.
       if (!state.hasDefaultViewAttributes(id)) {
@@ -237,7 +284,9 @@ class LithoViewAttributesExtension private constructor() :
   }
 
   companion object {
-    @get:JvmStatic val instance: LithoViewAttributesExtension = LithoViewAttributesExtension()
+    @JvmStatic
+    fun getInstance(useFineGrainedAttributesState: Boolean): LithoViewAttributesExtension =
+        LithoViewAttributesExtension(useFineGrainedAttributesState)
 
     @JvmStatic
     fun setViewAttributes(content: Any?, attributes: ViewAttributes, unit: RenderUnit<*>?) {
