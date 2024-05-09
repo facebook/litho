@@ -117,16 +117,35 @@ class IncrementalMountExtensionTest {
     val root: LayoutResult =
         SimpleLayoutResult.create()
             .renderUnit(ViewWrapperUnit(TextView(c), 1))
-            .width(100)
-            .height(100)
+            .width(0)
+            .height(0)
             .build()
     renderCoreTestRule
         .useExtensions(extensions)
         .useRootNode(LayoutResultWrappingNode(root))
-        .setSizePx(0, 0)
+        .setSizePx(100, 100)
         .render()
     val host = renderCoreTestRule.rootHost as HostView
     assertThat(host.getChildAt(0)).isInstanceOf(TextView::class.java)
+  }
+
+  @Test
+  fun whenVisibleBoundsIsZeroAndShouldNotMountZeroBoundsContent_shouldNotMountAnything() {
+    val c = renderCoreTestRule.context
+    val extensions = arrayOf<RenderCoreExtension<*, *>>(IncrementalMountRenderCoreExtension())
+    val root: LayoutResult =
+        SimpleLayoutResult.create()
+            .renderUnit(ViewWrapperUnit(TextView(c), 1))
+            .width(0)
+            .height(0)
+            .build()
+    renderCoreTestRule
+        .useExtensions(extensions)
+        .useRootNode(LayoutResultWrappingNode(root))
+        .setSizePx(100, 100)
+        .render()
+    val host = renderCoreTestRule.rootHost as HostView
+    assertThat(host.childCount).isEqualTo(0)
   }
 
   @Test
