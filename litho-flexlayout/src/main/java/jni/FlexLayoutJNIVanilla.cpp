@@ -15,6 +15,8 @@ using namespace facebook::flexlayout::jni;
 using namespace facebook::flexlayout::layoutoutput;
 using namespace facebook::flexlayout::core;
 
+using VoidMeasureResult = bool;
+
 struct JavaMeasureData {
   jobject callbackFunction;
   jint idx;
@@ -104,7 +106,7 @@ static auto FlexLayoutMeasureFunc(
     const float minHeight,
     const float maxHeight,
     const float ownerWidth,
-    const float ownerHeight) -> MeasureOutput<ScopedLocalRef<jobject>> {
+    const float ownerHeight) -> MeasureOutput<VoidMeasureResult> {
   JNIEnv* env = getCurrentEnv();
   static const jmethodID methodId = getMethodId(
       env,
@@ -133,24 +135,19 @@ static auto FlexLayoutMeasureFunc(
       env, (jfloatArray)env->GetObjectField(javaMeasureOutput.get(), arrField));
   const auto arr = ConstFloatArray{env, std::move(jary)};
 
-  static auto* const measureResultField = getFieldId(
-      env, measureOutputClass.get(), "measureResult", "Ljava/lang/Object;");
-  auto measureResult = make_local_ref(
-      env, env->GetObjectField(javaMeasureOutput.get(), measureResultField));
-
-  auto measureOutput = MeasureOutput<ScopedLocalRef<jobject>>{
+  auto measureOutput = MeasureOutput<VoidMeasureResult>{
       /* .width = */ arr[MEASURE_OUTPUT_WIDTH_POSITION],
       /* .height = */ arr[MEASURE_OUTPUT_HEIGHT_POSITION],
       /* .baseline = */ arr[MEASURE_OUTPUT_BASELINE_POSITION],
-      /* .result = */ std::move(measureResult)};
+      /* .result = */ true // dummy value
+  };
 
   return measureOutput;
 }
 
 static auto decodeFlexItemStyle(const ConstFloatArray& arr)
-    -> FlexItemStyle<JavaMeasureData, ScopedLocalRef<jobject>> {
-  auto flexItemStyle =
-      FlexItemStyle<JavaMeasureData, ScopedLocalRef<jobject>>();
+    -> FlexItemStyle<JavaMeasureData, VoidMeasureResult> {
+  auto flexItemStyle = FlexItemStyle<JavaMeasureData, VoidMeasureResult>();
   for (auto index = 0; index < arr.size();) {
     const auto key = static_cast<FlexItemStyleKeys>(arr[index++]);
     switch (key) {
@@ -278,7 +275,7 @@ static auto rawValue(Enum e) {
 }
 
 static void TransferLayoutOutputDataToJavaObject(
-    const LayoutOutput<ScopedLocalRef<jobject>>& layoutOutput,
+    const LayoutOutput<VoidMeasureResult>& layoutOutput,
     jobject obj) {
   if (!obj) {
     return;
@@ -293,11 +290,6 @@ static void TransferLayoutOutputDataToJavaObject(
   arr[rawValue(LayoutOutputKeys::Height)] = layoutOutput.height;
   arr[rawValue(LayoutOutputKeys::Baseline)] = layoutOutput.baseline;
 
-  static const jfieldID measureResultsField = getFieldId(
-      env, objectClass.get(), "measureResults", "[Ljava/lang/Object;");
-  auto measureResults = make_local_ref(
-      env,
-      static_cast<jobjectArray>(env->GetObjectField(obj, measureResultsField)));
   for (size_t i = 0; i < layoutOutput.children.size(); i++) {
     arr[NumLayoutOutputKeys + i * NumLayoutOutputChildKeys +
         rawValue(LayoutOutputChildKeys::Left)] = layoutOutput.children[i].left;
@@ -309,11 +301,6 @@ static void TransferLayoutOutputDataToJavaObject(
     arr[NumLayoutOutputKeys + i * NumLayoutOutputChildKeys +
         rawValue(LayoutOutputChildKeys::Height)] =
         layoutOutput.children[i].height;
-
-    env->SetObjectArrayElement(
-        measureResults.get(),
-        static_cast<jsize>(i),
-        layoutOutput.children[i].measureResult.get());
   }
   env->ReleaseFloatArrayElements(jary, arr, 0);
 }
@@ -335,7 +322,7 @@ static void jni_calculateLayout(
     const auto flexBoxStyle = decodeFlexBoxStyle(ConstFloatArray{
         env, make_local_ref_from_unowned(env, flexBoxStyleArray)});
 
-    std::vector<FlexItemStyle<JavaMeasureData, ScopedLocalRef<jobject>>>
+    std::vector<FlexItemStyle<JavaMeasureData, VoidMeasureResult>>
         childrenVector;
 
     int size = env->GetArrayLength(childrenFlexItemStyleArray);

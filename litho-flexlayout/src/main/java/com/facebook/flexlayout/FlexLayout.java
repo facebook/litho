@@ -43,6 +43,12 @@ public class FlexLayout {
                 callbackArray[idx].measure(
                     minWidth, maxWidth, minHeight, maxHeight, ownerWidth, ownerHeight);
 
+            // This measure callback implementation fills in the layout output array of
+            // measureResults directly within the measure calculation method. Unlike other
+            // platforms, in Java the costs of JNI crossing is high, and this lets us avoid book
+            // keeping a lot of local_ref
+            // objects.
+            layoutOutput.setMeasureResultForChildAt(idx, measureOutput);
             return measureOutput;
           }
 
