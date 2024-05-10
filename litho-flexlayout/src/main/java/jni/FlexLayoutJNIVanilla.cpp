@@ -18,6 +18,7 @@ using namespace facebook::flexlayout::core;
 using VoidMeasureResult = bool;
 
 struct JavaMeasureData {
+  JNIEnv* env;
   jobject callbackFunction;
   jint idx;
 };
@@ -82,7 +83,7 @@ static auto FlexLayoutBaselineFunc(
     const JavaMeasureData& baselineData,
     const float width,
     const float height) -> float {
-  JNIEnv* env = getCurrentEnv();
+  JNIEnv* env = baselineData.env;
 
   static const jmethodID methodId = getMethodId(
       env,
@@ -107,7 +108,8 @@ static auto FlexLayoutMeasureFunc(
     const float maxHeight,
     const float ownerWidth,
     const float ownerHeight) -> MeasureOutput<VoidMeasureResult> {
-  JNIEnv* env = getCurrentEnv();
+  JNIEnv* env = measureData.env;
+
   static const jmethodID methodId = getMethodId(
       env,
       findClass(env, "com/facebook/flexlayout/FlexLayoutNativeMeasureCallback"),
@@ -276,12 +278,13 @@ static auto rawValue(Enum e) {
 }
 
 static void TransferLayoutOutputDataToJavaObject(
+    JNIEnv* env,
     const LayoutOutput<VoidMeasureResult>& layoutOutput,
     jobject obj) {
   if (!obj) {
     return;
   }
-  JNIEnv* env = getCurrentEnv();
+
   static const jfieldID arrField = getFieldId(
       env, make_local_ref(env, env->GetObjectClass(obj)).get(), "arr", "[F");
   auto* jary = (jfloatArray)env->GetObjectField(obj, arrField);
@@ -332,7 +335,7 @@ static void jni_calculateLayout(
           childrenFlexItemStyleArray, i);
       auto flexItemStyle = decodeFlexItemStyle(
           ConstFloatArray{env, make_local_ref(env, flexItemStyleArray)});
-      flexItemStyle.measureData = (JavaMeasureData){callbackFunction, i};
+      flexItemStyle.measureData = (JavaMeasureData){env, callbackFunction, i};
       flexItemStyle.measureFunction = FlexLayoutMeasureFunc;
       childrenVector.push_back(std::move(flexItemStyle));
     }
@@ -346,7 +349,8 @@ static void jni_calculateLayout(
         maxHeight,
         ownerWidth);
 
-    TransferLayoutOutputDataToJavaObject(layoutOutput, layoutOutputJavaObject);
+    TransferLayoutOutputDataToJavaObject(
+        env, layoutOutput, layoutOutputJavaObject);
   } catch (const FlexLayoutJniException& jniException) {
     ScopedLocalRef<jthrowable> throwable = jniException.getThrowable();
     if (throwable.get() != nullptr) {
