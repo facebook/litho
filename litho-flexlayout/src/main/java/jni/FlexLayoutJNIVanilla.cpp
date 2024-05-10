@@ -127,10 +127,11 @@ static auto FlexLayoutMeasureFunc(
           ownerWidth,
           ownerHeight));
 
-  auto measureOutputClass =
-      make_local_ref(env, env->GetObjectClass(javaMeasureOutput.get()));
-  static const jfieldID arrField =
-      getFieldId(env, measureOutputClass.get(), "arr", "[F");
+  static const jfieldID arrField = getFieldId(
+      env,
+      make_local_ref(env, env->GetObjectClass(javaMeasureOutput.get())).get(),
+      "arr",
+      "[F");
   auto jary = make_local_ref(
       env, (jfloatArray)env->GetObjectField(javaMeasureOutput.get(), arrField));
   const auto arr = ConstFloatArray{env, std::move(jary)};
@@ -281,9 +282,8 @@ static void TransferLayoutOutputDataToJavaObject(
     return;
   }
   JNIEnv* env = getCurrentEnv();
-  auto objectClass = make_local_ref(env, env->GetObjectClass(obj));
-  static const jfieldID arrField =
-      getFieldId(env, objectClass.get(), "arr", "[F");
+  static const jfieldID arrField = getFieldId(
+      env, make_local_ref(env, env->GetObjectClass(obj)).get(), "arr", "[F");
   auto* jary = (jfloatArray)env->GetObjectField(obj, arrField);
   jfloat* arr = env->GetFloatArrayElements(jary, nullptr);
   arr[rawValue(LayoutOutputKeys::Width)] = layoutOutput.width;
