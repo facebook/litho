@@ -15,6 +15,11 @@ using namespace facebook::flexlayout::jni;
 using namespace facebook::flexlayout::layoutoutput;
 using namespace facebook::flexlayout::core;
 
+struct JavaMeasureData {
+  jobject callbackFunction;
+  jint idx;
+};
+
 static auto decodeFlexBoxStyle(const ConstFloatArray& arr) -> FlexBoxStyle {
   FlexBoxStyle flexBoxStyle = FlexBoxStyle{};
 
@@ -72,19 +77,28 @@ static auto decodeFlexBoxStyle(const ConstFloatArray& arr) -> FlexBoxStyle {
 }
 
 static auto FlexLayoutBaselineFunc(
-    const ScopedLocalRef<jobject>& baselineData,
+    const JavaMeasureData& baselineData,
     const float width,
     const float height) -> float {
   JNIEnv* env = getCurrentEnv();
-  auto objectClass =
-      make_local_ref(env, env->GetObjectClass(baselineData.get()));
-  static const jmethodID methodId =
-      getMethodId(env, objectClass.get(), "baseline", "(FF)F");
-  return callMethod<jfloat>(env, baselineData.get(), methodId, width, height);
+
+  static const jmethodID methodId = getMethodId(
+      env,
+      findClass(env, "com/facebook/flexlayout/FlexLayoutNativeMeasureCallback"),
+      "baselineNative",
+      "(IFF)F");
+
+  return callMethod<jfloat>(
+      env,
+      baselineData.callbackFunction,
+      methodId,
+      baselineData.idx,
+      width,
+      height);
 }
 
 static auto FlexLayoutMeasureFunc(
-    const ScopedLocalRef<jobject>& measureData,
+    const JavaMeasureData& measureData,
     const float minWidth,
     const float maxWidth,
     const float minHeight,
@@ -92,19 +106,18 @@ static auto FlexLayoutMeasureFunc(
     const float ownerWidth,
     const float ownerHeight) -> MeasureOutput<ScopedLocalRef<jobject>> {
   JNIEnv* env = getCurrentEnv();
-  auto objectClass =
-      make_local_ref(env, env->GetObjectClass(measureData.get()));
   static const jmethodID methodId = getMethodId(
       env,
-      objectClass.get(),
-      "measure",
-      "(FFFFFF)Lcom/facebook/flexlayout/layoutoutput/MeasureOutput;");
+      findClass(env, "com/facebook/flexlayout/FlexLayoutNativeMeasureCallback"),
+      "measureNative",
+      "(IFFFFFF)Lcom/facebook/flexlayout/layoutoutput/MeasureOutput;");
   auto const javaMeasureOutput = make_local_ref(
       env,
       callMethod<jobject>(
           env,
-          measureData.get(),
+          measureData.callbackFunction,
           methodId,
+          measureData.idx,
           minWidth,
           maxWidth,
           minHeight,
@@ -135,9 +148,9 @@ static auto FlexLayoutMeasureFunc(
 }
 
 static auto decodeFlexItemStyle(const ConstFloatArray& arr)
-    -> FlexItemStyle<ScopedLocalRef<jobject>, ScopedLocalRef<jobject>> {
+    -> FlexItemStyle<JavaMeasureData, ScopedLocalRef<jobject>> {
   auto flexItemStyle =
-      FlexItemStyle<ScopedLocalRef<jobject>, ScopedLocalRef<jobject>>();
+      FlexItemStyle<JavaMeasureData, ScopedLocalRef<jobject>>();
   for (auto index = 0; index < arr.size();) {
     const auto key = static_cast<FlexItemStyleKeys>(arr[index++]);
     switch (key) {
@@ -317,12 +330,12 @@ static void jni_calculateLayout(
     jfloat ownerWidth,
     jfloat,
     jobject layoutOutputJavaObject,
-    jobjectArray callbackArray) {
+    jobject callbackFunction) {
   try {
     const auto flexBoxStyle = decodeFlexBoxStyle(ConstFloatArray{
         env, make_local_ref_from_unowned(env, flexBoxStyleArray)});
 
-    std::vector<FlexItemStyle<ScopedLocalRef<jobject>, ScopedLocalRef<jobject>>>
+    std::vector<FlexItemStyle<JavaMeasureData, ScopedLocalRef<jobject>>>
         childrenVector;
 
     int size = env->GetArrayLength(childrenFlexItemStyleArray);
@@ -332,8 +345,7 @@ static void jni_calculateLayout(
           childrenFlexItemStyleArray, i);
       auto flexItemStyle = decodeFlexItemStyle(
           ConstFloatArray{env, make_local_ref(env, flexItemStyleArray)});
-      flexItemStyle.measureData =
-          make_local_ref(env, env->GetObjectArrayElement(callbackArray, i));
+      flexItemStyle.measureData = (JavaMeasureData){callbackFunction, i};
       flexItemStyle.measureFunction = FlexLayoutMeasureFunc;
       childrenVector.push_back(std::move(flexItemStyle));
     }
@@ -358,7 +370,7 @@ static void jni_calculateLayout(
 
 static JNINativeMethod methods[] = {
     {"jni_calculateLayout",
-     "([F[[FFFFFFFLcom/facebook/flexlayout/layoutoutput/LayoutOutput;[Lcom/facebook/flexlayout/styles/FlexItemCallback;)V",
+     "([F[[FFFFFFFLcom/facebook/flexlayout/layoutoutput/LayoutOutput;Lcom/facebook/flexlayout/FlexLayoutNativeMeasureCallback;)V",
      (void*)jni_calculateLayout},
 };
 

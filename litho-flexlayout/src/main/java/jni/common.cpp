@@ -7,14 +7,19 @@ namespace facebook {
 namespace flexlayout {
 namespace jni {
 
+jclass findClass(JNIEnv* env, const char* className) {
+  jclass clazz = env->FindClass(className);
+  assertNoPendingJniExceptionIf(env, clazz == nullptr);
+
+  return clazz;
+}
+
 void registerNatives(
     JNIEnv* env,
     const char* className,
     const JNINativeMethod methods[],
     jint numMethods) {
-  jclass clazz = env->FindClass(className);
-
-  assertNoPendingJniExceptionIf(env, clazz == nullptr);
+  jclass clazz = findClass(env, className);
 
   auto result = env->RegisterNatives(clazz, methods, numMethods);
 

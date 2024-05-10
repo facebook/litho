@@ -3,7 +3,6 @@
 package com.facebook.flexlayout;
 
 import com.facebook.flexlayout.layoutoutput.LayoutOutput;
-import com.facebook.flexlayout.styles.FlexItemCallback;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
@@ -23,5 +22,5 @@ public class FlexLayoutNative {
       float ownerWidth,
       float ownerHeight,
       LayoutOutput layoutOutput,
-      FlexItemCallback[] callbackArray);
+      FlexLayoutNativeMeasureCallback measureCallback);
 }

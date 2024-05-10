@@ -3,10 +3,9 @@
 package com.facebook.flexlayout;
 
 import com.facebook.flexlayout.layoutoutput.LayoutOutput;
+import com.facebook.flexlayout.layoutoutput.MeasureOutput;
 import com.facebook.flexlayout.styles.FlexItemCallback;
-import com.facebook.proguard.annotations.DoNotStrip;
 
-@DoNotStrip
 public class FlexLayout {
   public static <MeasureResult> LayoutOutput<MeasureResult> calculateLayout(
       float[] flexBoxStyle,
@@ -29,7 +28,29 @@ public class FlexLayout {
         ownerWidth,
         ownerHeight,
         layoutOutput,
-        callbackArray);
+        new FlexLayoutNativeMeasureCallback<MeasureResult>() {
+
+          @Override
+          MeasureOutput<MeasureResult> measure(
+              int idx,
+              float minWidth,
+              float maxWidth,
+              float minHeight,
+              float maxHeight,
+              float ownerWidth,
+              float ownerHeight) {
+            MeasureOutput<MeasureResult> measureOutput =
+                callbackArray[idx].measure(
+                    minWidth, maxWidth, minHeight, maxHeight, ownerWidth, ownerHeight);
+
+            return measureOutput;
+          }
+
+          @Override
+          float baseline(int idx, float width, float height) {
+            return callbackArray[idx].baseline(width, height);
+          }
+        });
     return layoutOutput;
   }
 }
