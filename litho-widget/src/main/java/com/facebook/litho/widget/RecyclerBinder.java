@@ -583,7 +583,7 @@ public class RecyclerBinder
 
       componentContext = ComponentContext.makeCopyForNestedTree(c);
       if (lifecycleProvider == null) {
-        lifecycleProvider = ComponentTree.getLifecycleProvider(c);
+        lifecycleProvider = ComponentTree.getLithoVisibilityEventsController(c);
       }
 
       if (layoutInfo == null) {

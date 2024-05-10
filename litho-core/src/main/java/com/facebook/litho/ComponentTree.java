@@ -367,7 +367,7 @@ public class ComponentTree
             config,
             LithoTree.Companion.create(this),
             "root",
-            getLifecycleProvider(),
+            getLithoVisibilityEventsController(),
             null,
             builder.parentTreePropContainer);
 
@@ -1640,12 +1640,12 @@ public class ComponentTree
     return mTreeState == null ? new TreeState() : new TreeState(mTreeState);
   }
 
-  public static @Nullable LithoVisibilityEventsController getLifecycleProvider(
+  public static @Nullable LithoVisibilityEventsController getLithoVisibilityEventsController(
       ComponentContext context) {
-    return context.getLifecycleProvider();
+    return context.getLithoVisibilityEventsController();
   }
 
-  public @Nullable LithoVisibilityEventsController getLifecycleProvider() {
+  public @Nullable LithoVisibilityEventsController getLithoVisibilityEventsController() {
     return mLifecycleProvider;
   }
 
@@ -1662,9 +1662,10 @@ public class ComponentTree
   public static ComponentTree.Builder createNestedComponentTree(
       final ComponentContext parentContext, @Nullable Component component) {
     final SimpleNestedTreeVisibilityEventsController lifecycleProvider =
-        parentContext.getLifecycleProvider() == null
+        parentContext.getLithoVisibilityEventsController() == null
             ? null
-            : new SimpleNestedTreeVisibilityEventsController(parentContext.getLifecycleProvider());
+            : new SimpleNestedTreeVisibilityEventsController(
+                parentContext.getLithoVisibilityEventsController());
 
     return ComponentTree.create(
         ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);

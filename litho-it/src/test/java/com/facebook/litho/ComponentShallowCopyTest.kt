@@ -89,7 +89,7 @@ class ComponentShallowCopyTest {
         componentTree.lithoConfiguration,
         create(componentTree),
         c.mGlobalKey,
-        c.lifecycleProvider,
+        c.lithoVisibilityEventsController,
         null,
         c.parentTreePropContainer)
   }

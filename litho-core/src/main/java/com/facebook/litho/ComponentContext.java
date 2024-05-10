@@ -78,7 +78,7 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LithoTree mLithoTree;
 
-  private @Nullable LithoVisibilityEventsController mLifecycleProvider;
+  private @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
 
   // Used to hold styling information applied to components
   @StyleRes
@@ -116,7 +116,7 @@ public class ComponentContext {
       @Nullable LithoConfiguration lithoConfiguration,
       @Nullable LithoTree lithoTree,
       @Nullable String globalKey,
-      @Nullable LithoVisibilityEventsController lifecycleProvider,
+      @Nullable LithoVisibilityEventsController lithoVisibilityEventsController,
       @Nullable Component componentScope,
       @Nullable TreePropContainer parentTreePropContainer) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
@@ -141,7 +141,7 @@ public class ComponentContext {
 
     mLithoTree = lithoTree;
     mGlobalKey = globalKey;
-    mLifecycleProvider = lifecycleProvider;
+    mLithoVisibilityEventsController = lithoVisibilityEventsController;
     mComponentScope = componentScope;
     mParentTreePropContainer = parentTreePropContainer;
   }
@@ -155,7 +155,7 @@ public class ComponentContext {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
-    mLifecycleProvider = context.mLifecycleProvider;
+    mLithoVisibilityEventsController = context.mLithoVisibilityEventsController;
     mLithoTree = context.mLithoTree;
     mTreePropContainer = treePropContainer != null ? treePropContainer : context.mTreePropContainer;
     mParentTreePropContainer = context.mParentTreePropContainer;
@@ -811,8 +811,8 @@ public class ComponentContext {
   }
 
   @Nullable
-  public LithoVisibilityEventsController getLifecycleProvider() {
-    return mLifecycleProvider;
+  public LithoVisibilityEventsController getLithoVisibilityEventsController() {
+    return mLithoVisibilityEventsController;
   }
 
   @VisibleForTesting

@@ -617,7 +617,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                 ct.getLithoConfiguration(),
                 LithoTree.Companion.create(ct),
                 c.mGlobalKey,
-                c.getLifecycleProvider(),
+                c.getLithoVisibilityEventsController(),
                 null,
                 c.getParentTreePropContainer());
       } else {
