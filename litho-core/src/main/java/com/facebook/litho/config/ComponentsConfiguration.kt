@@ -137,7 +137,8 @@ internal constructor(
      * a more reliable behavior. We are testing this currently to ensure there are no other
      * performance regressions.
      */
-    @JvmField val useFineGrainedViewAttributesExtension: Boolean = false
+    @JvmField val useFineGrainedViewAttributesExtension: Boolean = false,
+    @JvmField val enableFacadeStateUpdater: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
