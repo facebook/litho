@@ -12,7 +12,7 @@ public class FlexLayoutNative {
     SoLoader.loadLibrary("flexlayout");
   }
 
-  public static native void jni_calculateLayout(
+  public static native <MeasureResult> void jni_calculateLayout(
       float[] flexBoxStyleArray,
       float[][] childrenFlexItemStyleArray,
       float minWidth,
@@ -21,6 +21,6 @@ public class FlexLayoutNative {
       float maxHeight,
       float ownerWidth,
       float ownerHeight,
-      LayoutOutput layoutOutput,
-      FlexLayoutNativeMeasureCallback measureCallback);
+      LayoutOutput<MeasureResult> layoutOutput,
+      FlexLayoutNativeMeasureCallback<MeasureResult> measureCallback);
 }
