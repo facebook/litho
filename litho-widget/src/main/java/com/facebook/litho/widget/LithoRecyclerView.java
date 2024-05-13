@@ -22,6 +22,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Extension of {@link RecyclerView} that allows to add more features needed for @{@link
@@ -30,7 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDrawListener {
 
   private @Nullable TouchInterceptor mTouchInterceptor;
-  private @Nullable PostDispatchDrawListener mPostDispatchDrawListener;
+  private @Nullable List<PostDispatchDrawListener> mPostDispatchDrawListeners;
 
   public LithoRecyclerView(Context context) {
     this(context, null);
@@ -75,19 +77,26 @@ public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDr
   protected void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
 
-    if (mPostDispatchDrawListener != null) {
-      mPostDispatchDrawListener.postDispatchDraw();
+    if (mPostDispatchDrawListeners != null) {
+      for (int i = 0, size = mPostDispatchDrawListeners.size(); i < size; i++) {
+        mPostDispatchDrawListeners.get(i).postDispatchDraw(getChildCount());
+      }
     }
   }
 
   @Override
   public void registerPostDispatchDrawListener(PostDispatchDrawListener listener) {
-    mPostDispatchDrawListener = listener;
+    if (mPostDispatchDrawListeners == null) {
+      mPostDispatchDrawListeners = new ArrayList<>();
+    }
+    mPostDispatchDrawListeners.add(listener);
   }
 
   @Override
   public void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener) {
-    mPostDispatchDrawListener = null;
+    if (mPostDispatchDrawListeners != null) {
+      mPostDispatchDrawListeners.remove(listener);
+    }
   }
 
   /** Allows to override {@link #onInterceptTouchEvent(MotionEvent)} behavior */

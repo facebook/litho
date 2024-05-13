@@ -177,7 +177,7 @@ public class RecyclerBinder
   private final PostDispatchDrawListener mPostDispatchDrawListener =
       new PostDispatchDrawListener() {
         @Override
-        public void postDispatchDraw() {
+        public void postDispatchDraw(int childCount) {
           maybeDispatchDataRendered();
         }
       };
@@ -313,6 +313,7 @@ public class RecyclerBinder
   private final boolean[] mFirstMountLogged = new boolean[1];
   private final boolean[] mLastMountLogged = new boolean[1];
   private final RecyclerBinderAdapterDelegate mRecyclerBinderAdapterDelegate;
+  private final List<PostDispatchDrawListener> mAdditionalPostDispatchDrawListeners;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -445,6 +446,8 @@ public class RecyclerBinder
     private @Nullable LithoVisibilityEventsController lifecycleProvider;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
 
+    private @Nullable List<PostDispatchDrawListener> additionalPostDispatchDrawListeners;
+
     /**
      * Associates a {@link RecyclerBinderConfig} to the {@link RecyclerBinder} created by this
      * builder.
@@ -570,6 +573,12 @@ public class RecyclerBinder
     public Builder lithoLifecycleProvider(
         LithoVisibilityEventsController lithoVisibilityEventsController) {
       lifecycleProvider = lithoVisibilityEventsController;
+      return this;
+    }
+
+    public Builder addAdditionalPostDispatchDrawListeners(
+        List<PostDispatchDrawListener> listeners) {
+      additionalPostDispatchDrawListeners = listeners;
       return this;
     }
 
@@ -701,6 +710,10 @@ public class RecyclerBinder
         builder.adapterDelegate != null
             ? builder.adapterDelegate
             : new DefaultRecyclerBinderAdapterDelegate();
+    mAdditionalPostDispatchDrawListeners =
+        builder.additionalPostDispatchDrawListeners != null
+            ? builder.additionalPostDispatchDrawListeners
+            : new ArrayList<>();
     mInternalAdapter =
         builder.overrideInternalAdapter != null
             ? builder.overrideInternalAdapter
@@ -2950,8 +2963,13 @@ public class RecyclerBinder
 
   private void registerDrawListener(final RecyclerView view) {
     if (view instanceof HasPostDispatchDrawListener) {
-      ((HasPostDispatchDrawListener) view)
-          .registerPostDispatchDrawListener(mPostDispatchDrawListener);
+      HasPostDispatchDrawListener viewHasPostDispatchDrawListener =
+          (HasPostDispatchDrawListener) view;
+      viewHasPostDispatchDrawListener.registerPostDispatchDrawListener(mPostDispatchDrawListener);
+
+      for (PostDispatchDrawListener listener : mAdditionalPostDispatchDrawListeners) {
+        viewHasPostDispatchDrawListener.registerPostDispatchDrawListener(listener);
+      }
     } else if (view.getViewTreeObserver() != null) {
       view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
       // To make sure we unregister the OnPreDrawListener before RecyclerView is detached.
@@ -2961,8 +2979,13 @@ public class RecyclerBinder
 
   private void unregisterDrawListener(final RecyclerView view) {
     if (view instanceof HasPostDispatchDrawListener) {
-      ((HasPostDispatchDrawListener) view)
-          .unregisterPostDispatchDrawListener(mPostDispatchDrawListener);
+      HasPostDispatchDrawListener viewHasPostDispatchDrawListener =
+          (HasPostDispatchDrawListener) view;
+      viewHasPostDispatchDrawListener.unregisterPostDispatchDrawListener(mPostDispatchDrawListener);
+
+      for (PostDispatchDrawListener listener : mAdditionalPostDispatchDrawListeners) {
+        viewHasPostDispatchDrawListener.unregisterPostDispatchDrawListener(listener);
+      }
     } else if (view.getViewTreeObserver() != null) {
       view.getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     }
