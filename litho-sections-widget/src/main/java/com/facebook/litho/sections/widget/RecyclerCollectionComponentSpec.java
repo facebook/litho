@@ -68,6 +68,7 @@ import com.facebook.litho.widget.ExperimentalRecycler;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.LithoRecyclerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
+import com.facebook.litho.widget.PostDispatchDrawListener;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
@@ -394,7 +395,9 @@ public class RecyclerCollectionComponentSpec {
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
       @Prop(optional = true) @Nullable LithoStartupLogger startupLogger,
-      @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory) {
+      @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory,
+      @Prop(optional = true) @Nullable
+          List<PostDispatchDrawListener> additionalPostDispatchDrawListeners) {
 
     RecyclerBinderConfiguration binderConfiguration =
         recyclerConfiguration.getRecyclerBinderConfiguration();
@@ -421,6 +424,11 @@ public class RecyclerCollectionComponentSpec {
             .layoutInfo(newLayoutInfo)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger);
+
+    if (additionalPostDispatchDrawListeners != null) {
+      recyclerBinderBuilder.addAdditionalPostDispatchDrawListeners(
+          additionalPostDispatchDrawListeners);
+    }
 
     RecyclerBinder recyclerBinder = recyclerBinderBuilder.build(c);
 
