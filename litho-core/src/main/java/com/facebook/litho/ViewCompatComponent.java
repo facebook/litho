@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
-import com.facebook.rendercore.MountItemsPool;
 
 /**
  * A component that can wrap a view using a {@link ViewBinder} class to bind the view and a {@link
@@ -78,7 +77,7 @@ public class ViewCompatComponent<V extends View> extends SpecGeneratedComponent 
       int heightSpec,
       Size size,
       @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final V toMeasure = (V) MountItemsPool.acquireMountContent(c.getAndroidContext(), this);
+    final V toMeasure = onCreateMountContent(c.getAndroidContext());
     final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
 
     toMeasure.setLayoutParams(layoutParams);
@@ -95,8 +94,6 @@ public class ViewCompatComponent<V extends View> extends SpecGeneratedComponent 
     }
 
     mViewBinder.unbind(toMeasure);
-
-    MountItemsPool.release(c.getAndroidContext(), this, toMeasure);
   }
 
   @Override
