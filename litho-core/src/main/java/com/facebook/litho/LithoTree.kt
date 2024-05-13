@@ -37,9 +37,9 @@ constructor(
 
     private val IdGenerator = AtomicInteger(0)
 
-    fun create(componentTree: ComponentTree): LithoTree =
+    fun create(componentTree: ComponentTree, stateUpdater: StateUpdater): LithoTree =
         LithoTree(
-            componentTree,
+            stateUpdater,
             componentTree,
             componentTree,
             componentTree,

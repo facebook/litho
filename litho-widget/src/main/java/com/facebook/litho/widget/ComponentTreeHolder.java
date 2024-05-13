@@ -29,6 +29,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.FacadeStateUpdater;
 import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
 import com.facebook.litho.LithoVisibilityEventsListener;
@@ -59,6 +60,8 @@ public class ComponentTreeHolder {
   private @Nullable ComponentTreeHolderVisibilityEventsController
       mComponentTreeHolderLifecycleProvider;
   private final ComponentsConfiguration mComponentsConfiguration;
+
+  @Nullable private FacadeStateUpdater mFacadeStateUpdater;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -118,6 +121,7 @@ public class ComponentTreeHolder {
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable LithoVisibilityEventsController parentLifecycle;
+    private @Nullable FacadeStateUpdater facadeStateUpdater;
 
     private Builder(ComponentsConfiguration configuration) {
       componentsConfiguration = configuration;
@@ -144,6 +148,12 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder facadeStateUpdater(@Nullable FacadeStateUpdater facadeStateUpdater) {
+      this.facadeStateUpdater =
+          facadeStateUpdater == null ? new FacadeStateUpdater() : facadeStateUpdater;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -165,6 +175,7 @@ public class ComponentTreeHolder {
     mId = sIdGenerator.getAndIncrement();
     mParentLifecycle = builder.parentLifecycle;
     mComponentsConfiguration = builder.componentsConfiguration;
+    mFacadeStateUpdater = builder.facadeStateUpdater;
   }
 
   @VisibleForTesting
@@ -402,8 +413,10 @@ public class ComponentTreeHolder {
         treeComponentsConfigurationBuilder.componentsLogger(mRenderInfo.getComponentsLogger());
       }
 
+      ComponentsConfiguration treeComponentConfiguration =
+          treeComponentsConfigurationBuilder.build();
       builder
-          .componentsConfiguration(treeComponentsConfigurationBuilder.build())
+          .componentsConfiguration(treeComponentConfiguration)
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
           .measureListener(
@@ -411,7 +424,18 @@ public class ComponentTreeHolder {
                   ? null
                   : mComponentTreeMeasureListenerFactory.create(this));
 
+      if (treeComponentConfiguration.enableFacadeStateUpdater) {
+        if (mFacadeStateUpdater == null) {
+          mFacadeStateUpdater = new FacadeStateUpdater();
+        }
+        builder.stateUpdater(mFacadeStateUpdater);
+      }
+
       mComponentTree = builder.build();
+
+      if (treeComponentConfiguration.enableFacadeStateUpdater) {
+        mFacadeStateUpdater.attachStateUpdater(mComponentTree);
+      }
 
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
@@ -457,6 +481,9 @@ public class ComponentTreeHolder {
         return;
       }
 
+      if (mComponentsConfiguration.enableFacadeStateUpdater && mFacadeStateUpdater != null) {
+        mFacadeStateUpdater.detachStateUpdater();
+      }
       mComponentTree.release();
       mComponentTree = null;
     }

@@ -615,7 +615,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
                 c.getAndroidContext(),
                 c.getTreePropContainer(),
                 ct.getLithoConfiguration(),
-                LithoTree.Companion.create(ct),
+                LithoTree.Companion.create(ct, ct),
                 c.mGlobalKey,
                 c.getLithoVisibilityEventsController(),
                 null,

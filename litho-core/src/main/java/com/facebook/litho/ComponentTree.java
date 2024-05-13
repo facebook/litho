@@ -360,12 +360,15 @@ public class ComponentTree
             renderUnitIdGenerator,
             builder.visibilityBoundsTransformer);
 
+    final StateUpdater stateUpdater =
+        (builder.mStateUpdater != null) ? builder.mStateUpdater : this;
+
     mContext =
         new ComponentContext(
             androidContext,
             builder.treePropContainer,
             config,
-            LithoTree.Companion.create(this),
+            LithoTree.Companion.create(this, stateUpdater),
             "root",
             getLithoVisibilityEventsController(),
             null,
@@ -2959,6 +2962,8 @@ public class ComponentTree
     private @Nullable final TreePropContainer treePropContainer;
     private @Nullable final TreePropContainer parentTreePropContainer;
 
+    private @Nullable StateUpdater mStateUpdater = null;
+
     protected Builder(ComponentContext context) {
       config = context.mLithoConfiguration.componentsConfig;
       visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
@@ -3076,6 +3081,11 @@ public class ComponentTree
 
     public Builder visibilityBoundsTransformer(@Nullable VisibilityBoundsTransformer transformer) {
       visibilityBoundsTransformer = transformer;
+      return this;
+    }
+
+    public Builder stateUpdater(@Nullable StateUpdater stateUpdater) {
+      mStateUpdater = stateUpdater;
       return this;
     }
 
