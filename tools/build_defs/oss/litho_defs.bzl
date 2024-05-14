@@ -178,8 +178,6 @@ LITHO_MOCKITO_V2_TARGET = make_dep_path("lib/mockito2:mockito2")
 
 LITHO_JNI_TARGET = make_dep_path("lib/jni-hack:jni-hack")
 
-LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
-
 ANDROID_STUDIO_PLUGIN_SDK = make_dep_path("lib/intellij-plugin-sdk:intellij-plugin-sdk")
 
 ANDROID_STUDIO_PLUGIN_SDK_FOR_TESTS = make_dep_path("lib/intellij-plugin-sdk:intellij-plugin-sdk")
