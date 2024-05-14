@@ -307,6 +307,7 @@ internal constructor(
     private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
     private var useFineGrainedViewAttributesExtension =
         baseConfig.useFineGrainedViewAttributesExtension
+    private var enableFacadeStateUpdater = baseConfig.enableFacadeStateUpdater
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -397,6 +398,10 @@ internal constructor(
       useFineGrainedViewAttributesExtension = enabled
     }
 
+    fun enableFacadeStateUpdater(enabled: Boolean): Builder = also {
+      enableFacadeStateUpdater = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -429,7 +434,8 @@ internal constructor(
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
               enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
           skipHostAlphaReset = skipHostAlphaReset,
-          useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension)
+          useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
+          enableFacadeStateUpdater = enableFacadeStateUpdater)
     }
   }
 }
