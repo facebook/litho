@@ -32,6 +32,7 @@ import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.transition.TransitionData;
+import com.facebook.litho.transition.TransitionWithDependency;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
@@ -597,6 +598,30 @@ public class LayoutState
           }
         } catch (Exception e) {
           ComponentUtils.handleWithHierarchy(scopedContext, component, e);
+        }
+      }
+    }
+    LayoutStateLiteData mountedLayoutStateData = state.getPreviousLayoutStateData();
+    if (mTransitionData != null && !mTransitionData.isEmpty()) {
+      if (mountTimeTransitions == null) {
+        mountTimeTransitions = new ArrayList<>();
+      }
+      if (mPreviousLayoutStateId == mountedLayoutStateData.getLayoutStateId()) {
+        List<Transition> optimisticTransitions = mTransitionData.getOptimisticTransitions();
+        if (optimisticTransitions != null) {
+          mountTimeTransitions.addAll(optimisticTransitions);
+        }
+      } else {
+        Map<?, TransitionWithDependency> twds = mTransitionData.getTransitionsWithDependency();
+        if (twds != null) {
+          for (TransitionWithDependency twd : twds.values()) {
+            TransitionWithDependency previousTwd =
+                mountedLayoutStateData.getTransitionWithDependency(twd.getIdentityKey());
+            final Transition transition = twd.createTransition(previousTwd);
+            if (transition != null) {
+              mountTimeTransitions.add(transition);
+            }
+          }
         }
       }
     }

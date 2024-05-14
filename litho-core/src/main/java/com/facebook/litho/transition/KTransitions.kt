@@ -31,7 +31,7 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
 fun ComponentScope.useTransition(transition: Transition?) {
   transition ?: return
   TransitionUtils.setOwnerKey(transition, context.globalKey)
-  val transitionsList = transitions ?: ArrayList<Transition>()
+  val transitionsList = transitions ?: arrayListOf()
   transitionsList.add(transition)
   transitions = transitionsList
 }
@@ -55,7 +55,17 @@ fun ComponentScope.useTransition(
     vararg deps: Any?,
     createTransition: UseTransitionScope.() -> Transition?
 ) {
-  error("Not yet implemented")
+  val data = transitionData ?: TransitionData()
+  val identityKey = HookKey(context.globalKey, data.transitionsWithDependency?.size ?: 0)
+  val twd = TransitionWithDependency(identityKey, deps, createTransition)
+  val previousTwd =
+      checkNotNull(resolveContext)
+          .treeState
+          .getPreviousLayoutStateData()
+          .getTransitionWithDependency(twd.identityKey)
+  val optimisticTransition = twd.createTransition(previousTwd)
+  data.addTransitionWithDependency(twd, optimisticTransition)
+  transitionData = data
 }
 
 /**
