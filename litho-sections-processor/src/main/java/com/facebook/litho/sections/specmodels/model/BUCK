@@ -23,6 +23,7 @@ fb_java_library(
     ]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     source = "8",
     target = "8",
     visibility = [
@@ -48,6 +49,7 @@ fb_java_library(
     ]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,

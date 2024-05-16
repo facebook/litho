@@ -16,6 +16,7 @@ fb_core_android_library(
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     visibility = LITHO_TESTING_UTIL_VISIBILITY,
     deps = [
         LITHO_JAVA_TARGET,

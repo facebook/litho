@@ -10,6 +10,7 @@ fb_android_resource(
     name = "res",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     package = "com.facebook.litho.widget",
     res = "src/main/res",
     visibility = [
