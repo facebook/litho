@@ -56,6 +56,7 @@ object LithoDebugEvent {
   const val ComponentTreeResume = "Litho.ComponentTree.Resume"
   const val TreeFutureRun = "Litho.TreeFuture.Run"
   const val TreeFutureGet = "Litho.TreeFuture.Get"
+  const val TreeFutureGetPartial = "Litho.TreeFuture.GetPartial"
   const val TreeFutureWait = "Litho.TreeFuture.Wait"
   const val TreeFutureInterrupt = "Litho.TreeFuture.Interrupt"
   const val TreeFutureResume = "Litho.TreeFuture.Resume"
@@ -104,10 +105,19 @@ object LithoDebugEvents {
     }
 
     @JvmStatic
-    fun get(treeId: Int, name: String, wasInterrupted: Boolean) {
+    fun get(treeId: Int, name: String) {
       dispatch(type = LithoDebugEvent.TreeFutureGet, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
-        attrs[DebugEventAttribute.WasInterrupted] = wasInterrupted
+        attrs[DebugEventAttribute.WasInterrupted] = false
+        attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
+      }
+    }
+
+    @JvmStatic
+    fun getPartial(treeId: Int, name: String) {
+      dispatch(type = LithoDebugEvent.TreeFutureGetPartial, treeId = treeId) { attrs ->
+        attrs[DebugEventAttribute.Name] = name
+        attrs[DebugEventAttribute.WasInterrupted] = true
         attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }
