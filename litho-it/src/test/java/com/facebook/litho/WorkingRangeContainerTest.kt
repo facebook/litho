@@ -88,15 +88,14 @@ class WorkingRangeContainerTest {
     val workingRange2 = TestWorkingRange()
     workingRangeContainer.registerWorkingRange(NAME, workingRange2, scopedComponentInfo2, null)
     val statusHandler = WorkingRangeStatusHandler()
-    statusHandler.setStatus(NAME, component, "component", WorkingRangeStatusHandler.STATUS_IN_RANGE)
+    statusHandler.setStatus(NAME, "component", WorkingRangeStatusHandler.STATUS_IN_RANGE)
     doNothing()
         .`when`(component)
         .dispatchOnExitedRange(
             ArgumentMatchers.isA(ComponentContext::class.java),
             ArgumentMatchers.isA(String::class.java),
             isNull())
-    statusHandler.setStatus(
-        NAME, component2, "component2", WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE)
+    statusHandler.setStatus(NAME, "component2", WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE)
     doNothing()
         .`when`(component2)
         .dispatchOnExitedRange(
