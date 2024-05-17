@@ -14,6 +14,7 @@ fb_java_binary(
     name = "litho-annotations",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     visibility = [
         "PUBLIC",
     ],

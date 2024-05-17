@@ -16,6 +16,7 @@ fb_android_library(
     feature = FBApp_UIFrameworks_Litho,
     labels = [],
     language = "JAVA",
+    oncall = "litho_components_for_android",
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JSR_TARGET,

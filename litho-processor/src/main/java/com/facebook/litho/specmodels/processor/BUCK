@@ -43,6 +43,7 @@ fb_java_library(
     name = "processor-lib",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
     ],
@@ -69,6 +70,7 @@ fb_java_library(
     ],
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
@@ -98,6 +100,7 @@ fb_java_library(
     ),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,

@@ -11,6 +11,7 @@ fb_java_library(
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

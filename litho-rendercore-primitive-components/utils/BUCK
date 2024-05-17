@@ -14,6 +14,7 @@ fb_android_library(
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho,
     labels = [],
+    oncall = "litho_components_for_android",
     provided_deps = [
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,

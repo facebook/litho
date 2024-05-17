@@ -19,6 +19,7 @@ fb_java_library(
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
+    oncall = "playgroundapps",
     source = "8",
     target = "8",
     tests = [
