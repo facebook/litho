@@ -370,7 +370,9 @@ public class ComponentTree
             config,
             LithoTree.Companion.create(this, stateUpdater),
             "root",
-            getLithoVisibilityEventsController(),
+            ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView
+                ? builder.lithoVisibilityEventsController
+                : getLithoVisibilityEventsController(),
             null,
             builder.parentTreePropContainer);
 
@@ -409,8 +411,14 @@ public class ComponentTree
       }
     }
 
-    if (builder.mLifecycleProvider != null) {
-      subscribeToLifecycleProvider(builder.mLifecycleProvider);
+    if (ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView) {
+      if (mContext.getLithoVisibilityEventsController() != null) {
+        subscribeToLifecycleProvider(mContext.getLithoVisibilityEventsController());
+      }
+    } else {
+      if (builder.lithoVisibilityEventsController != null) {
+        subscribeToLifecycleProvider(builder.lithoVisibilityEventsController);
+      }
     }
 
     ComponentTreeDebugEventListener debugEventListener = config.componentsConfig.debugEventListener;
@@ -2955,7 +2963,7 @@ public class ComponentTree
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
-    private @Nullable LithoVisibilityEventsController mLifecycleProvider;
+    private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
     private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
 
@@ -3002,7 +3010,7 @@ public class ComponentTree
 
     public Builder withLithoVisibilityEventsController(
         @Nullable LithoVisibilityEventsController lifecycleProvider) {
-      mLifecycleProvider = lifecycleProvider;
+      lithoVisibilityEventsController = lifecycleProvider;
       return this;
     }
 

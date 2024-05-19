@@ -20,9 +20,9 @@ import android.graphics.Rect
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
-import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecLifecycleTester
+import com.facebook.testing.robolectric.WithTestDefaultsRunner
 import java.util.ArrayList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -32,7 +32,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
-@RunWith(LithoTestRunner::class)
+@RunWith(WithTestDefaultsRunner::class)
 @LooperMode(LooperMode.Mode.LEGACY)
 class LithoVisibilityEventsControllerTest {
 

@@ -140,6 +140,7 @@ internal constructor(
     @JvmField val useFineGrainedViewAttributesExtension: Boolean = false,
     @JvmField val enableFacadeStateUpdater: Boolean = false,
     @JvmField val skipSecondIsInWorkingRangeCheck: Boolean = false,
+    @JvmField val enableVisibilityFixForNestedLithoView: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -310,6 +311,8 @@ internal constructor(
         baseConfig.useFineGrainedViewAttributesExtension
     private var enableFacadeStateUpdater = baseConfig.enableFacadeStateUpdater
     private var skipSecondIsInWorkingRangeCheck = baseConfig.skipSecondIsInWorkingRangeCheck
+    private var enableVisibilityFixForNestedLithoView =
+        baseConfig.enableVisibilityFixForNestedLithoView
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -408,6 +411,10 @@ internal constructor(
       skipSecondIsInWorkingRangeCheck = enabled
     }
 
+    fun enableVisibilityFixForNestedLithoView(enabled: Boolean): Builder = also {
+      enableVisibilityFixForNestedLithoView = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -442,7 +449,8 @@ internal constructor(
           skipHostAlphaReset = skipHostAlphaReset,
           useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
           enableFacadeStateUpdater = enableFacadeStateUpdater,
-          skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck)
+          skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck,
+          enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView)
     }
   }
 }
