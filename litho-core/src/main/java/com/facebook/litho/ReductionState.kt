@@ -42,7 +42,7 @@ internal data class ReductionState(
     val rootX: Int,
     val rootY: Int,
     val root: LayoutResult? = null,
-    val id: Int = LayoutState.getIdGenerator().getAndIncrement(),
+    val id: Int = LayoutState.idGenerator.getAndIncrement(),
     val previousLayoutStateId: Int =
         currentLayoutState?.id ?: LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID,
     val mountableOutputs: MutableList<RenderTreeNode> = ArrayList(8),
@@ -71,9 +71,9 @@ internal data class ReductionState(
     var height: Int = 0,
     var rootNode: LithoNode? = null,
     var diffTreeRoot: DiffNode? = null,
-    var currentTransitionId: TransitionId? = currentLayoutState?.mCurrentTransitionId,
+    var currentTransitionId: TransitionId? = currentLayoutState?.currentTransitionId,
     var currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? =
-        currentLayoutState?.mCurrentLayoutOutputAffinityGroup,
+        currentLayoutState?.currentLayoutOutputAffinityGroup,
     var hasComponentsExcludedFromIncrementalMount: Boolean = false,
     var attachables: MutableList<Attachable>? = null,
     var transitions: MutableList<Transition>? = null,

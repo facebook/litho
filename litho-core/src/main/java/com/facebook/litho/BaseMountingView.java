@@ -826,7 +826,7 @@ public abstract class BaseMountingView extends ComponentHost
   // IncrementalMount.
   private static boolean hasComponentsExcludedFromIncrementalMount(
       @Nullable LayoutState layoutState) {
-    return layoutState != null && layoutState.hasComponentsExcludedFromIncrementalMount();
+    return layoutState != null && layoutState.getHasComponentsExcludedFromIncrementalMount();
   }
 
   @VisibleForTesting

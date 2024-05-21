@@ -404,7 +404,7 @@ public class ComponentTree
                     }
                   }
                   return layoutState != null
-                      ? layoutState.mMountableOutputs
+                      ? layoutState.getMountableOutputs()
                       : Collections.emptyList();
                 },
                 MountItemsPool::maybePreallocateContent);

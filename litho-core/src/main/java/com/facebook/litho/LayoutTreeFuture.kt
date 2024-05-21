@@ -118,7 +118,7 @@ class LayoutTreeFuture(
         val c = resolveResult.context
         val layoutCache =
             if (currentLayoutState != null) {
-              LayoutCache(currentLayoutState.mLayoutCacheData)
+              LayoutCache(currentLayoutState.layoutCacheData)
             } else {
               LayoutCache()
             }
