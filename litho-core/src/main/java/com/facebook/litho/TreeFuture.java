@@ -345,7 +345,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       //    returned immediately, and it is assumed that this result is partial. The partial result
       //    will then be resumed later in this method.
       if (runningThreadId != myTid) {
-        LithoDebugEvents.TreeFuture.wait(mTreeId, getDescription());
+        LithoDebugEvents.TreeFuture.wait(mTreeId, getDescription(), runningThreadId);
       }
       treeFutureResult = mFutureTask.get();
       final boolean isPartialResult =

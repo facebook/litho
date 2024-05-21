@@ -44,6 +44,7 @@ import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaFlexDirection;
 import java.util.HashMap;
@@ -253,6 +254,7 @@ public abstract class SpecGeneratedComponent extends Component
       if (traceId != null) {
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
+        attributes.put(DebugEventAttribute.Name, getSimpleName());
         beginTrace(
             traceId,
             LithoDebugEvent.ComponentRendered,
@@ -282,6 +284,7 @@ public abstract class SpecGeneratedComponent extends Component
       if (traceId != null) {
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put(LithoDebugEventAttributes.Component, getSimpleName());
+        attributes.put(DebugEventAttribute.Name, getSimpleName());
         beginTrace(
             traceId,
             LithoDebugEvent.ComponentRendered,

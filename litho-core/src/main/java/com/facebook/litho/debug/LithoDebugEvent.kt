@@ -82,6 +82,7 @@ object LithoDebugEventAttributes {
   const val Component = "component"
   const val Stack = "stack"
   const val Cause = "cause"
+  const val WaitingOn = "waiting-on"
 }
 
 object LithoDebugEvents {
@@ -97,10 +98,11 @@ object LithoDebugEvents {
     }
 
     @JvmStatic
-    fun wait(treeId: Int, name: String) {
+    fun wait(treeId: Int, name: String, waitingOn: Int) {
       dispatch(type = LithoDebugEvent.TreeFutureWait, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
         attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
+        attrs[LithoDebugEventAttributes.WaitingOn] = waitingOn
       }
     }
 
