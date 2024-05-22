@@ -26,7 +26,6 @@ import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.debug.DebugEventDispatcher.trace
-import com.facebook.rendercore.transitions.TransitionUtils
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import java.util.ArrayList
 import kotlin.jvm.JvmField
@@ -407,16 +406,10 @@ object Resolver {
   @JvmStatic
   @JvmName("applyTransitionsAndUseEffectEntriesToNode")
   internal fun applyTransitionsAndUseEffectEntriesToNode(
-      transitions: List<Transition>? = null,
       transitionData: TransitionData? = null,
       useEffectEntries: List<Attachable>? = null,
       node: LithoNode
   ) {
-    if (transitions != null) {
-      for (transition in transitions) {
-        node.addTransition(transition)
-      }
-    }
     if (transitionData != null) {
       node.addTransitionData(transitionData)
     }
@@ -461,25 +454,21 @@ object Resolver {
       return null
     }
     val collectedAttachables: MutableList<Attachable> = ArrayList()
-    val collectedTransitions: List<Transition> = ArrayList()
     val collectedTransitionData = TransitionData()
     val collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo> =
         ArrayList()
     collectOutputs(
         node,
         collectedAttachables,
-        collectedTransitions,
         collectedTransitionData,
         collectedComponentsThatNeedPreviousRenderData)
     return if (collectedAttachables.isEmpty() &&
-        collectedTransitions.isEmpty() &&
         collectedTransitionData.isEmpty() &&
         collectedComponentsThatNeedPreviousRenderData.isEmpty()) {
       null
     } else {
       Outputs(
           collectedAttachables,
-          collectedTransitions,
           collectedTransitionData,
           collectedComponentsThatNeedPreviousRenderData)
     }
@@ -488,7 +477,6 @@ object Resolver {
   private fun collectOutputs(
       node: LithoNode,
       collectedAttachables: MutableList<Attachable>,
-      collectedTransitions: List<Transition>,
       collectedTransitionData: TransitionData,
       collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo>
   ) {
@@ -498,7 +486,6 @@ object Resolver {
       collectOutputs(
           node.getChildAt(i),
           collectedAttachables,
-          collectedTransitions,
           collectedTransitionData,
           collectedComponentsThatNeedPreviousRenderData)
     }
@@ -509,11 +496,6 @@ object Resolver {
     val c: ComponentContext = node.tailComponentContext
     if (c.areTransitionsEnabled() && node !is NestedTreeHolder) {
       // collect transitions
-      node.transitions?.let { transitions ->
-        for (transition in transitions) {
-          TransitionUtils.addTransitions(transition, collectedTransitions)
-        }
-      }
       node.transitionData?.let { transitionData -> collectedTransitionData.add(transitionData) }
 
       // collect components that need previous render data
@@ -705,7 +687,6 @@ object Resolver {
   class Outputs
   internal constructor(
       @JvmField val attachables: List<Attachable>,
-      @JvmField val transitions: List<Transition>,
       @JvmField internal val transitionData: TransitionData?,
       @JvmField val componentsThatNeedPreviousRenderData: List<ScopedComponentInfo>
   )

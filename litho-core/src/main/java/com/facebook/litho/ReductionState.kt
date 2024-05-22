@@ -76,7 +76,6 @@ internal data class ReductionState(
         currentLayoutState?.currentLayoutOutputAffinityGroup,
     var hasComponentsExcludedFromIncrementalMount: Boolean = false,
     var attachables: MutableList<Attachable>? = null,
-    var transitions: MutableList<Transition>? = null,
     var transitionData: TransitionData? = null,
     var scopedComponentInfosNeedingPreviousRenderData: MutableList<ScopedComponentInfo>? = null,
     var workingRangeContainer: WorkingRangeContainer? = null,

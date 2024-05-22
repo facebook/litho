@@ -233,10 +233,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var isClone: Boolean = false
     private set
 
-  private var _transitions: ArrayList<Transition>? = null
-  val transitions: ArrayList<Transition>?
-    get() = _transitions
-
   internal var transitionData: TransitionData? = null
     private set
 

@@ -26,14 +26,8 @@ import com.facebook.litho.transition.TransitionData
 class RenderResult
 internal constructor(
     @JvmField internal val component: Component?,
-    @JvmField internal val transitions: List<Transition>?,
     @JvmField internal val transitionData: TransitionData?,
     @JvmField internal val useEffectEntries: List<Attachable>?
 ) {
-  @JvmOverloads
-  constructor(
-      component: Component?,
-      transitions: List<Transition>? = null,
-      useEffectEntries: List<Attachable>? = null
-  ) : this(component, transitions, null, useEffectEntries)
+  constructor(component: Component?) : this(component, null, null)
 }

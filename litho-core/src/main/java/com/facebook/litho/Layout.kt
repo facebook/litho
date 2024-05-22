@@ -155,14 +155,6 @@ internal object Layout {
             }
             .addAll(outputs.attachables)
 
-        reductionState.transitions
-            .getOrCreate {
-              ArrayList<Transition>(outputs.transitions.size).also {
-                reductionState.transitions = it
-              }
-            }
-            .addAll(outputs.transitions)
-
         reductionState.transitionData
             .getOrCreate { TransitionData().also { reductionState.transitionData = it } }
             .apply { outputs.transitionData?.let { add(it) } }

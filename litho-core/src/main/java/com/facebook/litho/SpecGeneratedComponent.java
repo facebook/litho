@@ -320,10 +320,7 @@ public abstract class SpecGeneratedComponent extends Component
 
       if (renderResult != null && node != null) {
         Resolver.applyTransitionsAndUseEffectEntriesToNode(
-            renderResult.transitions,
-            renderResult.transitionData,
-            renderResult.useEffectEntries,
-            node);
+            renderResult.transitionData, renderResult.useEffectEntries, node);
       }
     }
 

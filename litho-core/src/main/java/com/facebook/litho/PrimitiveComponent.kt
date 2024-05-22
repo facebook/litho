@@ -99,7 +99,6 @@ abstract class PrimitiveComponent : Component() {
     node.primitive = lithoPrimitive.primitive
 
     Resolver.applyTransitionsAndUseEffectEntriesToNode(
-        primitiveComponentScope.transitions,
         primitiveComponentScope.transitionData,
         primitiveComponentScope.useEffectEntries,
         node,
