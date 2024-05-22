@@ -30,10 +30,10 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
 @Hook
 fun ComponentScope.useTransition(transition: Transition?) {
   transition ?: return
+  val data = transitionData ?: TransitionData()
   TransitionUtils.setOwnerKey(transition, context.globalKey)
-  val transitionsList = transitions ?: arrayListOf()
-  transitionsList.add(transition)
-  transitions = transitionsList
+  data.addTransition(transition)
+  transitionData = data
 }
 
 /**

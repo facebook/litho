@@ -450,7 +450,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   }
 
   fun addTransition(transition: Transition) {
-    _transitions.getOrCreate { ArrayList<Transition>(1).also { _transitions = it } }.add(transition)
+    transitionData
+        .getOrCreate { TransitionData().also { transitionData = it } }
+        .addTransition(transition)
   }
 
   internal fun addTransitionData(data: TransitionData) {

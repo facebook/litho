@@ -91,7 +91,6 @@ internal constructor(
   private val workingRangeContainer: WorkingRangeContainer? = reductionState.workingRangeContainer
   private val transitionIdMapping: Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> =
       reductionState.transitionIdMapping
-  private val transitions: List<Transition>? = reductionState.transitions
 
   internal val transitionData: TransitionData? = reductionState.transitionData
   internal val scopedComponentInfosNeedingPreviousRenderData: List<ScopedComponentInfo>? =
@@ -283,7 +282,7 @@ internal constructor(
 
   override fun getRenderUnitIdsWhichHostRenderTrees(): Set<Long> = renderUnitIdsWhichHostRenderTrees
 
-  override fun getTransitions(): List<Transition>? = transitions
+  override fun getTransitions(): List<Transition>? = transitionData?.transitions
 
   /** Gets a mapping from transition ids to a group of LayoutOutput. */
   override fun getTransitionIdMapping():
