@@ -18,8 +18,12 @@ package com.facebook.litho.transition
 
 import com.facebook.litho.Transition
 import com.facebook.litho.internal.HookKey
+import com.facebook.rendercore.transitions.TransitionUtils
 
 internal class TransitionData {
+  var transitions: MutableList<Transition>? = null
+    private set
+
   var transitionsWithDependency: MutableMap<HookKey, TransitionWithDependency>? = null
     private set
 
@@ -27,7 +31,14 @@ internal class TransitionData {
     private set
 
   fun isEmpty(): Boolean =
-      transitionsWithDependency.isNullOrEmpty() && optimisticTransitions.isNullOrEmpty()
+      transitions.isNullOrEmpty() &&
+          transitionsWithDependency.isNullOrEmpty() &&
+          optimisticTransitions.isNullOrEmpty()
+
+  fun addTransition(transition: Transition) {
+    val transitions = transitions ?: mutableListOf<Transition>().also { transitions = it }
+    TransitionUtils.addTransitions(transition, transitions)
+  }
 
   fun addTransitionWithDependency(twd: TransitionWithDependency, optimisticResult: Transition?) {
     addTransitionWithDependency(twd)
@@ -35,6 +46,9 @@ internal class TransitionData {
   }
 
   fun add(transitionData: TransitionData) {
+    val otherTransitions = transitionData.transitions.orEmpty()
+    for (transition in otherTransitions) addTransition(transition)
+
     val otherTwds = transitionData.transitionsWithDependency.orEmpty()
     for ((_, twd) in otherTwds) addTransitionWithDependency(twd)
 
