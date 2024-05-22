@@ -164,7 +164,7 @@ public abstract class Section extends SectionLifecycle
   private String mGlobalKey;
   private String mKey;
   @Nullable private Handle mHandle;
-  @Nullable private boolean mShouldCompareCommonProps;
+  private boolean mShouldCompareCommonProps;
 
   /**
    * @return a unique key for this {@link Section} within its tree.
