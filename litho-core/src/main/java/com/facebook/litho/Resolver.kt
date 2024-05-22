@@ -22,6 +22,7 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEvent.ComponentResolveStart
 import com.facebook.litho.debug.LithoDebugEventAttributes
+import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
@@ -454,7 +455,7 @@ object Resolver {
       return null
     }
     val collectedAttachables: MutableList<Attachable> = ArrayList()
-    val collectedTransitionData = TransitionData()
+    val collectedTransitionData = MutableTransitionData()
     val collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo> =
         ArrayList()
     collectOutputs(
@@ -477,7 +478,7 @@ object Resolver {
   private fun collectOutputs(
       node: LithoNode,
       collectedAttachables: MutableList<Attachable>,
-      collectedTransitionData: TransitionData,
+      collectedTransitionData: MutableTransitionData,
       collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo>
   ) {
 

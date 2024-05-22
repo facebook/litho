@@ -20,20 +20,48 @@ import com.facebook.litho.Transition
 import com.facebook.litho.internal.HookKey
 import com.facebook.rendercore.transitions.TransitionUtils
 
-internal class TransitionData {
-  var transitions: MutableList<Transition>? = null
-    private set
+internal sealed interface TransitionData {
+  /**
+   * List of transitions that will be applied to a component.
+   *
+   * These transitions, when available, will always be applied to the component.
+   */
+  val transitions: List<Transition>?
 
-  var transitionsWithDependency: MutableMap<HookKey, TransitionWithDependency>? = null
-    private set
+  /**
+   * Map of [HookKey] to [TransitionWithDependency] definitions for a component.
+   *
+   * These are not actual transitions themselves, but rather a set of definitions that will be used
+   * to generate the transitions. In fact, every transition in [optimisticTransitions] is a
+   * direct/indirect result of evaluating these definitions.
+   */
+  val transitionsWithDependency: Map<HookKey, TransitionWithDependency>?
 
-  var optimisticTransitions: MutableList<Transition>? = null
-    private set
+  /**
+   * Optimistic list of transitions based on the [transitionsWithDependency] definitions
+   *
+   * Unlike [transitions], these transitions are only applied if certain conditions regarding the
+   * dependencies of the corresponding [TransitionWithDependency] are met. Otherwise, they may be
+   * discarded and re-evaluated on-demand.
+   */
+  val optimisticTransitions: List<Transition>?
 
+  /**
+   * Returns true if this [TransitionData] is empty.
+   *
+   * A [TransitionData] is considered empty if all of its [transitions], [transitionsWithDependency]
+   * and [optimisticTransitions] collections are null or empty.
+   */
   fun isEmpty(): Boolean =
       transitions.isNullOrEmpty() &&
           transitionsWithDependency.isNullOrEmpty() &&
           optimisticTransitions.isNullOrEmpty()
+}
+
+internal class MutableTransitionData : TransitionData {
+  override var transitions: MutableList<Transition>? = null
+  override var transitionsWithDependency: MutableMap<HookKey, TransitionWithDependency>? = null
+  override var optimisticTransitions: MutableList<Transition>? = null
 
   fun addTransition(transition: Transition) {
     val transitions = transitions ?: mutableListOf<Transition>().also { transitions = it }
@@ -71,3 +99,6 @@ internal class TransitionData {
     transitions.add(transition)
   }
 }
+
+internal fun TransitionData.asMutableData(): MutableTransitionData =
+    if (this is MutableTransitionData) this else MutableTransitionData().also { it.add(this) }

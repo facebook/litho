@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
-import com.facebook.litho.transition.TransitionData
+import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
@@ -156,7 +156,7 @@ internal object Layout {
             .addAll(outputs.attachables)
 
         reductionState.transitionData
-            .getOrCreate { TransitionData().also { reductionState.transitionData = it } }
+            .getOrCreate { MutableTransitionData().also { reductionState.transitionData = it } }
             .apply { outputs.transitionData?.let { add(it) } }
 
         reductionState.scopedComponentInfosNeedingPreviousRenderData

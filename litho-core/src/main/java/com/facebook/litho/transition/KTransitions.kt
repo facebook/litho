@@ -30,7 +30,7 @@ import com.facebook.rendercore.utils.areObjectsEquivalent
 @Hook
 fun ComponentScope.useTransition(transition: Transition?) {
   transition ?: return
-  val data = transitionData ?: TransitionData()
+  val data = transitionData ?: MutableTransitionData()
   TransitionUtils.setOwnerKey(transition, context.globalKey)
   data.addTransition(transition)
   transitionData = data
@@ -55,7 +55,7 @@ fun ComponentScope.useTransition(
     vararg deps: Any?,
     createTransition: UseTransitionScope.() -> Transition?
 ) {
-  val data = transitionData ?: TransitionData()
+  val data = transitionData ?: MutableTransitionData()
   val identityKey = HookKey(context.globalKey, data.transitionsWithDependency?.size ?: 0)
   val twd = TransitionWithDependency(identityKey, deps, createTransition)
   val previousTwd =

@@ -38,6 +38,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
@@ -233,7 +234,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var isClone: Boolean = false
     private set
 
-  internal var transitionData: TransitionData? = null
+  internal var transitionData: MutableTransitionData? = null
     private set
 
   private var _workingRangeRegistrations: MutableList<WorkingRangeContainer.Registration>? = null
@@ -447,12 +448,12 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   fun addTransition(transition: Transition) {
     transitionData
-        .getOrCreate { TransitionData().also { transitionData = it } }
+        .getOrCreate { MutableTransitionData().also { transitionData = it } }
         .addTransition(transition)
   }
 
   internal fun addTransitionData(data: TransitionData) {
-    transitionData.getOrCreate { TransitionData().also { transitionData = it } }.add(data)
+    transitionData.getOrCreate { MutableTransitionData().also { transitionData = it } }.add(data)
   }
 
   fun addWorkingRanges(registrations: List<WorkingRangeContainer.Registration>) {

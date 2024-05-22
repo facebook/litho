@@ -21,7 +21,7 @@ import androidx.collection.LongSparseArray
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.transition.TransitionData
+import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.SizeConstraints
@@ -76,7 +76,7 @@ internal data class ReductionState(
         currentLayoutState?.currentLayoutOutputAffinityGroup,
     var hasComponentsExcludedFromIncrementalMount: Boolean = false,
     var attachables: MutableList<Attachable>? = null,
-    var transitionData: TransitionData? = null,
+    var transitionData: MutableTransitionData? = null,
     var scopedComponentInfosNeedingPreviousRenderData: MutableList<ScopedComponentInfo>? = null,
     var workingRangeContainer: WorkingRangeContainer? = null,
 )
