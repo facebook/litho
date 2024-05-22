@@ -61,6 +61,7 @@ internal constructor(
     val componentTreeId: Int,
     val isAccessibilityEnabled: Boolean,
     val layoutCacheData: Map<Any, Any?>?,
+    // needed to be var as it's being reset via consumeCreatedEventHandlers
     private var createdEventHandlers: List<Pair<String, EventHandler<*>>>?,
     reductionState: ReductionState
 ) :
@@ -154,20 +155,25 @@ internal constructor(
       reductionState.dynamicValueOutputs
   override val isPartialResult: Boolean = false
 
-  private var cachedRenderTree: RenderTree? = null
+  private var cachedRenderTree: RenderTree? = null // memoized RenderTree
   // TODO(t66287929): Remove isCommitted from LayoutState by matching RenderState logic around
   //  Futures.
   private var isCommitted = false
+  // needed to be var as it's being updated in setShouldProcessVisibilityOutputs
   private var shouldProcessVisibilityOutputs = false
+  // needed to be var as it's being reset via consumeScopedSpecComponentInfos
   private var scopedSpecComponentInfos: List<ScopedComponentInfo>? =
       reductionState.scopedSpecComponentInfos
 
+  // needed to be var as a previously evaluated reference is set(restored) in LithoViewTestHelper
   var rootLayoutResult: LayoutResult? = reductionState.layoutResult
     internal set
 
+  // needed to be var as it's being updated in setInitialRootBoundsForAnimation
   var rootWidthAnimation: RootBoundsTransition? = null
     private set
 
+  // needed to be var as it's being updated in setInitialRootBoundsForAnimation
   var rootHeightAnimation: RootBoundsTransition? = null
     private set
 
