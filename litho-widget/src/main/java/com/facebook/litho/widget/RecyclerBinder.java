@@ -2002,10 +2002,19 @@ public class RecyclerBinder
   }
 
   @Override
-  public final synchronized ComponentTree getComponentForStickyHeaderAt(int position) {
-    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
-    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
-    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+  public final ComponentTree getComponentForStickyHeaderAt(int position) {
+    final ComponentTreeHolder holder = getComponentTreeHolderAt(position);
+    final Size measuredSize;
+    final int lastWidthSpec;
+    final int lastHeightSpec;
+    synchronized (this) {
+      measuredSize = mMeasuredSize;
+      lastWidthSpec = mLastWidthSpec;
+      lastHeightSpec = mLastHeightSpec;
+    }
+    final int childrenWidthSpec = getActualChildrenWidthSpec(holder, measuredSize, lastWidthSpec);
+    final int childrenHeightSpec =
+        getActualChildrenHeightSpec(holder, measuredSize, lastHeightSpec);
 
     if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
       return holder.getComponentTree();
@@ -2453,8 +2462,8 @@ public class RecyclerBinder
   private void computeLayoutAsync(final ComponentTreeHolder holder) {
     // If there's an existing async layout that's compatible, this is a no-op. Otherwise, that
     // computation will be canceled (if it hasn't started) and this new one will run.
-    final int widthSpec = getActualChildrenWidthSpec(holder);
-    final int heightSpec = getActualChildrenHeightSpec(holder);
+    final int widthSpec = getActualChildrenWidthSpec(holder, mMeasuredSize, mLastWidthSpec);
+    final int heightSpec = getActualChildrenHeightSpec(holder, mMeasuredSize, mLastHeightSpec);
 
     if (holder.isTreeValidForSizeSpecs(widthSpec, heightSpec)) {
       if (holder.hasCompletedLatestLayout()) {
@@ -2592,8 +2601,10 @@ public class RecyclerBinder
       return;
     }
 
-    final int childWidthSpec = getActualChildrenWidthSpec(nextHolder);
-    final int childHeightSpec = getActualChildrenHeightSpec(nextHolder);
+    final int childWidthSpec =
+        getActualChildrenWidthSpec(nextHolder, mMeasuredSize, mLastWidthSpec);
+    final int childHeightSpec =
+        getActualChildrenHeightSpec(nextHolder, mMeasuredSize, mLastHeightSpec);
     if (nextHolder.isTreeValidForSizeSpecs(childWidthSpec, childHeightSpec)) {
       return;
     }
@@ -2639,8 +2650,8 @@ public class RecyclerBinder
     }
 
     final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
-    final int childWidthSpec = getActualChildrenWidthSpec(holder);
-    final int childHeightSpec = getActualChildrenHeightSpec(holder);
+    final int childWidthSpec = getActualChildrenWidthSpec(holder, mMeasuredSize, mLastWidthSpec);
+    final int childHeightSpec = getActualChildrenHeightSpec(holder, mMeasuredSize, mLastHeightSpec);
 
     if (loggingForStartup) {
       mStartupLogger.markPoint(
@@ -3304,8 +3315,8 @@ public class RecyclerBinder
         return true;
       }
 
-      childrenWidthSpec = getActualChildrenWidthSpec(holder);
-      childrenHeightSpec = getActualChildrenHeightSpec(holder);
+      childrenWidthSpec = getActualChildrenWidthSpec(holder, mMeasuredSize, mLastWidthSpec);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder, mMeasuredSize, mLastHeightSpec);
     }
 
     if ((index >= rangeStart || holder.getRenderInfo().isSticky()) && index <= rangeEnd) {
@@ -3346,8 +3357,8 @@ public class RecyclerBinder
           (index >= rangeStart || holder.getRenderInfo().isSticky()) && index <= rangeEnd;
 
       if (shouldTryComputeLayout) {
-        childrenWidthSpec = getActualChildrenWidthSpec(holder);
-        childrenHeightSpec = getActualChildrenHeightSpec(holder);
+        childrenWidthSpec = getActualChildrenWidthSpec(holder, mMeasuredSize, mLastWidthSpec);
+        childrenHeightSpec = getActualChildrenHeightSpec(holder, mMeasuredSize, mLastHeightSpec);
       }
     }
 
@@ -3452,33 +3463,34 @@ public class RecyclerBinder
         : mSizeForMeasure.width;
   }
 
-  @GuardedBy("this")
-  private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
+  private int getActualChildrenWidthSpec(
+      final ComponentTreeHolder treeHolder, final Size measuredSize, final int lastWidthSpec) {
     if (isMeasured()) {
 
       if (isMatchingParentSize(treeHolder.getRenderInfo().getParentWidthPercent())) {
         return SizeSpec.makeSizeSpec(
             FastMath.round(
-                mMeasuredSize.width * treeHolder.getRenderInfo().getParentWidthPercent() / 100),
+                measuredSize.width * treeHolder.getRenderInfo().getParentWidthPercent() / 100),
             SizeSpec.EXACTLY);
       }
 
       return mLayoutInfo.getChildWidthSpec(
-          SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY), treeHolder.getRenderInfo());
+          SizeSpec.makeSizeSpec(measuredSize.width, SizeSpec.EXACTLY), treeHolder.getRenderInfo());
     }
 
-    return mLayoutInfo.getChildWidthSpec(mLastWidthSpec, treeHolder.getRenderInfo());
+    return mLayoutInfo.getChildWidthSpec(lastWidthSpec, treeHolder.getRenderInfo());
   }
 
-  @GuardedBy("this")
-  private int getActualChildrenHeightSpec(final ComponentTreeHolder treeHolder) {
+  private int getActualChildrenHeightSpec(
+      final ComponentTreeHolder treeHolder, final Size measuredSize, final int lastHeightSpec) {
     if (mHasDynamicItemHeight) {
 
       if (isMeasured()
           && isMatchingParentSize(treeHolder.getRenderInfo().getParentHeightPercent())) {
+
         return SizeSpec.makeSizeSpec(
             FastMath.round(
-                mMeasuredSize.height * treeHolder.getRenderInfo().getParentHeightPercent() / 100),
+                measuredSize.height * treeHolder.getRenderInfo().getParentHeightPercent() / 100),
             SizeSpec.EXACTLY);
       }
 
@@ -3490,16 +3502,15 @@ public class RecyclerBinder
       if (isMatchingParentSize(treeHolder.getRenderInfo().getParentHeightPercent())) {
         return SizeSpec.makeSizeSpec(
             FastMath.round(
-                mMeasuredSize.height * treeHolder.getRenderInfo().getParentHeightPercent() / 100),
+                measuredSize.height * treeHolder.getRenderInfo().getParentHeightPercent() / 100),
             SizeSpec.EXACTLY);
       }
 
       return mLayoutInfo.getChildHeightSpec(
-          SizeSpec.makeSizeSpec(mMeasuredSize.height, SizeSpec.EXACTLY),
-          treeHolder.getRenderInfo());
+          SizeSpec.makeSizeSpec(measuredSize.height, SizeSpec.EXACTLY), treeHolder.getRenderInfo());
     }
 
-    return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getRenderInfo());
+    return mLayoutInfo.getChildHeightSpec(lastHeightSpec, treeHolder.getRenderInfo());
   }
 
   @AnyThread
@@ -3779,8 +3790,10 @@ public class RecyclerBinder
       final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
       if (renderInfo.rendersComponent()) {
         final LithoView lithoView = holder.getLithoView();
-        final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
-        final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
+        final int childrenWidthSpec =
+            getActualChildrenWidthSpec(componentTreeHolder, mMeasuredSize, mLastWidthSpec);
+        final int childrenHeightSpec =
+            getActualChildrenHeightSpec(componentTreeHolder, mMeasuredSize, mLastHeightSpec);
         if (!componentTreeHolder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
           if (ComponentsConfiguration.computeRangeOnSyncLayout) {
             // Since synchronous layout is about to happen, and the ScrollListener that updates the
@@ -4102,8 +4115,20 @@ public class RecyclerBinder
 
       @Override
       public void prepareSync(ComponentTreeHolder holder, @Nullable Size size) {
-        final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
-        final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+
+        final Size measuredSize;
+        final int lastWidthSpec;
+        final int lastHeightSpec;
+        synchronized (RecyclerBinder.this) {
+          measuredSize = mMeasuredSize;
+          lastWidthSpec = mLastWidthSpec;
+          lastHeightSpec = mLastHeightSpec;
+        }
+
+        final int childrenWidthSpec =
+            getActualChildrenWidthSpec(holder, measuredSize, lastWidthSpec);
+        final int childrenHeightSpec =
+            getActualChildrenHeightSpec(holder, measuredSize, lastHeightSpec);
 
         if (size != null && holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
           size.width = SizeSpec.getSize(childrenWidthSpec);
@@ -4117,8 +4142,20 @@ public class RecyclerBinder
 
       @Override
       public void prepareAsync(ComponentTreeHolder holder) {
-        final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
-        final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+
+        final Size measuredSize;
+        final int lastWidthSpec;
+        final int lastHeightSpec;
+        synchronized (RecyclerBinder.this) {
+          measuredSize = mMeasuredSize;
+          lastWidthSpec = mLastWidthSpec;
+          lastHeightSpec = mLastHeightSpec;
+        }
+
+        final int childrenWidthSpec =
+            getActualChildrenWidthSpec(holder, measuredSize, lastWidthSpec);
+        final int childrenHeightSpec =
+            getActualChildrenHeightSpec(holder, measuredSize, lastHeightSpec);
 
         if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
           return;
