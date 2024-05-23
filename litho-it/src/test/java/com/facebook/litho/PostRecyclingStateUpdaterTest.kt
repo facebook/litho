@@ -48,7 +48,7 @@ class PostRecyclingStateUpdaterTest {
   lateinit var stateRef: AtomicReference<Int>
 
   @Test
-  fun `facadeStateUpdater updates lazyListItem after it was recycled`() {
+  fun `StateUpdaterDelegator updates lazyListItem after it was recycled`() {
     val lazyCollectionController = LazyCollectionController()
 
     val testLithoView =

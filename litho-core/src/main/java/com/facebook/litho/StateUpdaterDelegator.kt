@@ -17,19 +17,19 @@
 package com.facebook.litho
 
 /**
- * FacadeStateUpdater is responsible for holding reference to the right [StateUpdater] that will be
- * used during creation of [ComponentTree]
+ * StateUpdaterDelegator is responsible for holding reference to the right [StateUpdater] that will
+ * be used during creation of [ComponentTree]
  */
-class FacadeStateUpdater : StateUpdater {
-  var stateUpdater: StateUpdater? = null
+class StateUpdaterDelegator : StateUpdater {
+  var delegate: StateUpdater? = null
     private set
 
   fun attachStateUpdater(stateUpdater: StateUpdater) {
-    this.stateUpdater = stateUpdater
+    this.delegate = stateUpdater
   }
 
   fun detachStateUpdater() {
-    stateUpdater = null
+    delegate = null
   }
 
   override var isFirstMount: Boolean
@@ -144,6 +144,6 @@ class FacadeStateUpdater : StateUpdater {
   }
 
   private fun <T> applyOnStateUpdater(body: StateUpdater.() -> T): T {
-    return body(stateUpdater ?: error("Should have a StateUpdater"))
+    return body(delegate ?: error("Delegate StateUpdater not set"))
   }
 }
