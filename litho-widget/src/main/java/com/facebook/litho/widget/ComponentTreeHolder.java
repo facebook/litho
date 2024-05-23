@@ -480,10 +480,6 @@ public class ComponentTreeHolder {
 
         return;
       }
-
-      if (mComponentsConfiguration.enableFacadeStateUpdater && mStateUpdaterDelegator != null) {
-        mStateUpdaterDelegator.detachStateUpdater();
-      }
       mComponentTree.release();
       mComponentTree = null;
     }
