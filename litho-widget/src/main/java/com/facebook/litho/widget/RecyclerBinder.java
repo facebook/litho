@@ -2601,10 +2601,17 @@ public class RecyclerBinder
       return;
     }
 
-    final int childWidthSpec =
-        getActualChildrenWidthSpec(nextHolder, mMeasuredSize, mLastWidthSpec);
+    final Size measuredSize;
+    final int lastWidthSpec;
+    final int lastHeightSpec;
+    synchronized (RecyclerBinder.this) {
+      measuredSize = mMeasuredSize;
+      lastWidthSpec = mLastWidthSpec;
+      lastHeightSpec = mLastHeightSpec;
+    }
+    final int childWidthSpec = getActualChildrenWidthSpec(nextHolder, measuredSize, lastWidthSpec);
     final int childHeightSpec =
-        getActualChildrenHeightSpec(nextHolder, mMeasuredSize, mLastHeightSpec);
+        getActualChildrenHeightSpec(nextHolder, measuredSize, lastHeightSpec);
     if (nextHolder.isTreeValidForSizeSpecs(childWidthSpec, childHeightSpec)) {
       return;
     }
