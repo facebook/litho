@@ -15,9 +15,12 @@
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_RENDERCORE_PRIMITIVES_TARGET",
     "LITHO_RENDERCORE_PRIMITIVE_COMPONENTS_UTILS_TARGET",
+    "LITHO_RENDERCORE_SIMPLELIST_TARGET",
+    "LITHO_RENDERCORE_TARGET",
     "litho_android_library",
 )
 
@@ -28,8 +31,15 @@ litho_android_library(
     labels = [],
     visibility = ["PUBLIC"],
     deps = [
-        LITHO_JAVA_TARGET,
         LITHO_RENDERCORE_PRIMITIVES_TARGET,
+        LITHO_RENDERCORE_SIMPLELIST_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_RENDERCORE_TARGET,
+        "//fbandroid/java/com/facebook/common/sdk34workaround:gesturelistener",
+        "//fbandroid/third-party/java/rebound:rebound",
+        "//fbandroid/third-party/java/rebound/rebound-android:src",
+        "//fbandroid/third-party/java/rebound/rebound-core:src",
     ],
     exported_deps = [
         LITHO_RENDERCORE_PRIMITIVE_COMPONENTS_UTILS_TARGET,

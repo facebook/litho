@@ -25,9 +25,13 @@ import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.ResolveResult
 import com.facebook.litho.Style
+import com.facebook.litho.TouchEvent
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.bindToRenderTreeView
 import com.facebook.litho.useCached
 import com.facebook.litho.useNestedTree
+import com.facebook.litho.view.onInterceptTouch
+import com.facebook.litho.view.onTouch
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -35,6 +39,7 @@ import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import kotlin.math.max
 
+@ExperimentalLithoApi
 class ZoomableComponent(private val style: Style? = null, private val child: () -> Component) :
     PrimitiveComponent() {
 
@@ -43,9 +48,13 @@ class ZoomableComponent(private val style: Style? = null, private val child: () 
     val (
         state: NestedLithoTreeState,
         resolveResult: ResolveResult,
-    ) = useNestedTree(root = child(), treeProps = context.treePropContainer)
+    ) = useNestedTree(
+        root = child(),
+        treeProps = context.treePropContainer,
+        config = context.lithoConfiguration.componentsConfig.copy(incrementalMountEnabled = false))
 
-    val controller = useCached { ZoomableController() }
+    val controller = useCached { ZoomableController(androidContext) }
+
     return LithoPrimitive(
         layoutBehavior =
             ZoomableLayoutBehavior(
@@ -56,12 +65,19 @@ class ZoomableComponent(private val style: Style? = null, private val child: () 
               bindToRenderTreeView(state = state) { renderTreeView }
 
               bind(controller) { content ->
-                controller.bindView(content)
+                controller.bindTo(content)
 
-                onUnbind { controller.bindView(null) }
+                onUnbind {
+                  controller.resetZoom()
+                  controller.unbind()
+                }
               }
             },
-        style = style)
+        style =
+            Style.onTouch { touchEvent: TouchEvent ->
+                  controller.onTouch(touchEvent.motionEvent, touchEvent.view.parent)
+                }
+                .onInterceptTouch(true) { _ -> controller.interceptingTouch })
   }
 
   companion object {

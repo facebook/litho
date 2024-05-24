@@ -134,6 +134,7 @@ import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponent
+import com.facebook.samples.litho.kotlin.zoomable.ZoomableExampleComponent
 import com.facebook.samples.litho.onboarding.FirstComponentActivity
 import com.facebook.samples.litho.onboarding.HelloWorldActivity
 import com.facebook.samples.litho.onboarding.PostStyledKComponent
@@ -338,7 +339,14 @@ class Demos {
                         name = "Observability",
                         listOf(
                             SingleDemo(name = "useLiveData", component = UseLiveDataComponent()),
-                            SingleDemo(name = "useFlow", component = UseFlowComponent()))))),
+                            SingleDemo(name = "useFlow", component = UseFlowComponent()))),
+                    DemoGrouping(
+                        name = "Zoomable Component",
+                        listOf(
+                            SingleDemo(
+                                name = "Zoomable Component",
+                                component = ZoomableExampleComponent()))),
+                )),
             DemoList(
                 name = "Java API Demos",
                 listOf(
