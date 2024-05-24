@@ -29,6 +29,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -75,10 +76,10 @@ public class DetailActivity extends AppCompatActivity {
         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     if (landLitho) {
       final ComponentContext componentContext = new ComponentContext(this);
-      LithoView.OnDirtyMountListener dirtyMountListener =
-          new LithoView.OnDirtyMountListener() {
+      BaseMountingView.OnDirtyMountListener dirtyMountListener =
+          new BaseMountingView.OnDirtyMountListener() {
             @Override
-            public void onDirtyMount(LithoView view) {
+            public void onDirtyMount(BaseMountingView view) {
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // Continue the transition after Litho finishes it's dirty mount.
                 startPostponedEnterTransition();

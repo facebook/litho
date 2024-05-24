@@ -82,6 +82,8 @@ public abstract class BaseMountingView extends ComponentHost
   private final Rect mRect = new Rect();
   private boolean mIsAttached;
 
+  private @Nullable OnDirtyMountListener mOnDirtyMountListener = null;
+
   public BaseMountingView(Context context) {
     this(context, null);
   }
@@ -643,7 +645,15 @@ public abstract class BaseMountingView extends ComponentHost
     }
   }
 
-  protected synchronized void onDirtyMountComplete() {}
+  public synchronized void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
+    mOnDirtyMountListener = onDirtyMountListener;
+  }
+
+  protected synchronized void onDirtyMountComplete() {
+    if (mOnDirtyMountListener != null) {
+      mOnDirtyMountListener.onDirtyMount(this);
+    }
+  }
 
   @Nullable
   protected TreeMountInfo getMountInfo() {
@@ -1292,5 +1302,14 @@ public abstract class BaseMountingView extends ComponentHost
       this.currentVisibleArea = currentVisibleArea;
       this.processVisibilityOutputs = processVisibilityOutputs;
     }
+  }
+
+  public interface OnDirtyMountListener {
+
+    /**
+     * Called when finishing a mount where the mount state was dirty. This indicates that there were
+     * new props/state in the tree, or the BaseMountingView was mounting a new ComponentTree
+     */
+    void onDirtyMount(BaseMountingView view);
   }
 }

@@ -52,7 +52,6 @@ public class LithoView extends BaseMountingView {
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
   private boolean mHasNewComponentTree = false;
-  private OnDirtyMountListener mOnDirtyMountListener = null;
   private @Nullable OnPostDrawListener mOnPostDrawListener = null;
 
   private final AccessibilityManager mAccessibilityManager;
@@ -401,19 +400,8 @@ public class LithoView extends BaseMountingView {
     return componentTree != null ? componentTree.getRoot() : null;
   }
 
-  public synchronized void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
-    mOnDirtyMountListener = onDirtyMountListener;
-  }
-
   public void setOnPostDrawListener(@Nullable OnPostDrawListener onPostDrawListener) {
     mOnPostDrawListener = onPostDrawListener;
-  }
-
-  @Override
-  protected synchronized void onDirtyMountComplete() {
-    if (mOnDirtyMountListener != null) {
-      mOnDirtyMountListener.onDirtyMount(this);
-    }
   }
 
   public void setComponentTree(@Nullable ComponentTree componentTree) {
@@ -925,15 +913,6 @@ public class LithoView extends BaseMountingView {
           loggingInfo.startupLoggerAttribution);
       loggingInfo.lastMountLogged[0] = true;
     }
-  }
-
-  public interface OnDirtyMountListener {
-
-    /**
-     * Called when finishing a mount where the mount state was dirty. This indicates that there were
-     * new props/state in the tree, or the LithoView was mounting a new ComponentTree
-     */
-    void onDirtyMount(LithoView view);
   }
 
   public interface OnPostDrawListener {
