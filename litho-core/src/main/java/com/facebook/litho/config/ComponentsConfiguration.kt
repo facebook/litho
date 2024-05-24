@@ -112,8 +112,6 @@ internal constructor(
      * @see [com.facebook.rendercore.debug.DebugEvent]
      */
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
-    @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
-    @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
     @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
     @JvmField var skipHostAlphaReset: Boolean = false,
@@ -300,7 +298,6 @@ internal constructor(
     private var logTag = baseConfig.logTag
     private var componentsLogger = baseConfig.componentsLogger
     private var debugEventListener = baseConfig.debugEventListener
-    private var shouldBuildRenderTreeInBg = baseConfig.shouldBuildRenderTreeInBg
     private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
     private var primitiveRecyclerEnabled = baseConfig.primitiveRecyclerEnabled
@@ -372,10 +369,6 @@ internal constructor(
       this.debugEventListener = debugEventListener
     }
 
-    fun shouldBuildRenderTreeInBg(value: Boolean): Builder = also {
-      this.shouldBuildRenderTreeInBg = value
-    }
-
     fun enablePreAllocationSameThreadCheck(value: Boolean): Builder = also {
       enablePreAllocationSameThreadCheck = value
     }
@@ -439,8 +432,6 @@ internal constructor(
               },
           componentsLogger = componentsLogger,
           debugEventListener = debugEventListener,
-          shouldBuildRenderTreeInBg = shouldBuildRenderTreeInBg,
-          shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
           avoidRedundantPreAllocations = avoidRedundantPreAllocations,
           primitiveRecyclerEnabled = primitiveRecyclerEnabled,

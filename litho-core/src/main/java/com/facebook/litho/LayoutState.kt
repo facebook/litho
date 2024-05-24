@@ -201,9 +201,7 @@ internal constructor(
         RenderTree.create(
             root,
             flatList,
-            if (componentContext.mLithoConfiguration.componentsConfig.shouldReuseIdToPositionMap)
-                outputsIdToPositionMap
-            else null,
+            outputsIdToPositionMap,
             sizeConstraints.encodedValue,
             componentTreeId,
             null,
