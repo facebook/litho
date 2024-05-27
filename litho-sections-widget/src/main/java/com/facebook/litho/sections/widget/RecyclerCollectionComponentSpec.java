@@ -241,6 +241,11 @@ public class RecyclerCollectionComponentSpec {
 
     Component recyclerComponent;
 
+    List<OnScrollListener> listenersToUse =
+        onScrollListeners != null ? new ArrayList<>(onScrollListeners) : new ArrayList<>();
+    listenersToUse.add(
+        new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo));
+
     if (!isPrimitiveRecyclerEnabled) {
       final Recycler.Builder recycler =
           Recycler.create(c)
@@ -264,9 +269,7 @@ public class RecyclerCollectionComponentSpec {
               .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
               .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
               .fadingEdgeLengthDip(fadingEdgeLength)
-              .onScrollListener(
-                  new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo))
-              .onScrollListeners(onScrollListeners)
+              .onScrollListeners(listenersToUse)
               .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
               .refreshProgressBarColor(refreshProgressBarColor)
               .snapHelper(snapHelper)
@@ -286,11 +289,6 @@ public class RecyclerCollectionComponentSpec {
 
       recyclerComponent = recycler.build();
     } else {
-      List<OnScrollListener> listenersToUse =
-          onScrollListeners != null ? new ArrayList<>(onScrollListeners) : new ArrayList<>();
-      listenersToUse.add(
-          new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo));
-
       JavaStyle javaStyle = StyleCompat.touchHandler(recyclerTouchEventHandler).flexShrink(0f);
 
       if (shouldNotWrapContent) {
@@ -564,7 +562,6 @@ public class RecyclerCollectionComponentSpec {
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
       super.onScrolled(recyclerView, dx, dy);
-
       mEventsController.updateFirstLastFullyVisibleItemPositions(mLayoutInfo);
     }
   }
