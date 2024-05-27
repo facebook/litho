@@ -103,6 +103,7 @@ class ExperimentalRecycler(
 
                   // RecyclerSpec's @OnMount and @OnUnmount
                   bind(
+                      measureVersion,
                       binder,
                       hasFixedSize,
                       isClipToPaddingEnabled,
@@ -117,7 +118,7 @@ class ExperimentalRecycler(
                       fadingEdgeLength,
                       refreshProgressBarBackgroundColor,
                       refreshProgressBarColor,
-                      itemAnimator,
+                      itemAnimator?.javaClass,
                       itemDecorations) { sectionsRecyclerView ->
                         val recyclerView: RecyclerView =
                             sectionsRecyclerView.recyclerView
