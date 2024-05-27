@@ -94,6 +94,7 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
       result.append('\n')
     }
 
+    val recyclerComponentName = recyclerComponentName(lithoView.componentContext)
     val actual = result.toString()
     val expected =
         """
@@ -107,18 +108,18 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
           component[type=CollectionComponent]  parent[type=Column]
           component[type=LazyCollection]  parent[type=CollectionComponent]
           component[type=CollectionRecycler]  parent[type=LazyCollection]
-          component[type=Recycler]  parent[type=CollectionRecycler]
-          component[type=Text, testKey=item-#0]  parent[type=Recycler]
-          component[type=Text, testKey=item-#1]  parent[type=Recycler]
-          component[type=Text, testKey=item-#2]  parent[type=Recycler]
-          component[type=Text, testKey=item-#3]  parent[type=Recycler]
-          component[type=Text, testKey=item-#4]  parent[type=Recycler]
-          component[type=Text, testKey=item-#5]  parent[type=Recycler]
-          component[type=Text, testKey=item-#6]  parent[type=Recycler]
-          component[type=Text, testKey=item-#7]  parent[type=Recycler]
-          component[type=Text, testKey=item-#8]  parent[type=Recycler]
-          component[type=Text, testKey=item-#9]  parent[type=Recycler]
-          component[type=Text, testKey=item-#10]  parent[type=Recycler]
+          component[type=$recyclerComponentName]  parent[type=CollectionRecycler]
+          component[type=Text, testKey=item-#0]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#1]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#2]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#3]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#4]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#5]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#6]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#7]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#8]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#9]  parent[type=$recyclerComponentName]
+          component[type=Text, testKey=item-#10]  parent[type=$recyclerComponentName]
 
           """
             .trimIndent()

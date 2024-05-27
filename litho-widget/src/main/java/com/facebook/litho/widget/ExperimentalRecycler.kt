@@ -47,7 +47,7 @@ import kotlin.math.max
  * Please do not use this code outside of Litho as this is still under experimentation.
  */
 class ExperimentalRecycler(
-    private val binder: Binder<RecyclerView>,
+    val binder: Binder<RecyclerView>,
     private val hasFixedSize: Boolean = true,
     private val isClipToPaddingEnabled: Boolean = true,
     private val leftPadding: Int = 0,
