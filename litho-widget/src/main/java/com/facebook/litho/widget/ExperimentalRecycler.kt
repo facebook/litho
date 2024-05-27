@@ -129,12 +129,10 @@ class ExperimentalRecycler(
                         recyclerView.setHasFixedSize(hasFixedSize)
                         recyclerView.clipToPadding = isClipToPaddingEnabled
                         sectionsRecyclerView.clipToPadding = isClipToPaddingEnabled
-                        ViewCompat.setPaddingRelative(
-                            sectionsRecyclerView.recyclerView,
-                            leftPadding,
-                            topPadding,
-                            rightPadding,
-                            bottomPadding)
+                        if (!paddingAdditionDisabled) {
+                          ViewCompat.setPaddingRelative(
+                              recyclerView, leftPadding, topPadding, rightPadding, bottomPadding)
+                        }
                         recyclerView.clipChildren = isClipChildrenEnabled
                         sectionsRecyclerView.clipChildren = isClipChildrenEnabled
                         recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
@@ -146,11 +144,6 @@ class ExperimentalRecycler(
                         recyclerView.id = recyclerViewId
                         recyclerView.overScrollMode = overScrollMode
                         edgeFactory?.let { recyclerView.edgeEffectFactory = it }
-
-                        if (!paddingAdditionDisabled) {
-                          ViewCompat.setPaddingRelative(
-                              recyclerView, leftPadding, topPadding, rightPadding, bottomPadding)
-                        }
 
                         if (refreshProgressBarBackgroundColor != null) {
                           sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
@@ -176,6 +169,11 @@ class ExperimentalRecycler(
                           }
 
                           itemDecorations?.forEach { recyclerView.removeItemDecoration(it) }
+
+                          if (edgeFactory != null) {
+                            recyclerView.edgeEffectFactory =
+                                sectionsRecyclerView.defaultEdgeEffectFactory
+                          }
 
                           binder.unmount(recyclerView)
 
