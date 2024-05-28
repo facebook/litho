@@ -33,9 +33,6 @@ object RenderCoreConfig {
    */
   @JvmField var shouldSetInLayoutDuringUnmountAll: Boolean = false
 
-  /** Enabling this will clear the render tree from the MountState when unmount all is invoked. */
-  @JvmField var shouldClearRenderTreeOnUnmountAll: Boolean = false
-
   /**
    * Enables the global gap worker which will schedule gaps between mountable items in the same
    * frame.
