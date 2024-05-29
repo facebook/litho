@@ -103,6 +103,7 @@ import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKCo
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.DepsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.FriendsCollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.GridCollectionExample
 import com.facebook.samples.litho.kotlin.collection.HorizontalScrollKComponent
 import com.facebook.samples.litho.kotlin.collection.ModularCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.MultiListCollectionKComponent
@@ -255,6 +256,7 @@ class Demos {
                                 name = "Scroll Snapping (Snap to Start)",
                                 component = ScrollSnappingComponent()),
                             SingleDemo(name = "Tabs", component = TabsCollectionKComponent()),
+                            SingleDemo(name = "2xN Grid", component = GridCollectionExample()),
                             SingleDemo(
                                 name = "Staggered Grid",
                                 component = StaggeredGridCollectionExample()),
