@@ -129,7 +129,7 @@ public class ComponentTree
       "ComponentTree:CTContextIsDifferentFromRootBuilderContext";
   public static final int STATE_UPDATES_IN_LOOP_THRESHOLD = 50;
   private static boolean sBoostPerfLayoutStateFuture = false;
-  @Nullable LithoVisibilityEventsController mLifecycleProvider;
+  @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -303,14 +303,14 @@ public class ComponentTree
   public static Builder create(
       ComponentContext context,
       @Nullable Component root,
-      @Nullable LithoVisibilityEventsController lifecycleProvider) {
+      @Nullable LithoVisibilityEventsController controller) {
     final Builder builder = new ComponentTree.Builder(context);
 
     if (root != null) {
       builder.withRoot(root);
     }
 
-    return builder.withLithoVisibilityEventsController(lifecycleProvider);
+    return builder.withLithoVisibilityEventsController(controller);
   }
 
   protected ComponentTree(Builder builder) {
@@ -413,11 +413,11 @@ public class ComponentTree
 
     if (ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView) {
       if (mContext.getLithoVisibilityEventsController() != null) {
-        subscribeToLifecycleProvider(mContext.getLithoVisibilityEventsController());
+        subscribeToVisibilityEventsController(mContext.getLithoVisibilityEventsController());
       }
     } else {
       if (builder.lithoVisibilityEventsController != null) {
-        subscribeToLifecycleProvider(builder.lithoVisibilityEventsController);
+        subscribeToVisibilityEventsController(builder.lithoVisibilityEventsController);
       }
     }
 
@@ -786,8 +786,8 @@ public class ComponentTree
       return;
     }
     LithoVisibilityState currentStatus = null;
-    if (mLifecycleProvider != null) {
-      currentStatus = mLifecycleProvider.getVisibilityState();
+    if (mLithoVisibilityEventsController != null) {
+      currentStatus = mLithoVisibilityEventsController.getVisibilityState();
     }
     if (currentStatus != null) {
       if (currentStatus == LithoVisibilityState.HINT_VISIBLE) {
@@ -831,7 +831,7 @@ public class ComponentTree
     if (mIsAttached) {
       throw new IllegalStateException("Clearing the LithoView while the ComponentTree is attached");
     }
-    if (mLifecycleProvider != null) {
+    if (mLithoVisibilityEventsController != null) {
       mLithoView.resetVisibilityHint();
     }
 
@@ -1657,14 +1657,14 @@ public class ComponentTree
   }
 
   public @Nullable LithoVisibilityEventsController getLithoVisibilityEventsController() {
-    return mLifecycleProvider;
+    return mLithoVisibilityEventsController;
   }
 
   /**
    * Creates a ComponentTree nested inside the ComponentTree of the provided parentContext. If the
    * parent ComponentTree is subscribed to a LithoVisibilityEventsController, the nested
    * ComponentTree will also subscribe to a {@link SimpleNestedTreeVisibilityEventsController}
-   * hooked with the parent's lifecycle provider.
+   * hooked with the parent's visibility events controller.
    *
    * @param parentContext context associated with the parent ComponentTree.
    * @param component root of the new nested ComponentTree.
@@ -1672,14 +1672,14 @@ public class ComponentTree
    */
   public static ComponentTree.Builder createNestedComponentTree(
       final ComponentContext parentContext, @Nullable Component component) {
-    final SimpleNestedTreeVisibilityEventsController lifecycleProvider =
+    final SimpleNestedTreeVisibilityEventsController controller =
         parentContext.getLithoVisibilityEventsController() == null
             ? null
             : new SimpleNestedTreeVisibilityEventsController(
                 parentContext.getLithoVisibilityEventsController());
 
     return ComponentTree.create(
-        ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
+        ComponentContext.makeCopyForNestedTree(parentContext), component, controller);
   }
 
   public static ComponentTree.Builder createNestedComponentTree(
@@ -2726,19 +2726,19 @@ public class ComponentTree
     return mId;
   }
 
-  public synchronized void subscribeToLifecycleProvider(
-      LithoVisibilityEventsController lifecycleProvider) {
-    if (mLifecycleProvider != null) {
+  public synchronized void subscribeToVisibilityEventsController(
+      LithoVisibilityEventsController controller) {
+    if (mLithoVisibilityEventsController != null) {
       throw new IllegalStateException("Already subscribed");
     }
 
-    mLifecycleProvider = lifecycleProvider;
-    mLifecycleProvider.addListener(this);
+    mLithoVisibilityEventsController = controller;
+    mLithoVisibilityEventsController.addListener(this);
 
     if (!ComponentsConfiguration.defaultInstance
         .enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
-      if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-        LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      if (controller instanceof AOSPLifecycleOwnerProvider) {
+        LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) controller).getLifecycleOwner();
         if (owner != null) {
           setLifecycleOwnerTreeProp(owner);
         }
@@ -2750,8 +2750,8 @@ public class ComponentTree
     setInternalTreeProp(LifecycleOwnerTreeProp, owner);
   }
 
-  public synchronized boolean isSubscribedToLifecycleProvider() {
-    return mLifecycleProvider != null;
+  public synchronized boolean isSubscribedToVisibilityEventsController() {
+    return mLithoVisibilityEventsController != null;
   }
 
   @Override
@@ -2786,9 +2786,9 @@ public class ComponentTree
   private void onMoveToStateDestroy() {
     // This will call setComponentTree(null) on the LithoView if any.
     release();
-    if (mLifecycleProvider != null) {
-      mLifecycleProvider.removeListener(this);
-      mLifecycleProvider = null;
+    if (mLithoVisibilityEventsController != null) {
+      mLithoVisibilityEventsController.removeListener(this);
+      mLithoVisibilityEventsController = null;
     }
   }
 
@@ -3007,8 +3007,8 @@ public class ComponentTree
     }
 
     public Builder withLithoVisibilityEventsController(
-        @Nullable LithoVisibilityEventsController lifecycleProvider) {
-      lithoVisibilityEventsController = lifecycleProvider;
+        @Nullable LithoVisibilityEventsController controller) {
+      lithoVisibilityEventsController = controller;
       return this;
     }
 

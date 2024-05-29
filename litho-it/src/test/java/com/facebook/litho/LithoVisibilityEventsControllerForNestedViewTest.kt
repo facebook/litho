@@ -69,7 +69,7 @@ class LithoVisibilityEventsControllerForNestedViewTest {
             }
           }
         }
-    testLithoView.lithoView.subscribeComponentTreeToLifecycleProvider(
+    testLithoView.lithoView.subscribeComponentTreeToVisibilityEventsController(
         lithoVisibilityEventsControllerDelegate)
 
     // testing initial state
