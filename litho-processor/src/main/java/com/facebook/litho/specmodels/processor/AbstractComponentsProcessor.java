@@ -76,8 +76,11 @@ public abstract class AbstractComponentsProcessor extends ProcessorBase {
     super.init(processingEnv);
 
     Map<String, String> options = processingEnv.getOptions();
-    boolean isGeneratingAbi =
+    boolean isGeneratingJavaAbi =
         Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
+    boolean isGeneratingKotlinAbi =
+        Boolean.valueOf(options.getOrDefault("com.facebook.buck.kotlin.generating_abi", "false"));
+    boolean isGeneratingAbi = isGeneratingJavaAbi || isGeneratingKotlinAbi;
     if (isGeneratingAbi) {
       mRunMode.add(RunMode.ABI);
     }
