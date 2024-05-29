@@ -36,7 +36,7 @@ inline fun ResourcesScope.LazyGrid(
     snapToStartOffset: Dimen = 0.dp,
     reverse: Boolean = false,
     columns: Int = 2,
-    itemAnimator: RecyclerView.ItemAnimator? = null,
+    itemAnimator: RecyclerView.ItemAnimator? = CollectionRecyclerSpec.itemAnimator,
     itemDecoration: RecyclerView.ItemDecoration? = null,
     clipToPadding: Boolean? = null,
     clipChildren: Boolean? = null,

@@ -36,7 +36,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     reverse: Boolean = false,
     spans: Int = 2,
     gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
-    itemAnimator: RecyclerView.ItemAnimator? = null,
+    itemAnimator: RecyclerView.ItemAnimator? = CollectionRecyclerSpec.itemAnimator,
     itemDecoration: RecyclerView.ItemDecoration? = null,
     clipToPadding: Boolean? = null,
     clipChildren: Boolean? = null,

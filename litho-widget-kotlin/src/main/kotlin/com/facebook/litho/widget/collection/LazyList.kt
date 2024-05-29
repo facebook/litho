@@ -37,7 +37,7 @@ inline fun ResourcesScope.LazyList(
     reverse: Boolean = false,
     crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
     mainAxisWrapContent: Boolean = false,
-    itemAnimator: RecyclerView.ItemAnimator? = null,
+    itemAnimator: RecyclerView.ItemAnimator? = CollectionRecyclerSpec.itemAnimator,
     itemDecoration: RecyclerView.ItemDecoration? = null,
     clipToPadding: Boolean? = null,
     clipChildren: Boolean? = null,
@@ -78,6 +78,7 @@ inline fun ResourcesScope.LazyList(
     init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
+
   return LazyCollection(
       layout =
           CollectionLayouts.Linear(

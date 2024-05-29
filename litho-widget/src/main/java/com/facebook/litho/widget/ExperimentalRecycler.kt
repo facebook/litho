@@ -69,7 +69,7 @@ class ExperimentalRecycler(
     @IdRes private val recyclerViewId: Int = View.NO_ID,
     private val overScrollMode: Int = View.OVER_SCROLL_ALWAYS,
     private val contentDescription: CharSequence? = null,
-    private val itemAnimator: RecyclerView.ItemAnimator? = DEFAULT_ITEM_ANIMATOR,
+    private val itemAnimator: RecyclerView.ItemAnimator? = NoUpdateItemAnimator(),
     private val recyclerEventsController: RecyclerEventsController? = null,
     private val onScrollListeners: List<RecyclerView.OnScrollListener>? = null,
     private val snapHelper: SnapHelper? = null,
@@ -84,8 +84,6 @@ class ExperimentalRecycler(
 ) : PrimitiveComponent() {
 
   companion object {
-    val DEFAULT_ITEM_ANIMATOR: RecyclerView.ItemAnimator = NoUpdateItemAnimator()
-
     // This is the default value for refresh spinner background from RecyclerSpec.
     private const val DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = 0xFFFAFAFA.toInt()
   }
@@ -166,9 +164,7 @@ class ExperimentalRecycler(
 
                     itemDecorations?.forEach { recyclerView.addItemDecoration(it) }
 
-                    sectionsRecyclerView.setItemAnimator(
-                        if (itemAnimator !== DEFAULT_ITEM_ANIMATOR) itemAnimator
-                        else DEFAULT_ITEM_ANIMATOR)
+                    sectionsRecyclerView.setItemAnimator(itemAnimator)
 
                     binder.mount(recyclerView)
 

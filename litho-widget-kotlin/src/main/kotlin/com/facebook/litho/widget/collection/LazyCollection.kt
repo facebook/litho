@@ -59,7 +59,7 @@ typealias OnDataRendered =
 
 class LazyCollection(
     private val layout: CollectionLayout,
-    private val itemAnimator: RecyclerView.ItemAnimator? = null,
+    private val itemAnimator: RecyclerView.ItemAnimator?,
     private val itemDecoration: RecyclerView.ItemDecoration? = null,
     private val clipToPadding: Boolean? = null,
     private val clipChildren: Boolean? = null,

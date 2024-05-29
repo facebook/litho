@@ -139,6 +139,12 @@ internal constructor(
     @JvmField val enableFacadeStateUpdater: Boolean = false,
     @JvmField val skipSecondIsInWorkingRangeCheck: Boolean = false,
     @JvmField val enableVisibilityFixForNestedLithoView: Boolean = false,
+    /**
+     * This flag is used to enable the use of default item animators in lazy collections, so that
+     * the behavior is compatible to what exists nowadays in the
+     * [com.facebook.litho.sections.widget.RecyclerCollectionComponent].
+     */
+    @JvmField val useDefaultItemAnimatorInLazyCollections: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -310,6 +316,8 @@ internal constructor(
     private var skipSecondIsInWorkingRangeCheck = baseConfig.skipSecondIsInWorkingRangeCheck
     private var enableVisibilityFixForNestedLithoView =
         baseConfig.enableVisibilityFixForNestedLithoView
+    private var useDefaultItemAnimatorInLazyCollections =
+        baseConfig.useDefaultItemAnimatorInLazyCollections
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -408,6 +416,10 @@ internal constructor(
       enableVisibilityFixForNestedLithoView = enabled
     }
 
+    fun useDefaultItemAnimatorInLazyCollections(enabled: Boolean): Builder = also {
+      useDefaultItemAnimatorInLazyCollections = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -441,7 +453,8 @@ internal constructor(
           useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
           enableFacadeStateUpdater = enableFacadeStateUpdater,
           skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck,
-          enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView)
+          enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
+          useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections)
     }
   }
 }

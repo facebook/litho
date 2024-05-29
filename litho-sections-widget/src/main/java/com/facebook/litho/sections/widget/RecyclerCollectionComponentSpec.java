@@ -234,6 +234,13 @@ public class RecyclerCollectionComponentSpec {
                 .getRecyclerBinderConfig()
                 .wrapContent;
 
+    /*
+     * This is a hacky way to detect that the user opted by using our default implementation. We
+     * detect that by comparing with the item animator property default value, and if there is a
+     * match then we pass on a new instance of the same type of item animator. This is because we
+     * can't reuse the same item animator across different instances of RecyclerView, or it will
+     * crash.
+     */
     ItemAnimator recyclerItemAnimator =
         RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
             ? new NoUpdateItemAnimator()

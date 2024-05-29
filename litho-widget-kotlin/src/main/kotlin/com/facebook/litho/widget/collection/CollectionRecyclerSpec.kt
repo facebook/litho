@@ -41,6 +41,7 @@ import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
@@ -58,6 +59,8 @@ object CollectionRecyclerSpec {
 
   @get:PropDefault
   val recyclerConfiguration: RecyclerConfiguration = ListRecyclerConfiguration.create().build()
+
+  @PropDefault val itemAnimator: RecyclerView.ItemAnimator = NoUpdateItemAnimator()
 
   @JvmStatic
   @OnCreateLayout
@@ -104,6 +107,29 @@ object CollectionRecyclerSpec {
         (recyclerConfiguration.recyclerBinderConfiguration.isPrimitiveRecyclerEnabled ||
             componentsConfiguration.primitiveRecyclerEnabled)
 
+    /**
+     * This is a temporary solution while we experiment with offering the same behavior regarding
+     * the default item animators as in
+     * [com.facebook.litho.sections.widget.RecyclerCollectionComponent].
+     *
+     * This is needed because we will have a crash if we re-use the same animator instance across
+     * different RV instances. In this approach we identify if the client opted by using the
+     * "default" animator, and if so, it will pass on a new instance of the same type, to avoid a
+     * crash that happens due to re-using the same instances in different RVs.
+     */
+    val itemAnimatorToUse =
+        when (itemAnimator) {
+          CollectionRecyclerSpec.itemAnimator -> {
+            if (c.lithoConfiguration.componentsConfig.useDefaultItemAnimatorInLazyCollections ||
+                c.lithoConfiguration.componentsConfig.primitiveRecyclerEnabled) {
+              NoUpdateItemAnimator()
+            } else {
+              null
+            }
+          }
+          else -> itemAnimator
+        }
+
     return if (!isPrimitiveRecyclerEnabled) {
       Recycler.create(c)
           .leftPadding(startPadding)
@@ -126,6 +152,7 @@ object CollectionRecyclerSpec {
           .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
           .touchHandler(recyclerTouchEventHandler)
           .sectionsViewLogger(sectionsViewLogger)
+          .itemAnimator(itemAnimatorToUse)
           .apply {
             clipToPadding?.let { clipToPadding(it) }
             clipChildren?.let { clipChildren(it) }
@@ -134,7 +161,6 @@ object CollectionRecyclerSpec {
             recyclerViewId?.let { recyclerViewId(it) }
             overScrollMode?.let { overScrollMode(it) }
             refreshProgressBarColor?.let { refreshProgressBarColor(it) }
-            itemAnimator?.let { itemAnimator(it) }
           }
           .build()
     } else {
@@ -165,7 +191,7 @@ object CollectionRecyclerSpec {
           onItemTouchListener = itemTouchListener,
           excludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
           sectionsViewLogger = sectionsViewLogger,
-          itemAnimator = itemAnimator ?: ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR,
+          itemAnimator = itemAnimatorToUse,
           refreshProgressBarColor = refreshProgressBarColor ?: Color.BLACK,
           recyclerViewId = recyclerViewId ?: View.NO_ID,
           overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
