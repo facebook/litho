@@ -16,7 +16,10 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Event triggered when the visible rect of a Component changes. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityChangedEvent {
   /**
    * The visible top presents the top edge of the visible rect of the content. If the value is

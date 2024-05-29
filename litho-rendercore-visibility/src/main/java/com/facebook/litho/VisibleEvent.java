@@ -17,11 +17,13 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Event triggered when a Component enters the Visible Range. This happens when at least a pixel of
  * the Component is visible.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibleEvent {
 
   /** The content for which visibility event was dispatched. */

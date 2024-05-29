@@ -55,6 +55,7 @@ dependencies {
     // Infer annotations is partially class-retained and need to be part
     // of the POM.
     implementation deps.inferAnnotations
+    implementation deps.guava
 
     // Android Support Library
     compileOnly deps.supportAnnotations

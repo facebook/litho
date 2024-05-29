@@ -20,6 +20,7 @@ import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBU
 
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.InvisibleEvent;
@@ -29,6 +30,7 @@ import com.facebook.litho.VisibleEvent;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.RenderCoreSystrace;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityUtils {
 
   private static VisibleEvent sVisibleEvent;

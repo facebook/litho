@@ -18,6 +18,7 @@ package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Function;
 
 /**
@@ -25,6 +26,7 @@ import com.facebook.rendercore.Function;
  * handler have been set). This class is justified by the fact that VisibilityOutput should be
  * immutable.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityItem {
 
   private static final int FLAG_LEFT_EDGE_VISIBLE = 1 << 1;

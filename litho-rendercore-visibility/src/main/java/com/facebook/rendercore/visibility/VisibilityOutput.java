@@ -18,6 +18,7 @@ package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.LayoutResult;
 
@@ -25,6 +26,7 @@ import com.facebook.rendercore.LayoutResult;
  * Stores information about a node which has registered visibility handlers for. The information is
  * passed to the visibility extension which then dispatches the appropriate events.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityOutput {
 
   private final String mId;

@@ -16,9 +16,12 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Event triggered when a Component exits the Focused Range. The Focused Range is defined as at
  * least half of the viewport or, if the Component is smaller than half of the viewport, when the it
  * is fully visible.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class UnfocusedVisibleEvent {}

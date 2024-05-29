@@ -16,12 +16,15 @@
 
 package com.facebook.rendercore.visibility;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * This class contains mainly flags for features that are either under active development and not
  * ready for public consumption, or for use in experiments.
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityExtensionConfigs {
 
   public static final String DEBUG_TAG = "VisibilityExtension";
