@@ -379,6 +379,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @Prop(optional = true) int importantForAutofill,
       @Prop(optional = true) @Nullable String[] autofillHints,
+      @Prop(optional = true) boolean disableAutofill,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     EditTextWithEventHandlers editText = (EditTextWithEventHandlers) textInputLayout.getEditText();
@@ -435,6 +436,7 @@ class MaterialTextInputSpec {
         editTextEndPadding,
         editTextBottomPadding);
     editText.setTextState(savedText);
+    editText.setDisableAutofill(disableAutofill);
   }
 
   static void setParams(
