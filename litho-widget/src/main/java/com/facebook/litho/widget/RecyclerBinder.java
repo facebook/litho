@@ -855,9 +855,10 @@ public class RecyclerBinder
 
   /**
    * Inserts an item at position. The {@link RecyclerView} will only be notified of the item being
-   * inserted after a layout calculation has been completed for the new {@link Component}.
+   * inserted after a layout calculation has been completed for the new {@link Component}. Return
+   * true if the item was inserted, false if the item was not inserted.
    */
-  public final void insertItemAtAsync(int position, RenderInfo renderInfo) {
+  public final boolean insertItemAtAsync(int position, RenderInfo renderInfo) {
     assertSingleThreadForChangeSet();
 
     assertNoInsertOperationIfCircular();
@@ -872,11 +873,14 @@ public class RecyclerBinder
     final AsyncInsertOperation operation = createAsyncInsertOperation(position, renderInfo);
 
     synchronized (this) {
+      if (mAsyncComponentTreeHolders.size() < position) return false;
+
       mHasAsyncOperations = true;
 
       mAsyncComponentTreeHolders.add(position, operation.mHolder);
 
       registerAsyncInsert(operation);
+      return true;
     }
   }
 
@@ -884,9 +888,10 @@ public class RecyclerBinder
    * Inserts the new items starting from position. The {@link RecyclerView} will only be notified of
    * the items being inserted after a layout calculation has been completed for the new {@link
    * Component}s. There is not a guarantee that the {@link RecyclerView} will be notified about all
-   * the items in the range at the same time.
+   * the items in the range at the same time. Return true if the items were inserted, false if the
+   * items were not inserted.
    */
-  public final void insertRangeAtAsync(int position, List<RenderInfo> renderInfos) {
+  public final boolean insertRangeAtAsync(int position, List<RenderInfo> renderInfos) {
     assertSingleThreadForChangeSet();
 
     assertNoInsertOperationIfCircular();
@@ -909,6 +914,8 @@ public class RecyclerBinder
     }
 
     synchronized (this) {
+      if (mAsyncComponentTreeHolders.size() < position) return false;
+
       mHasAsyncOperations = true;
 
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
@@ -920,6 +927,7 @@ public class RecyclerBinder
 
         registerAsyncInsert(operation);
       }
+      return true;
     }
   }
 
