@@ -86,8 +86,6 @@ internal constructor(
      * will process visibility events.
      */
     @JvmField val visibilityProcessingEnabled: Boolean = true,
-    /** Whether we use a Recycler based on a Primitive implementation. */
-    @JvmField val primitiveRecyclerEnabled: Boolean = false,
     /**
      * This class is an error event handler that clients can optionally set on a [ComponentTree] to
      * gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
@@ -144,7 +142,17 @@ internal constructor(
      * the behavior is compatible to what exists nowadays in the
      * [com.facebook.litho.sections.widget.RecyclerCollectionComponent].
      */
-    @JvmField val useDefaultItemAnimatorInLazyCollections: Boolean = false
+    @JvmField val useDefaultItemAnimatorInLazyCollections: Boolean = false,
+    /**
+     * This defines which strategy we will use to bind the
+     * [com.facebook.litho.sections.widget.ExperimentalRecycler].
+     *
+     * If `null` we will not use the experimental version of a Recycler, and will rely on the
+     * MountSpec based one, which is the [com.facebook.litho.widget.RecyclerSpec]
+     *
+     * @see [PrimitiveRecyclerBinderStrategy] for more details.
+     */
+    @JvmField val primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -306,7 +314,6 @@ internal constructor(
     private var debugEventListener = baseConfig.debugEventListener
     private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
-    private var primitiveRecyclerEnabled = baseConfig.primitiveRecyclerEnabled
     private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
         baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
     private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
@@ -318,6 +325,7 @@ internal constructor(
         baseConfig.enableVisibilityFixForNestedLithoView
     private var useDefaultItemAnimatorInLazyCollections =
         baseConfig.useDefaultItemAnimatorInLazyCollections
+    private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -385,9 +393,9 @@ internal constructor(
       avoidRedundantPreAllocations = value
     }
 
-    fun primitiveRecyclerEnabled(primitiveRecyclerEnabled: Boolean): Builder = also {
-      this.primitiveRecyclerEnabled = primitiveRecyclerEnabled
-    }
+    fun primitiveRecyclerBinderStrategy(
+        primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy?
+    ): Builder = also { this.primitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy }
 
     fun enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner(
         enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean
@@ -446,7 +454,7 @@ internal constructor(
           debugEventListener = debugEventListener,
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
           avoidRedundantPreAllocations = avoidRedundantPreAllocations,
-          primitiveRecyclerEnabled = primitiveRecyclerEnabled,
+          primitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy,
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
               enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
           skipHostAlphaReset = skipHostAlphaReset,

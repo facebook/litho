@@ -37,6 +37,7 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
+import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionTree
@@ -103,9 +104,9 @@ object CollectionRecyclerSpec {
 
     val componentsConfiguration = c.lithoConfiguration.componentsConfig
 
-    val isPrimitiveRecyclerEnabled =
-        (recyclerConfiguration.recyclerBinderConfiguration.isPrimitiveRecyclerEnabled ||
-            componentsConfiguration.primitiveRecyclerEnabled)
+    val primitiveRecyclerBinderStrategy =
+        recyclerConfiguration.recyclerBinderConfiguration.primitiveRecyclerBinderStrategy
+            ?: componentsConfiguration.primitiveRecyclerBinderStrategy
 
     /**
      * This is a temporary solution while we experiment with offering the same behavior regarding
@@ -120,8 +121,9 @@ object CollectionRecyclerSpec {
     val itemAnimatorToUse =
         when (itemAnimator) {
           CollectionRecyclerSpec.itemAnimator -> {
-            if (c.lithoConfiguration.componentsConfig.useDefaultItemAnimatorInLazyCollections ||
-                c.lithoConfiguration.componentsConfig.primitiveRecyclerEnabled) {
+            if (c.lithoConfiguration.componentsConfig.useDefaultItemAnimatorInLazyCollections &&
+                c.lithoConfiguration.componentsConfig.primitiveRecyclerBinderStrategy ==
+                    PrimitiveRecyclerBinderStrategy.SPLIT_BINDERS) {
               NoUpdateItemAnimator()
             } else {
               null
@@ -130,7 +132,7 @@ object CollectionRecyclerSpec {
           else -> itemAnimator
         }
 
-    return if (!isPrimitiveRecyclerEnabled) {
+    return if (primitiveRecyclerBinderStrategy == null) {
       Recycler.create(c)
           .leftPadding(startPadding)
           .rightPadding(endPadding)
@@ -165,6 +167,7 @@ object CollectionRecyclerSpec {
           .build()
     } else {
       ExperimentalRecycler(
+          binderStrategy = primitiveRecyclerBinderStrategy,
           binder = binder,
           isClipToPaddingEnabled = clipToPadding ?: true,
           isClipChildrenEnabled = clipChildren ?: true,

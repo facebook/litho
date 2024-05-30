@@ -17,17 +17,20 @@
 package com.facebook.litho.testing.testrunner
 
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import org.junit.runners.model.FrameworkMethod
 
-class PrimitiveRecyclerConfiguration : LithoTestRunConfiguration {
+class RecyclerSpecEquivalentPrimitiveRecyclerConfiguration : LithoTestRunConfiguration {
 
   override fun beforeTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(primitiveRecyclerEnabled = true)
+        ComponentsConfiguration.defaultInstance.copy(
+            primitiveRecyclerBinderStrategy =
+                PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT)
   }
 
   override fun afterTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(primitiveRecyclerEnabled = false)
+        ComponentsConfiguration.defaultInstance.copy(primitiveRecyclerBinderStrategy = null)
   }
 }

@@ -224,9 +224,13 @@ public class RecyclerCollectionComponentSpec {
       componentsConfiguration = c.mLithoConfiguration.componentsConfig;
     }
 
-    boolean isPrimitiveRecyclerEnabled =
-        recyclerConfiguration.getRecyclerBinderConfiguration().isPrimitiveRecyclerEnabled()
-            || componentsConfiguration.primitiveRecyclerEnabled;
+    PrimitiveRecyclerBinderStrategy primitiveRecyclerBinderStrategy =
+        recyclerConfiguration.getRecyclerBinderConfiguration().getPrimitiveRecyclerBinderStrategy()
+                != null
+            ? recyclerConfiguration
+                .getRecyclerBinderConfiguration()
+                .getPrimitiveRecyclerBinderStrategy()
+            : componentsConfiguration.primitiveRecyclerBinderStrategy;
 
     boolean shouldNotWrapContent =
         !binder.canMeasure()
@@ -254,7 +258,7 @@ public class RecyclerCollectionComponentSpec {
     listenersToUse.add(
         new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo));
 
-    if (!isPrimitiveRecyclerEnabled) {
+    if (primitiveRecyclerBinderStrategy == null) {
       final Recycler.Builder recycler =
           Recycler.create(c)
               .clipToPadding(clipToPadding)
@@ -305,7 +309,7 @@ public class RecyclerCollectionComponentSpec {
 
       recyclerComponent =
           new ExperimentalRecycler(
-              PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT,
+              primitiveRecyclerBinderStrategy,
               binder,
               true,
               clipToPadding,

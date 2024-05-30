@@ -123,7 +123,7 @@ class ExperimentalRecycler(
             // RecyclerSpec's @OnMount and @OnUnmount
             withDescription("recycler-equivalent-mount") {
               bind(
-                  measureVersion,
+                  measureVersion.value,
                   binder,
                   hasFixedSize,
                   isClipToPaddingEnabled,
@@ -409,8 +409,6 @@ class ExperimentalRecycler(
                         sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
                             DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
                       }
-
-                      itemDecorations?.forEach { recyclerView.removeItemDecoration(it) }
 
                       if (edgeFactory != null) {
                         recyclerView.edgeEffectFactory =
