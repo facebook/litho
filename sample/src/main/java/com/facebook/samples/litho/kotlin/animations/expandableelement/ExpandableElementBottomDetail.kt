@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+package com.facebook.samples.litho.kotlin.animations.expandableelement
+
 import android.graphics.Color
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.Transition
 import com.facebook.litho.core.padding
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.flex
@@ -26,18 +29,18 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.transition.transitionKey
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.sp
-import com.facebook.samples.litho.kotlin.animations.expandableelement.TRANSITION_BOTTOM_DETAIL
 import com.facebook.yoga.YogaAlign
 
 class ExpandableElementBottomDetail(private val seen: Boolean) : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return Text(
         style =
             Style.alignSelf(YogaAlign.FLEX_END)
                 .padding(end = 10.dp)
                 .flex(shrink = 0f)
-                .transitionKey(context, TRANSITION_BOTTOM_DETAIL),
+                .transitionKey(
+                    context, TRANSITION_BOTTOM_DETAIL, Transition.TransitionKeyType.GLOBAL),
         textSize = 14.sp,
         textColor = Color.GRAY,
         text = if (seen) "Seen" else "Sent")

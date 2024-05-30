@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package com.facebook.samples.litho.kotlin.animations.expandableelement
+
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import com.facebook.litho.Component
