@@ -56,6 +56,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
@@ -304,6 +305,7 @@ public class RecyclerCollectionComponentSpec {
 
       recyclerComponent =
           new ExperimentalRecycler(
+              PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT,
               binder,
               true,
               clipToPadding,
