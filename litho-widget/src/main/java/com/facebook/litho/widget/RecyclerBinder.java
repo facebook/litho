@@ -1207,9 +1207,10 @@ public class RecyclerBinder
 
   /**
    * Removes an item from position. If there are other pending operations on this binder this will
-   * only be executed when all the operations have been completed (to ensure index consistency).
+   * only be executed when all the operations have been completed (to ensure index
+   * consistency).Return true if the item was removed, false if the item was not removed.
    */
-  public final void removeItemAtAsync(int position) {
+  public final boolean removeItemAtAsync(int position) {
     assertSingleThreadForChangeSet();
 
     if (SectionsDebug.ENABLED) {
@@ -1218,19 +1219,23 @@ public class RecyclerBinder
 
     final AsyncRemoveOperation asyncRemoveOperation = new AsyncRemoveOperation(position);
     synchronized (this) {
+      if (mAsyncComponentTreeHolders.size() <= position) {
+        return false;
+      }
       mHasAsyncOperations = true;
 
       mAsyncComponentTreeHolders.remove(position);
       addToCurrentBatch(asyncRemoveOperation);
+      return true;
     }
   }
 
   /**
    * Removes count items starting from position. If there are other pending operations on this
    * binder this will only be executed when all the operations have been completed (to ensure index
-   * consistency).
+   * consistency). Return true if the range was removed, false if the range was not removed.
    */
-  public final void removeRangeAtAsync(int position, int count) {
+  public final boolean removeRangeAtAsync(int position, int count) {
     assertSingleThreadForChangeSet();
 
     assertNoRemoveOperationIfCircular(count);
@@ -1243,6 +1248,9 @@ public class RecyclerBinder
 
     final AsyncRemoveRangeOperation operation = new AsyncRemoveRangeOperation(position, count);
     synchronized (this) {
+      if (mAsyncComponentTreeHolders.size() <= position) {
+        return false;
+      }
       mHasAsyncOperations = true;
 
       for (int i = 0; i < count; i++) {
@@ -1250,6 +1258,7 @@ public class RecyclerBinder
         mAsyncComponentTreeHolders.remove(position);
       }
       addToCurrentBatch(operation);
+      return true;
     }
   }
 
