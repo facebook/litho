@@ -75,6 +75,7 @@ inline fun ResourcesScope.LazyList(
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     shouldExcludeFromIncrementalMount: Boolean = false,
+    isCircular: Boolean = false,
     init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
@@ -92,7 +93,8 @@ inline fun ResourcesScope.LazyList(
               isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
               crossAxisWrapMode = crossAxisWrapMode,
-              mainAxisWrapContent = mainAxisWrapContent),
+              mainAxisWrapContent = mainAxisWrapContent,
+              isCircular = isCircular),
       itemAnimator,
       itemDecoration,
       clipToPadding,
