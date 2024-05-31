@@ -40,8 +40,11 @@ import com.facebook.rendercore.primitives.ViewAllocator
 import kotlin.math.max
 
 @ExperimentalLithoApi
-class ZoomableComponent(private val style: Style? = null, private val child: () -> Component) :
-    PrimitiveComponent() {
+class ZoomableComponent(
+    private val controller: ZoomableController? = null,
+    private val style: Style? = null,
+    private val child: () -> Component
+) : PrimitiveComponent() {
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
 
@@ -53,7 +56,7 @@ class ZoomableComponent(private val style: Style? = null, private val child: () 
         treeProps = context.treePropContainer,
         config = context.lithoConfiguration.componentsConfig.copy(incrementalMountEnabled = false))
 
-    val controller = useCached { ZoomableController(androidContext) }
+    val controller = useCached { controller ?: ZoomableController(androidContext) }
 
     return LithoPrimitive(
         layoutBehavior =
