@@ -296,6 +296,20 @@ class ExperimentalRecycler(
             doesMountRenderTreeHosts = true
             shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
 
+            withDescription("recycler-binder") {
+              bind(binder) { sectionsRecyclerView ->
+                val recyclerView: RecyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+
+                binder.mount(recyclerView)
+                binder.bind(recyclerView)
+
+                onUnbind {
+                  binder.unbind(recyclerView)
+                  binder.unmount(recyclerView)
+                }
+              }
+            }
+
             withDescription("recycler-content") {
               bind(
                   contentDescription,
@@ -451,20 +465,6 @@ class ExperimentalRecycler(
                 itemDecorations?.forEach(recyclerView::addItemDecoration)
 
                 onUnbind { itemDecorations?.forEach(recyclerView::removeItemDecoration) }
-              }
-            }
-
-            withDescription("recycler-binder") {
-              bind(binder) { sectionsRecyclerView ->
-                val recyclerView: RecyclerView = sectionsRecyclerView.requireLithoRecyclerView()
-
-                binder.mount(recyclerView)
-                binder.bind(recyclerView)
-
-                onUnbind {
-                  binder.unbind(recyclerView)
-                  binder.unmount(recyclerView)
-                }
               }
             }
           }
