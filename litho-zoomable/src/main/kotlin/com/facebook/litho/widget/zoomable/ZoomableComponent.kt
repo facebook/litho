@@ -42,7 +42,7 @@ import kotlin.math.max
 @ExperimentalLithoApi
 class ZoomableComponent(
     private val controller: ZoomableController? = null,
-    private val style: Style? = null,
+    private val style: Style = Style,
     private val child: () -> Component
 ) : PrimitiveComponent() {
 
@@ -57,6 +57,12 @@ class ZoomableComponent(
         config = context.lithoConfiguration.componentsConfig.copy(incrementalMountEnabled = false))
 
     val controller = useCached { controller ?: ZoomableController(androidContext) }
+
+    val zoomableStyle =
+        Style.onTouch { touchEvent: TouchEvent ->
+              controller.onTouch(touchEvent.motionEvent, touchEvent.view.parent)
+            }
+            .onInterceptTouch(true) { _ -> controller.interceptingTouch }
 
     return LithoPrimitive(
         layoutBehavior =
@@ -76,11 +82,8 @@ class ZoomableComponent(
                 }
               }
             },
-        style =
-            Style.onTouch { touchEvent: TouchEvent ->
-                  controller.onTouch(touchEvent.motionEvent, touchEvent.view.parent)
-                }
-                .onInterceptTouch(true) { _ -> controller.interceptingTouch })
+        style = style.plus(zoomableStyle),
+    )
   }
 
   companion object {
