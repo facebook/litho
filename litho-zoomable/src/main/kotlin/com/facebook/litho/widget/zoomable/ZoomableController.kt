@@ -35,7 +35,10 @@ import kotlin.math.roundToInt
 import kotlin.math.sign
 
 /** Most logic is from existing rendercore class [ZoomableViewController] */
-class ZoomableController(private val context: Context) : SpringListener {
+class ZoomableController(
+    private val context: Context,
+    private val isDoubleTapEnabled: Boolean = false
+) : SpringListener {
 
   private enum class State {
     IDLE,
@@ -100,6 +103,9 @@ class ZoomableController(private val context: Context) : SpringListener {
   private val gestureListener: SimpleOnGestureListenerWorkaround by lazy {
     object : SimpleOnGestureListenerWorkaround() {
       override fun onDoubleTap(event: MotionEvent): Boolean {
+        if (!isDoubleTapEnabled) {
+          return false
+        }
         val contentView = requireRootView().renderTreeView
         if (state == State.IDLE) {
           if (currentScaleFactor - DEFAULT_MIN_SCALE_FACTOR <
