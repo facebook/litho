@@ -510,7 +510,21 @@ public abstract class BaseMountingView extends ComponentHost
 
     layoutState.setShouldProcessVisibilityOutputs(processVisibilityOutputs);
 
-    mountWithMountDelegateTarget(layoutState, currentVisibleArea);
+    final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
+    if (currentVisibleArea != null && !needsMount) {
+      Preconditions.checkNotNull(mMountState.getMountDelegate())
+          .notifyVisibleBoundsChanged(currentVisibleArea);
+    } else {
+      // Generate the renderTree here so that any operations
+      // that occur in toRenderTree() happen prior to "beforeMount".
+      final RenderTree renderTree = layoutState.toRenderTree();
+      setupMountExtensions();
+      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
+      mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
+      mMountState.mount(renderTree);
+      LithoStats.incrementComponentMountCount();
+      drawDebugOverlay(this, layoutState.getComponentTreeId());
+    }
 
     onAfterMount(onBeforeMountResult);
     mIsMountStateDirty = false;
@@ -534,25 +548,6 @@ public abstract class BaseMountingView extends ComponentHost
    *     null.
    */
   void onAfterMount(@Nullable Object fromOnBeforeMount) {}
-
-  private void mountWithMountDelegateTarget(
-      LayoutState layoutState, @Nullable Rect currentVisibleArea) {
-    final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
-    if (currentVisibleArea != null && !needsMount) {
-      Preconditions.checkNotNull(mMountState.getMountDelegate())
-          .notifyVisibleBoundsChanged(currentVisibleArea);
-    } else {
-      // Generate the renderTree here so that any operations
-      // that occur in toRenderTree() happen prior to "beforeMount".
-      final RenderTree renderTree = layoutState.toRenderTree();
-      setupMountExtensions();
-      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
-      mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
-      mMountState.mount(renderTree);
-      LithoStats.incrementComponentMountCount();
-      drawDebugOverlay(this, layoutState.getComponentTreeId());
-    }
-  }
 
   // We pause mounting while the visibility hint is set to false, because the visible rect of
   // the BaseMountingView is not consistent with what's currently on screen.
