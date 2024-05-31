@@ -327,7 +327,10 @@ class ZoomableController(private val context: Context) : SpringListener {
 
   private fun startZoom() {
     state = State.ZOOMING
-    requireRootView().renderTreeView.setHasTransientState(true)
+    interceptingTouch = true
+    val renderTreeView = requireRootView().renderTreeView
+    renderTreeView.parent.requestDisallowInterceptTouchEvent(true)
+    renderTreeView.setHasTransientState(true)
   }
 
   private fun finishMovement() {
@@ -442,8 +445,6 @@ class ZoomableController(private val context: Context) : SpringListener {
   fun onTouch(event: MotionEvent, parent: ViewParent?): Boolean {
     when (event.actionMasked) {
       MotionEvent.ACTION_DOWN -> {
-        parent?.requestDisallowInterceptTouchEvent(true)
-        interceptingTouch = true
         requireRootView().startNestedScroll(ViewCompat.SCROLL_AXIS_NONE, ViewCompat.TYPE_TOUCH)
         if (state == State.ANIMATING) {
           zoomSpring.endValue = zoomSpring.currentValue
