@@ -163,8 +163,6 @@ public class DelegateMethodValidation {
       int numberOfAllowedMethodArgsUsed =
           getNumberOfAllowedMethodArgsUsed(delegateMethod.methodParams, allowedDelegateMethodArgs);
 
-      System.out.println("Delegate method info: " + delegateMethodDescription);
-
       for (int i = numberOfAllowedMethodArgsUsed, size = delegateMethod.methodParams.size();
           i < size;
           i++) {
