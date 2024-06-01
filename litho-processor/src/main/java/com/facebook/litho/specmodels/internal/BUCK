@@ -12,13 +12,14 @@ load(
     "make_dep_path",
 )
 
+oncall("playgroundapps")
+
 fb_java_library(
     name = "internal",
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     java_version = "8",
     labels = [],
-    oncall = "playgroundapps",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],
@@ -37,7 +38,6 @@ fb_java_library(
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    oncall = "playgroundapps",
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,

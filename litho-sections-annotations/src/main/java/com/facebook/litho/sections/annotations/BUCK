@@ -6,12 +6,13 @@
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
+oncall("playgroundapps")
+
 fb_java_library(
     name = "annotations",
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    oncall = "playgroundapps",
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

@@ -1,3 +1,4 @@
+oncall("litho_components_for_android")
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
@@ -15,7 +16,6 @@ fb_android_library(
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho,
     labels = [],
-    oncall = "litho_components_for_android",
     provided_deps = [
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
     ],

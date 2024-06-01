@@ -9,6 +9,8 @@ load(
     "fb_android_library",
 )
 
+oncall("litho_components_for_android")
+
 fb_android_library(
     name = "rendercore-transitions-stub",
     srcs = glob(["src/main/java/**/*.java"]),
@@ -16,7 +18,6 @@ fb_android_library(
     feature = FBApp_UIFrameworks_Litho,
     labels = [],
     language = "JAVA",
-    oncall = "litho_components_for_android",
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JSR_TARGET,

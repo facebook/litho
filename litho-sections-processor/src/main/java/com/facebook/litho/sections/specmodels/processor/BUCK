@@ -17,6 +17,8 @@ load(
     "make_dep_path",
 )
 
+oncall("playgroundapps")
+
 fb_native.java_annotation_processor(
     name = "processor",
     processor_class = "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
@@ -37,7 +39,6 @@ fb_java_library(
     ]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    oncall = "playgroundapps",
     source = "8",
     target = "8",
     visibility = ["PUBLIC"],
@@ -64,7 +65,6 @@ fb_java_library(
     ]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    oncall = "playgroundapps",
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
