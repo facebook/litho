@@ -25,6 +25,8 @@ load(
     "litho_android_library",
 )
 
+oncall("playgroundapps")
+
 litho_android_library(
     name = "components",
     autoglob = False,
@@ -106,7 +108,6 @@ fb_core_android_library(
     name = "sections",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    oncall = "playgroundapps",
     visibility = [
         "PUBLIC",
     ],
@@ -120,7 +121,6 @@ fb_core_android_library(
     name = "sections_no_codegen",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    oncall = "playgroundapps",
     visibility = [
         "PUBLIC",
     ],

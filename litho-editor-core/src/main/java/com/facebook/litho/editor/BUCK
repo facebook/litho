@@ -1,6 +1,8 @@
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_KOTLIN_STDLIB_TARGET", "fb_android_library")
 
+oncall("playgroundapps")
+
 DEPS = [
     LITHO_JSR_TARGET,
     LITHO_ANDROIDSUPPORT_TARGET,
@@ -18,7 +20,6 @@ fb_android_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     k2 = True,
     labels = [],
-    oncall = "playgroundapps",
     pure_kotlin = False,
     visibility = [
         "PUBLIC",
