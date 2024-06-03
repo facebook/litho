@@ -130,9 +130,16 @@ class MountSpecLifecycleTest {
     legacyLithoViewRule.attachToWindow().measure().layout()
     lifecycleTracker.reset()
     legacyLithoViewRule.detachFromWindow()
-    assertThat(lifecycleTracker.steps)
-        .describedAs("Should only call")
-        .containsExactly(LifecycleStep.ON_UNBIND)
+    val config = legacyLithoViewRule.lithoView.configuration
+    if (config != null && config.enableFixForIM) {
+      assertThat(lifecycleTracker.steps)
+          .describedAs("Should only call")
+          .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT)
+    } else {
+      assertThat(lifecycleTracker.steps)
+          .describedAs("Should only call")
+          .containsExactly(LifecycleStep.ON_UNBIND)
+    }
   }
 
   @Test
@@ -147,9 +154,17 @@ class MountSpecLifecycleTest {
     legacyLithoViewRule.attachToWindow().measure().layout().detachFromWindow()
     lifecycleTracker.reset()
     legacyLithoViewRule.attachToWindow().measure().layout()
-    assertThat(lifecycleTracker.steps)
-        .describedAs("Should only call")
-        .containsExactly(LifecycleStep.ON_BIND)
+
+    val config = legacyLithoViewRule.lithoView.configuration
+    if (config != null && config.enableFixForIM) {
+      assertThat(lifecycleTracker.steps)
+          .describedAs("Should only call")
+          .containsExactly(LifecycleStep.ON_MOUNT, LifecycleStep.ON_BIND)
+    } else {
+      assertThat(lifecycleTracker.steps)
+          .describedAs("Should only call")
+          .containsExactly(LifecycleStep.ON_BIND)
+    }
   }
 
   @Test

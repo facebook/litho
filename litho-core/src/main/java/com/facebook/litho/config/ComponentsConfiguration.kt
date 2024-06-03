@@ -152,7 +152,12 @@ internal constructor(
      *
      * @see [PrimitiveRecyclerBinderStrategy] for more details.
      */
-    @JvmField val primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy? = null
+    @JvmField val primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy? = null,
+    /**
+     * This flag is used to enable a fix for the issue where components that match the host view
+     * size do not get unmounted when they go out of the viewport.
+     */
+    @JvmField val enableFixForIM: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -326,6 +331,7 @@ internal constructor(
     private var useDefaultItemAnimatorInLazyCollections =
         baseConfig.useDefaultItemAnimatorInLazyCollections
     private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
+    private var enableFixForIM = baseConfig.enableFixForIM
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -428,6 +434,8 @@ internal constructor(
       useDefaultItemAnimatorInLazyCollections = enabled
     }
 
+    fun enableFixForIM(enabled: Boolean): Builder = also { enableFixForIM = enabled }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -462,7 +470,8 @@ internal constructor(
           enableFacadeStateUpdater = enableFacadeStateUpdater,
           skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck,
           enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
-          useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections)
+          useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
+          enableFixForIM = enableFixForIM)
     }
   }
 }

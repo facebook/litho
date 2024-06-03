@@ -77,7 +77,8 @@ public class LithoTestRunner extends RobolectricTestRunner {
         UseNewCacheValueLogicConfiguration.class,
         PostponeViewRecycleConfigurationConfiguration.class,
         RecyclerSpecEquivalentPrimitiveRecyclerConfiguration.class,
-        FineGrainedLithoViewAttributesStateExtensionConfiguration.class);
+        FineGrainedLithoViewAttributesStateExtensionConfiguration.class,
+        IncrementalMountConfiguration.class);
   }
 
   @Override

@@ -54,11 +54,11 @@ class ClickEventHandlerUpdateTest {
     // This specifically tests the following scenario:
     // 1. A click handler is mounted on a Host
     // 2. A new layout is calculated which removes that click handler, but it isn't mounted (thus
-    // the 'detachFromWindow' call)
+    // the 'setComponentTree' call)
     // 3. A second new layout is calculated which adds that click handler back, but capturing
     // different props/state
     // We want to make sure we dispatch an event with the updated props and state
-    testView.detachFromWindow()
+    testView.lithoView.setComponentTree(null, false)
     testView.setRoot(Row.create(context))
     // render with tag 1
     testView.setRoot(

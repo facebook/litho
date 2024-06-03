@@ -551,6 +551,13 @@ public class LithoView extends BaseMountingView {
     // Not calling super intentionally as in the LithoView case we want ComponentTree to control the
     // rebind logic.
     if (mComponentTree != null) {
+      final @Nullable ComponentsConfiguration config = getConfiguration();
+      if (config != null
+          && config.enableFixForIM
+          && !mIsTemporaryDetached
+          && !hasTransientState()) {
+        notifyVisibleBoundsChangedOnAttach();
+      }
       mComponentTree.attach();
     }
 

@@ -44,4 +44,10 @@ object RenderCoreConfig {
    * CalledFromWrongThreadException caused by calling from the wrong thread.
    */
   @JvmField var shouldCheckMainThreadOnLayoutRequest: Boolean = false
+
+  /**
+   * Enabling this config will fix the issue that component matches host view size will never be
+   * unmounted when getting out of the viewport.
+   */
+  @JvmField var shouldEnableIMFix: Boolean = false
 }

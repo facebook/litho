@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.ErrorReporter;
@@ -32,6 +33,7 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.RenderCoreConfig;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.Systracer;
@@ -903,6 +905,9 @@ public class TransitionsExtension
     }
 
     // Unmount from the current host
+    if (RenderCoreConfig.shouldEnableIMFix) {
+      ViewCompat.dispatchStartTemporaryDetach((View) mountItem.getContent());
+    }
     originalHost.unmount(mountItem);
 
     // Apply new bounds to the content as it will be mounted in the root now
@@ -910,6 +915,9 @@ public class TransitionsExtension
 
     // Mount to the root
     rootHost.mount(index, mountItem);
+    if (RenderCoreConfig.shouldEnableIMFix) {
+      ViewCompat.dispatchFinishTemporaryDetach((View) mountItem.getContent());
+    }
   }
 
   private static void maybeUpdateAnimatingMountContent(
