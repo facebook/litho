@@ -31,7 +31,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
-import com.facebook.rendercore.utils.ThreadUtils
 import java.lang.IllegalArgumentException
 
 private const val INITIAL_MOUNT_ITEMS_SIZE = 8
@@ -285,11 +284,7 @@ open class HostView @JvmOverloads constructor(context: Context, attrs: Attribute
       parent = parent.getParent()
     }
 
-    if (RenderCoreConfig.shouldCheckMainThreadOnLayoutRequest) {
-      ThreadUtils.runOnUiThread { super.requestLayout() }
-    } else {
-      super.requestLayout()
-    }
+    super.requestLayout()
   }
 
   protected fun shouldRequestLayout(): Boolean =
