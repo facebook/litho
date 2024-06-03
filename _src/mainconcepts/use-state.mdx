@@ -14,7 +14,7 @@ To familiarize yourself with the concept and rules for hooks, see the [Introduct
 
 ## Declaring and Using State
 
-Declare state with `useState`, passing an initial value. `useState` will always return a `State<T>` holding whatever the current value of that state is. On the first render, this is the initial value, however in subsequent renders it will include any updates that have been commited for that state variable.
+Declare state with `useState`, passing an initial value. `useState` will always return a `State<T>` holding whatever the current value of that state is. On the first render, this is the initial value, however in subsequent renders it will include any updates that have been committed for that state variable.
 
 The following code shows an example of a component that renders a counter that increments when it is clicked. `useState` is used to track the value of that counter over time:
 
@@ -47,7 +47,7 @@ To update state, use the `update` method on the `State<T>` returned from `useSta
 1. **Value variant** - takes a determined value, such as `myState.update(1)`.
 2. **Lambda variant** - takes a lambda receiving the old value which can be used to compute a new value, such as `myState.update { c -> c + 1 }`.
 
-**The basic rule of thumb is: use the lambda variant when you need to perform an update that depends on the old state value.** This is because `value` on `State` is a snapshot of that state for the current render and may not reflect any renders that have occurred since (or are currently occuring on other threads).
+**The basic rule of thumb is: use the lambda variant when you need to perform an update that depends on the old state value.** This is because `value` on `State` is a snapshot of that state for the current render and may not reflect any renders that have occurred since (or are currently occurring on other threads).
 
 For example, if your state update increments a counter, then using the function version of `update` with `count -> count + 1` enables you to account for updates that are in flight but not yet applied (such as if the user has tapped a button triggering the update multiple times in succession).
 
@@ -68,7 +68,7 @@ And then in the child component:
 Litho has an internal mechanism where it batches state updates to avoid the scenario of doing one layout re-calculation per state update (and corresponding mount) and, therefore
 become more performant.
 
-Internally, Litho achieves this by leveraging the lifecycle of the `Choreographer` API and how it breaks down its different work phases. Whenever the `Choregrapher` receives a VSYNC signal,
+Internally, Litho achieves this by leveraging the lifecycle of the `Choreographer` API and how it breaks down its different work phases. Whenever the `Choreographer` receives a VSYNC signal,
 it starts a cycle to prepare the next Frame. In this cycle, it goes through 3 main phases:
 
 1. Input handling

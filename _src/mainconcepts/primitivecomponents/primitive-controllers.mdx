@@ -29,7 +29,7 @@ In the Primitive Component implementation, it's necessary to  manually `bind` an
 The Primitive Component should pass the `TimePickerPrimitiveComponent` as a constructor parameter.
 
 :::note
-It's important to put the controller into the [useCached](../use-cached.mdx) hook so it's not recreated in each rerender. Otherwise the state won't be preserved across re-renders.
+It's important to put the controller into the [useCached](../use-cached.mdx) hook so it's not recreated in each re-render. Otherwise the state won't be preserved across re-renders.
 :::
 
 Any other methods and properties on the controller instance can be used easily in the code (see `controller.hour = ...`):
