@@ -684,7 +684,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     this.testKey = testKey
   }
 
-  fun touchExpansionPx(edge: YogaEdge?, @Px touchExpansion: Int) {
+  fun touchExpansionPx(edge: YogaEdge, @Px touchExpansion: Int) {
     if (this.touchExpansion == null) {
       this.touchExpansion = Edges()
     }

@@ -166,8 +166,8 @@ class EdgesTest {
   }
 
   private val edgesToValuesIndex: Long
-    private get() = Whitebox.getInternalState<Any>(edges, "mEdgesToValuesIndex") as Long
+    private get() = Whitebox.getInternalState<Any>(edges, "edgesToValuesIndex") as Long
 
   private val valuesArray: FloatArray
-    private get() = Whitebox.getInternalState<Any>(edges, "mValues") as FloatArray
+    private get() = Whitebox.getInternalState<Any>(edges, "values") as FloatArray
 }
