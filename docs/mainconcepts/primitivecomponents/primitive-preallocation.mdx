@@ -18,7 +18,7 @@ The `ViewAllocator` and `DrawableAllocator` have properties that allow for confi
 * `canPreallocate` - enables pre-allocation for this Primitive Component (disabled by default)
 * `poolSize` - defines the number of instances for the Litho framework to pre-allocate (default value is three); setting `poolSize` to 0 disables pooling of a given View/Drawable
 
-Primitive Components with `canPreallocate` set to `true` will be preallocated by Litho framework automatically before the component is mounted.
+Primitive Components with `canPreallocate` set to `true` will be pre-allocated by Litho framework automatically before the component is mounted.
 
 :::tip
 If creating new instances of the content is time-consuming but not very memory-consuming, it's recommended to keep the pool size high.
@@ -37,7 +37,7 @@ For the SampleTextInput component example above, ten instances of EditText will 
 
 ## Pre-filling content pool
 
-If automatic preallocation isn't enough, Litho provides an API that allows for manually pre-filling content pool ahead of time. For example, it may be useful when there is a complex component that needs to be displayed on the next screen. Pre-filling such component before the user opens the next screen may improve performance. In order to manually pre-fill content pool, you should use [MountItemsPool.prefillMountContentPool](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore/src/main/java/com/facebook/rendercore/MountItemsPool.java#L127) method, as shown in the example below:
+If automatic pre-allocation isn't enough, Litho provides an API that allows for manually pre-filling content pool ahead of time. For example, it may be useful when there is a complex component that needs to be displayed on the next screen. Pre-filling such component before the user opens the next screen may improve performance. In order to manually pre-fill content pool, you should use [MountItemsPool.prefillMountContentPool](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore/src/main/java/com/facebook/rendercore/MountItemsPool.java#L127) method, as shown in the example below:
 
 ```
 // preallocate 40 TestTextViewPrimitiveComponent components
