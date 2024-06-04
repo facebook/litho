@@ -40,12 +40,6 @@ object RenderCoreConfig {
   @JvmField var useGlobalGapWorker: Boolean = true
 
   /**
-   * Enables main thread check before calling 'requestLayout' in HostView. This should fix
-   * CalledFromWrongThreadException caused by calling from the wrong thread.
-   */
-  @JvmField var shouldCheckMainThreadOnLayoutRequest: Boolean = false
-
-  /**
    * Enabling this config will fix the issue that component matches host view size will never be
    * unmounted when getting out of the viewport.
    */
