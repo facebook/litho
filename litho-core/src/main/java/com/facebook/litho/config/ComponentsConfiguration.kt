@@ -158,6 +158,7 @@ internal constructor(
      * size do not get unmounted when they go out of the viewport.
      */
     @JvmField val enableFixForIM: Boolean = false,
+    @JvmField val enableLifecycleOwnerWrapper: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -332,6 +333,7 @@ internal constructor(
         baseConfig.useDefaultItemAnimatorInLazyCollections
     private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
     private var enableFixForIM = baseConfig.enableFixForIM
+    private var enableLifecycleOwnerWrapper = baseConfig.enableLifecycleOwnerWrapper
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -436,6 +438,10 @@ internal constructor(
 
     fun enableFixForIM(enabled: Boolean): Builder = also { enableFixForIM = enabled }
 
+    fun enableLifecycleOwnerWrapper(enabled: Boolean): Builder = also {
+      enableLifecycleOwnerWrapper = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -471,7 +477,8 @@ internal constructor(
           skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck,
           enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
-          enableFixForIM = enableFixForIM)
+          enableFixForIM = enableFixForIM,
+          enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper)
     }
   }
 }

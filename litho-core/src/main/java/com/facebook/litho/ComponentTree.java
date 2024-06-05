@@ -78,6 +78,7 @@ import com.facebook.litho.debug.AttributionUtils;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
+import com.facebook.litho.lifecycle.LifecycleOwnerWrapper;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
@@ -129,6 +130,7 @@ public class ComponentTree
       "ComponentTree:CTContextIsDifferentFromRootBuilderContext";
   public static final int STATE_UPDATES_IN_LOOP_THRESHOLD = 50;
   private static boolean sBoostPerfLayoutStateFuture = false;
+
   @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
 
   @GuardedBy("this")
@@ -236,7 +238,10 @@ public class ComponentTree
   private int mCommittedLayoutVersion = INVALID_LAYOUT_VERSION;
 
   @GuardedBy("this")
-  private @Nullable TreePropContainer mRootTreePropContainer;
+  private @Nullable TreePropContainer mTreePropContainer;
+
+  @GuardedBy("this")
+  private @Nullable TreePropContainer mDefaultTreeProps;
 
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
@@ -375,6 +380,15 @@ public class ComponentTree
                 : getLithoVisibilityEventsController(),
             null,
             builder.parentTreePropContainer);
+    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      initializeDefaultTreeProps();
+
+      TreePropContainer treePropContainer =
+          TreePropContainer.acquire(mContext.getTreePropContainer());
+      treePropContainer.putAll(mDefaultTreeProps);
+      mContext.setTreePropContainer(treePropContainer);
+      mContext.setParentTreePropContainerCloned(true);
+    }
 
     PreAllocationHandler preAllocationHandler = builder.config.preAllocationHandler;
     if (preAllocationHandler != null) {
@@ -1316,14 +1330,14 @@ public class ComponentTree
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
-    final @Nullable TreePropContainer rootTreePropContainer;
+    final @Nullable TreePropContainer treePropContainer;
 
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      rootTreePropContainer = TreePropContainer.copy(mRootTreePropContainer);
+      treePropContainer = TreePropContainer.copy(mTreePropContainer);
 
       if (isCreateLayoutInProgress) {
         logStateUpdatesFromCreateLayout(attribution);
@@ -1343,7 +1357,7 @@ public class ComponentTree
         isAsync ? RenderSource.UPDATE_STATE_ASYNC : RenderSource.UPDATE_STATE_SYNC,
         INVALID_LAYOUT_VERSION,
         attribution,
-        rootTreePropContainer,
+        treePropContainer,
         isCreateLayoutInProgress,
         false);
   }
@@ -1377,9 +1391,11 @@ public class ComponentTree
    * <p>It will make sure that the tree properties are properly cloned and stored.
    */
   private void setInternalTreeProp(TreeProp<?> key, @Nullable Object value) {
-    if (!mContext.isParentTreePropContainerCloned()) {
-      mContext.setTreePropContainer(TreePropContainer.acquire(mContext.getTreePropContainer()));
-      mContext.setParentTreePropContainerCloned(true);
+    if (!ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      if (!mContext.isParentTreePropContainerCloned()) {
+        mContext.setTreePropContainer(TreePropContainer.acquire(mContext.getTreePropContainer()));
+        mContext.setParentTreePropContainerCloned(true);
+      }
     }
 
     TreePropContainer treePropContainer = mContext.getTreePropContainer();
@@ -1840,15 +1856,21 @@ public class ComponentTree
       }
 
       if (treePropContainerInitialized) {
-        mRootTreePropContainer = treePropContainer;
-      } else {
-        treePropContainer = mRootTreePropContainer;
+        if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+          TreePropContainer newTreeProps = TreePropContainer.acquire(treePropContainer);
+          newTreeProps.putAll(mDefaultTreeProps);
+          if (!newTreeProps.equals(mTreePropContainer)) {
+            mTreePropContainer = newTreeProps;
+          }
+        } else {
+          mTreePropContainer = treePropContainer;
+        }
       }
 
       requestedWidthSpec = mWidthSpec;
       requestedHeightSpec = mHeightSpec;
       requestedRoot = mRoot;
-      requestedTreePropContainer = mRootTreePropContainer;
+      requestedTreePropContainer = mTreePropContainer;
 
       mLastLayoutSource = source;
     }
@@ -1925,9 +1947,12 @@ public class ComponentTree
     // there is no need to calculate the resolved result again and we can proceed straight to
     // layout.
     if (currentResolveResult != null) {
-      boolean canLayoutWithoutResolve =
-          (currentResolveResult.component == root
-              && currentResolveResult.context.getTreePropContainer() == treePropContainer);
+      boolean isSameTreeProps =
+          currentResolveResult.context.getTreePropContainer() == treePropContainer
+              || (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper
+                  && treePropContainer == null);
+
+      boolean canLayoutWithoutResolve = (currentResolveResult.component == root && isSameTreeProps);
       if (canLayoutWithoutResolve) {
         requestLayoutWithSplitFutures(
             currentResolveResult,
@@ -2602,6 +2627,11 @@ public class ComponentTree
     return sDefaultResolveThreadLooper;
   }
 
+  private void initializeDefaultTreeProps() {
+    mDefaultTreeProps = new TreePropContainer();
+    mDefaultTreeProps.put(LifecycleOwnerTreeProp, new LifecycleOwnerWrapper(null));
+  }
+
   private boolean isCompatibleSpec(
       final @Nullable LayoutState layoutState, final int widthSpec, final int heightSpec) {
     return layoutState != null
@@ -2747,7 +2777,14 @@ public class ComponentTree
   }
 
   synchronized void setLifecycleOwnerTreeProp(LifecycleOwner owner) {
-    setInternalTreeProp(LifecycleOwnerTreeProp, owner);
+    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      TreePropContainer treePropContainer = mContext.getTreePropContainer();
+      if (treePropContainer != null) {
+        ((LifecycleOwnerWrapper) treePropContainer.get(LifecycleOwnerTreeProp)).setDelegate(owner);
+      }
+    } else {
+      setInternalTreeProp(LifecycleOwnerTreeProp, owner);
+    }
   }
 
   public synchronized boolean isSubscribedToVisibilityEventsController() {

@@ -398,7 +398,11 @@ class ComponentTreeTest {
         size,
         treePropContainer)
     val c = componentTree.mainThreadLayoutState!!.componentContext
-    assertThat(c.treePropContainer).isSameAs(treePropContainer)
+    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      assertThat(c.treePropContainer?.get(Any::class.java)).isEqualTo("hello world")
+    } else {
+      assertThat(c.treePropContainer).isSameAs(treePropContainer)
+    }
   }
 
   @Test

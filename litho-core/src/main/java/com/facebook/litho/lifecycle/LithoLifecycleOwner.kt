@@ -18,8 +18,95 @@
 
 package com.facebook.litho.lifecycle
 
+import androidx.annotation.UiThread
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.facebook.litho.TreeProp
 import com.facebook.litho.treePropOf
+import com.facebook.rendercore.utils.ThreadUtils.assertMainThread
 
 @JvmField val LifecycleOwnerTreeProp: TreeProp<LifecycleOwner?> = treePropOf { null }
+
+/**
+ * The [LifecycleOwnerWrapper] is an abstraction that will allow [LiveData] to observe a [Lifecycle]
+ * before the [LifecycleOwner] is determined. Once the [LifecycleOwner] is set on the
+ * [LifecycleOwnerWrapper] all the [LifecycleObserver] in [observers] will be added to the delegate
+ * [Lifecycle].
+ */
+class LifecycleOwnerWrapper
+internal constructor(
+    private var delegate: LifecycleOwner?,
+) : LifecycleOwner, Lifecycle() {
+
+  private val observers: MutableSet<LifecycleObserver> = HashSet()
+  private var latestState = State.RESUMED
+
+  override val currentState: State
+    get() = synchronized(this) { delegate?.lifecycle?.currentState ?: latestState }
+
+  @UiThread
+  @Synchronized
+  override fun addObserver(observer: LifecycleObserver) {
+    // add new observer
+    observers.add(observer)
+
+    val delegate = delegate
+    delegate?.lifecycle?.addObserver(observer)
+
+    // If the delegate is null, no events are dispatched to the observer at this moment. It will be
+    // dispatched when the delegate is set
+  }
+
+  @UiThread
+  @Synchronized
+  override fun removeObserver(observer: LifecycleObserver) {
+    val delegate = delegate
+    delegate?.lifecycle?.removeObserver(observer)
+
+    observers.remove(observer)
+  }
+
+  override val lifecycle: Lifecycle = this
+
+  @UiThread
+  @Synchronized
+  fun setDelegate(value: LifecycleOwner?) {
+    assertMainThread()
+
+    if (value == this) {
+      throw IllegalArgumentException("Cannot set a LifecycleOwnerWrapper as its own delegate")
+    }
+
+    // if the value is already the delegate then do nothing
+    if (value === delegate) {
+      return
+    }
+
+    // if a delegate is present then all observers need
+    // to be removed from it and added to the new value
+    delegate?.let {
+      for (observer in observers) {
+        it.lifecycle.removeObserver(observer)
+      }
+    }
+
+    // add all observers to value
+    value?.lifecycle?.let { lifecycle ->
+      for (observer in observers) {
+        lifecycle.addObserver(observer)
+      }
+    }
+
+    // store the latest state if value is null
+    delegate?.let {
+      if (value == null) {
+        latestState = it.lifecycle.currentState
+      }
+    }
+    // set value as the new delegate
+    delegate = value
+  }
+
+  fun hasObservers(): Boolean = observers.isNotEmpty()
+}
