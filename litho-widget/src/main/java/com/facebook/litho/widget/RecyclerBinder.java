@@ -2872,7 +2872,20 @@ public class RecyclerBinder
         scrollSmoothToPosition(
             mCurrentFirstVisiblePosition, mCurrentOffset, mSmoothScrollAlignmentType);
       } else {
-        mLayoutInfo.scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
+        if (mLayoutInfo instanceof StaggeredGridLayoutInfo) {
+          // Run scrollToPositionWithOffset to restore positions for StaggeredGridLayout may cause a
+          // layout issue. Posting it to the next UI update can solve this issue.
+          view.post(
+              new ScrollToOffsetRunnable(mCurrentFirstVisiblePosition, mCurrentOffset) {
+                @Override
+                public void run() {
+                  mLayoutInfo.scrollToPositionWithOffset(
+                      currentFirstVisiblePosition, currentOffset);
+                }
+              });
+        } else {
+          mLayoutInfo.scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
+        }
       }
     } else if (mIsCircular) {
       // Initialize circular RecyclerView position
@@ -3762,6 +3775,17 @@ public class RecyclerBinder
     @Override
     public long getItemId(int position) {
       return mComponentTreeHolders.get(position).getId();
+    }
+  }
+
+  // A simple class to enable ScrollToOffset to run after the layout is finished.
+  private abstract static class ScrollToOffsetRunnable implements Runnable {
+    int currentFirstVisiblePosition = RecyclerView.NO_POSITION;
+    int currentOffset;
+
+    ScrollToOffsetRunnable(int currentFirstVisiblePosition, int currentOffset) {
+      this.currentFirstVisiblePosition = currentFirstVisiblePosition;
+      this.currentOffset = currentOffset;
     }
   }
 
