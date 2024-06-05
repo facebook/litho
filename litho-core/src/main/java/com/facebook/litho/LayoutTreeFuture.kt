@@ -28,7 +28,7 @@ import com.facebook.litho.debug.DebugOverlay.Companion.updateLayoutHistory
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.stats.LithoStats
-import com.facebook.litho.transition.asMutableData
+import com.facebook.litho.transition.toMutableData
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.debug.DebugEventAttribute
@@ -158,7 +158,7 @@ class LayoutTreeFuture(
                   rootX = lsc.rootOffset.x,
                   rootY = lsc.rootOffset.y,
                   attachables = resolveResult.outputs?.let { ArrayList(it.attachables) },
-                  transitionData = resolveResult.outputs?.transitionData?.asMutableData(),
+                  transitionData = resolveResult.outputs?.transitionData?.toMutableData(),
                   scopedComponentInfosNeedingPreviousRenderData =
                       resolveResult.outputs?.let {
                         ArrayList(it.componentsThatNeedPreviousRenderData)

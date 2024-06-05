@@ -74,14 +74,24 @@ internal class MutableTransitionData : TransitionData {
   }
 
   fun add(transitionData: TransitionData) {
-    val otherTransitions = transitionData.transitions.orEmpty()
-    for (transition in otherTransitions) addTransition(transition)
-
-    val otherTwds = transitionData.transitionsWithDependency.orEmpty()
-    for ((_, twd) in otherTwds) addTransitionWithDependency(twd)
-
-    val otherOptimisticTransitions = transitionData.optimisticTransitions.orEmpty()
-    for (transition in otherOptimisticTransitions) addOptimisticTransition(transition)
+    transitionData.transitions?.let { other ->
+      val transitions = transitions ?: ArrayList<Transition>(other.size).also { transitions = it }
+      transitions.addAll(other)
+    }
+    transitionData.transitionsWithDependency?.let { other ->
+      val twds =
+          transitionsWithDependency
+              ?: HashMap<HookKey, TransitionWithDependency>(other.size).also {
+                transitionsWithDependency = it
+              }
+      twds.putAll(other)
+    }
+    transitionData.optimisticTransitions?.let { other ->
+      val optimisticTransitions =
+          optimisticTransitions
+              ?: ArrayList<Transition>(other.size).also { optimisticTransitions = it }
+      optimisticTransitions.addAll(other)
+    }
   }
 
   private fun addTransitionWithDependency(twd: TransitionWithDependency) {
@@ -100,5 +110,6 @@ internal class MutableTransitionData : TransitionData {
   }
 }
 
-internal fun TransitionData.asMutableData(): MutableTransitionData =
-    if (this is MutableTransitionData) this else MutableTransitionData().also { it.add(this) }
+/** Creates and returns a new [MutableTransitionData] copy of this [TransitionData]. */
+internal fun TransitionData.toMutableData(): MutableTransitionData =
+    MutableTransitionData().also { it.add(this) }
