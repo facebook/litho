@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.litho
 
 /**
  * Event triggered when a Component becomes invisible. This is the same with exiting the Visible
  * Range, the Focused Range and the Full Impression Range. All the code that needs to be executed
  * when a component leaves any of these ranges should be written in the handler for this event.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class InvisibleEvent {}
+class InvisibleEvent
