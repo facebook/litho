@@ -27,7 +27,6 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -479,7 +478,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
   }
 
-  @NonNull
   private static Map<String, Object> createVisibilityDebugAttributes(
       VisibilityItem visibilityItem) {
     Map<String, Object> attributes = new HashMap<>();

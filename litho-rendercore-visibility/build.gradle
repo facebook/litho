@@ -15,6 +15,7 @@
  */
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 project.group = GROUP
 version = VERSION_NAME
@@ -25,6 +26,10 @@ android {
 
     // We're on an old version of Robolectric which requires this, sadly.
     useLibrary 'org.apache.http.legacy'
+
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjvm-default=all']
+    }
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
