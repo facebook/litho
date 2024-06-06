@@ -16,8 +16,5 @@
 
 package com.facebook.litho.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /** Marker for the Litho hooks */
-@Retention(RetentionPolicy.RUNTIME) annotation class Hook
+@Retention(AnnotationRetention.RUNTIME) @Unconditional annotation class Hook
