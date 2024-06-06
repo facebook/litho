@@ -21,6 +21,7 @@ import com.facebook.litho.Diff
 import com.facebook.litho.Transition
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
+import com.facebook.litho.annotations.Unconditional
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.internal.HookKey
 import com.facebook.rendercore.transitions.TransitionUtils
@@ -98,7 +99,7 @@ interface UseTransitionScope {
    * @return A [Diff] of previous and current values of the supplied [input].
    * @see useTransition
    */
-  fun <T> diffOf(input: T): Diff<T>
+  @Unconditional fun <T> diffOf(input: T): Diff<T>
 }
 
 internal class TransitionWithDependency(
@@ -133,6 +134,7 @@ private class UseTransitionScopeImpl(private val previousData: List<Any?>?) : Us
     get() = _inputs.orEmpty()
 
   @Suppress("UNCHECKED_CAST")
+  @Unconditional
   override fun <T> diffOf(input: T): Diff<T> {
     val inputs = _inputs ?: mutableListOf<Any?>().also { _inputs = it }
     inputs.add(input)
