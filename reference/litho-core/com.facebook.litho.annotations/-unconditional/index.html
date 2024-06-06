@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>text</title>
+    <title>Unconditional</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-widget:dokkaHtmlPartial/release">androidJvm</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":litho-core:dokkaHtmlPartial/release">androidJvm</button>
         </div>
     </div>
     <div class="navigation-controls">
@@ -58,12 +58,16 @@
                 <div class="sidebar--inner" id="sideMenu"></div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="member" id="content" pageids="litho-widget::com.facebook.litho.widget/TextChangedEvent/text/#/PointingToDeclaration//-534206624">
-  <div class="breadcrumbs"><a href="../../index.html">litho-widget</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.widget</a><span class="delimiter">/</span><a href="index.html">TextChangedEvent</a><span class="delimiter">/</span><span class="current">text</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="litho-core::com.facebook.litho.annotations/Unconditional///PointingToDeclaration//947585829">
+  <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.annotations</a><span class="delimiter">/</span><span class="current">Unconditional</span></div>
   <div class="cover ">
-    <h1 class="cover"><span><span>text</span></span></h1>
+    <h1 class="cover"><span><span>Unconditional</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-f-u-n-c-t-i-o-n/index.html">AnnotationTarget.FUNCTION</a><span class="token punctuation">, </span></span><wbr><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-a-n-n-o-t-a-t-i-o-n_-c-l-a-s-s/index.html">AnnotationTarget.ANNOTATION_CLASS</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="index.html">Unconditional</a></div><p class="paragraph">Marker annotation for methods that should be called unconditionally.</p><p class="paragraph">This annotation can be applied directly on methods. It can also serve as a meta annotation for other annotations to indicate that they should be treated as unconditional.</p><p class="paragraph">Unconditional methods follow 2 clear rules:</p><ul><li><p class="paragraph">They must be called unconditionally. i.e it is not permitted to call them inside if, when, for or forEach expressions</p></li><li><p class="paragraph">They may only be called within other Unconditional annotated methods.</p></li></ul><p class="paragraph">The reason for these rules is to preserve the identity of such methods and as such, ensure correctness and consistency across multiple invocations.</p><p class="paragraph">The motivation here is very similar to that of <a href="../-hook/index.html">Hook</a>s. In fact, hooks are a kind of Unconditional, though the vice versa is not necessarily true.</p><p class="paragraph"><strong>Note</strong>: At the moment, it is not possible to call Unconditional methods directly from a render(), hence, they can <strong>only</strong> be called from other unconditional methods (including Hooks, even though hooks don't actually have such restriction). This restriction may be lifted in the future.</p></div></div>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-widget:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="text.html">text</a><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"></div>
+    <div class="tabs-section-body"></div>
+  </div>
 </div>
       <div class="footer">
         <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
