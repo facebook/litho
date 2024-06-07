@@ -282,6 +282,11 @@ internal constructor(
     @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
     @JvmField var useOneShotPreDrawListener: Boolean = false
     @JvmField var useNewCacheValueLogic: Boolean = false
+    /**
+     * This flag is used to enable logging for the issue where components with an aspect ratio, like
+     * NaN or Infinity.
+     */
+    @JvmField var enableLoggingForInvalidAspectRatio: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a

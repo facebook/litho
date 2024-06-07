@@ -24,13 +24,19 @@ import com.facebook.litho.SizeSpec.getMode
 import com.facebook.litho.SizeSpec.getSize
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.SizeSpec.toString
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
+import com.facebook.litho.debug.LithoDebugEvent
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.debug.DebugEventAttribute
+import com.facebook.rendercore.debug.DebugEventDispatcher
 import kotlin.math.ceil
 import kotlin.math.min
 
 object MeasureUtils {
   private const val TAG = "MeasureUtils"
+  private const val ERROR_TAG = "INVALID_ASPECT_RATIO"
 
   @JvmStatic
   fun getViewMeasureSpec(sizeSpec: Int): Int {
@@ -208,6 +214,23 @@ object MeasureUtils {
     val isInvalidAspectRatio = aspectRatio.isNaN() || aspectRatio.isInfinite() || aspectRatio == 0f
     require(isInvalidAspectRatio || aspectRatio > 0) {
       "The aspect ratio must be a positive number"
+    }
+
+    if (ComponentsConfiguration.enableLoggingForInvalidAspectRatio && isInvalidAspectRatio) {
+      // NaN and INFINITY do not crash immediately but can result in unexpected output sizes that
+      // are difficult to predict.
+      val stackTrace = buildString {
+        for (ste in Thread.currentThread().stackTrace) {
+          append(ste.toString() + "\n")
+        }
+      }
+      DebugEventDispatcher.dispatch(
+          type = LithoDebugEvent.DebugInfo, renderStateId = { "-1" }, logLevel = LogLevel.DEBUG) {
+              attribute ->
+            attribute[DebugEventAttribute.Name] = ERROR_TAG
+            attribute["aspectRatio"] = aspectRatio
+            attribute[DebugEventAttribute.Source] = stackTrace
+          }
     }
 
     val widthMode = getMode(widthSpec)
