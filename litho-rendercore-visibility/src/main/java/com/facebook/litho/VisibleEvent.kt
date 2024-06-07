@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.litho
 
 /**
  * Event triggered when a Component enters the Visible Range. This happens when at least a pixel of
  * the Component is visible.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class VisibleEvent {
-
+class VisibleEvent {
   /** The content for which visibility event was dispatched. */
-  public @Nullable Object content;
+  @JvmField var content: Any? = null
 }
