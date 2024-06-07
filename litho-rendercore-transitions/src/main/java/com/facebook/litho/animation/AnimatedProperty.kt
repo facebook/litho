@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.animation;
+package com.facebook.litho.animation
 
-import com.facebook.litho.AnimatableItem;
+import com.facebook.litho.AnimatableItem
 
 /** A property on a mount content (View or Drawable), e.g. x, y, scale, text color, etc. */
-public interface AnimatedProperty {
+interface AnimatedProperty {
 
   /**
    * @return the name of this property. It should be unique across properties that a mount content
-   *     can have. It's used for identification purposes only. E.g., "x", "y", etc.
+   *   can have. It's used for identification purposes only. E.g., "x", "y", etc.
    */
-  String getName();
+  fun getName(): String
 
-  /**
-   * @return the current value of this property on the given mount content (View or Drawable).
-   */
-  float get(Object mountContent);
+  /** @return the current value of this property on the given mount content (View or Drawable). */
+  operator fun get(mountContent: Any): Float
 
-  /**
-   * @return the current value of this property on the given {@link AnimatableItem}.
-   */
-  float get(AnimatableItem animatableItem);
+  /** @return the current value of this property on the given [AnimatableItem]. */
+  operator fun get(animatableItem: AnimatableItem): Float
 
   /** Updates the value of this property on the given mount content to the given value. */
-  void set(Object mountContent, float value);
+  operator fun set(mountContent: Any, value: Float)
 
   /** Resets this property to its default value on this mount content. */
-  void reset(Object mountContent);
+  fun reset(mountContent: Any)
 }
