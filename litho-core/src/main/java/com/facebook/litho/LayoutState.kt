@@ -84,13 +84,8 @@ internal constructor(
       reductionState.mountableOutputBottoms
   private val renderUnitIdsWhichHostRenderTrees: Set<Long> =
       reductionState.renderUnitIdsWhichHostRenderTrees
-  private val tracer = ComponentsSystrace.systrace
   private val testOutputs: List<TestOutput>? = reductionState.testOutputs
-  private val rootTransitionId: TransitionId? =
-      LithoNodeUtils.createTransitionId(resolveResult.node)
   private val workingRangeContainer: WorkingRangeContainer? = reductionState.workingRangeContainer
-  private val transitionIdMapping: Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> =
-      reductionState.transitionIdMapping
 
   internal val transitionData: TransitionData? = reductionState.transitionData
   internal val scopedComponentInfosNeedingPreviousRenderData: List<ScopedComponentInfo>? =
@@ -117,6 +112,13 @@ internal constructor(
       reductionState.hasComponentsExcludedFromIncrementalMount
   val currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? =
       reductionState.currentLayoutOutputAffinityGroup
+
+  override val tracer: Systracer = ComponentsSystrace.systrace
+  override val rootTransitionId: TransitionId? =
+      LithoNodeUtils.createTransitionId(resolveResult.node)
+  /** Gets a mapping from transition ids to a group of LayoutOutput. */
+  override val transitionIdMapping: Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> =
+      reductionState.transitionIdMapping
 
   val rootComponent: Component
     get() = resolveResult.component
@@ -153,6 +155,21 @@ internal constructor(
   override val dynamicValueOutputs: Map<Long, DynamicValueOutput> =
       reductionState.dynamicValueOutputs
   override val isPartialResult: Boolean = false
+
+  override val animatableRootItem: AnimatableItem?
+    get() = animatableItems[MountState.ROOT_HOST_ID]
+
+  override val treeId: Int
+    get() = componentTreeId
+
+  override val transitions: List<Transition>?
+    get() = transitionData?.transitions
+
+  override val isIncrementalMountEnabled: Boolean
+    get() = ComponentContext.isIncrementalMountEnabled(resolveResult.context)
+
+  override val rootName: String
+    get() = resolveResult.component.simpleName
 
   private var cachedRenderTree: RenderTree? = null // memoized RenderTree
   // TODO(t66287929): Remove isCommitted from LayoutState by matching RenderState logic around
@@ -240,8 +257,6 @@ internal constructor(
   override fun getIncrementalMountOutputs(): Collection<IncrementalMountOutput> =
       incrementalMountOutputs.values
 
-  override fun getAnimatableRootItem(): AnimatableItem? = animatableItems[MountState.ROOT_HOST_ID]
-
   override fun getAnimatableItem(id: Long): AnimatableItem? = animatableItems[id]
 
   override fun getOutputsOrderedByTopBounds(): List<IncrementalMountOutput> = mountableOutputTops
@@ -258,8 +273,6 @@ internal constructor(
   fun getWidthSpec(): Int = getWidthSpec(sizeConstraints)
 
   fun getHeightSpec(): Int = getHeightSpec(sizeConstraints)
-
-  override fun getTreeId(): Int = componentTreeId
 
   // If the layout root is a nested tree holder node, it gets skipped immediately while
   // collecting the LayoutOutputs. The nested tree itself effectively becomes the layout
@@ -279,12 +292,6 @@ internal constructor(
       renderUnitIdsWhichHostRenderTrees.contains(id)
 
   override fun getRenderUnitIdsWhichHostRenderTrees(): Set<Long> = renderUnitIdsWhichHostRenderTrees
-
-  override fun getTransitions(): List<Transition>? = transitionData?.transitions
-
-  /** Gets a mapping from transition ids to a group of LayoutOutput. */
-  override fun getTransitionIdMapping():
-      Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> = transitionIdMapping
 
   /** Gets a group of LayoutOutput given transition key */
   override fun getAnimatableItemForTransitionId(
@@ -350,13 +357,6 @@ internal constructor(
     }
     return mountTimeTransitions
   }
-
-  override fun isIncrementalMountEnabled(): Boolean =
-      ComponentContext.isIncrementalMountEnabled(resolveResult.context)
-
-  override fun getTracer(): Systracer = tracer
-
-  override fun getRootTransitionId(): TransitionId? = rootTransitionId
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
   fun dumpAsString(): String {
@@ -428,8 +428,6 @@ internal constructor(
   fun setShouldProcessVisibilityOutputs(value: Boolean) {
     shouldProcessVisibilityOutputs = value
   }
-
-  override fun getRootName(): String = resolveResult.component.simpleName
 
   fun getRenderTreeNode(output: IncrementalMountOutput): RenderTreeNode =
       getMountableOutputAt(output.index)
