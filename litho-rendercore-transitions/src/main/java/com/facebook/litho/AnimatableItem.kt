@@ -14,41 +14,38 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.graphics.Rect;
-import androidx.annotation.Nullable;
+import android.graphics.Rect
 
 /** Interface used to expose a limited API to the animations package. */
-public interface AnimatableItem {
+interface AnimatableItem {
 
-  long getId();
+  fun getId(): Long
 
-  @Nullable
-  TransitionId getTransitionId();
+  fun getTransitionId(): TransitionId?
 
-  @OutputUnitType
-  int getOutputType();
+  @OutputUnitType fun getOutputType(): Int
 
-  Rect getAbsoluteBounds();
+  fun getAbsoluteBounds(): Rect
 
-  float getScale();
+  fun getScale(): Float
 
-  float getAlpha();
+  fun getAlpha(): Float
 
-  float getRotation();
+  fun getRotation(): Float
 
-  float getRotationX();
+  fun getRotationX(): Float
 
-  float getRotationY();
+  fun getRotationY(): Float
 
-  boolean isScaleSet();
+  fun isScaleSet(): Boolean
 
-  boolean isAlphaSet();
+  fun isAlphaSet(): Boolean
 
-  boolean isRotationSet();
+  fun isRotationSet(): Boolean
 
-  boolean isRotationXSet();
+  fun isRotationXSet(): Boolean
 
-  boolean isRotationYSet();
+  fun isRotationYSet(): Boolean
 }

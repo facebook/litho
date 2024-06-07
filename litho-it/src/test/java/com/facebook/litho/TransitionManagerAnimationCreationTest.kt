@@ -350,13 +350,13 @@ class TransitionManagerAnimationCreationTest {
     val transitionIdMapping: MutableMap<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> =
         LinkedHashMap()
     animatableItems.forEach { animatableItem ->
-      val transitionId = animatableItem.transitionId ?: return@forEach
+      val transitionId = animatableItem.getTransitionId() ?: return@forEach
       var group = transitionIdMapping[transitionId]
       if (group == null) {
         group = OutputUnitsAffinityGroup()
         transitionIdMapping[transitionId] = group
       }
-      @OutputUnitType val type = LayoutState.getTypeFromId(animatableItem.id)
+      @OutputUnitType val type = LayoutState.getTypeFromId(animatableItem.getId())
       group.add(type, animatableItem)
     }
     val layoutState = mock<LayoutState>()
