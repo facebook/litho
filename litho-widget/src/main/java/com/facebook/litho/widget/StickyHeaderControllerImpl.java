@@ -96,23 +96,50 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     }
 
     final int stickyHeaderPosition = findStickyHeaderPosition(firstVisiblePosition);
-    final ComponentTree firstVisibleItemComponentTree =
-        mHasStickyHeader.getComponentForStickyHeaderAt(firstVisiblePosition);
 
-    if (lastTranslatedView != null
-        && firstVisibleItemComponentTree != null
-        && lastTranslatedView != firstVisibleItemComponentTree.getLithoView()) {
+    // As firstVisibleItemComponentTree is not necessary for most of list without sticky header,
+    // we could postpone this op until we really need it.
+    ComponentTree firstVisibleItemComponentTree = null;
+    boolean shouldResetLastTranslatedView = (lastTranslatedView != null);
+    if (ComponentsConfiguration.enableFixForStickyHeader) {
+      // Actually, `previousStickyHeaderPosition` can help us determine whether we need to reset
+      // `lastTranslatedView`.
+      shouldResetLastTranslatedView =
+          shouldResetLastTranslatedView
+              && (previousStickyHeaderPosition != RecyclerView.NO_POSITION);
+    } else {
+      firstVisibleItemComponentTree =
+          mHasStickyHeader.getComponentForStickyHeaderAt(firstVisiblePosition);
+      shouldResetLastTranslatedView =
+          shouldResetLastTranslatedView
+              && (firstVisibleItemComponentTree != null)
+              && (lastTranslatedView != firstVisibleItemComponentTree.getLithoView());
+    }
+
+    if (shouldResetLastTranslatedView) {
       // Reset previously modified view
       lastTranslatedView.setTranslationY(0);
       lastTranslatedView = null;
     }
 
-    if (stickyHeaderPosition == RecyclerView.NO_POSITION || firstVisibleItemComponentTree == null) {
+    boolean noStickyHeader = (stickyHeaderPosition == RecyclerView.NO_POSITION);
+    if (!ComponentsConfiguration.enableFixForStickyHeader) {
+      // As `findStickyHeaderPosition` cannot return null, I believe we can safely remove this
+      // condition.
+      noStickyHeader = noStickyHeader || (firstVisibleItemComponentTree == null);
+    }
+
+    if (noStickyHeader) {
       // no sticky header above first visible position, reset the state
       mSectionsRecyclerView.hideStickyHeader();
       mSectionsRecyclerView.maybeRestoreDetachedComponentTree(previousStickyHeaderPosition);
       previousStickyHeaderPosition = RecyclerView.NO_POSITION;
       return;
+    }
+
+    if (firstVisibleItemComponentTree == null) {
+      firstVisibleItemComponentTree =
+          mHasStickyHeader.getComponentForStickyHeaderAt(firstVisiblePosition);
     }
 
     if (firstVisiblePosition == stickyHeaderPosition) {

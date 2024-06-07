@@ -295,6 +295,8 @@ internal constructor(
      * NaN or Infinity.
      */
     @JvmField var enableLoggingForInvalidAspectRatio: Boolean = false
+    /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
+    @JvmField var enableFixForStickyHeader: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
