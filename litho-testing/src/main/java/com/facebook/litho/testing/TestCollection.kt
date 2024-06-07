@@ -154,6 +154,12 @@ class TestCollection {
     }
   }
 
+  val measuredHeight: Int
+    get() = recyclerBinder.measuredHeight
+
+  val measuredWidth: Int
+    get() = recyclerBinder.measuredWidth
+
   internal val recyclerView: RecyclerView
     get() {
       val recyclerView: RecyclerView? = Whitebox.getInternalState(recyclerBinder, "mMountedView")

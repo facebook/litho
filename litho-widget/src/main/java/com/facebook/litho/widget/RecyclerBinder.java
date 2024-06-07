@@ -1705,6 +1705,16 @@ public class RecyclerBinder
     }
   }
 
+  @VisibleForTesting
+  public synchronized int getMeasuredHeight() {
+    return mMeasuredSize.height;
+  }
+
+  @VisibleForTesting
+  public synchronized int getMeasuredWidth() {
+    return mMeasuredSize.width;
+  }
+
   /** Removes count items starting from position. */
   @UiThread
   public final void removeRangeAt(int position, int count) {

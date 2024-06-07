@@ -30,6 +30,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Size
 import com.facebook.litho.State
 import com.facebook.litho.Style
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.eventHandler
 import com.facebook.litho.useState
@@ -104,7 +105,16 @@ class ExperimentalRecycler(
         }
 
     return LithoPrimitive(
-        layoutBehavior = RecyclerLayoutBehavior(binder) { measureVersion.update { v -> v + 1 } },
+        layoutBehavior =
+            RecyclerLayoutBehavior(
+                configuration = context.lithoConfiguration.componentsConfig,
+                binder = binder,
+                startPadding = leftPadding,
+                endPadding = rightPadding,
+                topPadding = topPadding,
+                bottomPadding = bottomPadding) {
+                  measureVersion.update { v -> v + 1 }
+                },
         mountBehavior = mountBehavior,
         style = style)
   }
@@ -482,15 +492,23 @@ private fun SectionsRecyclerView.requireLithoRecyclerView(): LithoRecyclerView =
             "RecyclerView not found, it should not be removed from SwipeRefreshLayout")
 
 private class RecyclerLayoutBehavior(
+    private val configuration: ComponentsConfiguration,
     private val binder: Binder<RecyclerView>,
+    private val startPadding: Int,
+    private val endPadding: Int,
+    private val topPadding: Int,
+    private val bottomPadding: Int,
     private val onRemeasure: () -> Unit
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val size = Size()
+
     binder.measure(
         size,
-        sizeConstraints.toWidthSpec(),
-        sizeConstraints.toHeightSpec(),
+        maybeGetSpecWithPadding(
+            configuration, sizeConstraints.toWidthSpec(), startPadding + endPadding),
+        maybeGetSpecWithPadding(
+            configuration, sizeConstraints.toHeightSpec(), topPadding + bottomPadding),
         if (binder.canMeasure() || binder.isWrapContent) eventHandler { onRemeasure() } else null)
     return PrimitiveLayoutResult(
         max(sizeConstraints.minWidth, size.width), max(sizeConstraints.minHeight, size.height))

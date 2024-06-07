@@ -158,7 +158,15 @@ internal constructor(
      * size do not get unmounted when they go out of the viewport.
      */
     @JvmField val enableFixForIM: Boolean = false,
-    @JvmField val enableLifecycleOwnerWrapper: Boolean = false
+    @JvmField val enableLifecycleOwnerWrapper: Boolean = false,
+    /**
+     * This flag is used to enable a fix for the issue where the Recycler is not measuring taking
+     * into any padding specified into it.
+     *
+     * @see [com.facebok.litho.widget.RecyclerSpec]
+     * @see [com.facebook.litho.widget.RecyclerLayoutBehavior]
+     */
+    @JvmField val measureRecyclerWithPadding: Boolean = false
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -339,6 +347,7 @@ internal constructor(
     private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
     private var enableFixForIM = baseConfig.enableFixForIM
     private var enableLifecycleOwnerWrapper = baseConfig.enableLifecycleOwnerWrapper
+    private var measureRecyclerWithPadding = baseConfig.measureRecyclerWithPadding
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -447,6 +456,10 @@ internal constructor(
       enableLifecycleOwnerWrapper = enabled
     }
 
+    fun measureRecyclerWithPadding(enabled: Boolean): Builder = also {
+      measureRecyclerWithPadding = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -483,7 +496,8 @@ internal constructor(
           enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
           enableFixForIM = enableFixForIM,
-          enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper)
+          enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper,
+          measureRecyclerWithPadding = measureRecyclerWithPadding)
     }
   }
 }
