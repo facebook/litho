@@ -88,7 +88,6 @@ import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.debug.DebugEventBus;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
-import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -362,8 +361,7 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            renderUnitIdGenerator,
-            builder.visibilityBoundsTransformer);
+            renderUnitIdGenerator);
 
     final StateUpdater stateUpdater =
         (builder.mStateUpdater != null) ? builder.mStateUpdater : this;
@@ -3000,7 +2998,6 @@ public class ComponentTree
     private @Nullable MeasureListener mMeasureListener;
     private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
-    private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
 
     private @Nullable final TreePropContainer treePropContainer;
     private @Nullable final TreePropContainer parentTreePropContainer;
@@ -3009,7 +3006,6 @@ public class ComponentTree
 
     protected Builder(ComponentContext context) {
       config = context.mLithoConfiguration.componentsConfig;
-      visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
       treePropContainer = context.getTreePropContainer();
       parentTreePropContainer = context.getParentTreePropContainer();
       mAndroidContext = context.getAndroidContext();
@@ -3119,11 +3115,6 @@ public class ComponentTree
 
     public Builder measureListener(@Nullable MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
-      return this;
-    }
-
-    public Builder visibilityBoundsTransformer(@Nullable VisibilityBoundsTransformer transformer) {
-      visibilityBoundsTransformer = transformer;
       return this;
     }
 

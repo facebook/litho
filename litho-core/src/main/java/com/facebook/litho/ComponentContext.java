@@ -37,7 +37,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
-import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -132,7 +131,7 @@ public class ComponentContext {
         lithoConfiguration != null
             ? lithoConfiguration
             : buildDefaultLithoConfiguration(
-                mContext, ComponentsConfiguration.defaultInstance, null, null);
+                mContext, ComponentsConfiguration.defaultInstance, null);
 
     if (mLithoConfiguration.componentsConfig.componentsLogger != null
         && mLithoConfiguration.componentsConfig.logTag == null) {
@@ -828,11 +827,6 @@ public class ComponentContext {
     if (mLithoTree != null) {
       mLithoTree.getStateUpdater().removePendingStateUpdate(key, nestedTreeContext);
     }
-  }
-
-  @Nullable
-  public VisibilityBoundsTransformer getVisibilityBoundsTransformer() {
-    return mLithoConfiguration.visibilityBoundsTransformer;
   }
 
   static ComponentsConfiguration getComponentsConfig(ComponentContext c) {

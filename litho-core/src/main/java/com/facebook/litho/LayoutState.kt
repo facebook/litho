@@ -433,7 +433,7 @@ internal constructor(
       getMountableOutputAt(output.index)
 
   override fun getVisibilityBoundsTransformer(): VisibilityBoundsTransformer? =
-      componentContext.visibilityBoundsTransformer
+      componentContext.lithoConfiguration.componentsConfig.visibilityBoundsTransformer
 
   companion object {
     @JvmStatic

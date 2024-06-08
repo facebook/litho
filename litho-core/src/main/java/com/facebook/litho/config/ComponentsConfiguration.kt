@@ -27,6 +27,7 @@ import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration.Builder
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
+import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
 /**
  * These values are safe defaults and should not require manual changes.
@@ -166,7 +167,8 @@ internal constructor(
      * @see [com.facebok.litho.widget.RecyclerSpec]
      * @see [com.facebook.litho.widget.RecyclerLayoutBehavior]
      */
-    @JvmField val measureRecyclerWithPadding: Boolean = false
+    @JvmField val measureRecyclerWithPadding: Boolean = false,
+    @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -350,6 +352,7 @@ internal constructor(
     private var enableFixForIM = baseConfig.enableFixForIM
     private var enableLifecycleOwnerWrapper = baseConfig.enableLifecycleOwnerWrapper
     private var measureRecyclerWithPadding = baseConfig.measureRecyclerWithPadding
+    private var visibilityBoundsTransformer = baseConfig.visibilityBoundsTransformer
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -462,6 +465,10 @@ internal constructor(
       measureRecyclerWithPadding = enabled
     }
 
+    fun visibilityBoundsTransformer(transformer: VisibilityBoundsTransformer?): Builder = also {
+      visibilityBoundsTransformer = transformer
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -499,7 +506,8 @@ internal constructor(
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
           enableFixForIM = enableFixForIM,
           enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper,
-          measureRecyclerWithPadding = measureRecyclerWithPadding)
+          measureRecyclerWithPadding = measureRecyclerWithPadding,
+          visibilityBoundsTransformer = visibilityBoundsTransformer)
     }
   }
 }

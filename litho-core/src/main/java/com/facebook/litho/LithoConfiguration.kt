@@ -19,14 +19,12 @@ package com.facebook.litho
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
 @DataClassGenerate(toString = Mode.OMIT, equalsHashCode = Mode.OMIT)
 data class LithoConfiguration(
     @JvmField val componentsConfig: ComponentsConfiguration,
     @JvmField val areTransitionsEnabled: Boolean,
     @JvmField val renderUnitIdGenerator: RenderUnitIdGenerator?,
-    @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer?,
 ) {
 
   val isSpecsDuplicateStateUpdateDetectionEnabled: Boolean

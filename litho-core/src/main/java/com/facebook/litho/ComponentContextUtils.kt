@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
 object ComponentContextUtils {
   @JvmStatic
@@ -26,12 +25,10 @@ object ComponentContextUtils {
       context: Context,
       componentsConfig: ComponentsConfiguration = ComponentsConfiguration.defaultInstance,
       renderUnitIdGenerator: RenderUnitIdGenerator? = null,
-      transformer: VisibilityBoundsTransformer? = null,
   ): LithoConfiguration {
     return LithoConfiguration(
         componentsConfig = componentsConfig,
         areTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(context),
-        renderUnitIdGenerator = renderUnitIdGenerator,
-        visibilityBoundsTransformer = transformer)
+        renderUnitIdGenerator = renderUnitIdGenerator)
   }
 }
