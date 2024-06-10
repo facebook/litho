@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+
+    testOptions.unitTests.includeAndroidResources = true
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+    }
+}
+
+dependencies {
+    implementation project(':litho-core')
+
+    // Annotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
+    implementation deps.supportCore
+    implementation deps.kotlinStandardLib
+
+    // Android Support Library
+    compileOnly deps.supportAnnotations
+
+    testImplementation project(':litho-rendercore-testing')
+    testImplementation project(':litho-testing')
+    testImplementation deps.assertjCore
+    testImplementation deps.junit
+    testImplementation deps.robolectric
+    testImplementation deps.supportTestJunit
+}
+
+apply plugin: "com.vanniktech.maven.publish"
