@@ -617,7 +617,7 @@ public abstract class BaseMountingView extends ComponentHost
       VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
     final Object content =
         visibilityOutput.hasMountableContent
-            ? mMountState.getContentById(visibilityOutput.mRenderUnitId)
+            ? mMountState.getContentById(visibilityOutput.renderUnitId)
             : null;
     if (visibilityEventType == VisibleEvent.class) {
       if (visibilityOutput.getVisibleEventHandler() != null) {

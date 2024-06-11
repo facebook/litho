@@ -358,7 +358,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
                     unfocusedHandler,
                     visibilityChangedHandler,
                     visibilityOutput.getKey(),
-                    visibilityOutput.mRenderUnitId,
+                    visibilityOutput.renderUnitId,
                     visibilityOutput.getBounds());
 
             visibilityItem.setDoNotClearInThisPass(isDirty);
@@ -368,7 +368,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             if (visibleHandler != null) {
               final Object content =
                   visibilityOutput.hasMountableContent
-                      ? getContentById(extensionState, visibilityOutput.mRenderUnitId)
+                      ? getContentById(extensionState, visibilityOutput.renderUnitId)
                       : null;
 
               @Nullable
