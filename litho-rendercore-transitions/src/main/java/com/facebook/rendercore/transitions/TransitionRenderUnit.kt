@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.transitions;
+package com.facebook.rendercore.transitions
 
-public interface TransitionRenderUnit {
-  boolean getMatchHostBounds();
+interface TransitionRenderUnit {
+  val matchHostBounds: Boolean
 }
