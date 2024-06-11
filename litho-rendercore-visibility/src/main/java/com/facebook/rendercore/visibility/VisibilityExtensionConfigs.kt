@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.visibility;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.rendercore.visibility
 
 /**
  * This class contains mainly flags for features that are either under active development and not
  * ready for public consumption, or for use in experiments.
  *
- * <p>These values are safe defaults and should not require manual changes.
+ * These values are safe defaults and should not require manual changes.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class VisibilityExtensionConfigs {
-
-  public static final String DEBUG_TAG = "VisibilityExtension";
-
+object VisibilityExtensionConfigs {
+  const val DEBUG_TAG: String = "VisibilityExtension"
   /** Skips visibility checks for fully visible items */
-  public static boolean skipVisChecksForFullyVisible = false;
-
+  @JvmField var skipVisChecksForFullyVisible: Boolean = false
   /** Set this to true to enable debug logs for the visibility extension. */
-  public static boolean isDebugLoggingEnabled = false;
+  @JvmField var isDebugLoggingEnabled: Boolean = false
 }
