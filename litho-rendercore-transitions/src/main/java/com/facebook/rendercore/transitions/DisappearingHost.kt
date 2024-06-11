@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.transitions;
+package com.facebook.rendercore.transitions
 
-import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.MountItem
 
 /**
- * This interface is needed to add specific methods to a {@link com.facebook.rendercore.Host} that
- * would allow for the extension to handle disappearing animations.
+ * This interface is needed to add specific methods to a [com.facebook.rendercore.Host] that would
+ * allow for the extension to handle disappearing animations.
  */
-public interface DisappearingHost {
+interface DisappearingHost {
 
   /**
    * This method should remove any reference to the mounted item but keep it added to the host to be
@@ -30,13 +30,13 @@ public interface DisappearingHost {
    *
    * @param mountItem
    */
-  void startDisappearingMountItem(MountItem mountItem);
+  fun startDisappearingMountItem(mountItem: MountItem)
 
   /**
    * In this method we finally remove the mountItem from the drawing pass.
    *
    * @param mountItem
-   * @return {@code true} iff the item was removed from the Host.
+   * @return `true` iff the item was removed from the Host.
    */
-  boolean finaliseDisappearingItem(MountItem mountItem);
+  fun finaliseDisappearingItem(mountItem: MountItem): Boolean
 }
