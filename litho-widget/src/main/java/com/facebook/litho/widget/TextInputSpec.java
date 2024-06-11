@@ -1078,10 +1078,11 @@ class TextInputSpec {
       @FromTrigger CharSequence text,
       @FromTrigger int startIndex,
       @FromTrigger int endIndex) {
-    EditTextWithEventHandlers editText = mountedView.get();
-    if (editText != null) {
-      editText.getText().replace(startIndex, endIndex, text);
-      editText.setSelection(text != null ? startIndex + text.length() : startIndex);
+    final @Nullable EditTextWithEventHandlers view = mountedView.get();
+    final @Nullable Editable editable = view != null ? view.getText() : null;
+    if (editable != null) {
+      editable.replace(startIndex, endIndex, text);
+      view.setSelection(text != null ? startIndex + text.length() : startIndex);
       return;
     }
 
@@ -1118,6 +1119,53 @@ class TextInputSpec {
     if (view != null) {
       view.setSelection(start, end < start ? start : end);
     }
+  }
+
+  @OnTrigger(SetSpanEvent.class)
+  static void setSpan(
+      ComponentContext c,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @FromTrigger Object what,
+      @FromTrigger int start,
+      @FromTrigger int end,
+      @FromTrigger int flags) {
+    ThreadUtils.assertMainThread();
+
+    final @Nullable EditTextWithEventHandlers view = mountedView.get();
+    final @Nullable Editable editable = view != null ? view.getText() : null;
+    if (editable != null) {
+      editable.setSpan(what, start, end, flags);
+    }
+  }
+
+  @OnTrigger(RemoveSpanEvent.class)
+  static void removeSpan(
+      ComponentContext c,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @FromTrigger Object what) {
+    ThreadUtils.assertMainThread();
+
+    final @Nullable EditTextWithEventHandlers view = mountedView.get();
+    final @Nullable Editable editable = view != null ? view.getText() : null;
+    if (editable != null) {
+      editable.removeSpan(what);
+    }
+  }
+
+  @OnTrigger(GetSpanStartEvent.class)
+  static int getSpanStart(
+      ComponentContext c,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @FromTrigger Object what) {
+    ThreadUtils.assertMainThread();
+
+    final @Nullable EditTextWithEventHandlers view = mountedView.get();
+    final @Nullable Editable editable = view != null ? view.getText() : null;
+    if (editable != null) {
+      return editable.getSpanStart(what);
+    }
+
+    return -1;
   }
 
   @OnUpdateState
