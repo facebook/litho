@@ -117,6 +117,7 @@ fun NestedLithoPrimitive(
           id = renderUnitId,
           contentAllocator = ViewAllocator(poolSize) { LithoRenderTreeView(it) },
       ) {
+        doesMountRenderTreeHosts = true
 
         // binder to clean up the content before returning it to the pool
         withDescription("final-unmount") {
