@@ -23,16 +23,14 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.setViewTreeLifecycleOwner
 import com.facebook.litho.AOSPLithoVisibilityEventsController
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
-import com.facebook.litho.LithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
-import com.facebook.litho.lifecycle.LifecycleOwnerWrapper
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -45,22 +43,17 @@ import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class UseLiveDataTest {
+class UseLiveDataDefaultLifecycleOwnerTest {
 
   private val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
-  @get:Rule
-  val rule: LithoViewRule =
-      LithoViewRule(
-          lithoVisibilityEventsController = {
-            AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
-          })
-  @get:Rule val ruleWithoutVisibilityEventsController: LithoViewRule = LithoViewRule()
+  @get:Rule val rule: LithoViewRule = LithoViewRule()
 
   @Before
   fun setUp() {
     ComponentsConfiguration.defaultInstance =
         ComponentsConfiguration.defaultInstance.copy(
-            enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner = false)
+            enableLifecycleOwnerWrapper = true,
+            enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner = true)
   }
 
   @Test
@@ -69,9 +62,11 @@ class UseLiveDataTest {
 
     val component = MyComponent(liveData)
 
-    val lithoView = rule.render { component }
+    val testLithoView = rule.createTestLithoView { component }
+    testLithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    testLithoView.attachToWindow().measure().layout()
 
-    assertThat(lithoView).hasVisibleText("hello")
+    assertThat(testLithoView).hasVisibleText("hello")
   }
 
   @Test
@@ -81,7 +76,10 @@ class UseLiveDataTest {
     val component = MyComponent(liveData)
 
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
-    val lithoView = rule.render { component }
+
+    val lithoView = rule.createTestLithoView { component }
+    lithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    lithoView.attachToWindow().measure().layout()
 
     assertThat(lithoView).hasVisibleText("hello")
 
@@ -97,7 +95,10 @@ class UseLiveDataTest {
     val component = MyComponent(liveData)
 
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_CREATE)
-    val lithoView = rule.render { component }
+
+    val lithoView = rule.createTestLithoView { component }
+    lithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    lithoView.attachToWindow().measure().layout()
 
     assertThat(lithoView).hasVisibleText("hello")
 
@@ -116,7 +117,9 @@ class UseLiveDataTest {
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
 
     // 1. in the beginning the first litho view will render the initial live data value
-    val firstLithoView = rule.render { firstComponent }
+    val firstLithoView = rule.createTestLithoView { firstComponent }
+    firstLithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    firstLithoView.attachToWindow().measure().layout()
     assertThat(firstLithoView).hasVisibleText("hello")
 
     // 2. we update the live data value, and that should be reflected in the first litho view
@@ -126,7 +129,9 @@ class UseLiveDataTest {
 
     // 3. we render the second component (in a second litho view) and it should render the last live
     // data value
-    val secondLithoView = rule.render { secondComponent }
+    val secondLithoView = rule.createTestLithoView { secondComponent }
+    secondLithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    secondLithoView.attachToWindow().measure().layout()
     assertThat(secondLithoView).hasVisibleText("world")
 
     // 4. we update the live data value, and it should be reflected in both observing components
@@ -145,7 +150,10 @@ class UseLiveDataTest {
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
 
     // 1. the litho view should reflect the initial live data value
-    val lithoView = rule.render { component }
+    val lithoView = rule.createTestLithoView { component }
+    lithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    lithoView.attachToWindow().measure().layout()
+
     assertThat(lithoView).hasVisibleText("hello")
 
     // 2. we change the lifecycle to an inactive state, and update the live data.
@@ -169,7 +177,10 @@ class UseLiveDataTest {
 
     fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
 
-    val lithoView = rule.render { component }
+    val lithoView = rule.createTestLithoView { component }
+    lithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    lithoView.attachToWindow().measure().layout()
+
     assertThat(lithoView).hasVisibleText("hello")
     Assertions.assertThat(liveData.hasObservers()).isTrue
 
@@ -190,56 +201,15 @@ class UseLiveDataTest {
                 rule.context, component, AOSPLithoVisibilityEventsController(fakeLifecycleOwner))
             .build()
 
-    val lithoView = rule.render(componentTree = componentTree) { component }
+    val lithoView = rule.createTestLithoView(componentTree = componentTree) { component }
+    lithoView.lithoView.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+    lithoView.attachToWindow().measure().layout()
+
     assertThat(lithoView).hasVisibleText("hello")
     Assertions.assertThat(liveData.hasObservers()).isTrue
 
     componentTree.release()
     Assertions.assertThat(liveData.hasObservers()).isFalse
-  }
-
-  @Test
-  fun `should observe lifecycle change when lifecycle owner is set after render`() {
-    ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = true)
-
-    // Override new lifecycle owner and provider with local
-    val rule = ruleWithoutVisibilityEventsController
-    val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
-    val controller = AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
-
-    val liveData = MutableLiveData("hello")
-    val component = MyComponent(liveData)
-
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
-
-    // 1. the litho view should reflect the initial live data value
-    val lithoView = LithoView(rule.context)
-    val testLithoView = rule.render(lithoView = lithoView) { component }
-    assertThat(testLithoView).hasVisibleText("hello")
-
-    lithoView.subscribeComponentTreeToVisibilityEventsController(controller)
-
-    // 2. we change the lifecycle to an inactive state, and update the live data.
-    // in this case, the live data won't emit as there is no active observer.
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_STOP)
-    liveData.value = "world"
-    rule.idle()
-    assertThat(testLithoView).doesNotHaveVisibleText("world")
-
-    // 3. we resume the lifecycle, and therefore it should show the latest store live data change
-    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_RESUME)
-    rule.idle()
-    assertThat(testLithoView).hasVisibleText("world")
-
-    val tree = lithoView.componentTree!!
-    tree.release()
-    Assertions.assertThat(liveData.hasObservers()).isFalse
-    val owner = tree.getContext().getTreePropContainer()?.get(LifecycleOwnerTreeProp)
-    Assertions.assertThat((owner as LifecycleOwnerWrapper)?.hasObservers()).isFalse
-
-    ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = false)
   }
 
   private class MyComponent(private val liveData: LiveData<String>) : KComponent() {
