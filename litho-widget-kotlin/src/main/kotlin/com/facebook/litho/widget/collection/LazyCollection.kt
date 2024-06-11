@@ -267,6 +267,9 @@ class LazyCollection(
     if (previous.deps != null || next.deps != null) {
       return previous.deps?.contentDeepEquals(next.deps) == true
     }
+    if (previous.isSticky != next.isSticky) {
+      return false
+    }
 
     return componentsEquivalent(previous.component, next.component)
   }
