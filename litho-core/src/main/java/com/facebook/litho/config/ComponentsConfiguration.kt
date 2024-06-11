@@ -168,7 +168,8 @@ internal constructor(
      * @see [com.facebook.litho.widget.RecyclerLayoutBehavior]
      */
     @JvmField val measureRecyclerWithPadding: Boolean = false,
-    @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null
+    @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null,
+    @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -353,6 +354,8 @@ internal constructor(
     private var enableLifecycleOwnerWrapper = baseConfig.enableLifecycleOwnerWrapper
     private var measureRecyclerWithPadding = baseConfig.measureRecyclerWithPadding
     private var visibilityBoundsTransformer = baseConfig.visibilityBoundsTransformer
+    private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
+        baseConfig.sectionsRecyclerViewOnCreateHandler
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -469,6 +472,10 @@ internal constructor(
       visibilityBoundsTransformer = transformer
     }
 
+    fun sectionsRecyclerViewOnCreateHandler(handler: ((Object) -> Unit)?): Builder = also {
+      sectionsRecyclerViewOnCreateHandler = handler
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           specsApiStateUpdateDuplicateDetectionEnabled =
@@ -507,7 +514,8 @@ internal constructor(
           enableFixForIM = enableFixForIM,
           enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper,
           measureRecyclerWithPadding = measureRecyclerWithPadding,
-          visibilityBoundsTransformer = visibilityBoundsTransformer)
+          visibilityBoundsTransformer = visibilityBoundsTransformer,
+          sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler)
     }
   }
 }

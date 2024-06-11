@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
@@ -65,6 +66,11 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   public SectionsRecyclerView(Context context, RecyclerView recyclerView) {
     super(context);
+    Function1<Object, Unit> handler =
+        ComponentsConfiguration.defaultInstance.sectionsRecyclerViewOnCreateHandler;
+    if (handler != null) {
+      handler.invoke(this);
+    }
 
     mRecyclerView = recyclerView;
     // Get the default edge effect factory (at least the default one in the initialized recycler)
