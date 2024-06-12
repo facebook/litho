@@ -435,6 +435,15 @@ internal object LithoReducer {
 
       val nestedTree: LithoLayoutResult = result.nestedResult ?: return
 
+      if (node.componentCount > 1) {
+        for (i in 1 until node.componentCount) {
+          val scope: ScopedComponentInfo = node.getComponentInfoAt(i)
+          if (scope.component is SpecGeneratedComponent) {
+            reductionState.scopedSpecComponentInfos.add(scope)
+          }
+        }
+      }
+
       try {
         collectResults(
             parentContext = immediateParentContext,
@@ -648,7 +657,7 @@ internal object LithoReducer {
       // calculation.
       node.getComponentContextAt(i).let { delegateScopedContext ->
         if (delegate is SpecGeneratedComponent) {
-          reductionState.scopedSpecComponentInfos?.add(delegateScopedContext.scopedComponentInfo)
+          reductionState.scopedSpecComponentInfos.add(delegateScopedContext.scopedComponentInfo)
         }
       }
       if (delegateKey != null || delegate.hasHandle()) {

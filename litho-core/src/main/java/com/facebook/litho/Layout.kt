@@ -384,11 +384,17 @@ internal object Layout {
       parentContext.setLithoLayoutContext(nestedLsc)
 
       // 4.b Measure the tree
-      measureTree(
-          lithoLayoutContext = nestedLsc,
-          androidContext = parentContext.androidContext,
-          node = newNode,
-          sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+      val result =
+          measureTree(
+              lithoLayoutContext = nestedLsc,
+              androidContext = parentContext.androidContext,
+              node = newNode,
+              sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+
+      CalculationContext.recordEventHandlers(nestedRsc, prevContext)
+      CalculationContext.recordEventHandlers(nestedLsc, prevContext)
+
+      result
     } finally {
       parentContext.calculationStateContext = prevContext
     }

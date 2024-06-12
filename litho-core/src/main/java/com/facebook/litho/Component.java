@@ -509,12 +509,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       final CalculationContext prevContext = calculationContext;
 
       try {
-        final LithoNode node;
+        final @Nullable LithoNode node;
+        final @Nullable ResolveContext nestedRsc;
 
         if (lastMeasuredLayout != null && lastMeasuredLayout.getNode() != null) {
+          nestedRsc = null;
           node = lastMeasuredLayout.getNode();
         } else {
-          final ResolveContext nestedRsc =
+          nestedRsc =
               new ResolveContext(
                   calculationContext.getTreeId(),
                   resultCache,
@@ -558,6 +560,10 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
           outputSize.height = 0;
           return;
         }
+
+        CalculationContext.recordEventHandlers(nestedRsc, prevContext);
+        CalculationContext.recordEventHandlers(nestedLsc, prevContext);
+
       } finally {
         c.setCalculationStateContext(prevContext);
       }
