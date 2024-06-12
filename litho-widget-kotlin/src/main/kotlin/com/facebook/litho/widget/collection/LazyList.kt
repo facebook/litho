@@ -71,7 +71,6 @@ inline fun ResourcesScope.LazyList(
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
     childEquivalenceIncludesCommonProps: Boolean = true,
-    overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     shouldExcludeFromIncrementalMount: Boolean = false,
@@ -123,7 +122,6 @@ inline fun ResourcesScope.LazyList(
       lazyCollectionController,
       onDataRendered,
       childEquivalenceIncludesCommonProps,
-      overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,

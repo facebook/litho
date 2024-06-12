@@ -69,7 +69,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
         context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     isIncrementalMountEnabled: Boolean = true,
     childEquivalenceIncludesCommonProps: Boolean = true,
-    overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     preAllocationHandler: PreAllocationHandler? =
@@ -119,7 +118,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
       lazyCollectionController,
       onDataRendered,
       childEquivalenceIncludesCommonProps,
-      overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,

@@ -68,7 +68,6 @@ inline fun ResourcesScope.LazyGrid(
     isReconciliationEnabled: Boolean =
         context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     childEquivalenceIncludesCommonProps: Boolean = true,
-    overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     preAllocationHandler: PreAllocationHandler? =
@@ -118,7 +117,6 @@ inline fun ResourcesScope.LazyGrid(
       lazyCollectionController,
       onDataRendered,
       childEquivalenceIncludesCommonProps,
-      overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,
