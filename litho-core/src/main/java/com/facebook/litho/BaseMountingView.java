@@ -968,7 +968,8 @@ public abstract class BaseMountingView extends ComponentHost
               mMountState,
               configuration != null
                   && (configuration.useFineGrainedViewAttributesExtension
-                      || configuration.componentHostRecyclingEnabled));
+                      || configuration.componentHostRecyclingEnabled),
+              configuration != null && configuration.cloneStateListAnimators);
 
       mLithoHostListenerCoordinator.enableNestedLithoViewsExtension();
       mLithoHostListenerCoordinator.enableTransitions();

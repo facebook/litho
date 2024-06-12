@@ -42,7 +42,10 @@ import com.facebook.rendercore.extensions.OnItemCallbacks
 import com.facebook.rendercore.utils.equals
 
 class LithoViewAttributesExtension
-private constructor(private val useFineGrainedAttributesState: Boolean) :
+private constructor(
+    private val useFineGrainedAttributesState: Boolean,
+    private val cloneStateListAnimators: Boolean
+) :
     MountExtension<ViewAttributesInput, LithoViewAttributesState>(),
     OnItemCallbacks<LithoViewAttributesState> {
 
@@ -51,10 +54,12 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
   }
 
   override fun createState(): LithoViewAttributesState =
-      if (useFineGrainedAttributesState) FineGrainedLithoViewAttributesState()
-      else DefaultLithoViewAttributesState()
+      if (useFineGrainedAttributesState)
+          FineGrainedLithoViewAttributesState(cloneStateListAnimators)
+      else DefaultLithoViewAttributesState(cloneStateListAnimators)
 
   interface LithoViewAttributesState {
+    val shouldCloneStateListAnimators: Boolean
 
     fun onUnitMounted(id: Long)
 
@@ -78,7 +83,9 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
     fun reset()
   }
 
-  private class DefaultLithoViewAttributesState : LithoViewAttributesState {
+  private class DefaultLithoViewAttributesState(
+      override val shouldCloneStateListAnimators: Boolean
+  ) : LithoViewAttributesState {
     private val _defaultViewAttributes: MutableMap<Long, Int> = HashMap()
     private var currentUnits: Map<Long, ViewAttributes>? = null
     private var newUnits: Map<Long, ViewAttributes>? = null
@@ -118,7 +125,9 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
     override fun onUnitUnmounted(id: Long) = Unit
   }
 
-  private class FineGrainedLithoViewAttributesState : LithoViewAttributesState {
+  private class FineGrainedLithoViewAttributesState(
+      override val shouldCloneStateListAnimators: Boolean
+  ) : LithoViewAttributesState {
     private val _defaultViewAttributes: MutableMap<Long, Int> = HashMap()
     private val currentUnits: MutableScatterMap<Long, ViewAttributes> = MutableScatterMap()
     private var toBeCommittedUnits: Map<Long, ViewAttributes>? = null
@@ -195,7 +204,7 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
             }
         state.setDefaultViewAttributes(id, flags)
       }
-      setViewAttributes(content, viewAttributes, renderUnit)
+      setViewAttributes(content, viewAttributes, renderUnit, state.shouldCloneStateListAnimators)
       state.onUnitMounted(id)
     }
   }
@@ -285,11 +294,19 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
 
   companion object {
     @JvmStatic
-    fun getInstance(useFineGrainedAttributesState: Boolean): LithoViewAttributesExtension =
-        LithoViewAttributesExtension(useFineGrainedAttributesState)
+    fun getInstance(
+        useFineGrainedAttributesState: Boolean,
+        cloneStateListAnimators: Boolean = false,
+    ): LithoViewAttributesExtension =
+        LithoViewAttributesExtension(useFineGrainedAttributesState, cloneStateListAnimators)
 
     @JvmStatic
-    fun setViewAttributes(content: Any?, attributes: ViewAttributes, unit: RenderUnit<*>?) {
+    fun setViewAttributes(
+        content: Any?,
+        attributes: ViewAttributes,
+        unit: RenderUnit<*>?,
+        cloneStateListAnimators: Boolean = false
+    ) {
       if (content !is View) {
         return
       }
@@ -334,7 +351,7 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
       setImportantForAccessibility(content, attributes.importantForAccessibility)
       val isHostSpec = attributes.isHostSpec
       setViewLayerType(content, attributes)
-      setViewStateListAnimator(content, attributes)
+      setViewStateListAnimator(content, attributes, cloneStateListAnimators)
       if (attributes.disableDrawableOutputs) {
         setViewBackground(content, attributes)
         setViewForeground(content, attributes.foreground)
@@ -981,7 +998,11 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
       view.layoutDirection = View.LAYOUT_DIRECTION_INHERIT
     }
 
-    private fun setViewStateListAnimator(view: View, attributes: ViewAttributes) {
+    private fun setViewStateListAnimator(
+        view: View,
+        attributes: ViewAttributes,
+        cloneStateListAnimators: Boolean
+    ) {
       var stateListAnimator = attributes.stateListAnimator
       val stateListAnimatorRes = attributes.stateListAnimatorRes
       if (stateListAnimator == null && stateListAnimatorRes == 0) {
@@ -993,6 +1014,15 @@ private constructor(private val useFineGrainedAttributesState: Boolean) :
       if (stateListAnimator == null) {
         stateListAnimator =
             AnimatorInflater.loadStateListAnimator(view.context, stateListAnimatorRes)
+      }
+      if (cloneStateListAnimators) {
+        stateListAnimator =
+            try {
+              stateListAnimator?.clone()
+            } catch (e: CloneNotSupportedException) {
+              // If we fail to clone, just fallback to the original animator
+              stateListAnimator
+            }
       }
       view.stateListAnimator = stateListAnimator
     }

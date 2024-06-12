@@ -135,6 +135,11 @@ internal constructor(
      * performance regressions.
      */
     @JvmField val useFineGrainedViewAttributesExtension: Boolean = false,
+    /**
+     * This is a temporary config param for debugging state list animator crashes during layout of a
+     * [ComponentHost]
+     */
+    @JvmField val cloneStateListAnimators: Boolean = false,
     @JvmField val enableFacadeStateUpdater: Boolean = false,
     @JvmField val skipSecondIsInWorkingRangeCheck: Boolean = false,
     @JvmField val enableVisibilityFixForNestedLithoView: Boolean = false,
@@ -343,6 +348,7 @@ internal constructor(
     private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
     private var useFineGrainedViewAttributesExtension =
         baseConfig.useFineGrainedViewAttributesExtension
+    private var cloneStateListAnimators = baseConfig.cloneStateListAnimators
     private var enableFacadeStateUpdater = baseConfig.enableFacadeStateUpdater
     private var skipSecondIsInWorkingRangeCheck = baseConfig.skipSecondIsInWorkingRangeCheck
     private var enableVisibilityFixForNestedLithoView =
@@ -442,6 +448,10 @@ internal constructor(
       useFineGrainedViewAttributesExtension = enabled
     }
 
+    fun cloneStateListAnimators(enabled: Boolean): Builder = also {
+      cloneStateListAnimators = enabled
+    }
+
     fun enableFacadeStateUpdater(enabled: Boolean): Builder = also {
       enableFacadeStateUpdater = enabled
     }
@@ -507,6 +517,7 @@ internal constructor(
               enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
           skipHostAlphaReset = skipHostAlphaReset,
           useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
+          cloneStateListAnimators = cloneStateListAnimators,
           enableFacadeStateUpdater = enableFacadeStateUpdater,
           skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck,
           enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,

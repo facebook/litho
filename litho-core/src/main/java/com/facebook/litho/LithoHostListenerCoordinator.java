@@ -48,10 +48,15 @@ public class LithoHostListenerCoordinator {
   private @Nullable ExtensionState<Void> mEndToEndTestingExtensionState;
   private boolean mUseFineGrainedLithoViewAttributesState;
 
+  private boolean mCloneStateListAnimators;
+
   public LithoHostListenerCoordinator(
-      MountDelegateTarget mountDelegateTarget, boolean useFineGrainedLithoViewAttributesState) {
+      MountDelegateTarget mountDelegateTarget,
+      boolean useFineGrainedLithoViewAttributesState,
+      boolean cloneStateListAnimators) {
     mMountDelegateTarget = mountDelegateTarget;
     mUseFineGrainedLithoViewAttributesState = useFineGrainedLithoViewAttributesState;
+    mCloneStateListAnimators = cloneStateListAnimators;
   }
 
   public void setCollectNotifyVisibleBoundsChangedCalls(boolean value) {
@@ -200,7 +205,8 @@ public class LithoHostListenerCoordinator {
 
     mViewAttributesExtensionState =
         mMountDelegateTarget.registerMountExtension(
-            LithoViewAttributesExtension.getInstance(mUseFineGrainedLithoViewAttributesState));
+            LithoViewAttributesExtension.getInstance(
+                mUseFineGrainedLithoViewAttributesState, mCloneStateListAnimators));
   }
 
   void enableNestedLithoViewsExtension() {
