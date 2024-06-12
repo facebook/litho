@@ -386,6 +386,7 @@ class MaterialTextInputSpec {
     mountedEditTextRef.set(editText);
 
     TextInputSpec.setParams(
+        c,
         editText,
         null,
         TextInputSpec.getBackgroundOrDefault(c, inputBackground),
