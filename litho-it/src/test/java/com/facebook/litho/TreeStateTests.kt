@@ -169,43 +169,6 @@ class TreeStateTests {
   }
 
   @Test
-  fun `queueDuplicateStateUpdates disabled - StateUpdate is not enqueued if it is a duplicate`() {
-    val treeState = TreeState(fromState = null)
-
-    treeState.createOrGetStateContainerForComponent(context, testComponent, testComponentKey)
-
-    treeState.assertThatTestStateContainerHasValue(4)
-
-    // increment
-    val update1Enqueued =
-        treeState.queueStateUpdate(
-            key = testComponentKey,
-            stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
-            isLazyStateUpdate = false,
-            isNestedTree = false,
-            queueDuplicateStateUpdates = false)
-
-    assertThat(update1Enqueued).isTrue
-    assertThat(treeState.hasUncommittedUpdates()).isTrue
-
-    treeState.applyStateUpdatesEarly(context, testComponent, null, false)
-    treeState.assertThatTestStateContainerHasValue(5)
-
-    // update with the same value (duplicate)
-    val duplicateUpdateEnqueued =
-        treeState.queueStateUpdate(
-            key = testComponentKey,
-            stateUpdate = StateUpdateTestComponent.createValueStateUpdate(5),
-            isLazyStateUpdate = false,
-            isNestedTree = false,
-            queueDuplicateStateUpdates = false)
-
-    assertThat(duplicateUpdateEnqueued).isFalse
-    assertThat(treeState.hasUncommittedUpdates()).isFalse
-    treeState.assertThatTestStateContainerHasValue(5)
-  }
-
-  @Test
   fun `queueDuplicateStateUpdates enabled - StateUpdate is enqueued if it is a duplicate`() {
     val treeState = TreeState(fromState = null)
 
@@ -214,15 +177,12 @@ class TreeStateTests {
     treeState.assertThatTestStateContainerHasValue(4)
 
     // increment
-    val update1Enqueued =
-        treeState.queueStateUpdate(
-            key = testComponentKey,
-            stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
-            isLazyStateUpdate = false,
-            isNestedTree = false,
-            queueDuplicateStateUpdates = true)
+    treeState.queueStateUpdate(
+        key = testComponentKey,
+        stateUpdate = StateUpdateTestComponent.createIncrementStateUpdate(),
+        isLazyStateUpdate = false,
+        isNestedTree = false)
 
-    assertThat(update1Enqueued).isTrue
     assertThat(treeState.hasUncommittedUpdates()).isTrue
 
     treeState.applyStateUpdatesEarly(context, testComponent, null, false)
@@ -234,10 +194,8 @@ class TreeStateTests {
             key = testComponentKey,
             stateUpdate = StateUpdateTestComponent.createValueStateUpdate(5),
             isLazyStateUpdate = false,
-            isNestedTree = false,
-            queueDuplicateStateUpdates = true)
+            isNestedTree = false)
 
-    assertThat(duplicateUpdateEnqueued).isTrue
     assertThat(treeState.hasUncommittedUpdates()).isTrue
     treeState.applyStateUpdatesEarly(context, testComponent, null, false)
     treeState.assertThatTestStateContainerHasValue(5)
