@@ -15,6 +15,7 @@
  */
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 project.group = GROUP
 version = VERSION_NAME
@@ -22,6 +23,10 @@ version = VERSION_NAME
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjvm-default=all']
+    }
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion

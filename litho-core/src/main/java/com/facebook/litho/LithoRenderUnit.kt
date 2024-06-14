@@ -48,7 +48,8 @@ protected constructor(
         importantForAccessibility
       }
 
-  override fun getMatchHostBounds(): Boolean = flags and LAYOUT_FLAG_MATCH_HOST_BOUNDS != 0
+  override val matchHostBounds: Boolean
+    get() = flags and LAYOUT_FLAG_MATCH_HOST_BOUNDS != 0
 
   val contentDescription: CharSequence?
     get() = nodeInfo?.contentDescription

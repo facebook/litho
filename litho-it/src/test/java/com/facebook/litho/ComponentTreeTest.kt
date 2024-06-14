@@ -82,7 +82,6 @@ class ComponentTreeTest {
   private lateinit var component: Component
   private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
-  private var oldWrapperConfig: RootWrapperComponentFactory? = null
   private var widthSpec: Int = 0
   private var widthSpec2: Int = 0
   private var heightSpec: Int = 0
@@ -114,16 +113,6 @@ class ComponentTreeTest {
   private fun runOneTask() {
     resolveThreadShadowLooper.runOneTask()
     layoutThreadShadowLooper.runOneTask()
-  }
-
-  @Before
-  fun saveConfig() {
-    oldWrapperConfig = ErrorBoundariesConfiguration.rootWrapperComponentFactory
-  }
-
-  @After
-  fun restoreConfig() {
-    ErrorBoundariesConfiguration.rootWrapperComponentFactory = oldWrapperConfig
   }
 
   @After
@@ -409,7 +398,11 @@ class ComponentTreeTest {
         size,
         treePropContainer)
     val c = componentTree.mainThreadLayoutState!!.componentContext
-    assertThat(c.treePropContainer).isSameAs(treePropContainer)
+    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      assertThat(c.treePropContainer?.get(Any::class.java)).isEqualTo("hello world")
+    } else {
+      assertThat(c.treePropContainer).isSameAs(treePropContainer)
+    }
   }
 
   @Test

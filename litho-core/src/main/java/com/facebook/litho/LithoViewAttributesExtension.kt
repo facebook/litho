@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
+import androidx.collection.MutableScatterMap
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput
@@ -40,7 +41,11 @@ import com.facebook.rendercore.extensions.MountExtension
 import com.facebook.rendercore.extensions.OnItemCallbacks
 import com.facebook.rendercore.utils.equals
 
-class LithoViewAttributesExtension private constructor() :
+class LithoViewAttributesExtension
+private constructor(
+    private val useFineGrainedAttributesState: Boolean,
+    private val cloneStateListAnimators: Boolean
+) :
     MountExtension<ViewAttributesInput, LithoViewAttributesState>(),
     OnItemCallbacks<LithoViewAttributesState> {
 
@@ -48,29 +53,120 @@ class LithoViewAttributesExtension private constructor() :
     val viewAttributes: Map<Long, ViewAttributes>?
   }
 
-  override fun createState(): LithoViewAttributesState = LithoViewAttributesState()
+  override fun createState(): LithoViewAttributesState =
+      if (useFineGrainedAttributesState)
+          FineGrainedLithoViewAttributesState(cloneStateListAnimators)
+      else DefaultLithoViewAttributesState(cloneStateListAnimators)
 
-  class LithoViewAttributesState {
+  interface LithoViewAttributesState {
+    val shouldCloneStateListAnimators: Boolean
+
+    fun onUnitMounted(id: Long)
+
+    fun onUnitUnmounted(id: Long)
+
+    fun hasDefaultViewAttributes(renderUnitId: Long): Boolean
+
+    fun setDefaultViewAttributes(renderUnitId: Long, flags: Int)
+
+    fun getDefaultViewAttributes(renderUnitId: Long): Int
+
+    fun getCurrentViewAttributes(id: Long): ViewAttributes?
+
+    fun getNewViewAttributes(id: Long): ViewAttributes?
+
+    /** This method should be called ahead of a new iteration of the state being called. */
+    fun prepare(newUnitsAttributes: Map<Long, ViewAttributes>?)
+
+    fun commit()
+
+    fun reset()
+  }
+
+  private class DefaultLithoViewAttributesState(
+      override val shouldCloneStateListAnimators: Boolean
+  ) : LithoViewAttributesState {
     private val _defaultViewAttributes: MutableMap<Long, Int> = HashMap()
-    internal var currentUnits: Map<Long, ViewAttributes>? = null
-    internal var newUnits: Map<Long, ViewAttributes>? = null
+    private var currentUnits: Map<Long, ViewAttributes>? = null
+    private var newUnits: Map<Long, ViewAttributes>? = null
 
-    fun setDefaultViewAttributes(renderUnitId: Long, flags: Int) {
+    override fun prepare(newUnitsAttributes: Map<Long, ViewAttributes>?) {
+      newUnits = newUnitsAttributes
+    }
+
+    override fun commit() {
+      currentUnits = newUnits
+    }
+
+    override fun reset() {
+      currentUnits = null
+      newUnits = null
+    }
+
+    override fun setDefaultViewAttributes(renderUnitId: Long, flags: Int) {
       _defaultViewAttributes[renderUnitId] = flags
     }
 
-    fun getDefaultViewAttributes(renderUnitId: Long): Int {
+    override fun getDefaultViewAttributes(renderUnitId: Long): Int {
       return _defaultViewAttributes[renderUnitId]
           ?: throw IllegalStateException(
               "View attributes not found, did you call onUnbindItem without onBindItem?")
     }
 
-    fun hasDefaultViewAttributes(renderUnitId: Long): Boolean =
+    override fun hasDefaultViewAttributes(renderUnitId: Long): Boolean =
         _defaultViewAttributes.containsKey(renderUnitId)
 
-    fun getCurrentViewAttributes(id: Long): ViewAttributes? = currentUnits?.get(id)
+    override fun getCurrentViewAttributes(id: Long): ViewAttributes? = currentUnits?.get(id)
 
-    fun getNewViewAttributes(id: Long): ViewAttributes? = newUnits?.get(id)
+    override fun getNewViewAttributes(id: Long): ViewAttributes? = newUnits?.get(id)
+
+    override fun onUnitMounted(id: Long) = Unit
+
+    override fun onUnitUnmounted(id: Long) = Unit
+  }
+
+  private class FineGrainedLithoViewAttributesState(
+      override val shouldCloneStateListAnimators: Boolean
+  ) : LithoViewAttributesState {
+    private val _defaultViewAttributes: MutableMap<Long, Int> = HashMap()
+    private val currentUnits: MutableScatterMap<Long, ViewAttributes> = MutableScatterMap()
+    private var toBeCommittedUnits: Map<Long, ViewAttributes>? = null
+
+    override fun prepare(newUnitsAttributes: Map<Long, ViewAttributes>?) {
+      toBeCommittedUnits = newUnitsAttributes
+    }
+
+    override fun commit() {
+      toBeCommittedUnits?.let { currentUnits.putAll(it) }
+    }
+
+    override fun reset() {
+      currentUnits.clear()
+      toBeCommittedUnits = null
+    }
+
+    override fun setDefaultViewAttributes(renderUnitId: Long, flags: Int) {
+      _defaultViewAttributes[renderUnitId] = flags
+    }
+
+    override fun getDefaultViewAttributes(renderUnitId: Long): Int {
+      return _defaultViewAttributes[renderUnitId]
+          ?: throw IllegalStateException(
+              "View attributes not found, did you call onUnbindItem without onBindItem? | $renderUnitId")
+    }
+
+    override fun hasDefaultViewAttributes(renderUnitId: Long): Boolean =
+        _defaultViewAttributes.containsKey(renderUnitId)
+
+    override fun getCurrentViewAttributes(id: Long): ViewAttributes? = currentUnits[id]
+
+    override fun getNewViewAttributes(id: Long): ViewAttributes? = toBeCommittedUnits?.get(id)
+
+    override fun onUnitMounted(id: Long) = Unit
+
+    override fun onUnitUnmounted(id: Long) {
+      currentUnits.remove(id)
+    }
   }
 
   override fun beforeMount(
@@ -79,12 +175,12 @@ class LithoViewAttributesExtension private constructor() :
       localVisibleRect: Rect?
   ) {
     if (input != null) {
-      extensionState.state?.newUnits = input.viewAttributes
+      extensionState.state.prepare(input.viewAttributes)
     }
   }
 
   override fun afterMount(extensionState: ExtensionState<LithoViewAttributesState>) {
-    extensionState.state.currentUnits = extensionState.state.newUnits
+    extensionState.state.commit()
   }
 
   override fun onMountItem(
@@ -96,6 +192,7 @@ class LithoViewAttributesExtension private constructor() :
     val state = extensionState.state
     val id = renderUnit.id
     val viewAttributes = state.getNewViewAttributes(id)
+
     if (viewAttributes != null) {
       // Get the initial view attribute flags for the root LithoView.
       if (!state.hasDefaultViewAttributes(id)) {
@@ -107,7 +204,8 @@ class LithoViewAttributesExtension private constructor() :
             }
         state.setDefaultViewAttributes(id, flags)
       }
-      setViewAttributes(content, viewAttributes, renderUnit)
+      setViewAttributes(content, viewAttributes, renderUnit, state.shouldCloneStateListAnimators)
+      state.onUnitMounted(id)
     }
   }
 
@@ -123,6 +221,7 @@ class LithoViewAttributesExtension private constructor() :
     if (viewAttributes != null) {
       val flags = state.getDefaultViewAttributes(id)
       unsetViewAttributes(content, viewAttributes, flags)
+      state.onUnitUnmounted(id)
     }
   }
 
@@ -190,15 +289,24 @@ class LithoViewAttributesExtension private constructor() :
   }
 
   override fun onUnmount(extensionState: ExtensionState<LithoViewAttributesState>) {
-    extensionState.state.currentUnits = null
-    extensionState.state.newUnits = null
+    extensionState.state.reset()
   }
 
   companion object {
-    @get:JvmStatic val instance: LithoViewAttributesExtension = LithoViewAttributesExtension()
+    @JvmStatic
+    fun getInstance(
+        useFineGrainedAttributesState: Boolean,
+        cloneStateListAnimators: Boolean = false,
+    ): LithoViewAttributesExtension =
+        LithoViewAttributesExtension(useFineGrainedAttributesState, cloneStateListAnimators)
 
     @JvmStatic
-    fun setViewAttributes(content: Any?, attributes: ViewAttributes, unit: RenderUnit<*>?) {
+    fun setViewAttributes(
+        content: Any?,
+        attributes: ViewAttributes,
+        unit: RenderUnit<*>?,
+        cloneStateListAnimators: Boolean = false
+    ) {
       if (content !is View) {
         return
       }
@@ -243,7 +351,7 @@ class LithoViewAttributesExtension private constructor() :
       setImportantForAccessibility(content, attributes.importantForAccessibility)
       val isHostSpec = attributes.isHostSpec
       setViewLayerType(content, attributes)
-      setViewStateListAnimator(content, attributes)
+      setViewStateListAnimator(content, attributes, cloneStateListAnimators)
       if (attributes.disableDrawableOutputs) {
         setViewBackground(content, attributes)
         setViewForeground(content, attributes.foreground)
@@ -890,7 +998,11 @@ class LithoViewAttributesExtension private constructor() :
       view.layoutDirection = View.LAYOUT_DIRECTION_INHERIT
     }
 
-    private fun setViewStateListAnimator(view: View, attributes: ViewAttributes) {
+    private fun setViewStateListAnimator(
+        view: View,
+        attributes: ViewAttributes,
+        cloneStateListAnimators: Boolean
+    ) {
       var stateListAnimator = attributes.stateListAnimator
       val stateListAnimatorRes = attributes.stateListAnimatorRes
       if (stateListAnimator == null && stateListAnimatorRes == 0) {
@@ -902,6 +1014,15 @@ class LithoViewAttributesExtension private constructor() :
       if (stateListAnimator == null) {
         stateListAnimator =
             AnimatorInflater.loadStateListAnimator(view.context, stateListAnimatorRes)
+      }
+      if (cloneStateListAnimators) {
+        stateListAnimator =
+            try {
+              stateListAnimator?.clone()
+            } catch (e: CloneNotSupportedException) {
+              // If we fail to clone, just fallback to the original animator
+              stateListAnimator
+            }
       }
       view.stateListAnimator = stateListAnimator
     }

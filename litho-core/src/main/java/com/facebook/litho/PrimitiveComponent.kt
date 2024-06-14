@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentsSystrace.endSection
 import com.facebook.litho.debug.LithoDebugEvent.ComponentRendered
 import com.facebook.litho.debug.LithoDebugEventAttributes.Component
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.debug.DebugEventAttribute
 import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -59,7 +60,10 @@ abstract class PrimitiveComponent : Component() {
         DebugEventDispatcher.trace(
             type = ComponentRendered,
             renderStateId = { resolveContext.treeId.toString() },
-            attributesAccumulator = { it[Component] = simpleName },
+            attributesAccumulator = {
+              it[Component] = simpleName
+              it[DebugEventAttribute.Name] = simpleName
+            },
         ) {
           val isTracing = ComponentsSystrace.isTracing
           if (isTracing) {
@@ -95,7 +99,7 @@ abstract class PrimitiveComponent : Component() {
     node.primitive = lithoPrimitive.primitive
 
     Resolver.applyTransitionsAndUseEffectEntriesToNode(
-        primitiveComponentScope.transitions,
+        primitiveComponentScope.transitionData,
         primitiveComponentScope.useEffectEntries,
         node,
     )

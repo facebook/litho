@@ -38,6 +38,8 @@ import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.transition.MutableTransitionData
+import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.FastMath
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.Node
@@ -232,9 +234,8 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var isClone: Boolean = false
     private set
 
-  private var _transitions: ArrayList<Transition>? = null
-  val transitions: ArrayList<Transition>?
-    get() = _transitions
+  internal var transitionData: MutableTransitionData? = null
+    private set
 
   private var _workingRangeRegistrations: MutableList<WorkingRangeContainer.Registration>? = null
   val workingRangeRegistrations: MutableList<WorkingRangeContainer.Registration>?
@@ -446,7 +447,13 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   }
 
   fun addTransition(transition: Transition) {
-    _transitions.getOrCreate { ArrayList<Transition>(1).also { _transitions = it } }.add(transition)
+    transitionData
+        .getOrCreate { MutableTransitionData().also { transitionData = it } }
+        .addTransition(transition)
+  }
+
+  internal fun addTransitionData(data: TransitionData) {
+    transitionData.getOrCreate { MutableTransitionData().also { transitionData = it } }.add(data)
   }
 
   fun addWorkingRanges(registrations: List<WorkingRangeContainer.Registration>) {
@@ -677,7 +684,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     this.testKey = testKey
   }
 
-  fun touchExpansionPx(edge: YogaEdge?, @Px touchExpansion: Int) {
+  fun touchExpansionPx(edge: YogaEdge, @Px touchExpansion: Int) {
     if (this.touchExpansion == null) {
       this.touchExpansion = Edges()
     }

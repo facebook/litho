@@ -28,6 +28,7 @@ import java.util.HashSet
  */
 class RenderState {
 
+  private var layoutStateData = LayoutStateLiteData.NONE
   private val renderData: MutableMap<String, RenderData?> = HashMap()
   private val seenGlobalKeys: MutableSet<String> = HashSet()
 
@@ -41,6 +42,12 @@ class RenderState {
     }
     seenGlobalKeys.clear()
   }
+
+  internal fun recordLayoutStateData(data: LayoutStateLiteData) {
+    layoutStateData = data
+  }
+
+  internal fun getPreviousLayoutStateData(): LayoutStateLiteData = layoutStateData
 
   fun applyPreviousRenderData(scopedComponentInfos: List<ScopedComponentInfo>?) {
     if (scopedComponentInfos == null) {

@@ -56,6 +56,7 @@ object LithoDebugEvent {
   const val ComponentTreeResume = "Litho.ComponentTree.Resume"
   const val TreeFutureRun = "Litho.TreeFuture.Run"
   const val TreeFutureGet = "Litho.TreeFuture.Get"
+  const val TreeFutureGetPartial = "Litho.TreeFuture.GetPartial"
   const val TreeFutureWait = "Litho.TreeFuture.Wait"
   const val TreeFutureInterrupt = "Litho.TreeFuture.Interrupt"
   const val TreeFutureResume = "Litho.TreeFuture.Resume"
@@ -81,6 +82,7 @@ object LithoDebugEventAttributes {
   const val Component = "component"
   const val Stack = "stack"
   const val Cause = "cause"
+  const val WaitingOn = "waiting-on"
 }
 
 object LithoDebugEvents {
@@ -96,18 +98,28 @@ object LithoDebugEvents {
     }
 
     @JvmStatic
-    fun wait(treeId: Int, name: String) {
+    fun wait(treeId: Int, name: String, waitingOn: Int) {
       dispatch(type = LithoDebugEvent.TreeFutureWait, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
+        attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
+        attrs[LithoDebugEventAttributes.WaitingOn] = waitingOn
+      }
+    }
+
+    @JvmStatic
+    fun get(treeId: Int, name: String) {
+      dispatch(type = LithoDebugEvent.TreeFutureGet, treeId = treeId) { attrs ->
+        attrs[DebugEventAttribute.Name] = name
+        attrs[DebugEventAttribute.WasInterrupted] = false
         attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }
 
     @JvmStatic
-    fun get(treeId: Int, name: String, wasInterrupted: Boolean) {
-      dispatch(type = LithoDebugEvent.TreeFutureGet, treeId = treeId) { attrs ->
+    fun getPartial(treeId: Int, name: String) {
+      dispatch(type = LithoDebugEvent.TreeFutureGetPartial, treeId = treeId) { attrs ->
         attrs[DebugEventAttribute.Name] = name
-        attrs[DebugEventAttribute.WasInterrupted] = wasInterrupted
+        attrs[DebugEventAttribute.WasInterrupted] = true
         attrs[DebugEventAttribute.ThreadPriority] = Process.getThreadPriority(Process.myTid())
       }
     }

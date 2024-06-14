@@ -82,9 +82,7 @@ object NestedLithoTree {
           current
         }
 
-    if (result.context.mLithoConfiguration.componentsConfig.shouldBuildRenderTreeInBg) {
-      layoutState.toRenderTree()
-    }
+    layoutState.toRenderTree()
 
     return layoutState
   }

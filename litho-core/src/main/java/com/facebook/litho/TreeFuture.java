@@ -85,6 +85,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
                             FUTURE_RESULT_NULL_REASON_RELEASED);
                       }
                     }
+                    LithoDebugEvents.TreeFuture.run(mTreeId, getDescription());
                     final T result = calculate();
                     synchronized (TreeFuture.this) {
                       if (mReleased) {
@@ -195,7 +196,6 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
         }
         // fall through
       default:
-        LithoDebugEvents.TreeFuture.interrupt(mTreeId, getDescription());
         // If we haven't returned false by now, we are now marked INTERRUPTED so we're good to
         // interrupt.
         return true;
@@ -291,13 +291,13 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   TreeFutureResult<T> runAndGet(@RenderSource final int source) {
-    if (mRunningThreadId.compareAndSet(-1, Process.myTid())) {
-      LithoDebugEvents.TreeFuture.run(mTreeId, getDescription());
+    final int myTid = Process.myTid();
+    if (mRunningThreadId.compareAndSet(-1, myTid)) {
       mFutureTask.run();
     }
 
     final int runningThreadId = this.mRunningThreadId.get();
-    final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
+    final boolean notRunningOnMyThread = runningThreadId != myTid;
     final int originalThreadPriority;
     final boolean didRaiseThreadPriority;
 
@@ -313,6 +313,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       // the bg task is interrupted.
       if (mIsInterruptionEnabled) {
         if (tryMoveToInterruptedState()) {
+          LithoDebugEvents.TreeFuture.interrupt(mTreeId, getDescription());
           mInterruptToken =
               WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculate");
         }
@@ -343,11 +344,19 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       //    future itself. If the future is being triggered again, then the cached result is
       //    returned immediately, and it is assumed that this result is partial. The partial result
       //    will then be resumed later in this method.
-      LithoDebugEvents.TreeFuture.wait(mTreeId, getDescription());
+      if (runningThreadId != myTid) {
+        LithoDebugEvents.TreeFuture.wait(mTreeId, getDescription(), runningThreadId);
+      }
       treeFutureResult = mFutureTask.get();
       final boolean isPartialResult =
           treeFutureResult.result != null && treeFutureResult.result.isPartialResult();
-      LithoDebugEvents.TreeFuture.get(mTreeId, getDescription(), isPartialResult);
+      if (runningThreadId == myTid) {
+        if (isPartialResult) {
+          LithoDebugEvents.TreeFuture.getPartial(mTreeId, getDescription());
+        } else {
+          LithoDebugEvents.TreeFuture.get(mTreeId, getDescription());
+        }
+      }
 
       onWaitEnd(shouldTrace, false);
 
@@ -372,6 +381,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
             LithoDebugEvents.TreeFuture.resume(mTreeId, getDescription());
             treeFutureResult =
                 TreeFutureResult.finishWithResult(resumeCalculation(treeFutureResult.result));
+            LithoDebugEvents.TreeFuture.get(mTreeId, getDescription());
           } catch (Throwable th) {
             markFailure(token, th);
             throw th;

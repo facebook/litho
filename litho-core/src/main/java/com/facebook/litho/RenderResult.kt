@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho
 
-import kotlin.jvm.JvmField
+import com.facebook.litho.transition.TransitionData
 
 /**
  * The result of a [Component#render] call. This will be the Component this component rendered to,
@@ -23,9 +24,10 @@ import kotlin.jvm.JvmField
  * transitions that should be applied.
  */
 class RenderResult
-@JvmOverloads
-constructor(
-    @JvmField val component: Component?,
-    @JvmField val transitions: List<Transition>? = null,
-    @JvmField val useEffectEntries: List<Attachable>? = null
-)
+internal constructor(
+    @JvmField internal val component: Component?,
+    @JvmField internal val transitionData: TransitionData?,
+    @JvmField internal val useEffectEntries: List<Attachable>?
+) {
+  constructor(component: Component?) : this(component, null, null)
+}

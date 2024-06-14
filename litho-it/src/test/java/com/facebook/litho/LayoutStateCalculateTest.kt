@@ -1962,7 +1962,7 @@ class LayoutStateCalculateTest {
           .build()
     }
 
-    val result = legacyLithoViewRule.committedLayoutState!!.mLayoutResult!!.getChildAt(0)!!
+    val result = legacyLithoViewRule.committedLayoutState!!.rootLayoutResult!!.getChildAt(0)
 
     assertThat(result is LithoLayoutResult).isTrue
     assertThat((result as LithoLayoutResult).node.tailComponent)

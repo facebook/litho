@@ -17,15 +17,15 @@
 package com.facebook.litho.editor.flipper;
 
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.DebugComponent;
-import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.debug.DebugSection;
 import com.facebook.litho.widget.LithoRecyclerView;
 
 public final class LithoFlipperDescriptors {
 
   public static void add(DescriptorMapping descriptorMapping) {
-    descriptorMapping.register(LithoView.class, new LithoViewDescriptor());
+    descriptorMapping.register(BaseMountingView.class, new LithoViewDescriptor());
     descriptorMapping.register(DebugComponent.class, new DebugComponentDescriptor());
   }
 

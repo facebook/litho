@@ -16,8 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.animations.expandableelement
 
-import ExpandableElementBottomDetail
-import ExpandableElementTopDetail
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -42,7 +40,7 @@ class ExpandableElement(
     private val seen: Boolean = false
 ) : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val expanded = useState { false }
 
     useTransition(
@@ -51,7 +49,10 @@ class ExpandableElement(
             Transition.create(TRANSITION_MSG_PARENT)
                 .animate(AnimatedProperties.HEIGHT)
                 .appearFrom(0f),
-            Transition.create(TRANSITION_TOP_DETAIL, TRANSITION_BOTTOM_DETAIL)
+            Transition.create(
+                    Transition.TransitionKeyType.GLOBAL,
+                    TRANSITION_TOP_DETAIL,
+                    TRANSITION_BOTTOM_DETAIL)
                 .animate(AnimatedProperties.HEIGHT)
                 .appearFrom(0f)
                 .disappearTo(0f)))

@@ -51,8 +51,7 @@ class DynamicPropsOnForcedRemountTest {
     val componentTree = ComponentTree.create(componentContext, component).build()
 
     lithoView.setComponentTree(componentTree)
-    lithoView.markAsNeedsRemount()
-    lithoView.attachToWindow()
+    lithoView.attachToWindow().measure().layout()
     LithoAssertions.assertThat(lithoView).hasVisibleText("0001")
 
     dynamicValue.set("0002")

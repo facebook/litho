@@ -113,7 +113,3 @@ Consider another example, this time displaying a shopping list:
 ```
 
 Each shopping list item requires a lambda to toggle a checkmark. If an unwrapped lambda was used, then no component would ever be reused as lambda does not provide an `equals()`. Instead, wrap the lambda in a `useCallback` hook. This provides equality across renders and ensure that changes are applied to the latest version of the `checkedItems` state.
-
-### Debugging unnecessary layouts
-
-In debug builds, `overlayRenderCount` parameter can be enabled on the Lazy Collection. This will overlay the render count onto each list item enabling the user the ability to see if items are being re-drawn when they have not changed. Simple, static items should only be rendered once. Items should only be re-rendered if their props have changed. If re-renders are being triggered by other items changing, then steps might need to be taken to deal with a prop that does not implement an `equals()`.

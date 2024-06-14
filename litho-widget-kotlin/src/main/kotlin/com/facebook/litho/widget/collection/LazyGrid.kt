@@ -36,7 +36,7 @@ inline fun ResourcesScope.LazyGrid(
     snapToStartOffset: Dimen = 0.dp,
     reverse: Boolean = false,
     columns: Int = 2,
-    itemAnimator: RecyclerView.ItemAnimator? = null,
+    itemAnimator: RecyclerView.ItemAnimator? = CollectionRecyclerSpec.itemAnimator,
     itemDecoration: RecyclerView.ItemDecoration? = null,
     clipToPadding: Boolean? = null,
     clipChildren: Boolean? = null,
@@ -68,7 +68,6 @@ inline fun ResourcesScope.LazyGrid(
     isReconciliationEnabled: Boolean =
         context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     childEquivalenceIncludesCommonProps: Boolean = true,
-    overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     preAllocationHandler: PreAllocationHandler? =
@@ -118,7 +117,6 @@ inline fun ResourcesScope.LazyGrid(
       lazyCollectionController,
       onDataRendered,
       childEquivalenceIncludesCommonProps,
-      overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,

@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -30,11 +31,7 @@ public class RecyclerBinderConfiguration {
   @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
 
-  /**
-   * Whether to use the primitive recycler API. This is an experimental feature and should not be
-   * used outside of the Litho team.
-   */
-  private final boolean mPrimitiveRecyclerEnabled;
+  @Nullable private final PrimitiveRecyclerBinderStrategy mPrimitiveRecyclerBinderStrategy;
 
   private final RecyclerBinderConfig mRecyclerBinderConfig;
 
@@ -51,12 +48,12 @@ public class RecyclerBinderConfiguration {
       boolean useBackgroundChangeSets,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean postToFrontOfQueueForFirstChangeset,
-      boolean primitiveRecyclerEnabled) {
+      @Nullable PrimitiveRecyclerBinderStrategy primitiveRecyclerBinderStrategy) {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mRecyclerBinderConfig = recyclerBinderConfig;
-    mPrimitiveRecyclerEnabled = primitiveRecyclerEnabled;
+    mPrimitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy;
   }
 
   public boolean getUseBackgroundChangeSets() {
@@ -75,8 +72,9 @@ public class RecyclerBinderConfiguration {
     return mRecyclerBinderConfig;
   }
 
-  public boolean isPrimitiveRecyclerEnabled() {
-    return mPrimitiveRecyclerEnabled;
+  @Nullable
+  public PrimitiveRecyclerBinderStrategy getPrimitiveRecyclerBinderStrategy() {
+    return mPrimitiveRecyclerBinderStrategy;
   }
 
   public static class Builder {
@@ -85,7 +83,7 @@ public class RecyclerBinderConfiguration {
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mPostToFrontOfQueueForFirstChangeset;
-    private boolean mIsPrimitiveRecyclerEnabled = false;
+    @Nullable private PrimitiveRecyclerBinderStrategy mIsPrimitiveRecyclerEnabled;
 
     Builder() {}
 
@@ -95,7 +93,7 @@ public class RecyclerBinderConfiguration {
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
-      this.mIsPrimitiveRecyclerEnabled = configuration.mPrimitiveRecyclerEnabled;
+      this.mIsPrimitiveRecyclerEnabled = configuration.mPrimitiveRecyclerBinderStrategy;
     }
 
     /**
@@ -128,8 +126,9 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder isPrimitiveRecyclerEnabled(boolean isPrimitiveRecyclerEnabled) {
-      mIsPrimitiveRecyclerEnabled = isPrimitiveRecyclerEnabled;
+    public Builder primitiveRecyclerBinderStrategy(
+        @Nullable PrimitiveRecyclerBinderStrategy primitiveRecyclerBinderStrategy) {
+      mIsPrimitiveRecyclerEnabled = primitiveRecyclerBinderStrategy;
       return this;
     }
 

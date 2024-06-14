@@ -42,7 +42,7 @@ import java.util.List;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
 public class LithoView extends BaseMountingView {
-  private static final String LITHO_LIFECYCLE_FOUND =
+  private static final String LITHO_VISIBILITY_EVENTS_CONTROLLER_FOUND =
       "lithoView:LithoVisibilityEventsControllerFound";
 
   private @Nullable ComponentTree mComponentTree;
@@ -52,7 +52,6 @@ public class LithoView extends BaseMountingView {
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
   private boolean mHasNewComponentTree = false;
-  private OnDirtyMountListener mOnDirtyMountListener = null;
   private @Nullable OnPostDrawListener mOnPostDrawListener = null;
 
   private final AccessibilityManager mAccessibilityManager;
@@ -85,8 +84,8 @@ public class LithoView extends BaseMountingView {
   }
 
   public static LithoView create(
-      Context context, Component component, LithoVisibilityEventsController lifecycleProvider) {
-    return create(new ComponentContext(context), component, lifecycleProvider);
+      Context context, Component component, LithoVisibilityEventsController controller) {
+    return create(new ComponentContext(context), component, controller);
   }
 
   /**
@@ -108,11 +107,9 @@ public class LithoView extends BaseMountingView {
    * the given LithoVisibilityEventsController instance.
    */
   public static LithoView create(
-      ComponentContext context,
-      Component component,
-      LithoVisibilityEventsController lifecycleProvider) {
+      ComponentContext context, Component component, LithoVisibilityEventsController controller) {
     final LithoView lithoView = new LithoView(context);
-    lithoView.setComponentTree(ComponentTree.create(context, component, lifecycleProvider).build());
+    lithoView.setComponentTree(ComponentTree.create(context, component, controller).build());
     return lithoView;
   }
 
@@ -401,19 +398,8 @@ public class LithoView extends BaseMountingView {
     return componentTree != null ? componentTree.getRoot() : null;
   }
 
-  public synchronized void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
-    mOnDirtyMountListener = onDirtyMountListener;
-  }
-
   public void setOnPostDrawListener(@Nullable OnPostDrawListener onPostDrawListener) {
     mOnPostDrawListener = onPostDrawListener;
-  }
-
-  @Override
-  protected synchronized void onDirtyMountComplete() {
-    if (mOnDirtyMountListener != null) {
-      mOnDirtyMountListener.onDirtyMount(this);
-    }
   }
 
   public void setComponentTree(@Nullable ComponentTree componentTree) {
@@ -509,8 +495,8 @@ public class LithoView extends BaseMountingView {
    * @return true if this LithoView has a ComponentTree attached and a
    *     LithoVisibilityEventsController is set on it, false otherwise.
    */
-  public synchronized boolean componentTreeHasLifecycleProvider() {
-    return mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider();
+  public synchronized boolean componentTreeHasVisibilityEventsController() {
+    return mComponentTree != null && mComponentTree.isSubscribedToVisibilityEventsController();
   }
 
   /**
@@ -520,26 +506,26 @@ public class LithoView extends BaseMountingView {
    * @return true if the LithoView's ComponentTree was subscribed as listener to the given
    *     LithoVisibilityEventsController, false otherwise.
    */
-  public synchronized boolean subscribeComponentTreeToLifecycleProvider(
-      LithoVisibilityEventsController lifecycleProvider) {
+  public synchronized boolean subscribeComponentTreeToVisibilityEventsController(
+      LithoVisibilityEventsController controller) {
     if (mComponentTree == null) {
       return false;
     }
 
-    if (mComponentTree.isSubscribedToLifecycleProvider()) {
+    if (mComponentTree.isSubscribedToVisibilityEventsController()) {
       return false;
     }
 
-    mComponentTree.subscribeToLifecycleProvider(lifecycleProvider);
+    mComponentTree.subscribeToVisibilityEventsController(controller);
     return true;
   }
 
   @Override
   public void setVisibilityHint(boolean isVisible, boolean skipMountingIfNotVisible) {
-    if (componentTreeHasLifecycleProvider()) {
+    if (componentTreeHasVisibilityEventsController()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
-          LITHO_LIFECYCLE_FOUND,
+          LITHO_VISIBILITY_EVENTS_CONTROLLER_FOUND,
           "Setting visibility hint but a LithoVisibilityEventsController was found, ignoring.");
 
       return;
@@ -549,10 +535,10 @@ public class LithoView extends BaseMountingView {
 
   @Override
   public void setVisibilityHint(boolean isVisible) {
-    if (componentTreeHasLifecycleProvider()) {
+    if (componentTreeHasVisibilityEventsController()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
-          LITHO_LIFECYCLE_FOUND,
+          LITHO_VISIBILITY_EVENTS_CONTROLLER_FOUND,
           "Setting visibility hint but a LithoVisibilityEventsController was found, ignoring.");
 
       return;
@@ -565,6 +551,13 @@ public class LithoView extends BaseMountingView {
     // Not calling super intentionally as in the LithoView case we want ComponentTree to control the
     // rebind logic.
     if (mComponentTree != null) {
+      final @Nullable ComponentsConfiguration config = getConfiguration();
+      if (config != null
+          && config.enableFixForIM
+          && !mIsTemporaryDetached
+          && !hasTransientState()) {
+        notifyVisibleBoundsChangedOnAttach();
+      }
       mComponentTree.attach();
     }
 
@@ -579,10 +572,6 @@ public class LithoView extends BaseMountingView {
     super.onDetached();
     if (mComponentTree != null) {
       mComponentTree.detach();
-
-      if (mComponentTree.getLithoConfiguration().componentsConfig.unmountOnDetachedFromWindow) {
-        unmountAllItems();
-      }
     }
 
     AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
@@ -687,14 +676,14 @@ public class LithoView extends BaseMountingView {
     return (mComponentTree != null && mComponentTree.isVisibilityProcessingEnabled());
   }
 
-  /** Deprecated: Consider subscribing the LithoView to a LithoLifecycleOwner instead. */
+  /** Deprecated: Consider subscribing the LithoView to a VisibilityEventsController instead. */
   @Deprecated
   public void release() {
     assertMainThread();
-    if (componentTreeHasLifecycleProvider()) {
+    if (componentTreeHasVisibilityEventsController()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
-          LITHO_LIFECYCLE_FOUND,
+          LITHO_VISIBILITY_EVENTS_CONTROLLER_FOUND,
           "Trying to release a LithoView but a LithoVisibilityEventsController was found,"
               + " ignoring.");
 
@@ -929,15 +918,6 @@ public class LithoView extends BaseMountingView {
           loggingInfo.startupLoggerAttribution);
       loggingInfo.lastMountLogged[0] = true;
     }
-  }
-
-  public interface OnDirtyMountListener {
-
-    /**
-     * Called when finishing a mount where the mount state was dirty. This indicates that there were
-     * new props/state in the tree, or the LithoView was mounting a new ComponentTree
-     */
-    void onDirtyMount(LithoView view);
   }
 
   public interface OnPostDrawListener {

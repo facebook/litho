@@ -39,6 +39,16 @@ import java.util.TreeSet;
 public class IncrementalMountRenderCoreExtension
     extends RenderCoreExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState> {
 
+  private final Visitor mLayoutResultVisitor;
+
+  public IncrementalMountRenderCoreExtension() {
+    this(false);
+  }
+
+  public IncrementalMountRenderCoreExtension(boolean shouldMountZeroBoundsContent) {
+    this.mLayoutResultVisitor = new Visitor(shouldMountZeroBoundsContent);
+  }
+
   public static final Comparator<IncrementalMountOutput> sTopsComparator =
       new Comparator<IncrementalMountOutput>() {
         @Override
@@ -79,7 +89,6 @@ public class IncrementalMountRenderCoreExtension
         }
       };
 
-  private final Visitor mLayoutResultVisitor = new Visitor();
   private static final IncrementalMountExtension mMountExtension =
       IncrementalMountExtension.getInstance();
 
@@ -184,6 +193,12 @@ public class IncrementalMountRenderCoreExtension
 
   public static class Visitor implements LayoutResultVisitor<Results> {
 
+    private final boolean mShouldMountZeroBoundsContent;
+
+    public Visitor(boolean shouldMountZeroBoundsContent) {
+      mShouldMountZeroBoundsContent = shouldMountZeroBoundsContent;
+    }
+
     @Override
     public void visit(
         final @Nullable RenderTreeNode parent,
@@ -212,7 +227,14 @@ public class IncrementalMountRenderCoreExtension
 
       host = results.getIncrementalMountOutputForId(parent.getRenderUnit().getId());
 
-      final Rect rect = new Rect(x, y, x + bounds.width(), y + bounds.height());
+      final Rect rect =
+          new Rect(
+              x,
+              y,
+              mShouldMountZeroBoundsContent ? x + Math.max(bounds.width(), 1) : x + bounds.width(),
+              mShouldMountZeroBoundsContent
+                  ? y + Math.max(bounds.height(), 1)
+                  : y + bounds.height());
 
       results.addOutput(
           new IncrementalMountOutput(

@@ -1,0 +1,45 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+
+load("@fbsource//tools/build_defs/android:fb_kotlin_test.bzl", "fb_kotlin_test")
+load("@fbsource//tools/build_defs/features:native_feature_wrapper.bzl", "feature_native")
+load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
+
+feature_native.kotlin_library(
+    name = "litho-compiler",
+    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    feature = FBApp_UIFrameworks_Litho_Litho,
+    labels = [],
+    oncall = "litho_components_for_android",
+    provided_deps = [
+        "//third-party/kotlin:kotlin-compiler-embeddable",
+    ],
+    resources = glob(["resources/**"]),
+    resources_root = "resources",
+    tests = [
+        "//fbandroid/libraries/components/litho-compiler-plugin/compiler:litho-compiler-test",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+    ],
+)
+
+fb_kotlin_test(
+    name = "litho-compiler-test",
+    srcs = glob(["src/test/kotlin/**/*.kt"]),
+    oncall = "litho_components_for_android",
+    deps = [
+        ":litho-compiler",
+        "//fbandroid/third-party/java/assertj:assertj-core",
+        "//fbandroid/third-party/java/junit:junit",
+        "//third-party/kotlin:kotlin",
+        "//third-party/kotlin:kotlin-compiler-embeddable",
+        "//third-party/kotlin:kotlin-reflect",
+        "//third-party/kotlin/kotlin-compile-testing:kotlin-compile-testing-k2-shaded",
+        "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",
+    ],
+)

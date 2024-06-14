@@ -37,7 +37,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
-import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -78,7 +77,7 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LithoTree mLithoTree;
 
-  private @Nullable LithoVisibilityEventsController mLifecycleProvider;
+  private @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
 
   // Used to hold styling information applied to components
   @StyleRes
@@ -116,7 +115,7 @@ public class ComponentContext {
       @Nullable LithoConfiguration lithoConfiguration,
       @Nullable LithoTree lithoTree,
       @Nullable String globalKey,
-      @Nullable LithoVisibilityEventsController lifecycleProvider,
+      @Nullable LithoVisibilityEventsController lithoVisibilityEventsController,
       @Nullable Component componentScope,
       @Nullable TreePropContainer parentTreePropContainer) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
@@ -132,7 +131,7 @@ public class ComponentContext {
         lithoConfiguration != null
             ? lithoConfiguration
             : buildDefaultLithoConfiguration(
-                mContext, ComponentsConfiguration.defaultInstance, null, null);
+                mContext, ComponentsConfiguration.defaultInstance, null);
 
     if (mLithoConfiguration.componentsConfig.componentsLogger != null
         && mLithoConfiguration.componentsConfig.logTag == null) {
@@ -141,7 +140,7 @@ public class ComponentContext {
 
     mLithoTree = lithoTree;
     mGlobalKey = globalKey;
-    mLifecycleProvider = lifecycleProvider;
+    mLithoVisibilityEventsController = lithoVisibilityEventsController;
     mComponentScope = componentScope;
     mParentTreePropContainer = parentTreePropContainer;
   }
@@ -155,7 +154,7 @@ public class ComponentContext {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
-    mLifecycleProvider = context.mLifecycleProvider;
+    mLithoVisibilityEventsController = context.mLithoVisibilityEventsController;
     mLithoTree = context.mLithoTree;
     mTreePropContainer = treePropContainer != null ? treePropContainer : context.mTreePropContainer;
     mParentTreePropContainer = context.mParentTreePropContainer;
@@ -811,8 +810,8 @@ public class ComponentContext {
   }
 
   @Nullable
-  public LithoVisibilityEventsController getLifecycleProvider() {
-    return mLifecycleProvider;
+  public LithoVisibilityEventsController getLithoVisibilityEventsController() {
+    return mLithoVisibilityEventsController;
   }
 
   @VisibleForTesting
@@ -828,11 +827,6 @@ public class ComponentContext {
     if (mLithoTree != null) {
       mLithoTree.getStateUpdater().removePendingStateUpdate(key, nestedTreeContext);
     }
-  }
-
-  @Nullable
-  public VisibilityBoundsTransformer getVisibilityBoundsTransformer() {
-    return mLithoConfiguration.visibilityBoundsTransformer;
   }
 
   static ComponentsConfiguration getComponentsConfig(ComponentContext c) {

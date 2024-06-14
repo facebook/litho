@@ -33,9 +33,6 @@ object RenderCoreConfig {
    */
   @JvmField var shouldSetInLayoutDuringUnmountAll: Boolean = false
 
-  /** Enabling this will clear the render tree from the MountState when unmount all is invoked. */
-  @JvmField var shouldClearRenderTreeOnUnmountAll: Boolean = false
-
   /**
    * Enables the global gap worker which will schedule gaps between mountable items in the same
    * frame.
@@ -43,8 +40,8 @@ object RenderCoreConfig {
   @JvmField var useGlobalGapWorker: Boolean = true
 
   /**
-   * Enables main thread check before calling 'requestLayout' in HostView. This should fix
-   * CalledFromWrongThreadException caused by calling from the wrong thread.
+   * Enabling this config will fix the issue that component matches host view size will never be
+   * unmounted when getting out of the viewport.
    */
-  @JvmField var shouldCheckMainThreadOnLayoutRequest: Boolean = false
+  @JvmField var shouldEnableIMFix: Boolean = false
 }

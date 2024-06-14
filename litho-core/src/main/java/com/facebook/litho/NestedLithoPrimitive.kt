@@ -23,6 +23,7 @@ import com.facebook.litho.NestedLithoTree.cleanup
 import com.facebook.litho.NestedLithoTree.commit
 import com.facebook.litho.NestedLithoTree.enqueue
 import com.facebook.litho.NestedLithoTree.runEffects
+import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
@@ -109,11 +110,14 @@ fun NestedLithoPrimitive(
           currentResolveResult,
       )
 
+  val poolSize = if (resolveContext.recycleHost) ContentAllocator.DEFAULT_MAX_PREALLOCATION else 0
+
   val mountBehavior =
       MountBehavior(
           id = renderUnitId,
-          contentAllocator = ViewAllocator { LithoRenderTreeView(it) },
+          contentAllocator = ViewAllocator(poolSize) { LithoRenderTreeView(it) },
       ) {
+        doesMountRenderTreeHosts = true
 
         // binder to clean up the content before returning it to the pool
         withDescription("final-unmount") {
@@ -237,6 +241,7 @@ data class NestedLithoResolveContext(
     val rootHostReference: NestedMountedViewReference = NestedMountedViewReference(),
     val lifecycleProvider: NestedLithoTreeLifecycleProvider = NestedLithoTreeLifecycleProvider(),
     val usePreviousLayoutState: Boolean,
+    val recycleHost: Boolean = true,
 )
 
 class NestedTreeId(val id: Int)

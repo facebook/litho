@@ -9,6 +9,7 @@ litho_android_library(
     srcs = glob(["**/*.kt"]),
     abi_generation_mode = "source_only",
     autoglob = False,
+    k2 = True,
     labels = [],
     visibility = [
         "PUBLIC",

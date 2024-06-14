@@ -21,15 +21,16 @@ import static com.facebook.rendercore.debug.DebugEventAttribute.Key;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     extends MountExtension<Input, VisibilityMountExtension.VisibilityMountExtensionState>
     implements VisibleBoundsCallbacks<VisibilityMountExtension.VisibilityMountExtensionState> {
@@ -68,8 +70,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   @Override
   public void beforeMount(
       ExtensionState<VisibilityMountExtensionState> extensionState,
-      Input input,
+      @Nullable Input input,
       @Nullable Rect localVisibleRect) {
+    checkNotNull(input);
 
     final boolean isTracing = RenderCoreSystrace.isTracing();
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
@@ -78,7 +81,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     if (isTracing) {
       RenderCoreSystrace.beginSection("VisibilityExtension.beforeMount");
     }
-
     final VisibilityMountExtensionState state = extensionState.getState();
 
     state.mVisibilityOutputs = input.getVisibilityOutputs();
@@ -293,8 +295,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           if (isTracing) {
             RenderCoreSystrace.endSection();
           }
-
-          visibilityItem.setDoNotClearInThisPass(isDirty);
+          if (visibilityItem != null) {
+            visibilityItem.setDoNotClearInThisPass(isDirty);
+          }
           continue;
         }
 
@@ -355,7 +358,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
                     unfocusedHandler,
                     visibilityChangedHandler,
                     visibilityOutput.getKey(),
-                    visibilityOutput.mRenderUnitId,
+                    visibilityOutput.renderUnitId,
                     visibilityOutput.getBounds());
 
             visibilityItem.setDoNotClearInThisPass(isDirty);
@@ -365,7 +368,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
             if (visibleHandler != null) {
               final Object content =
                   visibilityOutput.hasMountableContent
-                      ? getContentById(extensionState, visibilityOutput.mRenderUnitId)
+                      ? getContentById(extensionState, visibilityOutput.renderUnitId)
                       : null;
 
               @Nullable
@@ -475,7 +478,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
   }
 
-  @NonNull
   private static Map<String, Object> createVisibilityDebugAttributes(
       VisibilityItem visibilityItem) {
     Map<String, Object> attributes = new HashMap<>();

@@ -1,5 +1,3 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -30,11 +28,16 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
+import com.facebook.litho.LithoView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
+import com.facebook.litho.lifecycle.LifecycleOwnerWrapper
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,6 +54,14 @@ class UseLiveDataTest {
           lithoVisibilityEventsController = {
             AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
           })
+  @get:Rule val ruleWithoutVisibilityEventsController: LithoViewRule = LithoViewRule()
+
+  @Before
+  fun setUp() {
+    ComponentsConfiguration.defaultInstance =
+        ComponentsConfiguration.defaultInstance.copy(
+            enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner = false)
+  }
 
   @Test
   fun `should observe initial live data value`() {
@@ -187,6 +198,50 @@ class UseLiveDataTest {
     Assertions.assertThat(liveData.hasObservers()).isFalse
   }
 
+  @Test
+  fun `should observe lifecycle change when lifecycle owner is set after render`() {
+    ComponentsConfiguration.defaultInstance =
+        ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = true)
+
+    // Override new lifecycle owner and provider with local
+    val rule = ruleWithoutVisibilityEventsController
+    val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
+    val controller = AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
+
+    val liveData = MutableLiveData("hello")
+    val component = MyComponent(liveData)
+
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
+
+    // 1. the litho view should reflect the initial live data value
+    val lithoView = LithoView(rule.context)
+    val testLithoView = rule.render(lithoView = lithoView) { component }
+    assertThat(testLithoView).hasVisibleText("hello")
+
+    lithoView.subscribeComponentTreeToVisibilityEventsController(controller)
+
+    // 2. we change the lifecycle to an inactive state, and update the live data.
+    // in this case, the live data won't emit as there is no active observer.
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_STOP)
+    liveData.value = "world"
+    rule.idle()
+    assertThat(testLithoView).doesNotHaveVisibleText("world")
+
+    // 3. we resume the lifecycle, and therefore it should show the latest store live data change
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_RESUME)
+    rule.idle()
+    assertThat(testLithoView).hasVisibleText("world")
+
+    val tree = lithoView.componentTree!!
+    tree.release()
+    Assertions.assertThat(liveData.hasObservers()).isFalse
+    val owner = tree.getContext().getTreePropContainer()?.get(LifecycleOwnerTreeProp)
+    Assertions.assertThat((owner as LifecycleOwnerWrapper)?.hasObservers()).isFalse
+
+    ComponentsConfiguration.defaultInstance =
+        ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = false)
+  }
+
   private class MyComponent(private val liveData: LiveData<String>) : KComponent() {
 
     override fun ComponentScope.render(): Component {
@@ -247,5 +302,7 @@ class UseLiveDataTest {
     override fun removeObserver(observer: LifecycleObserver) {
       observers.remove(observer)
     }
+
+    fun hasObservers(): Boolean = observers.isNotEmpty()
   }
 }

@@ -658,7 +658,7 @@ class TreeDiffingTest {
     ): LayoutState {
       val result =
           ResolveTreeFuture.resolve(
-              context, component, TreeState(), -1, -1, previousLayoutState?.mRoot, null, null, null)
+              context, component, TreeState(), -1, -1, previousLayoutState?.root, null, null, null)
       return LayoutTreeFuture.layout(
           result,
           widthSpec,

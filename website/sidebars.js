@@ -34,6 +34,7 @@ module.exports = {
       'Main Concepts': [
         'mainconcepts/components-basics',
         'mainconcepts/props',
+        'mainconcepts/treeprops',
         {
           'Hooks and State': [
             'mainconcepts/hooks-intro',

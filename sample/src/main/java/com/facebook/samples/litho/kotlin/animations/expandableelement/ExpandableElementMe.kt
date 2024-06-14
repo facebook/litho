@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.animations.expandableelement
 
-import ExpandableElementMessageContent
 import android.graphics.Color
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -33,7 +32,7 @@ class ExpandableElementMe(
     private val seen: Boolean = false
 ) : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     return ExpandableElement(
         Row(
             style = Style.padding(start = 75.dp, end = 5.dp),

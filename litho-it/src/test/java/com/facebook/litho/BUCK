@@ -36,6 +36,8 @@ load(
     "make_dep_path",
 )
 
+oncall("components_for_android")
+
 litho_robolectric4_test(
     name = "litho",
     srcs = glob(
@@ -62,6 +64,7 @@ litho_robolectric4_test(
     target = "8",
     target_sdk_levels = ["33"],
     deps = [
+        "//fbandroid/java/com/facebook/testing/robolectric:robolectric",
         "//fbandroid/third-party/java/guava:guava",
         "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,

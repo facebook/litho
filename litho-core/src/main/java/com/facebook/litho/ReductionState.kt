@@ -21,6 +21,7 @@ import androidx.collection.LongSparseArray
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.SizeConstraints
@@ -41,7 +42,7 @@ internal data class ReductionState(
     val rootX: Int,
     val rootY: Int,
     val root: LayoutResult? = null,
-    val id: Int = LayoutState.getIdGenerator().getAndIncrement(),
+    val id: Int = LayoutState.idGenerator.getAndIncrement(),
     val previousLayoutStateId: Int =
         currentLayoutState?.id ?: LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID,
     val mountableOutputs: MutableList<RenderTreeNode> = ArrayList(8),
@@ -51,7 +52,7 @@ internal data class ReductionState(
     val visibilityOutputs: MutableList<VisibilityOutput> = ArrayList(8),
     val testOutputs: MutableList<TestOutput>? =
         if (ComponentsConfiguration.isEndToEndTestRun) ArrayList(8) else null,
-    val scopedSpecComponentInfos: MutableList<ScopedComponentInfo>? = ArrayList(),
+    val scopedSpecComponentInfos: MutableList<ScopedComponentInfo> = ArrayList(),
     val componentKeyToBounds: MutableMap<String, Rect> = HashMap(),
     val componentHandleToBounds: MutableMap<Handle, Rect> = HashMap(),
     val duplicatedTransitionIds: MutableSet<TransitionId> = HashSet(),
@@ -70,12 +71,12 @@ internal data class ReductionState(
     var height: Int = 0,
     var rootNode: LithoNode? = null,
     var diffTreeRoot: DiffNode? = null,
-    var currentTransitionId: TransitionId? = currentLayoutState?.mCurrentTransitionId,
+    var currentTransitionId: TransitionId? = currentLayoutState?.currentTransitionId,
     var currentLayoutOutputAffinityGroup: OutputUnitsAffinityGroup<AnimatableItem>? =
-        currentLayoutState?.mCurrentLayoutOutputAffinityGroup,
+        currentLayoutState?.currentLayoutOutputAffinityGroup,
     var hasComponentsExcludedFromIncrementalMount: Boolean = false,
     var attachables: MutableList<Attachable>? = null,
-    var transitions: MutableList<Transition>? = null,
+    var transitionData: MutableTransitionData? = null,
     var scopedComponentInfosNeedingPreviousRenderData: MutableList<ScopedComponentInfo>? = null,
     var workingRangeContainer: WorkingRangeContainer? = null,
 )

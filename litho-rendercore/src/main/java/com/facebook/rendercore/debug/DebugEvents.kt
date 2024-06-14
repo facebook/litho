@@ -134,7 +134,7 @@ class DebugMarkerEvent(
 /** Base class for process events */
 class DebugProcessEvent(
     val timestamp: Long = System.currentTimeMillis(), // for calendar time
-    val duration: Duration,
+    val durationNs: Duration,
     type: String,
     renderStateId: String,
     threadName: String = Thread.currentThread().name,
@@ -149,7 +149,7 @@ class DebugProcessEvent(
         attributes =
             buildMap {
               put(DebugEventAttribute.Timestamp, timestamp)
-              put(DebugEventAttribute.Duration, duration)
+              put(DebugEventAttribute.Duration, durationNs)
               putAll(attributes)
             })
 
@@ -320,7 +320,6 @@ object DebugEventDispatcher {
 
   @JvmStatic
   fun endTrace(traceIdentifier: Int) {
-    val endTime = System.nanoTime()
     val last = traceIdsToEvents.remove(traceIdentifier) ?: return
     val type = last.type
 
@@ -338,12 +337,13 @@ object DebugEventDispatcher {
       return
     }
 
+    val endTime = System.nanoTime()
     val event =
         DebugProcessEvent(
             type = type,
             timestamp = last.timestamp, // for calender time
             renderStateId = last.renderStateId,
-            duration = Duration(value = endTime - last.startTime),
+            durationNs = Duration(value = endTime - last.startTime),
             attributes = last.attributes,
         )
 
@@ -390,7 +390,7 @@ object DebugEventDispatcher {
             type = type,
             timestamp = timestamp,
             renderStateId = renderStateId(),
-            duration = Duration(value = endTime - startTime),
+            durationNs = Duration(value = endTime - startTime),
             attributes = attributes,
         )
 

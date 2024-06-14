@@ -56,6 +56,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
@@ -68,6 +69,7 @@ import com.facebook.litho.widget.ExperimentalRecycler;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.LithoRecyclerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
+import com.facebook.litho.widget.PostDispatchDrawListener;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
@@ -222,9 +224,13 @@ public class RecyclerCollectionComponentSpec {
       componentsConfiguration = c.mLithoConfiguration.componentsConfig;
     }
 
-    boolean isPrimitiveRecyclerEnabled =
-        recyclerConfiguration.getRecyclerBinderConfiguration().isPrimitiveRecyclerEnabled()
-            || componentsConfiguration.primitiveRecyclerEnabled;
+    PrimitiveRecyclerBinderStrategy primitiveRecyclerBinderStrategy =
+        recyclerConfiguration.getRecyclerBinderConfiguration().getPrimitiveRecyclerBinderStrategy()
+                != null
+            ? recyclerConfiguration
+                .getRecyclerBinderConfiguration()
+                .getPrimitiveRecyclerBinderStrategy()
+            : componentsConfiguration.primitiveRecyclerBinderStrategy;
 
     boolean shouldNotWrapContent =
         !binder.canMeasure()
@@ -233,6 +239,13 @@ public class RecyclerCollectionComponentSpec {
                 .getRecyclerBinderConfig()
                 .wrapContent;
 
+    /*
+     * This is a hacky way to detect that the user opted by using our default implementation. We
+     * detect that by comparing with the item animator property default value, and if there is a
+     * match then we pass on a new instance of the same type of item animator. This is because we
+     * can't reuse the same item animator across different instances of RecyclerView, or it will
+     * crash.
+     */
     ItemAnimator recyclerItemAnimator =
         RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
             ? new NoUpdateItemAnimator()
@@ -240,7 +253,12 @@ public class RecyclerCollectionComponentSpec {
 
     Component recyclerComponent;
 
-    if (!isPrimitiveRecyclerEnabled) {
+    List<OnScrollListener> listenersToUse =
+        onScrollListeners != null ? new ArrayList<>(onScrollListeners) : new ArrayList<>();
+    listenersToUse.add(
+        new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo));
+
+    if (primitiveRecyclerBinderStrategy == null) {
       final Recycler.Builder recycler =
           Recycler.create(c)
               .clipToPadding(clipToPadding)
@@ -263,9 +281,7 @@ public class RecyclerCollectionComponentSpec {
               .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
               .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
               .fadingEdgeLengthDip(fadingEdgeLength)
-              .onScrollListener(
-                  new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo))
-              .onScrollListeners(onScrollListeners)
+              .onScrollListeners(listenersToUse)
               .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
               .refreshProgressBarColor(refreshProgressBarColor)
               .snapHelper(snapHelper)
@@ -285,11 +301,6 @@ public class RecyclerCollectionComponentSpec {
 
       recyclerComponent = recycler.build();
     } else {
-      List<OnScrollListener> listenersToUse =
-          onScrollListeners != null ? new ArrayList<>(onScrollListeners) : new ArrayList<>();
-      listenersToUse.add(
-          new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo));
-
       JavaStyle javaStyle = StyleCompat.touchHandler(recyclerTouchEventHandler).flexShrink(0f);
 
       if (shouldNotWrapContent) {
@@ -298,6 +309,7 @@ public class RecyclerCollectionComponentSpec {
 
       recyclerComponent =
           new ExperimentalRecycler(
+              primitiveRecyclerBinderStrategy,
               binder,
               true,
               clipToPadding,
@@ -394,7 +406,9 @@ public class RecyclerCollectionComponentSpec {
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
       @Prop(optional = true) @Nullable LithoStartupLogger startupLogger,
-      @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory) {
+      @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory,
+      @Prop(optional = true) @Nullable
+          List<PostDispatchDrawListener> additionalPostDispatchDrawListeners) {
 
     RecyclerBinderConfiguration binderConfiguration =
         recyclerConfiguration.getRecyclerBinderConfiguration();
@@ -421,6 +435,11 @@ public class RecyclerCollectionComponentSpec {
             .layoutInfo(newLayoutInfo)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .startupLogger(startupLogger);
+
+    if (additionalPostDispatchDrawListeners != null) {
+      recyclerBinderBuilder.addAdditionalPostDispatchDrawListeners(
+          additionalPostDispatchDrawListeners);
+    }
 
     RecyclerBinder recyclerBinder = recyclerBinderBuilder.build(c);
 
@@ -556,7 +575,6 @@ public class RecyclerCollectionComponentSpec {
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
       super.onScrolled(recyclerView, dx, dy);
-
       mEventsController.updateFirstLastFullyVisibleItemPositions(mLayoutInfo);
     }
   }

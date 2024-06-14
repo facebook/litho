@@ -21,6 +21,7 @@ import android.graphics.Rect
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.collection.LazyList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -98,6 +99,7 @@ class KTreePropsTest {
   @Test
   fun treePropsAreIsolatedBetweenSiblings() {
     val child1StringPropRef = TreePropHolder()
+    val child2StringPropRef = TreePropHolder()
     val child1IntPropRef = TreePropHolder()
     val child2IntPropRef = TreePropHolder()
 
@@ -111,6 +113,7 @@ class KTreePropsTest {
 
     class Child2Component : KComponent() {
       override fun ComponentScope.render(): Component? {
+        child2StringPropRef.prop = getTreeProp<String>()
         child2IntPropRef.prop = getTreeProp<Integer>()
         return null
       }
@@ -130,8 +133,41 @@ class KTreePropsTest {
     ComponentTestHelper.mountComponent(context, ParentComponent())
 
     assertThat(child1StringPropRef.prop).isEqualTo("kavabanga")
+    assertThat(child2StringPropRef.prop).isEqualTo("kavabanga")
     assertThat(child1IntPropRef.prop).isEqualTo(42)
     assertThat(child2IntPropRef.prop).isNull()
+  }
+
+  @Test
+  fun treePropValueIsPropagatedFromParentToNestedComponentTree() {
+    val childStringPropRef = TreePropHolder()
+    val childIntPropRef = TreePropHolder()
+
+    class ChildComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        childStringPropRef.prop = getTreeProp<String>()
+        childIntPropRef.prop = getTreeProp<Integer>()
+        return null
+      }
+    }
+    class IntermediateComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return TreePropProvider(Integer::class.java to 24) { ChildComponent() }
+      }
+    }
+    class ParentComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return TreePropProvider(String::class.java to "kavabanga") {
+          LazyList {
+            (1..1).forEach { tag -> child(id = tag, component = IntermediateComponent()) }
+          }
+        }
+      }
+    }
+
+    ComponentTestHelper.mountComponent(context, ParentComponent())
+    assertThat(childStringPropRef.prop).isEqualTo("kavabanga")
+    assertThat(childIntPropRef.prop).isEqualTo(24)
   }
 }
 

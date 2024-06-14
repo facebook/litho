@@ -3,10 +3,9 @@
 package com.facebook.flexlayout;
 
 import com.facebook.flexlayout.layoutoutput.LayoutOutput;
+import com.facebook.flexlayout.layoutoutput.MeasureOutput;
 import com.facebook.flexlayout.styles.FlexItemCallback;
-import com.facebook.proguard.annotations.DoNotStrip;
 
-@DoNotStrip
 public class FlexLayout {
   public static <MeasureResult> LayoutOutput<MeasureResult> calculateLayout(
       float[] flexBoxStyle,
@@ -29,7 +28,35 @@ public class FlexLayout {
         ownerWidth,
         ownerHeight,
         layoutOutput,
-        callbackArray);
+        new FlexLayoutNativeMeasureCallback<MeasureResult>() {
+
+          @Override
+          MeasureOutput<MeasureResult> measure(
+              int idx,
+              float minWidth,
+              float maxWidth,
+              float minHeight,
+              float maxHeight,
+              float ownerWidth,
+              float ownerHeight) {
+            MeasureOutput<MeasureResult> measureOutput =
+                callbackArray[idx].measure(
+                    minWidth, maxWidth, minHeight, maxHeight, ownerWidth, ownerHeight);
+
+            // This measure callback implementation fills in the layout output array of
+            // measureResults directly within the measure calculation method. Unlike other
+            // platforms, in Java the costs of JNI crossing is high, and this lets us avoid book
+            // keeping a lot of local_ref
+            // objects.
+            layoutOutput.setMeasureResultForChildAt(idx, measureOutput);
+            return measureOutput;
+          }
+
+          @Override
+          float baseline(int idx, float width, float height) {
+            return callbackArray[idx].baseline(width, height);
+          }
+        });
     return layoutOutput;
   }
 }

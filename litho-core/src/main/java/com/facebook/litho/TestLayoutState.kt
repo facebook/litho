@@ -335,7 +335,7 @@ object TestLayoutState {
               }
           if (node != null) {
             Resolver.applyTransitionsAndUseEffectEntriesToNode(
-                renderResult.transitions, renderResult.useEffectEntries, node)
+                renderResult.transitionData, renderResult.useEffectEntries, node)
           }
         }
         else -> throw IllegalArgumentException("component:${component.simpleName}")

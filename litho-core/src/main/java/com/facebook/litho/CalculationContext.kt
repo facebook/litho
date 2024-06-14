@@ -35,4 +35,16 @@ interface CalculationContext {
    * will be used by [EventHandlersController] to rebind existing EventHandlers.
    */
   fun recordEventHandler(globalKey: String, eventHandler: EventHandler<*>)
+
+  companion object {
+    @JvmName("recordEventHandlers")
+    @JvmStatic
+    fun recordEventHandlers(from: CalculationContext?, to: CalculationContext?) {
+      if (to != null && from != null) {
+        from.eventHandlers?.forEach { handler ->
+          to.recordEventHandler(handler.first, handler.second)
+        }
+      }
+    }
+  }
 }

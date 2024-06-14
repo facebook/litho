@@ -67,6 +67,7 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -4581,6 +4582,23 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+  }
+
+  @Test
+  public void testAdditionalPostDispatchDrawListenerOnDispatchDraw() {
+    final PostDispatchDrawListener mockDispatchDrawListener = mock(PostDispatchDrawListener.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .recyclerBinderConfig(RecyclerBinderConfig.create().rangeRatio(RANGE_RATIO).build())
+            .addAdditionalPostDispatchDrawListeners(ImmutableList.of(mockDispatchDrawListener))
+            .build(mComponentContext);
+
+    final LithoRecyclerView recyclerView = new LithoRecyclerView(getApplicationContext());
+    recyclerBinder.mount(recyclerView);
+
+    recyclerView.dispatchDraw(mock(Canvas.class));
+
+    verify(mockDispatchDrawListener).postDispatchDraw(anyInt());
   }
 
   // Async init range tests.

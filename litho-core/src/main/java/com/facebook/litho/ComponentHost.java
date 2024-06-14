@@ -79,10 +79,10 @@ public class ComponentHost extends Host implements DisappearingHost, SupportsPiv
   private static final float UNSET = Float.MIN_VALUE;
 
   private final SparseArrayCompat<MountItem> mMountItems = new SparseArrayCompat<>();
-  private SparseArrayCompat<MountItem> mScrapMountItemsArray;
+  @Nullable private SparseArrayCompat<MountItem> mScrapMountItemsArray;
 
   private final SparseArrayCompat<MountItem> mViewMountItems = new SparseArrayCompat<>();
-  private SparseArrayCompat<MountItem> mScrapViewMountItemsArray;
+  @Nullable private SparseArrayCompat<MountItem> mScrapViewMountItemsArray;
 
   private final SparseArrayCompat<MountItem> mDrawableMountItems = new SparseArrayCompat<>();
   private SparseArrayCompat<MountItem> mScrapDrawableMountItems;
@@ -1359,7 +1359,7 @@ public class ComponentHost extends Host implements DisappearingHost, SupportsPiv
    */
   private class InterleavedDispatchDraw {
 
-    private Canvas mCanvas;
+    @Nullable private Canvas mCanvas;
     private int mDrawIndex;
     private int mItemsToDraw;
 

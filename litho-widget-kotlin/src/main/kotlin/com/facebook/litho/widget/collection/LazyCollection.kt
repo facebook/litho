@@ -23,7 +23,6 @@ import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
-import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.ChangesInfo
@@ -59,7 +58,7 @@ typealias OnDataRendered =
 
 class LazyCollection(
     private val layout: CollectionLayout,
-    private val itemAnimator: RecyclerView.ItemAnimator? = null,
+    private val itemAnimator: RecyclerView.ItemAnimator?,
     private val itemDecoration: RecyclerView.ItemDecoration? = null,
     private val clipToPadding: Boolean? = null,
     private val clipChildren: Boolean? = null,
@@ -87,7 +86,6 @@ class LazyCollection(
     private val lazyCollectionController: LazyCollectionController? = null,
     private val onDataRendered: OnDataRendered? = null,
     private val childEquivalenceIncludesCommonProps: Boolean = true,
-    private val overlayRenderCount: Boolean = false,
     private val alwaysDetectDuplicates: Boolean = false,
     private val fadingEdgeLength: Dimen? = null,
     private val shouldExcludeFromIncrementalMount: Boolean = false,
@@ -240,10 +238,7 @@ class LazyCollection(
                       parentHeightPercent(item.parentHeightPercent)
                     }
                   }
-                  .component(
-                      if (LithoDebugConfigurations.isDebugModeEnabled && overlayRenderCount)
-                          component.overlayRenderCount
-                      else component)
+                  .component(component)
                   .build()
             })
         .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
@@ -266,6 +261,9 @@ class LazyCollection(
   fun isChildEquivalent(previous: CollectionChild, next: CollectionChild): Boolean {
     if (previous.deps != null || next.deps != null) {
       return previous.deps?.contentDeepEquals(next.deps) == true
+    }
+    if (previous.isSticky != next.isSticky) {
+      return false
     }
 
     return componentsEquivalent(previous.component, next.component)

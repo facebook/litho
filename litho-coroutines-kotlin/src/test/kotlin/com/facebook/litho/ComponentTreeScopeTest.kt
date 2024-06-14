@@ -54,7 +54,7 @@ class ComponentTreeScopeTest {
     val events = mutableListOf<String>()
 
     val tree = ComponentTree.create(ComponentContext(context)).build()
-    val lithoTree = LithoTree.create(tree)
+    val lithoTree = LithoTree.create(tree, tree)
 
     lithoTree.lithoTreeScope.launch { events += "launch" }
     testDispatcher.scheduler.runCurrent()
@@ -67,7 +67,7 @@ class ComponentTreeScopeTest {
     val events = mutableListOf<String>()
 
     val tree = ComponentTree.create(ComponentContext(context)).build()
-    val lithoTree = LithoTree.create(tree)
+    val lithoTree = LithoTree.create(tree, tree)
 
     lithoTree.lithoTreeScope.launch {
       try {
@@ -89,7 +89,7 @@ class ComponentTreeScopeTest {
   @Test
   fun `componentTreeScope starts as canceled if view is detached`() {
     val tree = ComponentTree.create(ComponentContext(context)).build()
-    val lithoTree = LithoTree.create(tree)
+    val lithoTree = LithoTree.create(tree, tree)
 
     tree.release()
 

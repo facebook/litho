@@ -334,10 +334,7 @@ class JavaStyle {
     style =
         style.plus(
             if (touchHandler != null) {
-              Style.onTouch { touchEvent ->
-                touchHandler.dispatchEvent(touchEvent)
-                true
-              }
+              Style.onTouch { touchEvent -> touchHandler.dispatchEvent(touchEvent) as Boolean }
             } else {
               Style
             })

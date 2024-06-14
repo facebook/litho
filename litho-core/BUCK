@@ -6,6 +6,8 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 # LICENSE file in the root directory of this source tree.
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_android_resource")
 
+oncall("playgroundapps")
+
 fb_android_resource(
     name = "res",
     feature = FBApp_UIFrameworks_Litho_Litho,

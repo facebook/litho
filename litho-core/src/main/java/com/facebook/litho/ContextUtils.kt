@@ -23,6 +23,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ApplicationInfo
 import android.view.View
+import androidx.activity.ComponentActivity
 
 object ContextUtils {
 
@@ -80,4 +81,9 @@ object ContextUtils {
     }
     return false
   }
+}
+
+fun Context.findComponentActivity(): ComponentActivity? {
+  val activity = ContextUtils.findActivityInContext(this)
+  return activity as? ComponentActivity
 }

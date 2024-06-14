@@ -33,6 +33,7 @@ import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.LithoVisibilityEventsControllerDelegate;
 import com.facebook.litho.LithoVisibilityEventsListener;
 import com.facebook.litho.Size;
+import com.facebook.litho.StateUpdaterDelegator;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -59,6 +60,8 @@ public class ComponentTreeHolder {
   private @Nullable ComponentTreeHolderVisibilityEventsController
       mComponentTreeHolderLifecycleProvider;
   private final ComponentsConfiguration mComponentsConfiguration;
+
+  @Nullable private StateUpdaterDelegator mStateUpdaterDelegator;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -118,6 +121,7 @@ public class ComponentTreeHolder {
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable LithoVisibilityEventsController parentLifecycle;
+    private @Nullable StateUpdaterDelegator stateUpdaterDelegator;
 
     private Builder(ComponentsConfiguration configuration) {
       componentsConfiguration = configuration;
@@ -144,6 +148,12 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder stateUpdaterDelegator(@Nullable StateUpdaterDelegator stateUpdaterDelegator) {
+      this.stateUpdaterDelegator =
+          stateUpdaterDelegator == null ? new StateUpdaterDelegator() : stateUpdaterDelegator;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -165,6 +175,7 @@ public class ComponentTreeHolder {
     mId = sIdGenerator.getAndIncrement();
     mParentLifecycle = builder.parentLifecycle;
     mComponentsConfiguration = builder.componentsConfiguration;
+    mStateUpdaterDelegator = builder.stateUpdaterDelegator;
   }
 
   @VisibleForTesting
@@ -402,8 +413,10 @@ public class ComponentTreeHolder {
         treeComponentsConfigurationBuilder.componentsLogger(mRenderInfo.getComponentsLogger());
       }
 
+      ComponentsConfiguration treeComponentConfiguration =
+          treeComponentsConfigurationBuilder.build();
       builder
-          .componentsConfiguration(treeComponentsConfigurationBuilder.build())
+          .componentsConfiguration(treeComponentConfiguration)
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
           .measureListener(
@@ -411,7 +424,18 @@ public class ComponentTreeHolder {
                   ? null
                   : mComponentTreeMeasureListenerFactory.create(this));
 
+      if (treeComponentConfiguration.enableFacadeStateUpdater) {
+        if (mStateUpdaterDelegator == null) {
+          mStateUpdaterDelegator = new StateUpdaterDelegator();
+        }
+        builder.stateUpdater(mStateUpdaterDelegator);
+      }
+
       mComponentTree = builder.build();
+
+      if (treeComponentConfiguration.enableFacadeStateUpdater) {
+        mStateUpdaterDelegator.attachStateUpdater(mComponentTree);
+      }
 
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
@@ -456,7 +480,6 @@ public class ComponentTreeHolder {
 
         return;
       }
-
       mComponentTree.release();
       mComponentTree = null;
     }

@@ -45,7 +45,7 @@ abstract class KComponent : Component() {
     val componentResult = componentScope.render()
     componentScope.cleanUp()
     return RenderResult(
-        componentResult, componentScope.transitions, componentScope.useEffectEntries)
+        componentResult, componentScope.transitionData, componentScope.useEffectEntries)
   }
 
   final override fun resolve(
@@ -93,7 +93,7 @@ abstract class KComponent : Component() {
 
     if (node != null) {
       Resolver.applyTransitionsAndUseEffectEntriesToNode(
-          renderResult.transitions,
+          renderResult.transitionData,
           renderResult.useEffectEntries,
           node,
       )

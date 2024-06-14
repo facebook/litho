@@ -15,6 +15,14 @@ using namespace facebook::flexlayout::jni;
 using namespace facebook::flexlayout::layoutoutput;
 using namespace facebook::flexlayout::core;
 
+using VoidMeasureResult = bool;
+
+struct JavaMeasureData {
+  JNIEnv* env;
+  jobject callbackFunction;
+  jint idx;
+};
+
 static auto decodeFlexBoxStyle(const ConstFloatArray& arr) -> FlexBoxStyle {
   FlexBoxStyle flexBoxStyle = FlexBoxStyle{};
 
@@ -72,39 +80,48 @@ static auto decodeFlexBoxStyle(const ConstFloatArray& arr) -> FlexBoxStyle {
 }
 
 static auto FlexLayoutBaselineFunc(
-    const ScopedLocalRef<jobject>& baselineData,
+    const JavaMeasureData& baselineData,
     const float width,
     const float height) -> float {
-  JNIEnv* env = getCurrentEnv();
-  auto objectClass =
-      make_local_ref(env, env->GetObjectClass(baselineData.get()));
-  static const jmethodID methodId =
-      getMethodId(env, objectClass.get(), "baseline", "(FF)F");
-  return callMethod<jfloat>(env, baselineData.get(), methodId, width, height);
+  JNIEnv* env = baselineData.env;
+
+  static const jmethodID methodId = getMethodId(
+      env,
+      findClass(env, "com/facebook/flexlayout/FlexLayoutNativeMeasureCallback"),
+      "baselineNative",
+      "(IFF)F");
+
+  return callMethod<jfloat>(
+      env,
+      baselineData.callbackFunction,
+      methodId,
+      baselineData.idx,
+      width,
+      height);
 }
 
 static auto FlexLayoutMeasureFunc(
-    const ScopedLocalRef<jobject>& measureData,
+    const JavaMeasureData& measureData,
     const float minWidth,
     const float maxWidth,
     const float minHeight,
     const float maxHeight,
     const float ownerWidth,
-    const float ownerHeight) -> MeasureOutput<ScopedLocalRef<jobject>> {
-  JNIEnv* env = getCurrentEnv();
-  auto objectClass =
-      make_local_ref(env, env->GetObjectClass(measureData.get()));
+    const float ownerHeight) -> MeasureOutput<VoidMeasureResult> {
+  JNIEnv* env = measureData.env;
+
   static const jmethodID methodId = getMethodId(
       env,
-      objectClass.get(),
-      "measure",
-      "(FFFFFF)Lcom/facebook/flexlayout/layoutoutput/MeasureOutput;");
+      findClass(env, "com/facebook/flexlayout/FlexLayoutNativeMeasureCallback"),
+      "measureNative",
+      "(IFFFFFF)Lcom/facebook/flexlayout/layoutoutput/MeasureOutput;");
   auto const javaMeasureOutput = make_local_ref(
       env,
       callMethod<jobject>(
           env,
-          measureData.get(),
+          measureData.callbackFunction,
           methodId,
+          measureData.idx,
           minWidth,
           maxWidth,
           minHeight,
@@ -112,32 +129,28 @@ static auto FlexLayoutMeasureFunc(
           ownerWidth,
           ownerHeight));
 
-  auto measureOutputClass =
-      make_local_ref(env, env->GetObjectClass(javaMeasureOutput.get()));
-  static const jfieldID arrField =
-      getFieldId(env, measureOutputClass.get(), "arr", "[F");
+  static const jfieldID arrField = getFieldId(
+      env,
+      make_local_ref(env, env->GetObjectClass(javaMeasureOutput.get())).get(),
+      "arr",
+      "[F");
   auto jary = make_local_ref(
       env, (jfloatArray)env->GetObjectField(javaMeasureOutput.get(), arrField));
   const auto arr = ConstFloatArray{env, std::move(jary)};
 
-  static auto* const measureResultField = getFieldId(
-      env, measureOutputClass.get(), "measureResult", "Ljava/lang/Object;");
-  auto measureResult = make_local_ref(
-      env, env->GetObjectField(javaMeasureOutput.get(), measureResultField));
-
-  auto measureOutput = MeasureOutput<ScopedLocalRef<jobject>>{
+  auto measureOutput = MeasureOutput<VoidMeasureResult>{
       /* .width = */ arr[MEASURE_OUTPUT_WIDTH_POSITION],
       /* .height = */ arr[MEASURE_OUTPUT_HEIGHT_POSITION],
       /* .baseline = */ arr[MEASURE_OUTPUT_BASELINE_POSITION],
-      /* .result = */ std::move(measureResult)};
+      /* .result = */ true // dummy value
+  };
 
   return measureOutput;
 }
 
 static auto decodeFlexItemStyle(const ConstFloatArray& arr)
-    -> FlexItemStyle<ScopedLocalRef<jobject>, ScopedLocalRef<jobject>> {
-  auto flexItemStyle =
-      FlexItemStyle<ScopedLocalRef<jobject>, ScopedLocalRef<jobject>>();
+    -> FlexItemStyle<JavaMeasureData, VoidMeasureResult> {
+  auto flexItemStyle = FlexItemStyle<JavaMeasureData, VoidMeasureResult>();
   for (auto index = 0; index < arr.size();) {
     const auto key = static_cast<FlexItemStyleKeys>(arr[index++]);
     switch (key) {
@@ -265,26 +278,21 @@ static auto rawValue(Enum e) {
 }
 
 static void TransferLayoutOutputDataToJavaObject(
-    const LayoutOutput<ScopedLocalRef<jobject>>& layoutOutput,
+    JNIEnv* env,
+    const LayoutOutput<VoidMeasureResult>& layoutOutput,
     jobject obj) {
   if (!obj) {
     return;
   }
-  JNIEnv* env = getCurrentEnv();
-  auto objectClass = make_local_ref(env, env->GetObjectClass(obj));
-  static const jfieldID arrField =
-      getFieldId(env, objectClass.get(), "arr", "[F");
+
+  static const jfieldID arrField = getFieldId(
+      env, make_local_ref(env, env->GetObjectClass(obj)).get(), "arr", "[F");
   auto* jary = (jfloatArray)env->GetObjectField(obj, arrField);
   jfloat* arr = env->GetFloatArrayElements(jary, nullptr);
   arr[rawValue(LayoutOutputKeys::Width)] = layoutOutput.width;
   arr[rawValue(LayoutOutputKeys::Height)] = layoutOutput.height;
   arr[rawValue(LayoutOutputKeys::Baseline)] = layoutOutput.baseline;
 
-  static const jfieldID measureResultsField = getFieldId(
-      env, objectClass.get(), "measureResults", "[Ljava/lang/Object;");
-  auto measureResults = make_local_ref(
-      env,
-      static_cast<jobjectArray>(env->GetObjectField(obj, measureResultsField)));
   for (size_t i = 0; i < layoutOutput.children.size(); i++) {
     arr[NumLayoutOutputKeys + i * NumLayoutOutputChildKeys +
         rawValue(LayoutOutputChildKeys::Left)] = layoutOutput.children[i].left;
@@ -296,11 +304,6 @@ static void TransferLayoutOutputDataToJavaObject(
     arr[NumLayoutOutputKeys + i * NumLayoutOutputChildKeys +
         rawValue(LayoutOutputChildKeys::Height)] =
         layoutOutput.children[i].height;
-
-    env->SetObjectArrayElement(
-        measureResults.get(),
-        static_cast<jsize>(i),
-        layoutOutput.children[i].measureResult.get());
   }
   env->ReleaseFloatArrayElements(jary, arr, 0);
 }
@@ -317,12 +320,12 @@ static void jni_calculateLayout(
     jfloat ownerWidth,
     jfloat,
     jobject layoutOutputJavaObject,
-    jobjectArray callbackArray) {
+    jobject callbackFunction) {
   try {
     const auto flexBoxStyle = decodeFlexBoxStyle(ConstFloatArray{
         env, make_local_ref_from_unowned(env, flexBoxStyleArray)});
 
-    std::vector<FlexItemStyle<ScopedLocalRef<jobject>, ScopedLocalRef<jobject>>>
+    std::vector<FlexItemStyle<JavaMeasureData, VoidMeasureResult>>
         childrenVector;
 
     int size = env->GetArrayLength(childrenFlexItemStyleArray);
@@ -332,8 +335,7 @@ static void jni_calculateLayout(
           childrenFlexItemStyleArray, i);
       auto flexItemStyle = decodeFlexItemStyle(
           ConstFloatArray{env, make_local_ref(env, flexItemStyleArray)});
-      flexItemStyle.measureData =
-          make_local_ref(env, env->GetObjectArrayElement(callbackArray, i));
+      flexItemStyle.measureData = (JavaMeasureData){env, callbackFunction, i};
       flexItemStyle.measureFunction = FlexLayoutMeasureFunc;
       childrenVector.push_back(std::move(flexItemStyle));
     }
@@ -347,7 +349,8 @@ static void jni_calculateLayout(
         maxHeight,
         ownerWidth);
 
-    TransferLayoutOutputDataToJavaObject(layoutOutput, layoutOutputJavaObject);
+    TransferLayoutOutputDataToJavaObject(
+        env, layoutOutput, layoutOutputJavaObject);
   } catch (const FlexLayoutJniException& jniException) {
     ScopedLocalRef<jthrowable> throwable = jniException.getThrowable();
     if (throwable.get() != nullptr) {
@@ -358,7 +361,7 @@ static void jni_calculateLayout(
 
 static JNINativeMethod methods[] = {
     {"jni_calculateLayout",
-     "([F[[FFFFFFFLcom/facebook/flexlayout/layoutoutput/LayoutOutput;[Lcom/facebook/flexlayout/styles/FlexItemCallback;)V",
+     "([F[[FFFFFFFLcom/facebook/flexlayout/layoutoutput/LayoutOutput;Lcom/facebook/flexlayout/FlexLayoutNativeMeasureCallback;)V",
      (void*)jni_calculateLayout},
 };
 

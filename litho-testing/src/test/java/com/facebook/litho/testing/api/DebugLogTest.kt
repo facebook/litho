@@ -132,7 +132,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
              isEnabled = false
            |-CollectionRecycler(children=1)
               isEnabled = false
-            |-Recycler(children=10)
+            |-${recyclerComponentName(rule.componentContext)}(children=10)
                isEnabled = false
              |-Text
              |  testKey = item-#1
@@ -258,7 +258,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
             isEnabled = false
             text = Info
             Actions = [OnClick]
-        -Recycler(children=10)
+        -${recyclerComponentName(rule.componentContext)}(children=10)
            isEnabled = false
          |-Text
          |  testKey = item-#1

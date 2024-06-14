@@ -16,13 +16,16 @@ public class MeasureOutput<MeasureResult> {
   @DoNotStrip
   private float[] arr = new float[Keys.values().length];
 
-  // Read from in native code
-  @DoNotStrip private MeasureResult measureResult;
+  private final MeasureResult measureResult;
 
   public MeasureOutput(float width, float height, float baseline, MeasureResult measureResult) {
     arr[Keys.WIDTH.ordinal()] = width;
     arr[Keys.HEIGHT.ordinal()] = height;
     arr[Keys.BASELINE.ordinal()] = baseline;
     this.measureResult = measureResult;
+  }
+
+  MeasureResult getMeasureResult() {
+    return measureResult;
   }
 }

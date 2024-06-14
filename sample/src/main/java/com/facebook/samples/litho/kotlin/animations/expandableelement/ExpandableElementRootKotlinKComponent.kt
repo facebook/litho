@@ -45,7 +45,7 @@ import com.facebook.yoga.YogaAlign
 class ExpandableElementRootKotlinKComponent(private val initialMessages: List<Message>) :
     KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val messages = useState { initialMessages }
     val counter = useState { 1 }
 

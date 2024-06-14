@@ -28,7 +28,7 @@ import kotlin.jvm.JvmField
  * event to components to trigger their delegated methods.
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-class WorkingRangeContainer {
+class WorkingRangeContainer(private val skipSecondIsInWorkingRangeCheck: Boolean = false) {
 
   /**
    * Use [java.util.HashMap] to store the working range of each component. The key is composed with
@@ -77,7 +77,12 @@ class WorkingRangeContainer {
         val scopedContext = scopedComponentInfo.context
         val component = scopedComponentInfo.component as SpecGeneratedComponent
         val globalKey = scopedContext.globalKey
-        if (!statusHandler.isInRange(rangeTuple.name, component, globalKey) &&
+        val isInRange = statusHandler.isInRange(rangeTuple.name, globalKey)
+        val isOutOfRange =
+            if (skipSecondIsInWorkingRangeCheck) !isInRange
+            else !statusHandler.isInRange(rangeTuple.name, globalKey)
+
+        if (isOutOfRange &&
             isEnteringRange(
                 rangeTuple.workingRange,
                 position,
@@ -91,8 +96,8 @@ class WorkingRangeContainer {
           } catch (e: Exception) {
             ComponentUtils.handle(scopedContext, e)
           }
-          statusHandler.setEnteredRangeStatus(rangeTuple.name, component, globalKey)
-        } else if (statusHandler.isInRange(rangeTuple.name, component, globalKey) &&
+          statusHandler.setEnteredRangeStatus(rangeTuple.name, globalKey)
+        } else if (isInRange &&
             isExitingRange(
                 rangeTuple.workingRange,
                 position,
@@ -106,7 +111,7 @@ class WorkingRangeContainer {
           } catch (e: Exception) {
             ComponentUtils.handle(scopedContext, e)
           }
-          statusHandler.setExitedRangeStatus(rangeTuple.name, component, globalKey)
+          statusHandler.setExitedRangeStatus(rangeTuple.name, globalKey)
         }
         i++
       }
@@ -132,7 +137,7 @@ class WorkingRangeContainer {
         // working ranges are only available in Spec Components, so we can cast it here
         val component = scopedComponentInfo.component as SpecGeneratedComponent
         val globalKey = scopedContext.globalKey
-        if (statusHandler.isInRange(rangeTuple.name, component, globalKey)) {
+        if (statusHandler.isInRange(rangeTuple.name, globalKey)) {
           try {
             component.dispatchOnExitedRange(
                 scopedContext, rangeTuple.name, rangeTuple.interStagePropsContainer)

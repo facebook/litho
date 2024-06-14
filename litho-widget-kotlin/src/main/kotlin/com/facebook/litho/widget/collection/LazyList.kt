@@ -37,7 +37,7 @@ inline fun ResourcesScope.LazyList(
     reverse: Boolean = false,
     crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
     mainAxisWrapContent: Boolean = false,
-    itemAnimator: RecyclerView.ItemAnimator? = null,
+    itemAnimator: RecyclerView.ItemAnimator? = CollectionRecyclerSpec.itemAnimator,
     itemDecoration: RecyclerView.ItemDecoration? = null,
     clipToPadding: Boolean? = null,
     clipChildren: Boolean? = null,
@@ -71,13 +71,14 @@ inline fun ResourcesScope.LazyList(
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
     childEquivalenceIncludesCommonProps: Boolean = true,
-    overlayRenderCount: Boolean = false,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
     shouldExcludeFromIncrementalMount: Boolean = false,
+    isCircular: Boolean = false,
     init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
+
   return LazyCollection(
       layout =
           CollectionLayouts.Linear(
@@ -91,7 +92,8 @@ inline fun ResourcesScope.LazyList(
               isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
               crossAxisWrapMode = crossAxisWrapMode,
-              mainAxisWrapContent = mainAxisWrapContent),
+              mainAxisWrapContent = mainAxisWrapContent,
+              isCircular = isCircular),
       itemAnimator,
       itemDecoration,
       clipToPadding,
@@ -120,7 +122,6 @@ inline fun ResourcesScope.LazyList(
       lazyCollectionController,
       onDataRendered,
       childEquivalenceIncludesCommonProps,
-      overlayRenderCount,
       alwaysDetectDuplicates,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,

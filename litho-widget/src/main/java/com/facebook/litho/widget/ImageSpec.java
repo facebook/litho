@@ -41,6 +41,7 @@ import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.drawable.DrawableUtils;
@@ -58,6 +59,8 @@ import javax.annotation.Nullable;
 public class ImageSpec {
 
   private static final ScaleType[] SCALE_TYPE = ScaleType.values();
+
+  @PropDefault static final boolean useIntrinsicSize = true;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -85,7 +88,8 @@ public class ImageSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable) {
+      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable,
+      @Prop(optional = true) boolean useIntrinsicSize) {
     if (drawable == null
         || drawable.getIntrinsicWidth() <= 0
         || drawable.getIntrinsicHeight() <= 0) {
@@ -104,8 +108,12 @@ public class ImageSpec {
     }
 
     final float aspectRatio = intrinsicWidth / (float) intrinsicHeight;
-    MeasureUtils.measureWithAspectRatio(
-        widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size);
+    if (useIntrinsicSize) {
+      MeasureUtils.measureWithAspectRatio(
+          widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size);
+    } else {
+      MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, size);
+    }
   }
 
   @OnBoundsDefined

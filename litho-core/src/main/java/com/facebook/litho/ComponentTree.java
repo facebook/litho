@@ -78,6 +78,7 @@ import com.facebook.litho.debug.AttributionUtils;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
+import com.facebook.litho.lifecycle.LifecycleOwnerWrapper;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LogLevel;
@@ -87,7 +88,6 @@ import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.debug.DebugEventBus;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
-import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -129,7 +129,8 @@ public class ComponentTree
       "ComponentTree:CTContextIsDifferentFromRootBuilderContext";
   public static final int STATE_UPDATES_IN_LOOP_THRESHOLD = 50;
   private static boolean sBoostPerfLayoutStateFuture = false;
-  @Nullable LithoVisibilityEventsController mLifecycleProvider;
+
+  @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -236,7 +237,10 @@ public class ComponentTree
   private int mCommittedLayoutVersion = INVALID_LAYOUT_VERSION;
 
   @GuardedBy("this")
-  private @Nullable TreePropContainer mRootTreePropContainer;
+  private @Nullable TreePropContainer mTreePropContainer;
+
+  @GuardedBy("this")
+  private @Nullable TreePropContainer mDefaultTreeProps;
 
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
@@ -303,14 +307,14 @@ public class ComponentTree
   public static Builder create(
       ComponentContext context,
       @Nullable Component root,
-      @Nullable LithoVisibilityEventsController lifecycleProvider) {
+      @Nullable LithoVisibilityEventsController controller) {
     final Builder builder = new ComponentTree.Builder(context);
 
     if (root != null) {
       builder.withRoot(root);
     }
 
-    return builder.withLithoVisibilityEventsController(lifecycleProvider);
+    return builder.withLithoVisibilityEventsController(controller);
   }
 
   protected ComponentTree(Builder builder) {
@@ -357,19 +361,32 @@ public class ComponentTree
         new LithoConfiguration(
             builder.config,
             AnimationsDebug.areTransitionsEnabled(androidContext),
-            renderUnitIdGenerator,
-            builder.visibilityBoundsTransformer);
+            renderUnitIdGenerator);
+
+    final StateUpdater stateUpdater =
+        (builder.mStateUpdater != null) ? builder.mStateUpdater : this;
 
     mContext =
         new ComponentContext(
             androidContext,
             builder.treePropContainer,
             config,
-            LithoTree.Companion.create(this),
+            LithoTree.Companion.create(this, stateUpdater),
             "root",
-            getLifecycleProvider(),
+            ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView
+                ? builder.lithoVisibilityEventsController
+                : getLithoVisibilityEventsController(),
             null,
             builder.parentTreePropContainer);
+    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      initializeDefaultTreeProps();
+
+      TreePropContainer treePropContainer =
+          TreePropContainer.acquire(mContext.getTreePropContainer());
+      treePropContainer.putAll(mDefaultTreeProps);
+      mContext.setTreePropContainer(treePropContainer);
+      mContext.setParentTreePropContainerCloned(true);
+    }
 
     PreAllocationHandler preAllocationHandler = builder.config.preAllocationHandler;
     if (preAllocationHandler != null) {
@@ -399,15 +416,21 @@ public class ComponentTree
                     }
                   }
                   return layoutState != null
-                      ? layoutState.mMountableOutputs
+                      ? layoutState.getMountableOutputs()
                       : Collections.emptyList();
                 },
                 MountItemsPool::maybePreallocateContent);
       }
     }
 
-    if (builder.mLifecycleProvider != null) {
-      subscribeToLifecycleProvider(builder.mLifecycleProvider);
+    if (ComponentsConfiguration.defaultInstance.enableVisibilityFixForNestedLithoView) {
+      if (mContext.getLithoVisibilityEventsController() != null) {
+        subscribeToVisibilityEventsController(mContext.getLithoVisibilityEventsController());
+      }
+    } else {
+      if (builder.lithoVisibilityEventsController != null) {
+        subscribeToVisibilityEventsController(builder.lithoVisibilityEventsController);
+      }
     }
 
     ComponentTreeDebugEventListener debugEventListener = config.componentsConfig.debugEventListener;
@@ -775,8 +798,8 @@ public class ComponentTree
       return;
     }
     LithoVisibilityState currentStatus = null;
-    if (mLifecycleProvider != null) {
-      currentStatus = mLifecycleProvider.getVisibilityState();
+    if (mLithoVisibilityEventsController != null) {
+      currentStatus = mLithoVisibilityEventsController.getVisibilityState();
     }
     if (currentStatus != null) {
       if (currentStatus == LithoVisibilityState.HINT_VISIBLE) {
@@ -820,7 +843,7 @@ public class ComponentTree
     if (mIsAttached) {
       throw new IllegalStateException("Clearing the LithoView while the ComponentTree is attached");
     }
-    if (mLifecycleProvider != null) {
+    if (mLithoVisibilityEventsController != null) {
       mLithoView.resetVisibilityHint();
     }
 
@@ -1305,14 +1328,14 @@ public class ComponentTree
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
-    final @Nullable TreePropContainer rootTreePropContainer;
+    final @Nullable TreePropContainer treePropContainer;
 
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      rootTreePropContainer = TreePropContainer.copy(mRootTreePropContainer);
+      treePropContainer = TreePropContainer.copy(mTreePropContainer);
 
       if (isCreateLayoutInProgress) {
         logStateUpdatesFromCreateLayout(attribution);
@@ -1332,7 +1355,7 @@ public class ComponentTree
         isAsync ? RenderSource.UPDATE_STATE_ASYNC : RenderSource.UPDATE_STATE_SYNC,
         INVALID_LAYOUT_VERSION,
         attribution,
-        rootTreePropContainer,
+        treePropContainer,
         isCreateLayoutInProgress,
         false);
   }
@@ -1366,9 +1389,11 @@ public class ComponentTree
    * <p>It will make sure that the tree properties are properly cloned and stored.
    */
   private void setInternalTreeProp(TreeProp<?> key, @Nullable Object value) {
-    if (!mContext.isParentTreePropContainerCloned()) {
-      mContext.setTreePropContainer(TreePropContainer.acquire(mContext.getTreePropContainer()));
-      mContext.setParentTreePropContainerCloned(true);
+    if (!ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      if (!mContext.isParentTreePropContainerCloned()) {
+        mContext.setTreePropContainer(TreePropContainer.acquire(mContext.getTreePropContainer()));
+        mContext.setParentTreePropContainerCloned(true);
+      }
     }
 
     TreePropContainer treePropContainer = mContext.getTreePropContainer();
@@ -1640,20 +1665,20 @@ public class ComponentTree
     return mTreeState == null ? new TreeState() : new TreeState(mTreeState);
   }
 
-  public static @Nullable LithoVisibilityEventsController getLifecycleProvider(
+  public static @Nullable LithoVisibilityEventsController getLithoVisibilityEventsController(
       ComponentContext context) {
-    return context.getLifecycleProvider();
+    return context.getLithoVisibilityEventsController();
   }
 
-  public @Nullable LithoVisibilityEventsController getLifecycleProvider() {
-    return mLifecycleProvider;
+  public @Nullable LithoVisibilityEventsController getLithoVisibilityEventsController() {
+    return mLithoVisibilityEventsController;
   }
 
   /**
    * Creates a ComponentTree nested inside the ComponentTree of the provided parentContext. If the
    * parent ComponentTree is subscribed to a LithoVisibilityEventsController, the nested
    * ComponentTree will also subscribe to a {@link SimpleNestedTreeVisibilityEventsController}
-   * hooked with the parent's lifecycle provider.
+   * hooked with the parent's visibility events controller.
    *
    * @param parentContext context associated with the parent ComponentTree.
    * @param component root of the new nested ComponentTree.
@@ -1661,13 +1686,14 @@ public class ComponentTree
    */
   public static ComponentTree.Builder createNestedComponentTree(
       final ComponentContext parentContext, @Nullable Component component) {
-    final SimpleNestedTreeVisibilityEventsController lifecycleProvider =
-        parentContext.getLifecycleProvider() == null
+    final SimpleNestedTreeVisibilityEventsController controller =
+        parentContext.getLithoVisibilityEventsController() == null
             ? null
-            : new SimpleNestedTreeVisibilityEventsController(parentContext.getLifecycleProvider());
+            : new SimpleNestedTreeVisibilityEventsController(
+                parentContext.getLithoVisibilityEventsController());
 
     return ComponentTree.create(
-        ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
+        ComponentContext.makeCopyForNestedTree(parentContext), component, controller);
   }
 
   public static ComponentTree.Builder createNestedComponentTree(
@@ -1828,15 +1854,21 @@ public class ComponentTree
       }
 
       if (treePropContainerInitialized) {
-        mRootTreePropContainer = treePropContainer;
-      } else {
-        treePropContainer = mRootTreePropContainer;
+        if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+          TreePropContainer newTreeProps = TreePropContainer.acquire(treePropContainer);
+          newTreeProps.putAll(mDefaultTreeProps);
+          if (!newTreeProps.equals(mTreePropContainer)) {
+            mTreePropContainer = newTreeProps;
+          }
+        } else {
+          mTreePropContainer = treePropContainer;
+        }
       }
 
       requestedWidthSpec = mWidthSpec;
       requestedHeightSpec = mHeightSpec;
       requestedRoot = mRoot;
-      requestedTreePropContainer = mRootTreePropContainer;
+      requestedTreePropContainer = mTreePropContainer;
 
       mLastLayoutSource = source;
     }
@@ -1913,9 +1945,12 @@ public class ComponentTree
     // there is no need to calculate the resolved result again and we can proceed straight to
     // layout.
     if (currentResolveResult != null) {
-      boolean canLayoutWithoutResolve =
-          (currentResolveResult.component == root
-              && currentResolveResult.context.getTreePropContainer() == treePropContainer);
+      boolean isSameTreeProps =
+          currentResolveResult.context.getTreePropContainer() == treePropContainer
+              || (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper
+                  && treePropContainer == null);
+
+      boolean canLayoutWithoutResolve = (currentResolveResult.component == root && isSameTreeProps);
       if (canLayoutWithoutResolve) {
         requestLayoutWithSplitFutures(
             currentResolveResult,
@@ -2298,9 +2333,7 @@ public class ComponentTree
           && !layoutState.isCommitted()
           && isCompatibleSpec(layoutState, mWidthSpec, mHeightSpec)) {
         mCommittedLayoutVersion = layoutVersion;
-        if (mContext.mLithoConfiguration.componentsConfig.shouldBuildRenderTreeInBg) {
-          layoutState.toRenderTree();
-        }
+        layoutState.toRenderTree();
         mCommittedLayoutState = layoutState;
         layoutState.markCommitted();
         committedNewLayout = true;
@@ -2592,6 +2625,11 @@ public class ComponentTree
     return sDefaultResolveThreadLooper;
   }
 
+  private void initializeDefaultTreeProps() {
+    mDefaultTreeProps = new TreePropContainer();
+    mDefaultTreeProps.put(LifecycleOwnerTreeProp, new LifecycleOwnerWrapper(null));
+  }
+
   private boolean isCompatibleSpec(
       final @Nullable LayoutState layoutState, final int widthSpec, final int heightSpec) {
     return layoutState != null
@@ -2716,19 +2754,19 @@ public class ComponentTree
     return mId;
   }
 
-  public synchronized void subscribeToLifecycleProvider(
-      LithoVisibilityEventsController lifecycleProvider) {
-    if (mLifecycleProvider != null) {
+  public synchronized void subscribeToVisibilityEventsController(
+      LithoVisibilityEventsController controller) {
+    if (mLithoVisibilityEventsController != null) {
       throw new IllegalStateException("Already subscribed");
     }
 
-    mLifecycleProvider = lifecycleProvider;
-    mLifecycleProvider.addListener(this);
+    mLithoVisibilityEventsController = controller;
+    mLithoVisibilityEventsController.addListener(this);
 
     if (!ComponentsConfiguration.defaultInstance
         .enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner) {
-      if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-        LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+      if (controller instanceof AOSPLifecycleOwnerProvider) {
+        LifecycleOwner owner = ((AOSPLifecycleOwnerProvider) controller).getLifecycleOwner();
         if (owner != null) {
           setLifecycleOwnerTreeProp(owner);
         }
@@ -2737,11 +2775,18 @@ public class ComponentTree
   }
 
   synchronized void setLifecycleOwnerTreeProp(LifecycleOwner owner) {
-    setInternalTreeProp(LifecycleOwnerTreeProp, owner);
+    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      TreePropContainer treePropContainer = mContext.getTreePropContainer();
+      if (treePropContainer != null) {
+        ((LifecycleOwnerWrapper) treePropContainer.get(LifecycleOwnerTreeProp)).setDelegate(owner);
+      }
+    } else {
+      setInternalTreeProp(LifecycleOwnerTreeProp, owner);
+    }
   }
 
-  public synchronized boolean isSubscribedToLifecycleProvider() {
-    return mLifecycleProvider != null;
+  public synchronized boolean isSubscribedToVisibilityEventsController() {
+    return mLithoVisibilityEventsController != null;
   }
 
   @Override
@@ -2776,9 +2821,9 @@ public class ComponentTree
   private void onMoveToStateDestroy() {
     // This will call setComponentTree(null) on the LithoView if any.
     release();
-    if (mLifecycleProvider != null) {
-      mLifecycleProvider.removeListener(this);
-      mLifecycleProvider = null;
+    if (mLithoVisibilityEventsController != null) {
+      mLithoVisibilityEventsController.removeListener(this);
+      mLithoVisibilityEventsController = null;
     }
   }
 
@@ -2951,16 +2996,16 @@ public class ComponentTree
     private @Nullable TreeState treeState;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
-    private @Nullable LithoVisibilityEventsController mLifecycleProvider;
+    private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
-    private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
 
     private @Nullable final TreePropContainer treePropContainer;
     private @Nullable final TreePropContainer parentTreePropContainer;
 
+    private @Nullable StateUpdater mStateUpdater = null;
+
     protected Builder(ComponentContext context) {
       config = context.mLithoConfiguration.componentsConfig;
-      visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
       treePropContainer = context.getTreePropContainer();
       parentTreePropContainer = context.getParentTreePropContainer();
       mAndroidContext = context.getAndroidContext();
@@ -2995,8 +3040,8 @@ public class ComponentTree
     }
 
     public Builder withLithoVisibilityEventsController(
-        @Nullable LithoVisibilityEventsController lifecycleProvider) {
-      mLifecycleProvider = lifecycleProvider;
+        @Nullable LithoVisibilityEventsController controller) {
+      lithoVisibilityEventsController = controller;
       return this;
     }
 
@@ -3073,8 +3118,8 @@ public class ComponentTree
       return this;
     }
 
-    public Builder visibilityBoundsTransformer(@Nullable VisibilityBoundsTransformer transformer) {
-      visibilityBoundsTransformer = transformer;
+    public Builder stateUpdater(@Nullable StateUpdater stateUpdater) {
+      mStateUpdater = stateUpdater;
       return this;
     }
 

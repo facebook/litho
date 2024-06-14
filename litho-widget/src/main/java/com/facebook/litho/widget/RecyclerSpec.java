@@ -16,6 +16,8 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
@@ -32,8 +34,11 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.Output;
 import com.facebook.litho.Size;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
@@ -53,6 +58,7 @@ import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import java.util.List;
 
@@ -112,19 +118,68 @@ class RecyclerSpec {
       int widthSpec,
       int heightSpec,
       Size measureOutput,
-      @Prop Binder<RecyclerView> binder) {
+      @Prop(optional = true) int leftPadding,
+      @Prop(optional = true) int rightPadding,
+      @Prop(optional = true) int topPadding,
+      @Prop(optional = true) int bottomPadding,
+      @Prop Binder<RecyclerView> binder,
+      Output<Integer> measuredWidth,
+      Output<Integer> measuredHeight) {
+
+    ComponentsConfiguration configuration = c.getLithoConfiguration().componentsConfig;
+
+    int widthSpecToUse =
+        RecyclerMeasureHelper.maybeGetSpecWithPadding(
+            configuration, widthSpec, leftPadding + rightPadding);
+    int heightSpecToUse =
+        RecyclerMeasureHelper.maybeGetSpecWithPadding(
+            configuration, heightSpec, topPadding + bottomPadding);
 
     binder.measure(
         measureOutput,
-        widthSpec,
-        heightSpec,
+        widthSpecToUse,
+        heightSpecToUse,
         (binder.canMeasure() || binder.isWrapContent()) ? Recycler.onRemeasure(c) : null);
+
+    measuredWidth.set(measureOutput.width);
+    measuredHeight.set(measureOutput.height);
   }
 
   @OnBoundsDefined
   static void onBoundsDefined(
-      ComponentContext context, ComponentLayout layout, @Prop Binder<RecyclerView> binder) {
-    binder.setSize(layout.getWidth(), layout.getHeight());
+      ComponentContext context,
+      ComponentLayout layout,
+      @Prop(optional = true) int leftPadding,
+      @Prop(optional = true) int rightPadding,
+      @Prop(optional = true) int topPadding,
+      @Prop(optional = true) int bottomPadding,
+      @Prop Binder<RecyclerView> binder,
+      @FromMeasure Integer measuredWidth,
+      @FromMeasure Integer measuredHeight) {
+    ComponentsConfiguration configuration = context.getLithoConfiguration().componentsConfig;
+
+    int layoutWidth = layout.getWidth();
+    int layoutHeight = layout.getHeight();
+
+    int width = layoutWidth;
+    if (configuration.measureRecyclerWithPadding
+        && (measuredWidth == null || measuredWidth != layoutWidth)) {
+      int spec =
+          RecyclerMeasureHelper.maybeGetSpecWithPadding(
+              configuration, exactly(layoutWidth), leftPadding + rightPadding);
+      width = SizeSpec.getSize(spec);
+    }
+
+    int height = layoutHeight;
+    if (configuration.measureRecyclerWithPadding
+        && (measuredHeight == null || measuredHeight != layoutHeight)) {
+      int spec =
+          RecyclerMeasureHelper.maybeGetSpecWithPadding(
+              configuration, exactly(layoutHeight), topPadding + bottomPadding);
+      height = SizeSpec.getSize(height);
+    }
+
+    binder.setSize(width, height);
   }
 
   @OnCreateMountContent

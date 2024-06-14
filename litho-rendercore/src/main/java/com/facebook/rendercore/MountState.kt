@@ -231,9 +231,7 @@ constructor(
       }
 
       _needsRemount = true
-      if (RenderCoreConfig.shouldClearRenderTreeOnUnmountAll) {
-        renderTree = null
-      }
+      renderTree = null
     } finally {
       if (RenderCoreConfig.shouldSetInLayoutDuringUnmountAll) {
         _rootHost.unsetInLayout()

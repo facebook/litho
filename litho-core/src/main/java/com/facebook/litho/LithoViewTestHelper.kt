@@ -244,7 +244,7 @@ object LithoViewTestHelper {
     val componentTree = view.componentTree
     val mainThreadLayoutState = componentTree?.mainThreadLayoutState
     if (mainThreadLayoutState != null) {
-      mainThreadLayoutState.mLayoutResult = rootLayoutNode.internalNodeRef
+      mainThreadLayoutState.rootLayoutResult = rootLayoutNode.internalNodeRef
     }
   }
 

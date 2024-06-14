@@ -27,6 +27,7 @@ import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration.Builder
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
+import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
 /**
  * These values are safe defaults and should not require manual changes.
@@ -63,14 +64,6 @@ internal constructor(
      */
     @JvmField
     val shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible: Boolean = false,
-    /**
-     * If enabled, then the [com.facebook.litho.LithoView] will attempt to unmount any mounted
-     * content of the mount state when it gets detached from window.
-     *
-     * This is done to tackle and edge case where mount contents that have the same top/bottom
-     * boundaries of the host view are not mounted by incremental mount.
-     */
-    @JvmField val unmountOnDetachedFromWindow: Boolean = false,
     /** Whether the [ComponentTree] should be using State Reconciliation. */
     @JvmField val isReconciliationEnabled: Boolean = true,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
@@ -94,8 +87,6 @@ internal constructor(
      * will process visibility events.
      */
     @JvmField val visibilityProcessingEnabled: Boolean = true,
-    /** Whether we use a Recycler based on a Primitive implementation. */
-    @JvmField val primitiveRecyclerEnabled: Boolean = false,
     /**
      * This class is an error event handler that clients can optionally set on a [ComponentTree] to
      * gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
@@ -120,12 +111,70 @@ internal constructor(
      * @see [com.facebook.rendercore.debug.DebugEvent]
      */
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
-    @JvmField val shouldBuildRenderTreeInBg: Boolean = false,
-    @JvmField val shouldReuseIdToPositionMap: Boolean = shouldBuildRenderTreeInBg,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
     @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
-    @JvmField var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
-    @JvmField var skipHostAlphaReset: Boolean = false
+    @JvmField var skipHostAlphaReset: Boolean = false,
+    @JvmField val enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
+    /**
+     * LithoViewAttributesExtension is an extension for LithoView that allows setting custom view
+     * attributes on the underlying Android View or Drawable. This extension plays a crucial role
+     * when working with Litho components because it enables the modification of view properties not
+     * already exposed by the Litho framework. The proper functioning of this extension is vital for
+     * maintaining correct component behavior during mount and unmount processes, especially when
+     * controlled by animations.
+     *
+     * Prior to the introduction of
+     * [com.facebook.litho.LithoViewAttributesExtension.FineGrainedLithoViewAttributesState], an
+     * existing bug caused view attributes not to be correctly reset upon unmount due to the lack of
+     * information in the view attributes state about the corresponding render unit. This issue
+     * arose primarily during animations that controlled the mount/unmount cycle.
+     *
+     * This configuration aims then to allow you to enable the usage of
+     * [com.facebook.litho.LithoViewAttributesExtension.FineGrainedLithoViewAttributesState] to have
+     * a more reliable behavior. We are testing this currently to ensure there are no other
+     * performance regressions.
+     */
+    @JvmField val useFineGrainedViewAttributesExtension: Boolean = false,
+    /**
+     * This is a temporary config param for debugging state list animator crashes during layout of a
+     * [ComponentHost]
+     */
+    @JvmField val cloneStateListAnimators: Boolean = false,
+    @JvmField val enableFacadeStateUpdater: Boolean = false,
+    @JvmField val skipSecondIsInWorkingRangeCheck: Boolean = false,
+    @JvmField val enableVisibilityFixForNestedLithoView: Boolean = false,
+    /**
+     * This flag is used to enable the use of default item animators in lazy collections, so that
+     * the behavior is compatible to what exists nowadays in the
+     * [com.facebook.litho.sections.widget.RecyclerCollectionComponent].
+     */
+    @JvmField val useDefaultItemAnimatorInLazyCollections: Boolean = false,
+    /**
+     * This defines which strategy we will use to bind the
+     * [com.facebook.litho.sections.widget.ExperimentalRecycler].
+     *
+     * If `null` we will not use the experimental version of a Recycler, and will rely on the
+     * MountSpec based one, which is the [com.facebook.litho.widget.RecyclerSpec]
+     *
+     * @see [PrimitiveRecyclerBinderStrategy] for more details.
+     */
+    @JvmField val primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy? = null,
+    /**
+     * This flag is used to enable a fix for the issue where components that match the host view
+     * size do not get unmounted when they go out of the viewport.
+     */
+    @JvmField val enableFixForIM: Boolean = false,
+    @JvmField val enableLifecycleOwnerWrapper: Boolean = false,
+    /**
+     * This flag is used to enable a fix for the issue where the Recycler is not measuring taking
+     * into any padding specified into it.
+     *
+     * @see [com.facebok.litho.widget.RecyclerSpec]
+     * @see [com.facebook.litho.widget.RecyclerLayoutBehavior]
+     */
+    @JvmField val measureRecyclerWithPadding: Boolean = false,
+    @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null,
+    @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -249,6 +298,13 @@ internal constructor(
     @JvmField var useSafeSpanEndInTextInputSpec: Boolean = false
     @JvmField var useOneShotPreDrawListener: Boolean = false
     @JvmField var useNewCacheValueLogic: Boolean = false
+    /**
+     * This flag is used to enable logging for the issue where components with an aspect ratio, like
+     * NaN or Infinity.
+     */
+    @JvmField var enableLoggingForInvalidAspectRatio: Boolean = false
+    /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
+    @JvmField var enableFixForStickyHeader: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
@@ -285,14 +341,27 @@ internal constructor(
     private var logTag = baseConfig.logTag
     private var componentsLogger = baseConfig.componentsLogger
     private var debugEventListener = baseConfig.debugEventListener
-    private var shouldBuildRenderTreeInBg = baseConfig.shouldBuildRenderTreeInBg
     private var enablePreAllocationSameThreadCheck = baseConfig.enablePreAllocationSameThreadCheck
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
-    private var unmountOnDetachedFromWindow = baseConfig.unmountOnDetachedFromWindow
-    private var primitiveRecyclerEnabled = baseConfig.primitiveRecyclerEnabled
     private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
         baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
     private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
+    private var useFineGrainedViewAttributesExtension =
+        baseConfig.useFineGrainedViewAttributesExtension
+    private var cloneStateListAnimators = baseConfig.cloneStateListAnimators
+    private var enableFacadeStateUpdater = baseConfig.enableFacadeStateUpdater
+    private var skipSecondIsInWorkingRangeCheck = baseConfig.skipSecondIsInWorkingRangeCheck
+    private var enableVisibilityFixForNestedLithoView =
+        baseConfig.enableVisibilityFixForNestedLithoView
+    private var useDefaultItemAnimatorInLazyCollections =
+        baseConfig.useDefaultItemAnimatorInLazyCollections
+    private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
+    private var enableFixForIM = baseConfig.enableFixForIM
+    private var enableLifecycleOwnerWrapper = baseConfig.enableLifecycleOwnerWrapper
+    private var measureRecyclerWithPadding = baseConfig.measureRecyclerWithPadding
+    private var visibilityBoundsTransformer = baseConfig.visibilityBoundsTransformer
+    private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
+        baseConfig.sectionsRecyclerViewOnCreateHandler
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -352,10 +421,6 @@ internal constructor(
       this.debugEventListener = debugEventListener
     }
 
-    fun shouldBuildRenderTreeInBg(value: Boolean): Builder = also {
-      this.shouldBuildRenderTreeInBg = value
-    }
-
     fun enablePreAllocationSameThreadCheck(value: Boolean): Builder = also {
       enablePreAllocationSameThreadCheck = value
     }
@@ -364,13 +429,9 @@ internal constructor(
       avoidRedundantPreAllocations = value
     }
 
-    fun unmountOnDetachedFromWindow(unmountOnDetachedFromWindow: Boolean): Builder = also {
-      this.unmountOnDetachedFromWindow = unmountOnDetachedFromWindow
-    }
-
-    fun primitiveRecyclerEnabled(primitiveRecyclerEnabled: Boolean): Builder = also {
-      this.primitiveRecyclerEnabled = primitiveRecyclerEnabled
-    }
+    fun primitiveRecyclerBinderStrategy(
+        primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy?
+    ): Builder = also { this.primitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy }
 
     fun enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner(
         enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean
@@ -381,6 +442,48 @@ internal constructor(
 
     fun skipHostAlphaReset(skipHostAlphaReset: Boolean): Builder = also {
       this.skipHostAlphaReset = skipHostAlphaReset
+    }
+
+    fun useFineGrainedViewAttributesExtension(enabled: Boolean): Builder = also {
+      useFineGrainedViewAttributesExtension = enabled
+    }
+
+    fun cloneStateListAnimators(enabled: Boolean): Builder = also {
+      cloneStateListAnimators = enabled
+    }
+
+    fun enableFacadeStateUpdater(enabled: Boolean): Builder = also {
+      enableFacadeStateUpdater = enabled
+    }
+
+    fun skipSecondIsInWorkingRangeCheck(enabled: Boolean): Builder = also {
+      skipSecondIsInWorkingRangeCheck = enabled
+    }
+
+    fun enableVisibilityFixForNestedLithoView(enabled: Boolean): Builder = also {
+      enableVisibilityFixForNestedLithoView = enabled
+    }
+
+    fun useDefaultItemAnimatorInLazyCollections(enabled: Boolean): Builder = also {
+      useDefaultItemAnimatorInLazyCollections = enabled
+    }
+
+    fun enableFixForIM(enabled: Boolean): Builder = also { enableFixForIM = enabled }
+
+    fun enableLifecycleOwnerWrapper(enabled: Boolean): Builder = also {
+      enableLifecycleOwnerWrapper = enabled
+    }
+
+    fun measureRecyclerWithPadding(enabled: Boolean): Builder = also {
+      measureRecyclerWithPadding = enabled
+    }
+
+    fun visibilityBoundsTransformer(transformer: VisibilityBoundsTransformer?): Builder = also {
+      visibilityBoundsTransformer = transformer
+    }
+
+    fun sectionsRecyclerViewOnCreateHandler(handler: ((Object) -> Unit)?): Builder = also {
+      sectionsRecyclerViewOnCreateHandler = handler
     }
 
     fun build(): ComponentsConfiguration {
@@ -407,15 +510,23 @@ internal constructor(
               },
           componentsLogger = componentsLogger,
           debugEventListener = debugEventListener,
-          shouldBuildRenderTreeInBg = shouldBuildRenderTreeInBg,
-          shouldReuseIdToPositionMap = shouldBuildRenderTreeInBg,
           enablePreAllocationSameThreadCheck = enablePreAllocationSameThreadCheck,
           avoidRedundantPreAllocations = avoidRedundantPreAllocations,
-          unmountOnDetachedFromWindow = unmountOnDetachedFromWindow,
-          primitiveRecyclerEnabled = primitiveRecyclerEnabled,
+          primitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy,
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
               enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
-          skipHostAlphaReset = skipHostAlphaReset)
+          skipHostAlphaReset = skipHostAlphaReset,
+          useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
+          cloneStateListAnimators = cloneStateListAnimators,
+          enableFacadeStateUpdater = enableFacadeStateUpdater,
+          skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck,
+          enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
+          useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
+          enableFixForIM = enableFixForIM,
+          enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper,
+          measureRecyclerWithPadding = measureRecyclerWithPadding,
+          visibilityBoundsTransformer = visibilityBoundsTransformer,
+          sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler)
     }
   }
 }

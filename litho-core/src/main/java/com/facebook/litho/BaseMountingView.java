@@ -62,6 +62,7 @@ public abstract class BaseMountingView extends ComponentHost
       "ComponentTree:ReentrantMountsExceedMaxAttempts";
   private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
   private static final String TAG = BaseMountingView.class.getSimpleName();
+  private static final Rect EMPTY_RECT = new Rect();
 
   private @Nullable LifecycleOwner mLifecycleOwner;
   private final MountState mMountState;
@@ -81,6 +82,12 @@ public abstract class BaseMountingView extends ComponentHost
   private boolean mSkipMountingIfNotVisible;
   private final Rect mRect = new Rect();
   private boolean mIsAttached;
+  // This is a flag to indicate that the BaseMountingView is currently being detached temporarily,
+  // like when disappearing transition happens we will detach the view and re-attach to its skip
+  // root.
+  protected boolean mIsTemporaryDetached;
+
+  private @Nullable OnDirtyMountListener mOnDirtyMountListener = null;
 
   public BaseMountingView(Context context) {
     this(context, null);
@@ -247,12 +254,14 @@ public abstract class BaseMountingView extends ComponentHost
 
   @Override
   public void onStartTemporaryDetach() {
+    mIsTemporaryDetached = true;
     super.onStartTemporaryDetach();
     onDetach();
   }
 
   @Override
   public void onFinishTemporaryDetach() {
+    mIsTemporaryDetached = false;
     super.onFinishTemporaryDetach();
     onAttach();
   }
@@ -291,6 +300,10 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void onDetached() {
     mMountState.detach();
+    final @Nullable ComponentsConfiguration config = getConfiguration();
+    if (config != null && config.enableFixForIM && !mIsTemporaryDetached && !hasTransientState()) {
+      notifyVisibleBoundsChangedOnDetach();
+    }
   }
 
   boolean isAttached() {
@@ -401,15 +414,6 @@ public abstract class BaseMountingView extends ComponentHost
     return mMountState.needsRemount();
   }
 
-  /**
-   * The usage of this method is not encouraged and it is only being used in the scope of a
-   * temporary experiment.
-   */
-  @Deprecated
-  public void setMountStateAsNeedingRemount() {
-    mMountState.needsRemount(true);
-  }
-
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public MountDelegateTarget getMountDelegateTarget() {
     return mMountState;
@@ -508,7 +512,21 @@ public abstract class BaseMountingView extends ComponentHost
 
     layoutState.setShouldProcessVisibilityOutputs(processVisibilityOutputs);
 
-    mountWithMountDelegateTarget(layoutState, currentVisibleArea);
+    final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
+    if (currentVisibleArea != null && !needsMount) {
+      Preconditions.checkNotNull(mMountState.getMountDelegate())
+          .notifyVisibleBoundsChanged(currentVisibleArea);
+    } else {
+      // Generate the renderTree here so that any operations
+      // that occur in toRenderTree() happen prior to "beforeMount".
+      final RenderTree renderTree = layoutState.toRenderTree();
+      setupMountExtensions();
+      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
+      mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
+      mMountState.mount(renderTree);
+      LithoStats.incrementComponentMountCount();
+      drawDebugOverlay(this, layoutState.getComponentTreeId());
+    }
 
     onAfterMount(onBeforeMountResult);
     mIsMountStateDirty = false;
@@ -532,25 +550,6 @@ public abstract class BaseMountingView extends ComponentHost
    *     null.
    */
   void onAfterMount(@Nullable Object fromOnBeforeMount) {}
-
-  private void mountWithMountDelegateTarget(
-      LayoutState layoutState, @Nullable Rect currentVisibleArea) {
-    final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
-    if (currentVisibleArea != null && !needsMount) {
-      Preconditions.checkNotNull(mMountState.getMountDelegate())
-          .notifyVisibleBoundsChanged(currentVisibleArea);
-    } else {
-      // Generate the renderTree here so that any operations
-      // that occur in toRenderTree() happen prior to "beforeMount".
-      final RenderTree renderTree = layoutState.toRenderTree();
-      setupMountExtensions();
-      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
-      mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
-      mMountState.mount(renderTree);
-      LithoStats.incrementComponentMountCount();
-      drawDebugOverlay(this, layoutState.getComponentTreeId());
-    }
-  }
 
   // We pause mounting while the visibility hint is set to false, because the visible rect of
   // the BaseMountingView is not consistent with what's currently on screen.
@@ -618,7 +617,7 @@ public abstract class BaseMountingView extends ComponentHost
       VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
     final Object content =
         visibilityOutput.hasMountableContent
-            ? mMountState.getContentById(visibilityOutput.mRenderUnitId)
+            ? mMountState.getContentById(visibilityOutput.renderUnitId)
             : null;
     if (visibilityEventType == VisibleEvent.class) {
       if (visibilityOutput.getVisibleEventHandler() != null) {
@@ -643,7 +642,15 @@ public abstract class BaseMountingView extends ComponentHost
     }
   }
 
-  protected synchronized void onDirtyMountComplete() {}
+  public synchronized void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
+    mOnDirtyMountListener = onDirtyMountListener;
+  }
+
+  protected synchronized void onDirtyMountComplete() {
+    if (mOnDirtyMountListener != null) {
+      mOnDirtyMountListener.onDirtyMount(this);
+    }
+  }
 
   @Nullable
   protected TreeMountInfo getMountInfo() {
@@ -727,27 +734,85 @@ public abstract class BaseMountingView extends ComponentHost
     mSkipMountingIfNotVisible = skipMountingIfNotVisible;
   }
 
+  void notifyVisibleBoundsChangedOnAttach() {
+    final Rect currentVisibleArea = new Rect();
+    final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
+    if (areBoundsVisible || isRectVisible(currentVisibleArea)) {
+      // We noticed that `getLocalVisibleRect` will not always return true even if the component is
+      // visible when getting attached, so we need isRectVisible to justify the visibility result.
+      performIncrementalMountForVisibleBoundsChange(currentVisibleArea);
+    }
+  }
+
+  void notifyVisibleBoundsChangedOnDetach() {
+    // Since we don't have a reliable way to determine if the current view is visible or not, we
+    // have to set an empty rect to unmount all components.
+    performIncrementalMountForVisibleBoundsChange(EMPTY_RECT);
+  }
+
   @UiThread
   void performIncrementalMountForVisibleBoundsChange() {
+    performIncrementalMountForVisibleBoundsChange(null);
+  }
+
+  @UiThread
+  void performIncrementalMountForVisibleBoundsChange(@Nullable Rect rect) {
     assertMainThread();
 
     if (!hasTree()) {
       return;
     }
 
-    // Per ComponentTree visible area. Because BaseMountingViews can be nested and mounted
-    // not in "depth order", this variable cannot be static.
-    final Rect currentVisibleArea = new Rect();
-    final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
-
-    if (areBoundsVisible
-        || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
-        // It might not be yet visible but animating from 0 height/width in which case we still
-        // need to mount them to trigger animation.
-        || animatingRootBoundsFromZero(currentVisibleArea)
-        || hasBecomeInvisible()) {
-      mountComponent(currentVisibleArea, true);
+    if (rect != null) {
+      if (rect.equals(mPreviousMountVisibleRectBounds)) {
+        return;
+      }
+      // As [View.getLocalVisibleRect] on detach can return a value which cannot be for used for
+      // processing visibility. For example, a visible Rect will be returned even when it's totally
+      // invisible. This can cause components to not dispatch the correct visibility events
+      // correctly or not get unmounted by incremental mount. We manually invokes the visible bounds
+      // change call with the appropriate visible rect when the view is getting attached or
+      // detached.
+      mountComponent(rect, true);
+    } else {
+      // Per ComponentTree visible area. Because BaseMountingViews can be nested and mounted
+      // not in "depth order", this variable cannot be static.
+      final Rect currentVisibleArea = new Rect();
+      final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
+      if (areBoundsVisible
+          || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
+          // It might not be yet visible but animating from 0 height/width in which case we still
+          // need to mount them to trigger animation.
+          || animatingRootBoundsFromZero(currentVisibleArea)
+          || hasBecomeInvisible()) {
+        mountComponent(currentVisibleArea, true);
+      }
     }
+  }
+
+  // This is used to detect if the rect is visible or not, more details could be found at here:
+  // https://developer.android.com/reference/android/view/View#getLocalVisibleRect(android.graphics.Rect)
+  private boolean isRectVisible(Rect rect) {
+    int width = getMeasuredWidth();
+    int height = getMeasuredHeight();
+
+    if (width == 0 || height == 0) {
+      // It means the view is not measured yet.
+      return false;
+    }
+
+    if ((rect.left < 0 && rect.right <= 0) || (rect.top < 0 && rect.bottom <= 0)) {
+      // It means the view is outside of left or top of the screen.
+      return false;
+    }
+
+    if ((rect.left >= width && rect.right > width)
+        || (rect.top >= height && rect.bottom > height)) {
+      // It means the view is outside of right or bottom of the screen.
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -826,7 +891,7 @@ public abstract class BaseMountingView extends ComponentHost
   // IncrementalMount.
   private static boolean hasComponentsExcludedFromIncrementalMount(
       @Nullable LayoutState layoutState) {
-    return layoutState != null && layoutState.hasComponentsExcludedFromIncrementalMount();
+    return layoutState != null && layoutState.getHasComponentsExcludedFromIncrementalMount();
   }
 
   @VisibleForTesting
@@ -894,7 +959,17 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void setupMountExtensions() {
     if (mLithoHostListenerCoordinator == null) {
-      mLithoHostListenerCoordinator = new LithoHostListenerCoordinator(mMountState);
+      ComponentsConfiguration configuration = getConfiguration();
+      /*
+       * We want to allow the usage of the {@link ComponentsConfiguration#useFineGrainedViewAttributesExtension} whenever the {@link ComponentsConfiguration#componentHostRecyclingEnabled} is enabled because the bug was mainly visible when this was enabled.
+       */
+      mLithoHostListenerCoordinator =
+          new LithoHostListenerCoordinator(
+              mMountState,
+              configuration != null
+                  && (configuration.useFineGrainedViewAttributesExtension
+                      || configuration.componentHostRecyclingEnabled),
+              configuration != null && configuration.cloneStateListAnimators);
 
       mLithoHostListenerCoordinator.enableNestedLithoViewsExtension();
       mLithoHostListenerCoordinator.enableTransitions();
@@ -1283,5 +1358,14 @@ public abstract class BaseMountingView extends ComponentHost
       this.currentVisibleArea = currentVisibleArea;
       this.processVisibilityOutputs = processVisibilityOutputs;
     }
+  }
+
+  public interface OnDirtyMountListener {
+
+    /**
+     * Called when finishing a mount where the mount state was dirty. This indicates that there were
+     * new props/state in the tree, or the BaseMountingView was mounting a new ComponentTree
+     */
+    void onDirtyMount(BaseMountingView view);
   }
 }

@@ -295,7 +295,7 @@ fun PrimitiveComponentScope.useNestedTree(
               nestedTreeState.id,
           ),
           "nested-tree-root",
-          context.lifecycleProvider,
+          context.lithoVisibilityEventsController,
           null,
           null,
       )

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.SizeConstraints
@@ -154,13 +155,9 @@ internal object Layout {
             }
             .addAll(outputs.attachables)
 
-        reductionState.transitions
-            .getOrCreate {
-              ArrayList<Transition>(outputs.transitions.size).also {
-                reductionState.transitions = it
-              }
-            }
-            .addAll(outputs.transitions)
+        reductionState.transitionData
+            .getOrCreate { MutableTransitionData().also { reductionState.transitionData = it } }
+            .apply { outputs.transitionData?.let { add(it) } }
 
         reductionState.scopedComponentInfosNeedingPreviousRenderData
             .getOrCreate {
@@ -212,7 +209,10 @@ internal object Layout {
 
     val workingRange: WorkingRangeContainer =
         reductionState.workingRangeContainer.getOrCreate {
-          WorkingRangeContainer().also { reductionState.workingRangeContainer = it }
+          WorkingRangeContainer(
+                  result.context.lithoConfiguration.componentsConfig
+                      .skipSecondIsInWorkingRangeCheck)
+              .also { reductionState.workingRangeContainer = it }
         }
     val component: Component = result.node.tailComponent
     for (registration in registrations) {
@@ -384,11 +384,17 @@ internal object Layout {
       parentContext.setLithoLayoutContext(nestedLsc)
 
       // 4.b Measure the tree
-      measureTree(
-          lithoLayoutContext = nestedLsc,
-          androidContext = parentContext.androidContext,
-          node = newNode,
-          sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+      val result =
+          measureTree(
+              lithoLayoutContext = nestedLsc,
+              androidContext = parentContext.androidContext,
+              node = newNode,
+              sizeConstraints = SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec))
+
+      CalculationContext.recordEventHandlers(nestedRsc, prevContext)
+      CalculationContext.recordEventHandlers(nestedLsc, prevContext)
+
+      result
     } finally {
       parentContext.calculationStateContext = prevContext
     }

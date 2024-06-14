@@ -38,9 +38,7 @@ public class LayoutOutput<MeasureResult> {
   @DoNotStrip
   private float[] arr;
 
-  @SuppressWarnings("MismatchedReadAndWriteOfArray") // Written to from native code
-  @DoNotStrip
-  private Object[] measureResults;
+  private final Object[] measureResults;
 
   public LayoutOutput(int childrenSize) {
     measureResults = new Object[childrenSize];
@@ -79,6 +77,10 @@ public class LayoutOutput<MeasureResult> {
 
   public float getHeightForChildAt(int idx) {
     return arr[Keys.values().length + idx * ChildKeys.values().length + ChildKeys.HEIGHT.ordinal()];
+  }
+
+  public void setMeasureResultForChildAt(int idx, MeasureOutput<MeasureResult> measureOutput) {
+    measureResults[idx] = measureOutput.getMeasureResult();
   }
 
   public MeasureResult getMeasureResultForChildAt(int idx) {

@@ -71,7 +71,7 @@ class WillRenderTest {
         .setRoot(Wrapper.create(c).delegate(null))
         .layout()
         .measure()
-    assertThat(legacyLithoViewRule.committedLayoutState?.layoutRoot).isNull()
+    assertThat(legacyLithoViewRule.committedLayoutState?.root).isNull()
   }
 
   @Test

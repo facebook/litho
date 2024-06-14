@@ -28,5 +28,12 @@ import com.facebook.litho.widget.Image
 inline fun ResourcesScope.Image(
     drawable: Drawable,
     style: Style? = null,
-    scaleType: ScaleType = ScaleType.FIT_CENTER
-): Image = Image.create(context).drawable(drawable).scaleType(scaleType).kotlinStyle(style).build()
+    scaleType: ScaleType = ScaleType.FIT_CENTER,
+    useIntrinsicSize: Boolean = true,
+): Image =
+    Image.create(context)
+        .drawable(drawable)
+        .scaleType(scaleType)
+        .useIntrinsicSize(useIntrinsicSize)
+        .kotlinStyle(style)
+        .build()

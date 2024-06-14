@@ -87,9 +87,9 @@ class ComponentShallowCopyTest {
         c.androidContext,
         c.treePropContainer,
         componentTree.lithoConfiguration,
-        create(componentTree),
+        create(componentTree, componentTree),
         c.mGlobalKey,
-        c.lifecycleProvider,
+        c.lithoVisibilityEventsController,
         null,
         c.parentTreePropContainer)
   }

@@ -41,38 +41,38 @@ class WorkingRangeStatusHandlerTest {
   @Test
   fun testIsNotInRange() {
     workingRangeStateHandler.setStatus(
-        workingRangeName, component, globalKey, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE)
-    val notInRange = !workingRangeStateHandler.isInRange(workingRangeName, component, globalKey)
+        workingRangeName, globalKey, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE)
+    val notInRange = !workingRangeStateHandler.isInRange(workingRangeName, globalKey)
     assertThat(notInRange).isEqualTo(true)
   }
 
   @Test
   fun testIsInRange() {
     workingRangeStateHandler.setStatus(
-        workingRangeName, component, globalKey, WorkingRangeStatusHandler.STATUS_IN_RANGE)
-    val inRange = workingRangeStateHandler.isInRange(workingRangeName, component, globalKey)
+        workingRangeName, globalKey, WorkingRangeStatusHandler.STATUS_IN_RANGE)
+    val inRange = workingRangeStateHandler.isInRange(workingRangeName, globalKey)
     assertThat(inRange).isEqualTo(true)
   }
 
   @Test
   fun testSetEnteredRangeState() {
     workingRangeStateHandler.setStatus(
-        workingRangeName, component, globalKey, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE)
-    val notInRange = !workingRangeStateHandler.isInRange(workingRangeName, component, globalKey)
+        workingRangeName, globalKey, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE)
+    val notInRange = !workingRangeStateHandler.isInRange(workingRangeName, globalKey)
     assertThat(notInRange).isEqualTo(true)
-    workingRangeStateHandler.setEnteredRangeStatus(workingRangeName, component, globalKey)
-    val inRange = workingRangeStateHandler.isInRange(workingRangeName, component, globalKey)
+    workingRangeStateHandler.setEnteredRangeStatus(workingRangeName, globalKey)
+    val inRange = workingRangeStateHandler.isInRange(workingRangeName, globalKey)
     assertThat(inRange).isEqualTo(true)
   }
 
   @Test
   fun testSetExitedRangeState() {
     workingRangeStateHandler.setStatus(
-        workingRangeName, component, globalKey, WorkingRangeStatusHandler.STATUS_IN_RANGE)
-    val inRange = workingRangeStateHandler.isInRange(workingRangeName, component, globalKey)
+        workingRangeName, globalKey, WorkingRangeStatusHandler.STATUS_IN_RANGE)
+    val inRange = workingRangeStateHandler.isInRange(workingRangeName, globalKey)
     assertThat(inRange).isEqualTo(true)
-    workingRangeStateHandler.setExitedRangeStatus(workingRangeName, component, globalKey)
-    val notInRange = !workingRangeStateHandler.isInRange(workingRangeName, component, globalKey)
+    workingRangeStateHandler.setExitedRangeStatus(workingRangeName, globalKey)
+    val notInRange = !workingRangeStateHandler.isInRange(workingRangeName, globalKey)
     assertThat(notInRange).isEqualTo(true)
   }
 }

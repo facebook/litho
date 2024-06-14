@@ -11,6 +11,11 @@ namespace flexlayout {
 namespace jni {
 
 /**
+ * Find class by its name. Aborts if not found.
+ */
+jclass findClass(JNIEnv* env, const char* className);
+
+/**
  * Registers a set of methods for a JNI class. Aborts if registration fails.
  */
 void registerNatives(

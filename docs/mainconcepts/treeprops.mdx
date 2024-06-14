@@ -1,0 +1,40 @@
+---
+id: treeprops
+title: Tree Props
+keywords:
+    - tree props
+    - treeprops
+    - treeprop
+---
+
+The [Types of Props](props.mdx) page details different types of Litho props. This page covers one more type of props - Tree Props.
+
+## Tree Props
+
+:::note
+A tree prop is a special type of prop that is transparently passed from a parent component to its children.
+:::
+
+A TreeProp is a special type of prop which is transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass `val` properties to every component in your hierarchy.
+
+### Declaring a Tree Prop
+
+In order to declare a TreeProp you need to use `TreePropProvider`:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/treeprops/TreePropsExampleComponent.kt start=declaring_tree_prop_start end=declaring_tree_prop_end
+```
+
+:::note
+You can only declare one TreeProp for any one given type. If a child of ParentComponent also defines a TreeProp of the given type, it will override the value of that TreeProp for all its children (but not for itself).
+:::
+
+### Using a Tree Prop
+
+The child component can access the TreeProp value through a `ComponentScope.getTreeProp<>()` method that has the same type that was declared in the parents `TreePropProvider` call:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/treeprops/TreePropsChildComponent.kt start=using_tree_prop_start end=using_tree_prop_end
+```
+
+### When to Use Tree Props
+
+Tree Props are powerful, but if overused, they can make your component code more difficult to understand. The best practice is to only use tree props for properties that the whole tree needs to know about (such as theming information or loggers) and not just as a more convenient way to get props to the leaves of a tree of components.

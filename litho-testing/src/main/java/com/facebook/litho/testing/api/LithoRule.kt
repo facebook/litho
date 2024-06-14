@@ -33,17 +33,20 @@ import org.robolectric.Shadows.shadowOf
 
 class LithoRule : TestRule, TestNodeSelectionProvider {
 
-  private var componentContext: ComponentContext? = null
+  private var _componentContext: ComponentContext? = null
   private lateinit var testContext: TestContext
 
   private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
+
+  val componentContext: ComponentContext
+    get() = checkNotNull(_componentContext)
 
   override fun apply(statement: Statement, description: Description): Statement =
       object : Statement() {
         override fun evaluate() {
 
           try {
-            componentContext = ComponentContext(getApplicationContext<Context>())
+            _componentContext = ComponentContext(getApplicationContext<Context>())
             threadLooperController.init()
             statement.evaluate()
           } finally {
@@ -54,7 +57,7 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
 
   fun render(componentProvider: () -> Component): LithoRule = also {
     setupLithoViewWithComponent(
-        componentContext = checkNotNull(componentContext), componentProvider = componentProvider)
+        componentContext = checkNotNull(_componentContext), componentProvider = componentProvider)
   }
 
   override fun selectNode(matcher: TestNodeMatcher): TestNodeSelection {

@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.transition.ChangeTransform;
 import androidx.transition.TransitionSet;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -111,10 +112,10 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
           new ViewGroup.LayoutParams(
               ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
       layout.addView(boxInLithoView);
-      LithoView.OnDirtyMountListener dirtyMountListener =
-          new LithoView.OnDirtyMountListener() {
+      BaseMountingView.OnDirtyMountListener dirtyMountListener =
+          new BaseMountingView.OnDirtyMountListener() {
             @Override
-            public void onDirtyMount(LithoView view) {
+            public void onDirtyMount(BaseMountingView view) {
               startPostponedEnterTransition();
             }
           };
@@ -211,10 +212,10 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
               .build();
 
       final LithoView lithoView = LithoView.create(activity, component);
-      LithoView.OnDirtyMountListener dirtyMountListener =
-          new LithoView.OnDirtyMountListener() {
+      BaseMountingView.OnDirtyMountListener dirtyMountListener =
+          new BaseMountingView.OnDirtyMountListener() {
             @Override
-            public void onDirtyMount(LithoView view) {
+            public void onDirtyMount(BaseMountingView view) {
               startPostponedEnterTransition();
             }
           };

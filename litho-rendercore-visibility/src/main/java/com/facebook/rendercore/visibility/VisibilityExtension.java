@@ -19,6 +19,7 @@ package com.facebook.rendercore.visibility;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityExtension
     extends RenderCoreExtension<Results, VisibilityMountExtensionState> {
 

@@ -322,7 +322,9 @@ private constructor(
             nextComponent,
         )
       } catch (e: Exception) {
-        ComponentUtils.handle(nextScopedContext, e)
+        if (nextScopedContext != null) {
+          ComponentUtils.handle(nextScopedContext, e)
+        }
         true
       } finally {
         if (isTracing) {

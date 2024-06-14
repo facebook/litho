@@ -10,6 +10,8 @@ load(
     "make_dep_path",
 )
 
+oncall("playgroundapps")
+
 fb_java_binary(
     name = "litho-annotations",
     feature = FBApp_UIFrameworks_Litho_Litho,

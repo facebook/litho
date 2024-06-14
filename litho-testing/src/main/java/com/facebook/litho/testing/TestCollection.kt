@@ -21,6 +21,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.LithoView
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
+import com.facebook.litho.widget.ExperimentalRecycler
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 import kotlin.reflect.KClass
@@ -38,8 +39,16 @@ class TestCollection {
     val binder =
         Whitebox.getInternalState<Binder<RecyclerView>>(recycler, "binder") as SectionBinderTarget
 
-    this.recyclerBinder = Whitebox.getInternalState(binder, "mRecyclerBinder")
+    this.recyclerBinder = binder.recyclerBinder
   }
+
+  constructor(recycler: ExperimentalRecycler) {
+    val binder = recycler.binder as SectionBinderTarget
+    this.recyclerBinder = binder.recyclerBinder
+  }
+
+  private val SectionBinderTarget.recyclerBinder: RecyclerBinder
+    get() = Whitebox.getInternalState(this, "mRecyclerBinder")
 
   /**
    * Get the number of items in the lazy collection. This is not the same as the number of items
@@ -144,6 +153,12 @@ class TestCollection {
       recyclerView.layoutManager?.findViewByPosition(it) as? LithoView
     }
   }
+
+  val measuredHeight: Int
+    get() = recyclerBinder.measuredHeight
+
+  val measuredWidth: Int
+    get() = recyclerBinder.measuredWidth
 
   internal val recyclerView: RecyclerView
     get() {

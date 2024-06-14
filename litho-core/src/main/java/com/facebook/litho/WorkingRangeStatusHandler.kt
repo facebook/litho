@@ -37,22 +37,22 @@ class WorkingRangeStatusHandler {
    */
   private val _status: MutableMap<String, Int> = HashMap()
 
-  fun isInRange(name: String, component: Component, globalKey: String): Boolean =
-      getStatus(name, component, globalKey) == STATUS_IN_RANGE
+  fun isInRange(name: String, globalKey: String): Boolean =
+      getStatus(name, globalKey) == STATUS_IN_RANGE
 
   /** Components in the collection share same status, we can only check the first component. */
   @WorkingRangeStatus
-  private fun getStatus(name: String, component: Component, componentGlobalKey: String): Int {
+  private fun getStatus(name: String, componentGlobalKey: String): Int {
     val key = generateKey(name, componentGlobalKey)
     return _status[key] ?: STATUS_UNINITIALIZED
   }
 
-  fun setEnteredRangeStatus(name: String, component: Component?, globalKey: String) {
-    setStatus(name, component, globalKey, STATUS_IN_RANGE)
+  fun setEnteredRangeStatus(name: String, globalKey: String) {
+    setStatus(name, globalKey, STATUS_IN_RANGE)
   }
 
-  fun setExitedRangeStatus(name: String, component: Component?, globalKey: String) {
-    setStatus(name, component, globalKey, STATUS_OUT_OF_RANGE)
+  fun setExitedRangeStatus(name: String, globalKey: String) {
+    setStatus(name, globalKey, STATUS_OUT_OF_RANGE)
   }
 
   fun clear() {
@@ -64,12 +64,7 @@ class WorkingRangeStatusHandler {
     get() = _status
 
   @VisibleForTesting
-  fun setStatus(
-      name: String,
-      component: Component?,
-      componentGlobalKey: String,
-      @WorkingRangeStatus status: Int
-  ) {
+  fun setStatus(name: String, componentGlobalKey: String, @WorkingRangeStatus status: Int) {
     _status[generateKey(name, componentGlobalKey)] = status
   }
 
