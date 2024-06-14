@@ -432,15 +432,13 @@ public abstract class BaseMountingView extends ComponentHost
 
   private void consumeReentrantMounts() {
     if (mReentrantMounts != null) {
-      final Deque<ReentrantMount> reentrantMounts = new ArrayDeque<>(mReentrantMounts);
+      final Deque<ReentrantMount> requests = new ArrayDeque<>(mReentrantMounts);
       mReentrantMounts.clear();
 
-      while (!reentrantMounts.isEmpty()) {
-        final ReentrantMount reentrantMount =
-            Preconditions.checkNotNull(reentrantMounts.pollFirst());
+      while (!requests.isEmpty()) {
+        final ReentrantMount request = Preconditions.checkNotNull(requests.pollFirst());
         setMountStateDirty();
-        maybeMountOrNotifyVisibleBoundsChange(
-            reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
+        mount(request.currentVisibleArea, request.processVisibilityOutputs);
       }
     }
   }
