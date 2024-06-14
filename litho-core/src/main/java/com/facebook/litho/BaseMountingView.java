@@ -388,7 +388,7 @@ public abstract class BaseMountingView extends ComponentHost
       return;
     }
 
-    mountComponentInternal(currentVisibleArea, processVisibilityOutputs);
+    maybeMountOrNotifyVisibleBoundsChange(currentVisibleArea, processVisibilityOutputs);
 
     consumeReentrantMounts();
   }
@@ -439,13 +439,13 @@ public abstract class BaseMountingView extends ComponentHost
         final ReentrantMount reentrantMount =
             Preconditions.checkNotNull(reentrantMounts.pollFirst());
         setMountStateDirty();
-        mountComponentInternal(
+        maybeMountOrNotifyVisibleBoundsChange(
             reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
       }
     }
   }
 
-  private void mountComponentInternal(
+  private void maybeMountOrNotifyVisibleBoundsChange(
       final @Nullable Rect actualVisibleRect, final boolean requestVisibilityEvents) {
     final LayoutState layoutState = getCurrentLayoutState();
     if (layoutState == null) {
@@ -695,7 +695,7 @@ public abstract class BaseMountingView extends ComponentHost
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onRegisterForPremount");
       }
-      mountComponentInternal(null, false);
+      maybeMountOrNotifyVisibleBoundsChange(null, false);
       RenderCoreExtension.onRegisterForPremount(mMountState, frameTime);
       if (isTracing) {
         ComponentsSystrace.endSection();
