@@ -78,7 +78,7 @@ internal class IncrementalMountHelper(private val componentTree: ComponentTree) 
     private val viewPager: WeakReference<ViewPager> = WeakReference(viewPager)
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-      componentTree.get()?.lithoView?.performIncrementalMountForVisibleBoundsChange()
+      componentTree.get()?.lithoView?.notifyVisibleBoundsChanged()
     }
 
     fun release() {

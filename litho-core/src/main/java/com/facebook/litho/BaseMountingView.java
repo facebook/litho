@@ -680,7 +680,7 @@ public abstract class BaseMountingView extends ComponentHost
       ComponentsSystrace.beginSection("BaseMountingView.notifyVisibleBoundsChanged");
     }
 
-    performIncrementalMountForVisibleBoundsChange();
+    notifyVisibleBoundsChanged(null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -740,23 +740,18 @@ public abstract class BaseMountingView extends ComponentHost
     if (areBoundsVisible || isRectVisible(currentVisibleArea)) {
       // We noticed that `getLocalVisibleRect` will not always return true even if the component is
       // visible when getting attached, so we need isRectVisible to justify the visibility result.
-      performIncrementalMountForVisibleBoundsChange(currentVisibleArea);
+      notifyVisibleBoundsChanged(currentVisibleArea);
     }
   }
 
   void notifyVisibleBoundsChangedOnDetach() {
     // Since we don't have a reliable way to determine if the current view is visible or not, we
     // have to set an empty rect to unmount all components.
-    performIncrementalMountForVisibleBoundsChange(EMPTY_RECT);
+    notifyVisibleBoundsChanged(EMPTY_RECT);
   }
 
   @UiThread
-  void performIncrementalMountForVisibleBoundsChange() {
-    performIncrementalMountForVisibleBoundsChange(null);
-  }
-
-  @UiThread
-  void performIncrementalMountForVisibleBoundsChange(@Nullable Rect rect) {
+  void notifyVisibleBoundsChanged(@Nullable Rect rect) {
     assertMainThread();
 
     if (!hasTree()) {
@@ -936,7 +931,7 @@ public abstract class BaseMountingView extends ComponentHost
       }
 
       if (isIncrementalMountEnabled()) {
-        performIncrementalMountForVisibleBoundsChange();
+        notifyVisibleBoundsChanged(null);
       } else {
         final Rect visibleRect = new Rect();
         getLocalVisibleRect(visibleRect);
