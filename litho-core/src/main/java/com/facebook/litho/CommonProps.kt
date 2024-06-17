@@ -34,6 +34,7 @@ import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.utils.equals
@@ -397,6 +398,14 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   fun visibilityChangedHandler(visibilityChangedHandler: EventHandler<VisibilityChangedEvent>?) {
     otherProps.visibilityChangedHandler(visibilityChangedHandler)
   }
+
+  fun setVisibility(visibility: Visibility) {
+    getOrCreateNodeInfo().visibility = visibility
+    wrapInView()
+  }
+
+  val visibility: Visibility?
+    get() = _nodeInfo?.visibility
 
   fun contentDescription(contentDescription: CharSequence?) {
     getOrCreateNodeInfo().contentDescription = contentDescription

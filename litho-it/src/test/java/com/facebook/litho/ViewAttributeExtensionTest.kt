@@ -24,9 +24,15 @@ import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
+import com.facebook.litho.visibility.Visibility
+import com.facebook.litho.visibility.Visibility.Companion.Invisible
+import com.facebook.litho.visibility.Visibility.Companion.Visible
+import com.facebook.litho.visibility.visibility
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
@@ -38,6 +44,7 @@ import org.junit.runner.RunWith
 class ViewAttributeExtensionTest {
 
   @JvmField @Rule var lithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
+  @JvmField @Rule var lithoTestRule = LithoViewRule()
 
   @Test
   fun `when view attributes is set it should override attribute set by mount spec`() {
@@ -123,5 +130,64 @@ class ViewAttributeExtensionTest {
 
     assertThat(viewAttributes.size).isEqualTo(2)
     assertThat(viewAttributes.values).doesNotContainNull()
+  }
+
+  @Test
+  fun `when visibility is set on a component then view should be follow it`() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val drawableVisibility: State<Visibility> = useState { Visible }
+        val viewVisibility: State<Visibility> = useState { Visible }
+        return Column {
+          child(
+              SolidColor(
+                  color = Color.BLACK,
+                  style =
+                      Style.width(10.px)
+                          .height(10.px)
+                          .viewTag("test-tag-0")
+                          .onClick {
+                            drawableVisibility.updateSync {
+                              if (it == Visible) Invisible else Visible
+                            }
+                          }
+                          .visibility(drawableVisibility.value),
+              ),
+          )
+
+          child(
+              TextInput(
+                  initialText = "hello world",
+                  style =
+                      Style.width(10.px)
+                          .height(10.px)
+                          .viewTag("test-tag-1")
+                          .onClick {
+                            viewVisibility.updateSync { if (it == Visible) Invisible else Visible }
+                          }
+                          .visibility(viewVisibility.value),
+              ),
+          )
+        }
+      }
+    }
+
+    val handle = lithoTestRule.render { TestComponent() }
+
+    val drawableHost = handle.findViewWithTag("test-tag-0")
+
+    assertThat(drawableHost.visibility).isEqualTo(View.VISIBLE)
+    drawableHost.callOnClick()
+    assertThat(drawableHost.visibility).isEqualTo(View.INVISIBLE)
+    drawableHost.callOnClick()
+    assertThat(drawableHost.visibility).isEqualTo(View.VISIBLE)
+
+    val view = handle.findViewWithTag("test-tag-1")
+
+    assertThat(view.visibility).isEqualTo(View.VISIBLE)
+    view.callOnClick()
+    assertThat(view.visibility).isEqualTo(View.INVISIBLE)
+    view.callOnClick()
+    assertThat(view.visibility).isEqualTo(View.VISIBLE)
   }
 }

@@ -30,6 +30,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.utils.equals
 import com.facebook.rendercore.utils.isEquivalentTo
 
@@ -71,6 +72,7 @@ class ViewAttributes {
   @DrawableRes var stateListAnimatorRes: Int = 0
   @LayerType var layerType: Int = LayerType.LAYER_TYPE_NOT_SET
   var layoutPaint: Paint? = null
+  var visibility: Visibility? = null
 
   internal var flags: Int = 0
     private set
