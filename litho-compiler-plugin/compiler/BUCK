@@ -7,12 +7,13 @@ load("@fbsource//tools/build_defs/android:fb_kotlin_test.bzl", "fb_kotlin_test")
 load("@fbsource//tools/build_defs/features:native_feature_wrapper.bzl", "feature_native")
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 
+oncall("litho_components_for_android")
+
 feature_native.kotlin_library(
     name = "litho-compiler",
     srcs = glob(["src/main/kotlin/**/*.kt"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    oncall = "litho_components_for_android",
     provided_deps = [
         "//third-party/kotlin:kotlin-compiler-embeddable",
     ],
@@ -31,7 +32,6 @@ feature_native.kotlin_library(
 fb_kotlin_test(
     name = "litho-compiler-test",
     srcs = glob(["src/test/kotlin/**/*.kt"]),
-    oncall = "litho_components_for_android",
     deps = [
         ":litho-compiler",
         "//fbandroid/third-party/java/assertj:assertj-core",
