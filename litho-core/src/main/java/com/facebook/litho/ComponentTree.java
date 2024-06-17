@@ -88,6 +88,7 @@ import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.debug.DebugEventBus;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1923,7 +1924,8 @@ public class ComponentTree
     // layout.
     if (currentResolveResult != null) {
       boolean isSameTreeProps =
-          currentResolveResult.context.getTreePropContainer() == treePropContainer
+          EquivalenceUtils.equals(
+                  currentResolveResult.context.getTreePropContainer(), treePropContainer)
               || (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper
                   && treePropContainer == null);
 
