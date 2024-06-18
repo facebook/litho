@@ -20,6 +20,7 @@ import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
@@ -51,7 +52,8 @@ abstract class CollectionLayout(
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
     preAllocationHandler: PreAllocationHandler?,
-    isCircular: Boolean
+    isCircular: Boolean,
+    enableStableIds: Boolean
 ) {
   internal abstract fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder
 
@@ -71,7 +73,8 @@ abstract class CollectionLayout(
                                   incrementalMountEnabled = isIncrementalMountEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO,
                           wrapContent = mainAxisWrapContent,
-                          isCircular = isCircular))
+                          isCircular = isCircular,
+                          enableStableIds = enableStableIds))
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .build())
           .build()
@@ -132,7 +135,8 @@ internal object CollectionLayouts {
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
       preAllocationHandler: PreAllocationHandler?,
-      isCircular: Boolean
+      isCircular: Boolean,
+      enableStableIds: Boolean
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -146,7 +150,8 @@ internal object CollectionLayouts {
               canMeasureRecycler = crossAxisWrapMode.canMeasureRecycler,
               mainAxisWrapContent = mainAxisWrapContent,
               preAllocationHandler = preAllocationHandler,
-              isCircular = isCircular) {
+              isCircular = isCircular,
+              enableStableIds = enableStableIds) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             ListRecyclerConfiguration.create()
                 .snapMode(snapMode)
@@ -186,7 +191,8 @@ internal object CollectionLayouts {
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
-              isCircular = false) {
+              isCircular = false,
+              enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             GridRecyclerConfiguration.create()
                 .snapMode(snapMode)
@@ -229,7 +235,8 @@ internal object CollectionLayouts {
               isReconciliationEnabled = isReconciliationEnabled,
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
-              isCircular = false) {
+              isCircular = false,
+              enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)
       }
