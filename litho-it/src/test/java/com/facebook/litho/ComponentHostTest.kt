@@ -627,12 +627,12 @@ class ComponentHostTest {
   private val drawableItemsSize: Int
     get() {
       val drawableItems =
-          Whitebox.getInternalState<SparseArrayCompat<*>>(host, "mDrawableMountItems")
+          Whitebox.getInternalState<SparseArrayCompat<*>>(host, "drawableMountItems")
       return Whitebox.invokeMethod(drawableItems, "size")
     }
 
   private fun getDrawableMountItemAt(index: Int): MountItem {
-    val drawableItems = Whitebox.getInternalState<SparseArrayCompat<*>>(host, "mDrawableMountItems")
+    val drawableItems = Whitebox.getInternalState<SparseArrayCompat<*>>(host, "drawableMountItems")
     return Whitebox.invokeMethod(drawableItems, "valueAt", index)
   }
 
@@ -692,9 +692,9 @@ class ComponentHostTest {
     var focusRequestCount = 0
       private set
 
-    constructor(context: ComponentContext?) : super(context)
+    constructor(context: ComponentContext) : super(context)
 
-    constructor(context: Context?) : super(context, null)
+    constructor(context: Context) : super(context, null)
 
     override fun invalidate(dirty: Rect) {
       super.invalidate(dirty)

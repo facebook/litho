@@ -119,7 +119,7 @@ class TouchExpansionDelegateTest {
             .paddingPx(YogaEdge.ALL, 10)
             .build()
     legacyLithoViewRule.setRoot(component).attachToWindow().measure().layout()
-    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate.size())
+    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate?.size())
         .describedAs("touch expansion delegates should be present")
         .isEqualTo(1)
     legacyLithoViewRule.lithoView.unmountAllItems()
@@ -127,7 +127,7 @@ class TouchExpansionDelegateTest {
     assertThat(callback.handled)
         .describedAs("TouchEvent within bounds bounds should not be handled")
         .isFalse
-    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate.size())
+    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate?.size())
         .describedAs("all touch expansion delegates should be released")
         .isEqualTo(0)
   }
@@ -168,7 +168,7 @@ class TouchExpansionDelegateTest {
         .describedAs("TouchEvent within bounds bounds should be handled only once")
         .isEqualTo(1)
     legacyLithoViewRule.lithoView.unmountAllItems()
-    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate.size())
+    assertThat(legacyLithoViewRule.lithoView.touchExpansionDelegate?.size())
         .describedAs("all touch expansion delegates should be released")
         .isEqualTo(0)
   }
