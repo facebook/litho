@@ -329,10 +329,40 @@ public class TextInputSpecTest {
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
     TextInput.replaceText(
-        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 0);
+        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 0, false);
     assertThat(editText.getText().toString()).isEqualTo(textToSet);
     assertThat(editText.getSelectionStart()).isEqualTo(textToSet.length());
     assertThat(editText.getSelectionEnd()).isEqualTo(textToSet.length());
+  }
+
+  @Test
+  public void textInput_setReplaceText_replacesTextWithSkippedSelection() {
+    final Handle handle = new Handle();
+    mLegacyLithoViewRule
+        .setRoot(
+            Column.create(mLegacyLithoViewRule.getContext())
+                .child(TextInput.create(mLegacyLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    final CharSequence initialText = "some text with suggestion";
+    final CharSequence textToSet = "";
+    final EditText editText = getEditText(mLegacyLithoViewRule.getLithoView());
+    TextInput.setText(mLegacyLithoViewRule.getComponentTree().getContext(), handle, initialText);
+    editText.setSelection(5);
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    TextInput.replaceText(
+        mLegacyLithoViewRule.getComponentTree().getContext(),
+        handle,
+        textToSet,
+        9,
+        initialText.length(),
+        true);
+    assertThat(editText.getText().toString()).isEqualTo("some text");
+    assertThat(editText.getSelectionStart()).isEqualTo(5);
+    assertThat(editText.getSelectionEnd()).isEqualTo(5);
   }
 
   @Test
@@ -352,7 +382,7 @@ public class TextInputSpecTest {
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
     TextInput.replaceText(
-        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 2);
+        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 2, false);
     assertThat(editText.getText().toString()).isEqualTo(textToSet + "23");
     assertThat(editText.getSelectionStart()).isEqualTo(textToSet.length());
     assertThat(editText.getSelectionEnd()).isEqualTo(textToSet.length());
@@ -375,7 +405,7 @@ public class TextInputSpecTest {
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
     TextInput.replaceText(
-        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 0);
+        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 0, false);
     final CharSequence text =
         TextInput.getText(mLegacyLithoViewRule.getComponentTree().getContext(), handle);
     assertThat(text).isNotNull();
@@ -408,7 +438,7 @@ public class TextInputSpecTest {
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
     TextInput.replaceText(
-        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 2);
+        mLegacyLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 2, false);
     final CharSequence text =
         TextInput.getText(mLegacyLithoViewRule.getComponentTree().getContext(), handle);
     assertThat(text).isNotNull();

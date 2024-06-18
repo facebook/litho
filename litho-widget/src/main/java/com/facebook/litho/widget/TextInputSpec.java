@@ -1077,12 +1077,15 @@ class TextInputSpec {
       @State AtomicReference<CharSequence> savedText,
       @FromTrigger CharSequence text,
       @FromTrigger int startIndex,
-      @FromTrigger int endIndex) {
+      @FromTrigger int endIndex,
+      @FromTrigger boolean skipSelection) {
     final @Nullable EditTextWithEventHandlers view = mountedView.get();
     final @Nullable Editable editable = view != null ? view.getText() : null;
     if (editable != null) {
       editable.replace(startIndex, endIndex, text);
-      view.setSelection(text != null ? startIndex + text.length() : startIndex);
+      if (!skipSelection) {
+        view.setSelection(text != null ? startIndex + text.length() : startIndex);
+      }
       return;
     }
 
