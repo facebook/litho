@@ -434,6 +434,9 @@ public class ComponentTree
       }
     }
 
+    // Set the default root tree props from the context.
+    mTreePropContainer = mContext.getTreePropContainer();
+
     ComponentTreeDebugEventListener debugEventListener = config.componentsConfig.debugEventListener;
     if (debugEventListener != null) {
       mDebugEventsSubscriber =
