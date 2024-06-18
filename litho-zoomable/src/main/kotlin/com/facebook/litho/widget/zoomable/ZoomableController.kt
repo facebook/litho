@@ -69,6 +69,8 @@ class ZoomableController(
   // difference so that we avoid a sudden jump of the view in the y-axis.
   private var touchAdjustment = 0
   private var initialTranslationY = 0f
+  private var contentViewIndex = 0
+  private var contentViewLayoutParams: ViewGroup.LayoutParams? = null
 
   private var currentScaleFactor = 1f
   private var state = State.IDLE
@@ -76,7 +78,7 @@ class ZoomableController(
   private var dragOffsetY = 0f
 
   private var rootView: LithoZoomableView? = null
-  private var remoteContainer: FrameLayout? = null
+  private var remoteContainer: LithoRemoteContainerView? = null
   private var contentView: View? = null
 
   private var zoomSpring: Spring? = null
@@ -183,7 +185,7 @@ class ZoomableController(
     requireRootView().renderTreeView.getLocationInWindow(location)
     touchAdjustment = location[1]
 
-    val remoteContainer = FrameLayout(context)
+    val remoteContainer = LithoRemoteContainerView(context)
     remoteContainer.layoutParams = LAYOUT_PARAMS
     if (backgroundDrawable != null) {
       remoteContainer.background = backgroundDrawable
@@ -197,7 +199,7 @@ class ZoomableController(
 
   private fun requireRootView(): LithoZoomableView = checkNotNull(rootView)
 
-  private fun requireRemoteContainer(): FrameLayout = checkNotNull(remoteContainer)
+  private fun requireRemoteContainer(): LithoRemoteContainerView = checkNotNull(remoteContainer)
 
   private fun requireContentView(): View =
       if (state == State.REMOTE_ZOOMING) {
@@ -221,12 +223,20 @@ class ZoomableController(
     val remoteContainer = requireRemoteContainer()
     val contentView = rootView.renderTreeView
 
-    rootView.removeView(contentView)
-    remoteContainer.addView(contentView)
+    contentViewIndex = rootView.indexOfChild(contentView)
+    contentViewLayoutParams = contentView.layoutParams
+
+    rootView.detachViewFromParent(contentView)
+    remoteContainer.attachViewToParent(contentView, 0, LAYOUT_PARAMS)
+    remoteContainer.bringToFront()
+    rootView.requestLayout()
+    rootView.invalidate()
+
     remoteContainer.visibility = View.VISIBLE
     this.contentView = contentView
 
     rootView.parent.requestDisallowInterceptTouchEvent(true)
+    rootView.requestDisallowInterceptTouchEvent(true)
     remoteContainer.parent.requestDisallowInterceptTouchEvent(true)
     requireContentView().setHasTransientState(true)
   }
@@ -249,6 +259,8 @@ class ZoomableController(
     updateTranslation(0f, initialTranslationY)
     dragOffsetX = 0f
     dragOffsetY = 0f
+    contentViewIndex = 0
+    contentViewLayoutParams = null
     state = State.IDLE
   }
 
@@ -339,12 +351,15 @@ class ZoomableController(
       val contentView = requireContentView()
 
       rootView.parent.requestDisallowInterceptTouchEvent(false)
+      rootView.requestDisallowInterceptTouchEvent(false)
       remoteContainer.parent.requestDisallowInterceptTouchEvent(false)
       contentView.setHasTransientState(false)
       rootView.stopNestedScroll(ViewCompat.TYPE_TOUCH)
 
-      remoteContainer.removeView(contentView)
-      rootView.addView(contentView)
+      remoteContainer.detachViewFromParent(contentView)
+      rootView.attachViewToParent(contentView, contentViewIndex, contentViewLayoutParams)
+      contentView.requestLayout()
+
       decorView.removeView(this.remoteContainer)
       this.contentView = contentView
       this.remoteContainer = null
