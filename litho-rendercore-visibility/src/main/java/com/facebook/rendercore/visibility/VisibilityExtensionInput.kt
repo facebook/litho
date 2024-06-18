@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.visibility;
+package com.facebook.rendercore.visibility
 
-import androidx.annotation.Nullable;
-import com.facebook.rendercore.RenderTreeHost;
-import com.facebook.rendercore.RenderUnit;
-import java.util.List;
-import java.util.Set;
+import com.facebook.rendercore.RenderTreeHost
+import com.facebook.rendercore.RenderUnit
 
 /** This APIs declares that inputs required by the Visibility Extensions. */
-public interface VisibilityExtensionInput {
+interface VisibilityExtensionInput {
 
   /** returns a list of items for which visibility events will be processed */
-  List<VisibilityOutput> getVisibilityOutputs();
+  val visibilityOutputs: List<VisibilityOutput>
 
-  /** Returns the set of ids of {@link RenderUnit}s which host {@link RenderTreeHost} */
-  Set<Long> getRenderUnitIdsWhichHostRenderTrees();
-
-  boolean isProcessingVisibilityOutputsEnabled();
-
-  @Nullable
-  VisibilityBoundsTransformer getVisibilityBoundsTransformer();
+  /** Returns the set of ids of [RenderUnit]s which host [RenderTreeHost] */
+  val renderUnitIdsWhichHostRenderTrees: Set<Long>
+  val isProcessingVisibilityOutputsEnabled: Boolean
+  val visibilityBoundsTransformer: VisibilityBoundsTransformer?
 }

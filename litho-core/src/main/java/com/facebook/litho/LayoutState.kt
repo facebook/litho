@@ -74,7 +74,6 @@ internal constructor(
     DynamicPropsExtensionInput {
 
   private val animatableItems: LongSparseArray<AnimatableItem> = reductionState.animatableItems
-  private val visibilityOutputs: List<VisibilityOutput> = reductionState.visibilityOutputs
   private val outputsIdToPositionMap: LongSparseArray<Int> = reductionState.outputsIdToPositionMap
   private val incrementalMountOutputs: Map<Long, IncrementalMountOutput> =
       reductionState.incrementalMountOutputs
@@ -82,8 +81,7 @@ internal constructor(
       reductionState.mountableOutputTops
   private val mountableOutputBottoms: ArrayList<IncrementalMountOutput> =
       reductionState.mountableOutputBottoms
-  private val renderUnitIdsWhichHostRenderTrees: Set<Long> =
-      reductionState.renderUnitIdsWhichHostRenderTrees
+
   private val testOutputs: List<TestOutput>? = reductionState.testOutputs
   private val workingRangeContainer: WorkingRangeContainer? = reductionState.workingRangeContainer
 
@@ -119,7 +117,9 @@ internal constructor(
   /** Gets a mapping from transition ids to a group of LayoutOutput. */
   override val transitionIdMapping: Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> =
       reductionState.transitionIdMapping
-
+  override val visibilityOutputs: List<VisibilityOutput> = reductionState.visibilityOutputs
+  override val renderUnitIdsWhichHostRenderTrees: Set<Long> =
+      reductionState.renderUnitIdsWhichHostRenderTrees
   val rootComponent: Component
     get() = resolveResult.component
 
@@ -170,6 +170,12 @@ internal constructor(
 
   override val rootName: String
     get() = resolveResult.component.simpleName
+
+  override val visibilityBoundsTransformer: VisibilityBoundsTransformer?
+    get() = componentContext.lithoConfiguration.componentsConfig.visibilityBoundsTransformer
+
+  override val isProcessingVisibilityOutputsEnabled: Boolean
+    get() = shouldProcessVisibilityOutputs
 
   private var cachedRenderTree: RenderTree? = null // memoized RenderTree
   // TODO(t66287929): Remove isCommitted from LayoutState by matching RenderState logic around
@@ -266,8 +272,6 @@ internal constructor(
 
   fun getVisibilityOutputAt(index: Int): VisibilityOutput = visibilityOutputs[index]
 
-  override fun getVisibilityOutputs(): List<VisibilityOutput> = visibilityOutputs
-
   override fun getTestOutputAt(position: Int): TestOutput? = testOutputs?.get(position)
 
   fun getWidthSpec(): Int = getWidthSpec(sizeConstraints)
@@ -290,8 +294,6 @@ internal constructor(
 
   override fun renderUnitWithIdHostsRenderTrees(id: Long): Boolean =
       renderUnitIdsWhichHostRenderTrees.contains(id)
-
-  override fun getRenderUnitIdsWhichHostRenderTrees(): Set<Long> = renderUnitIdsWhichHostRenderTrees
 
   /** Gets a group of LayoutOutput given transition key */
   override fun getAnimatableItemForTransitionId(
@@ -423,17 +425,12 @@ internal constructor(
     isCommitted = true
   }
 
-  override fun isProcessingVisibilityOutputsEnabled(): Boolean = shouldProcessVisibilityOutputs
-
   fun setShouldProcessVisibilityOutputs(value: Boolean) {
     shouldProcessVisibilityOutputs = value
   }
 
   fun getRenderTreeNode(output: IncrementalMountOutput): RenderTreeNode =
       getMountableOutputAt(output.index)
-
-  override fun getVisibilityBoundsTransformer(): VisibilityBoundsTransformer? =
-      componentContext.lithoConfiguration.componentsConfig.visibilityBoundsTransformer
 
   companion object {
     @JvmStatic
