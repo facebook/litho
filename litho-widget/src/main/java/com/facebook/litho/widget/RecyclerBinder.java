@@ -4020,6 +4020,10 @@ public class RecyclerBinder
     }
 
     private void onViewRecycledInternal(RecyclerBinderViewHolder holder) {
+      boolean isTracing = ComponentsSystrace.isTracing();
+      if (isTracing) {
+        ComponentsSystrace.beginSection("RecyclerBinder.InternalAdapter#onViewRecycledInternal");
+      }
       final LithoView lithoView = (LithoView) holder.getLithoView();
       if (lithoView != null) {
         mRecyclerBinderAdapterDelegate.onViewRecycled(holder);
@@ -4034,6 +4038,10 @@ public class RecyclerBinder
             baseViewHolder.viewBinder = null;
           }
         }
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
 
