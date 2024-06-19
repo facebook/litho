@@ -16,28 +16,21 @@
 
 package com.facebook.litho
 
-import android.graphics.Rect
 import android.widget.FrameLayout
 import com.facebook.litho.Column.Companion.create
-import com.facebook.litho.ComponentsSystrace.systrace
 import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.TestComponent
-import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
-import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.Reducer
 import com.facebook.rendercore.RenderTree
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.visibility.VisibilityMountExtension
-import com.facebook.yoga.YogaEdge
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
@@ -67,41 +60,6 @@ class VisibilityEventsWithVisibilityExtensionTest {
           bottom = 10
           addView(lithoView)
         }
-  }
-
-  @Test
-  fun visibilityExtensionInput_dirtyMountWithoutVisibilityProcessing_setInput() {
-    val content: TestComponent = TestViewComponent.create(context).build()
-    val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
-    val root: Component =
-        create(context)
-            .child(
-                Wrapper.create(context)
-                    .delegate(content)
-                    .visibleHandler(visibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
-            .build()
-    legacyLithoViewRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(10), exactly(5))
-        .measure()
-    val layoutState: LayoutState = mock()
-    val renderTree: RenderTree = mock()
-    val rootNode: RenderTreeNode = mock()
-    whenever(layoutState.toRenderTree()).thenReturn(renderTree)
-    whenever(layoutState.tracer).thenReturn(systrace)
-    whenever(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode)
-    whenever(rootNode.renderUnit).thenReturn(Reducer.ROOT_HOST_RENDER_UNIT)
-    legacyLithoViewRule.lithoView.setMountStateDirty()
-    val visibilityExtension: VisibilityMountExtension<LayoutState> =
-        spy(VisibilityMountExtension.getInstance() as VisibilityMountExtension<LayoutState>)
-    useVisibilityOutputsExtension(legacyLithoViewRule.lithoView, visibilityExtension)
-    val rect = Rect(0, 0, right, 10)
-    legacyLithoViewRule.lithoView.mount(layoutState, Rect(0, 0, right, 10), false)
-    verify(visibilityExtension).beforeMount(any(), eq(layoutState), eq(rect))
   }
 
   @Test

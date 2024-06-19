@@ -16,6 +16,7 @@
 
 package com.facebook.litho.visibility
 
+import android.view.View
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.CommonProps
 import com.facebook.litho.ComponentContext
@@ -30,6 +31,23 @@ import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
 import com.facebook.litho.eventHandler
 
+@JvmInline
+value class Visibility private constructor(val value: Int) {
+
+  fun toViewVisibility(): Int {
+    return when (this) {
+      Visible -> View.VISIBLE
+      Invisible -> View.INVISIBLE
+      else -> throw IllegalArgumentException("Unknown visibility value: $this")
+    }
+  }
+
+  companion object {
+    val Visible: Visibility = Visibility(View.VISIBLE)
+    val Invisible: Visibility = Visibility(View.INVISIBLE)
+  }
+}
+
 /** Enums for [VisibilityStyleItem]. */
 @PublishedApi
 internal enum class VisibilityField : StyleItemField {
@@ -39,6 +57,7 @@ internal enum class VisibilityField : StyleItemField {
   ON_UNFOCUSED,
   ON_FULL_IMPRESSION,
   ON_VISIBILITY_CHANGED,
+  VISIBILITY
 }
 
 /** Enums for [VisibilityFloatStyleItem]. */
@@ -71,6 +90,10 @@ internal data class VisibilityStyleItem(
       VisibilityField.ON_VISIBILITY_CHANGED, ->
           commonProps.visibilityChangedHandler(
               eventHandler(value as (VisibilityChangedEvent) -> Unit, tag))
+      VisibilityField.VISIBILITY ->
+          if (value is Visibility) {
+            commonProps.setVisibility(value)
+          }
     }
   }
 }
@@ -146,3 +169,13 @@ inline fun Style.visibleHeightRatio(visibleHeightRatio: Float): Style =
  */
 inline fun Style.visibleWidthRatio(visibleWidthRatio: Float): Style =
     this + VisibilityFloatStyleItem(VisibilityFloatField.VISIBLE_WIDTH_RATIO, visibleWidthRatio)
+
+/**
+ * Defines the visibility of the Component. The values can be [Visibility.VISIBLE] or
+ * [Visibility.INVISIBLE]. The default value [Visibility.VISIBLE] which means is the same as
+ * [View.VISIBLE]; i.e. the component will be invisible but still occupy space. <b>Note:</b> Using
+ * this API will not change how Visibility Events are dispatched; [onVisible] and/or [onInvisible]
+ * will work as if this property was not in use.
+ */
+inline fun Style.visibility(value: Visibility): Style =
+    this + VisibilityStyleItem(VisibilityField.VISIBILITY, value)

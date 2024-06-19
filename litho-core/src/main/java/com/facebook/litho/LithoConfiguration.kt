@@ -25,8 +25,4 @@ data class LithoConfiguration(
     @JvmField val componentsConfig: ComponentsConfiguration,
     @JvmField val areTransitionsEnabled: Boolean,
     @JvmField val renderUnitIdGenerator: RenderUnitIdGenerator?,
-) {
-
-  val isSpecsDuplicateStateUpdateDetectionEnabled: Boolean
-    get() = componentsConfig.specsApiStateUpdateDuplicateDetectionEnabled
-}
+)

@@ -42,6 +42,8 @@ class LithoMountData(content: Any?) {
     private const val FLAG_VIEW_LAYER_TYPE_0 = 1 shl 5
     private const val FLAG_VIEW_LAYER_TYPE_1 = 1 shl 6
     private const val FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER = 1 shl 7
+    private const val FLAG_VIEW_VISIBILITY_1 = 1 shl 8
+    private const val FLAG_VIEW_VISIBILITY_2 = 1 shl 9
 
     /** @return Whether the view associated with this MountItem is clickable. */
     @JvmStatic
@@ -80,6 +82,15 @@ class LithoMountData(content: Any?) {
           LayerType.LAYER_TYPE_SOFTWARE
         }
 
+    fun getOriginalVisibility(flags: Int): Int =
+        if (flags and (FLAG_VIEW_VISIBILITY_1 or FLAG_VIEW_VISIBILITY_2) == 0) {
+          View.VISIBLE
+        } else if (flags and FLAG_VIEW_VISIBILITY_1 == FLAG_VIEW_VISIBILITY_1) {
+          View.INVISIBLE
+        } else {
+          View.GONE
+        }
+
     @JvmStatic
     fun getMountData(item: MountItem): LithoMountData {
       return item.mountData as? LithoMountData
@@ -107,6 +118,11 @@ class LithoMountData(content: Any?) {
         }
         if (ViewCompat.isKeyboardNavigationCluster(content)) {
           flags = flags or FLAG_VIEW_KEYBOARD_NAVIGATION_CLUSTER
+        }
+        when (content.visibility) {
+          View.VISIBLE -> {} // 00
+          View.INVISIBLE -> flags = flags or FLAG_VIEW_VISIBILITY_1 // 01
+          View.GONE -> flags = flags or FLAG_VIEW_VISIBILITY_2 // 10
         }
         when (content.layerType) {
           View.LAYER_TYPE_NONE -> {}

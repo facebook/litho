@@ -315,6 +315,8 @@ private constructor(
         content.setSafeViewModificationsEnabled(true)
       }
 
+      attributes.visibility?.let { content.visibility = it.toViewVisibility() }
+
       setClickHandler(attributes.clickHandler, content)
       setLongClickHandler(attributes.longClickHandler, content)
       setFocusChangeHandler(attributes.focusChangeHandler, content)
@@ -387,6 +389,11 @@ private constructor(
 
       if (content is ComponentHost) {
         content.setSafeViewModificationsEnabled(true)
+      }
+
+      // If visibility was set the unset it back to the original value.
+      attributes.visibility?.let {
+        content.visibility = LithoMountData.getOriginalVisibility(mountFlags)
       }
 
       if (attributes.clickHandler != null) {

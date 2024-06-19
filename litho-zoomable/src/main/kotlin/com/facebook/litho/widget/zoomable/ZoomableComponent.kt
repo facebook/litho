@@ -29,6 +29,7 @@ import com.facebook.litho.TouchEvent
 import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.bindToRenderTreeView
 import com.facebook.litho.useCached
+import com.facebook.litho.useEffect
 import com.facebook.litho.useNestedTree
 import com.facebook.litho.view.onInterceptTouch
 import com.facebook.litho.view.onTouch
@@ -57,6 +58,11 @@ class ZoomableComponent(
         config = context.lithoConfiguration.componentsConfig.copy(incrementalMountEnabled = false))
 
     val controller = useCached { controller ?: ZoomableController(androidContext) }
+
+    useEffect(Unit) {
+      controller.init()
+      null
+    }
 
     val zoomableStyle =
         Style.onTouch { touchEvent: TouchEvent ->

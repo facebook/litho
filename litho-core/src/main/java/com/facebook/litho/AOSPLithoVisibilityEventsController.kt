@@ -28,22 +28,30 @@ import com.facebook.litho.LithoVisibilityEventsController.LithoVisibilityState
  * passed as param, the observers will be registered to listen to all of the fragment's lifecycle
  * state changes.
  */
-open class AOSPLithoVisibilityEventsController(
-    final override val lifecycleOwner: LifecycleOwner,
-    private val delegate: LithoVisibilityEventsControllerDelegate =
-        LithoVisibilityEventsControllerDelegate()
-) :
-    LithoVisibilityEventsController by delegate,
-    LifecycleEventObserver,
-    AOSPLifecycleOwnerProvider {
+open class AOSPLithoVisibilityEventsController(final override val lifecycleOwner: LifecycleOwner) :
+    LithoVisibilityEventsController, LifecycleEventObserver, AOSPLifecycleOwnerProvider {
+
+  private val delegate: LithoVisibilityEventsControllerDelegate =
+      LithoVisibilityEventsControllerDelegate()
 
   init {
     lifecycleOwner.lifecycle.addObserver(this)
   }
 
-  constructor(
-      lifecycleOwner: LifecycleOwner
-  ) : this(lifecycleOwner = lifecycleOwner, delegate = LithoVisibilityEventsControllerDelegate())
+  override val visibilityState: LithoVisibilityState
+    get() = delegate.visibilityState
+
+  override fun moveToVisibilityState(newVisibilityState: LithoVisibilityState) {
+    delegate.moveToVisibilityState(newVisibilityState)
+  }
+
+  override fun addListener(listener: LithoVisibilityEventsListener) {
+    delegate.addListener(listener)
+  }
+
+  override fun removeListener(listener: LithoVisibilityEventsListener) {
+    delegate.removeListener(listener)
+  }
 
   override fun onStateChanged(source: LifecycleOwner, event: Event) {
     when (event) {

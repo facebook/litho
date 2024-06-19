@@ -25,6 +25,7 @@ import androidx.annotation.IntDef
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.NodeInfoUtils.isEquivalentTo
+import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.Equivalence
 
 /**
@@ -115,6 +116,12 @@ class NodeInfo : Equivalence<NodeInfo> {
   private var _sendAccessibilityEventUncheckedHandler:
       EventHandler<SendAccessibilityEventUncheckedEvent>? =
       null
+
+  var visibility: Visibility? = null
+    internal set(value) {
+      flags = flags or PFLAG_VISIBILITY_IS_SET
+      field = value
+    }
 
   @FocusState
   var focusState: Int = FOCUS_UNSET
@@ -612,6 +619,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     if (flags and PFLAG_ROTATION_Y_IS_SET != 0L) {
       target.rotationY = _rotationY
     }
+    if (flags and PFLAG_VISIBILITY_IS_SET != 0L) {
+      target.visibility = visibility
+    }
   }
 
   fun copyInto(target: ViewAttributes) {
@@ -696,6 +706,9 @@ class NodeInfo : Equivalence<NodeInfo> {
     }
     if (flags and PFLAG_ROTATION_Y_IS_SET != 0L) {
       target.rotationY = _rotationY
+    }
+    if (flags and PFLAG_VISIBILITY_IS_SET != 0L) {
+      target.visibility = visibility
     }
   }
 
@@ -806,5 +819,7 @@ class NodeInfo : Equivalence<NodeInfo> {
 
     // When this flag is set, tooltipText was explicitly set on this node.
     private const val PFLAG_TOOLTIP_TEXT_IS_SET = 1L shl 33
+
+    private const val PFLAG_VISIBILITY_IS_SET = 1L shl 34
   }
 }

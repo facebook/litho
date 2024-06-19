@@ -144,6 +144,10 @@ object NodeInfoUtils {
       return false
     }
 
+    if (!equals(x.visibility, y.visibility)) {
+      return false
+    }
+
     return equals(x.viewTags, y.viewTags)
   }
 }

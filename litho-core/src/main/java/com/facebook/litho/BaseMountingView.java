@@ -388,7 +388,7 @@ public abstract class BaseMountingView extends ComponentHost
       return;
     }
 
-    mountComponentInternal(currentVisibleArea, processVisibilityOutputs);
+    maybeMountOrNotifyVisibleBoundsChange(currentVisibleArea, processVisibilityOutputs);
 
     consumeReentrantMounts();
   }
@@ -432,40 +432,101 @@ public abstract class BaseMountingView extends ComponentHost
 
   private void consumeReentrantMounts() {
     if (mReentrantMounts != null) {
-      final Deque<ReentrantMount> reentrantMounts = new ArrayDeque<>(mReentrantMounts);
+      final Deque<ReentrantMount> requests = new ArrayDeque<>(mReentrantMounts);
       mReentrantMounts.clear();
 
-      while (!reentrantMounts.isEmpty()) {
-        final ReentrantMount reentrantMount =
-            Preconditions.checkNotNull(reentrantMounts.pollFirst());
+      while (!requests.isEmpty()) {
+        final ReentrantMount request = Preconditions.checkNotNull(requests.pollFirst());
         setMountStateDirty();
-        mountComponentInternal(
-            reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
+        mount(request.currentVisibleArea, request.processVisibilityOutputs);
       }
     }
   }
 
-  private void mountComponentInternal(
-      @Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
+  private void maybeMountOrNotifyVisibleBoundsChange(
+      final @Nullable Rect actualVisibleRect, final boolean requestVisibilityEvents) {
     final LayoutState layoutState = getCurrentLayoutState();
     if (layoutState == null) {
-      Log.w(TAG, "Main Thread Layout state is not found");
       return;
     }
 
-    final boolean isDirtyMount = isMountStateDirty();
-    final TreeMountInfo mountInfo = getMountInfo();
-    if (mountInfo != null && !mountInfo.hasMounted) {
-      mountInfo.isFirstMount = true;
-      mountInfo.hasMounted = true;
+    if (shouldPauseMountingWithVisibilityHintFalse()) {
+      return;
     }
-    mIsMounting = true;
 
-    // currentVisibleArea null or empty => mount all
+    final Rect visibleRectToUse;
+    final boolean processVisibilityOutputs;
+    if (mTransientStateCount > 0 && hasTree() && isIncrementalMountEnabled()) {
+      // If transient state is set but the MountState is dirty we want to re-mount everything.
+      // Otherwise, we don't need to do anything as the entire BaseMountingView was mounted when
+      // the transient state was set.
+      if (!isMountStateDirty()) {
+        return;
+      } else {
+        visibleRectToUse = new Rect(0, 0, getWidth(), getHeight());
+        processVisibilityOutputs = false;
+      }
+    } else {
+      visibleRectToUse = actualVisibleRect;
+      processVisibilityOutputs = requestVisibilityEvents;
+    }
+
+    if (visibleRectToUse == null) {
+      mPreviousMountVisibleRectBounds.setEmpty();
+    } else {
+      mPreviousMountVisibleRectBounds.set(visibleRectToUse);
+    }
+
+    final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
+    if (visibleRectToUse != null && !needsMount) {
+      layoutState.setShouldProcessVisibilityOutputs(processVisibilityOutputs);
+      Preconditions.checkNotNull(mMountState.getMountDelegate())
+          .notifyVisibleBoundsChanged(visibleRectToUse);
+    } else {
+      mount(visibleRectToUse, processVisibilityOutputs);
+    }
+  }
+
+  private void mount(
+      final @Nullable Rect visibleRect, final boolean shouldProcessVisibilityEvents) {
+
+    final LayoutState layoutState = getCurrentLayoutState();
+    if (layoutState == null) {
+      return;
+    }
+    if (shouldPauseMountingWithVisibilityHintFalse()) {
+      return;
+    }
+
+    final boolean isMountStateDirty = isMountStateDirty();
     try {
-      mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+
+      // If this is the first mount, we need to set the hasMounted flag on the TreeState.
+      final TreeMountInfo mountInfo = getMountInfo();
+      if (mountInfo != null && !mountInfo.hasMounted) {
+        mountInfo.isFirstMount = true;
+        mountInfo.hasMounted = true;
+      }
+
+      mIsMounting = true;
+
+      Object onBeforeMountResult = onBeforeMount();
+
+      layoutState.setShouldProcessVisibilityOutputs(shouldProcessVisibilityEvents);
+
+      final RenderTree renderTree = layoutState.toRenderTree();
+      setupMountExtensions();
+      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
+      mLithoHostListenerCoordinator.beforeMount(layoutState, visibleRect);
+      mMountState.mount(renderTree);
+      LithoStats.incrementComponentMountCount();
+      drawDebugOverlay(this, layoutState.getComponentTreeId());
+
+      onAfterMount(onBeforeMountResult);
+      mIsMountStateDirty = false;
+
       final TreeState treeState = getTreeState();
-      if (isDirtyMount && treeState != null) {
+      if (isMountStateDirty && treeState != null) {
         treeState.recordRenderData(layoutState);
       }
     } catch (Exception e) {
@@ -475,61 +536,10 @@ public abstract class BaseMountingView extends ComponentHost
         getMountInfo().isFirstMount = false;
       }
       mIsMounting = false;
-      if (isDirtyMount) {
+      if (isMountStateDirty) {
         onDirtyMountComplete();
       }
     }
-  }
-
-  void mount(
-      LayoutState layoutState,
-      @Nullable Rect currentVisibleArea,
-      boolean processVisibilityOutputs) {
-
-    if (shouldPauseMountingWithVisibilityHintFalse()) {
-      return;
-    }
-
-    if (mTransientStateCount > 0 && hasTree() && isIncrementalMountEnabled()) {
-      // If transient state is set but the MountState is dirty we want to re-mount everything.
-      // Otherwise, we don't need to do anything as the entire BaseMountingView was mounted when the
-      // transient state was set.
-      if (!isMountStateDirty()) {
-        return;
-      } else {
-        currentVisibleArea = new Rect(0, 0, getWidth(), getHeight());
-        processVisibilityOutputs = false;
-      }
-    }
-
-    if (currentVisibleArea == null) {
-      mPreviousMountVisibleRectBounds.setEmpty();
-    } else {
-      mPreviousMountVisibleRectBounds.set(currentVisibleArea);
-    }
-
-    Object onBeforeMountResult = onBeforeMount();
-
-    layoutState.setShouldProcessVisibilityOutputs(processVisibilityOutputs);
-
-    final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
-    if (currentVisibleArea != null && !needsMount) {
-      Preconditions.checkNotNull(mMountState.getMountDelegate())
-          .notifyVisibleBoundsChanged(currentVisibleArea);
-    } else {
-      // Generate the renderTree here so that any operations
-      // that occur in toRenderTree() happen prior to "beforeMount".
-      final RenderTree renderTree = layoutState.toRenderTree();
-      setupMountExtensions();
-      Preconditions.checkNotNull(mLithoHostListenerCoordinator);
-      mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
-      mMountState.mount(renderTree);
-      LithoStats.incrementComponentMountCount();
-      drawDebugOverlay(this, layoutState.getComponentTreeId());
-    }
-
-    onAfterMount(onBeforeMountResult);
-    mIsMountStateDirty = false;
   }
 
   /**
@@ -680,7 +690,7 @@ public abstract class BaseMountingView extends ComponentHost
       ComponentsSystrace.beginSection("BaseMountingView.notifyVisibleBoundsChanged");
     }
 
-    performIncrementalMountForVisibleBoundsChange();
+    notifyVisibleBoundsChanged(null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -695,7 +705,7 @@ public abstract class BaseMountingView extends ComponentHost
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onRegisterForPremount");
       }
-      mountComponentInternal(null, false);
+      mount(new Rect(), false);
       RenderCoreExtension.onRegisterForPremount(mMountState, frameTime);
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -740,23 +750,18 @@ public abstract class BaseMountingView extends ComponentHost
     if (areBoundsVisible || isRectVisible(currentVisibleArea)) {
       // We noticed that `getLocalVisibleRect` will not always return true even if the component is
       // visible when getting attached, so we need isRectVisible to justify the visibility result.
-      performIncrementalMountForVisibleBoundsChange(currentVisibleArea);
+      notifyVisibleBoundsChanged(currentVisibleArea);
     }
   }
 
   void notifyVisibleBoundsChangedOnDetach() {
     // Since we don't have a reliable way to determine if the current view is visible or not, we
     // have to set an empty rect to unmount all components.
-    performIncrementalMountForVisibleBoundsChange(EMPTY_RECT);
+    notifyVisibleBoundsChanged(EMPTY_RECT);
   }
 
   @UiThread
-  void performIncrementalMountForVisibleBoundsChange() {
-    performIncrementalMountForVisibleBoundsChange(null);
-  }
-
-  @UiThread
-  void performIncrementalMountForVisibleBoundsChange(@Nullable Rect rect) {
+  void notifyVisibleBoundsChanged(@Nullable Rect rect) {
     assertMainThread();
 
     if (!hasTree()) {
@@ -936,7 +941,7 @@ public abstract class BaseMountingView extends ComponentHost
       }
 
       if (isIncrementalMountEnabled()) {
-        performIncrementalMountForVisibleBoundsChange();
+        notifyVisibleBoundsChanged(null);
       } else {
         final Rect visibleRect = new Rect();
         getLocalVisibleRect(visibleRect);

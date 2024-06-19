@@ -40,11 +40,6 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
  */
 data class ComponentsConfiguration
 internal constructor(
-    /**
-     * This determines if the [ComponentTree] attached to this configuration, will attempt to detect
-     * and ignore duplicate state updates coming from usages in the Specs API.
-     */
-    @JvmField val specsApiStateUpdateDuplicateDetectionEnabled: Boolean = false,
     val shouldCacheLayouts: Boolean = true,
     val disableNestedTreeCaching: Boolean = true,
     val shouldAddHostViewForRootComponent: Boolean = false,
@@ -326,8 +321,6 @@ internal constructor(
     private var shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
         baseConfig.shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
-    private var specsApiStateUpdateDuplicateDetectionEnabled =
-        baseConfig.specsApiStateUpdateDuplicateDetectionEnabled
     private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
     private var preAllocationHandler = baseConfig.preAllocationHandler
@@ -374,10 +367,6 @@ internal constructor(
     }
 
     fun shouldCacheLayouts(enabled: Boolean): Builder = also { shouldCacheLayouts = enabled }
-
-    fun specsApiStateUpdateDetectionEnabled(enabled: Boolean): Builder = also {
-      specsApiStateUpdateDuplicateDetectionEnabled = enabled
-    }
 
     fun isReconciliationEnabled(enabled: Boolean): Builder = also {
       isReconciliationEnabled = enabled
@@ -488,8 +477,6 @@ internal constructor(
 
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
-          specsApiStateUpdateDuplicateDetectionEnabled =
-              specsApiStateUpdateDuplicateDetectionEnabled,
           shouldCacheLayouts = shouldCacheLayouts,
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
           isReconciliationEnabled = isReconciliationEnabled,

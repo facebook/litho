@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.visibility;
+package com.facebook.rendercore.visibility
 
-import android.graphics.Rect;
-import android.view.View;
-import android.view.ViewGroup;
-import androidx.annotation.Nullable;
+import android.graphics.Rect
+import android.view.View
+import android.view.ViewGroup
 
-public interface VisibilityBoundsTransformer {
+interface VisibilityBoundsTransformer {
 
-  @Nullable
-  Rect getTransformedLocalVisibleRect(ViewGroup host);
+  fun getTransformedLocalVisibleRect(host: ViewGroup): Rect?
 
-  Rect getViewportRect(View view);
+  fun getViewportRect(view: View): Rect
 
-  boolean shouldUseTransformedVisibleRect(VisibilityOutput visibilityOutput);
+  fun shouldUseTransformedVisibleRect(visibilityOutput: VisibilityOutput): Boolean
 }

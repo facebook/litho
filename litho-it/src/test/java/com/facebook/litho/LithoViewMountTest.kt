@@ -70,10 +70,10 @@ class LithoViewMountTest {
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
-    verify(lithoView).performIncrementalMountForVisibleBoundsChange()
+    verify(lithoView).notifyVisibleBoundsChanged(null)
     lithoView.unmountAllItems()
     lithoView.performLayout(false, 0, 0, width, height)
-    verify(lithoView, times(2)).performIncrementalMountForVisibleBoundsChange()
+    verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
   }
 
   @Test

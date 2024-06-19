@@ -173,7 +173,7 @@ object AnimatedProperties {
         mountContent is Host && mountContent is AnimatedRootHost -> (mountContent as View).x = value
         mountContent is View -> {
           val view = mountContent
-          val parentX = getPositionRelativeToRootHost(view.parent as View, true)
+          val parentX = getPositionRelativeToRootHost(view.parent as? View, true)
           view.x = value - parentX
         }
         mountContent is Drawable -> {
@@ -224,7 +224,7 @@ object AnimatedProperties {
         mountContent is Host && mountContent is AnimatedRootHost -> (mountContent as View).y = value
         mountContent is View -> {
           val view = mountContent
-          val parentY = getPositionRelativeToRootHost(view.parent as View, false)
+          val parentY = getPositionRelativeToRootHost(view.parent as? View, false)
           view.y = value - parentY
         }
         mountContent is Drawable -> {

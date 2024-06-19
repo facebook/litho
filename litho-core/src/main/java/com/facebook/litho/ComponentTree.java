@@ -88,6 +88,7 @@ import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.debug.DebugEventBus;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
+import com.facebook.rendercore.utils.EquivalenceUtils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1023,10 +1024,6 @@ public class ComponentTree
     return mContext.mLithoConfiguration;
   }
 
-  private boolean isSpecsDuplicateStateUpdateDetectionEnabled() {
-    return mContext.mLithoConfiguration.isSpecsDuplicateStateUpdateDetectionEnabled();
-  }
-
   /** Returns whether incremental mount is enabled or not in this component. */
   public boolean isIncrementalMountEnabled() {
     return ComponentContext.isIncrementalMountEnabled(mContext);
@@ -1144,7 +1141,6 @@ public class ComponentTree
       String attribution,
       boolean isCreateLayoutInProgress,
       boolean isLayoutState) {
-    boolean isStateEnqueued = false;
 
     synchronized (this) {
       if (mRoot == null) {
@@ -1153,13 +1149,7 @@ public class ComponentTree
 
       if (mTreeState != null) {
         try {
-          isStateEnqueued =
-              mTreeState.queueStateUpdate(
-                  componentKey,
-                  stateUpdate,
-                  false,
-                  isLayoutState,
-                  !isSpecsDuplicateStateUpdateDetectionEnabled());
+          mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
         } catch (Exception e) {
           if (mContext.mLithoConfiguration.componentsConfig.errorEventHandler != null) {
             mContext.mLithoConfiguration.componentsConfig.errorEventHandler.onError(mContext, e);
@@ -1168,9 +1158,7 @@ public class ComponentTree
       }
     }
 
-    if (isStateEnqueued) {
-      ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
-    }
+    ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
   }
 
   @VisibleForTesting
@@ -1189,28 +1177,18 @@ public class ComponentTree
       String attribution,
       boolean isCreateLayoutInProgress,
       boolean isLayoutState) {
-    boolean isStateUpdateEnqueued = false;
-
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
       if (mTreeState != null) {
-        isStateUpdateEnqueued =
-            mTreeState.queueStateUpdate(
-                componentKey,
-                stateUpdate,
-                false,
-                isLayoutState,
-                !isSpecsDuplicateStateUpdateDetectionEnabled());
+        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isLayoutState);
       }
     }
 
-    if (isStateUpdateEnqueued) {
-      LithoStats.incrementComponentStateUpdateAsyncCount();
-      onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
-    }
+    LithoStats.incrementComponentStateUpdateAsyncCount();
+    onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
   }
 
   @Override
@@ -1946,7 +1924,8 @@ public class ComponentTree
     // layout.
     if (currentResolveResult != null) {
       boolean isSameTreeProps =
-          currentResolveResult.context.getTreePropContainer() == treePropContainer
+          EquivalenceUtils.equals(
+                  currentResolveResult.context.getTreePropContainer(), treePropContainer)
               || (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper
                   && treePropContainer == null);
 
