@@ -151,7 +151,7 @@ open class ComponentHost(
     get() {
       val size = drawableMountItems.size()
       if (size == 0) {
-        return emptyList()
+        return mutableListOf()
       }
       val drawables: MutableList<Drawable> = ArrayList(size)
       for (i in 0 until size) {
@@ -166,7 +166,7 @@ open class ComponentHost(
     get() {
       val contentSize = mountItems.size()
       if (contentSize == 0) {
-        return emptyList()
+        return mutableListOf()
       }
       val contentNames: MutableList<String> = ArrayList(contentSize)
       for (i in 0 until contentSize) {
