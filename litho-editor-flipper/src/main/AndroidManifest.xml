@@ -16,9 +16,7 @@
   -->
 
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.facebook.litho.editor.flipper"
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
   <!-- This is the version BUCK tests will run against to -->
   <uses-sdk
