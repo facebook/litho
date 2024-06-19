@@ -704,8 +704,20 @@ public class RecyclerBinder
     mParentLifecycle = builder.lifecycleProvider;
 
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
+
+    /*
+     This is a work-around to use the client explicit config, or if that hasn't happened to resort
+     to the one defined in the ComponentsConfiguration. We have to use this approach because atm the
+     [RecyclerBinderConfig] has an optional components configuration.
+    */
+    boolean enableStableIdsToUse =
+        mRecyclerBinderConfig.enableStableIds != null
+            ? mRecyclerBinderConfig.enableStableIds
+            : ComponentsConfiguration.defaultRecyclerBinderUseStableId;
+
     // we cannot enable circular list and stable id at the same time
-    mEnableStableIds = (!mRecyclerBinderConfig.isCircular && mRecyclerBinderConfig.enableStableIds);
+    mEnableStableIds = (!mRecyclerBinderConfig.isCircular && enableStableIdsToUse);
+
     mRecyclerBinderAdapterDelegate =
         builder.adapterDelegate != null
             ? builder.adapterDelegate
