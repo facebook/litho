@@ -74,6 +74,8 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
     shouldExcludeFromIncrementalMount: Boolean = false,
+    enableStableIds: Boolean =
+        context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
@@ -89,7 +91,8 @@ inline fun ResourcesScope.LazyStaggeredGrid(
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
               spans = spans,
-              gapStrategy = gapStrategy),
+              gapStrategy = gapStrategy,
+              enableStableIds = enableStableIds),
       itemAnimator,
       itemDecoration,
       clipToPadding,

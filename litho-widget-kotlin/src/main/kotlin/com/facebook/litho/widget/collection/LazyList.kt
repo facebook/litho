@@ -22,7 +22,6 @@ import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
@@ -76,7 +75,8 @@ inline fun ResourcesScope.LazyList(
     fadingEdgeLength: Dimen? = null,
     shouldExcludeFromIncrementalMount: Boolean = false,
     isCircular: Boolean = false,
-    enableStableIds: Boolean = ComponentsConfiguration.defaultRecyclerBinderUseStableId,
+    enableStableIds: Boolean =
+        context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }

@@ -20,7 +20,6 @@ import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
@@ -181,6 +180,7 @@ internal object CollectionLayouts {
           componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       columns: Int = 2,
       preAllocationHandler: PreAllocationHandler?,
+      enableStableIds: Boolean
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -192,7 +192,7 @@ internal object CollectionLayouts {
               isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
               isCircular = false,
-              enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId) {
+              enableStableIds = enableStableIds) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             GridRecyclerConfiguration.create()
                 .snapMode(snapMode)
@@ -224,6 +224,7 @@ internal object CollectionLayouts {
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
       preAllocationHandler: PreAllocationHandler?,
+      enableStableIds: Boolean
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -236,7 +237,7 @@ internal object CollectionLayouts {
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
               isCircular = false,
-              enableStableIds = ComponentsConfiguration.defaultRecyclerBinderUseStableId) {
+              enableStableIds = enableStableIds) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)
       }

@@ -169,7 +169,12 @@ internal constructor(
      */
     @JvmField val measureRecyclerWithPadding: Boolean = false,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null,
-    @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null
+    @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null,
+    /**
+     * Determines whether we should enable stable ids by default in the
+     * [com.facebook.litho.widget.RecyclerBinder]
+     */
+    @JvmField val useStableIdsInRecyclerBinder: Boolean = true
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -280,7 +285,6 @@ internal constructor(
     /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
     @JvmField var shouldAllowCoreThreadTimeout: Boolean = false
     @JvmField var layoutThreadKeepAliveTimeMs: Long = 1_000
-    @JvmField var defaultRecyclerBinderUseStableId: Boolean = true
     @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
@@ -355,6 +359,7 @@ internal constructor(
     private var visibilityBoundsTransformer = baseConfig.visibilityBoundsTransformer
     private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
         baseConfig.sectionsRecyclerViewOnCreateHandler
+    private var useStableIdsInRecyclerBinder = baseConfig.useStableIdsInRecyclerBinder
 
     fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
         enabled: Boolean
@@ -475,6 +480,10 @@ internal constructor(
       sectionsRecyclerViewOnCreateHandler = handler
     }
 
+    fun useStableIdsInRecyclerBinder(enabled: Boolean): Builder = also {
+      useStableIdsInRecyclerBinder = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldCacheLayouts = shouldCacheLayouts,
@@ -513,7 +522,8 @@ internal constructor(
           enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper,
           measureRecyclerWithPadding = measureRecyclerWithPadding,
           visibilityBoundsTransformer = visibilityBoundsTransformer,
-          sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler)
+          sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler,
+          useStableIdsInRecyclerBinder = useStableIdsInRecyclerBinder)
     }
   }
 }
