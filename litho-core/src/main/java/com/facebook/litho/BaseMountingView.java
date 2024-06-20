@@ -53,7 +53,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.Objects;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class BaseMountingView extends ComponentHost
@@ -303,7 +302,7 @@ public abstract class BaseMountingView extends ComponentHost
     mMountState.detach();
     final @Nullable ComponentsConfiguration config = getConfiguration();
     if (config != null && config.enableFixForIM && !mIsTemporaryDetached && !hasTransientState()) {
-      notifyVisibleBoundsChanged(EMPTY_RECT);
+      notifyVisibleBoundsChangedOnDetach();
     }
   }
 
@@ -745,43 +744,54 @@ public abstract class BaseMountingView extends ComponentHost
     mSkipMountingIfNotVisible = skipMountingIfNotVisible;
   }
 
+  void notifyVisibleBoundsChangedOnAttach() {
+    final Rect currentVisibleArea = new Rect();
+    final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
+    if (areBoundsVisible || isRectVisible(currentVisibleArea)) {
+      // We noticed that `getLocalVisibleRect` will not always return true even if the component is
+      // visible when getting attached, so we need isRectVisible to justify the visibility result.
+      notifyVisibleBoundsChanged(currentVisibleArea);
+    }
+  }
+
+  void notifyVisibleBoundsChangedOnDetach() {
+    // Since we don't have a reliable way to determine if the current view is visible or not, we
+    // have to set an empty rect to unmount all components.
+    notifyVisibleBoundsChanged(EMPTY_RECT);
+  }
+
   @UiThread
   void notifyVisibleBoundsChanged(@Nullable Rect rect) {
     assertMainThread();
 
-    final @Nullable ComponentsConfiguration config = getConfiguration();
-    final boolean mountWhenAttachAndDetach = (config != null) && config.enableFixForIM;
-    if (!hasTree()
-        || (mountWhenAttachAndDetach && Objects.equals(rect, mPreviousMountVisibleRectBounds))) {
+    if (!hasTree()) {
       return;
     }
 
-    final Rect visibleRectToUse;
-    final boolean areBoundsVisible;
-    if (rect == null) {
+    if (rect != null) {
+      if (rect.equals(mPreviousMountVisibleRectBounds)) {
+        return;
+      }
       // As [View.getLocalVisibleRect] on detach can return a value which cannot be for used for
-      // processing visibility. For example, a visible Rect can be returned even when it's totally
+      // processing visibility. For example, a visible Rect will be returned even when it's totally
       // invisible. This can cause components to not dispatch the correct visibility events
       // correctly or not get unmounted by incremental mount. We manually invokes the visible bounds
       // change call with the appropriate visible rect when the view is getting attached or
       // detached.
-      final Rect actualVisibleRect = new Rect();
-      areBoundsVisible = getLocalVisibleRect(actualVisibleRect);
-      visibleRectToUse = actualVisibleRect;
+      mountComponent(rect, true);
     } else {
-      // Since we don't have a reliable way to determine if the current view is visible or not, we
-      // have to use an empty rect to unmount all components.
-      areBoundsVisible = false;
-      visibleRectToUse = new Rect(rect);
-    }
-
-    if (areBoundsVisible
-        || (mountWhenAttachAndDetach && visibleRectToUse.isEmpty())
-        || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
-        // It might not be yet visible but animating from 0 height/width in which case we still
-        // need to mount them to trigger animation.
-        || animatingRootBoundsFromZero(visibleRectToUse)) {
-      mountComponent(visibleRectToUse, true);
+      // Per ComponentTree visible area. Because BaseMountingViews can be nested and mounted
+      // not in "depth order", this variable cannot be static.
+      final Rect currentVisibleArea = new Rect();
+      final boolean areBoundsVisible = getLocalVisibleRect(currentVisibleArea);
+      if (areBoundsVisible
+          || hasComponentsExcludedFromIncrementalMount(getCurrentLayoutState())
+          // It might not be yet visible but animating from 0 height/width in which case we still
+          // need to mount them to trigger animation.
+          || animatingRootBoundsFromZero(currentVisibleArea)
+          || hasBecomeInvisible()) {
+        mountComponent(currentVisibleArea, true);
+      }
     }
   }
 
@@ -793,10 +803,6 @@ public abstract class BaseMountingView extends ComponentHost
 
     if (width == 0 || height == 0) {
       // It means the view is not measured yet.
-      return false;
-    }
-
-    if (rect.isEmpty()) {
       return false;
     }
 
@@ -812,6 +818,66 @@ public abstract class BaseMountingView extends ComponentHost
     }
 
     return true;
+  }
+
+  /**
+   * This is used to detect an edge case of using Litho in a nested scenario. You can imagine a a
+   * host XML, which takes a LithoView on top.
+   *
+   * <p>As we scroll the LithoView out of the screen, we will process incremental mount correctly
+   * until the last visible pixel.
+   *
+   * <pre>
+   *        |________________________| top: 0
+   *        ||                      ||
+   *        ||        Litho View    ||
+   *        ||______________________|| bottom: 156
+   *        |                        |
+   *        |                        |
+   *        |    Remaining Host      |
+   *        |                        |
+   *        |_______________________ |
+   * </pre>
+   *
+   * However, once the LithoView goes off the screen but the remaining host is still visible, the
+   * LithoView rect coordinates become negative:
+   *
+   * <pre>
+   *        |________________________| top: -156
+   *        ||                      ||
+   *        ||        Litho View    ||
+   *        ||______________________|| bottom: 0
+   *
+   *                                    invisible
+   *    - - - - - - - - - - - - - - - - - - - - - -
+   *                                    visible
+   *        |_______________________ |
+   *        |                        |
+   *        |    Remaining Host      |
+   *        |                        |
+   *        |_______________________ |
+   * </pre>
+   *
+   * Therefore, the rect is considered not visible, and in normal conditions we wouldn't process an
+   * extra pass of incremental mount.
+   *
+   * <p>We use this check to understand if in the last IM pass, the rect was visible, and that now
+   * is not. If that is the case, we will do an extra pass of IM to guarantee that the visibility
+   * outputs are processed and any onInvisible callback is delivered.
+   */
+  private boolean hasBecomeInvisible() {
+    ComponentsConfiguration configuration = getConfiguration();
+    boolean shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
+        configuration != null
+            && configuration.shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible;
+
+    return shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible
+        && mPreviousMountVisibleRectBounds.bottom >= 0
+        && mPreviousMountVisibleRectBounds.top >= 0
+        && mPreviousMountVisibleRectBounds.height() > 0
+        && mPreviousMountVisibleRectBounds.left >= 0
+        && mPreviousMountVisibleRectBounds.right >= 0
+        && mPreviousMountVisibleRectBounds.width() > 0;
   }
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
@@ -994,21 +1060,10 @@ public abstract class BaseMountingView extends ComponentHost
     mVisibilityHintIsVisible = isVisible;
 
     if (isVisible) {
-      // Due to the fact that detached LithoView is still receiving visibility event and ends up IM
-      // being kicked off, we need to make sure that current view is in the state of being attached.
-      final @Nullable ComponentsConfiguration config = getConfiguration();
-      if (config != null
-          && config.enableFixForIM
-          && !mIsTemporaryDetached
-          && !hasTransientState()
-          && !isAttached()) {
-        notifyVisibleBoundsChanged(EMPTY_RECT);
-      } else {
-        if (forceMount) {
-          notifyVisibleBoundsChanged();
-        } else if (getLocalVisibleRect(mRect)) {
-          processVisibilityOutputs(mRect);
-        }
+      if (forceMount) {
+        notifyVisibleBoundsChanged();
+      } else if (getLocalVisibleRect(mRect)) {
+        processVisibilityOutputs(mRect);
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
