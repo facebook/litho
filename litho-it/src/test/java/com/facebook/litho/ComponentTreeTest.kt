@@ -34,6 +34,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoStatsRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestDrawableComponent.BlockInPrepareComponentListener
 import com.facebook.litho.testing.TestLayoutComponent
@@ -86,6 +87,8 @@ class ComponentTreeTest {
   private var widthSpec2: Int = 0
   private var heightSpec: Int = 0
   private var heightSpec2: Int = 0
+
+  @get:Rule val lithoViewRule = LithoViewRule()
 
   @Before
   fun setup() {
@@ -658,6 +661,105 @@ class ComponentTreeTest {
             componentTree.mainThreadLayoutState?.isForComponentId((newComponent as Component).id))
         .isTrue
     assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(1_000)
+    assertThat(lithoStatsRule.componentCalculateLayoutCount)
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a layout from measure.")
+        .isEqualTo(3)
+  }
+
+  /*
+   * This test is meant to simulate a LithoView in a LinearLayout or RelativeLayout where it gets
+   * measured twice in a single layout pass with the second measurement depending on the result
+   * of the first (e.g. if the LithoView measures to be 500px in the first measure pass, the parent
+   * remeasures with AT_MOST 500). We need to make sure we end up showing the correct root and
+   * respecting the size it would have within its parent.
+   *
+   * In this test, we simulate a situation where:
+   * - We have already set a set a root successfully with height 150px.
+   * - We set a second root (async) with height 200px.
+   * - While the second root is processing, a new measure happens, and it should detect that the
+   * root has changed, and therefore request a sync resolve. If this didn't happen, the second measure (which constrains)
+   * would be ran synchronously, using the wrong size specs from the first iteration of children measurement.
+   */
+  @Test
+  fun testSetRootAsyncFollowedByMeasurementInParentWithDoubleMeasureWithSameSizeSpecs() {
+    val firstIterationHeightPx = 150
+    val secondIterationHeightPx = 200
+
+    // Setting up Component Tree and LithoView
+    val componentTree = ComponentTree.create(context).build()
+    val testLithoView =
+        lithoViewRule.render(componentTree = componentTree) {
+          TestDrawableComponent.create(context)
+              .widthPx(100)
+              .heightPx(firstIterationHeightPx)
+              .build()
+        }
+
+    // Add Litho View to Double Measure Parent.
+    val parent =
+        DoubleMeasureViewGroup(context = context.androidContext).apply {
+          addView(testLithoView.lithoView)
+        }
+
+    // Update Size Specs
+    testLithoView.setSizeSpecs(atMost(2_000), atMost(2_000))
+    testLithoView.measure()
+
+    // Set Async Root and block on Prepare.
+    val blockInPrepare = BlockInPrepareComponentListener()
+    val secondComponent =
+        TestDrawableComponent.create(context).widthPx(100).heightPx(secondIterationHeightPx).build()
+    blockInPrepare.setDoNotBlockOnThisThread()
+    secondComponent.setTestComponentListener(blockInPrepare)
+    componentTree.setRootAsync(secondComponent)
+    val asyncLayout = backgroundLayoutLooperRule.runToEndOfTasksAsync()
+    blockInPrepare.awaitPrepareStart()
+
+    // This is a bit of a hack: Robolectric's ShadowLegacyLooper implementation is synchronized
+    // on runToEndOfTasks and post(). Since we are simulating being in the middle of calculating a
+    // layout, this means that we can't post() to the same Handler (as we will try to do in measure)
+    // The "fix" here is to update the layout thread to a new handler/looper that can be controlled
+    // separately.
+    val newHandlerThread = createAndStartNewHandlerThread()
+    componentTree.updateLayoutThreadHandler(RunnableHandler.DefaultHandler(newHandlerThread.looper))
+
+    // This is used to detect the resolve that is happening from measure, and let the
+    // blocked one through.
+    componentTree.setFutureExecutionListener(
+        object : TreeFuture.FutureExecutionListener {
+          override fun onPreExecution(
+              version: Int,
+              futureExecutionType: TreeFuture.FutureExecutionType?,
+              attribution: String?
+          ) {
+            if (attribution == ResolveTreeFuture.DESCRIPTION) {
+              blockInPrepare.allowPrepareToComplete()
+              asyncLayout.acquire()
+            }
+            componentTree.setFutureExecutionListener(null)
+          }
+
+          override fun onPostExecution(version: Int, released: Boolean, attribution: String?) {
+            //
+          }
+        })
+
+    // Measure the parent.
+    parent.requestLayout()
+    parent.measure(exactly(2000), exactly(2000))
+    parent.layout(0, 0, 2000, 2000)
+
+    lithoViewRule.idle()
+
+    assertThat(testLithoView.lithoView.width).isEqualTo(100)
+    assertThat(testLithoView.lithoView.height).isEqualTo(200)
+    assertThat(componentTree.root).isEqualTo(secondComponent)
+    assertThat(
+            componentTree.mainThreadLayoutState?.isForComponentId(
+                (secondComponent as Component).id))
+        .isTrue
+
     assertThat(lithoStatsRule.componentCalculateLayoutCount)
         .describedAs(
             "We expect one initial layout, the async layout (thrown away), and a layout from measure.")
@@ -1353,11 +1455,13 @@ class ComponentTreeTest {
         throw RuntimeException("Must give AT_MOST or EXACT measurements")
       }
       val child = getChildAt(0)
-      child.measure(
-          makeSizeSpec(getSize(widthMeasureSpec), AT_MOST),
-          makeSizeSpec(getSize(heightMeasureSpec), AT_MOST))
-      child.measure(
-          makeSizeSpec(child.measuredWidth, AT_MOST), makeSizeSpec(child.measuredHeight, AT_MOST))
+
+      // let children measure themselves unconstrained
+      child.measure(atMost(getSize(widthMeasureSpec)), atMost(heightMeasureSpec))
+
+      // constrain the height
+      child.measure(atMost(child.measuredWidth), atMost(child.measuredHeight))
+
       setMeasuredDimension(child.measuredWidth, child.measuredHeight)
     }
 
