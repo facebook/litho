@@ -24,4 +24,6 @@ public class ReplaceTextEvent {
   public CharSequence text;
   public int startIndex;
   public int endIndex;
+
+  public boolean skipSelection;
 }

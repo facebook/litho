@@ -434,6 +434,10 @@ public class ComponentTree
       }
     }
 
+    // Set the default root tree props from the context.
+    // TODO(T192860025): Clean up if required
+    mTreePropContainer = mContext.getTreePropContainer();
+
     ComponentTreeDebugEventListener debugEventListener = config.componentsConfig.debugEventListener;
     if (debugEventListener != null) {
       mDebugEventsSubscriber =
@@ -1835,7 +1839,7 @@ public class ComponentTree
         if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
           TreePropContainer newTreeProps = TreePropContainer.acquire(treePropContainer);
           newTreeProps.putAll(mDefaultTreeProps);
-          if (!newTreeProps.equals(mTreePropContainer)) {
+          if (!EquivalenceUtils.equals(newTreeProps, mTreePropContainer)) {
             mTreePropContainer = newTreeProps;
           }
         } else {

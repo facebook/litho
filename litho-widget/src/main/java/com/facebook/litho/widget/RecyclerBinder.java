@@ -704,31 +704,6 @@ public class RecyclerBinder
     mParentLifecycle = builder.lifecycleProvider;
 
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
-    // we cannot enable circular list and stable id at the same time
-    mEnableStableIds = (!mRecyclerBinderConfig.isCircular && mRecyclerBinderConfig.enableStableIds);
-    mRecyclerBinderAdapterDelegate =
-        builder.adapterDelegate != null
-            ? builder.adapterDelegate
-            : new DefaultRecyclerBinderAdapterDelegate();
-    mAdditionalPostDispatchDrawListeners =
-        builder.additionalPostDispatchDrawListeners != null
-            ? builder.additionalPostDispatchDrawListeners
-            : new ArrayList<>();
-    mInternalAdapter =
-        builder.overrideInternalAdapter != null
-            ? builder.overrideInternalAdapter
-            : new InternalAdapter();
-
-    mRangeRatio = mRecyclerBinderConfig.rangeRatio;
-    mLayoutInfo = builder.layoutInfo;
-    mLayoutHandlerFactory = mRecyclerBinderConfig.layoutHandlerFactory;
-    mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
-    mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
-    mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
-    mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
-    mPostponeViewRecycle = mRecyclerBinderConfig.postponeViewRecycle;
-    mPostponeViewRecycleDelayMs = mRecyclerBinderConfig.postponeViewRecycleDelayMs;
-    mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
 
     /*
      * If there is no configuration set, then we retrieve it from the owning
@@ -756,6 +731,42 @@ public class RecyclerBinder
             .build();
 
     mComponentsConfiguration = tempConfiguration;
+
+    /*
+     This is a work-around to use the client explicit config, or if that hasn't happened to resort
+     to the one defined in the ComponentsConfiguration. We have to use this approach because atm the
+     [RecyclerBinderConfig] has an optional components configuration.
+    */
+    boolean enableStableIdsToUse =
+        mRecyclerBinderConfig.enableStableIds != null
+            ? mRecyclerBinderConfig.enableStableIds
+            : mComponentsConfiguration.useStableIdsInRecyclerBinder;
+
+    // we cannot enable circular list and stable id at the same time
+    mEnableStableIds = (!mRecyclerBinderConfig.isCircular && enableStableIdsToUse);
+    mRecyclerBinderAdapterDelegate =
+        builder.adapterDelegate != null
+            ? builder.adapterDelegate
+            : new DefaultRecyclerBinderAdapterDelegate();
+    mAdditionalPostDispatchDrawListeners =
+        builder.additionalPostDispatchDrawListeners != null
+            ? builder.additionalPostDispatchDrawListeners
+            : new ArrayList<>();
+    mInternalAdapter =
+        builder.overrideInternalAdapter != null
+            ? builder.overrideInternalAdapter
+            : new InternalAdapter();
+
+    mRangeRatio = mRecyclerBinderConfig.rangeRatio;
+    mLayoutInfo = builder.layoutInfo;
+    mLayoutHandlerFactory = mRecyclerBinderConfig.layoutHandlerFactory;
+    mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
+    mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
+    mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
+    mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
+    mPostponeViewRecycle = mRecyclerBinderConfig.postponeViewRecycle;
+    mPostponeViewRecycleDelayMs = mRecyclerBinderConfig.postponeViewRecycleDelayMs;
+    mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
 
     if (mLayoutHandlerFactory == null
         && mRecyclerBinderConfig.threadPoolConfig != null
@@ -4020,6 +4031,10 @@ public class RecyclerBinder
     }
 
     private void onViewRecycledInternal(RecyclerBinderViewHolder holder) {
+      boolean isTracing = ComponentsSystrace.isTracing();
+      if (isTracing) {
+        ComponentsSystrace.beginSection("RecyclerBinder.InternalAdapter#onViewRecycledInternal");
+      }
       final LithoView lithoView = (LithoView) holder.getLithoView();
       if (lithoView != null) {
         mRecyclerBinderAdapterDelegate.onViewRecycled(holder);
@@ -4034,6 +4049,10 @@ public class RecyclerBinder
             baseViewHolder.viewBinder = null;
           }
         }
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
 

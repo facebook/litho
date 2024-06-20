@@ -73,6 +73,8 @@ inline fun ResourcesScope.LazyGrid(
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
     shouldExcludeFromIncrementalMount: Boolean = false,
+    enableStableIds: Boolean =
+        context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
@@ -88,7 +90,8 @@ inline fun ResourcesScope.LazyGrid(
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
-              columns = columns),
+              columns = columns,
+              enableStableIds = enableStableIds),
       itemAnimator,
       itemDecoration,
       clipToPadding,

@@ -20,6 +20,7 @@ import android.graphics.Rect
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import java.util.ArrayList

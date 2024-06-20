@@ -51,7 +51,8 @@ abstract class CollectionLayout(
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
     preAllocationHandler: PreAllocationHandler?,
-    isCircular: Boolean
+    isCircular: Boolean,
+    enableStableIds: Boolean
 ) {
   internal abstract fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder
 
@@ -71,7 +72,8 @@ abstract class CollectionLayout(
                                   incrementalMountEnabled = isIncrementalMountEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO,
                           wrapContent = mainAxisWrapContent,
-                          isCircular = isCircular))
+                          isCircular = isCircular,
+                          enableStableIds = enableStableIds))
                   .useBackgroundChangeSets(useBackgroundChangeSets)
                   .build())
           .build()
@@ -132,7 +134,8 @@ internal object CollectionLayouts {
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
       preAllocationHandler: PreAllocationHandler?,
-      isCircular: Boolean
+      isCircular: Boolean,
+      enableStableIds: Boolean
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -146,7 +149,8 @@ internal object CollectionLayouts {
               canMeasureRecycler = crossAxisWrapMode.canMeasureRecycler,
               mainAxisWrapContent = mainAxisWrapContent,
               preAllocationHandler = preAllocationHandler,
-              isCircular = isCircular) {
+              isCircular = isCircular,
+              enableStableIds = enableStableIds) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             ListRecyclerConfiguration.create()
                 .snapMode(snapMode)
@@ -176,6 +180,7 @@ internal object CollectionLayouts {
           componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       columns: Int = 2,
       preAllocationHandler: PreAllocationHandler?,
+      enableStableIds: Boolean
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -186,7 +191,8 @@ internal object CollectionLayouts {
               useBackgroundChangeSets = useBackgroundChangeSets,
               isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
-              isCircular = false) {
+              isCircular = false,
+              enableStableIds = enableStableIds) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             GridRecyclerConfiguration.create()
                 .snapMode(snapMode)
@@ -218,6 +224,7 @@ internal object CollectionLayouts {
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
       preAllocationHandler: PreAllocationHandler?,
+      enableStableIds: Boolean
   ): CollectionLayout =
       object :
           CollectionLayout(
@@ -229,7 +236,8 @@ internal object CollectionLayouts {
               isReconciliationEnabled = isReconciliationEnabled,
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
-              isCircular = false) {
+              isCircular = false,
+              enableStableIds = enableStableIds) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)
       }

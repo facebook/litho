@@ -302,16 +302,16 @@ class TreeDiffingTest {
     assertThat(mountItem1).isEqualTo(hostHolder.getMountItemAt(1))
     assertThat(1)
         .isEqualTo(
-            (Whitebox.getInternalState<Any>(hostHolder, "mScrapMountItemsArray")
+            (Whitebox.getInternalState<Any>(hostHolder, "scrapMountItemsArray")
                     as? SparseArrayCompat<MountItem?>)
                 ?.size())
     hostHolder.unmount(0, mountItem)
     assertThat(2)
         .isEqualTo(
-            (Whitebox.getInternalState<Any>(hostHolder, "mMountItems")
+            (Whitebox.getInternalState<Any>(hostHolder, "mountItems")
                     as? SparseArrayCompat<MountItem?>)
                 ?.size())
-    assertThat(Whitebox.getInternalState<Any?>(hostHolder, "mScrapMountItemsArray")).isNull()
+    assertThat(Whitebox.getInternalState<Any?>(hostHolder, "scrapMountItemsArray")).isNull()
   }
 
   @Test

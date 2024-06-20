@@ -75,6 +75,8 @@ inline fun ResourcesScope.LazyList(
     fadingEdgeLength: Dimen? = null,
     shouldExcludeFromIncrementalMount: Boolean = false,
     isCircular: Boolean = false,
+    enableStableIds: Boolean =
+        context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
@@ -93,7 +95,8 @@ inline fun ResourcesScope.LazyList(
               preAllocationHandler = preAllocationHandler,
               crossAxisWrapMode = crossAxisWrapMode,
               mainAxisWrapContent = mainAxisWrapContent,
-              isCircular = isCircular),
+              isCircular = isCircular,
+              enableStableIds = enableStableIds),
       itemAnimator,
       itemDecoration,
       clipToPadding,

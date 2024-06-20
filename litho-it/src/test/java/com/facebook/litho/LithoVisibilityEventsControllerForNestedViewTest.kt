@@ -21,11 +21,11 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.sp
-import com.facebook.testing.robolectric.WithTestDefaultsRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(WithTestDefaultsRunner::class)
+@RunWith(LithoTestRunner::class)
 class LithoVisibilityEventsControllerForNestedViewTest {
   @Rule
   @JvmField

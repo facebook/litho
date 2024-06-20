@@ -176,7 +176,7 @@ class RecyclerSpec {
       int spec =
           RecyclerMeasureHelper.maybeGetSpecWithPadding(
               configuration, exactly(layoutHeight), topPadding + bottomPadding);
-      height = SizeSpec.getSize(height);
+      height = SizeSpec.getSize(spec);
     }
 
     binder.setSize(width, height);

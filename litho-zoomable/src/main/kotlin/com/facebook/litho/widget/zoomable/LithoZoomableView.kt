@@ -17,6 +17,8 @@
 package com.facebook.litho.widget.zoomable
 
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.NestedScrollingChild3
 import androidx.core.view.NestedScrollingChildHelper
@@ -36,6 +38,18 @@ class LithoZoomableView(context: Context) :
     renderTreeView.clipToPadding = false
     clipChildren = false
     clipToPadding = false
+  }
+
+  public override fun attachViewToParent(
+      child: View?,
+      index: Int,
+      params: ViewGroup.LayoutParams?
+  ) {
+    super.attachViewToParent(child, index, params)
+  }
+
+  public override fun detachViewFromParent(child: View?) {
+    super.detachViewFromParent(child)
   }
 
   override fun onAttachedToWindow() {

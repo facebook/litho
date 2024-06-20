@@ -34,7 +34,7 @@ internal object ComponentHostUtils {
   fun <T> moveItem(
       oldIndex: Int,
       newIndex: Int,
-      items: SparseArrayCompat<T?>,
+      items: SparseArrayCompat<T>,
       scrapItems: SparseArrayCompat<T>?
   ) {
     val itemToMove: T?
@@ -49,7 +49,7 @@ internal object ComponentHostUtils {
       itemToMove = items[oldIndex]
       items.remove(oldIndex)
     }
-    items.put(newIndex, itemToMove)
+    itemToMove?.let { items.put(newIndex, it) }
   }
 
   /**

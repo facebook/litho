@@ -556,7 +556,7 @@ public class LithoView extends BaseMountingView {
           && config.enableFixForIM
           && !mIsTemporaryDetached
           && !hasTransientState()) {
-        notifyVisibleBoundsChangedOnAttach();
+        notifyVisibleBoundsChanged();
       }
       mComponentTree.attach();
     }

@@ -157,10 +157,10 @@ data class RecyclerBinderConfig(
     @JvmField val rangeRatio: Float = DEFAULT_RANGE_RATIO,
     /**
      * If set, the RecyclerView adapter will have stableId support turned on. Please note that this
-     * configuration will be disregarded in case [isCircular] is set to `true`.
+     * configuration will be disregarded in case [isCircular] is set to `true`. If not set, it will
+     * follow the default value set for the [ComponentsConfiguration]
      */
-    @JvmField
-    val enableStableIds: Boolean = ComponentsConfiguration.defaultRecyclerBinderUseStableId,
+    @JvmField val enableStableIds: Boolean? = null,
     /**
      * If true, the [RecyclerBinder] will measure the parent height by the height of children if the
      * orientation is vertical, or measure the parent width by the width of children if the
