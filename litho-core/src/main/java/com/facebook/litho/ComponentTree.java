@@ -908,17 +908,13 @@ public class ComponentTree
           promoteCommittedLayoutStateToUI();
         }
 
-        final boolean hasExactSameSpecs =
-            mMainThreadLayoutState != null
-                && mMainThreadLayoutState.getWidthSpec() == widthSpec
-                && mMainThreadLayoutState.getHeightSpec() == heightSpec;
         final boolean hasSameRootAndEquivalentSpecs =
             isCompatibleComponentAndSpec(
                 mMainThreadLayoutState,
                 mRoot != null ? mRoot.getId() : INVALID_ID,
                 widthSpec,
                 heightSpec);
-        if (hasExactSameSpecs || hasSameRootAndEquivalentSpecs) {
+        if (hasSameRootAndEquivalentSpecs) {
           measureOutput[0] = mMainThreadLayoutState.getWidth();
           measureOutput[1] = mMainThreadLayoutState.getHeight();
           needsSyncLayout = false;

@@ -589,21 +589,6 @@ class ComponentTreeTest {
   }
 
   @Test
-  fun testSetRootAsyncFollowedByMeasureDoesntComputeSyncLayout() {
-    val componentTree = ComponentTree.create(context, component).build()
-    componentTree.setLithoView(LithoView(context))
-    componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
-    componentTree.attach()
-    val newComponent: Component = SimpleMountSpecTester.create(context).color(1_234).build()
-    componentTree.setRootAsync(newComponent)
-    assertThat(componentTree.root).isEqualTo(newComponent)
-    componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(component.id)).isTrue
-    runToEndOfTasks()
-    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
-  }
-
-  @Test
   fun testSetRootAsyncFollowedByNonCompatibleMeasureComputesSyncLayout() {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
@@ -637,10 +622,6 @@ class ComponentTreeTest {
    */
   @Test
   fun testSetRootAsyncFollowedByMeasurementInParentWithDoubleMeasure() {
-    // TODO (T134949954) reexamine need for this
-    if (true) {
-      return
-    }
     val componentTree =
         ComponentTree.create(context, Row.create(context).minWidthPx(100).minHeightPx(100)).build()
     val lithoView = LithoView(context)
