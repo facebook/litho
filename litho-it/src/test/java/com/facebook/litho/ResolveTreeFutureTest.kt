@@ -27,8 +27,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
 
 @RunWith(LithoTestRunner::class)
+@LooperMode(LooperMode.Mode.LEGACY)
 class ResolveTreeFutureTest {
 
   private lateinit var componentContext: ComponentContext
