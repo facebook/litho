@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.facebook">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <!--
   Android Studio will sometimes helpfully add activities to this file.
   That's fine for local development, but don't check it in!
