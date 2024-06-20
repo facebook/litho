@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.Hook
 import com.facebook.litho.findComponentActivity
 import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
@@ -42,6 +43,7 @@ import java.util.UUID
  *
  * Check [rules for hooks](https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks)
  */
+@ExperimentalLithoApi
 @Hook
 fun ComponentScope.usePermission(permission: String): PermissionState {
 

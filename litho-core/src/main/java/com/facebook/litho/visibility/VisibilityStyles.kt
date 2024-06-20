@@ -29,6 +29,7 @@ import com.facebook.litho.StyleItemField
 import com.facebook.litho.UnfocusedVisibleEvent
 import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.eventHandler
 
 @JvmInline
@@ -177,5 +178,6 @@ inline fun Style.visibleWidthRatio(visibleWidthRatio: Float): Style =
  * this API will not change how Visibility Events are dispatched; [onVisible] and/or [onInvisible]
  * will work as if this property was not in use.
  */
+@ExperimentalLithoApi
 inline fun Style.visibility(value: Visibility): Style =
     this + VisibilityStyleItem(VisibilityField.VISIBILITY, value)

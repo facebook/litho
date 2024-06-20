@@ -17,6 +17,9 @@
 package com.facebook.litho.permissions
 
 import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.facebook.litho.annotations.ExperimentalLithoApi
 
 /**
  * A state object that can be hoisted to control and observe [permission] status changes.
@@ -26,6 +29,7 @@ import android.content.pm.PackageManager
  * It's recommended that apps exercise the permissions workflow as described in the
  * [documentation](https://developer.android.com/training/permissions/requesting#workflow_for_requesting_permissions).
  */
+@ExperimentalLithoApi
 interface PermissionState {
 
   /** The permission to request and observe. */
@@ -48,6 +52,7 @@ interface PermissionState {
 }
 
 /** Model for the status of a permission. It can be granted or denied or never ask again. */
+@ExperimentalLithoApi
 @JvmInline
 value class PermissionStatus private constructor(val value: Int) {
 
@@ -62,13 +67,13 @@ value class PermissionStatus private constructor(val value: Int) {
 
   companion object {
     /**
-     * The permission has been granted. Same as [ContextCompat.checkSelfPermission] retuing
+     * The permission has been granted. Same as [ContextCompat.checkSelfPermission] returning
      * [PackageManager.PERMISSION_GRANTED].
      */
     val Granted: PermissionStatus = PermissionStatus(PackageManager.PERMISSION_GRANTED)
 
     /**
-     * The permission has been denied. Same as [ContextCompat.checkSelfPermission] retuing
+     * The permission has been denied. Same as [ContextCompat.checkSelfPermission] returning
      * [PackageManager.PERMISSION_DENIED]
      */
     val NotGranted: PermissionStatus = PermissionStatus(PackageManager.PERMISSION_DENIED)
