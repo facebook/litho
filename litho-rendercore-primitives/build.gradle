@@ -40,11 +40,12 @@ android {
         release {
         }
     }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
+    namespace 'com.facebook.rendercore.primitives'
+    lint {
         abortOnError false
     }
+
+    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {
