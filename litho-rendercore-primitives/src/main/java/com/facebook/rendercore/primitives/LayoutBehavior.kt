@@ -52,7 +52,12 @@ interface LayoutBehavior : Equivalence<LayoutBehavior> {
  */
 object ExactSizeConstraintsLayoutBehavior : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
-    return PrimitiveLayoutResult(size = Size.exact(sizeConstraints))
+    val exactSize = Size.exact(sizeConstraints)
+    if (exactSize == Size.Invalid) {
+      throw IllegalArgumentException(
+          "Expected exact SizeConstraints where minWidth==maxWidth and minHeight==maxHeight but got $sizeConstraints.")
+    }
+    return PrimitiveLayoutResult(size = exactSize)
   }
 }
 
