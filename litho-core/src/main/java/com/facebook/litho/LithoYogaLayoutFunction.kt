@@ -462,16 +462,18 @@ internal object LithoYogaLayoutFunction {
     // going to save the size without padding and border.
     val newContentWidth =
         (layoutResult.width -
-            layoutResult.paddingRight -
-            layoutResult.paddingLeft -
-            layoutResult.borderRight -
-            layoutResult.borderLeft)
+                layoutResult.paddingRight -
+                layoutResult.paddingLeft -
+                layoutResult.borderRight -
+                layoutResult.borderLeft)
+            .coerceAtLeast(0)
     val newContentHeight =
         (layoutResult.height -
-            layoutResult.paddingTop -
-            layoutResult.paddingBottom -
-            layoutResult.borderTop -
-            layoutResult.borderBottom)
+                layoutResult.paddingTop -
+                layoutResult.paddingBottom -
+                layoutResult.borderTop -
+                layoutResult.borderBottom)
+            .coerceAtLeast(0)
     if (Component.isMountSpec(component) && component is SpecGeneratedComponent) {
 
       hasLayoutSizeChanged =
