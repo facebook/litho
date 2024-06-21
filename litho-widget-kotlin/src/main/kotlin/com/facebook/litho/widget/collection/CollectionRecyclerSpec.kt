@@ -181,7 +181,7 @@ object CollectionRecyclerSpec {
           isPullToRefreshEnabled = internalPullToRefreshEnabled,
           onRefresh =
               if (internalPullToRefreshEnabled) {
-                { CollectionRecycler.onRefresh(c) }
+                { refreshContent(c, sectionTree) }
               } else null,
           itemDecorations = itemDecoration?.let { listOf(it) },
           isHorizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
@@ -261,6 +261,10 @@ object CollectionRecyclerSpec {
   @JvmStatic
   @OnEvent(PTRRefreshEvent::class)
   fun onRefresh(c: ComponentContext, @State sectionTree: SectionTree): Boolean {
+    return refreshContent(c, sectionTree)
+  }
+
+  private fun refreshContent(c: ComponentContext, sectionTree: SectionTree): Boolean {
     val ptrEventHandler = CollectionRecycler.getPTRRefreshEventHandler(c)
     if (ptrEventHandler == null) {
       sectionTree.refresh()

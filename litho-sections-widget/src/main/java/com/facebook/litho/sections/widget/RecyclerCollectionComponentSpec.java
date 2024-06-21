@@ -181,6 +181,9 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) @Nullable SectionsRecyclerViewLogger sectionsViewLogger,
       @Prop(optional = true) @Nullable CharSequence recyclerContentDescription,
       @Prop(optional = true) boolean shouldExcludeFromIncrementalMount,
+      // Caution: ignoreLoadingUpdates breaks loadingComponent/errorComponent/emptyComponent.
+      // It's intended to be a temporary workaround, not something you should use often.
+      @Prop(optional = true) boolean ignoreLoadingUpdates,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,
@@ -189,7 +192,6 @@ public class RecyclerCollectionComponentSpec {
       @State SectionTree sectionTree,
       @State RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandler,
       @State SnapHelper snapHelper) {
-
     // This is a side effect from OnCreateLayout, so it's inherently prone to race conditions:
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
 
@@ -339,7 +341,7 @@ public class RecyclerCollectionComponentSpec {
               itemTouchListener,
               canPTR
                   ? () -> {
-                    RecyclerCollectionComponent.onRefresh(c, sectionTree);
+                    refreshContent(c, sectionTree, ignoreLoadingUpdates);
                     return Unit.INSTANCE;
                   }
                   : null,
@@ -516,20 +518,24 @@ public class RecyclerCollectionComponentSpec {
       ComponentContext c,
       @Param SectionTree sectionTree,
       @Prop(optional = true) boolean ignoreLoadingUpdates) {
+    refreshContent(c, sectionTree, ignoreLoadingUpdates);
+    return true;
+  }
+
+  private static void refreshContent(
+      ComponentContext c, SectionTree sectionTree, boolean ignoreLoadingUpdates) {
     EventHandler<PTRRefreshEvent> ptrEventHandler =
         RecyclerCollectionComponent.getPTRRefreshEventHandler(c);
 
     if (!ignoreLoadingUpdates || ptrEventHandler == null) {
       sectionTree.refresh();
-      return true;
+      return;
     }
 
     final boolean isHandled = RecyclerCollectionComponent.dispatchPTRRefreshEvent(ptrEventHandler);
     if (!isHandled) {
       sectionTree.refresh();
     }
-
-    return true;
   }
 
   @OnTrigger(ScrollEvent.class)

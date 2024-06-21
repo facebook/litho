@@ -221,7 +221,7 @@ class ExperimentalRecycler(
                 sectionsRecyclerView.isEnabled = isPullToRefreshEnabled && onRefresh != null
 
                 if (onRefresh != null) {
-                  sectionsRecyclerView.setOnRefreshListener { onRefresh.invoke() }
+                  sectionsRecyclerView.setOnRefreshListener { onRefresh() }
                 }
 
                 val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
@@ -374,16 +374,6 @@ class ExperimentalRecycler(
 
                     sectionsRecyclerView.setSectionsRecyclerViewLogger(sectionsViewLogger)
 
-                    // contentDescription should be set on the recyclerView itself, and not the
-                    // sectionsRecycler.
-                    sectionsRecyclerView.contentDescription = null
-
-                    sectionsRecyclerView.isEnabled = isPullToRefreshEnabled && onRefresh != null
-
-                    if (onRefresh != null) {
-                      sectionsRecyclerView.setOnRefreshListener { onRefresh.invoke() }
-                    }
-
                     // @OnBind in RecyclerSpec
 
                     // contentDescription should be set on the recyclerView itself, and not the
@@ -393,7 +383,7 @@ class ExperimentalRecycler(
                     sectionsRecyclerView.isEnabled = isPullToRefreshEnabled && onRefresh != null
 
                     if (onRefresh != null) {
-                      sectionsRecyclerView.setOnRefreshListener { onRefresh.invoke() }
+                      sectionsRecyclerView.setOnRefreshListener { onRefresh() }
                     }
 
                     if (onScrollListeners != null) {
