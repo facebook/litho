@@ -19,14 +19,14 @@ package com.facebook.litho.widget.zoomable
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.view.NestedScrollingChild3
 import androidx.core.view.NestedScrollingChildHelper
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.rendercore.simplelist.RCRecyclerView.RCRecyclerViewNestedScrollingChild
+import com.facebook.rendercore.zoomable.ZoomableContainerView
 
 class LithoZoomableView(context: Context) :
-    FrameLayout(context), NestedScrollingChild3, RCRecyclerViewNestedScrollingChild {
+    ZoomableContainerView(context), NestedScrollingChild3, RCRecyclerViewNestedScrollingChild {
 
   val renderTreeView: LithoRenderTreeView = LithoRenderTreeView(context)
 

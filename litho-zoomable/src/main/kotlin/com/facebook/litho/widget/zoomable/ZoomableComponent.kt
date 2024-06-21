@@ -42,7 +42,7 @@ import kotlin.math.max
 
 @ExperimentalLithoApi
 class ZoomableComponent(
-    private val controller: ZoomableController? = null,
+    private val controller: LithoZoomableController? = null,
     private val style: Style = Style,
     private val child: () -> Component
 ) : PrimitiveComponent() {
@@ -57,7 +57,7 @@ class ZoomableComponent(
         treeProps = context.treePropContainer,
         config = context.lithoConfiguration.componentsConfig.copy(incrementalMountEnabled = false))
 
-    val controller = useCached { controller ?: ZoomableController(androidContext) }
+    val controller = useCached { controller ?: LithoZoomableController(androidContext) }
 
     useEffect(Unit) {
       controller.init()
