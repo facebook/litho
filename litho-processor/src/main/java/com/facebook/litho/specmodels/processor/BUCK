@@ -45,9 +45,7 @@ fb_java_library(
     name = "processor-lib",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
-    tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
-    ],
+    tests = [],
     visibility = [
         "PUBLIC",
     ],
