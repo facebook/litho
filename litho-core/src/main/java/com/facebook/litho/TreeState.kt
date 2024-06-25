@@ -326,8 +326,8 @@ class TreeState {
   }
 
   fun recordRenderData(layoutState: LayoutState) {
-    renderState.recordLayoutStateData(
-        LayoutStateLiteData(layoutState.id, layoutState.transitionData?.transitionsWithDependency))
+    val twds = layoutState.transitionData?.transitionsWithDependency?.associateBy { it.identityKey }
+    renderState.recordLayoutStateData(LayoutStateLiteData(layoutState.id, twds))
     val componentScopes = layoutState.scopedComponentInfosNeedingPreviousRenderData
     if (CollectionsUtils.isNullOrEmpty(componentScopes)) {
       return

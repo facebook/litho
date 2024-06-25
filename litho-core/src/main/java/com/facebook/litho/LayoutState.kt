@@ -340,7 +340,7 @@ internal constructor(
       } else {
         val twds = transitionData.transitionsWithDependency
         if (twds != null) {
-          for ((_, twd) in twds) {
+          for (twd in twds) {
             val previousTwd = mountedLayoutStateData.getTransitionWithDependency(twd.identityKey)
             val transition = twd.createTransition(previousTwd)
             if (transition != null) {

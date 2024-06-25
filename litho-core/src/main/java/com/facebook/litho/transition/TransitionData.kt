@@ -17,7 +17,6 @@
 package com.facebook.litho.transition
 
 import com.facebook.litho.Transition
-import com.facebook.litho.internal.HookKey
 import com.facebook.rendercore.transitions.TransitionUtils
 
 internal sealed interface TransitionData {
@@ -29,13 +28,13 @@ internal sealed interface TransitionData {
   val transitions: List<Transition>?
 
   /**
-   * Map of [HookKey] to [TransitionWithDependency] definitions for a component.
+   * List of [TransitionWithDependency] definitions for a component.
    *
    * These are not actual transitions themselves, but rather a set of definitions that will be used
    * to generate the transitions. In fact, every transition in [optimisticTransitions] is a
    * direct/indirect result of evaluating these definitions.
    */
-  val transitionsWithDependency: Map<HookKey, TransitionWithDependency>?
+  val transitionsWithDependency: List<TransitionWithDependency>?
 
   /**
    * Optimistic list of transitions based on the [transitionsWithDependency] definitions
@@ -60,7 +59,7 @@ internal sealed interface TransitionData {
 
 internal class MutableTransitionData : TransitionData {
   override var transitions: MutableList<Transition>? = null
-  override var transitionsWithDependency: MutableMap<HookKey, TransitionWithDependency>? = null
+  override var transitionsWithDependency: MutableList<TransitionWithDependency>? = null
   override var optimisticTransitions: MutableList<Transition>? = null
 
   fun addTransition(transition: Transition) {
@@ -81,10 +80,10 @@ internal class MutableTransitionData : TransitionData {
     transitionData.transitionsWithDependency?.let { other ->
       val twds =
           transitionsWithDependency
-              ?: HashMap<HookKey, TransitionWithDependency>(other.size).also {
+              ?: ArrayList<TransitionWithDependency>(other.size).also {
                 transitionsWithDependency = it
               }
-      twds.putAll(other)
+      twds.addAll(other)
     }
     transitionData.optimisticTransitions?.let { other ->
       val optimisticTransitions =
@@ -97,10 +96,8 @@ internal class MutableTransitionData : TransitionData {
   private fun addTransitionWithDependency(twd: TransitionWithDependency) {
     val twds =
         transitionsWithDependency
-            ?: mutableMapOf<HookKey, TransitionWithDependency>().also {
-              transitionsWithDependency = it
-            }
-    twds[twd.identityKey] = twd
+            ?: mutableListOf<TransitionWithDependency>().also { transitionsWithDependency = it }
+    twds.add(twd)
   }
 
   private fun addOptimisticTransition(transition: Transition) {
