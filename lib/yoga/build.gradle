@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+    namespace 'com.facebook.yoga'
 
     ndkVersion '26.1.10909125'
 
@@ -43,7 +44,7 @@ dependencies {
 task buckBuild(type: Exec) {
     workingDir rootDir
     environment BUCKVERSION: System.getenv('BUCKVERSION') ?: 'last'
-    def buckPath = System.getenv('BUCK_PATH') ?: 'buck'
+    def buckPath = System.getenv('BUCK_PATH') ?: 'buck1'
     commandLine buckPath, 'build', '//lib/yogajni:jni#default,shared'
     doLast {
         System.out.println("[Yoga Buck Build]: exit value: ${executionResult.get().exitValue}")
