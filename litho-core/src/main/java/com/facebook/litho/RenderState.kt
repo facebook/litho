@@ -17,9 +17,8 @@
 package com.facebook.litho
 
 import com.facebook.litho.Component.RenderData
-import java.lang.RuntimeException
-import java.util.HashMap
-import java.util.HashSet
+import com.facebook.litho.internal.HookKey
+import com.facebook.litho.transition.TransitionWithDependency
 
 /**
  * Keeps track of the last mounted @Prop/@State a component was rendered with for components that
@@ -28,26 +27,27 @@ import java.util.HashSet
  */
 class RenderState {
 
-  private var layoutStateData = LayoutStateLiteData.NONE
-  private val renderData: MutableMap<String, RenderData?> = HashMap()
-  private val seenGlobalKeys: MutableSet<String> = HashSet()
+  private var layoutStateId: Int = LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID
+  private val renderData: MutableMap<HookKey, RenderData?> = HashMap()
+  private val seenHookKeys: MutableSet<HookKey> = HashSet()
 
-  fun recordRenderData(scopedComponentInfos: List<ScopedComponentInfo>?) {
-    if (scopedComponentInfos == null) {
-      return
-    }
+  fun recordRenderData(layoutState: LayoutState) {
+    // Record the layout state id for the next layout calculation.
+    layoutStateId = layoutState.id
 
-    for (componentInfo in scopedComponentInfos) {
-      recordRenderData(componentInfo)
-    }
-    seenGlobalKeys.clear()
+    // Record render data for Spec-Gen components
+    val scopedComponentInfos = layoutState.scopedComponentInfosNeedingPreviousRenderData
+    if (!scopedComponentInfos.isNullOrEmpty()) recordRenderData(scopedComponentInfos)
+
+    // Record render data for KComponents
+    val definitions = layoutState.transitionData?.transitionsWithDependency
+    if (!definitions.isNullOrEmpty()) recordKRenderData(definitions)
+
+    // Reset seen global keys for the next record phase
+    seenHookKeys.clear()
   }
 
-  internal fun recordLayoutStateData(data: LayoutStateLiteData) {
-    layoutStateData = data
-  }
-
-  internal fun getPreviousLayoutStateData(): LayoutStateLiteData = layoutStateData
+  internal fun getPreviousRenderData(hookKey: HookKey): RenderData? = renderData[hookKey]
 
   fun applyPreviousRenderData(scopedComponentInfos: List<ScopedComponentInfo>?) {
     if (scopedComponentInfos == null) {
@@ -58,36 +58,56 @@ class RenderState {
     }
   }
 
+  fun getPreviousLayoutStateId(): Int = layoutStateId
+
+  private fun recordRenderData(scopedComponentInfos: List<ScopedComponentInfo>) {
+    for (componentInfo in scopedComponentInfos) {
+      recordRenderData(componentInfo)
+    }
+  }
+
+  private fun recordKRenderData(definitions: List<TransitionWithDependency>) {
+    for (def in definitions) {
+      // Sanity check like in StateHandler
+      val hookKey = def.identityKey
+      if (!seenHookKeys.add(hookKey)) {
+        // We found two components with the same global key.
+        throw RuntimeException(
+            "Cannot record render data for KComponent, found another Component with the same key: ${hookKey.globalKey}")
+      }
+      renderData[hookKey] = def.recordRenderData()
+    }
+  }
+
   private fun recordRenderData(scopedComponentInfo: ScopedComponentInfo) {
     val component = scopedComponentInfo.component
-    val globalKey = scopedComponentInfo.context.globalKey
+    val hookKey = HookKey(scopedComponentInfo.context.globalKey, 0)
     if (!isPreviousRenderDataSupported(component)) {
       throw RuntimeException(
           "Trying to record previous render data for component that doesn't support it")
     }
 
     // Sanity check like in StateHandler
-    if (seenGlobalKeys.contains(globalKey)) {
+    if (!seenHookKeys.add(hookKey)) {
       // We found two components with the same global key.
       throw RuntimeException(
-          "Cannot record previous render data for ${component.simpleName}, found another Component with the same key: $globalKey")
+          "Cannot record previous render data for ${component.simpleName}, found another Component with the same key: $hookKey")
     }
-    seenGlobalKeys.add(globalKey)
-    val currentInfo = renderData[globalKey]
-    renderData[globalKey] =
+    val currentInfo = renderData[hookKey]
+    renderData[hookKey] =
         (component as SpecGeneratedComponent).recordRenderData(
             scopedComponentInfo.context, currentInfo)
   }
 
   private fun applyPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {
     val component = scopedComponentInfo.component
-    val globalKey = scopedComponentInfo.context.globalKey
+    val hookKey = HookKey(scopedComponentInfo.context.globalKey, 0)
     if (!isPreviousRenderDataSupported(component)) {
       throw RuntimeException(
           "Trying to apply previous render data to component that doesn't support it")
     }
 
-    (component as SpecGeneratedComponent).applyPreviousRenderData(renderData[globalKey])
+    (component as SpecGeneratedComponent).applyPreviousRenderData(renderData[hookKey])
   }
 
   private fun isPreviousRenderDataSupported(component: Component): Boolean =

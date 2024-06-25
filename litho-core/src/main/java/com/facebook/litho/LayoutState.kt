@@ -327,12 +327,11 @@ internal constructor(
         }
       }
     }
-    val mountedLayoutStateData = state.getPreviousLayoutStateData()
     if (transitionData != null && !transitionData.isEmpty()) {
       if (mountTimeTransitions == null) {
         mountTimeTransitions = ArrayList()
       }
-      if (previousLayoutStateId == mountedLayoutStateData.layoutStateId) {
+      if (previousLayoutStateId == state.getPreviousLayoutStateId()) {
         val optimisticTransitions = transitionData.optimisticTransitions
         if (optimisticTransitions != null) {
           mountTimeTransitions.addAll(optimisticTransitions)
@@ -341,11 +340,9 @@ internal constructor(
         val twds = transitionData.transitionsWithDependency
         if (twds != null) {
           for (twd in twds) {
-            val previousTwd = mountedLayoutStateData.getTransitionWithDependency(twd.identityKey)
-            val transition = twd.createTransition(previousTwd)
-            if (transition != null) {
-              mountTimeTransitions.add(transition)
-            }
+            val previousRenderData = state.getPreviousRenderData(twd.identityKey)
+            val transition = twd.createTransition(previousRenderData)
+            if (transition != null) mountTimeTransitions.add(transition)
           }
         }
       }

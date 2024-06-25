@@ -16,6 +16,7 @@
 
 package com.facebook.litho.transition
 
+import com.facebook.litho.Component.RenderData
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Diff
 import com.facebook.litho.Transition
@@ -58,13 +59,9 @@ fun ComponentScope.useTransition(
 ) {
   val data = transitionData ?: MutableTransitionData()
   val identityKey = HookKey(context.globalKey, data.transitionsWithDependency?.size ?: 0)
-  val twd = TransitionWithDependency(identityKey, deps, createTransition)
-  val previousTwd =
-      checkNotNull(resolveContext)
-          .treeState
-          .getPreviousLayoutStateData()
-          .getTransitionWithDependency(twd.identityKey)
-  val optimisticTransition = twd.createTransition(previousTwd)
+  val twd = KTransitionWithDependency(identityKey, deps, createTransition)
+  val renderData = checkNotNull(resolveContext).treeState.getPreviousRenderData(twd.identityKey)
+  val optimisticTransition = twd.createTransition(renderData)
   data.addTransitionWithDependency(twd, optimisticTransition)
   transitionData = data
 }
@@ -102,17 +99,20 @@ interface UseTransitionScope {
   @Unconditional fun <T> diffOf(input: T): Diff<T>
 }
 
-internal class TransitionWithDependency(
-    val identityKey: HookKey,
+// ---- Implementation Details ----
+
+private class KTransitionWithDependency(
+    override val identityKey: HookKey,
     private val dependencies: Array<*>,
     private val createTransition: UseTransitionScope.() -> Transition?
-) {
+) : TransitionWithDependency {
 
   private var diffInputs: List<Any?>? = null
 
-  fun createTransition(previousTransition: TransitionWithDependency?): Transition? {
-    return if (!areObjectsEquivalent(previousTransition?.dependencies, dependencies)) {
-      val transitionScope = UseTransitionScopeImpl(previousTransition?.diffInputs)
+  override fun createTransition(previous: RenderData?): Transition? {
+    require(previous is KRenderData?)
+    return if (!areObjectsEquivalent(previous?.dependencies, dependencies)) {
+      val transitionScope = UseTransitionScopeImpl(previous?.diffInputs)
       transitionScope.createTransition().also { transition ->
         if (transition != null) TransitionUtils.setOwnerKey(transition, identityKey.globalKey)
         if (diffInputs == null) {
@@ -124,6 +124,10 @@ internal class TransitionWithDependency(
         }
       }
     } else null
+  }
+
+  override fun recordRenderData(): RenderData {
+    return KRenderData(dependencies, diffInputs)
   }
 }
 

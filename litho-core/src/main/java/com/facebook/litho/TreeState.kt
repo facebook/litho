@@ -18,6 +18,8 @@ package com.facebook.litho
 
 import android.util.Pair
 import androidx.annotation.VisibleForTesting
+import com.facebook.litho.Component.RenderData
+import com.facebook.litho.internal.HookKey
 import com.facebook.rendercore.annotations.UIState
 
 class TreeState {
@@ -309,30 +311,18 @@ class TreeState {
         )
   }
 
-  fun applyPreviousRenderData(componentScopes: List<ScopedComponentInfo>?) {
-    if (CollectionsUtils.isNullOrEmpty(componentScopes)) {
-      return
-    }
-    renderState.applyPreviousRenderData(componentScopes)
-  }
+  internal fun getPreviousLayoutStateId(): Int = renderState.getPreviousLayoutStateId()
 
   fun applyPreviousRenderData(layoutState: LayoutState) {
-    applyPreviousRenderData(layoutState.scopedComponentInfosNeedingPreviousRenderData)
+    renderState.applyPreviousRenderData(layoutState.scopedComponentInfosNeedingPreviousRenderData)
   }
 
-  @JvmName("getPreviousLayoutStateData")
-  internal fun getPreviousLayoutStateData(): LayoutStateLiteData {
-    return renderState.getPreviousLayoutStateData()
+  internal fun getPreviousRenderData(hookKey: HookKey): RenderData? {
+    return renderState.getPreviousRenderData(hookKey)
   }
 
   fun recordRenderData(layoutState: LayoutState) {
-    val twds = layoutState.transitionData?.transitionsWithDependency?.associateBy { it.identityKey }
-    renderState.recordLayoutStateData(LayoutStateLiteData(layoutState.id, twds))
-    val componentScopes = layoutState.scopedComponentInfosNeedingPreviousRenderData
-    if (CollectionsUtils.isNullOrEmpty(componentScopes)) {
-      return
-    }
-    renderState.recordRenderData(componentScopes)
+    renderState.recordRenderData(layoutState)
   }
 
   fun getEventTrigger(triggerKey: String): EventTrigger<*>? {
