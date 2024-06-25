@@ -16,6 +16,7 @@
 
 package com.facebook.litho.transition
 
+import com.facebook.litho.Component.RenderData
 import com.facebook.litho.Transition
 import com.facebook.rendercore.transitions.TransitionUtils
 
@@ -67,9 +68,15 @@ internal class MutableTransitionData : TransitionData {
     TransitionUtils.addTransitions(transition, transitions)
   }
 
-  fun addTransitionWithDependency(twd: TransitionWithDependency, optimisticResult: Transition?) {
+  fun addTransitionWithDependency(
+      twd: TransitionWithDependency,
+      previousRenderData: RenderData? = null
+  ) {
     addTransitionWithDependency(twd)
-    if (optimisticResult != null) addOptimisticTransition(optimisticResult)
+    if (twd.supportsOptimisticTransitions) {
+      val optimisticTransition = twd.createTransition(previousRenderData)
+      if (optimisticTransition != null) addOptimisticTransition(optimisticTransition)
+    }
   }
 
   fun add(transitionData: TransitionData) {

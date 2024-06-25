@@ -310,40 +310,21 @@ internal constructor(
 
   override fun getMountTimeTransitions(): List<Transition>? {
     val state = resolveResult.treeState
-    state.applyPreviousRenderData(this)
     var mountTimeTransitions: MutableList<Transition>? = null
-    if (scopedComponentInfosNeedingPreviousRenderData != null) {
-      mountTimeTransitions = ArrayList()
-      for (scopedComponentInfo in scopedComponentInfosNeedingPreviousRenderData) {
-        val scopedContext = scopedComponentInfo.context
-        val component = scopedComponentInfo.component
-        try {
-          val transition = (component as? SpecGeneratedComponent)?.createTransition(scopedContext)
-          if (transition != null) {
-            mountTimeTransitions.add(transition)
-          }
-        } catch (e: Exception) {
-          ComponentUtils.handleWithHierarchy(scopedContext, component, e)
-        }
-      }
-    }
     if (transitionData != null && !transitionData.isEmpty()) {
-      if (mountTimeTransitions == null) {
-        mountTimeTransitions = ArrayList()
-      }
-      if (previousLayoutStateId == state.getPreviousLayoutStateId()) {
+      mountTimeTransitions = ArrayList()
+      val canUseOptimisticTransitions = previousLayoutStateId == state.getPreviousLayoutStateId()
+      if (canUseOptimisticTransitions) {
         val optimisticTransitions = transitionData.optimisticTransitions
-        if (optimisticTransitions != null) {
-          mountTimeTransitions.addAll(optimisticTransitions)
-        }
-      } else {
-        val twds = transitionData.transitionsWithDependency
-        if (twds != null) {
-          for (twd in twds) {
-            val previousRenderData = state.getPreviousRenderData(twd.identityKey)
-            val transition = twd.createTransition(previousRenderData)
-            if (transition != null) mountTimeTransitions.add(transition)
-          }
+        if (optimisticTransitions != null) mountTimeTransitions.addAll(optimisticTransitions)
+      }
+      val twds = transitionData.transitionsWithDependency
+      if (twds != null) {
+        for (twd in twds) {
+          if (twd.supportsOptimisticTransitions && canUseOptimisticTransitions) continue
+          val previousRenderData = state.getPreviousRenderData(twd.identityKey)
+          val transition = twd.createTransition(previousRenderData)
+          if (transition != null) mountTimeTransitions.add(transition)
         }
       }
     }

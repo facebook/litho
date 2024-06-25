@@ -61,8 +61,7 @@ fun ComponentScope.useTransition(
   val identityKey = HookKey(context.globalKey, data.transitionsWithDependency?.size ?: 0)
   val twd = KTransitionWithDependency(identityKey, deps, createTransition)
   val renderData = checkNotNull(resolveContext).treeState.getPreviousRenderData(twd.identityKey)
-  val optimisticTransition = twd.createTransition(renderData)
-  data.addTransitionWithDependency(twd, optimisticTransition)
+  data.addTransitionWithDependency(twd, renderData)
   transitionData = data
 }
 
@@ -108,6 +107,9 @@ private class KTransitionWithDependency(
 ) : TransitionWithDependency {
 
   private var diffInputs: List<Any?>? = null
+
+  override val supportsOptimisticTransitions: Boolean
+    get() = true
 
   override fun createTransition(previous: RenderData?): Transition? {
     require(previous is KRenderData?)

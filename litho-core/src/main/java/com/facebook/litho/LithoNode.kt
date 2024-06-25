@@ -438,12 +438,10 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       globalKey: String,
       scopedComponentInfo: ScopedComponentInfo
   ) {
-    _scopedComponentInfosNeedingPreviousRenderData
-        .getOrCreate {
-          HashMap<String, ScopedComponentInfo>(1).also {
-            _scopedComponentInfosNeedingPreviousRenderData = it
-          }
-        }[globalKey] = scopedComponentInfo
+    val twd = SpecTransitionWithDependency(scopedComponentInfo)
+    transitionData
+        .getOrCreate { MutableTransitionData().also { transitionData = it } }
+        .addTransitionWithDependency(twd)
   }
 
   fun addTransition(transition: Transition) {

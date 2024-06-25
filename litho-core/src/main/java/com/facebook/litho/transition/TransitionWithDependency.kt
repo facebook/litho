@@ -36,6 +36,15 @@ internal interface TransitionWithDependency {
   val identityKey: HookKey
 
   /**
+   * Whether this definition supports optimistic transitions.
+   *
+   * Definitions that support optimistic transitions may completely avoid doing work at mount time,
+   * provided the evaluation conditions remain the same. This is possible since their transitions
+   * can be optimistically created on a background thread during the resolve phase
+   */
+  val supportsOptimisticTransitions: Boolean
+
+  /**
    * Creates a [Transition] based on the [Diff] of data from a previous render.
    *
    * @param previous the [Component.RenderData] from the previous render.
