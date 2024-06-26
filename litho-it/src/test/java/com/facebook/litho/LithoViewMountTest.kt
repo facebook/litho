@@ -28,7 +28,6 @@ import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.rendercore.MountState
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assume.assumeFalse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,8 +63,6 @@ class LithoViewMountTest {
 
   @Test
   fun testIncrementalMountTriggeredAfterUnmountAllWithSameDimensions() {
-    // TODO(T193117797): Reenable this test.
-    assumeFalse(ComponentsConfiguration.defaultInstance.enableFixForIM)
     componentTree =
         createComponentTree(useSpy = true, incMountEnabled = true, width = 100, height = 100)
     val width = 50
@@ -74,10 +71,20 @@ class LithoViewMountTest {
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
-    verify(lithoView).notifyVisibleBoundsChanged(null)
+    if (ComponentsConfiguration.defaultInstance.enableFixForIM) {
+      // We would invoke notifyVisibleBoundsChanged when getting attached
+      verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
+    } else {
+      verify(lithoView).notifyVisibleBoundsChanged(null)
+    }
     lithoView.unmountAllItems()
     lithoView.performLayout(false, 0, 0, width, height)
-    verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
+    if (ComponentsConfiguration.defaultInstance.enableFixForIM) {
+      // We would invoke notifyVisibleBoundsChanged when getting attached
+      verify(lithoView, times(3)).notifyVisibleBoundsChanged(null)
+    } else {
+      verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
+    }
   }
 
   @Test
@@ -97,8 +104,6 @@ class LithoViewMountTest {
 
   @Test
   fun testSetSameSizeComponentAndAttachRequestsLayout() {
-    // TODO(T193117797): Reenable this test.
-    assumeFalse(ComponentsConfiguration.defaultInstance.enableFixForIM)
     lithoView.setMeasured(100, 100)
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
@@ -107,8 +112,6 @@ class LithoViewMountTest {
 
   @Test
   fun testSetComponentTwiceWithResetAndAttachRequestsLayout() {
-    // TODO(T193117797): Reenable this test.
-    assumeFalse(ComponentsConfiguration.defaultInstance.enableFixForIM)
     val ct = createComponentTree(useSpy = false, incMountEnabled = false, width = 100, height = 100)
     lithoView.componentTree = ct
     lithoView.setMeasured(100, 100)
@@ -139,8 +142,6 @@ class LithoViewMountTest {
 
   @Test
   fun testReAttachRequestsLayout() {
-    // TODO(T193117797): Reenable this test.
-    assumeFalse(ComponentsConfiguration.defaultInstance.enableFixForIM)
     lithoView.setMeasured(100, 100)
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
