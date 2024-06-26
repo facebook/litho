@@ -44,4 +44,7 @@ object RenderCoreConfig {
    * unmounted when getting out of the viewport.
    */
   @JvmField var shouldEnableIMFix: Boolean = false
+
+  /** This flag is used to enable automatic cleaning of common View listeners from ComponentHost. */
+  @JvmField var clearCommonViewListeners: Boolean = false
 }

@@ -86,6 +86,9 @@ object MountItemsPool {
 
   @JvmStatic
   fun release(context: Context, poolableMountContent: ContentAllocator<*>, mountContent: Any) {
+    if (RenderCoreConfig.clearCommonViewListeners && mountContent is View) {
+      clearCommonListeners(mountContent)
+    }
     val pool = getOrCreateMountContentPool(context, poolableMountContent)
     if (mountItemPoolsReleaseValidator != null && pool != null && mountContent is View) {
       mountItemPoolsReleaseValidator.assertValidRelease(
@@ -243,6 +246,39 @@ object MountItemsPool {
       val contextKey = it.next().key
       if (isContextWrapper(contextKey, context)) {
         it.remove()
+      }
+    }
+  }
+
+  @Suppress("DEPRECATION")
+  private fun clearCommonListeners(view: View) {
+    view.apply {
+      onFocusChangeListener = null
+      setOnClickListener(null)
+      setOnLongClickListener(null)
+      setOnCreateContextMenuListener(null)
+      setOnKeyListener(null)
+      setOnTouchListener(null)
+      setOnHoverListener(null)
+      setOnGenericMotionListener(null)
+      setOnDragListener(null)
+      setOnSystemUiVisibilityChangeListener(null)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        setOnApplyWindowInsetsListener(null)
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        setOnScrollChangeListener(null)
+        setOnContextClickListener(null)
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        setOnCapturedPointerListener(null)
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        setWindowInsetsAnimationCallback(null)
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        setScrollCaptureCallback(null)
+        setOnReceiveContentListener(null, null)
       }
     }
   }
