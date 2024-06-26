@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.util.Pools
 import java.util.WeakHashMap
@@ -37,6 +38,8 @@ import javax.annotation.concurrent.GuardedBy
  * this we will tend to expand all buffers to the largest size needed.
  */
 object MountItemsPool {
+
+  private val mountItemPoolsReleaseValidator: MountItemPoolsReleaseValidator? = null
 
   /** A factory used to create [MountItemsPool.ItemPool]s. */
   fun interface Factory {
@@ -84,6 +87,10 @@ object MountItemsPool {
   @JvmStatic
   fun release(context: Context, poolableMountContent: ContentAllocator<*>, mountContent: Any) {
     val pool = getOrCreateMountContentPool(context, poolableMountContent)
+    if (mountItemPoolsReleaseValidator != null && pool != null && mountContent is View) {
+      mountItemPoolsReleaseValidator.assertValidRelease(
+          mountContent, listOf(poolableMountContent.getPoolableContentType().name))
+    }
     pool?.release(mountContent)
   }
 
