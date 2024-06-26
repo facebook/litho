@@ -30,6 +30,8 @@ import com.facebook.litho.animated.rotation
 import com.facebook.litho.animated.scaleX
 import com.facebook.litho.animated.scaleY
 import com.facebook.litho.animated.translationX
+import com.facebook.litho.animated.translationY
+import com.facebook.litho.animated.translationZ
 import com.facebook.litho.animated.useBinding
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
@@ -43,7 +45,9 @@ class AllCommonDynamicPropsKComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
     val scale = useBinding(1f)
     val alpha = useBinding(1f)
-    val translation = useBinding(1f)
+    val translationX = useBinding(0f)
+    val translationY = useBinding(0f)
+    val translationZ = useBinding(0f)
     val rotation = useBinding(0f)
     val elevation = useBinding(1f)
 
@@ -61,7 +65,9 @@ class AllCommonDynamicPropsKComponent : KComponent() {
                     .scaleX(scale)
                     .scaleY(scale)
                     .alpha(alpha)
-                    .translationX(translation)
+                    .translationX(translationX)
+                    .translationY(translationY)
+                    .translationZ(translationZ)
                     .rotation(rotation)
                     .elevation(elevation))
 
@@ -75,8 +81,18 @@ class AllCommonDynamicPropsKComponent : KComponent() {
       child(
           SeekBar(
               initialValue = .5f,
-              label = "Translation",
-              onProgressChanged = { translation.set(evaluate(it, -100f, 100f)) }))
+              label = "Translation X",
+              onProgressChanged = { translationX.set(evaluate(it, -100f, 100f)) }))
+      child(
+          SeekBar(
+              initialValue = .5f,
+              label = "Translation Y",
+              onProgressChanged = { translationY.set(evaluate(it, -100f, 100f)) }))
+      child(
+          SeekBar(
+              initialValue = .5f,
+              label = "Translation Z",
+              onProgressChanged = { translationZ.set(evaluate(it, -100f, 100f)) }))
       child(
           SeekBar(
               initialValue = 0f,

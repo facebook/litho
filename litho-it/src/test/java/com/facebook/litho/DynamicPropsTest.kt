@@ -327,6 +327,32 @@ class DynamicPropsTest {
   }
 
   @Test
+  fun testDynamicTranslationZApplied() {
+    val startValue = 100f
+    val translationZDV = DynamicValue(startValue)
+    val lithoView =
+        legacyLithoViewRule
+            .attachToWindow()
+            .setRoot(
+                Column.create(context)
+                    .widthPx(80)
+                    .heightPx(80)
+                    .translationZ(translationZDV)
+                    .build())
+            .measure()
+            .layout()
+            .lithoView
+    assertThat(lithoView.childCount).isEqualTo(1)
+    val hostView = lithoView.getChildAt(0)
+    assertThat(hostView.translationZ).isEqualTo(startValue)
+    translationZDV.set(25f)
+    assertThat(hostView.translationZ).isEqualTo(25f)
+
+    lithoView.unmountAllItems()
+    assertThat(hostView.translationZ).isEqualTo(0f)
+  }
+
+  @Test
   fun commonDynamicProps_unbindAndRebindContent_resetValues() {
     val stateUpdateCaller = DynamicPropsResetValueTesterSpec.Caller()
     val component = DynamicPropsResetValueTester.create(context).caller(stateUpdateCaller).build()

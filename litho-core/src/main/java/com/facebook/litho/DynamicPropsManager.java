@@ -54,6 +54,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   public static final int KEY_ROTATION = 8;
   public static final int KEY_BACKGROUND_DRAWABLE = 9;
   public static final int KEY_FOREGROUND_COLOR = 10;
+  public static final int KEY_TRANSLATION_Z = 11;
 
   private static final DynamicValue<?>[] sEmptyArray = new DynamicValue[0];
 
@@ -170,6 +171,14 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         }
         break;
 
+      case KEY_TRANSLATION_Z:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          if (target.getTranslationZ() != 0) {
+            target.setTranslationZ(0);
+          }
+        }
+        break;
+
       case KEY_SCALE_X:
         if (target.getScaleX() != 1) {
           target.setScaleX(1);
@@ -259,6 +268,12 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
 
       case KEY_TRANSLATION_Y:
         target.setTranslationY(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_TRANSLATION_Z:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          target.setTranslationZ(DynamicPropsManager.<Float>resolve(value));
+        }
         break;
 
       case KEY_SCALE_X:

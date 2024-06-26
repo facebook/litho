@@ -30,6 +30,7 @@ import com.facebook.litho.DynamicPropsManager.KEY_SCALE_X
 import com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y
 import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X
 import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y
+import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Z
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
@@ -48,6 +49,7 @@ internal enum class DynamicField : StyleItemField {
   SCALE_Y,
   TRANSLATION_X,
   TRANSLATION_Y,
+  TRANSLATION_Z,
 }
 
 /**
@@ -72,6 +74,7 @@ internal data class DynamicStyleItem(
       DynamicField.SCALE_Y -> commonDynamicProps.put(KEY_SCALE_Y, value)
       DynamicField.TRANSLATION_X -> commonDynamicProps.put(KEY_TRANSLATION_X, value)
       DynamicField.TRANSLATION_Y -> commonDynamicProps.put(KEY_TRANSLATION_Y, value)
+      DynamicField.TRANSLATION_Z -> commonDynamicProps.put(KEY_TRANSLATION_Z, value)
     }
   }
 }
@@ -105,3 +108,6 @@ inline fun Style.translationX(translationX: DynamicValue<Float>): Style =
 
 inline fun Style.translationY(translationY: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.TRANSLATION_Y, translationY)
+
+inline fun Style.translationZ(translationZ: DynamicValue<Float>): Style =
+    this + DynamicStyleItem(DynamicField.TRANSLATION_Z, translationZ)

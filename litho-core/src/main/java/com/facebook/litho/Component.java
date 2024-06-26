@@ -29,6 +29,7 @@ import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
+import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Z;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -2152,6 +2153,16 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      */
     public T translationY(DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Y, value);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object to the translationZ value for this Component
+     *
+     * @param value controller for the translationZ value
+     */
+    public T translationZ(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Z, value);
       return getThis();
     }
 
