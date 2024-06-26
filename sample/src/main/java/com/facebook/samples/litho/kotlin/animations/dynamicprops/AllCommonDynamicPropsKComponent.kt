@@ -27,6 +27,8 @@ import com.facebook.litho.animated.alpha
 import com.facebook.litho.animated.background
 import com.facebook.litho.animated.elevation
 import com.facebook.litho.animated.rotation
+import com.facebook.litho.animated.rotationX
+import com.facebook.litho.animated.rotationY
 import com.facebook.litho.animated.scaleX
 import com.facebook.litho.animated.scaleY
 import com.facebook.litho.animated.translationX
@@ -49,7 +51,9 @@ class AllCommonDynamicPropsKComponent : KComponent() {
     val translationY = useBinding(0f)
     val translationZ = useBinding(0f)
     val rotation = useBinding(0f)
-    val elevation = useBinding(1f)
+    val rotationX = useBinding(0f)
+    val rotationY = useBinding(0f)
+    val elevation = useBinding(0f)
 
     val background = useBinding(ColorDrawable(Color.RED))
     val fgColor = useBinding(Color.GREEN)
@@ -69,6 +73,8 @@ class AllCommonDynamicPropsKComponent : KComponent() {
                     .translationY(translationY)
                     .translationZ(translationZ)
                     .rotation(rotation)
+                    .rotationX(rotationX)
+                    .rotationY(rotationY)
                     .elevation(elevation))
 
     return Column(style = Style.padding(all = 20.dp)) {
@@ -95,9 +101,19 @@ class AllCommonDynamicPropsKComponent : KComponent() {
               onProgressChanged = { translationZ.set(evaluate(it, -100f, 100f)) }))
       child(
           SeekBar(
-              initialValue = 0f,
+              initialValue = .5f,
               label = "Rotation",
-              onProgressChanged = { rotation.set(evaluate(it, 0f, 360f)) }))
+              onProgressChanged = { rotation.set(evaluate(it, -360f, 360f)) }))
+      child(
+          SeekBar(
+              initialValue = .5f,
+              label = "Rotation X",
+              onProgressChanged = { rotationX.set(evaluate(it, -360f, 360f)) }))
+      child(
+          SeekBar(
+              initialValue = .5f,
+              label = "Rotation Y",
+              onProgressChanged = { rotationY.set(evaluate(it, -360f, 360f)) }))
       child(
           SeekBar(
               initialValue = 0f,

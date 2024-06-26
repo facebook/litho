@@ -247,24 +247,46 @@ class DynamicPropsTest {
 
   @Test
   fun testDynamicRotationApplied() {
-    val startValue = 0f
-    val rotationDV = DynamicValue(startValue)
+    val startValue = 1f
+    val rotation = DynamicValue(startValue)
+    val rotationX = DynamicValue(startValue)
+    val rotationY = DynamicValue(startValue)
     val lithoView =
         legacyLithoViewRule
             .attachToWindow()
-            .setRoot(Column.create(context).widthPx(80).heightPx(80).rotation(rotationDV).build())
+            .setRoot(
+                Column.create(context)
+                    .widthPx(80)
+                    .heightPx(80)
+                    .rotation(rotation)
+                    .rotationX(rotationX)
+                    .rotationY(rotationY)
+                    .build())
             .measure()
             .layout()
             .lithoView
     assertThat(lithoView.childCount).isEqualTo(1)
     val hostView = lithoView.getChildAt(0)
     assertThat(hostView.rotation).isEqualTo(startValue)
-    rotationDV.set(364f)
+    assertThat(hostView.rotationX).isEqualTo(startValue)
+    assertThat(hostView.rotationY).isEqualTo(startValue)
+    rotation.set(364f)
+    rotationX.set(10f)
+    rotationY.set(100f)
     assertThat(hostView.rotation).isEqualTo(364f)
-    rotationDV.set(520f)
-    assertThat(hostView.rotation).isEqualTo(520f)
-    rotationDV.set(-1f)
+    assertThat(hostView.rotationX).isEqualTo(10f)
+    assertThat(hostView.rotationY).isEqualTo(100f)
+    rotation.set(-1f)
+    rotationX.set(-10f)
+    rotationY.set(-100f)
     assertThat(hostView.rotation).isEqualTo(-1f)
+    assertThat(hostView.rotationX).isEqualTo(-10f)
+    assertThat(hostView.rotationY).isEqualTo(-100f)
+
+    lithoView.unmountAllItems()
+    assertThat(hostView.rotation).isEqualTo(0f)
+    assertThat(hostView.rotationX).isEqualTo(0f)
+    assertThat(hostView.rotationY).isEqualTo(0f)
   }
 
   @Test

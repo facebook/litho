@@ -26,6 +26,8 @@ import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_DRAWABLE
 import com.facebook.litho.DynamicPropsManager.KEY_ELEVATION
 import com.facebook.litho.DynamicPropsManager.KEY_FOREGROUND_COLOR
 import com.facebook.litho.DynamicPropsManager.KEY_ROTATION
+import com.facebook.litho.DynamicPropsManager.KEY_ROTATION_X
+import com.facebook.litho.DynamicPropsManager.KEY_ROTATION_Y
 import com.facebook.litho.DynamicPropsManager.KEY_SCALE_X
 import com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y
 import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X
@@ -45,6 +47,8 @@ internal enum class DynamicField : StyleItemField {
   ELEVATION,
   FOREGROUND,
   ROTATION,
+  ROTATION_X,
+  ROTATION_Y,
   SCALE_X,
   SCALE_Y,
   TRANSLATION_X,
@@ -70,6 +74,8 @@ internal data class DynamicStyleItem(
       DynamicField.ELEVATION -> commonDynamicProps.put(KEY_ELEVATION, value)
       DynamicField.FOREGROUND -> commonDynamicProps.put(KEY_FOREGROUND_COLOR, value)
       DynamicField.ROTATION -> commonDynamicProps.put(KEY_ROTATION, value)
+      DynamicField.ROTATION_X -> commonDynamicProps.put(KEY_ROTATION_X, value)
+      DynamicField.ROTATION_Y -> commonDynamicProps.put(KEY_ROTATION_Y, value)
       DynamicField.SCALE_X -> commonDynamicProps.put(KEY_SCALE_X, value)
       DynamicField.SCALE_Y -> commonDynamicProps.put(KEY_SCALE_Y, value)
       DynamicField.TRANSLATION_X -> commonDynamicProps.put(KEY_TRANSLATION_X, value)
@@ -96,6 +102,12 @@ inline fun Style.elevation(elevation: DynamicValue<Float>): Style =
 
 inline fun Style.rotation(rotation: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ROTATION, rotation)
+
+inline fun Style.rotationX(rotationX: DynamicValue<Float>): Style =
+    this + DynamicStyleItem(DynamicField.ROTATION_X, rotationX)
+
+inline fun Style.rotationY(rotationY: DynamicValue<Float>): Style =
+    this + DynamicStyleItem(DynamicField.ROTATION_Y, rotationY)
 
 inline fun Style.scaleX(scaleX: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.SCALE_X, scaleX)

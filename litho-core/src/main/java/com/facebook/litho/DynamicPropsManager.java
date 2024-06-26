@@ -47,14 +47,17 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   public static final int KEY_ALPHA = 1;
   public static final int KEY_TRANSLATION_X = 2;
   public static final int KEY_TRANSLATION_Y = 3;
-  public static final int KEY_SCALE_X = 4;
-  public static final int KEY_SCALE_Y = 5;
-  public static final int KEY_ELEVATION = 6;
-  public static final int KEY_BACKGROUND_COLOR = 7;
-  public static final int KEY_ROTATION = 8;
-  public static final int KEY_BACKGROUND_DRAWABLE = 9;
-  public static final int KEY_FOREGROUND_COLOR = 10;
-  public static final int KEY_TRANSLATION_Z = 11;
+
+  public static final int KEY_TRANSLATION_Z = 4;
+  public static final int KEY_SCALE_X = 5;
+  public static final int KEY_SCALE_Y = 6;
+  public static final int KEY_ELEVATION = 7;
+  public static final int KEY_BACKGROUND_COLOR = 8;
+  public static final int KEY_ROTATION = 9;
+  public static final int KEY_ROTATION_X = 10;
+  public static final int KEY_ROTATION_Y = 11;
+  public static final int KEY_BACKGROUND_DRAWABLE = 12;
+  public static final int KEY_FOREGROUND_COLOR = 13;
 
   private static final DynamicValue<?>[] sEmptyArray = new DynamicValue[0];
 
@@ -203,6 +206,18 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         }
         break;
 
+      case KEY_ROTATION_X:
+        if (target.getRotationX() != 0) {
+          target.setRotationX(0);
+        }
+        break;
+
+      case KEY_ROTATION_Y:
+        if (target.getRotationY() != 0) {
+          target.setRotationY(0);
+        }
+        break;
+
       case KEY_BACKGROUND_COLOR:
       case KEY_BACKGROUND_DRAWABLE:
         if (target.getBackground() != null) {
@@ -296,6 +311,14 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
 
       case KEY_ROTATION:
         target.setRotation(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_ROTATION_X:
+        target.setRotationX(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_ROTATION_Y:
+        target.setRotationY(DynamicPropsManager.<Float>resolve(value));
         break;
 
       case KEY_BACKGROUND_DRAWABLE:

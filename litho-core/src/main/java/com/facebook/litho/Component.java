@@ -25,6 +25,8 @@ import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_DRAWABLE;
 import static com.facebook.litho.DynamicPropsManager.KEY_ELEVATION;
 import static com.facebook.litho.DynamicPropsManager.KEY_FOREGROUND_COLOR;
 import static com.facebook.litho.DynamicPropsManager.KEY_ROTATION;
+import static com.facebook.litho.DynamicPropsManager.KEY_ROTATION_X;
+import static com.facebook.litho.DynamicPropsManager.KEY_ROTATION_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
@@ -1930,11 +1932,31 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     }
 
     /**
+     * Links a {@link DynamicValue} object to the rotationX value for this Component
+     *
+     * @param rotationX controller for the rotationX value
+     */
+    public T rotationX(@Nullable DynamicValue<Float> rotationX) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_ROTATION_X, rotationX);
+      return getThis();
+    }
+
+    /**
      * Sets the degree that this component is rotated around the vertical axis through the pivot
      * point.
      */
     public T rotationY(float rotationY) {
       mComponent.getOrCreateCommonProps().rotationY(rotationY);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object to the rotationY value for this Component
+     *
+     * @param rotationY controller for the rotationY value
+     */
+    public T rotationY(@Nullable DynamicValue<Float> rotationY) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_ROTATION_Y, rotationY);
       return getThis();
     }
 
