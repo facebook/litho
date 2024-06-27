@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import android.graphics.Rect
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -71,20 +70,10 @@ class LithoViewMountTest {
     lithoView.componentTree = componentTree
     lithoView.onAttachedToWindow()
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
-    if (ComponentsConfiguration.defaultInstance.enableFixForIM) {
-      // We would invoke notifyVisibleBoundsChanged when getting attached
-      verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
-    } else {
-      verify(lithoView).notifyVisibleBoundsChanged(null)
-    }
+    verify(lithoView).notifyVisibleBoundsChanged(null)
     lithoView.unmountAllItems()
     lithoView.performLayout(false, 0, 0, width, height)
-    if (ComponentsConfiguration.defaultInstance.enableFixForIM) {
-      // We would invoke notifyVisibleBoundsChanged when getting attached
-      verify(lithoView, times(3)).notifyVisibleBoundsChanged(null)
-    } else {
-      verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
-    }
+    verify(lithoView, times(2)).notifyVisibleBoundsChanged(null)
   }
 
   @Test
