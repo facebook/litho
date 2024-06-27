@@ -68,6 +68,7 @@ import com.facebook.rendercore.MountState
 import com.facebook.rendercore.debug.DebugEventAttribute.Name
 import com.facebook.rendercore.debug.DebugEventDispatcher.dispatch
 import com.facebook.rendercore.transitions.DisappearingHost
+import com.facebook.rendercore.utils.clearCommonViewListeners
 
 /**
  * A [ViewGroup] that can host the mounted state of a [Component]. This is used by [MountState] to
@@ -105,10 +106,7 @@ open class ComponentHost(
   var componentFocusChangeListener: ComponentFocusChangeListener? = null
     set(value) {
       field = value
-      val prevSafeModification = isSafeViewModificationsEnabled
-      setSafeViewModificationsEnabled(true)
-      this.onFocusChangeListener = value
-      setSafeViewModificationsEnabled(prevSafeModification)
+      withSafeModification { this.onFocusChangeListener = value }
     }
 
   /**
@@ -119,10 +117,7 @@ open class ComponentHost(
   var componentTouchListener: ComponentTouchListener? = null
     set(value) {
       field = value
-      val prevSafeModification = isSafeViewModificationsEnabled
-      setSafeViewModificationsEnabled(true)
-      setOnTouchListener(value)
-      setSafeViewModificationsEnabled(prevSafeModification)
+      withSafeModification { setOnTouchListener(value) }
     }
 
   var touchExpansionDelegate: TouchExpansionDelegate? = null
@@ -571,10 +566,7 @@ open class ComponentHost(
     get() = onLongClickListener
     set(listener) {
       onLongClickListener = listener
-      val prevSafeModification = isSafeViewModificationsEnabled
-      setSafeViewModificationsEnabled(true)
-      setOnLongClickListener(listener)
-      setSafeViewModificationsEnabled(prevSafeModification)
+      withSafeModification { setOnLongClickListener(listener) }
     }
 
   /**
@@ -940,6 +932,10 @@ open class ComponentHost(
     }
   }
 
+  override fun clearCommonListeners() {
+    withSafeModification { clearCommonViewListeners() }
+  }
+
   override fun setAccessibilityDelegate(accessibilityDelegate: AccessibilityDelegate?) {
     super.setAccessibilityDelegate(accessibilityDelegate)
 
@@ -1181,6 +1177,16 @@ open class ComponentHost(
   private fun ensureScrapDrawableMountItemsArray() {
     if (scrapDrawableMountItems == null) {
       scrapDrawableMountItems = SparseArrayCompat(SCRAP_ARRAY_INITIAL_SIZE)
+    }
+  }
+
+  private inline fun withSafeModification(block: () -> Unit) {
+    val prevSafeModification = isSafeViewModificationsEnabled
+    try {
+      setSafeViewModificationsEnabled(true)
+      block()
+    } finally {
+      setSafeViewModificationsEnabled(prevSafeModification)
     }
   }
 
