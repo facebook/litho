@@ -36,6 +36,10 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     testOptions {
         unitTests.includeAndroidResources = true
 
@@ -46,11 +50,12 @@ android {
             maxParallelForks = 4
         }
     }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
+    namespace 'com.facebook.rendercore'
+    lint {
         abortOnError false
     }
+
+    // TODO(#62): Re-enable abort on error.
 }
 
 dependencies {

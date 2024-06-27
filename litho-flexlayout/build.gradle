@@ -49,6 +49,7 @@ android {
             version '3.18.1'
         }
     }
+    namespace 'com.facebook.flexlayout'
 }
 
 dependencies {
@@ -56,6 +57,10 @@ dependencies {
     implementation deps.jsr305
 
     compileOnly deps.proguardAnnotations
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 apply plugin: "com.vanniktech.maven.publish"

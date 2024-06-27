@@ -58,7 +58,7 @@ function getAndroidSDK {
   TMP=/tmp/sdk$$.zip
 
   echo "downloading sdk command line tools"
-  download 'https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip' $TMP
+  download 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip' $TMP
 
   echo "clean $ANDROID_HOME"
   rm -r $ANDROID_HOME/*
