@@ -28,12 +28,6 @@ object RenderCoreConfig {
   @JvmField var isEndToEndTestRun: Boolean = System.getProperty("IS_TESTING") != null
 
   /**
-   * Enabling this config will set the root host view in layout before unmounting all items from it
-   * so that layouts are not request when removing content from the hierarchy.
-   */
-  @JvmField var shouldSetInLayoutDuringUnmountAll: Boolean = false
-
-  /**
    * Enables the global gap worker which will schedule gaps between mountable items in the same
    * frame.
    */

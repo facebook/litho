@@ -209,9 +209,7 @@ constructor(
 
   override fun unmountAllItems() {
     try {
-      if (RenderCoreConfig.shouldSetInLayoutDuringUnmountAll) {
-        _rootHost.setInLayout()
-      }
+      _rootHost.setInLayout()
       if (renderTree == null) {
         unregisterAllExtensions()
         return
@@ -233,9 +231,7 @@ constructor(
       _needsRemount = true
       renderTree = null
     } finally {
-      if (RenderCoreConfig.shouldSetInLayoutDuringUnmountAll) {
-        _rootHost.unsetInLayout()
-      }
+      _rootHost.unsetInLayout()
     }
   }
 
