@@ -16,8 +16,10 @@
 
 package com.facebook.litho
 
+import android.os.Build
 import android.view.View
 import androidx.annotation.FloatRange
+import com.facebook.litho.utils.VersionedAndroidApis
 
 /**
  * An interface for a View which supports setting and unsetting its transform pivot, even on pre-API
@@ -28,6 +30,22 @@ import androidx.annotation.FloatRange
  * after they are unmounted.
  */
 interface SupportsPivotTransform {
+
+  companion object {
+    const val BadPivotClassErrorMessage: String =
+        "Setting transform pivot is only supported on Views that implement SupportsPivotTransform. " +
+            "If it isn't possible to add this interface to the View in question, wrap this " +
+            "Component in a Row or Column and apply the transform and pivot there instead."
+
+    fun resetPivot(view: View) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        VersionedAndroidApis.P.resetPivot(view)
+      } else {
+        check(view is SupportsPivotTransform) { BadPivotClassErrorMessage }
+        view.setTransformPivot(50f, 50f)
+      }
+    }
+  }
 
   /**
    * Sets the transform pivot of a View - used for scale and rotation transforms - to be centered at
@@ -45,15 +63,4 @@ interface SupportsPivotTransform {
       @FloatRange(0.0, 100.0) pivotXPercent: Float,
       @FloatRange(0.0, 100.0) pivotYPercent: Float
   )
-
-  /**
-   * Resets the transform pivot of a View to its default state.
-   *
-   * Note for implementors: While API 28+ devices can just use [View.resetPivot], this needs a
-   * special implementation pre-API 28 which should ensure that when reset, the pivot stays at the
-   * center of the View, even if it's resized. [View.onSizeChanged] can be used to achieve this.
-   *
-   * @see [View.resetPivot]
-   */
-  fun resetTransformPivot()
 }

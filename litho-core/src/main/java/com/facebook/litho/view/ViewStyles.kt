@@ -40,6 +40,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
 import com.facebook.litho.SupportsPivotTransform
+import com.facebook.litho.SupportsPivotTransform.Companion.BadPivotClassErrorMessage
 import com.facebook.litho.TouchEvent
 import com.facebook.litho.binders.viewBinder
 import com.facebook.litho.drawable.ComparableColorDrawable
@@ -462,11 +463,6 @@ inline fun Style.pivotPercent(
 @PublishedApi
 internal object PivotBinder : RenderUnit.Binder<Pair<Float, Float>, View, Unit> {
 
-  private const val BadPivotClassErrorMessage =
-      "Setting transform pivot is only supported on Views that implement SupportsPivotTransform. " +
-          "If it isn't possible to add this interface to the View in question, wrap this " +
-          "Component in a Row or Column and apply the transform and pivot there instead."
-
   override fun shouldUpdate(
       currentModel: Pair<Float, Float>,
       newModel: Pair<Float, Float>,
@@ -487,7 +483,7 @@ internal object PivotBinder : RenderUnit.Binder<Pair<Float, Float>, View, Unit> 
       bindData: Unit?
   ) {
     check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
-    content.resetTransformPivot()
+    SupportsPivotTransform.resetPivot(content)
   }
 }
 

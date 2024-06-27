@@ -21,7 +21,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.SparseArray
@@ -31,10 +30,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.view.accessibility.AccessibilityNodeInfo
-import androidx.annotation.DoNotInline
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
-import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import androidx.collection.SparseArrayCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -472,19 +469,19 @@ open class ComponentHost(
     updatePivots()
   }
 
-  override fun resetTransformPivot() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      pivotXPercent = UNSET
-      pivotYPercent = UNSET
-      AndroidPImpl.resetPivot(this)
-    } else {
-      setTransformPivot(50f, 50f)
-    }
-  }
-
   private fun updatePivots() {
     pivotX = width * pivotXPercent / 100f
     pivotY = height * pivotYPercent / 100f
+    if (pivotXPercent == 50f && pivotYPercent == 50f) {
+      this.pivotXPercent = UNSET
+      this.pivotYPercent = UNSET
+    }
+  }
+
+  override fun resetPivot() {
+    this.pivotXPercent = UNSET
+    this.pivotYPercent = UNSET
+    super.resetPivot()
   }
 
   /**
@@ -1404,14 +1401,6 @@ open class ComponentHost(
    * are identified.
    */
   class ComponentHostInvalidModification(message: String) : RuntimeException(message)
-
-  @RequiresApi(Build.VERSION_CODES.P)
-  private object AndroidPImpl {
-    @DoNotInline
-    fun resetPivot(view: View) {
-      view.resetPivot()
-    }
-  }
 
   companion object {
     @IdRes val COMPONENT_NODE_INFO_ID: Int = R.id.component_node_info
