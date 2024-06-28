@@ -52,13 +52,6 @@ enum class Reason {
   SECTION_USED_WITH_OTHER_SECTIONS,
 
   /**
-   * Used when creating new react native component bridges. currently the implementation only
-   * supports LithoSpec, integrating with KComponents ends up with a lot of rendering issues such as
-   * https://fb.workplace.com/groups/rn.support/permalink/25722856564002949/.
-   */
-  REACT_NATIVE_BRIDGING,
-
-  /**
    * Used when Component.Builder is required at call site, e.g. when creating new native template
    * component bridges.
    */
