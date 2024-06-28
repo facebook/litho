@@ -713,7 +713,7 @@ public abstract class BaseMountingView extends ComponentHost
       if (isTracing) {
         ComponentsSystrace.beginSection("BaseMountingView::onRegisterForPremount");
       }
-      maybeMountOrNotifyVisibleBoundsChange(null, false);
+      mount(new Rect(), false);
       RenderCoreExtension.onRegisterForPremount(mMountState, frameTime);
       if (isTracing) {
         ComponentsSystrace.endSection();
