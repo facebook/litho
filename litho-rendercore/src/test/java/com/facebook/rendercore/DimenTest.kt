@@ -197,6 +197,46 @@ class DimenTest {
     Dimen(Double.NaN.toRawBits()).toPixels(resourceResolver)
   }
 
+  @Test
+  fun `dimen mul div`() {
+    assertThat(10.sp * 5.0).isEqualTo(50.sp)
+    assertThat(10.dp * 5.0).isEqualTo(50.dp)
+    assertThat(10.px * 5.0).isEqualTo(50.px)
+    assertThat(5.0 * 10.sp).isEqualTo(50.sp)
+    assertThat(5.0 * 10.dp).isEqualTo(50.dp)
+    assertThat(5.0 * 10.px).isEqualTo(50.px)
+
+    assertThat(10.sp / 2.0).isEqualTo(5.sp)
+    assertThat(10.dp / 2.0).isEqualTo(5.dp)
+    assertThat(10.px / 2.0).isEqualTo(5.px)
+
+    assertThat(10.sp * 5f).isEqualTo(50.sp)
+    assertThat(10.dp * 5f).isEqualTo(50.dp)
+    assertThat(10.px * 5f).isEqualTo(50.px)
+    assertThat(5f * 10.sp).isEqualTo(50.sp)
+    assertThat(5f * 10.dp).isEqualTo(50.dp)
+    assertThat(5f * 10.px).isEqualTo(50.px)
+
+    assertThat(10.sp / 2f).isEqualTo(5.sp)
+    assertThat(10.dp / 2f).isEqualTo(5.dp)
+    assertThat(10.px / 2f).isEqualTo(5.px)
+
+    assertThat(10.sp * 5).isEqualTo(50.sp)
+    assertThat(10.dp * 5).isEqualTo(50.dp)
+    assertThat(10.px * 5).isEqualTo(50.px)
+    assertThat(5 * 10.sp).isEqualTo(50.sp)
+    assertThat(5 * 10.dp).isEqualTo(50.dp)
+    assertThat(5 * 10.px).isEqualTo(50.px)
+
+    assertThat(10.sp / 2).isEqualTo(5.sp)
+    assertThat(10.dp / 2).isEqualTo(5.dp)
+    assertThat(10.px / 2).isEqualTo(5.px)
+
+    assertThat(-(10.sp)).isEqualTo((-10).sp)
+    assertThat(-(10.dp)).isEqualTo((-10).dp)
+    assertThat(-(10.px)).isEqualTo((-10).px)
+  }
+
   private class MockResourceResolver(val density: Float, val scaledDensity: Float) :
       ResourceResolver(
           ApplicationProvider.getApplicationContext<Context>(),

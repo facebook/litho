@@ -49,7 +49,85 @@ value class Dimen @PublishedApi internal constructor(val encodedValue: Long) {
       else -> "NaN"
     }
   }
+
+  operator fun times(other: Double): Dimen {
+    return Dimen(
+        when {
+          // DP case
+          encodedValue and NAN_MASK != NAN_MASK ->
+              doubleToRawLongBits(longBitsToDouble(encodedValue) * other)
+          // PX case
+          encodedValue and PX_FLAG == PX_FLAG ->
+              encodePxInt(((encodedValue and PAYLOAD_MASK).toInt() * other).toInt())
+          // SP case
+          encodedValue and SP_FLAG == SP_FLAG ->
+              encodeSpFloat(
+                  (intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()) * other).toFloat())
+          else -> doubleToRawLongBits(Double.NaN)
+        })
+  }
+
+  operator fun times(other: Float): Dimen {
+    return Dimen(
+        when {
+          // DP case
+          encodedValue and NAN_MASK != NAN_MASK ->
+              doubleToRawLongBits(longBitsToDouble(encodedValue) * other)
+          // PX case
+          encodedValue and PX_FLAG == PX_FLAG ->
+              encodePxInt(((encodedValue and PAYLOAD_MASK).toInt() * other).toInt())
+          // SP case
+          encodedValue and SP_FLAG == SP_FLAG ->
+              encodeSpFloat(
+                  (intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()) * other).toFloat())
+          else -> doubleToRawLongBits(Double.NaN)
+        })
+  }
+
+  operator fun times(other: Int): Dimen {
+    return Dimen(
+        when {
+          // DP case
+          encodedValue and NAN_MASK != NAN_MASK ->
+              doubleToRawLongBits(longBitsToDouble(encodedValue) * other)
+          // PX case
+          encodedValue and PX_FLAG == PX_FLAG ->
+              encodePxInt((encodedValue and PAYLOAD_MASK).toInt() * other)
+          // SP case
+          encodedValue and SP_FLAG == SP_FLAG ->
+              encodeSpFloat(intBitsToFloat(encodedValue.and(PAYLOAD_MASK).toInt()) * other)
+          else -> doubleToRawLongBits(Double.NaN)
+        })
+  }
+
+  operator fun div(other: Double): Dimen = this * (1.0 / other)
+
+  operator fun div(other: Float): Dimen = this * (1f / other)
+
+  operator fun div(other: Int): Dimen {
+    return Dimen(
+        when {
+          // DP case
+          encodedValue and NAN_MASK != NAN_MASK ->
+              doubleToRawLongBits(longBitsToDouble(encodedValue) / other)
+          // PX case
+          encodedValue and PX_FLAG == PX_FLAG ->
+              encodePxInt((encodedValue and PAYLOAD_MASK).toInt() / other)
+          // SP case
+          encodedValue and SP_FLAG == SP_FLAG ->
+              encodeSpFloat(intBitsToFloat(encodedValue.and(PAYLOAD_MASK).toInt()) / other)
+          else -> doubleToRawLongBits(Double.NaN)
+        })
+  }
+
+  operator fun unaryMinus(): Dimen = this * -1
 }
+
+operator fun Double.times(other: Dimen): Dimen = other * this
+
+operator fun Float.times(other: Dimen): Dimen = other * this
+
+operator fun Int.times(other: Dimen): Dimen = other * this
 
 /** Creates a Dimen with a constant dp (density-independent pixels) value. */
 inline val Int.dp: Dimen
