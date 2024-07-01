@@ -108,7 +108,6 @@ internal constructor(
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
     @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
-    @JvmField var skipHostAlphaReset: Boolean = false,
     @JvmField val enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
     /**
      * LithoViewAttributesExtension is an extension for LithoView that allows setting custom view
@@ -345,7 +344,6 @@ internal constructor(
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
     private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
         baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
-    private var skipHostAlphaReset = baseConfig.skipHostAlphaReset
     private var useFineGrainedViewAttributesExtension =
         baseConfig.useFineGrainedViewAttributesExtension
     private var cloneStateListAnimators = baseConfig.cloneStateListAnimators
@@ -437,10 +435,6 @@ internal constructor(
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
     }
 
-    fun skipHostAlphaReset(skipHostAlphaReset: Boolean): Builder = also {
-      this.skipHostAlphaReset = skipHostAlphaReset
-    }
-
     fun useFineGrainedViewAttributesExtension(enabled: Boolean): Builder = also {
       useFineGrainedViewAttributesExtension = enabled
     }
@@ -514,7 +508,6 @@ internal constructor(
           primitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy,
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
               enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
-          skipHostAlphaReset = skipHostAlphaReset,
           useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
           cloneStateListAnimators = cloneStateListAnimators,
           enableFacadeStateUpdater = enableFacadeStateUpdater,
