@@ -274,7 +274,7 @@ public class LithoHostListenerCoordinator {
     }
 
     mDynamicPropsExtensionState =
-        mMountDelegateTarget.registerMountExtension(DynamicPropsExtension.getInstance());
+        mMountDelegateTarget.registerMountExtension(DynamicPropsExtension.INSTANCE);
   }
 
   @VisibleForTesting
