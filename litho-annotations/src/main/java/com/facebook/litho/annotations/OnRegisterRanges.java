@@ -20,7 +20,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * The method annotated with this annotation will be called to register working ranges for the
+ * Deprecated: Please avoid using this annotation and it will be not supported in the future release
+ *
+ * <p>The method annotated with this annotation will be called to register working ranges for the
  * {@link LayoutSpec}.
  *
  * <p>For example
@@ -38,5 +40,6 @@ import java.lang.annotation.RetentionPolicy;
  * </code>
  * </pre>
  */
+@Deprecated
 @Retention(RetentionPolicy.CLASS)
 public @interface OnRegisterRanges {}
