@@ -279,7 +279,8 @@ public class ComponentTree
    */
   @Nullable private String mDebugLogBreadcrumb;
 
-  private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
+  private final BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy =
+      new PostStateUpdateToChoreographerCallback();
 
   /**
    * This method associates this {@link ComponentTree} debug logs with the given <code>String</code>
@@ -334,12 +335,6 @@ public class ComponentTree
       }
     } else {
       renderUnitIdGenerator = new RenderUnitIdGenerator(mId);
-    }
-
-    if (builder.config.enableStateUpdatesBatching) {
-      mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
-    } else {
-      mBatchedStateUpdatesStrategy = null;
     }
 
     addMeasureListener(builder.mMeasureListener);
@@ -1235,9 +1230,8 @@ public class ComponentTree
   private void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
     dispatchStateUpdateEnqueuedEvent(attribution, false);
 
-    if (mBatchedStateUpdatesStrategy == null
-        || !mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
-            attribution, isCreateLayoutInProgress)) {
+    if (!mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
+        attribution, isCreateLayoutInProgress)) {
       updateStateInternal(true, attribution, isCreateLayoutInProgress);
     }
   }
@@ -1319,9 +1313,7 @@ public class ComponentTree
         logStateUpdatesFromCreateLayout(attribution);
       }
 
-      if (mBatchedStateUpdatesStrategy != null) {
-        mBatchedStateUpdatesStrategy.onInternalStateUpdateStart();
-      }
+      mBatchedStateUpdatesStrategy.onInternalStateUpdateStart();
     }
 
     setRootAndSizeSpecInternal(
@@ -2455,9 +2447,7 @@ public class ComponentTree
         DebugEventBus.unsubscribe(mDebugEventsSubscriber);
       }
 
-      if (mBatchedStateUpdatesStrategy != null) {
-        mBatchedStateUpdatesStrategy.release();
-      }
+      mBatchedStateUpdatesStrategy.release();
 
       mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 

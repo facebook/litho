@@ -72,12 +72,6 @@ internal constructor(
      */
     @JvmField val componentHostRecyclingEnabled: Boolean = false,
     /**
-     * Controls whether we attempt to batch state updates to avoid running the render process for
-     * every state update in a small time window. This has been proven to be an overall improvement
-     * for performance so it's highly advised to not disable it.
-     */
-    @JvmField val enableStateUpdatesBatching: Boolean = true,
-    /**
      * Whether the [com.facebook.LithoView] associated with the [com.facebook.litho.ComponentTree]
      * will process visibility events.
      */
@@ -332,7 +326,6 @@ internal constructor(
     private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
-    private var enableStateUpdatesBatching = baseConfig.enableStateUpdatesBatching
     private var errorEventHandler = baseConfig.errorEventHandler
     private var componentHostInvalidModificationPolicy =
         baseConfig.componentHostInvalidModificationPolicy
@@ -388,10 +381,6 @@ internal constructor(
 
     fun componentHostRecyclingEnabled(enabled: Boolean): Builder = also {
       componentHostRecyclingEnabled = enabled
-    }
-
-    fun enableStateUpdatesBatching(enabled: Boolean): Builder = also {
-      enableStateUpdatesBatching = enabled
     }
 
     fun componentHostInvalidModificationPolicy(
@@ -489,7 +478,6 @@ internal constructor(
           preAllocationHandler = preAllocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
           componentHostRecyclingEnabled = componentHostRecyclingEnabled,
-          enableStateUpdatesBatching = enableStateUpdatesBatching,
           componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
