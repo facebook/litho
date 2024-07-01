@@ -220,13 +220,8 @@ public class SharedElementsFragmentActivity extends AppCompatActivity {
             }
           };
       lithoView.setOnDirtyMountListener(dirtyMountListener);
-      // We can not set LithoView as the root view of Fragment because the enforement of alpha
-      // value in HostComponent.onMount causes the transition to fail. A workaround is
-      // to wrap the LithoView in a FrameLayout.
-      // TODO: T183183765
-      final FrameLayout frameLayout = new FrameLayout(activity);
-      frameLayout.addView(lithoView);
-      return frameLayout;
+
+      return lithoView;
     }
   }
 }
