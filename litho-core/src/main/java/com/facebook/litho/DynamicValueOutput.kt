@@ -21,5 +21,5 @@ import android.util.SparseArray
 class DynamicValueOutput(
     val component: Component,
     val scopedContext: ComponentContext?,
-    val commonDynamicProps: SparseArray<out DynamicValue<*>>
+    val commonDynamicProps: SparseArray<out DynamicValue<Any?>>
 )

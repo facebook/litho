@@ -22,6 +22,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.util.SparseArray
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.SizeSpec.EXACTLY
@@ -340,7 +341,10 @@ class DynamicPropsTest {
             .build()
     val dynamicPropsManager = DynamicPropsManager()
     dynamicPropsManager.onBindComponentToContent(
-        component, context, component.commonDynamicProps, lithoView)
+        component,
+        context,
+        component.commonDynamicProps as SparseArray<out DynamicValue<Any?>>,
+        lithoView)
     assertThat(lithoView.elevation).isEqualTo(startValue)
     elevationDV.set(50f)
     assertThat(lithoView.elevation).isEqualTo(50f)
