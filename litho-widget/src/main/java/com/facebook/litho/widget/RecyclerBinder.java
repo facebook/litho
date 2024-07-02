@@ -68,12 +68,10 @@ import com.facebook.litho.PerfEvent;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.ThreadPoolLayoutHandler;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
@@ -301,8 +299,6 @@ public class RecyclerBinder
 
   private StickyHeaderController mStickyHeaderController;
   private final @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
-  private final @Nullable RunnableHandler mLayoutThreadPoolHandler;
-  private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private @Nullable EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
@@ -767,16 +763,6 @@ public class RecyclerBinder
     mPostponeViewRecycle = mRecyclerBinderConfig.postponeViewRecycle;
     mPostponeViewRecycleDelayMs = mRecyclerBinderConfig.postponeViewRecycleDelayMs;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
-
-    if (mLayoutHandlerFactory == null
-        && mRecyclerBinderConfig.threadPoolConfig != null
-        && mComponentsConfiguration.enableRecyclerThreadPoolConfig) {
-      mThreadPoolConfig = mRecyclerBinderConfig.threadPoolConfig;
-      mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
-    } else {
-      mThreadPoolConfig = null;
-      mLayoutThreadPoolHandler = null;
-    }
 
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(builder.componentViewType);
@@ -2624,11 +2610,7 @@ public class RecyclerBinder
       return;
     }
 
-    int numItemsToSchedule = mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize();
-
-    for (int i = 0; i < numItemsToSchedule; i++) {
-      maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
-    }
+    maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
   }
 
   private void maybeScheduleOneAsyncLayoutDuringInitRange(
@@ -4170,14 +4152,11 @@ public class RecyclerBinder
       }
     }
 
-    final RunnableHandler layoutHandler;
-    if (mLayoutHandlerFactory != null) {
-      layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
-    } else if (mLayoutThreadPoolHandler != null) {
-      layoutHandler = mLayoutThreadPoolHandler;
-    } else {
-      layoutHandler = null;
-    }
+    final RunnableHandler layoutHandler =
+        mLayoutHandlerFactory != null
+            ? mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo)
+            : null;
+
     return mComponentTreeHolderFactory.create(
         renderInfo,
         layoutHandler,

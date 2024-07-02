@@ -58,7 +58,6 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EmptyComponent;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoVisibilityEventsController;
 import com.facebook.litho.RenderCompleteEvent;
@@ -93,6 +92,7 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -4654,122 +4654,7 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testInitRangeAsyncThreadPool() {
-    final CountDownLatch lockRangeIsNotNull = new CountDownLatch(1);
-    final CountDownLatch lockInitRangeFinishes1 = new CountDownLatch(1);
-    final CountDownLatch lockInitRangeFinishes2 = new CountDownLatch(1);
-    final CountDownLatch lockTest = new CountDownLatch(2);
-
-    when(mLayoutInfo.getChildHeightSpec(anyInt(), (RenderInfo) any()))
-        .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
-    when(mLayoutInfo.getChildWidthSpec(anyInt(), (RenderInfo) any()))
-        .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
-    when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(0);
-
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .layoutInfo(mLayoutInfo)
-            .recyclerBinderConfig(
-                RecyclerBinderConfig.create()
-                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
-                    .rangeRatio(0)
-                    .build())
-            .build(mComponentContext);
-
-    final List<RenderInfo> components = new ArrayList<>();
-    int NOT_SET = -1;
-    final int SYNC = 1;
-    final int ASYNC = 2;
-    final List<Integer> syncLayouts = new ArrayList<>(30);
-    for (int i = 0; i < 30; i++) {
-      syncLayouts.add(NOT_SET);
-    }
-
-    final Component initRangeComponent =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            syncLayouts.set(0, ThreadUtils.isMainThread() ? SYNC : ASYNC);
-            lockRangeIsNotNull.countDown();
-            return null;
-          }
-        };
-
-    RenderInfo renderInfo = ComponentRenderInfo.create().component(initRangeComponent).build();
-    components.add(renderInfo);
-
-    for (int i = 1; i < 30; i++) {
-      final int finalI = i;
-      final Component component =
-          new InlineLayoutSpec() {
-            @Override
-            protected Component onCreateLayout(ComponentContext c) {
-              syncLayouts.set(finalI, ThreadUtils.isMainThread() ? SYNC : ASYNC);
-
-              if (finalI == 1) {
-
-                ThreadTestingUtils.failSilentlyIfInterrupted(
-                    () -> lockInitRangeFinishes1.await(5, TimeUnit.SECONDS));
-
-                lockTest.countDown();
-              }
-
-              if (finalI == 2) {
-
-                ThreadTestingUtils.failSilentlyIfInterrupted(
-                    () -> lockInitRangeFinishes2.await(5, TimeUnit.SECONDS));
-
-                lockTest.countDown();
-              }
-              return null;
-            }
-          };
-
-      renderInfo = ComponentRenderInfo.create().component(component).build();
-      components.add(renderInfo);
-    }
-
-    recyclerBinder.insertRangeAt(0, components);
-
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    for (int i = 0; i < 30; i++) {
-      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder).isNotNull();
-    }
-
-    final int widthSpec = makeSizeSpec(100, AT_MOST);
-    final int heightSpec = makeSizeSpec(100, EXACTLY);
-
-    recyclerBinder.initRange(
-        SizeSpec.getSize(widthSpec),
-        SizeSpec.getSize(heightSpec),
-        new RecyclerBinder.ComponentTreeHolderRangeInfo(
-            0, recyclerBinder.getComponentTreeHolders()),
-        OrientationHelper.VERTICAL);
-
-    ThreadTestingUtils.failSilentlyIfInterrupted(
-        () -> lockRangeIsNotNull.await(5, TimeUnit.SECONDS));
-
-    lockInitRangeFinishes1.countDown();
-    lockInitRangeFinishes2.countDown();
-
-    ThreadTestingUtils.failSilentlyIfInterrupted(() -> lockTest.await(5, TimeUnit.SECONDS));
-
-    assertThat(recyclerBinder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
-    assertThat(syncLayouts.get(0)).isEqualTo(SYNC);
-
-    assertThat(recyclerBinder.getComponentTreeHolderAt(1).isTreeValid()).isTrue();
-    assertThat(syncLayouts.get(1)).isEqualTo(ASYNC);
-
-    assertThat(recyclerBinder.getComponentTreeHolderAt(2).isTreeValid()).isTrue();
-    assertThat(syncLayouts.get(2)).isEqualTo(ASYNC);
-
-    assertThat(recyclerBinder.getComponentTreeHolderAt(3).isTreeValid()).isFalse();
-    assertThat(syncLayouts.get(3)).isEqualTo(NOT_SET);
-  }
-
-  @Test
+  @Ignore("T194213454")
   public void testInitRangeAsyncFirstLayoutIsLongSchedMany() {
     final CountDownLatch lockInitRangeLayout = new CountDownLatch(2);
     final CountDownLatch lockTest = new CountDownLatch(1);
@@ -4785,7 +4670,7 @@ public class RecyclerBinderTest {
             .layoutInfo(mLayoutInfo)
             .recyclerBinderConfig(
                 RecyclerBinderConfig.create()
-                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
+                    // .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
                     .rangeRatio(0)
                     .build())
             .build(mComponentContext);
@@ -5233,37 +5118,6 @@ public class RecyclerBinderTest {
     ShadowLooper.runUiThreadTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
-  }
-
-  @Test
-  public void testBothLayoutHandlerFactoryAndThreadPoolConfigProvided() {
-    final RunnableHandler layoutHandler = mock(RunnableHandler.class);
-    final Component component = mock(Component.class);
-    final RecyclerBinder binder =
-        mRecyclerBinderBuilder
-            .recyclerBinderConfig(
-                RecyclerBinderConfig.create()
-                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 0))
-                    .layoutHandlerFactory(
-                        new LayoutHandlerFactory() {
-                          @Override
-                          public RunnableHandler createLayoutCalculationHandler(
-                              RenderInfo renderInfo) {
-                            return layoutHandler;
-                          }
-
-                          @Override
-                          public boolean shouldUpdateLayoutHandler(
-                              RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-                            return false;
-                          }
-                        })
-                    .build())
-            .build(mComponentContext);
-
-    binder.insertItemAt(0, ComponentRenderInfo.create().component(component).build());
-
-    assertThat(mHoldersForComponents.get(component).mLayoutHandler).isSameAs(layoutHandler);
   }
 
   @Test

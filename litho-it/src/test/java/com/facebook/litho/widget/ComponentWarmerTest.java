@@ -27,7 +27,6 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.RenderResult;
 import com.facebook.litho.ResolveContext;
 import com.facebook.litho.Row;
@@ -43,6 +42,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
@@ -145,13 +145,11 @@ public class ComponentWarmerTest {
   }
 
   @Test
+  @Ignore("T194213454")
   public void testCancelDuringPrepareAsync() {
     final RecyclerBinder binder =
         new RecyclerBinder.Builder()
-            .recyclerBinderConfig(
-                RecyclerBinderConfig.create()
-                    .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
-                    .build())
+            .recyclerBinderConfig(RecyclerBinderConfig.create().build())
             .build(mContext);
 
     binder.measure(

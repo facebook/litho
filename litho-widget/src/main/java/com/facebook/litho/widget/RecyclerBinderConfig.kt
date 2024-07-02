@@ -19,7 +19,6 @@ package com.facebook.litho.widget
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.Mode
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.config.LayoutThreadPoolConfiguration
 
 /**
  * This configuration is meant to be used in the context of [RecyclerBinder]. It allows you to
@@ -138,14 +137,6 @@ data class RecyclerBinderConfig(
      */
     @JvmField val layoutHandlerFactory: LayoutHandlerFactory? = null,
     /**
-     * RecyclerBinder will use this [LayoutThreadPoolConfiguration] to create
-     * [com.facebook.litho.ThreadPoolLayoutHandler] this will create a new separate thread pool
-     * which might negatively affect the app's [RecyclerBinder.Builder.layoutHandlerFactory] is
-     * provided, the handler created by the factory will be used instead of the one that would have
-     * been created by this config.
-     */
-    @JvmField val threadPoolConfig: LayoutThreadPoolConfiguration? = null,
-    /**
      * Ratio to determine the number of components before and after the
      * [androidx.recyclerview.widget.RecyclerView]'s total number of currently visible items to have
      * their [com.facebook.litho.Component] layout computed ahead of time.
@@ -220,7 +211,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var postponeViewRecycle = configuration.postponeViewRecycle
   private var postponeViewRecycleDelayMs = configuration.postponeViewRecycleDelayMs
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
-  private var threadPoolConfig = configuration.threadPoolConfig
   private var componentsConfiguration = configuration.componentsConfiguration
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
@@ -271,10 +261,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.hasDynamicItemHeight = hasDynamicItemHeight
   }
 
-  fun threadPoolConfig(
-      threadPoolConfig: LayoutThreadPoolConfiguration?
-  ): RecyclerBinderConfigBuilder = also { this.threadPoolConfig = threadPoolConfig }
-
   fun componentsConfiguration(
       componentsConfiguration: ComponentsConfiguration?
   ): RecyclerBinderConfigBuilder = also { this.componentsConfiguration = componentsConfiguration }
@@ -309,7 +295,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         componentWarmer = componentWarmer,
         estimatedViewportCount = estimatedViewportCount,
         hasDynamicItemHeight = hasDynamicItemHeight,
-        threadPoolConfig = threadPoolConfig,
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
         enableStableIds = enableStableIds,

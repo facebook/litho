@@ -101,7 +101,6 @@ internal constructor(
      */
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
-    @JvmField val enableRecyclerThreadPoolConfig: Boolean = true,
     @JvmField val enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
     /**
      * LithoViewAttributesExtension is an extension for LithoView that allows setting custom view
@@ -275,9 +274,6 @@ internal constructor(
     @JvmField var shouldCompareRootCommonPropsInSingleComponentSection: Boolean = false
     @JvmField var isYogaFlexBasisFixEnabled: Boolean = true
 
-    /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
-    @JvmField var shouldAllowCoreThreadTimeout: Boolean = false
-    @JvmField var layoutThreadKeepAliveTimeMs: Long = 1_000
     @JvmField var recyclerBinderStrategy: Int = 0
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var enableFixForDisappearTransitionInRecyclerBinder: Boolean = false
