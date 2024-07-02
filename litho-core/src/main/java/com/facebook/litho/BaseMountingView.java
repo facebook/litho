@@ -533,6 +533,7 @@ public abstract class BaseMountingView extends ComponentHost
 
       final TreeState treeState = getTreeState();
       if (isMountStateDirty && treeState != null) {
+        layoutState.recordRenderData();
         treeState.recordRenderData(layoutState);
       }
     } catch (Exception e) {

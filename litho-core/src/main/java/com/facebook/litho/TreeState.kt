@@ -75,7 +75,7 @@ class TreeState {
       resolveState = StateHandler(fromState?.resolveState),
       layoutState = StateHandler(fromState?.layoutState),
       mountInfo = fromState?.mountInfo ?: TreeMountInfo(),
-      renderState = fromState?.renderState ?: RenderState(),
+      renderState = RenderState(fromState?.renderState),
       effectsHandler = fromState?.effectsHandler ?: AttachDetachHandler(),
       eventTriggersContainer = fromState?.eventTriggersContainer ?: EventTriggersContainer(),
       eventHandlersController = fromState?.eventHandlersController ?: EventHandlersController(),

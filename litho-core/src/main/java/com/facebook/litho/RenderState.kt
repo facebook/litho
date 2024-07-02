@@ -25,11 +25,11 @@ import com.facebook.litho.transition.TransitionWithDependency
  * care about them (currently, this is just for ComponentSpecs that use [Diff]'s of props in any of
  * their lifecycle methods).
  */
-class RenderState {
+class RenderState(from: RenderState? = null) {
 
-  private var layoutStateId: Int = LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID
-  private val renderData: MutableMap<HookKey, RenderData?> = HashMap()
-  private val seenHookKeys: MutableSet<HookKey> = HashSet()
+  private var layoutStateId: Int = from?.layoutStateId ?: LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID
+  private val renderData: MutableMap<HookKey, RenderData?> = HashMap(from?.renderData.orEmpty())
+  private val seenHookKeys: MutableSet<HookKey> = HashSet(from?.seenHookKeys.orEmpty())
 
   fun recordRenderData(layoutState: LayoutState) {
     // Record the layout state id for the next layout calculation.

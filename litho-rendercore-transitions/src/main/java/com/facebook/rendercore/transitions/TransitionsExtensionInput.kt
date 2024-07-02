@@ -40,7 +40,7 @@ interface TransitionsExtensionInput : MountDelegateInput {
   val transitions: List<Transition?>?
   val transitionIdMapping: Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>>?
 
-  fun getMountTimeTransitions(): List<Transition?>?
+  fun getMountTimeTransitions(previousInput: TransitionsExtensionInput?): List<Transition?>?
 
   // TODO: remove dependency to MountDelegateInput
   override fun getMountableOutputCount(): Int

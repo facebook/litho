@@ -485,7 +485,9 @@ public class TransitionsExtension
       allTransitions.addAll(input.getTransitions());
     }
 
-    TransitionsExtension.collectMountTimeTransitions(input, allTransitions);
+    TransitionsExtensionInput previousInput =
+        extensionState.getState().mLastTransitionsExtensionInput;
+    TransitionsExtension.collectMountTimeTransitions(previousInput, input, allTransitions);
 
     Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
@@ -520,8 +522,10 @@ public class TransitionsExtension
   }
 
   private static void collectMountTimeTransitions(
-      TransitionsExtensionInput input, List<Transition> outList) {
-    List<Transition> transitions = input.getMountTimeTransitions();
+      @Nullable TransitionsExtensionInput previousInput,
+      TransitionsExtensionInput input,
+      List<Transition> outList) {
+    List<Transition> transitions = input.getMountTimeTransitions(previousInput);
     if (transitions != null) {
       for (Transition transition : transitions) {
         TransitionUtils.addTransitions(transition, outList);

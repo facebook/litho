@@ -308,27 +308,32 @@ internal constructor(
     rootHeightAnimation = rootHeight
   }
 
-  override fun getMountTimeTransitions(): List<Transition>? {
-    val state = resolveResult.treeState
+  override fun getMountTimeTransitions(
+      previousInput: TransitionsExtensionInput?
+  ): List<Transition>? {
+    previousInput as LayoutState?
     var mountTimeTransitions: MutableList<Transition>? = null
+    val mountedLayoutStateId = previousInput?.id ?: NO_PREVIOUS_LAYOUT_STATE_ID
     if (transitionData != null && !transitionData.isEmpty()) {
       mountTimeTransitions = ArrayList()
-      val canUseOptimisticTransitions = previousLayoutStateId == state.getPreviousLayoutStateId()
+      val canUseOptimisticTransitions = previousLayoutStateId == mountedLayoutStateId
       if (canUseOptimisticTransitions) {
         val optimisticTransitions = transitionData.optimisticTransitions
         if (optimisticTransitions != null) mountTimeTransitions.addAll(optimisticTransitions)
       }
+      val previousTreeState = previousInput?.treeState
       val twds = transitionData.transitionsWithDependency
       if (twds != null) {
         for (twd in twds) {
           if (twd.supportsOptimisticTransitions && canUseOptimisticTransitions) continue
-          val previousRenderData = state.getPreviousRenderData(twd.identityKey)
+          val previousRenderData = previousTreeState?.getPreviousRenderData(twd.identityKey)
           val transition = twd.createTransition(previousRenderData)
           if (transition != null) mountTimeTransitions.add(transition)
         }
       }
     }
-    val updateStateTransitions = state.pendingStateUpdateTransitions
+    // Use the current resolved TreeState here rather than the previous one
+    val updateStateTransitions = treeState.pendingStateUpdateTransitions
     if (updateStateTransitions.isNotEmpty()) {
       if (mountTimeTransitions == null) {
         mountTimeTransitions = ArrayList()
@@ -336,6 +341,11 @@ internal constructor(
       mountTimeTransitions.addAll(updateStateTransitions)
     }
     return mountTimeTransitions
+  }
+
+  @JvmName("recordRenderData")
+  internal fun recordRenderData() {
+    treeState.recordRenderData(this)
   }
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
