@@ -54,15 +54,15 @@ class UnregisterLocalTreeStateInResolveTest {
         object : TreeFuture.FutureExecutionListener {
           override fun onPreExecution(
               version: Int,
-              futureExecutionType: TreeFuture.FutureExecutionType?,
-              attribution: String?
+              futureExecutionType: TreeFuture.FutureExecutionType,
+              attribution: String
           ) {
             if (version == 1 && attribution == "resolve") {
               componentTree.setRootSync(TestCounterComponent(initialCounter = 2))
             }
           }
 
-          override fun onPostExecution(version: Int, released: Boolean, attribution: String?) {}
+          override fun onPostExecution(version: Int, released: Boolean, attribution: String) {}
         })
 
     componentTree.setRootAsync(TestCounterComponent(initialCounter = 1))

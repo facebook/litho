@@ -730,8 +730,8 @@ class ComponentTreeTest {
         object : TreeFuture.FutureExecutionListener {
           override fun onPreExecution(
               version: Int,
-              futureExecutionType: TreeFuture.FutureExecutionType?,
-              attribution: String?
+              futureExecutionType: TreeFuture.FutureExecutionType,
+              attribution: String
           ) {
             if (attribution == ResolveTreeFuture.DESCRIPTION) {
               blockInPrepare.allowPrepareToComplete()
@@ -740,7 +740,7 @@ class ComponentTreeTest {
             componentTree.setFutureExecutionListener(null)
           }
 
-          override fun onPostExecution(version: Int, released: Boolean, attribution: String?) {
+          override fun onPostExecution(version: Int, released: Boolean, attribution: String) {
             //
           }
         })

@@ -41,7 +41,7 @@ class LayoutTreeFuture(
     private val perfEvent: PerfEvent?,
     private val widthSpec: Int,
     private val heightSpec: Int,
-    private val treeId: Int,
+    override val treeId: Int,
     private val version: Int,
     @RenderSource private val source: Int
 ) : TreeFuture<LayoutState>(treeId, false) {
@@ -72,7 +72,7 @@ class LayoutTreeFuture(
         }
   }
 
-  override fun resumeCalculation(partialResult: LayoutState): LayoutState {
+  override fun resumeCalculation(partialResult: LayoutState?): LayoutState {
     throw UnsupportedOperationException("LayoutTreeFuture cannot be resumed.")
   }
 
