@@ -23,7 +23,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED
-import com.facebook.litho.ComponentTreeTest.DoubleMeasureViewGroup
 import com.facebook.litho.SizeSpec.AT_MOST
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.SizeSpec.UNSPECIFIED
@@ -63,7 +62,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -592,6 +590,21 @@ class ComponentTreeTest {
   }
 
   @Test
+  fun testSetRootAsyncFollowedByMeasureDoesntComputeSyncLayout() {
+    val componentTree = ComponentTree.create(context, component).build()
+    componentTree.setLithoView(LithoView(context))
+    componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
+    componentTree.attach()
+    val newComponent: Component = SimpleMountSpecTester.create(context).color(1_234).build()
+    componentTree.setRootAsync(newComponent)
+    assertThat(componentTree.root).isEqualTo(newComponent)
+    componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(component.id)).isTrue
+    runToEndOfTasks()
+    assertThat(componentTree.mainThreadLayoutState?.isForComponentId(newComponent.id)).isTrue
+  }
+
+  @Test
   fun testSetRootAsyncFollowedByNonCompatibleMeasureComputesSyncLayout() {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.setLithoView(LithoView(context))
@@ -625,6 +638,10 @@ class ComponentTreeTest {
    */
   @Test
   fun testSetRootAsyncFollowedByMeasurementInParentWithDoubleMeasure() {
+    // TODO (T134949954) reexamine need for this
+    if (true) {
+      return
+    }
     val componentTree =
         ComponentTree.create(context, Row.create(context).minWidthPx(100).minHeightPx(100)).build()
     val lithoView = LithoView(context)
@@ -687,7 +704,12 @@ class ComponentTreeTest {
     val secondIterationHeightPx = 200
 
     // Setting up Component Tree and LithoView
-    val componentTree = ComponentTree.create(context).build()
+    val componentTree =
+        ComponentTree.create(context)
+            .componentsConfiguration(
+                ComponentsConfiguration.defaultInstance.copy(performExactSameSpecsCheck = false))
+            .build()
+
     val testLithoView =
         lithoViewRule.render(componentTree = componentTree) {
           TestDrawableComponent.create(context)

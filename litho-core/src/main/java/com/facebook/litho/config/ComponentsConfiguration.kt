@@ -166,7 +166,12 @@ internal constructor(
      * Determines whether we should enable stable ids by default in the
      * [com.facebook.litho.widget.RecyclerBinder]
      */
-    @JvmField val useStableIdsInRecyclerBinder: Boolean = true
+    @JvmField val useStableIdsInRecyclerBinder: Boolean = true,
+    /**
+     * This will perform an optimization that will verify if the same size specs were used. However,
+     * this creates a bug in a specific scenario where double measure happens.
+     */
+    @JvmField val performExactSameSpecsCheck: Boolean = true
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
