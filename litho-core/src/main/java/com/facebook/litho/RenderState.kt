@@ -19,6 +19,8 @@ package com.facebook.litho
 import com.facebook.litho.Component.RenderData
 import com.facebook.litho.internal.HookKey
 import com.facebook.litho.transition.TransitionWithDependency
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 /**
  * Keeps track of the last mounted @Prop/@State a component was rendered with for components that
@@ -94,9 +96,7 @@ class RenderState(from: RenderState? = null) {
           "Cannot record previous render data for ${component.simpleName}, found another Component with the same key: $hookKey")
     }
     val currentInfo = renderData[hookKey]
-    renderData[hookKey] =
-        (component as SpecGeneratedComponent).recordRenderData(
-            scopedComponentInfo.context, currentInfo)
+    renderData[hookKey] = component.recordRenderData(scopedComponentInfo.context, currentInfo)
   }
 
   private fun applyPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {
@@ -107,9 +107,12 @@ class RenderState(from: RenderState? = null) {
           "Trying to apply previous render data to component that doesn't support it")
     }
 
-    (component as SpecGeneratedComponent).applyPreviousRenderData(renderData[hookKey])
+    component.applyPreviousRenderData(renderData[hookKey])
   }
 
-  private fun isPreviousRenderDataSupported(component: Component): Boolean =
-      component is SpecGeneratedComponent && component.needsPreviousRenderData()
+  @OptIn(ExperimentalContracts::class)
+  private fun isPreviousRenderDataSupported(component: Component): Boolean {
+    contract { returns(true) implies (component is SpecGeneratedComponent) }
+    return component is SpecGeneratedComponent && component.needsPreviousRenderData()
+  }
 }
