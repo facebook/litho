@@ -152,6 +152,29 @@ Component: $name""")
   }
 
   /**
+   * Will invoke [showTooltip] for the given [handle] if it has a valid container. The code of
+   * [showTooltip] should be the one responsible for drawing the tooltip in the screen and is left
+   * for the client implementation.
+   */
+  @JvmStatic
+  fun showTooltipOnHandle(
+      c: ComponentContext,
+      handle: Handle,
+      showTooltip: (container: View, anchorBounds: Rect) -> Unit
+  ) {
+    showTooltipOnHandle(
+        c = c,
+        lithoTooltip = { container, anchorBounds, _, _ ->
+          if (container != null) {
+            showTooltip(container, anchorBounds)
+          }
+        },
+        handle = handle,
+        xOffset = 0,
+        yOffset = 0)
+  }
+
+  /**
    * Show the given tooltip with the specified offsets from the bottom-left corner of the component
    * with the given anchorKey.
    */
