@@ -86,8 +86,6 @@ internal constructor(
   private val workingRangeContainer: WorkingRangeContainer? = reductionState.workingRangeContainer
 
   internal val transitionData: TransitionData? = reductionState.transitionData
-  internal val scopedComponentInfosNeedingPreviousRenderData: List<ScopedComponentInfo>? =
-      reductionState.scopedComponentInfosNeedingPreviousRenderData
 
   val root: LithoNode? = reductionState.rootNode
   val diffTree: DiffNode? = reductionState.diffTreeRoot

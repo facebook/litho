@@ -313,10 +313,6 @@ class TreeState {
 
   internal fun getPreviousLayoutStateId(): Int = renderState.getPreviousLayoutStateId()
 
-  fun applyPreviousRenderData(layoutState: LayoutState) {
-    renderState.applyPreviousRenderData(layoutState.scopedComponentInfosNeedingPreviousRenderData)
-  }
-
   internal fun getPreviousRenderData(hookKey: HookKey): RenderData? {
     return renderState.getPreviousRenderData(hookKey)
   }

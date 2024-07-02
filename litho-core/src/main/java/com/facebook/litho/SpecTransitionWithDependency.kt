@@ -18,6 +18,8 @@ package com.facebook.litho
 
 import com.facebook.litho.internal.HookKey
 import com.facebook.litho.transition.TransitionWithDependency
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 internal class SpecTransitionWithDependency(private val scopedComponentInfo: ScopedComponentInfo) :
     TransitionWithDependency {
@@ -28,16 +30,28 @@ internal class SpecTransitionWithDependency(private val scopedComponentInfo: Sco
 
   override fun createTransition(previous: Component.RenderData?): Transition? {
     val context = scopedComponentInfo.context
-    val component = scopedComponentInfo.component as SpecGeneratedComponent
+    val component = scopedComponentInfo.component
+    require(isPreviousRenderDataSupported(component)) {
+      "Trying to apply previous render data to component that doesn't support it"
+    }
     component.applyPreviousRenderData(previous)
     return component.createTransition(context)
   }
 
   override fun recordRenderData(): Component.RenderData {
     val context = scopedComponentInfo.context
-    val component = scopedComponentInfo.component as SpecGeneratedComponent
+    val component = scopedComponentInfo.component
+    require(isPreviousRenderDataSupported(component)) {
+      "Trying to record previous render data to component that doesn't support it"
+    }
     val renderData = component.recordRenderData(context, null)
     // This method is only invoked for SpecGeneratedComponents whose RenderData is never null
     return requireNotNull(renderData)
+  }
+
+  @OptIn(ExperimentalContracts::class)
+  private fun isPreviousRenderDataSupported(component: Component): Boolean {
+    contract { returns(true) implies (component is SpecGeneratedComponent) }
+    return component is SpecGeneratedComponent && component.needsPreviousRenderData()
   }
 }

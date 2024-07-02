@@ -18,9 +18,6 @@ package com.facebook.litho
 
 import com.facebook.litho.Component.RenderData
 import com.facebook.litho.internal.HookKey
-import com.facebook.litho.transition.TransitionWithDependency
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 /**
  * Keeps track of the last mounted @Prop/@State a component was rendered with for components that
@@ -30,46 +27,15 @@ import kotlin.contracts.contract
 class RenderState(from: RenderState? = null) {
 
   private var layoutStateId: Int = from?.layoutStateId ?: LayoutState.NO_PREVIOUS_LAYOUT_STATE_ID
-  private val renderData: MutableMap<HookKey, RenderData?> = HashMap(from?.renderData.orEmpty())
-  private val seenHookKeys: MutableSet<HookKey> = HashSet(from?.seenHookKeys.orEmpty())
+  private val renderData: MutableMap<HookKey, RenderData> = HashMap(from?.renderData.orEmpty())
 
   fun recordRenderData(layoutState: LayoutState) {
     // Record the layout state id for the next layout calculation.
     layoutStateId = layoutState.id
 
-    // Record render data for Spec-Gen components
-    val scopedComponentInfos = layoutState.scopedComponentInfosNeedingPreviousRenderData
-    if (!scopedComponentInfos.isNullOrEmpty()) recordRenderData(scopedComponentInfos)
-
-    // Record render data for KComponents
-    val definitions = layoutState.transitionData?.transitionsWithDependency
-    if (!definitions.isNullOrEmpty()) recordKRenderData(definitions)
-
-    // Reset seen global keys for the next record phase
-    seenHookKeys.clear()
-  }
-
-  internal fun getPreviousRenderData(hookKey: HookKey): RenderData? = renderData[hookKey]
-
-  fun applyPreviousRenderData(scopedComponentInfos: List<ScopedComponentInfo>?) {
-    if (scopedComponentInfos == null) {
-      return
-    }
-    for (componentInfo in scopedComponentInfos) {
-      applyPreviousRenderData(componentInfo)
-    }
-  }
-
-  fun getPreviousLayoutStateId(): Int = layoutStateId
-
-  private fun recordRenderData(scopedComponentInfos: List<ScopedComponentInfo>) {
-    for (componentInfo in scopedComponentInfos) {
-      recordRenderData(componentInfo)
-    }
-  }
-
-  private fun recordKRenderData(definitions: List<TransitionWithDependency>) {
-    for (def in definitions) {
+    // Record render data
+    val seenHookKeys = HashSet<HookKey>()
+    for (def in layoutState.transitionData?.transitionsWithDependency.orEmpty()) {
       // Sanity check like in StateHandler
       val hookKey = def.identityKey
       if (!seenHookKeys.add(hookKey)) {
@@ -81,38 +47,7 @@ class RenderState(from: RenderState? = null) {
     }
   }
 
-  private fun recordRenderData(scopedComponentInfo: ScopedComponentInfo) {
-    val component = scopedComponentInfo.component
-    val hookKey = HookKey(scopedComponentInfo.context.globalKey, 0)
-    if (!isPreviousRenderDataSupported(component)) {
-      throw RuntimeException(
-          "Trying to record previous render data for component that doesn't support it")
-    }
+  internal fun getPreviousRenderData(hookKey: HookKey): RenderData? = renderData[hookKey]
 
-    // Sanity check like in StateHandler
-    if (!seenHookKeys.add(hookKey)) {
-      // We found two components with the same global key.
-      throw RuntimeException(
-          "Cannot record previous render data for ${component.simpleName}, found another Component with the same key: $hookKey")
-    }
-    val currentInfo = renderData[hookKey]
-    renderData[hookKey] = component.recordRenderData(scopedComponentInfo.context, currentInfo)
-  }
-
-  private fun applyPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {
-    val component = scopedComponentInfo.component
-    val hookKey = HookKey(scopedComponentInfo.context.globalKey, 0)
-    if (!isPreviousRenderDataSupported(component)) {
-      throw RuntimeException(
-          "Trying to apply previous render data to component that doesn't support it")
-    }
-
-    component.applyPreviousRenderData(renderData[hookKey])
-  }
-
-  @OptIn(ExperimentalContracts::class)
-  private fun isPreviousRenderDataSupported(component: Component): Boolean {
-    contract { returns(true) implies (component is SpecGeneratedComponent) }
-    return component is SpecGeneratedComponent && component.needsPreviousRenderData()
-  }
+  fun getPreviousLayoutStateId(): Int = layoutStateId
 }

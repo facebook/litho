@@ -277,12 +277,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   val tailScopedComponentInfo: ScopedComponentInfo
     get() = _scopedComponentInfos[0]
 
-  private var _scopedComponentInfosNeedingPreviousRenderData:
-      MutableMap<String, ScopedComponentInfo>? =
-      null
-  val scopedComponentInfosNeedingPreviousRenderData: Map<String, ScopedComponentInfo>?
-    get() = _scopedComponentInfosNeedingPreviousRenderData
-
   // endregion
 
   override fun calculateLayout(
@@ -434,10 +428,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     frozen = true
   }
 
-  fun addComponentNeedingPreviousRenderData(
-      globalKey: String,
-      scopedComponentInfo: ScopedComponentInfo
-  ) {
+  fun addComponentNeedingPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {
     val twd = SpecTransitionWithDependency(scopedComponentInfo)
     transitionData
         .getOrCreate { MutableTransitionData().also { transitionData = it } }

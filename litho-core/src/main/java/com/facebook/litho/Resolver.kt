@@ -283,7 +283,7 @@ object Resolver {
               // 11. Create and add transition to this component's InternalNode.
               if (c.areTransitionsEnabled()) {
                 if (component is SpecGeneratedComponent && component.needsPreviousRenderData()) {
-                  node.addComponentNeedingPreviousRenderData(globalKey, scopedComponentInfo)
+                  node.addComponentNeedingPreviousRenderData(scopedComponentInfo)
                 } else {
                   try {
                     // Calls onCreateTransition on the Spec.
@@ -456,39 +456,23 @@ object Resolver {
     }
     val collectedAttachables: MutableList<Attachable> = ArrayList()
     val collectedTransitionData = MutableTransitionData()
-    val collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo> =
-        ArrayList()
-    collectOutputs(
-        node,
-        collectedAttachables,
-        collectedTransitionData,
-        collectedComponentsThatNeedPreviousRenderData)
-    return if (collectedAttachables.isEmpty() &&
-        collectedTransitionData.isEmpty() &&
-        collectedComponentsThatNeedPreviousRenderData.isEmpty()) {
+    collectOutputs(node, collectedAttachables, collectedTransitionData)
+    return if (collectedAttachables.isEmpty() && collectedTransitionData.isEmpty()) {
       null
     } else {
-      Outputs(
-          collectedAttachables,
-          collectedTransitionData,
-          collectedComponentsThatNeedPreviousRenderData)
+      Outputs(collectedAttachables, collectedTransitionData)
     }
   }
 
   private fun collectOutputs(
       node: LithoNode,
       collectedAttachables: MutableList<Attachable>,
-      collectedTransitionData: MutableTransitionData,
-      collectedComponentsThatNeedPreviousRenderData: MutableList<ScopedComponentInfo>
+      collectedTransitionData: MutableTransitionData
   ) {
 
     // TODO(T143986616): optimise traversal for reused nodes
     for (i in 0 until node.childCount) {
-      collectOutputs(
-          node.getChildAt(i),
-          collectedAttachables,
-          collectedTransitionData,
-          collectedComponentsThatNeedPreviousRenderData)
+      collectOutputs(node.getChildAt(i), collectedAttachables, collectedTransitionData)
     }
 
     // We'll deduplicate attachable in [AttachDetachHandler]
@@ -498,11 +482,6 @@ object Resolver {
     if (c.areTransitionsEnabled() && node !is NestedTreeHolder) {
       // collect transitions
       node.transitionData?.let { transitionData -> collectedTransitionData.add(transitionData) }
-
-      // collect components that need previous render data
-      node.scopedComponentInfosNeedingPreviousRenderData?.let { components ->
-        collectedComponentsThatNeedPreviousRenderData.addAll(components.values)
-      }
     }
   }
 
@@ -688,7 +667,6 @@ object Resolver {
   class Outputs
   internal constructor(
       @JvmField val attachables: List<Attachable>,
-      @JvmField internal val transitionData: TransitionData?,
-      @JvmField val componentsThatNeedPreviousRenderData: List<ScopedComponentInfo>
+      @JvmField internal val transitionData: TransitionData?
   )
 }

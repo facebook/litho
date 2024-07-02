@@ -159,10 +159,6 @@ class LayoutTreeFuture(
                   rootY = lsc.rootOffset.y,
                   attachables = resolveResult.outputs?.let { ArrayList(it.attachables) },
                   transitionData = resolveResult.outputs?.transitionData?.toMutableData(),
-                  scopedComponentInfosNeedingPreviousRenderData =
-                      resolveResult.outputs?.let {
-                        ArrayList(it.componentsThatNeedPreviousRenderData)
-                      },
               )
           if (root != null) {
             try {

@@ -77,6 +77,5 @@ internal data class ReductionState(
     var hasComponentsExcludedFromIncrementalMount: Boolean = false,
     var attachables: MutableList<Attachable>? = null,
     var transitionData: MutableTransitionData? = null,
-    var scopedComponentInfosNeedingPreviousRenderData: MutableList<ScopedComponentInfo>? = null,
     var workingRangeContainer: WorkingRangeContainer? = null,
 )

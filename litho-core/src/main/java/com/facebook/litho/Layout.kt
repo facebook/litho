@@ -158,13 +158,6 @@ internal object Layout {
         reductionState.transitionData
             .getOrCreate { MutableTransitionData().also { reductionState.transitionData = it } }
             .apply { outputs.transitionData?.let { add(it) } }
-
-        reductionState.scopedComponentInfosNeedingPreviousRenderData
-            .getOrCreate {
-              ArrayList<ScopedComponentInfo>(outputs.componentsThatNeedPreviousRenderData.size)
-                  .also { reductionState.scopedComponentInfosNeedingPreviousRenderData = it }
-            }
-            .addAll(outputs.componentsThatNeedPreviousRenderData)
       }
 
       try {

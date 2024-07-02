@@ -374,7 +374,7 @@ object TestLayoutState {
     // 11. Create and add transition to this component's InternalNode.
     if (c.areTransitionsEnabled()) {
       if (component is SpecGeneratedComponent && component.needsPreviousRenderData()) {
-        node.addComponentNeedingPreviousRenderData(globalKey, scopedComponentInfo)
+        node.addComponentNeedingPreviousRenderData(scopedComponentInfo)
       } else {
         try {
           // Calls onCreateTransition on the Spec.
