@@ -17,12 +17,12 @@
 package com.facebook.litho
 
 import com.facebook.litho.internal.HookKey
-import com.facebook.litho.transition.TransitionWithDependency
+import com.facebook.litho.transition.TransitionCreator
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-internal class SpecTransitionWithDependency(private val scopedComponentInfo: ScopedComponentInfo) :
-    TransitionWithDependency {
+internal class SpecTransitionCreator(private val scopedComponentInfo: ScopedComponentInfo) :
+    TransitionCreator {
   override val identityKey: HookKey = HookKey(scopedComponentInfo.context.globalKey, 0)
 
   override val supportsOptimisticTransitions: Boolean

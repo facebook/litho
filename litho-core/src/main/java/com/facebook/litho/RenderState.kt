@@ -35,15 +35,15 @@ class RenderState(from: RenderState? = null) {
 
     // Record render data
     val seenHookKeys = HashSet<HookKey>()
-    for (def in layoutState.transitionData?.transitionsWithDependency.orEmpty()) {
+    for (creator in layoutState.transitionData?.transitionCreators.orEmpty()) {
       // Sanity check like in StateHandler
-      val hookKey = def.identityKey
+      val hookKey = creator.identityKey
       if (!seenHookKeys.add(hookKey)) {
         // We found two components with the same global key.
         throw RuntimeException(
             "Cannot record render data for KComponent, found another Component with the same key: ${hookKey.globalKey}")
       }
-      renderData[hookKey] = def.recordRenderData()
+      renderData[hookKey] = creator.recordRenderData()
     }
   }
 

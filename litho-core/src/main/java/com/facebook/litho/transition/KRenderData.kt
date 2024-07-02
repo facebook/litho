@@ -22,13 +22,13 @@ import com.facebook.litho.KComponent
 
 /**
  * A lightweight data structure for [KComponent]s to keep track of data from the last execution of a
- * [TransitionWithDependency].
+ * [TransitionCreator].
  *
  * The exact params that are tracked are essentially the ones needed to properly support the [Diff]
  * API needed by [useTransition].
  *
- * @param dependencies a list of dependencies for the corresponding [TransitionWithDependency].
+ * @param dependencies a list of dependencies for the corresponding [TransitionCreator].
  * @param diffInputs a list of values that will serve as the previous [Diff] values in the next
- *   iteration of [TransitionWithDependency.createTransition]
+ *   iteration of [TransitionCreator.createTransition]
  */
 internal class KRenderData(val dependencies: Array<*>, val diffInputs: List<Any?>?) : RenderData

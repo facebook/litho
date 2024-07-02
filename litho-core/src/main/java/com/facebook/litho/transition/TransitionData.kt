@@ -29,38 +29,38 @@ internal sealed interface TransitionData {
   val transitions: List<Transition>?
 
   /**
-   * List of [TransitionWithDependency] definitions for a component.
+   * List of [TransitionCreator] definitions for a component.
    *
    * These are not actual transitions themselves, but rather a set of definitions that will be used
    * to generate the transitions. In fact, every transition in [optimisticTransitions] is a
    * direct/indirect result of evaluating these definitions.
    */
-  val transitionsWithDependency: List<TransitionWithDependency>?
+  val transitionCreators: List<TransitionCreator>?
 
   /**
-   * Optimistic list of transitions based on the [transitionsWithDependency] definitions
+   * Optimistic list of transitions based on the [transitionCreators] definitions
    *
    * Unlike [transitions], these transitions are only applied if certain conditions regarding the
-   * dependencies of the corresponding [TransitionWithDependency] are met. Otherwise, they may be
-   * discarded and re-evaluated on-demand.
+   * dependencies of the corresponding [TransitionCreator] are met. Otherwise, they may be discarded
+   * and re-evaluated on-demand.
    */
   val optimisticTransitions: List<Transition>?
 
   /**
    * Returns true if this [TransitionData] is empty.
    *
-   * A [TransitionData] is considered empty if all of its [transitions], [transitionsWithDependency]
-   * and [optimisticTransitions] collections are null or empty.
+   * A [TransitionData] is considered empty if all of its [transitions], [transitionCreators] and
+   * [optimisticTransitions] collections are null or empty.
    */
   fun isEmpty(): Boolean =
       transitions.isNullOrEmpty() &&
-          transitionsWithDependency.isNullOrEmpty() &&
+          transitionCreators.isNullOrEmpty() &&
           optimisticTransitions.isNullOrEmpty()
 }
 
 internal class MutableTransitionData : TransitionData {
   override var transitions: MutableList<Transition>? = null
-  override var transitionsWithDependency: MutableList<TransitionWithDependency>? = null
+  override var transitionCreators: MutableList<TransitionCreator>? = null
   override var optimisticTransitions: MutableList<Transition>? = null
 
   fun addTransition(transition: Transition) {
@@ -68,13 +68,10 @@ internal class MutableTransitionData : TransitionData {
     TransitionUtils.addTransitions(transition, transitions)
   }
 
-  fun addTransitionWithDependency(
-      twd: TransitionWithDependency,
-      previousRenderData: RenderData? = null
-  ) {
-    addTransitionWithDependency(twd)
-    if (twd.supportsOptimisticTransitions) {
-      val optimisticTransition = twd.createTransition(previousRenderData)
+  fun addTransitionCreator(creator: TransitionCreator, previousRenderData: RenderData? = null) {
+    addTransitionCreator(creator)
+    if (creator.supportsOptimisticTransitions) {
+      val optimisticTransition = creator.createTransition(previousRenderData)
       if (optimisticTransition != null) addOptimisticTransition(optimisticTransition)
     }
   }
@@ -84,13 +81,11 @@ internal class MutableTransitionData : TransitionData {
       val transitions = transitions ?: ArrayList<Transition>(other.size).also { transitions = it }
       transitions.addAll(other)
     }
-    transitionData.transitionsWithDependency?.let { other ->
-      val twds =
-          transitionsWithDependency
-              ?: ArrayList<TransitionWithDependency>(other.size).also {
-                transitionsWithDependency = it
-              }
-      twds.addAll(other)
+    transitionData.transitionCreators?.let { other ->
+      val creators =
+          transitionCreators
+              ?: ArrayList<TransitionCreator>(other.size).also { transitionCreators = it }
+      creators.addAll(other)
     }
     transitionData.optimisticTransitions?.let { other ->
       val optimisticTransitions =
@@ -100,11 +95,10 @@ internal class MutableTransitionData : TransitionData {
     }
   }
 
-  private fun addTransitionWithDependency(twd: TransitionWithDependency) {
-    val twds =
-        transitionsWithDependency
-            ?: mutableListOf<TransitionWithDependency>().also { transitionsWithDependency = it }
-    twds.add(twd)
+  private fun addTransitionCreator(creator: TransitionCreator) {
+    val creators =
+        transitionCreators ?: mutableListOf<TransitionCreator>().also { transitionCreators = it }
+    creators.add(creator)
   }
 
   private fun addOptimisticTransition(transition: Transition) {

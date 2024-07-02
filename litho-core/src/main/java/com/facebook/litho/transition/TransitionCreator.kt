@@ -25,7 +25,7 @@ import com.facebook.litho.internal.HookKey
  * Encapsulates the logic needed for creating [Transition]s whose definition depends on the [Diff]
  * of data from a previous render.
  */
-internal interface TransitionWithDependency {
+internal interface TransitionCreator {
 
   /**
    * A [HookKey] that uniquely identifies this definition and may be used to efficiently store and

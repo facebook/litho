@@ -58,10 +58,11 @@ fun ComponentScope.useTransition(
     createTransition: UseTransitionScope.() -> Transition?
 ) {
   val data = transitionData ?: MutableTransitionData()
-  val identityKey = HookKey(context.globalKey, data.transitionsWithDependency?.size ?: 0)
-  val twd = KTransitionWithDependency(identityKey, deps, createTransition)
-  val renderData = checkNotNull(resolveContext).treeState.getPreviousRenderData(twd.identityKey)
-  data.addTransitionWithDependency(twd, renderData)
+  val identityKey = HookKey(context.globalKey, data.transitionCreators?.size ?: 0)
+  val transitionCreator = KTransitionCreator(identityKey, deps, createTransition)
+  val renderData =
+      checkNotNull(resolveContext).treeState.getPreviousRenderData(transitionCreator.identityKey)
+  data.addTransitionCreator(transitionCreator, renderData)
   transitionData = data
 }
 
@@ -100,11 +101,11 @@ interface UseTransitionScope {
 
 // ---- Implementation Details ----
 
-private class KTransitionWithDependency(
+private class KTransitionCreator(
     override val identityKey: HookKey,
     private val dependencies: Array<*>,
     private val createTransition: UseTransitionScope.() -> Transition?
-) : TransitionWithDependency {
+) : TransitionCreator {
 
   private var diffInputs: List<Any?>? = null
 

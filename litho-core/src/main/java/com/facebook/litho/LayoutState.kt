@@ -320,12 +320,12 @@ internal constructor(
         if (optimisticTransitions != null) mountTimeTransitions.addAll(optimisticTransitions)
       }
       val previousTreeState = previousInput?.treeState
-      val twds = transitionData.transitionsWithDependency
-      if (twds != null) {
-        for (twd in twds) {
-          if (twd.supportsOptimisticTransitions && canUseOptimisticTransitions) continue
-          val previousRenderData = previousTreeState?.getPreviousRenderData(twd.identityKey)
-          val transition = twd.createTransition(previousRenderData)
+      val transitionCreators = transitionData.transitionCreators
+      if (transitionCreators != null) {
+        for (creator in transitionCreators) {
+          if (creator.supportsOptimisticTransitions && canUseOptimisticTransitions) continue
+          val previousRenderData = previousTreeState?.getPreviousRenderData(creator.identityKey)
+          val transition = creator.createTransition(previousRenderData)
           if (transition != null) mountTimeTransitions.add(transition)
         }
       }

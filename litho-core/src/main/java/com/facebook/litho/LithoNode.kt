@@ -429,10 +429,10 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   }
 
   fun addComponentNeedingPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {
-    val twd = SpecTransitionWithDependency(scopedComponentInfo)
+    val transitionCreator = SpecTransitionCreator(scopedComponentInfo)
     transitionData
         .getOrCreate { MutableTransitionData().also { transitionData = it } }
-        .addTransitionWithDependency(twd)
+        .addTransitionCreator(transitionCreator)
   }
 
   fun addTransition(transition: Transition) {
