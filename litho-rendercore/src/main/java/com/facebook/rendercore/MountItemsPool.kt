@@ -78,16 +78,10 @@ object MountItemsPool {
 
   @JvmStatic
   fun acquireMountContent(context: Context, poolableMountContent: ContentAllocator<*>): Any {
-    val content =
-        if (poolableMountContent.poolingPolicy.canAcquireContent) {
-          val pool =
-              getOrCreateMountContentPool(context, poolableMountContent)
-                  ?: return poolableMountContent.createPoolableContent(context)
-          pool.acquire(poolableMountContent)
-        } else {
-          null
-        }
-
+    val pool =
+        getOrCreateMountContentPool(context, poolableMountContent)
+            ?: return poolableMountContent.createPoolableContent(context)
+    val content = pool.acquire(poolableMountContent)
     return content ?: poolableMountContent.createPoolableContent(context)
   }
 
@@ -100,23 +94,12 @@ object MountItemsPool {
         mountContent.clearCommonViewListeners()
       }
     }
-    val pool =
-        if (poolableMountContent.poolingPolicy.canReleaseContent) {
-          getOrCreateMountContentPool(context, poolableMountContent)
-        } else {
-          null
-        }
-
-    if (pool == null) {
-      return
-    }
-
-    if (mountItemPoolsReleaseValidator != null && mountContent is View) {
+    val pool = getOrCreateMountContentPool(context, poolableMountContent)
+    if (mountItemPoolsReleaseValidator != null && pool != null && mountContent is View) {
       mountItemPoolsReleaseValidator.assertValidRelease(
           mountContent, listOf(poolableMountContent.getPoolableContentType().name))
     }
-
-    pool.release(mountContent)
+    pool?.release(mountContent)
   }
 
   @JvmStatic
@@ -143,9 +126,7 @@ object MountItemsPool {
     if (poolSize == 0) {
       return
     }
-
     val pool = getOrCreateMountContentPool(context, poolableMountContent, poolSize)
-
     if (pool != null) {
       for (i in 0 until poolSize) {
         if (!pool.release(poolableMountContent.createPoolableContent(context))) {
@@ -164,7 +145,7 @@ object MountItemsPool {
       allocator: ContentAllocator<*>,
       poolSize: Int = allocator.poolSize()
   ): ItemPool? {
-    if (isPoolingDisabled || poolSize <= 0) {
+    if (allocator.isPoolingDisabled || isPoolingDisabled || poolSize <= 0) {
       return null
     }
 

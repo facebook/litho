@@ -73,34 +73,6 @@ class MountItemsPoolTest {
   }
 
   @Test
-  fun testCannotReleaseToPoolIfPolicyDoesNotAllow() {
-    val prefillCount = 2
-    val testRenderUnit =
-        TestRenderUnit(id = 0, customPoolSize = prefillCount, policy = PoolingPolicy.AcquireOnly)
-
-    // Assert prefill works
-    prefillMountContentPool(context, prefillCount, testRenderUnit)
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(2)
-
-    // Assert acquiring works by fetching from pool
-    val mountContentList =
-        (0 until prefillCount).map { acquireMountContent(context, testRenderUnit) }
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount)
-
-    // Attempt to release into the pool (should not work)
-    for (i in 0 until prefillCount) {
-      release(context, testRenderUnit.contentAllocator, mountContentList[i])
-    }
-
-    // Attempt to acquire again
-    for (i in 0 until prefillCount) {
-      acquireMountContent(context, testRenderUnit.contentAllocator)
-    }
-    // The number of creation should double because we had to create content again
-    Java6Assertions.assertThat(testRenderUnit.createdCount).isEqualTo(prefillCount * 2)
-  }
-
-  @Test
   fun testPrefillMountContentPoolWithCustomPool() {
     val prefillCount = 4
     val customPoolSize = 2
@@ -174,7 +146,7 @@ class MountItemsPoolTest {
   }
 
   @Test
-  fun testAcquireContentWhenPoolIsSize0ReturnsNewContentEveryTime() {
+  fun testAcquireContentWhenPoolingIsDisabledReturnsNewContentEveryTime() {
     val testRenderUnitToAcquire = TestRenderUnit(/*id*/ 0, /*customPoolSize*/ 0) // disable Pooling
 
     // acquire content objects
@@ -196,62 +168,26 @@ class MountItemsPoolTest {
     Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
   }
 
-  @Test
-  fun testAcquireContentWhenPoolingIsDisabledReturnsNewContentEveryTime() {
-    val testRenderUnitToAcquire =
-        TestRenderUnit(id = 0, customPoolSize = 5, policy = PoolingPolicy.Disabled)
+  class TestRenderUnit : RenderUnit<View>, ContentAllocator<View> {
 
-    // acquire content objects
-    val firstContent = acquireMountContent(context, testRenderUnitToAcquire)
-    val secondContent = acquireMountContent(context, testRenderUnitToAcquire)
+    override val id: Long
 
-    // both of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-    Java6Assertions.assertThat(firstContent).isNotNull
-    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
+    private val customPoolSize: Int
 
-    // release the second content instance
-    release(context, testRenderUnitToAcquire, secondContent)
-
-    // acquire the third content instance
-    val thirdContent = acquireMountContent(context, testRenderUnitToAcquire)
-
-    // it should not be the same as just released instance because pool size is 0
-    Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
-  }
-
-  @Test
-  fun testPolicyIsAcquireOnlyReturnsNewContentEveryTime() {
-    val testRenderUnitToAcquire =
-        TestRenderUnit(id = 0, customPoolSize = 5, policy = PoolingPolicy.AcquireOnly)
-
-    // acquire content objects
-    val firstContent = acquireMountContent(context, testRenderUnitToAcquire)
-    val secondContent = acquireMountContent(context, testRenderUnitToAcquire)
-
-    // both of them should be created and they shouldn't be the same instance
-    Java6Assertions.assertThat(testRenderUnitToAcquire.createdCount).isEqualTo(2)
-    Java6Assertions.assertThat(firstContent).isNotNull
-    Java6Assertions.assertThat(secondContent).isNotSameAs(firstContent)
-
-    // release the second content instance
-    release(context, testRenderUnitToAcquire, secondContent)
-
-    // acquire the third content instance
-    val thirdContent = acquireMountContent(context, testRenderUnitToAcquire)
-
-    // it should not be the same as just released instance because pool size is 0
-    Java6Assertions.assertThat(thirdContent).isNotSameAs(secondContent)
-  }
-
-  class TestRenderUnit(
-      override val id: Long,
-      private val customPoolSize: Int = ContentAllocator.DEFAULT_MAX_PREALLOCATION,
-      private val policy: PoolingPolicy = PoolingPolicy.Default,
-  ) : RenderUnit<View>(RenderType.VIEW), ContentAllocator<View> {
-
-    var createdCount: Int = 0
+    var createdCount: Int
       private set
+
+    constructor(id: Long) : super(RenderType.VIEW) {
+      this.id = id
+      createdCount = 0
+      customPoolSize = ContentAllocator.DEFAULT_MAX_PREALLOCATION
+    }
+
+    constructor(id: Long, customPoolSize: Int) : super(RenderType.VIEW) {
+      this.id = id
+      createdCount = 0
+      this.customPoolSize = customPoolSize
+    }
 
     override fun createContent(context: Context): View {
       createdCount++
@@ -261,9 +197,8 @@ class MountItemsPoolTest {
     override val contentAllocator: ContentAllocator<View>
       get() = this
 
-    override val poolingPolicy: PoolingPolicy
-      get() = policy
-
-    override fun poolSize(): Int = customPoolSize
+    override fun poolSize(): Int {
+      return customPoolSize
+    }
   }
 }

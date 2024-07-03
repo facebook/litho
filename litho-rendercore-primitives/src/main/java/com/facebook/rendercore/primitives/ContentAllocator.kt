@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.ContentAllocator.Companion.DEFAULT_MAX_PREALLOCATION
-import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.RenderUnit
 
 /**
@@ -36,7 +35,6 @@ import com.facebook.rendercore.RenderUnit
 class ViewAllocator<Content : View>(
     private val poolSize: Int = DEFAULT_MAX_PREALLOCATION,
     private val canPreallocate: Boolean = false,
-    override val poolingPolicy: PoolingPolicy = PoolingPolicy.Default,
     private val allocator: Allocator<Content>
 ) : ContentAllocator<Content> {
   override fun createContent(context: Context): Content = allocator.allocate(context)
@@ -62,7 +60,6 @@ class ViewAllocator<Content : View>(
 class DrawableAllocator<Content : Drawable>(
     private val poolSize: Int = DEFAULT_MAX_PREALLOCATION,
     private val canPreallocate: Boolean = false,
-    override val poolingPolicy: PoolingPolicy = PoolingPolicy.Default,
     private val allocator: Allocator<Content>
 ) : ContentAllocator<Content> {
   override fun createContent(context: Context): Content = allocator.allocate(context)

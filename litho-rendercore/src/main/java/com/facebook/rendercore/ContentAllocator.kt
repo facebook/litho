@@ -43,12 +43,8 @@ interface ContentAllocator<Content : Any> {
     return javaClass
   }
 
-  /**
-   * Returns the [PoolingPolicy] which defines the behavior allowed regarding releasing and
-   * acquiring
-   */
-  val poolingPolicy: PoolingPolicy
-    get() = PoolingPolicy.Default
+  val isPoolingDisabled: Boolean
+    get() = false
 
   fun createRecyclingPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ItemPool? {
     return if (poolSizeOverride > UNSET_POOL_SIZE) {

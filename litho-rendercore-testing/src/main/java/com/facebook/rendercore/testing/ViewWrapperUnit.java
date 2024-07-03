@@ -23,7 +23,6 @@ import android.util.SparseArray;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.ContentAllocator;
-import com.facebook.rendercore.PoolingPolicy;
 import com.facebook.rendercore.RenderUnit;
 import java.util.Collections;
 
@@ -73,8 +72,8 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
   }
 
   @Override
-  public PoolingPolicy getPoolingPolicy() {
-    return PoolingPolicy.Disabled.INSTANCE;
+  public boolean isPoolingDisabled() {
+    return true;
   }
 
   public ViewWrapperUnit addBindBinders(
