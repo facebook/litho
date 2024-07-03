@@ -134,8 +134,6 @@ LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path("lib/androidx:androidx-
 
 LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET = make_dep_path("lib/androidx:androidx-appcompat")
 
-LITHO_ANDROIDSUPPORT_LIFECYCLE_EXT_TARGET = make_dep_path("lib/androidx:androidx-lifecycle-extensions")
-
 LITHO_ANDROIDSUPPORT_MATERIAL_TARGET = make_dep_path("lib/androidx:androidx-material")
 
 LITHO_ANDROIDSUPPORT_SWIPEREFRESHLAYOUT_TARGET = make_dep_path("lib/androidx:androidx-swiperefreshlayout")
