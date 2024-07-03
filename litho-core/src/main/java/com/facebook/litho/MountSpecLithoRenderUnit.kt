@@ -29,6 +29,7 @@ import com.facebook.litho.LithoLayoutData.Companion.getInterStageProps
 import com.facebook.litho.LithoLayoutData.Companion.verifyAndGetLithoLayoutData
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.MountItemsPool.ItemPool
+import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
 
@@ -98,8 +99,12 @@ private constructor(
     return renderContentType
   }
 
-  override val isPoolingDisabled: Boolean
-    get() = (component is SpecGeneratedComponent && component.isPoolingDisabled)
+  override val poolingPolicy: PoolingPolicy =
+      if (component is SpecGeneratedComponent) {
+        component.poolingPolicy
+      } else {
+        PoolingPolicy.Disabled
+      }
 
   override val description: String = component.simpleName
 
