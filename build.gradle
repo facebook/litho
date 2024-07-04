@@ -67,6 +67,7 @@ subprojects {
                 }
             }
         }
+        dependsOn(tasks.withType(org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask))
     }
 
     tasks.withType(Test) {
