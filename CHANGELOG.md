@@ -7,18 +7,25 @@ _release-date_
 * [NEW] Add new `useFirstDrawReporter` hook together with `Style.reportFirstContentDraw` for executing actions when related Component is fully rendered on the screen. Can be used to mark the end of TTRC or TTI markers.
 
 ## Version 0.50.0
+_2024-07-04_
 
 * [BREAKING] All the nested BUCK modules under litho-core deleted
+* [BREAKING] Rename `SpecTransitionWithDependency`,
 * Exposed `androidContext` inside of `bind{}` blocks in Primitive API
+* Add Style.rotationX/Y/, Styale.translationZ
+* Add visibility style
 * Converted more code to Kotlin
 * Numerous bug fixes.
 
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.49.1...v0.50.0).
 
 ## Version 0.49.1
 _2024-03-13_
 
 * [BREAKING] move litho-core-kotlin to litho-core module
 * Converted more code to Kotlin
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.49.0...v0.49.1).
 
 ## Version 0.49.0
 
