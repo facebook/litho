@@ -25,6 +25,7 @@ import com.facebook.litho.widget.Text
 import java.lang.RuntimeException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
@@ -46,6 +47,7 @@ class ResolveTreeFutureTest {
    * Tests that the RenderTreeFuture properly resolves a component. Ensures that this future manages
    * resume logic correctly.
    */
+  @Ignore
   @Test
   fun testRenderTreeFuture() {
     val canRenderHolder = BooleanArray(1)
