@@ -23,6 +23,8 @@ import com.facebook.rendercore.debug.DebugEventDispatcher
 
 object LithoDebugEvent {
 
+  val NoRenderStateId = { "-1" }
+
   @JvmField var enableStackTraces: Boolean = true
 
   @JvmStatic

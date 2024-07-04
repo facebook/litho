@@ -34,6 +34,7 @@ import com.facebook.litho.DefaultComponentsReporter;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -46,6 +47,10 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.DefaultErrorReporter;
 import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.debug.DebugEvent;
+import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventBus;
+import com.facebook.rendercore.debug.DebugEventSubscriber;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -72,12 +77,22 @@ public class DataDiffSectionSpecTest {
   @Mock public EventHandler<OnCheckIsSameItemEvent<String>> mIsSameItemEventEventHandler;
   @Mock public HasEventDispatcher mHasEventDispatcher;
 
+  private List<DebugEvent> mDebugEvents = new ArrayList<>();
+
   @Before
   public void setup() throws Exception {
     MockitoAnnotations.initMocks(this);
     mSectionContext = new SectionContext(getApplicationContext());
     mTestTarget = new TestTarget();
     mSectionTree = SectionTree.create(mSectionContext, mTestTarget).build();
+    mDebugEvents.clear();
+    DebugEventBus.subscribe(
+        new DebugEventSubscriber(LithoDebugEvent.DebugInfo) {
+          @Override
+          public void onEvent(DebugEvent event) {
+            mDebugEvents.add(event);
+          }
+        });
   }
 
   @Test
@@ -463,55 +478,48 @@ public class DataDiffSectionSpecTest {
   @Test
   public void testDuplicatesDefault() {
     final List<String> oldData = generateDuplicatedData(100);
-    RecordingComponentsReporter reporter = new RecordingComponentsReporter();
-    ComponentsReporter.provide(reporter);
     mSectionTree.setRoot(TestDataDiffSection.create(mSectionContext).data(oldData).build());
-    ComponentsReporter.provide(new DefaultErrorReporter());
-    assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG))
-        .isEqualTo(LithoDebugConfigurations.isDebugModeEnabled);
+    assertThat(mDebugEvents).hasSize(LithoDebugConfigurations.isDebugModeEnabled ? 1 : 0);
   }
 
   @Test
   public void testDuplicatesOff() {
     final List<String> oldData = generateDuplicatedData(100);
-    RecordingComponentsReporter reporter = new RecordingComponentsReporter();
-    ComponentsReporter.provide(reporter);
     mSectionTree.setRoot(
         TestDataDiffSection.create(mSectionContext)
             .data(oldData)
             .alwaysDetectDuplicates(false)
             .build());
-    ComponentsReporter.provide(new DefaultErrorReporter());
-    assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG)).isFalse();
+    assertThat(mDebugEvents).hasSize(0);
   }
 
   @Test
   public void testDuplicatesOn() {
     final List<String> oldData = generateDuplicatedData(100);
-    RecordingComponentsReporter reporter = new RecordingComponentsReporter();
-    ComponentsReporter.provide(reporter);
     mSectionTree.setRoot(
         TestDataDiffSection.create(mSectionContext)
             .data(oldData)
             .alwaysDetectDuplicates(true)
             .build());
-    ComponentsReporter.provide(new DefaultErrorReporter());
-    assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG)).isTrue();
+    assertThat(mDebugEvents).hasSize(1);
+    assertThat(mDebugEvents.get(0).getType()).isEqualTo(LithoDebugEvent.DebugInfo);
+    assertThat(mDebugEvents.get(0).<String>attribute(DebugEventAttribute.Name))
+        .isEqualTo("DuplicateItemsInSection");
   }
 
   @Test
   public void testDuplicatesOnIdentity() {
     final List<String> oldData = generateDuplicatedDataSameRef(100);
-    RecordingComponentsReporter reporter = new RecordingComponentsReporter();
-    ComponentsReporter.provide(reporter);
     mSectionTree.setRoot(
         TestDataDiffSection.create(mSectionContext)
             .data(oldData)
             .skipCheckIsSameHandler(true)
             .alwaysDetectDuplicates(true)
             .build());
-    ComponentsReporter.provide(new DefaultErrorReporter());
-    assertThat(reporter.containsMessage(DataDiffSectionSpec.DUPLICATES_EXIST_MSG)).isTrue();
+    assertThat(mDebugEvents).hasSize(1);
+    assertThat(mDebugEvents.get(0).getType()).isEqualTo(LithoDebugEvent.DebugInfo);
+    assertThat(mDebugEvents.get(0).<String>attribute(DebugEventAttribute.Name))
+        .isEqualTo("DuplicateItemsInSection");
   }
 
   private void assertRangeOperation(

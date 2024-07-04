@@ -38,6 +38,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        "//fbandroid/libraries/components/litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,

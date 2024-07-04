@@ -75,6 +75,10 @@ public final class ChangeSet {
     return mChanges;
   }
 
+  public String getSectionName() {
+    return mSection != null ? mSection.getSimpleName() : "null";
+  }
+
   /**
    * Add a new Change to this ChangeSet. This is what a {@link DiffSectionSpec} would call in its
    * {@link OnDiff} method to append a {@link Change}.

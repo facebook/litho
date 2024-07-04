@@ -38,6 +38,7 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnVerifyChangeSet;
+import com.facebook.litho.sections.logger.SectionsDebugEventLogger;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
@@ -139,7 +140,7 @@ public class DataDiffSectionSpec<T> {
     final Callback<T> callback = new Callback<>(c, data.getPrevious(), data.getNext());
 
     if (nextData != null && isDetectDuplicatesEnabled(alwaysDetectDuplicates)) {
-      detectDuplicates(nextData, callback);
+      detectDuplicates(nextData, callback, changeSet.getSectionName());
     }
     if (isTracing) {
       ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
@@ -164,38 +165,55 @@ public class DataDiffSectionSpec<T> {
     final List<? extends T> nextData = data;
     if (nextData != null) {
       final Callback<T> callback = new Callback<>(context, null, nextData);
-      return detectDuplicates(nextData, callback);
+      final String section =
+          context.getSectionScope() != null ? context.getSectionScope().getSimpleName() : "null";
+      return detectDuplicates(nextData, callback, section);
     }
     return null;
   }
 
   @Nullable
-  public static <T> String detectDuplicates(List<? extends T> data, Callback<T> callback) {
+  public static <T> String detectDuplicates(
+      List<? extends T> data, Callback<T> callback, final @Nullable String section) {
     int idx = 0;
     for (ListIterator<? extends T> it = data.listIterator(); it.hasNext(); idx++) {
+      final int currentIndex = idx;
       int nextIdx = it.nextIndex() + 1;
       T item = it.next();
       for (ListIterator<? extends T> jt = data.listIterator(nextIdx); jt.hasNext(); nextIdx++) {
+        final int nextIndex = nextIdx;
         T other = jt.next();
         if (callback.areItemsTheSame(item, other)) {
-          String type = (item != null ? item.getClass().getSimpleName() : "NULL");
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.ERROR,
-              "sections_duplicate_item",
-              DUPLICATES_EXIST_MSG
-                  + ", type: "
-                  + type
-                  + ", hash: "
-                  + System.identityHashCode(item));
+          final String itemDesc = item != null ? item.toString() : "null";
+          final String otherItemDesc = other != null ? other.toString() : "null";
+          final String itemType =
+              "<cls>" + (item != null ? item.getClass().getName() : "null") + "</cls>";
+          final String otherItemType =
+              "<cls>" + (other != null ? other.getClass().getName() : "null") + "</cls>";
+
+          SectionsDebugEventLogger.log(
+              "DuplicateItemsInSection",
+              attributes -> {
+                attributes.put("section", section);
+                attributes.put("size", data.size());
+                attributes.put("item", itemDesc);
+                attributes.put("item-type", itemType);
+                attributes.put("other-item", otherItemDesc);
+                attributes.put("other-item-type", otherItemType);
+                attributes.put("index", currentIndex);
+                attributes.put("next-index", nextIndex);
+                return null;
+              });
+
           /* we don't need to know how many, just that there is at least one duplicate */
           return "Duplicates are [type:"
-              + type
+              + itemType
               + " hash:"
               + System.identityHashCode(item)
               + " position:"
               + idx
               + "] and [type:"
-              + type
+              + otherItemType
               + " hash:"
               + System.identityHashCode(other)
               + " position:"
