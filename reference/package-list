@@ -14,7 +14,6 @@ com.facebook.litho.core
 com.facebook.litho.debug
 com.facebook.litho.drawable
 com.facebook.litho.flexbox
-com.facebook.litho.internal
 com.facebook.litho.layout
 com.facebook.litho.layout.flexlayout
 com.facebook.litho.lifecycle
