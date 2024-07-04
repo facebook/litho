@@ -299,6 +299,11 @@ internal constructor(
      * by TalkBack after a state update in some specific situations.
      */
     @JvmField var enableAccessibilityReannouncementFix: Boolean = false
+    /**
+     * This flag is used to enable a change where a state update is skipped if the current and new
+     * state value are null.
+     */
+    @JvmField var enableSkipNullStateUpdates: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a

@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.view.View
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.accessibility.contentDescription
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -577,6 +578,38 @@ class KStateTest {
     }
 
     lithoViewRule.render { RootComponent() }
+  }
+
+  @Test
+  fun useState_updateNullStateWithNull_stateUpdateIsSkipped() {
+    val renderCount = AtomicInteger(0)
+
+    class TestPrimitiveComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val state = useState<String?> { null }
+        renderCount.set(renderCount.get() + 1)
+
+        return LithoPrimitive(
+            TestPrimitive(),
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  state.update { null }
+                })
+      }
+    }
+
+    val testLithoView = lithoViewRule.render { TestPrimitiveComponent() }
+
+    assertThat(renderCount.get()).isEqualTo(1)
+
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+
+    // TODO clean up when experiment concluded
+    if (ComponentsConfiguration.enableSkipNullStateUpdates) {
+      assertThat(renderCount.get()).isEqualTo(1)
+    } else {
+      assertThat(renderCount.get()).isEqualTo(2)
+    }
   }
 
   private class CountDownLatchComponent(
