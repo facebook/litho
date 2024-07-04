@@ -26,6 +26,7 @@ import com.facebook.litho.DefaultErrorEventHandler
 import com.facebook.litho.ErrorEventHandler
 import com.facebook.litho.config.ComponentsConfiguration.Builder
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory
+import com.facebook.rendercore.PoolingPolicy
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
 
@@ -66,11 +67,8 @@ internal constructor(
     @JvmField val avoidRedundantPreAllocations: Boolean = false,
     /** Whether the [com.facebook.rendercore.MountState] can be mounted using incremental mount. */
     @JvmField val incrementalMountEnabled: Boolean = true,
-    /**
-     * If enabled, this will enable the recycling of [com.facebook.litho.ComponentHost] using
-     * [MountItemsPool]
-     */
-    @JvmField val componentHostRecyclingEnabled: Boolean = false,
+    /** Determines the pooling behavior for component hosts */
+    @JvmField val componentHostPoolingPolicy: PoolingPolicy = PoolingPolicy.Disabled,
     /**
      * Whether the [com.facebook.LithoView] associated with the [com.facebook.litho.ComponentTree]
      * will process visibility events.
@@ -326,7 +324,7 @@ internal constructor(
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
     private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
-    private var componentHostRecyclingEnabled = baseConfig.componentHostRecyclingEnabled
+    private var componentHostPoolingPolicy = baseConfig.componentHostPoolingPolicy
     private var errorEventHandler = baseConfig.errorEventHandler
     private var componentHostInvalidModificationPolicy =
         baseConfig.componentHostInvalidModificationPolicy
@@ -380,8 +378,8 @@ internal constructor(
       incrementalMountEnabled = enabled
     }
 
-    fun componentHostRecyclingEnabled(enabled: Boolean): Builder = also {
-      componentHostRecyclingEnabled = enabled
+    fun componentHostPoolingPolicy(poolingPolicy: PoolingPolicy): Builder = also {
+      componentHostPoolingPolicy = poolingPolicy
     }
 
     fun componentHostInvalidModificationPolicy(
@@ -478,7 +476,7 @@ internal constructor(
           isReconciliationEnabled = isReconciliationEnabled,
           preAllocationHandler = preAllocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
-          componentHostRecyclingEnabled = componentHostRecyclingEnabled,
+          componentHostPoolingPolicy = componentHostPoolingPolicy,
           componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
           shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =

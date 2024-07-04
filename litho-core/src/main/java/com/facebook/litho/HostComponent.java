@@ -35,30 +35,32 @@ class HostComponent extends SpecGeneratedComponent {
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   private boolean mImplementsVirtualViews = false;
-  private final boolean mPoolingEnabled;
+  private final PoolingPolicy mPoolingPolicy;
   private final @Nullable ComponentHost.UnsafeModificationPolicy mUnsafeModificationPolicy;
 
   protected HostComponent(
-      boolean recyclingEnabled,
+      PoolingPolicy poolingPolicy,
       @Nullable ComponentHost.UnsafeModificationPolicy unsafeModificationPolicy) {
     super("HostComponent");
-    mPoolingEnabled = recyclingEnabled;
     mUnsafeModificationPolicy = unsafeModificationPolicy;
+    mPoolingPolicy = poolingPolicy;
   }
 
   @Override
   public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new HostMountContentPool(ComponentsConfiguration.hostComponentPoolSize, mPoolingEnabled);
+    return new HostMountContentPool(
+        ComponentsConfiguration.hostComponentPoolSize,
+        mPoolingPolicy.canAcquireContent || mPoolingPolicy.canReleaseContent);
   }
 
   @Override
   public PoolingPolicy getPoolingPolicy() {
-    return mPoolingEnabled ? PoolingPolicy.Default.INSTANCE : PoolingPolicy.Disabled.INSTANCE;
+    return mPoolingPolicy;
   }
 
   @Override
   public boolean canPreallocate() {
-    return mPoolingEnabled;
+    return mPoolingPolicy.canAcquireContent;
   }
 
   @Override
@@ -118,11 +120,11 @@ class HostComponent extends SpecGeneratedComponent {
 
     /* If we are testing host recycling and no policy was set, then we override to be LOG */
     if (policy != ComponentHost.UnsafeModificationPolicy.CRASH
-        && componentsConfiguration.componentHostRecyclingEnabled) {
+        && componentsConfiguration.componentHostPoolingPolicy.canReleaseContent) {
       policy = ComponentHost.UnsafeModificationPolicy.LOG;
     }
 
-    return new HostComponent(componentsConfiguration.componentHostRecyclingEnabled, policy);
+    return new HostComponent(componentsConfiguration.componentHostPoolingPolicy, policy);
   }
 
   @Override
