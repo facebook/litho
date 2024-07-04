@@ -19,6 +19,7 @@ package com.facebook.rendercore.testing;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import com.facebook.rendercore.ContentAllocator;
+import com.facebook.rendercore.PoolingPolicy;
 import com.facebook.rendercore.RenderUnit;
 
 public class DrawableWrapperUnit extends RenderUnit<Drawable>
@@ -59,7 +60,7 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   }
 
   @Override
-  public boolean isPoolingDisabled() {
-    return true;
+  public PoolingPolicy getPoolingPolicy() {
+    return PoolingPolicy.Disabled.INSTANCE;
   }
 }

@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.PoolingPolicy;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class HostComponent extends SpecGeneratedComponent {
@@ -51,8 +52,8 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isPoolingDisabled() {
-    return !mPoolingEnabled;
+  public PoolingPolicy getPoolingPolicy() {
+    return mPoolingEnabled ? PoolingPolicy.Default.INSTANCE : PoolingPolicy.Disabled.INSTANCE;
   }
 
   @Override

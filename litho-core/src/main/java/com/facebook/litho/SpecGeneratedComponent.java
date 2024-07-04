@@ -817,11 +817,6 @@ public abstract class SpecGeneratedComponent extends Component
     return getClass();
   }
 
-  @Override
-  public boolean isPoolingDisabled() {
-    return poolSize() == 0;
-  }
-
   @Nullable
   @Override
   public MountItemsPool.ItemPool createRecyclingPool(int poolSize) {
