@@ -364,7 +364,7 @@ object MountItemsPool {
   open class DefaultItemPool(poolableContentType: Class<*>, private val maxPoolSize: Int) :
       ItemPool {
 
-    private val pool: Pools.Pool<Any> = Pools.SimplePool(maxPoolSize)
+    private val pool: Pools.SynchronizedPool<Any> = Pools.SynchronizedPool(maxPoolSize)
 
     private val debugIdentifier: String = poolableContentType.name
 
