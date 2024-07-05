@@ -137,9 +137,7 @@ jobs:
         chmod +x buck/buck && \
         ls -l buck)
     - name: Upload Android Archives
-      run: ./gradlew publish --no-daemon --no-parallel --info --stacktrace
-    - name: Release and close
-      run: ./gradlew closeAndReleaseRepository
+      run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
     - name: Clean secrets
       if: always()
       run: rm /tmp/secring.gpg
