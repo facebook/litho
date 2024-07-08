@@ -36,6 +36,7 @@ import com.facebook.litho.lifecycle.LifecycleOwnerWrapper
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.collection.LazyList
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Rule
@@ -240,6 +241,36 @@ class UseLiveDataTest {
 
     ComponentsConfiguration.defaultInstance =
         ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = false)
+  }
+
+  @Test
+  fun `should observe live data changes when in active state for nested component tree`() {
+    val liveData = MutableLiveData("hello")
+
+    class IntermediateComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+
+        return MyComponent(liveData)
+      }
+    }
+    class ParentComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return LazyList {
+          (1..1).forEach { tag -> child(id = tag, component = IntermediateComponent()) }
+        }
+      }
+    }
+    val component = ParentComponent()
+
+    fakeLifecycleOwner.onEvent(Lifecycle.Event.ON_START)
+    val lithoView = rule.createTestLithoView(widthPx = 600, heightPx = 600) { component }
+    lithoView.attachToWindow().measure().layout()
+
+    assertThat(lithoView).hasVisibleText("hello")
+
+    rule.act(lithoView) { liveData.value = "world" }
+
+    assertThat(lithoView).hasVisibleText("world")
   }
 
   private class MyComponent(private val liveData: LiveData<String>) : KComponent() {
