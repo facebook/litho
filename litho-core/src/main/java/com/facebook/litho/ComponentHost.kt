@@ -66,7 +66,6 @@ import com.facebook.rendercore.MountState
 import com.facebook.rendercore.debug.DebugEventAttribute.Name
 import com.facebook.rendercore.debug.DebugEventDispatcher.dispatch
 import com.facebook.rendercore.transitions.DisappearingHost
-import com.facebook.rendercore.utils.clearCommonViewListeners
 
 /**
  * A [ViewGroup] that can host the mounted state of a [Component]. This is used by [MountState] to
@@ -935,10 +934,6 @@ open class ComponentHost(
         nodeInfo?.let { registerAccessibilityDelegateOnView(child, it) }
       }
     }
-  }
-
-  override fun clearCommonListeners() {
-    withSafeModification { clearCommonViewListeners() }
   }
 
   override fun setAccessibilityDelegate(accessibilityDelegate: AccessibilityDelegate?) {

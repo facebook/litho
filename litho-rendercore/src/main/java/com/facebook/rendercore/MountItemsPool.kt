@@ -27,7 +27,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.util.Pools
-import com.facebook.rendercore.utils.clearCommonViewListeners
 import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.concurrent.GuardedBy
@@ -93,13 +92,6 @@ object MountItemsPool {
 
   @JvmStatic
   fun release(context: Context, poolableMountContent: ContentAllocator<*>, mountContent: Any) {
-    if (RenderCoreConfig.clearCommonViewListeners) {
-      if (mountContent is Host) {
-        mountContent.clearCommonListeners()
-      } else if (mountContent is View) {
-        mountContent.clearCommonViewListeners()
-      }
-    }
     val pool =
         if (poolableMountContent.poolingPolicy.canReleaseContent) {
           getOrCreateMountContentPool(context, poolableMountContent)

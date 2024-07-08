@@ -78,6 +78,4 @@ abstract class Host(context: Context, attrs: AttributeSet?) : ViewGroup(context,
   open fun setInLayout() {}
 
   open fun unsetInLayout() {}
-
-  open fun clearCommonListeners() {}
 }
