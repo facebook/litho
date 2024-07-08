@@ -48,8 +48,6 @@ public abstract class TransitionSet extends Transition {
       }
     } else if (child != null) {
       mChildren.add(child);
-    } else {
-      throw new IllegalStateException("Null element is not allowed in transition set");
     }
   }
 
