@@ -24,6 +24,8 @@ import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.config.PreAllocationHandler
+import com.facebook.litho.sections.widget.StaggeredGridLayoutInfoFactory
+import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.rendercore.Dimen
@@ -74,6 +76,8 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
     shouldExcludeFromIncrementalMount: Boolean = false,
+    staggeredGridlayoutInfoFactory: StaggeredGridLayoutInfoFactory =
+        StaggeredGridRecyclerConfiguration.Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY,
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
     init: LazyGridScope.() -> Unit
@@ -90,6 +94,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
               isReconciliationEnabled = isReconciliationEnabled,
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
+              staggeredGridlayoutInfoFactory = staggeredGridlayoutInfoFactory,
               spans = spans,
               gapStrategy = gapStrategy,
               enableStableIds = enableStableIds),
