@@ -19,6 +19,7 @@ package com.facebook.litho.widget.zoomable
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.view.MotionEvent
 import android.view.ViewGroup
 import com.facebook.litho.LithoRenderTreeView
 import com.facebook.litho.findComponentActivity
@@ -35,4 +36,11 @@ class LithoZoomableController(
       checkNotNull(context.findComponentActivity()).window.decorView as ViewGroup
 
   override fun getRenderTreeView(): LithoRenderTreeView = requireRootView().renderTreeView
+
+  val zoomableTouchListener: ZoomableTouchListener =
+      object : ZoomableTouchListener {
+        override fun onTouchEvent(event: MotionEvent): Boolean {
+          return onTouch(event)
+        }
+      }
 }

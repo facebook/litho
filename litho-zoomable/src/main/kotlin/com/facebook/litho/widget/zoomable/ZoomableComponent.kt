@@ -42,7 +42,7 @@ import kotlin.math.max
 
 @ExperimentalLithoApi
 class ZoomableComponent(
-    private val controller: LithoZoomableController? = null,
+    private val zoomableTouchGestureListener: ZoomableTouchGestureListener? = null,
     private val style: Style = Style,
     private val child: () -> Component
 ) : PrimitiveComponent() {
@@ -57,18 +57,22 @@ class ZoomableComponent(
         treeProps = context.treePropContainer,
         config = context.lithoConfiguration.componentsConfig.copy(incrementalMountEnabled = false))
 
-    val controller = useCached { controller ?: LithoZoomableController(androidContext) }
+    val lithoZoomableController = useCached { LithoZoomableController(androidContext) }
 
-    useEffect(Unit) {
-      controller.init()
+    val zoomableTouchGestureListener = useCached {
+      zoomableTouchGestureListener ?: ZoomableTouchGestureListener()
+    }
+
+    useEffect(lithoZoomableController) {
+      lithoZoomableController.init()
       null
     }
 
     val zoomableStyle =
         Style.onTouch { touchEvent: TouchEvent ->
-              controller.onTouch(touchEvent.motionEvent, touchEvent.view.parent)
+              zoomableTouchGestureListener.onTouch(touchEvent.motionEvent)
             }
-            .onInterceptTouch(true) { _ -> controller.interceptingTouch }
+            .onInterceptTouch(true) { _ -> lithoZoomableController.interceptingTouch }
 
     return LithoPrimitive(
         layoutBehavior =
@@ -79,12 +83,16 @@ class ZoomableComponent(
             MountBehavior(ALLOCATOR) {
               bindToRenderTreeView(state = state) { renderTreeView }
 
-              bind(controller) { content ->
-                controller.bindTo(content)
+              bind(lithoZoomableController) { content ->
+                lithoZoomableController.bindTo(content)
+                zoomableTouchGestureListener.addZoomableTouchListener(
+                    lithoZoomableController.zoomableTouchListener)
 
                 onUnbind {
-                  controller.resetZoom()
-                  controller.unbind()
+                  lithoZoomableController.resetZoom()
+                  zoomableTouchGestureListener.removeZoomableTouchListener(
+                      lithoZoomableController.zoomableTouchListener)
+                  lithoZoomableController.unbind()
                 }
               }
             },
