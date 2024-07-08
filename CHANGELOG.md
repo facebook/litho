@@ -7,7 +7,7 @@ _release-date_
 * [NEW] Add new `useFirstDrawReporter` hook together with `Style.reportFirstContentDraw` for executing actions when related Component is fully rendered on the screen. Can be used to mark the end of TTRC or TTI markers.
 
 ## Version 0.50.0
-_2024-07-04_
+_2024-07-08_
 
 * [BREAKING] All the nested BUCK modules under litho-core deleted
 * [BREAKING] Rename `SpecTransitionWithDependency`,
