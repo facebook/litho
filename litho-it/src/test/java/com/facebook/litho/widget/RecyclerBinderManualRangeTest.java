@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import android.os.Looper;
-import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
@@ -54,7 +53,6 @@ public class RecyclerBinderManualRangeTest {
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
   private ComponentContext mComponentContext;
-  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   @Before
@@ -64,16 +62,9 @@ public class RecyclerBinderManualRangeTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-    mResolveThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
   }
 
   private void runToEndOfTasks() {
-    if (mResolveThreadShadowLooper != null) {
-      mResolveThreadShadowLooper.runToEndOfTasks();
-    }
-
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 

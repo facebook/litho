@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import android.os.Looper;
-import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -53,7 +52,6 @@ public class ComponentTreeHolderTest {
   private EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;
   private ComponentRenderInfo mComponentRenderInfo;
   private ViewRenderInfo mViewRenderInfo;
-  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
   private int mWidthSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
   private int mHeightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
@@ -79,16 +77,9 @@ public class ComponentTreeHolderTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-    mResolveThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
   }
 
   private void runToEndOfTasks() {
-    if (mResolveThreadShadowLooper != null) {
-      mResolveThreadShadowLooper.runToEndOfTasks();
-    }
-
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 

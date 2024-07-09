@@ -29,7 +29,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -58,7 +57,6 @@ public class RecyclerBinderWrapContentTest {
   private static final float RANGE_RATIO = 2.0f;
 
   private ComponentContext mComponentContext;
-  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   private TestRecyclerView mRecyclerView;
@@ -67,19 +65,12 @@ public class RecyclerBinderWrapContentTest {
   public void setup() {
     mComponentContext = new ComponentContext(getApplicationContext());
     mRecyclerView = new TestRecyclerView(mComponentContext.getAndroidContext());
-    mResolveThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
   }
 
   private void runToEndOfTasks() {
-    if (mResolveThreadShadowLooper != null) {
-      mResolveThreadShadowLooper.runToEndOfTasks();
-    }
-
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 

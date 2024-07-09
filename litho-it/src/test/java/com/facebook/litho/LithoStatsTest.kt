@@ -36,7 +36,6 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(LithoTestRunner::class)
 class LithoStatsTest {
 
-  private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
   private lateinit var context: ComponentContext
   private lateinit var testComponent: StateUpdateTestComponent
@@ -49,7 +48,6 @@ class LithoStatsTest {
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    resolveThreadShadowLooper = ComponentTestHelper.getDefaultResolveThreadShadowLooper()
     layoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper()
     testComponent = StateUpdateTestComponent()
     testComponentKey = testComponent.key
@@ -61,14 +59,10 @@ class LithoStatsTest {
   }
 
   private fun runToEndOfTasks() {
-    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 
   private fun runOneTask() {
-    if (this::resolveThreadShadowLooper.isInitialized) {
-      resolveThreadShadowLooper.runOneTask()
-    }
     layoutThreadShadowLooper.runOneTask()
   }
 

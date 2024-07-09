@@ -650,22 +650,12 @@ public final class ComponentTestHelper {
     return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");
   }
 
-  public static Looper getDefaultResolveThreadLooper() {
-    return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper");
-  }
-
   /** Access the shadow of the default layout thread looper for testing purposes only. */
   public static ShadowLooper getDefaultLayoutThreadShadowLooper() {
     return shadowOf(getDefaultLayoutThreadLooper());
   }
 
-  public static ShadowLooper getDefaultResolveThreadShadowLooper() {
-    return shadowOf(getDefaultResolveThreadLooper());
-  }
-
   public static ShadowLooper[] getDefaultThreadShadowLoopers() {
-    return new ShadowLooper[] {
-      getDefaultResolveThreadShadowLooper(), getDefaultLayoutThreadShadowLooper()
-    };
+    return new ShadowLooper[] {getDefaultLayoutThreadShadowLooper()};
   }
 }

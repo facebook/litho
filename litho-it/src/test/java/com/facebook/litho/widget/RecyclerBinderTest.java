@@ -159,7 +159,6 @@ public class RecyclerBinderTest {
   private LayoutInfo mCircularLayoutInfo;
   private ComponentContext mComponentContext;
   private ShadowLooper mLayoutThreadShadowLooper;
-  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private RecyclerBinder.ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private RecyclerBinder.ComponentTreeHolderFactory
       mComponentTreeHolderFactoryLayoutFinishedListener;
@@ -239,25 +238,13 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-
-    mResolveThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
   }
 
   private void runToEndOfTasks() {
-    if (mResolveThreadShadowLooper != null) {
-      mResolveThreadShadowLooper.runToEndOfTasks();
-    }
-
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   private void runOneTask() {
-    if (mResolveThreadShadowLooper != null) {
-      mResolveThreadShadowLooper.runOneTask();
-    }
-
     mLayoutThreadShadowLooper.runOneTask();
   }
 

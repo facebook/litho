@@ -157,9 +157,6 @@ public class ComponentTree
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultLayoutThreadLooper;
 
-  @GuardedBy("ComponentTree.class")
-  private static volatile Looper sDefaultResolveThreadLooper;
-
   private static final ThreadLocal<WeakReference<RunnableHandler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
 
@@ -2586,17 +2583,6 @@ public class ComponentTree
     }
 
     return sDefaultLayoutThreadLooper;
-  }
-
-  private static synchronized Looper getDefaultResolveThreadLooper() {
-    if (sDefaultResolveThreadLooper == null) {
-      final HandlerThread defaultThread =
-          new HandlerThread(DEFAULT_RESOLVE_THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY);
-      defaultThread.start();
-      sDefaultResolveThreadLooper = defaultThread.getLooper();
-    }
-
-    return sDefaultResolveThreadLooper;
   }
 
   private TreePropContainer createImplicitTreePropContainer(

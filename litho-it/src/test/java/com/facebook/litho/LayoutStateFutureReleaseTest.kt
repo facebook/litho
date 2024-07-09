@@ -46,7 +46,6 @@ class LayoutStateFutureReleaseTest {
   private var widthSpec = 0
   private var heightSpec = 0
   private lateinit var context: ComponentContext
-  private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
 
   private val defaultConfig = ComponentsConfiguration.defaultInstance
@@ -60,14 +59,9 @@ class LayoutStateFutureReleaseTest {
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
                 as Looper)
-    resolveThreadShadowLooper =
-        Shadows.shadowOf(
-            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
-                as Looper)
   }
 
   private fun runToEndOfTasks() {
-    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 

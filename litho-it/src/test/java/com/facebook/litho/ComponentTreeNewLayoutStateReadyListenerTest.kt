@@ -43,7 +43,6 @@ class ComponentTreeNewLayoutStateReadyListenerTest {
   private lateinit var context: ComponentContext
   private lateinit var component: Component
   private lateinit var componentTree: ComponentTree
-  private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
   private lateinit var listener: ComponentTree.NewLayoutStateReadyListener
   private var widthSpec = 0
@@ -56,10 +55,6 @@ class ComponentTreeNewLayoutStateReadyListenerTest {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     component = SimpleMountSpecTester.create(context).build()
     componentTree = ComponentTree.create(context, component).build()
-    resolveThreadShadowLooper =
-        Shadows.shadowOf(
-            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
-                as Looper)
     layoutThreadShadowLooper =
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
@@ -72,7 +67,6 @@ class ComponentTreeNewLayoutStateReadyListenerTest {
   }
 
   private fun runToEndOfTasks() {
-    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 
