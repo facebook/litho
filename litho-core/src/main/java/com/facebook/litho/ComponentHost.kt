@@ -29,7 +29,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
-import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
@@ -66,7 +65,6 @@ import com.facebook.rendercore.MountState
 import com.facebook.rendercore.debug.DebugEventAttribute.Name
 import com.facebook.rendercore.debug.DebugEventDispatcher.dispatch
 import com.facebook.rendercore.transitions.DisappearingHost
-import com.facebook.rendercore.utils.clearCommonViewListeners
 
 /**
  * A [ViewGroup] that can host the mounted state of a [Component]. This is used by [MountState] to
@@ -447,13 +445,6 @@ open class ComponentHost(
       // To fix the issue that the TYPE_WINDOW_CONTENT_CHANGED event doesn't get triggered.
       // More details at here: https://fburl.com/aoa2apq5
       super.setContentDescription(contentDescription)
-
-      // This is a fix for an issue where TalkBack doesn't re-announce the content description after
-      // a state update in some cases. It's behind a flag so that it can be turned off in case it
-      // breaks something unexpectedly. See T193726518 for more details.
-      if (ComponentsConfiguration.enableAccessibilityReannouncementFix) {
-        sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION)
-      }
     }
     maybeInvalidateAccessibilityState()
   }
@@ -935,10 +926,6 @@ open class ComponentHost(
         nodeInfo?.let { registerAccessibilityDelegateOnView(child, it) }
       }
     }
-  }
-
-  override fun clearCommonListeners() {
-    withSafeModification { clearCommonViewListeners() }
   }
 
   override fun setAccessibilityDelegate(accessibilityDelegate: AccessibilityDelegate?) {

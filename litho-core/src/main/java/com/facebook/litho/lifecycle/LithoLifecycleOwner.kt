@@ -109,4 +109,9 @@ internal constructor(
   }
 
   fun hasObservers(): Boolean = observers.isNotEmpty()
+
+  @JvmName("getDelegate")
+  internal fun getDelegate(): LifecycleOwner? {
+    return delegate
+  }
 }

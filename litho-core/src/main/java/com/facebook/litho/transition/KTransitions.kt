@@ -126,7 +126,10 @@ private class KTransitionCreator(
           }
         }
       }
-    } else null
+    } else {
+      diffInputs = previous?.diffInputs
+      null
+    }
   }
 
   override fun recordRenderData(): RenderData {

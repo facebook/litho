@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-@file:JvmName("RenderTreeNodeUtils")
+package com.facebook.litho.widget.zoomable
 
-package com.facebook.litho
+import android.view.MotionEvent
 
-import android.graphics.Rect
-import com.facebook.rendercore.RenderTreeNode
-
-fun create(
-    unit: LithoRenderUnit,
-    bounds: Rect,
-    padding: Rect?,
-    layoutData: LithoLayoutData? = null,
-    parent: RenderTreeNode? = null
-): RenderTreeNode =
-    RenderTreeNode(parent, unit, layoutData, bounds, padding, parent?.childrenCount ?: 0)
+interface ZoomableTouchListener {
+  fun onTouchEvent(event: MotionEvent): Boolean
+}

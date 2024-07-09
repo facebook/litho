@@ -25,6 +25,7 @@ import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
+import com.facebook.litho.sections.widget.StaggeredGridLayoutInfoFactory
 import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
 import com.facebook.litho.widget.RecyclerBinderConfig
 import com.facebook.litho.widget.SnapUtil
@@ -223,6 +224,8 @@ internal object CollectionLayouts {
       isIncrementalMountEnabled: Boolean = true,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
+      staggeredGridlayoutInfoFactory: StaggeredGridLayoutInfoFactory =
+          StaggeredGridRecyclerConfiguration.Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY,
       preAllocationHandler: PreAllocationHandler?,
       enableStableIds: Boolean
   ): CollectionLayout =
@@ -239,6 +242,9 @@ internal object CollectionLayouts {
               isCircular = false,
               enableStableIds = enableStableIds) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)
+            StaggeredGridRecyclerConfiguration.create()
+                .numSpans(spans)
+                .gapStrategy(gapStrategy)
+                .staggeredGridLayoutInfoFactory(staggeredGridlayoutInfoFactory)
       }
 }

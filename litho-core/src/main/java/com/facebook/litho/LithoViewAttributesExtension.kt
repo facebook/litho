@@ -31,8 +31,6 @@ import androidx.collection.MutableScatterMap
 import androidx.core.view.ViewCompat
 import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput
-import com.facebook.rendercore.ErrorReporter
-import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
@@ -370,7 +368,6 @@ private constructor(
         // Set view background, if applicable.  Do this before padding
         // as it otherwise overrides the padding.
         setViewBackground(content, attributes)
-        setViewPadding(content, attributes)
         setViewForeground(content, attributes.foreground)
         setViewLayoutDirection(content, attributes)
       }
@@ -455,7 +452,6 @@ private constructor(
         unsetViewForeground(content, attributes)
       }
       if (!isHostView) {
-        unsetViewPadding(content, attributes)
         unsetViewBackground(content, attributes)
         unsetViewForeground(content, attributes)
         unsetViewLayoutDirection(content)
@@ -926,35 +922,6 @@ private constructor(
     private fun unsetRotationY(view: View, attributes: ViewAttributes) {
       if (attributes.isRotationYSet && view.rotationY != 0f) {
         view.rotationY = 0f
-      }
-    }
-
-    private fun setViewPadding(view: View, attributes: ViewAttributes) {
-      if (!attributes.hasPadding()) {
-        return
-      }
-      view.setPadding(
-          attributes.paddingLeft,
-          attributes.paddingTop,
-          attributes.paddingRight,
-          attributes.paddingBottom)
-    }
-
-    private fun unsetViewPadding(view: View, attributes: ViewAttributes) {
-      if (!attributes.hasPadding()) {
-        return
-      }
-      try {
-        view.setPadding(0, 0, 0, 0)
-      } catch (e: NullPointerException) {
-        // T53931759 Gathering extra info around this NPE
-        ErrorReporter.instance.report(
-            LogLevel.ERROR,
-            "LITHO:NPE:UNSET_PADDING",
-            "From component: ${attributes.componentName}",
-            e,
-            0,
-            null)
       }
     }
 

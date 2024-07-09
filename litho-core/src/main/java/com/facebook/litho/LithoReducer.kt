@@ -175,6 +175,7 @@ internal object LithoReducer {
         create(
             unit = rootHostRenderUnit,
             bounds = Rect(0, 0, width, height),
+            padding = null,
             layoutData =
                 LithoLayoutData(
                     width = width,
@@ -231,6 +232,7 @@ internal object LithoReducer {
       result: LayoutResult,
       node: LithoNode,
       bounds: Rect,
+      padding: Rect?,
       reductionState: ReductionState,
       expandedTouchBounds: Rect?,
       parent: RenderTreeNode? = null,
@@ -255,6 +257,7 @@ internal object LithoReducer {
                 bounds.top + result.adjustedTop(),
                 bounds.right + result.adjustedRight(),
                 bounds.bottom + result.adjustedBottom()),
+        padding,
         reductionState = reductionState,
         isSizeDependant =
             if (node.tailComponent is SpecGeneratedComponent) {
@@ -268,26 +271,10 @@ internal object LithoReducer {
         debugHierarchyNode = debugNode)
   }
 
-  private fun createHostRenderTreeNode(
-      unit: LithoRenderUnit,
-      bounds: Rect,
-      reductionState: ReductionState,
-      expandedTouchBounds: Rect?,
-      parent: RenderTreeNode? = null,
-      hierarchy: DebugHierarchy.Node? = null,
-  ): RenderTreeNode =
-      createRenderTreeNode(
-          unit = unit,
-          bounds = bounds,
-          reductionState = reductionState,
-          isSizeDependant = true,
-          parent = parent,
-          expandedTouchBounds = expandedTouchBounds,
-          debugHierarchyNode = hierarchy?.mutateType(OutputUnitType.HOST))
-
   private fun createRenderTreeNode(
       unit: LithoRenderUnit,
       bounds: Rect,
+      padding: Rect?,
       reductionState: ReductionState,
       isSizeDependant: Boolean,
       expandedTouchBounds: Rect?,
@@ -307,6 +294,7 @@ internal object LithoReducer {
     return create(
         unit = unit,
         bounds = resolvedBounds,
+        padding = padding,
         layoutData =
             LithoLayoutData(
                 width = resolvedBounds.width(),
@@ -492,18 +480,30 @@ internal object LithoReducer {
     val b: Int = t + result.height
     val bounds = Rect(l, t, r, b)
 
+    val padding =
+        if (result.paddingLeft != 0 ||
+            result.paddingTop != 0 ||
+            result.paddingRight != 0 ||
+            result.paddingBottom != 0) {
+          Rect(result.paddingLeft, result.paddingTop, result.paddingRight, result.paddingBottom)
+        } else {
+          null
+        }
+
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (hostRenderUnit != null) {
       val hostLayoutPosition =
           addHostRenderTreeNode(
               hostRenderUnit = hostRenderUnit,
               bounds = bounds,
+              padding = if (!node.willMountView) padding else null,
               parent = parentRenderTreeNode,
               result = result,
               node = node,
               reductionState = reductionState,
               diffNode = diffNode,
-              hierarchy = hierarchy)
+              hierarchy = hierarchy,
+          )
       addCurrentAffinityGroupToTransitionMapping(reductionState)
 
       parentRenderTreeNode = reductionState.mountableOutputs[hostLayoutPosition]
@@ -534,6 +534,7 @@ internal object LithoReducer {
             result = result,
             node = node,
             bounds = bounds,
+            padding = if (node.willMountView) padding else null,
             reductionState = reductionState,
             expandedTouchBounds = result.expandedTouchBounds,
             parent = parentRenderTreeNode,
@@ -696,6 +697,7 @@ internal object LithoReducer {
         createRenderTreeNode(
             unit = unit,
             bounds = bounds,
+            padding = null,
             reductionState = reductionState,
             isSizeDependant = true,
             expandedTouchBounds = expandedTouchBounds,
@@ -783,6 +785,7 @@ internal object LithoReducer {
   private fun addHostRenderTreeNode(
       hostRenderUnit: LithoRenderUnit,
       bounds: Rect,
+      padding: Rect?,
       parent: RenderTreeNode? = null,
       result: LithoLayoutResult,
       node: LithoNode,
@@ -796,14 +799,17 @@ internal object LithoReducer {
     require(!(node.willMountView && !isLayoutRoot(reductionState, result))) {
       "We shouldn't insert a host as a parent of a View"
     }
+
     val hostRenderTreeNode: RenderTreeNode =
-        createHostRenderTreeNode(
+        createRenderTreeNode(
             unit = hostRenderUnit,
             bounds = bounds,
+            padding = padding,
             reductionState = reductionState,
-            expandedTouchBounds = result.expandedTouchBounds,
+            isSizeDependant = true,
             parent = parent,
-            hierarchy = hierarchy)
+            expandedTouchBounds = result.expandedTouchBounds,
+            debugHierarchyNode = hierarchy?.mutateType(OutputUnitType.HOST))
 
     diffNode?.hostOutput = hostRenderUnit
 

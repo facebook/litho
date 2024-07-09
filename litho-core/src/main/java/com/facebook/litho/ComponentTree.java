@@ -241,7 +241,7 @@ public class ComponentTree
   private @Nullable TreePropContainer mTreePropContainer;
 
   @GuardedBy("this")
-  private @Nullable TreePropContainer mDefaultTreeProps;
+  private @Nullable TreePropContainer mImplicitTreePropContainer;
 
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
@@ -362,10 +362,18 @@ public class ComponentTree
     final StateUpdater stateUpdater =
         (builder.mStateUpdater != null) ? builder.mStateUpdater : this;
 
+    TreePropContainer treePropContainer = builder.treePropContainer;
+
+    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
+      mImplicitTreePropContainer =
+          createImplicitTreePropContainer(
+              getLifecycleOwnerFromTreePropContainer(builder.treePropContainer));
+      treePropContainer = createTreePropContainer(treePropContainer);
+    }
     mContext =
         new ComponentContext(
             androidContext,
-            builder.treePropContainer,
+            treePropContainer,
             config,
             LithoTree.Companion.create(this, stateUpdater),
             "root",
@@ -374,15 +382,6 @@ public class ComponentTree
                 : getLithoVisibilityEventsController(),
             null,
             builder.parentTreePropContainer);
-    if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
-      initializeDefaultTreeProps();
-
-      TreePropContainer treePropContainer =
-          TreePropContainer.acquire(mContext.getTreePropContainer());
-      treePropContainer.putAll(mDefaultTreeProps);
-      mContext.setTreePropContainer(treePropContainer);
-      mContext.setParentTreePropContainerCloned(true);
-    }
 
     PreAllocationHandler preAllocationHandler = builder.config.preAllocationHandler;
     if (preAllocationHandler != null) {
@@ -1832,8 +1831,7 @@ public class ComponentTree
 
       if (treePropContainerInitialized) {
         if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
-          TreePropContainer newTreeProps = TreePropContainer.acquire(treePropContainer);
-          newTreeProps.putAll(mDefaultTreeProps);
+          TreePropContainer newTreeProps = createTreePropContainer(treePropContainer);
           if (!EquivalenceUtils.equals(newTreeProps, mTreePropContainer)) {
             mTreePropContainer = newTreeProps;
           }
@@ -2601,9 +2599,29 @@ public class ComponentTree
     return sDefaultResolveThreadLooper;
   }
 
-  private void initializeDefaultTreeProps() {
-    mDefaultTreeProps = new TreePropContainer();
-    mDefaultTreeProps.put(LifecycleOwnerTreeProp, new LifecycleOwnerWrapper(null));
+  private TreePropContainer createImplicitTreePropContainer(
+      @Nullable LifecycleOwner lifecycleOwner) {
+    final TreePropContainer treePropContainer = new TreePropContainer();
+    treePropContainer.put(LifecycleOwnerTreeProp, new LifecycleOwnerWrapper(lifecycleOwner));
+    return treePropContainer;
+  }
+
+  private @Nullable LifecycleOwner getLifecycleOwnerFromTreePropContainer(
+      @Nullable TreePropContainer inputTreeProps) {
+    final @Nullable LifecycleOwnerWrapper lifecycleOwnerWrapper =
+        inputTreeProps == null
+            ? null
+            : ((LifecycleOwnerWrapper) inputTreeProps.get(LifecycleOwnerTreeProp));
+    return lifecycleOwnerWrapper == null ? null : lifecycleOwnerWrapper.getDelegate();
+  }
+
+  private TreePropContainer createTreePropContainer(@Nullable TreePropContainer inputTreeProps) {
+    final TreePropContainer treePropContainer = TreePropContainer.acquire(inputTreeProps);
+    // The default tree props implicit to the component tree so we don't want them to be overridden
+    // by the parent.
+    treePropContainer.putAll(mImplicitTreePropContainer);
+
+    return treePropContainer;
   }
 
   private boolean isCompatibleSpec(
@@ -2753,8 +2771,17 @@ public class ComponentTree
   synchronized void setLifecycleOwnerTreeProp(LifecycleOwner owner) {
     if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
       TreePropContainer treePropContainer = mContext.getTreePropContainer();
+
       if (treePropContainer != null) {
-        ((LifecycleOwnerWrapper) treePropContainer.get(LifecycleOwnerTreeProp)).setDelegate(owner);
+        final LifecycleOwnerWrapper wrapper =
+            (LifecycleOwnerWrapper) treePropContainer.get(LifecycleOwnerTreeProp);
+        if (wrapper.getDelegate() != null && wrapper.getDelegate() != owner) {
+          throw new IllegalArgumentException(
+              "The lifecycle owner has been set from the parent, owner = " + owner);
+        }
+        wrapper.setDelegate(owner);
+      } else {
+        throw new NullPointerException("The treePropContainer cannot be null");
       }
     } else {
       setInternalTreeProp(LifecycleOwnerTreeProp, owner);

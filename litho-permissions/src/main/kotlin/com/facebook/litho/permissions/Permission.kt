@@ -45,7 +45,10 @@ import java.util.UUID
  */
 @ExperimentalLithoApi
 @Hook
-fun ComponentScope.usePermission(permission: String): PermissionState {
+fun ComponentScope.usePermission(
+    permission: String,
+    onReceivePermissionResult: ((Boolean) -> Unit)? = null
+): PermissionState {
 
   val context = androidContext
   val activity =
@@ -95,9 +98,11 @@ fun ComponentScope.usePermission(permission: String): PermissionState {
   val key = useCached { UUID.randomUUID().toString() }
   useEffect(key, manager) {
     manager.launcher =
-        activity.activityResultRegistry.register(key, ActivityResultContracts.RequestPermission()) {
-          manager.updatePermissionStatus()
-        }
+        activity.activityResultRegistry.register(
+            key, ActivityResultContracts.RequestPermission()) { granted ->
+              manager.updatePermissionStatus()
+              onReceivePermissionResult?.invoke(granted)
+            }
     onCleanup { manager.launcher = null }
   }
   // endregion

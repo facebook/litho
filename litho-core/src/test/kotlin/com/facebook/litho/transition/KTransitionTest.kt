@@ -249,6 +249,33 @@ class KTransitionTest {
     }
   }
 
+  @Test
+  fun useTransition_alternateChangingDependency_propagatesCorrectDiff() {
+    val testLithoView = lithoViewRule.createTestLithoView()
+    var diff: Diff<Int> by Delegates.notNull()
+
+    class TestComponent(private val dep: Int) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        useTransition(dep) {
+          diff = diffOf(dep)
+          Transition.allLayout()
+        }
+        return Text(text = "Hello")
+      }
+    }
+    testLithoView.mount(TestComponent(10))
+    assertThat(diff.previous).isEqualTo(null)
+    assertThat(diff.next).isEqualTo(10)
+
+    // Mount with the same dependency
+    testLithoView.mount(TestComponent(10))
+    // Then mount with a different dependency
+    testLithoView.mount(TestComponent(100))
+
+    assertThat(diff.previous).isEqualTo(10)
+    assertThat(diff.next).isEqualTo(100)
+  }
+
   private fun TestLithoView.mount(component: Component) {
     ComponentTestHelper.mountComponent(lithoView, componentTree, component)
   }

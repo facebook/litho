@@ -19,7 +19,6 @@ package com.facebook.litho
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.infer.annotation.ThreadSafe
 import java.util.Collections
-import java.util.HashMap
 import java.util.Objects
 
 /**

@@ -295,11 +295,6 @@ internal constructor(
      */
     @JvmField var enableLoggingForInvalidAspectRatio: Boolean = false
     /**
-     * This flag is used to enable a fix for the issue where content description is not re-announced
-     * by TalkBack after a state update in some specific situations.
-     */
-    @JvmField var enableAccessibilityReannouncementFix: Boolean = false
-    /**
      * This flag is used to enable a change where a state update is skipped if the current and new
      * state value are null.
      */

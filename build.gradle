@@ -45,6 +45,10 @@ allprojects {
     tasks.withType(Javadoc).all {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
+    // Disabled until there's a workaround/fix for https://github.com/Kotlin/dokka/issues/2472
+    tasks.withType(com.android.build.gradle.tasks.JavaDocGenerationTask).all {
+        enabled = false
+    }
     configurations.all {
         // These are to prevent upgrade problems where second-party dependencies like Fresco may be
         // dependencing on a specific, older version of Litho causing dex merging conflicts.
