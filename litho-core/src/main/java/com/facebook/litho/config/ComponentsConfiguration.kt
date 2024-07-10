@@ -308,6 +308,12 @@ internal constructor(
     @JvmField var enableSkipNullStateUpdates: Boolean = false
 
     /**
+     * This flag is used to enable a fix for the race condition when two async updates are happening
+     * at the same time.
+     */
+    @JvmField var enableFixForTheRaceOfAsyncUpdates: Boolean = false
+
+    /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
      */
