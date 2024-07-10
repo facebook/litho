@@ -103,6 +103,11 @@ object MountItemsPool {
 
   @JvmStatic
   fun release(context: Context, poolableMountContent: ContentAllocator<*>, mountContent: Any) {
+    if (RenderCoreConfig.removeComponentHostListeners) {
+      if (mountContent is Host) {
+        mountContent.removeViewListeners()
+      }
+    }
     val pool =
         if (poolableMountContent.poolingPolicy.canReleaseContent) {
           getOrCreateMountContentPool(context, poolableMountContent)
