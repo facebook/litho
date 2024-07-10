@@ -35,6 +35,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.utils.CommonUtils;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -838,6 +839,17 @@ public class LithoView extends BaseMountingView {
   public String toString() {
     // dump this view and include litho internal UI data
     return super.toString() + LithoViewTestHelper.viewToString(this, true);
+  }
+
+  /**
+   * For Litho we will use the root as hint for which is the hierarchy backed by the {@link
+   * com.facebook.rendercore.MountState}.
+   */
+  @Nullable
+  @Override
+  public String getHostHierarchyMountStateIdentifier() {
+    Component root = mComponentTree == null ? null : mComponentTree.getRoot();
+    return root != null ? CommonUtils.getSectionNameForTracing(root.getClass()) : null;
   }
 
   static class MountStartupLoggingInfo {
