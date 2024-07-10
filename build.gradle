@@ -126,7 +126,7 @@ ext {
 
 ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')
 ext.isRelease = { forceReleaseBuild ||
-        ['publish', 'publishToMavenLocal'].any { gradle.startParameter.taskNames.contains(it) } }
+        ['publish', 'publishToMavenLocal', 'publishToMavenCentral', 'publishAndReleaseToMavenCentral'].any { gradle.startParameter.taskNames.contains(it) } }
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
 ext.isDokkaBuild = getGradle().getStartParameter().getTaskNames().toString().toLowerCase().contains("dokka")
 
