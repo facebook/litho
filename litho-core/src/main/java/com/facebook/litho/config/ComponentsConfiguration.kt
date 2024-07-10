@@ -169,7 +169,14 @@ internal constructor(
      * This will perform an optimization that will verify if the same size specs were used. However,
      * this creates a bug in a specific scenario where double measure happens.
      */
-    @JvmField val performExactSameSpecsCheck: Boolean = true
+    @JvmField val performExactSameSpecsCheck: Boolean = true,
+    /**
+     * Applies a fix for sticky header offsets to ensure the header is properly restored to the
+     * right position when scrolling back to the top of the list. There was a bug where the header
+     * was incorrectly positioned if the content was scrolled to the top of the list very fast while
+     * more items were being loaded
+     */
+    @JvmField val enableStickyHeaderOffsetFix: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

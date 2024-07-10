@@ -96,8 +96,21 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     }
 
     final int stickyHeaderPosition = findStickyHeaderPosition(firstVisiblePosition);
-    boolean shouldResetLastTranslatedView =
+    final boolean enableOffsetFix =
+        ComponentsConfiguration.defaultInstance.enableStickyHeaderOffsetFix;
+
+    ComponentTree firstVisibleItemComponentTree =
+        enableOffsetFix
+            ? mHasStickyHeader.getComponentForStickyHeaderAt(firstVisiblePosition)
+            : null;
+    boolean shouldResetLastTranslatedViewOld =
         (lastTranslatedView != null) && (previousStickyHeaderPosition != RecyclerView.NO_POSITION);
+    boolean shouldResetLastTranslatedViewFix =
+        lastTranslatedView != null
+            && firstVisibleItemComponentTree != null
+            && lastTranslatedView != firstVisibleItemComponentTree.getLithoView();
+    boolean shouldResetLastTranslatedView =
+        enableOffsetFix ? shouldResetLastTranslatedViewFix : shouldResetLastTranslatedViewOld;
 
     if (shouldResetLastTranslatedView) {
       // Reset previously modified view
@@ -105,7 +118,9 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
       lastTranslatedView = null;
     }
 
-    boolean noStickyHeader = (stickyHeaderPosition == RecyclerView.NO_POSITION);
+    boolean noStickyHeader =
+        stickyHeaderPosition == RecyclerView.NO_POSITION
+            || (enableOffsetFix && firstVisibleItemComponentTree == null);
     if (noStickyHeader) {
       // no sticky header above first visible position, reset the state
       mSectionsRecyclerView.hideStickyHeader();
@@ -115,8 +130,9 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     }
 
     if (firstVisiblePosition == stickyHeaderPosition) {
-      ComponentTree firstVisibleItemComponentTree =
-          mHasStickyHeader.getComponentForStickyHeaderAt(firstVisiblePosition);
+      if (!enableOffsetFix)
+        firstVisibleItemComponentTree =
+            mHasStickyHeader.getComponentForStickyHeaderAt(firstVisiblePosition);
       final LithoView firstVisibleView = firstVisibleItemComponentTree.getLithoView();
 
       if (firstVisibleView == null) {
