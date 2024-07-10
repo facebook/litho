@@ -2027,9 +2027,14 @@ public class RecyclerBinder
 
   @Override
   public final ComponentTree getComponentForStickyHeaderAt(int position) {
-
-    // As this method is called from the main thread, we can safely access the list without a lock.
-    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
+    final ComponentTreeHolder holder;
+    if (ComponentsConfiguration.enableFixForStickyHeader) {
+      // As this method is called from the main thread, we can safely access the list without a
+      // lock.
+      holder = mComponentTreeHolders.get(position);
+    } else {
+      holder = getComponentTreeHolderAt(position);
+    }
 
     final Size measuredSize;
     final int lastWidthSpec;

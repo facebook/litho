@@ -306,6 +306,8 @@ internal constructor(
      * state value are null.
      */
     @JvmField var enableSkipNullStateUpdates: Boolean = false
+    /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
+    @JvmField var enableFixForStickyHeader: Boolean = false
 
     /**
      * This flag is used to enable a fix for the race condition when two async updates are happening
