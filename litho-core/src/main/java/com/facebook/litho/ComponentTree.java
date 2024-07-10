@@ -262,6 +262,9 @@ public class ComponentTree
   @GuardedBy("this")
   private @Nullable TreeState mTreeState;
 
+  /** The flag to indicate whether we should remove the current resolve runnable. */
+  private final boolean mShouldRemoveCurrentResolveRunnable = false;
+
   protected final int mId;
 
   @GuardedBy("this")
@@ -1938,9 +1941,18 @@ public class ComponentTree
       }
     }
 
-    if (isAsync) {
+    if (!mShouldRemoveCurrentResolveRunnable) {
       synchronized (mCurrentDoLayoutRunnableLock) {
         if (mCurrentDoResolveRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
+          mCurrentDoResolveRunnable = null;
+        }
+      }
+    }
+
+    if (isAsync) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
+        if (mCurrentDoResolveRunnable != null && mShouldRemoveCurrentResolveRunnable) {
           mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
         }
         mCurrentDoResolveRunnable =
@@ -1985,10 +1997,12 @@ public class ComponentTree
       final int widthSpec,
       final int heightSpec) {
 
-    synchronized (mCurrentDoLayoutRunnableLock) {
-      if (mCurrentDoResolveRunnable != null) {
-        mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
-        mCurrentDoResolveRunnable = null;
+    if (mShouldRemoveCurrentResolveRunnable) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
+        if (mCurrentDoResolveRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
+          mCurrentDoResolveRunnable = null;
+        }
       }
     }
 
