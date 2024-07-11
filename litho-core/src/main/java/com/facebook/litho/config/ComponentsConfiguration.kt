@@ -314,6 +314,10 @@ internal constructor(
      * at the same time.
      */
     @JvmField var enableFixForTheRaceOfAsyncUpdates: Boolean = false
+    /**
+     * This flag is used to enable a change where a hook deps are compared using EquivalenceUtils.
+     */
+    @JvmField var enableCompareHooksDepsWithEquivalence: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
