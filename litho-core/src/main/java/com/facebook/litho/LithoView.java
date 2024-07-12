@@ -32,7 +32,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import androidx.lifecycle.LifecycleOwner;
-import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.utils.CommonUtils;
@@ -290,13 +289,10 @@ public class LithoView extends BaseMountingView {
       mDoMeasureInLayout = false;
     }
 
-    final TreeMountInfo mountInfo = getMountInfo();
-    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
-
     final boolean canAnimateRootBounds =
         !mSuppressMeasureComponentTree
             && mComponentTree != null
-            && (!mHasNewComponentTree || !hasMounted);
+            && (!mHasNewComponentTree || !hasMountedAtLeastOnce());
 
     if (canAnimateRootBounds) {
       // We might need to collect transitions before mount to know whether this LithoView has
@@ -557,7 +553,7 @@ public class LithoView extends BaseMountingView {
           && config.enableFixForIM
           && !mIsTemporaryDetached
           && !hasTransientState()) {
-        if (mComponentTree.hasMounted()) {
+        if (hasMountedAtLeastOnce()) {
           // If this is the first mount, we don't want to notify the visible bounds changed.
           notifyVisibleBoundsChanged();
         }

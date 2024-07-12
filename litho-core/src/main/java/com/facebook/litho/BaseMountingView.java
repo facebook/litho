@@ -676,6 +676,14 @@ public abstract class BaseMountingView extends ComponentHost
     return treeState != null ? treeState.getMountInfo() : null;
   }
 
+  /**
+   * @return Whether the current Litho tree has been mounted at least once.
+   */
+  protected boolean hasMountedAtLeastOnce() {
+    final TreeMountInfo mountInfo = getMountInfo();
+    return mountInfo != null && mountInfo.hasMounted;
+  }
+
   private void logReentrantMountsExceedMaxAttempts() {
     final String message =
         "Reentrant mounts exceed max attempts"
@@ -822,12 +830,10 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
-    final TreeMountInfo mountInfo = getMountInfo();
-    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
     final LayoutState layoutState = getCurrentLayoutState();
 
     return hasTree()
-        && !hasMounted
+        && !hasMountedAtLeastOnce()
         && layoutState != null
         && ((layoutState.getRootHeightAnimation() != null && currentVisibleArea.height() == 0)
             || (layoutState.getRootWidthAnimation() != null && currentVisibleArea.width() == 0));
@@ -1138,9 +1144,7 @@ public abstract class BaseMountingView extends ComponentHost
     if (rootBoundsTransition == null) {
       return SIZE_UNSET;
     }
-    final TreeState treeState = getTreeState();
-    final TreeMountInfo mountInfo = treeState != null ? treeState.getMountInfo() : null;
-    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
+    final boolean hasMounted = hasMountedAtLeastOnce();
     if (!hasMounted && rootBoundsTransition.appearTransition != null) {
       return (int)
           Transition.getRootAppearFromValue(
