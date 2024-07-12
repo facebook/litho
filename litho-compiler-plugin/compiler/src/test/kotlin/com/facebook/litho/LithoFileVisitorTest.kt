@@ -69,6 +69,8 @@ class LithoFileVisitorTest {
               messageOutputStream = System.out
               commandLineProcessors = listOf(LithoCommandLineProcessor())
               pluginOptions = listOf()
+              languageVersion = "1.9"
+              supportsK2 = false
             }
             .compile()
 
