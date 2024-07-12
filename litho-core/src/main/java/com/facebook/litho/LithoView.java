@@ -223,12 +223,12 @@ public class LithoView extends BaseMountingView {
 
   private void onMeasureInternal(int widthMeasureSpec, int heightMeasureSpec) {
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
-    final boolean animating = mAnimatedWidth != -1 || mAnimatedHeight != -1;
+    final boolean animating = mAnimatedWidth != SIZE_UNSET || mAnimatedHeight != SIZE_UNSET;
     // up to date view sizes, taking into account running animations
-    final int upToDateWidth = (mAnimatedWidth != -1) ? mAnimatedWidth : getWidth();
-    final int upToDateHeight = (mAnimatedHeight != -1) ? mAnimatedHeight : getHeight();
-    mAnimatedWidth = -1;
-    mAnimatedHeight = -1;
+    final int upToDateWidth = (mAnimatedWidth != SIZE_UNSET) ? mAnimatedWidth : getWidth();
+    final int upToDateHeight = (mAnimatedHeight != SIZE_UNSET) ? mAnimatedHeight : getHeight();
+    mAnimatedWidth = SIZE_UNSET;
+    mAnimatedHeight = SIZE_UNSET;
 
     if (animating) {
       // If the mount state is dirty, we want to ignore the current animation and calculate the
@@ -305,13 +305,13 @@ public class LithoView extends BaseMountingView {
 
       final int initialAnimatedWidth =
           getInitialAnimatedMountingViewWidth(upToDateWidth, mHasNewComponentTree);
-      if (initialAnimatedWidth != -1) {
+      if (initialAnimatedWidth != SIZE_UNSET) {
         width = initialAnimatedWidth;
       }
 
       final int initialAnimatedHeight =
           getInitialAnimatedMountingViewHeight(upToDateHeight, mHasNewComponentTree);
-      if (initialAnimatedHeight != -1) {
+      if (initialAnimatedHeight != SIZE_UNSET) {
         height = initialAnimatedHeight;
       }
     }
