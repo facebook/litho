@@ -18,13 +18,11 @@
 
 package com.facebook.litho.lifecycle
 
-import androidx.annotation.UiThread
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.facebook.litho.TreeProp
 import com.facebook.litho.treePropOf
-import com.facebook.rendercore.utils.ThreadUtils.assertMainThread
 
 @JvmField val LifecycleOwnerTreeProp: TreeProp<LifecycleOwner?> = treePropOf { null }
 
@@ -45,7 +43,6 @@ internal constructor(
   override val currentState: State
     get() = synchronized(this) { delegate?.lifecycle?.currentState ?: latestState }
 
-  @UiThread
   @Synchronized
   override fun addObserver(observer: LifecycleObserver) {
     // add new observer
@@ -58,7 +55,6 @@ internal constructor(
     // dispatched when the delegate is set
   }
 
-  @UiThread
   @Synchronized
   override fun removeObserver(observer: LifecycleObserver) {
     val delegate = delegate
@@ -69,11 +65,8 @@ internal constructor(
 
   override val lifecycle: Lifecycle = this
 
-  @UiThread
   @Synchronized
   fun setDelegate(value: LifecycleOwner?) {
-    assertMainThread()
-
     if (value == this) {
       throw IllegalArgumentException("Cannot set a LifecycleOwnerWrapper as its own delegate")
     }
@@ -111,6 +104,7 @@ internal constructor(
   fun hasObservers(): Boolean = observers.isNotEmpty()
 
   @JvmName("getDelegate")
+  @Synchronized
   internal fun getDelegate(): LifecycleOwner? {
     return delegate
   }
