@@ -228,11 +228,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   public int getChildWidthSpec(int index) {
-    throw new UnsupportedOperationException("Not implemented");
+    return mRecyclerBinder.getChildWidthSpec(index);
   }
 
   @Override
   public int getChildHeightSpec(int index) {
-    throw new UnsupportedOperationException("Not implemented");
+    return mRecyclerBinder.getChildHeightSpec(index);
   }
 }
