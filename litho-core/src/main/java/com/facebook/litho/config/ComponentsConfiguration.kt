@@ -48,18 +48,6 @@ internal constructor(
     val useIncrementalMountGapWorker: Boolean = IncrementalMountExtensionConfigs.useGapWorker,
     val useNonRebindingEventHandlers: Boolean = false,
     internal val shouldDisableBgFgOutputs: Boolean = false,
-    /**
-     * We have detected a scenario where we don't process visibility bounds change if the
-     * localVisibleRect goes of the viewport and a LithoView is nested on an Host that is still
-     * visible.
-     *
-     * This option attempts to tackle this issue by attempting to process an extra pass of IM if we
-     * detect the Rect became invisible.
-     *
-     * Check {@code BaseMountingView#isPreviousRectVisibleAndCurrentInvisible} to get more context.
-     */
-    @JvmField
-    val shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible: Boolean = false,
     /** Whether the [ComponentTree] should be using State Reconciliation. */
     @JvmField val isReconciliationEnabled: Boolean = true,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
@@ -336,8 +324,6 @@ internal constructor(
    */
   class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
 
-    private var shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
-        baseConfig.shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
     private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
@@ -372,12 +358,6 @@ internal constructor(
     private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
         baseConfig.sectionsRecyclerViewOnCreateHandler
     private var useStableIdsInRecyclerBinder = baseConfig.useStableIdsInRecyclerBinder
-
-    fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
-        enabled: Boolean
-    ): Builder = also {
-      shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible = enabled
-    }
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -498,8 +478,6 @@ internal constructor(
           componentHostPoolingPolicy = componentHostPoolingPolicy,
           componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
-          shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
-              shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible,
           errorEventHandler = errorEventHandler,
           logTag =
               if (logTag == null && componentsLogger != null) {
