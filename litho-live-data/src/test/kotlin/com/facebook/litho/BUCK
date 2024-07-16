@@ -60,5 +60,6 @@ litho_robolectric4_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        "//third-party/java/androidx/lifecycle/lifecycle-livedata:lifecycle-livedata",
     ],
 )

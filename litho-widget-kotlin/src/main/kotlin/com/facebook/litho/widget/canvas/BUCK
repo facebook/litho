@@ -32,6 +32,7 @@ litho_android_library(
         LITHO_JAVA_TARGET,
         LITHO_KOTLIN_STDLIB_TARGET,
         LITHO_RENDERCORE_PRIMITIVE_COMPONENTS_CANVAS_TARGET,
+        "//third-party/java/androidx/annotation/annotation:annotation",
     ],
     exported_deps = [
         LITHO_RENDERCORE_PRIMITIVE_COMPONENTS_UTILS_TARGET,

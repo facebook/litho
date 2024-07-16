@@ -8,7 +8,6 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET",
     "LITHO_ANDROIDSUPPORT_DYNAMICANIMATION_TARGET",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_BUILD_CONFIG_TARGET",
     "LITHO_FLEXLAYOUT_TARGET",
@@ -41,7 +40,6 @@ litho_android_library(
     ]),
     autoglob = False,
     exported_provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
     ],
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
@@ -57,6 +55,7 @@ litho_android_library(
     ],
     visibility = LITHO_VISIBILITY,
     deps = [
+        "//third-party/java/androidx/activity/activity:activity",
         "//third-party/java/androidx/lifecycle/lifecycle-runtime:lifecycle-runtime",
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
@@ -69,6 +68,7 @@ litho_android_library(
         LITHO_RENDERCORE_EXTENSIONS_RES_TARGET,
         LITHO_PERF_LOGGER,
         LITHO_FLEXLAYOUT_TARGET,
+        "//third-party/java/androidx/viewpager/viewpager:viewpager",
     ],
     exported_deps = [
         "//fbandroid/java/com/facebook/kotlin/compilerplugins/dataclassgenerate/annotation:dataclassgenerate-annotation",
@@ -83,5 +83,8 @@ litho_android_library(
         LITHO_YOGA_TARGET,
         LITHO_PERF_LOGGER,
         LITHO_FLEXLAYOUT_TARGET,
+        "//third-party/java/androidx/annotation/annotation:annotation",
+        "//third-party/java/androidx/core/core:core",
+        "//third-party/java/androidx/fragment/fragment:fragment",
     ],
 )

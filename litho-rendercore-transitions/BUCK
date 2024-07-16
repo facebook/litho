@@ -1,7 +1,6 @@
 load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JSR_TARGET",
     "LITHO_PROGUARD_ANNOTATIONS_TARGET",
@@ -22,7 +21,6 @@ fb_android_library(
     feature = FBApp_UIFrameworks_Litho,
     labels = [],
     provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JSR_TARGET,
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
     ],
@@ -32,5 +30,8 @@ fb_android_library(
     deps = [
         LITHO_RENDERCORE_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
+        "//third-party/java/androidx/annotation/annotation:annotation",
+        "//third-party/java/androidx/collection/collection:collection",
+        "//third-party/java/androidx/core/core:core",
     ],
 )

@@ -6,7 +6,6 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_ASSERTJ_TARGET",
@@ -74,7 +73,6 @@ litho_android_test_library(
     autoglob = False,
     language = "JAVA",
     deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_HAMCREST_TARGET,
         LITHO_JAVA_TARGET,
@@ -82,6 +80,7 @@ litho_android_test_library(
         LITHO_TESTING_ASSERTJ_TARGET,
         LITHO_TESTING_TARGET,
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
+        "//third-party/java/androidx/annotation/annotation:annotation",
     ],
     exported_deps = [
         make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho"),

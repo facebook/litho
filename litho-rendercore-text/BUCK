@@ -1,7 +1,6 @@
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_RENDERCORE_PRIMITIVES_TARGET",
     "LITHO_RENDERCORE_TARGET",
@@ -27,11 +26,12 @@ litho_android_library(
         ":res",
         LITHO_RENDERCORE_TARGET,
         LITHO_TEXTLAYOUTBUILDER_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_RENDERCORE_PRIMITIVES_TARGET,
         "//fbandroid/android_res/rendercore:rendercore",
         "//fbandroid/java/com/facebook/proguard/annotations:annotations",
+        "//third-party/java/androidx/core/core-ktx:core-ktx",
+        "//third-party/java/androidx/customview/customview:customview",
     ],
 )
 

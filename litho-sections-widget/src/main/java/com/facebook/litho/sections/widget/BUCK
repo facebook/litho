@@ -8,7 +8,6 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JAVA_TARGET",
@@ -45,7 +44,6 @@ litho_android_library(
     deps = [
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,

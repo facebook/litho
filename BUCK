@@ -7,7 +7,6 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_BUILD_CONFIG_TARGET",
     "LITHO_COMPONENTS_TARGET_VISIBILITY",
     "LITHO_COROUTINES_KOTLIN_TARGET",
@@ -37,9 +36,11 @@ litho_android_library(
         LITHO_BUILD_CONFIG_TARGET,
     ],
     exported_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_YOGA_TARGET,
+        "//third-party/java/androidx/annotation/annotation:annotation",
+        "//third-party/java/androidx/core/core:core",
+        "//third-party/java/androidx/fragment/fragment:fragment",
     ],
 )
 

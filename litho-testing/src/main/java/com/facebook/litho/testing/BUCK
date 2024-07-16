@@ -6,7 +6,6 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
     "LITHO_FRESCO_TARGET",
@@ -66,7 +65,6 @@ litho_android_test_library(
     ],
     deps = [
         LITHO_GUAVA_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_RES_TARGET,
         LITHO_JSR_TARGET,
