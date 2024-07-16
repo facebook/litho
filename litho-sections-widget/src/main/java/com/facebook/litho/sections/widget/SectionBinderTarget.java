@@ -226,4 +226,13 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
       mRecyclerBinder.removeRangeAt(0, mRecyclerBinder.getItemCount());
     }
   }
+
+  public int getChildWidthSpec(int index) {
+    throw new UnsupportedOperationException("Not implemented");
+  }
+
+  @Override
+  public int getChildHeightSpec(int index) {
+    throw new UnsupportedOperationException("Not implemented");
+  }
 }

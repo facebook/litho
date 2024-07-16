@@ -102,4 +102,8 @@ public interface Binder<V extends ViewGroup> {
 
   /** Detach items under the hood. */
   void detach();
+
+  int getChildWidthSpec(int index);
+
+  int getChildHeightSpec(int index);
 }
