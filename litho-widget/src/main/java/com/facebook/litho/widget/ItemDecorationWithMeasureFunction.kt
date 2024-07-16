@@ -22,6 +22,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.facebook.rendercore.utils.ThreadUtils
 
+/**
+ * Creates an [ItemDecoration] that provides the developer a function to measure the [View] if the
+ * insets required depend on the measured size of the [View]. The [measure] function will use the
+ * size constraints recorded by [Binder] of the Recycler Component. This approach is required
+ * because the [RecyclerView] gets the insets from the [ItemDecoration] before the [View] is
+ * measured, so the measured size of the view is 0, and the insets would not be correct.
+ */
 abstract class ItemDecorationWithMeasureFunction() : ItemDecoration() {
 
   internal var measure: (View.() -> Unit)? = null
@@ -35,7 +42,7 @@ abstract class ItemDecorationWithMeasureFunction() : ItemDecoration() {
       return field
     }
 
-  override fun getItemOffsets(
+  final override fun getItemOffsets(
       outRect: Rect,
       view: View,
       parent: RecyclerView,
