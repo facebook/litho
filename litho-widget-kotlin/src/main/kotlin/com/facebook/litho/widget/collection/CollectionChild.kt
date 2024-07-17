@@ -30,5 +30,6 @@ data class CollectionChild(
     val parentWidthPercent: Float = -1f,
     val parentHeightPercent: Float = -1f,
     val deps: Array<Any?>? = null,
+    val customAttributes: Map<String, Any?>? = null,
     val onNearViewport: OnNearCallback? = null,
 )

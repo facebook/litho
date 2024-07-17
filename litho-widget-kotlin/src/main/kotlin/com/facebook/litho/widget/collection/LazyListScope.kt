@@ -53,6 +53,7 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
           false,
           null,
           onNearViewport,
+          null,
           parentWidthPercent,
           parentHeightPercent)
 

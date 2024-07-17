@@ -70,6 +70,7 @@ class LazyCollectionChildren {
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
       onNearViewport: OnNearCallback? = null,
+      customAttributes: Map<String, Any?>? = null,
       parentWidthPercent: Float = -1f,
       parentHeightPercent: Float = -1f,
   ) {
@@ -86,6 +87,7 @@ class LazyCollectionChildren {
             parentWidthPercent,
             parentHeightPercent,
             null,
+            customAttributes,
             onNearViewport,
         )
     collectionChildrenBuilder.add(child)
@@ -114,6 +116,7 @@ class LazyCollectionChildren {
             parentWidthPercent,
             parentHeightPercent,
             deps,
+            null,
             onNearViewport,
         )
     collectionChildrenBuilder.add(child)

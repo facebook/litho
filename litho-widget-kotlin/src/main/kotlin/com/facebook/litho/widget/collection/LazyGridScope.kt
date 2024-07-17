@@ -44,7 +44,8 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
       onNearViewport: OnNearCallback? = null,
-  ) = children.add(component, id, isSticky, isFullSpan, spanSize, onNearViewport)
+      customAttributes: Map<String, Any?>? = null,
+  ) = children.add(component, id, isSticky, isFullSpan, spanSize, onNearViewport, customAttributes)
 
   /**
    * Add a child [Component] created by the provided [componentFunction] function.
