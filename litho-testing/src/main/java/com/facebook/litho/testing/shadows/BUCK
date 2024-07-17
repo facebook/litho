@@ -5,7 +5,6 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_YOGA_TARGET",
     "litho_android_library",
@@ -19,7 +18,6 @@ litho_android_library(
         make_dep_path("litho-it/src/test/..."),
     ],
     deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ROBOLECTRIC_V4_TARGET,
         LITHO_YOGA_TARGET,
     ],

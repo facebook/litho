@@ -16,7 +16,6 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_STDLIB_TARGET",
@@ -33,7 +32,6 @@ litho_android_library(
     k2 = False,
     labels = [],
     provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
     ],
     required_for_source_only_abi = True,
     visibility = [

@@ -4,7 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JSR_TARGET",
     "LITHO_PROCESSOR_TARGET",
@@ -30,7 +29,6 @@ litho_android_test_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,

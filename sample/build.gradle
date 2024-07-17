@@ -46,6 +46,7 @@ dependencies {
     implementation project(':litho-core')
     implementation project(':litho-coroutines-kotlin')
     implementation project(':litho-editor-core')
+    implementation project(':litho-editor-flipper')
     implementation project(':litho-fresco')
     implementation project(':litho-fresco-kotlin')
     implementation project(':litho-live-data')
@@ -59,6 +60,8 @@ dependencies {
 
     // First-party
     implementation deps.soloader
+    implementation deps.flipper
+    implementation deps.flipperLithoPlugin
     implementation deps.fresco
     implementation deps.frescoVito
     implementation deps.frescoVitoLitho
@@ -100,4 +103,8 @@ dependencies {
     testImplementation deps.supportTestCore
     testImplementation deps.assertjCore
     testImplementation deps.mockitoCore
+}
+
+kotlin {
+    jvmToolchain(17)
 }

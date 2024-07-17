@@ -72,10 +72,20 @@ abstract class Host(context: Context, attrs: AttributeSet?) : ViewGroup(context,
   open val descriptionOfMountedItems: String
     get() = ""
 
+  /**
+   * Returns a [String] identifier that should be used to help to understand which kind of hierarchy
+   * is being backed in the [MountState]. This information will be used for traces and debugging
+   * purposes.
+   */
+  open val hostHierarchyMountStateIdentifier: String?
+    get() = null
+
   /** Use this API to remove all mounted items from the Host to recover from errors. */
   open fun safelyUnmountAll() {}
 
   open fun setInLayout() {}
 
   open fun unsetInLayout() {}
+
+  open fun removeViewListeners() {}
 }

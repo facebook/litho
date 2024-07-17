@@ -5,7 +5,6 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_PROCESSOR_TARGET",
@@ -22,9 +21,9 @@ litho_android_test_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_YOGA_TARGET,
+        "//third-party/java/androidx/annotation/annotation:annotation",
     ],
 )

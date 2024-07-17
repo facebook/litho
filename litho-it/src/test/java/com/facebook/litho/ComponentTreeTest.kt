@@ -79,7 +79,6 @@ class ComponentTreeTest {
 
   private lateinit var context: ComponentContext
   private lateinit var component: Component
-  private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
   private var widthSpec: Int = 0
   private var widthSpec2: Int = 0
@@ -96,10 +95,6 @@ class ComponentTreeTest {
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
                 as Looper)
-    resolveThreadShadowLooper =
-        Shadows.shadowOf(
-            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
-                as Looper)
     widthSpec = makeSizeSpec(39, EXACTLY)
     widthSpec2 = makeSizeSpec(40, EXACTLY)
     heightSpec = makeSizeSpec(41, EXACTLY)
@@ -107,12 +102,10 @@ class ComponentTreeTest {
   }
 
   private fun runToEndOfTasks() {
-    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 
   private fun runOneTask() {
-    resolveThreadShadowLooper.runOneTask()
     layoutThreadShadowLooper.runOneTask()
   }
 

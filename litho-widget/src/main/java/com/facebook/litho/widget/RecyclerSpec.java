@@ -61,6 +61,8 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import java.util.List;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Components that renders a {@link RecyclerView}.
@@ -210,6 +212,7 @@ class RecyclerSpec {
       @Prop(optional = true) int scrollBarStyle,
       @Nullable @Prop(optional = true, varArg = "itemDecoration")
           List<RecyclerView.ItemDecoration> itemDecorations,
+      @State Function1<View, Unit> childMeasureFunction,
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
@@ -254,6 +257,9 @@ class RecyclerSpec {
 
     if (itemDecorations != null) {
       for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
+        if (itemDecoration instanceof ItemDecorationWithMeasureFunction) {
+          ((ItemDecorationWithMeasureFunction) itemDecoration).setMeasure(childMeasureFunction);
+        }
         recyclerView.addItemDecoration(itemDecoration);
       }
     }
@@ -410,6 +416,9 @@ class RecyclerSpec {
 
     if (itemDecorations != null) {
       for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
+        if (itemDecoration instanceof ItemDecorationWithMeasureFunction) {
+          ((ItemDecorationWithMeasureFunction) itemDecoration).setMeasure(null);
+        }
         recyclerView.removeItemDecoration(itemDecoration);
       }
     }
@@ -536,8 +545,18 @@ class RecyclerSpec {
   }
 
   @OnCreateInitialState
-  protected static void onCreateInitialState(StateValue<Integer> measureVersion) {
+  protected static void onCreateInitialState(
+      StateValue<Integer> measureVersion,
+      StateValue<Function1<View, Unit>> childMeasureFunction,
+      @Prop Binder<RecyclerView> binder) {
     measureVersion.set(0);
+    childMeasureFunction.set(
+        view -> {
+          int position =
+              ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewLayoutPosition();
+          view.measure(binder.getChildWidthSpec(position), binder.getChildWidthSpec(position));
+          return Unit.INSTANCE;
+        });
   }
 
   @OnUpdateState

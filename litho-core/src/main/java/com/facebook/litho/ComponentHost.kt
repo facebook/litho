@@ -533,6 +533,16 @@ open class ComponentHost(
     releaseScrapDataStructuresIfNeeded()
   }
 
+  override fun removeViewListeners() {
+    withSafeModification {
+      setOnClickListener(null)
+      componentLongClickListener?.eventHandler = null
+      componentFocusChangeListener?.eventHandler = null
+      componentTouchListener?.eventHandler = null
+      setInterceptTouchEventHandler(null)
+    }
+  }
+
   private fun isIllegalMountItemMove(mountItem: MountItem, moveFromIndex: Int): Boolean {
     // If the mount item exists at the given index in the mount items array, this is a legal move.
     return if (mountItem == mountItems[moveFromIndex]) {

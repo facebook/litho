@@ -5,7 +5,6 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JSR_TARGET",
     "LITHO_PROGUARDANNOTATIONS_TARGET",
@@ -23,7 +22,6 @@ litho_android_library(
     autoglob = False,
     extra_kotlinc_arguments = ["-Xjvm-default=all"],
     provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JSR_TARGET,
         LITHO_PROGUARDANNOTATIONS_TARGET,
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
@@ -34,6 +32,9 @@ litho_android_library(
         ":build_config",
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_RES_TARGET,
+        "//third-party/java/androidx/annotation/annotation:annotation",
+        "//third-party/java/androidx/core/core:core",
+        "//third-party/java/androidx/core/core-ktx:core-ktx",
     ],
 )
 

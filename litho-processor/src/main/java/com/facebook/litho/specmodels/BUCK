@@ -7,7 +7,6 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_GUAVA_TARGET",
     "LITHO_JAVAPOET_TARGET",
@@ -58,8 +57,8 @@ fb_java_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        "//third-party/java/androidx/annotation/annotation:annotation",
     ],
     exported_deps = [
         LITHO_ANNOTATIONS_TARGET,
@@ -92,7 +91,6 @@ fb_java_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
     ],
 )

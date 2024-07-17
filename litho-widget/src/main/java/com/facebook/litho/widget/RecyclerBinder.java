@@ -40,6 +40,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -2027,9 +2028,14 @@ public class RecyclerBinder
 
   @Override
   public final ComponentTree getComponentForStickyHeaderAt(int position) {
-
-    // As this method is called from the main thread, we can safely access the list without a lock.
-    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
+    final ComponentTreeHolder holder;
+    if (ComponentsConfiguration.enableFixForStickyHeader) {
+      // As this method is called from the main thread, we can safely access the list without a
+      // lock.
+      holder = mComponentTreeHolders.get(position);
+    } else {
+      holder = getComponentTreeHolderAt(position);
+    }
 
     final Size measuredSize;
     final int lastWidthSpec;
@@ -3504,6 +3510,18 @@ public class RecyclerBinder
     return mLayoutInfo.getScrollDirection() == HORIZONTAL
         ? mSizeForMeasure.height
         : mSizeForMeasure.width;
+  }
+
+  @Override
+  public synchronized int getChildWidthSpec(int index) {
+    ComponentTreeHolder holder = Preconditions.checkNotNull(mComponentTreeHolders.get(index));
+    return getActualChildrenWidthSpec(holder, mMeasuredSize, mLastWidthSpec);
+  }
+
+  @Override
+  public synchronized int getChildHeightSpec(int index) {
+    ComponentTreeHolder holder = Preconditions.checkNotNull(mComponentTreeHolders.get(index));
+    return getActualChildrenHeightSpec(holder, mMeasuredSize, mLastHeightSpec);
   }
 
   private int getActualChildrenWidthSpec(

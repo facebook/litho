@@ -36,7 +36,6 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(LithoTestRunner::class)
 class LithoStatsTest {
 
-  private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
   private lateinit var context: ComponentContext
   private lateinit var testComponent: StateUpdateTestComponent
@@ -49,7 +48,6 @@ class LithoStatsTest {
   @Before
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    resolveThreadShadowLooper = ComponentTestHelper.getDefaultResolveThreadShadowLooper()
     layoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper()
     testComponent = StateUpdateTestComponent()
     testComponentKey = testComponent.key
@@ -61,28 +59,24 @@ class LithoStatsTest {
   }
 
   private fun runToEndOfTasks() {
-    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 
   private fun runOneTask() {
-    if (this::resolveThreadShadowLooper.isInitialized) {
-      resolveThreadShadowLooper.runOneTask()
-    }
     layoutThreadShadowLooper.runOneTask()
   }
 
   @Test
   fun updateStateAsync_incrementsAsyncCountAndTotalCount() {
-    val beforeSync = LithoStats.getComponentTriggeredSyncStateUpdateCount()
-    val beforeAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount()
-    val beforeTotal = LithoStats.getComponentAppliedStateUpdateCount()
+    val beforeSync = LithoStats.componentTriggeredSyncStateUpdateCount
+    val beforeAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
+    val beforeTotal = LithoStats.componentAppliedStateUpdateCount
     componentTree.updateStateAsync(
         testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
     runToEndOfTasks()
-    val afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount()
-    val afterAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount()
-    val afterTotal = LithoStats.getComponentAppliedStateUpdateCount()
+    val afterSync = LithoStats.componentTriggeredSyncStateUpdateCount
+    val afterAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
+    val afterTotal = LithoStats.componentAppliedStateUpdateCount
     assertThat(afterSync - beforeSync).isEqualTo(0)
     assertThat(afterAsync - beforeAsync).isEqualTo(1)
     assertThat(afterTotal - beforeTotal).isEqualTo(1)
@@ -90,15 +84,15 @@ class LithoStatsTest {
 
   @Test
   fun updateStateSync_incrementsSyncAndTotalCount() {
-    val beforeSync = LithoStats.getComponentTriggeredSyncStateUpdateCount()
-    val beforeAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount()
-    val beforeTotal = LithoStats.getComponentAppliedStateUpdateCount()
+    val beforeSync = LithoStats.componentTriggeredSyncStateUpdateCount
+    val beforeAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
+    val beforeTotal = LithoStats.componentAppliedStateUpdateCount
     componentTree.updateStateSync(
         testComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false)
     runToEndOfTasks()
-    val afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount()
-    val afterAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount()
-    val afterTotal = LithoStats.getComponentAppliedStateUpdateCount()
+    val afterSync = LithoStats.componentTriggeredSyncStateUpdateCount
+    val afterAsync = LithoStats.componentTriggeredAsyncStateUpdateCount
+    val afterTotal = LithoStats.componentAppliedStateUpdateCount
     assertThat(afterSync - beforeSync).isEqualTo(1)
     assertThat(afterAsync - beforeAsync).isEqualTo(0)
     assertThat(afterTotal - beforeTotal).isEqualTo(1)
@@ -106,19 +100,19 @@ class LithoStatsTest {
 
   @Test
   fun setRoot_incrementsCalculateLayoutOnUIAndTotalCount() {
-    val beforeLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount()
-    val beforeLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount()
+    val beforeLayoutCalculationCount = LithoStats.componentCalculateLayoutCount
+    val beforeLayoutCalculationOnUICount = LithoStats.componentCalculateLayoutOnUICount
     componentTree.root = StateUpdateTestComponent()
-    val afterLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount()
-    val afterLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount()
+    val afterLayoutCalculationCount = LithoStats.componentCalculateLayoutCount
+    val afterLayoutCalculationOnUICount = LithoStats.componentCalculateLayoutOnUICount
     assertThat(afterLayoutCalculationCount - beforeLayoutCalculationCount).isEqualTo(1)
     assertThat(afterLayoutCalculationOnUICount - beforeLayoutCalculationOnUICount).isEqualTo(1)
   }
 
   @Test
   fun setRootAsync_incrementsCalculateLayoutTotalCount() {
-    val beforeLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount()
-    val beforeLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount()
+    val beforeLayoutCalculationCount = LithoStats.componentCalculateLayoutCount
+    val beforeLayoutCalculationOnUICount = LithoStats.componentCalculateLayoutOnUICount
     componentTree.setRootAsync(StateUpdateTestComponent())
     val latch = CountDownLatch(1)
     Thread {
@@ -130,18 +124,18 @@ class LithoStatsTest {
         }
         .start()
     latch.await()
-    val afterLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount()
-    val afterLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount()
+    val afterLayoutCalculationCount = LithoStats.componentCalculateLayoutCount
+    val afterLayoutCalculationOnUICount = LithoStats.componentCalculateLayoutOnUICount
     assertThat(afterLayoutCalculationCount - beforeLayoutCalculationCount).isEqualTo(1)
     assertThat(afterLayoutCalculationOnUICount - beforeLayoutCalculationOnUICount).isEqualTo(0)
   }
 
   @Test
   fun mount_incrementsMountCount() {
-    val beforeMountCount = LithoStats.getComponentMountCount()
+    val beforeMountCount = LithoStats.componentMountCount
     val component = TextInput.create(legacyLithoViewRule.context).build()
     legacyLithoViewRule.attachToWindow().setRoot(component).measure().layout()
-    val afterMountCount = LithoStats.getComponentMountCount()
+    val afterMountCount = LithoStats.componentMountCount
     assertThat(afterMountCount - beforeMountCount).isEqualTo(1)
   }
 }

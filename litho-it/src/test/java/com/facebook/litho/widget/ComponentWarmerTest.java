@@ -22,7 +22,6 @@ import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import android.os.HandlerThread;
 import android.os.Looper;
-import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -56,7 +55,6 @@ public class ComponentWarmerTest {
   private ComponentContext mContext;
   private ComponentRenderInfo mComponentRenderInfo;
   private ComponentRenderInfo mPrepareComponentRenderInfo;
-  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
   private int mWidthSpec;
   private int mHeightSpec;
@@ -76,18 +74,11 @@ public class ComponentWarmerTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-    mResolveThreadShadowLooper =
-        Shadows.shadowOf(
-            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
     mWidthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     mHeightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
   }
 
   private void runToEndOfTasks() {
-    if (mResolveThreadShadowLooper != null) {
-      mResolveThreadShadowLooper.runToEndOfTasks();
-    }
-
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 

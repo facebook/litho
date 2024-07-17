@@ -208,17 +208,27 @@ constructor(
     if (isTracing) {
       tracer.beginSection(sectionName("$description:mount-fixed"))
     }
+
     for (i in 0 until fixedMountBindersSize) {
       val binder = fixedMountBinders[i]
       if (isTracing) {
         tracer.beginSection(sectionName(binder.description))
       }
-      val binderBindData = binder.bind(context, content, layoutData)
-      bindData.setFixedBindersBindData(binderBindData, i, fixedMountBindersSize)
-      if (isTracing) {
-        tracer.endSection()
+      try {
+        val binderBindData = binder.bind(context, content, layoutData)
+        bindData.setFixedBindersBindData(binderBindData, i, fixedMountBindersSize)
+      } catch (exception: Exception) {
+        throw RenderUnitOperationException(
+            renderUnit = this,
+            message = "Exception binding fixed mount binder: ${binder.description}",
+            cause = exception)
+      } finally {
+        if (isTracing) {
+          tracer.endSection()
+        }
       }
     }
+
     if (isTracing) {
       tracer.endSection()
     }
@@ -244,11 +254,20 @@ constructor(
       if (isTracing) {
         tracer.beginSection(sectionName(binder.description))
       }
-      val binderBindData = binder.bind(context, content, layoutData)
-      bindData.setOptionalMountBindersBindData(
-          binderBindData, binder.binder.javaClass, optionalMountBindersSize)
-      if (isTracing) {
-        tracer.endSection()
+
+      try {
+        val binderBindData = binder.bind(context, content, layoutData)
+        bindData.setOptionalMountBindersBindData(
+            binderBindData, binder.binder.javaClass, optionalMountBindersSize)
+      } catch (exception: Exception) {
+        throw RenderUnitOperationException(
+            renderUnit = this,
+            message = "Exception while mounting optional mount binder: ${binder.description}",
+            cause = exception)
+      } finally {
+        if (isTracing) {
+          tracer.endSection()
+        }
       }
     }
     if (isTracing) {
@@ -274,9 +293,17 @@ constructor(
       if (isTracing) {
         tracer.beginSection(sectionName(binder.description))
       }
-      binder.unbind(context, content, layoutData, bindData.removeFixedBinderBindData(i))
-      if (isTracing) {
-        tracer.endSection()
+      try {
+        binder.unbind(context, content, layoutData, bindData.removeFixedBinderBindData(i))
+      } catch (exception: Exception) {
+        throw RenderUnitOperationException(
+            renderUnit = this,
+            message = "Exception while unmounting fixed binder: ${binder.description}",
+            cause = exception)
+      } finally {
+        if (isTracing) {
+          tracer.endSection()
+        }
       }
     }
     if (isTracing) {
@@ -302,13 +329,23 @@ constructor(
         if (isTracing) {
           tracer.beginSection(sectionName(binder.description))
         }
-        binder.unbind(
-            context,
-            content,
-            layoutData,
-            bindData.removeOptionalMountBindersBindData(binder.binder.javaClass))
-        if (isTracing) {
-          tracer.endSection()
+
+        try {
+          binder.unbind(
+              context,
+              content,
+              layoutData,
+              bindData.removeOptionalMountBindersBindData(binder.binder.javaClass))
+        } catch (exception: Exception) {
+          throw RenderUnitOperationException(
+              renderUnit = this,
+              message =
+                  "Exception while unmounting optional binder: [$description] ${binder.description}",
+              cause = exception)
+        } finally {
+          if (isTracing) {
+            tracer.endSection()
+          }
         }
       }
       if (isTracing) {
@@ -407,11 +444,18 @@ constructor(
 
     // 1. Resolve fixed mount binders which should update.
     val fixedMountBindersToUpdate =
-        resolveFixedMountBindersToUpdate(
-            currentRenderUnit.fixedMountBinders,
-            fixedMountBinders,
-            currentLayoutData,
-            newLayoutData)
+        try {
+          resolveFixedMountBindersToUpdate(
+              currentRenderUnit.fixedMountBinders,
+              fixedMountBinders,
+              currentLayoutData,
+              newLayoutData)
+        } catch (exception: Exception) {
+          throw RenderUnitOperationException(
+              renderUnit = this,
+              message = "Exception resolving fixed mount binders to update",
+              cause = exception)
+        }
 
     // 2. Diff the binders to resolve what's to bind/unbind.
     resolveBindersToUpdate(
@@ -843,6 +887,22 @@ constructor(
       return if (name.length <= MAX_DESCRIPTION_LENGTH) {
         name
       } else name.substring(0, MAX_DESCRIPTION_LENGTH)
+    }
+  }
+
+  /**
+   * This is a wrapper [Exception] that appends information about the [RenderUnit] that caused the
+   * exception.
+   *
+   * The [message] should help to reflect which was the faulty operation and provide specific
+   * contextual data if possible.
+   */
+  class RenderUnitOperationException(renderUnit: RenderUnit<*>, message: String, cause: Throwable) :
+      RuntimeException("[${renderUnit.description}] $message") {
+
+    init {
+      initCause(cause)
+      stackTrace = emptyArray()
     }
   }
 }

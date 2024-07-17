@@ -44,6 +44,25 @@ fb_native.android_binary(
     ],
 )
 
+fb_native.android_binary(
+    name = "sample_arm64",
+    aapt_mode = "aapt2",
+    allow_r_dot_java_in_secondary_dex = True,
+    cpu_filters = ["arm64"],
+    includes_vector_drawables = True,
+    keystore = DEBUG_KEYSTORE,
+    manifest = ":manifest",
+    primary_dex_patterns = NORMAL_PRIMARY_DEX_PATTERNS,
+    use_split_dex = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_SAMPLE,
+        CARIBOU_PREVIEW,
+    ],
+)
+
 fb_native.android_manifest(
     name = "manifest",
     skeleton = "src/main/AndroidManifest.xml",

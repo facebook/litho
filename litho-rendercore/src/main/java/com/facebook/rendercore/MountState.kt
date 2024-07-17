@@ -123,20 +123,20 @@ constructor(
       checkNotNull(this.renderTree)
 
       val isTracing = tracer.isTracing()
+      val hostHierarchyIdentifier = _rootHost.hostHierarchyMountStateIdentifier
       if (isTracing) {
-        tracer.beginSection("MountState.mount")
+        tracer.beginSection(
+            "MountState.mount${if(hostHierarchyIdentifier.isNullOrBlank()) "" else "[$hostHierarchyIdentifier]"}")
         tracer.beginSection("RenderCoreExtension.beforeMount")
       }
 
       RenderCoreExtension.beforeMount(_rootHost, _mountDelegate, renderTree.extensionResults)
-
       if (isTracing) {
         tracer.endSection()
         tracer.beginSection("MountState.prepareMount")
       }
 
       prepareMount(previousRenderTree)
-
       if (isTracing) {
         tracer.endSection()
       }
@@ -169,6 +169,9 @@ constructor(
       }
 
       RenderCoreExtension.afterMount(_mountDelegate)
+      if (isTracing) {
+        tracer.endSection()
+      }
 
       isMounting = false
 
@@ -180,10 +183,6 @@ constructor(
         if (isTracing) {
           tracer.endSection()
         }
-      }
-
-      if (isTracing) {
-        tracer.endSection()
       }
     } catch (e: Exception) {
       ErrorReporter.report(

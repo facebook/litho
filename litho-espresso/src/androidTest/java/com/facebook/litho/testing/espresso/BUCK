@@ -5,7 +5,6 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_CONTACT_NAME",
@@ -49,7 +48,6 @@ fb_core_android_library(
         LITHO_PROCESSOR_TARGET,
     ],
     provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,
     ],
     deps = [

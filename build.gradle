@@ -126,7 +126,7 @@ ext {
 
 ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')
 ext.isRelease = { forceReleaseBuild ||
-        ['publish', 'publishToMavenLocal'].any { gradle.startParameter.taskNames.contains(it) } }
+        ['publish', 'publishToMavenLocal', 'publishToMavenCentral', 'publishAndReleaseToMavenCentral'].any { gradle.startParameter.taskNames.contains(it) } }
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
 ext.isDokkaBuild = getGradle().getStartParameter().getTaskNames().toString().toLowerCase().contains("dokka")
 
@@ -164,8 +164,8 @@ ext.deps = [
         soloader           : 'com.facebook.soloader:soloader:0.10.5',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.7.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
-        flipper            : 'com.facebook.flipper:flipper:0.250.0',
-        flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.250.0',
+        flipper            : 'com.facebook.flipper:flipper:0.258.0',
+        flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.258.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',

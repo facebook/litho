@@ -48,18 +48,6 @@ internal constructor(
     val useIncrementalMountGapWorker: Boolean = IncrementalMountExtensionConfigs.useGapWorker,
     val useNonRebindingEventHandlers: Boolean = false,
     internal val shouldDisableBgFgOutputs: Boolean = false,
-    /**
-     * We have detected a scenario where we don't process visibility bounds change if the
-     * localVisibleRect goes of the viewport and a LithoView is nested on an Host that is still
-     * visible.
-     *
-     * This option attempts to tackle this issue by attempting to process an extra pass of IM if we
-     * detect the Rect became invisible.
-     *
-     * Check {@code BaseMountingView#isPreviousRectVisibleAndCurrentInvisible} to get more context.
-     */
-    @JvmField
-    val shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible: Boolean = false,
     /** Whether the [ComponentTree] should be using State Reconciliation. */
     @JvmField val isReconciliationEnabled: Boolean = true,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
@@ -169,7 +157,14 @@ internal constructor(
      * This will perform an optimization that will verify if the same size specs were used. However,
      * this creates a bug in a specific scenario where double measure happens.
      */
-    @JvmField val performExactSameSpecsCheck: Boolean = true
+    @JvmField val performExactSameSpecsCheck: Boolean = true,
+    /**
+     * Applies a fix for sticky header offsets to ensure the header is properly restored to the
+     * right position when scrolling back to the top of the list. There was a bug where the header
+     * was incorrectly positioned if the content was scrolled to the top of the list very fast while
+     * more items were being loaded
+     */
+    @JvmField val enableStickyHeaderOffsetFix: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -299,6 +294,18 @@ internal constructor(
      * state value are null.
      */
     @JvmField var enableSkipNullStateUpdates: Boolean = false
+    /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
+    @JvmField var enableFixForStickyHeader: Boolean = false
+
+    /**
+     * This flag is used to enable a fix for the race condition when two async updates are happening
+     * at the same time.
+     */
+    @JvmField var enableFixForTheRaceOfAsyncUpdates: Boolean = false
+    /**
+     * This flag is used to enable a change where a hook deps are compared using EquivalenceUtils.
+     */
+    @JvmField var enableCompareHooksDepsWithEquivalence: Boolean = false
 
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
@@ -317,8 +324,6 @@ internal constructor(
    */
   class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
 
-    private var shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
-        baseConfig.shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
     private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
@@ -353,12 +358,6 @@ internal constructor(
     private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
         baseConfig.sectionsRecyclerViewOnCreateHandler
     private var useStableIdsInRecyclerBinder = baseConfig.useStableIdsInRecyclerBinder
-
-    fun shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible(
-        enabled: Boolean
-    ): Builder = also {
-      shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible = enabled
-    }
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -479,8 +478,6 @@ internal constructor(
           componentHostPoolingPolicy = componentHostPoolingPolicy,
           componentHostInvalidModificationPolicy = componentHostInvalidModificationPolicy,
           visibilityProcessingEnabled = visibilityProcessingEnabled,
-          shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible =
-              shouldNotifyVisibleBoundsChangeWhenNestedLithoViewBecomesInvisible,
           errorEventHandler = errorEventHandler,
           logTag =
               if (logTag == null && componentsLogger != null) {

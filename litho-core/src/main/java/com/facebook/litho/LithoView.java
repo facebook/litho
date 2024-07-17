@@ -32,9 +32,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import androidx.lifecycle.LifecycleOwner;
-import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.utils.CommonUtils;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -222,12 +222,12 @@ public class LithoView extends BaseMountingView {
 
   private void onMeasureInternal(int widthMeasureSpec, int heightMeasureSpec) {
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
-    final boolean animating = mAnimatedWidth != -1 || mAnimatedHeight != -1;
+    final boolean animating = mAnimatedWidth != SIZE_UNSET || mAnimatedHeight != SIZE_UNSET;
     // up to date view sizes, taking into account running animations
-    final int upToDateWidth = (mAnimatedWidth != -1) ? mAnimatedWidth : getWidth();
-    final int upToDateHeight = (mAnimatedHeight != -1) ? mAnimatedHeight : getHeight();
-    mAnimatedWidth = -1;
-    mAnimatedHeight = -1;
+    final int upToDateWidth = (mAnimatedWidth != SIZE_UNSET) ? mAnimatedWidth : getWidth();
+    final int upToDateHeight = (mAnimatedHeight != SIZE_UNSET) ? mAnimatedHeight : getHeight();
+    mAnimatedWidth = SIZE_UNSET;
+    mAnimatedHeight = SIZE_UNSET;
 
     if (animating) {
       // If the mount state is dirty, we want to ignore the current animation and calculate the
@@ -289,13 +289,10 @@ public class LithoView extends BaseMountingView {
       mDoMeasureInLayout = false;
     }
 
-    final TreeMountInfo mountInfo = getMountInfo();
-    final boolean hasMounted = mountInfo != null && mountInfo.hasMounted;
-
     final boolean canAnimateRootBounds =
         !mSuppressMeasureComponentTree
             && mComponentTree != null
-            && (!mHasNewComponentTree || !hasMounted);
+            && (!mHasNewComponentTree || !hasMountedAtLeastOnce());
 
     if (canAnimateRootBounds) {
       // We might need to collect transitions before mount to know whether this LithoView has
@@ -304,13 +301,13 @@ public class LithoView extends BaseMountingView {
 
       final int initialAnimatedWidth =
           getInitialAnimatedMountingViewWidth(upToDateWidth, mHasNewComponentTree);
-      if (initialAnimatedWidth != -1) {
+      if (initialAnimatedWidth != SIZE_UNSET) {
         width = initialAnimatedWidth;
       }
 
       final int initialAnimatedHeight =
           getInitialAnimatedMountingViewHeight(upToDateHeight, mHasNewComponentTree);
-      if (initialAnimatedHeight != -1) {
+      if (initialAnimatedHeight != SIZE_UNSET) {
         height = initialAnimatedHeight;
       }
     }
@@ -556,7 +553,7 @@ public class LithoView extends BaseMountingView {
           && config.enableFixForIM
           && !mIsTemporaryDetached
           && !hasTransientState()) {
-        if (mComponentTree.hasMounted()) {
+        if (hasMountedAtLeastOnce()) {
           // If this is the first mount, we don't want to notify the visible bounds changed.
           notifyVisibleBoundsChanged();
         }
@@ -838,6 +835,17 @@ public class LithoView extends BaseMountingView {
   public String toString() {
     // dump this view and include litho internal UI data
     return super.toString() + LithoViewTestHelper.viewToString(this, true);
+  }
+
+  /**
+   * For Litho we will use the root as hint for which is the hierarchy backed by the {@link
+   * com.facebook.rendercore.MountState}.
+   */
+  @Nullable
+  @Override
+  public String getHostHierarchyMountStateIdentifier() {
+    Component root = mComponentTree == null ? null : mComponentTree.getRoot();
+    return root != null ? CommonUtils.getSectionNameForTracing(root.getClass()) : null;
   }
 
   static class MountStartupLoggingInfo {

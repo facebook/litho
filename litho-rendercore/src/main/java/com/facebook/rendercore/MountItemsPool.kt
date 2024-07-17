@@ -79,19 +79,35 @@ object MountItemsPool {
   fun acquireMountContent(context: Context, poolableMountContent: ContentAllocator<*>): Any {
     val content =
         if (poolableMountContent.poolingPolicy.canAcquireContent) {
-          val pool =
-              getOrCreateMountContentPool(context, poolableMountContent)
-                  ?: return poolableMountContent.createPoolableContent(context)
-          pool.acquire(poolableMountContent)
+          val pool = getOrCreateMountContentPool(context, poolableMountContent)
+          pool?.acquire(poolableMountContent)
         } else {
           null
         }
 
-    return content ?: poolableMountContent.createPoolableContent(context)
+    return if (content != null) {
+      content
+    } else {
+      val isTracing = RenderCoreSystrace.isTracing()
+      if (isTracing) {
+        RenderCoreSystrace.beginSection(
+            "MountItemsPool:createMountContent ${poolableMountContent.getPoolableContentType().simpleName}")
+      }
+      val content = poolableMountContent.createPoolableContent(context)
+      if (isTracing) {
+        RenderCoreSystrace.endSection()
+      }
+      content
+    }
   }
 
   @JvmStatic
   fun release(context: Context, poolableMountContent: ContentAllocator<*>, mountContent: Any) {
+    if (RenderCoreConfig.removeComponentHostListeners) {
+      if (mountContent is Host) {
+        mountContent.removeViewListeners()
+      }
+    }
     val pool =
         if (poolableMountContent.poolingPolicy.canReleaseContent) {
           getOrCreateMountContentPool(context, poolableMountContent)

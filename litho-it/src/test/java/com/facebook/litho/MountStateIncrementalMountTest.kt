@@ -79,7 +79,6 @@ import org.robolectric.shadows.ShadowLooper
 class MountStateIncrementalMountTest {
 
   private lateinit var context: ComponentContext
-  private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
 
   @JvmField
@@ -96,10 +95,6 @@ class MountStateIncrementalMountTest {
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
                 as Looper)
-    resolveThreadShadowLooper =
-        Shadows.shadowOf(
-            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
-                as Looper)
   }
 
   @After
@@ -109,7 +104,6 @@ class MountStateIncrementalMountTest {
   }
 
   private fun runToEndOfTasks() {
-    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 

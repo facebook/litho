@@ -19,6 +19,7 @@ package com.facebook.rendercore.text;
 import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.ACTION_UP;
+import static com.facebook.rendercore.text.accessibility.AccessibilityUtils.ACCESSIBILITY_ROLE_LINK;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -575,7 +576,12 @@ public class RCTextView extends View {
     private void populateNodeAccessibilityInfo(
         RCAccessibleClickableSpan span, AccessibilityNodeInfoCompat node) {
       final String label = span.getAccessibilityLabel();
-      final String role = span.getAccessibilityRole();
+      // Default to link if no role is specified to align with iOS –
+      // https://fburl.com/code/eubqa9re.
+      final String role =
+          span.getAccessibilityRole() == null
+              ? ACCESSIBILITY_ROLE_LINK
+              : span.getAccessibilityRole();
       AccessibilityUtils.initializeAccessibilityLabel(label, node);
       AccessibilityUtils.initializeAccessibilityRole(getContext(), role, null, node);
     }

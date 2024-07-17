@@ -242,7 +242,7 @@ class RenderUnitTest {
             attachBinder2)
   }
 
-  @Test(expected = IllegalStateException::class)
+  @Test
   fun testUpdateExtensions_withDifferentFixedBindersCount_shouldCrash() {
     val fixedMountBinder1 = TestBinder1(bindOrder, unbindOrder)
     val fixedMountBinder2 = TestBinder1(bindOrder, unbindOrder)
@@ -252,15 +252,28 @@ class RenderUnitTest {
                 createDelegateBinder(TestRenderUnit(), fixedMountBinder1),
                 createDelegateBinder(TestRenderUnit(), fixedMountBinder2)))
     val nextRU = TestRenderUnit(listOf(createDelegateBinder(TestRenderUnit(), fixedMountBinder1)))
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+
+    val throwable =
+        Java6Assertions.catchThrowable {
+          nextRU.updateBinders(
+              context, content, currentRU, null, Any(), null, bindData, true, tracer)
+        }
+    Java6Assertions.assertThat(throwable.message)
+        .isEqualTo("[TestRenderUnit] Exception resolving fixed mount binders to update")
   }
 
-  @Test(expected = IllegalStateException::class)
+  @Test
   fun testUpdateExtensions_withRemovedFixedBinder_shouldCrash() {
     val fixedMountBinder = TestBinder1(bindOrder, unbindOrder)
     val currentRU = TestRenderUnit(listOf(createDelegateBinder(TestRenderUnit(), fixedMountBinder)))
     val nextRU = TestRenderUnit()
-    nextRU.updateBinders(context, content, currentRU, null, Any(), null, bindData, true, tracer)
+    val throwable =
+        Java6Assertions.catchThrowable {
+          nextRU.updateBinders(
+              context, content, currentRU, null, Any(), null, bindData, true, tracer)
+        }
+    Java6Assertions.assertThat(throwable.message)
+        .isEqualTo("[TestRenderUnit] Exception resolving fixed mount binders to update")
   }
 
   @Test
@@ -768,6 +781,48 @@ class RenderUnitTest {
     Java6Assertions.assertThat(renderUnit.getExtra<String>(1)).isEqualTo("test")
     Java6Assertions.assertThat(renderUnit.getExtra<Int>(999)).isEqualTo(42)
     Java6Assertions.assertThat(renderUnit.getExtra<Boolean>(-50000)).isEqualTo(true)
+  }
+
+  @Test
+  fun addsDescriptionAndBinderDescriptionIfExceptionHappensDuringMount() {
+    val testRenderUnit =
+        TestRenderUnit(
+            fixedMountBinders =
+                listOf(
+                    createDelegateBinder(Unit, CrashingBinder),
+                ))
+
+    val throwable =
+        Java6Assertions.catchThrowable {
+          testRenderUnit.mountBinders(context, content, null, bindData, tracer)
+        }
+    Java6Assertions.assertThat(throwable.message)
+        .isEqualTo("[TestRenderUnit] Exception binding fixed mount binder: my-crashing-binder")
+  }
+
+  private object CrashingBinder : RenderUnit.Binder<Any, View, Any> {
+
+    override fun shouldUpdate(
+        currentModel: Any,
+        newModel: Any,
+        currentLayoutData: Any?,
+        nextLayoutData: Any?
+    ): Boolean = true
+
+    override fun bind(context: Context, content: View, model: Any, layoutData: Any?): Any? {
+      throw RuntimeException("ups!")
+    }
+
+    override fun unbind(
+        context: Context,
+        content: View,
+        model: Any,
+        layoutData: Any?,
+        bindData: Any?
+    ) = Unit
+
+    override val description: String
+      get() = "my-crashing-binder"
   }
 
   companion object {

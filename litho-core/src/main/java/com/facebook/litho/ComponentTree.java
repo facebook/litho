@@ -157,9 +157,6 @@ public class ComponentTree
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultLayoutThreadLooper;
 
-  @GuardedBy("ComponentTree.class")
-  private static volatile Looper sDefaultResolveThreadLooper;
-
   private static final ThreadLocal<WeakReference<RunnableHandler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
 
@@ -619,12 +616,7 @@ public class ComponentTree
         throw new RuntimeException("Unexpected null mCommittedLayoutState");
       }
 
-      if (mMainThreadLayoutState != mCommittedLayoutState) {
-        promoteCommittedLayoutStateToUI();
-        layoutStateUpdated = true;
-      } else {
-        layoutStateUpdated = false;
-      }
+      layoutStateUpdated = maybePromoteCommittedLayoutStateToUI();
     }
 
     if (!layoutStateUpdated) {
@@ -719,9 +711,7 @@ public class ComponentTree
         // We need to track that we are attached regardless...
         mIsAttached = true;
 
-        if (mCommittedLayoutState != null && mMainThreadLayoutState != mCommittedLayoutState) {
-          promoteCommittedLayoutStateToUI();
-        }
+        maybePromoteCommittedLayoutStateToUI();
 
         if (mRoot == null) {
           throw new IllegalStateException(
@@ -857,13 +847,13 @@ public class ComponentTree
 
   @UiThread
   @GuardedBy("this")
-  private void promoteCommittedLayoutStateToUI() {
+  private boolean maybePromoteCommittedLayoutStateToUI() {
     if (mCommittedLayoutState == null) {
-      throw new RuntimeException("Cannot promote null LayoutState!");
+      return false;
     }
 
     if (mCommittedLayoutState == mMainThreadLayoutState) {
-      return;
+      return false;
     }
 
     final @Nullable LayoutState previousMainThreadLayoutState = mMainThreadLayoutState;
@@ -871,7 +861,7 @@ public class ComponentTree
 
     if (LayoutState.isNullOrEmpty(previousMainThreadLayoutState)
         && LayoutState.isNullOrEmpty(mCommittedLayoutState)) {
-      return;
+      return false;
     }
 
     dispatchOnAttached();
@@ -879,6 +869,8 @@ public class ComponentTree
     if (mLithoView != null) {
       mLithoView.setMountStateDirty();
     }
+
+    return true;
   }
 
   @UiThread
@@ -896,10 +888,8 @@ public class ComponentTree
     try {
       final boolean needsSyncLayout;
       synchronized (this) {
-        if (mCommittedLayoutState != null
-            && mCommittedLayoutState != mMainThreadLayoutState
-            && isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)) {
-          promoteCommittedLayoutStateToUI();
+        if (isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)) {
+          maybePromoteCommittedLayoutStateToUI();
         }
 
         final boolean hasExactSameSpecs =
@@ -981,9 +971,7 @@ public class ComponentTree
           if (mReleased) {
             throw new RuntimeException("Tree is released during measure!");
           }
-          if (mCommittedLayoutState != mMainThreadLayoutState) {
-            promoteCommittedLayoutStateToUI();
-          }
+          maybePromoteCommittedLayoutStateToUI();
 
           if (mMainThreadLayoutState != null) {
             measureOutput[0] = mMainThreadLayoutState.getWidth();
@@ -1941,9 +1929,19 @@ public class ComponentTree
       }
     }
 
-    if (isAsync) {
+    if (ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
       synchronized (mCurrentDoLayoutRunnableLock) {
         if (mCurrentDoResolveRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
+          mCurrentDoResolveRunnable = null;
+        }
+      }
+    }
+
+    if (isAsync) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
+        if (mCurrentDoResolveRunnable != null
+            && !ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
           mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
         }
         mCurrentDoResolveRunnable =
@@ -1988,10 +1986,12 @@ public class ComponentTree
       final int widthSpec,
       final int heightSpec) {
 
-    synchronized (mCurrentDoLayoutRunnableLock) {
-      if (mCurrentDoResolveRunnable != null) {
-        mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
-        mCurrentDoResolveRunnable = null;
+    if (!ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
+        if (mCurrentDoResolveRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoResolveRunnable);
+          mCurrentDoResolveRunnable = null;
+        }
       }
     }
 
@@ -2586,17 +2586,6 @@ public class ComponentTree
     }
 
     return sDefaultLayoutThreadLooper;
-  }
-
-  private static synchronized Looper getDefaultResolveThreadLooper() {
-    if (sDefaultResolveThreadLooper == null) {
-      final HandlerThread defaultThread =
-          new HandlerThread(DEFAULT_RESOLVE_THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY);
-      defaultThread.start();
-      sDefaultResolveThreadLooper = defaultThread.getLooper();
-    }
-
-    return sDefaultResolveThreadLooper;
   }
 
   private TreePropContainer createImplicitTreePropContainer(

@@ -226,4 +226,13 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
       mRecyclerBinder.removeRangeAt(0, mRecyclerBinder.getItemCount());
     }
   }
+
+  public int getChildWidthSpec(int index) {
+    return mRecyclerBinder.getChildWidthSpec(index);
+  }
+
+  @Override
+  public int getChildHeightSpec(int index) {
+    return mRecyclerBinder.getChildHeightSpec(index);
+  }
 }

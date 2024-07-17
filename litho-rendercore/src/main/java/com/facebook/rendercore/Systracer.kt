@@ -69,3 +69,16 @@ interface Systracer {
     fun arg(key: String, value: Double): ArgsBuilder
   }
 }
+
+inline fun <T> Systracer.trace(name: String, block: () -> T): T {
+  return if (isTracing()) {
+    beginSection(name)
+    try {
+      block()
+    } finally {
+      endSection()
+    }
+  } else {
+    block()
+  }
+}

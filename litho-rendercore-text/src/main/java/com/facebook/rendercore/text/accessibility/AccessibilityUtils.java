@@ -31,7 +31,7 @@ public class AccessibilityUtils {
   private static final String ACCESSIBILITY_ROLE_HEADER = "Header";
   private static final String ACCESSIBILITY_ROLE_SELECTED_BUTTON = "Selected Button";
   private static final String ACCESSIBILITY_ROLE_TAB_WIDGET = "Tab Bar";
-  private static final String ACCESSIBILITY_ROLE_LINK = "Link";
+  public static final String ACCESSIBILITY_ROLE_LINK = "Link";
 
   private static final String ACCESSIBILITY_CLASS_BUTTON = "android.widget.Button";
   private static final String ACCESSIBILITY_CLASS_IMAGE = "android.widget.ImageView";

@@ -461,7 +461,7 @@ class LithoViewRuleExampleTest {
     lithoViewRule.act(testLithoView) { clickOnContentDescription("row") }
 
     /** check number of state updates */
-    assertThat(LithoStats.getComponentTriggeredAsyncStateUpdateCount()).isEqualTo(1)
+    assertThat(LithoStats.componentTriggeredAsyncStateUpdateCount).isEqualTo(1)
 
     /** Find [Component] based on the text or [Component] class */
     assertThat(testLithoView.findViewWithTextOrNull("Text")).isNotNull()

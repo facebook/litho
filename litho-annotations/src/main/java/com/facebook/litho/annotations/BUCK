@@ -6,7 +6,6 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 # LICENSE file in the root directory of this source tree.
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "litho_android_library",
 )
 
@@ -21,11 +20,11 @@ litho_android_library(
     k2 = True,
     labels = [],
     provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
     ],
     pure_kotlin = False,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],
+    deps = ["//third-party/java/androidx/annotation/annotation:annotation"],
 )

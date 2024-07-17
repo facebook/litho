@@ -7,7 +7,6 @@ load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFr
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_PERF_LOGGER",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
@@ -40,7 +39,6 @@ litho_android_library(
     deps = [
         "//fbandroid/libraries/components/litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_SECTIONS_CONFIG_TARGET,
         LITHO_SECTIONS_TARGET,

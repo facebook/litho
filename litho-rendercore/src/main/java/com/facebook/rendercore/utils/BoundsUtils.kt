@@ -18,11 +18,13 @@ package com.facebook.rendercore.utils
 
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.View
 import android.view.View.MeasureSpec
 import com.facebook.rendercore.Host
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.Systracer
+import java.util.Locale
 
 object BoundsUtils {
 
@@ -127,7 +129,15 @@ object BoundsUtils {
         view.top != top ||
         view.right != right ||
         view.bottom != bottom) {
-      view.layout(left, top, right, bottom)
+      try {
+        view.layout(left, top, right, bottom)
+      } catch (e: NullPointerException) {
+        if ("huawei" == Build.BRAND.lowercase(Locale.US)) {
+          // Swallow the crash(https://fburl.com/logview/bk0z9v0t) on devices from Huawei because we
+          // can do nothing about that.
+          return false
+        }
+      }
       return true
     }
 

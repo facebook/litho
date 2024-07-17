@@ -39,7 +39,6 @@ class ComponentTreeHasCompatibleLayoutTest {
   private lateinit var context: ComponentContext
   private lateinit var component: Component
   private lateinit var componentTree: ComponentTree
-  private lateinit var resolveThreadShadowLooper: ShadowLooper
   private lateinit var layoutThreadShadowLooper: ShadowLooper
   private var widthSpec: Int = 0
   private var widthSpec2: Int = 0
@@ -51,10 +50,6 @@ class ComponentTreeHasCompatibleLayoutTest {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     component = SimpleMountSpecTester.create(context).build()
     componentTree = ComponentTree.create(context, component).build()
-    resolveThreadShadowLooper =
-        Shadows.shadowOf(
-            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
-                as Looper)
     layoutThreadShadowLooper =
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
@@ -66,7 +61,6 @@ class ComponentTreeHasCompatibleLayoutTest {
   }
 
   private fun runToEndOfTasks() {
-    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 

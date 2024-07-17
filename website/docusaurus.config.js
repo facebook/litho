@@ -16,7 +16,10 @@
  * @format
  */
 
-const {fbContent, fbInternalOnly} = require('docusaurus-plugin-internaldocs-fb/internal');
+const {
+  fbContent,
+  fbInternalOnly,
+} = require('docusaurus-plugin-internaldocs-fb/internal');
 
 const repoUrl = 'https://github.com/facebook/litho';
 const siteTitle = fbContent({internal: 'Litho @FB', external: 'Litho'});
@@ -37,12 +40,12 @@ module.exports = {
   projectName: 'litho',
   themeConfig: {
     announcementBar: {
-          id: 'support_ukraine',
-          content:
-            'Support Ukraine 🇺🇦 <a target="_blank" rel="noopener noreferrer" href="https://opensource.facebook.com/support-ukraine">Help Provide Humanitarian Aid to Ukraine</a>',
-          textColor: '#091E42',
-          isCloseable: false,
-        },
+      id: 'support_ukraine',
+      content:
+        'Support Ukraine 🇺🇦 <a target="_blank" rel="noopener noreferrer" href="https://opensource.facebook.com/support-ukraine">Help Provide Humanitarian Aid to Ukraine</a>',
+      textColor: '#091E42',
+      isCloseable: false,
+    },
     navbar: {
       title: siteTitle,
       logo: {
@@ -75,9 +78,9 @@ module.exports = {
     footer: {
       style: 'dark',
       logo: {
-        alt: 'Facebook Open Source Logo',
-        src: 'images/oss_logo.png',
-        href: 'https://opensource.facebook.com',
+        alt: 'Meta Open Source Logo',
+        src: 'images/meta_opensource_logo_negative.svg',
+        href: 'https://opensource.fb.com/',
       },
       links: [
         {
@@ -134,7 +137,7 @@ module.exports = {
         },
       ],
       // Please do not remove the credits, help to publicize Docusaurus :)
-      copyright: `Copyright © ${new Date().getFullYear()} Facebook, Inc.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Meta Platforms, Inc`,
     },
     colorMode: {
       // Current CSS doesn't have high contrast so it needs some work before being enabled.
@@ -146,8 +149,8 @@ module.exports = {
       external: {
         appId: '5QBCYR8NMZ',
         apiKey: '770b32556a2f295e844076c56d04da49',
-        indexName: 'fblitho'
-      }
+        indexName: 'fblitho',
+      },
     }),
     prism: {
       theme: require('prism-react-renderer/themes/github'),
@@ -157,7 +160,7 @@ module.exports = {
   },
   customFields: {
     fbRepoName: 'fbsource',
-    ossRepoPath: 'fbandroid/libraries/components'
+    ossRepoPath: 'fbandroid/libraries/components',
   },
   plugins: [
     [
@@ -182,10 +185,7 @@ module.exports = {
           },
           {
             to: '/docs/sections/recycler-collection-component',
-            from: [
-              '/docs/recycler-collection-component',
-              '/docs/hscrolls',
-            ],
+            from: ['/docs/recycler-collection-component', '/docs/hscrolls'],
           },
           {
             to: '/docs/sections/services',
@@ -209,7 +209,10 @@ module.exports = {
           },
           {
             to: '/docs/codegen/transition-definitions',
-            from: ['/docs/transition-definitions', '/docs/animations/transition-definitions'],
+            from: [
+              '/docs/transition-definitions',
+              '/docs/animations/transition-definitions',
+            ],
           },
           {
             to: '/docs/animations/transition-key-types',
@@ -225,37 +228,38 @@ module.exports = {
           },
         ],
       },
-    ]
+    ],
   ],
   presets: [
     [
       require.resolve('docusaurus-plugin-internaldocs-fb/docusaurus-preset'),
       {
-        docs: {
+        'docs': {
           path: '../docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: fbContent({
-            internal: 'https://www.internalfb.com/intern/diffusion/FBS/browse/master/fbandroid/libraries/components/website/',
+            internal:
+              'https://www.internalfb.com/intern/diffusion/FBS/browse/master/fbandroid/libraries/components/website/',
             external: 'https://github.com/facebook/litho/edit/master/website/',
-          })
+          }),
         },
         'remark-code-snippets': {
-          baseDir: '..'
+          baseDir: '..',
         },
-        theme: {
+        'theme': {
           customCss: require.resolve('./src/css/custom.css'),
         },
-        enableEditor: fbContent({
+        'enableEditor': fbContent({
           internal: 'top',
           external: true,
         }),
-        staticDocsProject: 'litho',
-        trackingFile: 'fbcode/staticdocs/WATCHED_FILES',
-        googleAnalytics: fbContent({
+        'staticDocsProject': 'litho',
+        'trackingFile': 'fbcode/staticdocs/WATCHED_FILES',
+        'googleAnalytics': fbContent({
           internal: undefined,
           external: {
             trackingID: 'UA-44373548-28',
-          }
+          },
         }),
       },
     ],
