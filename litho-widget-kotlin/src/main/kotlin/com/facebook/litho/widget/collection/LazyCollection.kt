@@ -231,6 +231,9 @@ class LazyCollection(
                     }
                     item.spanSize?.let { spanSize(it) }
                     customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
+                    item.customAttributes?.forEach { entry ->
+                      customAttribute(entry.key, entry.value)
+                    }
                     if (item.parentWidthPercent in 0.0f..100.0f) {
                       parentWidthPercent(item.parentWidthPercent)
                     }
