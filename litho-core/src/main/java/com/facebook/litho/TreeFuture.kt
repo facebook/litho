@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.Volatile
 
 /** Base class that wraps a [FutureTask] to allow calculating the same result across threads. */
-abstract class TreeFuture<T : PotentiallyPartialResult?>(
+abstract class TreeFuture<T : PotentiallyPartialResult>(
     protected open val treeId: Int,
     protected val isInterruptionEnabled: Boolean
 ) {
@@ -64,14 +64,14 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
   var isReleased: Boolean = false
     private set
 
-  protected val futureTask: RunnableFuture<TreeFutureResult<T?>>
+  protected val futureTask: RunnableFuture<TreeFutureResult<T>>
 
   init {
     futureTask =
-        instrument<TreeFutureResult<T?>>(
+        instrument<TreeFutureResult<T>>(
             FutureTask(
-                object : Callable<TreeFutureResult<T?>> {
-                  override fun call(): TreeFutureResult<T?> {
+                object : Callable<TreeFutureResult<T>> {
+                  override fun call(): TreeFutureResult<T> {
                     synchronized(this@TreeFuture) {
                       if (isReleased) {
                         return TreeFutureResult.interruptWithMessage(
@@ -264,7 +264,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
    * @return The expected result of calculation, or null if this future was released.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  fun runAndGet(@RenderSource source: Int): TreeFutureResult<T?> {
+  fun runAndGet(@RenderSource source: Int): TreeFutureResult<T> {
     val myTid = Process.myTid()
     if (runningThreadId.compareAndSet(-1, myTid)) {
       futureTask.run()
@@ -275,7 +275,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
     val didRaiseThreadPriority: Boolean
     val shouldWaitForResult = !futureTask.isDone && notRunningOnMyThread
     if (shouldWaitForResult && !isMainThread && !isFromSyncLayout(source)) {
-      return TreeFutureResult.interruptWithMessage<T?>(
+      return TreeFutureResult.interruptWithMessage<T>(
           FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD)
     }
     if (isMainThread && shouldWaitForResult) {
@@ -294,7 +294,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
       originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT
       didRaiseThreadPriority = false
     }
-    var treeFutureResult: TreeFutureResult<T?>
+    var treeFutureResult: TreeFutureResult<T>
     val shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing
     try {
 
@@ -358,7 +358,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
           // This means that the bg task was interrupted and the UI thread will pick up the rest
           // of the work. No need to return a LayoutState.
           treeFutureResult =
-              TreeFutureResult.interruptWithMessage<T?>(
+              TreeFutureResult.interruptWithMessage<T>(
                   FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD)
           continuationToken =
               WorkContinuationInstrumenter.onOfferWorkForContinuation(
@@ -395,7 +395,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
     }
     synchronized(this@TreeFuture) {
       if (isReleased) {
-        return TreeFutureResult.interruptWithMessage<T?>(FUTURE_RESULT_NULL_REASON_RELEASED)
+        return TreeFutureResult.interruptWithMessage<T>(FUTURE_RESULT_NULL_REASON_RELEASED)
       }
       return treeFutureResult
     }
@@ -405,16 +405,16 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
    * Holder class for tree-future results. When the contained result is null, the string message
    * will be populated with the result for it being null.
    */
-  class TreeFutureResult<T : PotentiallyPartialResult?>
+  class TreeFutureResult<T : PotentiallyPartialResult>
   private constructor(@JvmField val result: T?, val message: String?) {
     companion object {
-      fun <T : PotentiallyPartialResult?> finishWithResult(result: T): TreeFutureResult<T> {
+      fun <T : PotentiallyPartialResult> finishWithResult(result: T): TreeFutureResult<T> {
         return TreeFutureResult(result, null)
       }
 
-      fun <T : PotentiallyPartialResult?> interruptWithMessage(
+      fun <T : PotentiallyPartialResult> interruptWithMessage(
           message: String?
-      ): TreeFutureResult<T?> {
+      ): TreeFutureResult<T> {
         return TreeFutureResult(null, message)
       }
     }
@@ -477,13 +477,13 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @JvmStatic
-    fun <T : PotentiallyPartialResult?, F : TreeFuture<T>> trackAndRunTreeFuture(
+    fun <T : PotentiallyPartialResult, F : TreeFuture<T>> trackAndRunTreeFuture(
         treeFuture: F,
         futureList: MutableList<F>,
         @RenderSource source: Int,
         mutex: Any,
         futureExecutionListener: FutureExecutionListener?
-    ): TreeFutureResult<T?> {
+    ): TreeFutureResult<T> {
       var future = treeFuture
       val isSync = isFromSyncLayout(source)
       var isReusingFuture = false
@@ -525,7 +525,7 @@ abstract class TreeFuture<T : PotentiallyPartialResult?>(
       }
 
       // Run and get the result
-      val result: TreeFutureResult<T?> = future.runAndGet(source)
+      val result: TreeFutureResult<T> = future.runAndGet(source)
       synchronized(mutex) {
         futureExecutionListener?.onPostExecution(
             future.getVersion(), future.isReleased, future.getDescription())
