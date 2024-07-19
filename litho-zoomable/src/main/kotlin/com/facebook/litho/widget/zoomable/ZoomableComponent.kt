@@ -89,7 +89,6 @@ class ZoomableComponent(
                     lithoZoomableController.zoomableTouchListener)
 
                 onUnbind {
-                  lithoZoomableController.resetZoom()
                   zoomableTouchGestureListener.removeZoomableTouchListener(
                       lithoZoomableController.zoomableTouchListener)
                   lithoZoomableController.unbind()
