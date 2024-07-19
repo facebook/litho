@@ -46,6 +46,9 @@ dependencies {
     implementation project(':litho-core')
     implementation project(':litho-coroutines-kotlin')
     implementation project(':litho-editor-core')
+    implementation(project(':litho-editor-flipper')) {
+        exclude group:'com.facebook.flipper'
+    }
     implementation project(':litho-fresco')
     implementation project(':litho-fresco-kotlin')
     implementation project(':litho-live-data')
@@ -59,6 +62,10 @@ dependencies {
 
     // First-party
     implementation deps.soloader
+    implementation deps.flipper
+    implementation(deps.flipperLithoPlugin) {
+       exclude group:'com.facebook.litho'
+    }
     implementation deps.fresco
     implementation deps.frescoVito
     implementation deps.frescoVitoLitho
