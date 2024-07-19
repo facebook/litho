@@ -37,6 +37,10 @@ fun <T : Any> legacyTreePropOf(clazz: Class<T>): TreeProp<T?> {
   return ClassBasedTreeProp(clazz)
 }
 
+inline fun <reified T : Any> legacyTreePropOf(): TreeProp<T?> {
+  return legacyTreePropOf(T::class.java)
+}
+
 fun <T> treePropOf(defaultValueProducer: () -> T): TreeProp<T> {
   return ObjectBasedTreeProp(defaultValueProducer)
 }

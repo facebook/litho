@@ -47,7 +47,7 @@ typealias TreePropValuePair<T> = Pair<TreeProp<T>, T>
 @Suppress("FunctionName")
 @Deprecated(
     "Please, use the new [TreePropProvider] with [TreePropValuePair] args. You can use " +
-        "[createLegacyTreeProp] for interoperability with old API")
+        "[legacyTreePropOf] for interoperability with old API")
 inline fun TreePropProvider(
     vararg props: ClassValuePair<*>,
     component: () -> Component
