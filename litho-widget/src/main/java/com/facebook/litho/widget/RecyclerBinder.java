@@ -853,10 +853,9 @@ public class RecyclerBinder
 
   /**
    * Inserts an item at position. The {@link RecyclerView} will only be notified of the item being
-   * inserted after a layout calculation has been completed for the new {@link Component}. Return
-   * true if the item was inserted, false if the item was not inserted.
+   * inserted after a layout calculation has been completed for the new {@link Component}.
    */
-  public final boolean insertItemAtAsync(int position, RenderInfo renderInfo) {
+  public final void insertItemAtAsync(int position, RenderInfo renderInfo) {
     assertSingleThreadForChangeSet();
 
     assertNoInsertOperationIfCircular();
@@ -871,14 +870,9 @@ public class RecyclerBinder
     final AsyncInsertOperation operation = createAsyncInsertOperation(position, renderInfo);
 
     synchronized (this) {
-      if (mAsyncComponentTreeHolders.size() < position) return false;
-
       mHasAsyncOperations = true;
-
       mAsyncComponentTreeHolders.add(position, operation.mHolder);
-
       registerAsyncInsert(operation);
-      return true;
     }
   }
 
@@ -886,10 +880,9 @@ public class RecyclerBinder
    * Inserts the new items starting from position. The {@link RecyclerView} will only be notified of
    * the items being inserted after a layout calculation has been completed for the new {@link
    * Component}s. There is not a guarantee that the {@link RecyclerView} will be notified about all
-   * the items in the range at the same time. Return true if the items were inserted, false if the
-   * items were not inserted.
+   * the items in the range at the same time.
    */
-  public final boolean insertRangeAtAsync(int position, List<RenderInfo> renderInfos) {
+  public final void insertRangeAtAsync(int position, List<RenderInfo> renderInfos) {
     assertSingleThreadForChangeSet();
 
     assertNoInsertOperationIfCircular();
@@ -912,20 +905,14 @@ public class RecyclerBinder
     }
 
     synchronized (this) {
-      if (mAsyncComponentTreeHolders.size() < position) return false;
-
       mHasAsyncOperations = true;
-
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
         final RenderInfo renderInfo = renderInfos.get(i);
         assertNotNullRenderInfo(renderInfo);
         final AsyncInsertOperation operation = createAsyncInsertOperation(position + i, renderInfo);
-
         mAsyncComponentTreeHolders.add(position + i, operation.mHolder);
-
         registerAsyncInsert(operation);
       }
-      return true;
     }
   }
 
@@ -1208,7 +1195,7 @@ public class RecyclerBinder
    * only be executed when all the operations have been completed (to ensure index
    * consistency).Return true if the item was removed, false if the item was not removed.
    */
-  public final boolean removeItemAtAsync(int position) {
+  public final void removeItemAtAsync(int position) {
     assertSingleThreadForChangeSet();
 
     if (SectionsDebug.ENABLED) {
@@ -1217,14 +1204,9 @@ public class RecyclerBinder
 
     final AsyncRemoveOperation asyncRemoveOperation = new AsyncRemoveOperation(position);
     synchronized (this) {
-      if (mAsyncComponentTreeHolders.size() <= position) {
-        return false;
-      }
       mHasAsyncOperations = true;
-
       mAsyncComponentTreeHolders.remove(position);
       addToCurrentBatch(asyncRemoveOperation);
-      return true;
     }
   }
 
@@ -1233,7 +1215,7 @@ public class RecyclerBinder
    * binder this will only be executed when all the operations have been completed (to ensure index
    * consistency). Return true if the range was removed, false if the range was not removed.
    */
-  public final boolean removeRangeAtAsync(int position, int count) {
+  public final void removeRangeAtAsync(int position, int count) {
     assertSingleThreadForChangeSet();
 
     assertNoRemoveOperationIfCircular(count);
@@ -1246,17 +1228,12 @@ public class RecyclerBinder
 
     final AsyncRemoveRangeOperation operation = new AsyncRemoveRangeOperation(position, count);
     synchronized (this) {
-      if (mAsyncComponentTreeHolders.size() <= position) {
-        return false;
-      }
       mHasAsyncOperations = true;
-
       for (int i = 0; i < count; i++) {
         // TODO(t28712163): Cancel pending layouts for async inserts
         mAsyncComponentTreeHolders.remove(position);
       }
       addToCurrentBatch(operation);
-      return true;
     }
   }
 
