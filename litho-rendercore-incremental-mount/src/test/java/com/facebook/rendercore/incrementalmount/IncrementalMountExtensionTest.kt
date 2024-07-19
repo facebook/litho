@@ -47,7 +47,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [19])
 class IncrementalMountExtensionTest {
   @Rule @JvmField val renderCoreTestRule = RenderCoreTestRule()
 
@@ -305,6 +304,7 @@ class IncrementalMountExtensionTest {
   }
 
   @Test
+  @Config(sdk = [21])
   fun whenPreviousHostIsMovedOutOfBounds_shouldMountItemsCorrectly() {
     val c = renderCoreTestRule.context
     val parent = FrameLayout(c)
