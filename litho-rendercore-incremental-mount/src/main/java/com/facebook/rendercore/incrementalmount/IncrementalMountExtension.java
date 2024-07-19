@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountState;
+import com.facebook.rendercore.RenderCoreConfig;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.debug.DebugEvent;
@@ -495,7 +496,8 @@ public class IncrementalMountExtension
 
         if (extensionState.ownsReference(id)
             && !node.excludeFromIncrementalMount()
-            && !state.usesGapWorker) {
+            && !state.usesGapWorker
+            && !RenderCoreConfig.disableIncrementalUnmounting) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;
@@ -562,7 +564,8 @@ public class IncrementalMountExtension
 
         if (extensionState.ownsReference(id)
             && !node.excludeFromIncrementalMount()
-            && !state.usesGapWorker) {
+            && !state.usesGapWorker
+            && !RenderCoreConfig.disableIncrementalUnmounting) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;

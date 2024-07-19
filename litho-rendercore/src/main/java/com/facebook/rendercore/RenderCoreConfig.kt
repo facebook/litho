@@ -39,6 +39,9 @@ object RenderCoreConfig {
    */
   @JvmField var shouldEnableIMFix: Boolean = false
 
+  /** This flag is used to disable incremental unmounting in LithoView. */
+  @JvmField var disableIncrementalUnmounting: Boolean = false
+
   /** This flag is used to enable automatic removal of View listeners from ComponentHost. */
   @JvmField var removeComponentHostListeners: Boolean = false
 }
