@@ -48,10 +48,11 @@ typealias TreePropValuePair<T> = Pair<TreeProp<T>, T>
 @Deprecated(
     "Please, use the new [TreePropProvider] with [TreePropValuePair] args. You can use " +
         "[legacyTreePropOf] for interoperability with old API")
+@JvmName("LegacyTreePropProvider") // avoid JVM declaration clash with the other TreePropProvider
 inline fun TreePropProvider(
     vararg props: ClassValuePair<*>,
     component: () -> Component
-): TreePropProviderImpl {
+): KComponent {
   val resolvedComponent = component()
   return TreePropProviderImpl(classProps = props, child = resolvedComponent)
 }
@@ -70,7 +71,7 @@ inline fun TreePropProvider(
 inline fun TreePropProvider(
     vararg props: TreePropValuePair<*>,
     component: () -> Component
-): Component {
+): KComponent {
   val resolvedComponent = component()
   return TreePropProviderImpl(treeProps = props, child = resolvedComponent)
 }
@@ -83,13 +84,14 @@ inline fun TreePropProvider(
 inline fun NullableTreePropProvider(
     vararg props: ClassValuePair<*>,
     component: () -> Component?
-): TreePropProviderImpl? {
+): KComponent? {
   val resolvedComponent = component() ?: return null
   return TreePropProviderImpl(classProps = props, child = resolvedComponent)
 }
 
 /** See [TreePropProvider]. */
-class TreePropProviderImpl(
+@PublishedApi
+internal class TreePropProviderImpl(
     private val classProps: Array<out ClassValuePair<*>>? = null,
     private val treeProps: Array<out TreePropValuePair<*>>? = null,
     private val child: Component
