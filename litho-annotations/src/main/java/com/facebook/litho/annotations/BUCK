@@ -9,6 +9,8 @@ load(
     "litho_android_library",
 )
 
+oncall("playgroundapps")
+
 litho_android_library(
     name = "annotations",
     srcs = glob([

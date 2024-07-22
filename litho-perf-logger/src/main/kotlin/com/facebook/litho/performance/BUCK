@@ -5,6 +5,8 @@ load(
     "litho_android_library",
 )
 
+oncall("playgroundapps")
+
 litho_android_library(
     name = "litho-perf-logger",
     srcs = glob([

@@ -13,6 +13,8 @@ load(
     "litho_android_library",
 )
 
+oncall("playgroundapps")
+
 litho_android_library(
     name = "fresco",
     feature = FBApp_UIFrameworks_Litho_Litho,

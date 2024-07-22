@@ -22,6 +22,8 @@ load(
     "litho_android_library",
 )
 
+oncall("playgroundapps")
+
 litho_android_library(
     name = "canvas",
     feature = FBApp_UIFrameworks_Litho_Litho,

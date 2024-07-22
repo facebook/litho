@@ -32,6 +32,8 @@ load(
     "make_dep_path",
 )
 
+oncall("playgroundapps")
+
 litho_android_library(
     name = "litho",
     srcs = glob([

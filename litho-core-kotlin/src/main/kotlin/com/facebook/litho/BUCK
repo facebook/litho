@@ -24,6 +24,8 @@ load(
     "litho_android_library",
 )
 
+oncall("playgroundapps")
+
 litho_android_library(
     name = "litho-kotlin",
     srcs = glob(["**/*.kt"]),
