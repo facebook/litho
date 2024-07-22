@@ -26,21 +26,13 @@ object Reflection {
   private inline fun <reified T> fromCache(key: String): T? = cache[key] as? T
 
   private fun getCacheKey(obj: Any, name: String, vararg types: Class<*>) =
-      StringBuilder()
-          .apply {
-            val klass = obj as? Class<*> ?: obj::class.java
-            append(klass.name).append('#').append(name)
-            if (types.isNotEmpty()) {
-              append('(')
-              var separator = ""
-              types.forEach {
-                append(separator).append(it.name)
-                separator = ","
-              }
-              append(')')
-            }
+      buildString {
+          val klass = obj as? Class<*> ?: obj::class.java
+          append("${klass.name}#$name")
+          if (types.isNotEmpty()) {
+              append("(${types.joinToString(",") { it.name }})")
           }
-          .toString()
+      }
 
   fun getMethod(obj: Any?, name: String, vararg types: Class<*>): Method? {
     if (obj == null) return null
