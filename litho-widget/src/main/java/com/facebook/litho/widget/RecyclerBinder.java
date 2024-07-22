@@ -95,6 +95,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * This binder class is used to asynchronously layout Components given a list of {@link Component}
@@ -157,6 +159,8 @@ public class RecyclerBinder
 
   private final AtomicBoolean mHasAsyncBatchesToCheck = new AtomicBoolean(false);
   private final AtomicBoolean mIsInMeasure = new AtomicBoolean(false);
+
+  private final @Nullable Function1<Exception, Unit> mErrorHandler;
 
   @ThreadConfined(ThreadConfined.UI)
   @VisibleForTesting
@@ -445,6 +449,8 @@ public class RecyclerBinder
 
     private @Nullable List<PostDispatchDrawListener> additionalPostDispatchDrawListeners;
 
+    private @Nullable Function1<Exception, Unit> errorHandler;
+
     /**
      * Associates a {@link RecyclerBinderConfig} to the {@link RecyclerBinder} created by this
      * builder.
@@ -576,6 +582,11 @@ public class RecyclerBinder
     public Builder addAdditionalPostDispatchDrawListeners(
         List<PostDispatchDrawListener> listeners) {
       additionalPostDispatchDrawListeners = listeners;
+      return this;
+    }
+
+    public Builder errorHandler(@Nullable Function1<Exception, Unit> handler) {
+      errorHandler = handler;
       return this;
     }
 
@@ -812,6 +823,7 @@ public class RecyclerBinder
     mComponentWarmer = mRecyclerBinderConfig.componentWarmer;
     mStartupLogger = builder.startupLogger;
     mRecyclingStrategy = builder.recyclingStrategy;
+    mErrorHandler = builder.errorHandler;
   }
 
   /**
@@ -871,6 +883,15 @@ public class RecyclerBinder
 
     synchronized (this) {
       mHasAsyncOperations = true;
+      if (handleIndexOutOfBoundsException(
+          "insertItemAtAsync",
+          mAsyncComponentTreeHolders.size(),
+          position,
+          true,
+          renderInfo,
+          mErrorHandler)) {
+        return;
+      }
       mAsyncComponentTreeHolders.add(position, operation.mHolder);
       registerAsyncInsert(operation);
     }
@@ -908,6 +929,15 @@ public class RecyclerBinder
       mHasAsyncOperations = true;
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
         final RenderInfo renderInfo = renderInfos.get(i);
+        if (handleIndexOutOfBoundsException(
+            "insertRangeAtAsync",
+            mAsyncComponentTreeHolders.size(),
+            position + i,
+            true,
+            renderInfo,
+            mErrorHandler)) {
+          return;
+        }
         assertNotNullRenderInfo(renderInfo);
         final AsyncInsertOperation operation = createAsyncInsertOperation(position + i, renderInfo);
         mAsyncComponentTreeHolders.add(position + i, operation.mHolder);
@@ -1137,7 +1167,17 @@ public class RecyclerBinder
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") applyAsyncInsert " + operation.mPosition);
     }
 
-    mRenderInfoViewCreatorController.maybeTrackViewCreator(operation.mHolder.getRenderInfo());
+    final RenderInfo renderInfo = operation.mHolder.getRenderInfo();
+    mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
+    if (handleIndexOutOfBoundsException(
+        "applyAsyncInsert",
+        mComponentTreeHolders.size(),
+        operation.mPosition,
+        true,
+        renderInfo,
+        mErrorHandler)) {
+      return;
+    }
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
     operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
@@ -1205,6 +1245,15 @@ public class RecyclerBinder
     final AsyncRemoveOperation asyncRemoveOperation = new AsyncRemoveOperation(position);
     synchronized (this) {
       mHasAsyncOperations = true;
+      if (handleIndexOutOfBoundsException(
+          "removeItemAtAsync",
+          mAsyncComponentTreeHolders.size(),
+          position,
+          false,
+          null,
+          mErrorHandler)) {
+        return;
+      }
       mAsyncComponentTreeHolders.remove(position);
       addToCurrentBatch(asyncRemoveOperation);
     }
@@ -1231,6 +1280,15 @@ public class RecyclerBinder
       mHasAsyncOperations = true;
       for (int i = 0; i < count; i++) {
         // TODO(t28712163): Cancel pending layouts for async inserts
+        if (handleIndexOutOfBoundsException(
+            "removeRangeAtAsync",
+            mAsyncComponentTreeHolders.size(),
+            position,
+            false,
+            null,
+            mErrorHandler)) {
+          return;
+        }
         mAsyncComponentTreeHolders.remove(position);
       }
       addToCurrentBatch(operation);
@@ -1509,20 +1567,15 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
     synchronized (this) {
-      if (position < 0 || position >= mComponentTreeHolders.size()) {
-        throw new RuntimeException(
-            "Trying to update an item while index is out of bounds (index="
-                + position
-                + ", size="
-                + mComponentTreeHolders.size()
-                + "). This likely means data passed to the section had duplicates or a mutable data"
-                + " model. Component involved in the error whose backing data model may have"
-                + " duplicates: "
-                + renderInfo.getName()
-                + ". Read more here:"
-                + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception");
+      if (handleIndexOutOfBoundsException(
+          "updateItemAt",
+          mComponentTreeHolders.size(),
+          position,
+          false,
+          renderInfo,
+          mErrorHandler)) {
+        return;
       }
-
       holder = mComponentTreeHolders.get(position);
       renderInfoWasView = holder.getRenderInfo().rendersView();
 
@@ -1538,6 +1591,51 @@ public class RecyclerBinder
     }
 
     mViewportManager.setShouldUpdate(mViewportManager.updateAffectsVisibleRange(position, 1));
+  }
+
+  /**
+   * @return return true if we need to interrupt the workflow.
+   */
+  private static boolean handleIndexOutOfBoundsException(
+      String operation,
+      int size,
+      int position,
+      boolean isAddingElement,
+      @Nullable RenderInfo renderInfo,
+      @Nullable Function1<Exception, Unit> errorHandler) {
+    if (isAddingElement) {
+      if (position >= 0 && position <= size) {
+        // Adding element is safe as the position is in a valid range
+        return false;
+      }
+    } else {
+      if (position >= 0 && position < size) {
+        // Accessing element is safe as the position is in a valid range
+        return false;
+      }
+    }
+
+    RecyclerBinderException e =
+        new RecyclerBinderException(
+            "Trying to ["
+                + operation
+                + "] while index is out of bounds (index="
+                + position
+                + ", size="
+                + size
+                + "). This likely means data passed to the section had duplicates or a mutable"
+                + " data model. Component involved in the error whose backing data model may"
+                + " have duplicates: "
+                + ((renderInfo == null) ? "NULL" : renderInfo.getName())
+                + ". Read more here:"
+                + " https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception");
+
+    if (errorHandler != null) {
+      errorHandler.invoke(e);
+    } else {
+      throw e;
+    }
+    return true;
   }
 
   /**
@@ -1566,37 +1664,31 @@ public class RecyclerBinder
     }
 
     synchronized (this) {
-      try {
-        for (int i = 0, size = renderInfos.size(); i < size; i++) {
-          final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
-          final RenderInfo newRenderInfo = renderInfos.get(i);
-
-          assertNotNullRenderInfo(newRenderInfo);
-
-          // If this item is rendered with a view (or was rendered with a view before now) we still
-          // need to notify the RecyclerView's adapter that something changed.
-          if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
-            mInternalAdapter.notifyItemChanged(position + i);
-          }
-
-          mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
-          updateHolder(holder, newRenderInfo);
+      for (int i = 0, size = renderInfos.size(); i < size; i++) {
+        final RenderInfo newRenderInfo = renderInfos.get(i);
+        final int targetPosition = position + i;
+        if (handleIndexOutOfBoundsException(
+            "updateRangeAt",
+            mComponentTreeHolders.size(),
+            targetPosition,
+            false,
+            newRenderInfo,
+            mErrorHandler)) {
+          return;
         }
-      } catch (IndexOutOfBoundsException e) {
-        final String[] names = new String[renderInfos.size()];
-        for (int i = 0; i < renderInfos.size(); i++) {
-          names[i] = renderInfos.get(i).getName();
+
+        final ComponentTreeHolder holder = mComponentTreeHolders.get(targetPosition);
+
+        assertNotNullRenderInfo(newRenderInfo);
+
+        // If this item is rendered with a view (or was rendered with a view before now) we still
+        // need to notify the RecyclerView's adapter that something changed.
+        if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
+          mInternalAdapter.notifyItemChanged(position + i);
         }
-        String debugInfo =
-            "("
-                + hashCode()
-                + ") updateRangeAt "
-                + position
-                + ", size: "
-                + renderInfos.size()
-                + ", names: "
-                + Arrays.toString(names);
-        throw new IndexOutOfBoundsException(debugInfo + e.getMessage());
+
+        mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
+        updateHolder(holder, newRenderInfo);
       }
     }
 
@@ -1620,7 +1712,15 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     final boolean isNewPositionInRange;
     synchronized (this) {
+      if (handleIndexOutOfBoundsException(
+          "moveItemFrom", mComponentTreeHolders.size(), fromPosition, false, null, mErrorHandler)) {
+        return;
+      }
       holder = mComponentTreeHolders.remove(fromPosition);
+      if (handleIndexOutOfBoundsException(
+          "moveItemTo", mComponentTreeHolders.size(), toPosition, true, null, mErrorHandler)) {
+        return;
+      }
       mComponentTreeHolders.add(toPosition, holder);
 
       isNewPositionInRange =
@@ -1657,6 +1757,10 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     synchronized (this) {
+      if (handleIndexOutOfBoundsException(
+          "removeItemAt", mComponentTreeHolders.size(), position, false, null, mErrorHandler)) {
+        return;
+      }
       holder = mComponentTreeHolders.remove(position);
     }
     mInternalAdapter.notifyItemRemoved(position);
@@ -1705,6 +1809,10 @@ public class RecyclerBinder
     final List<ComponentTreeHolder> toRelease = new ArrayList<>();
     synchronized (this) {
       for (int i = 0; i < count; i++) {
+        if (handleIndexOutOfBoundsException(
+            "removeRangeAt", mComponentTreeHolders.size(), position, false, null, mErrorHandler)) {
+          return;
+        }
         final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
         toRelease.add(holder);
       }
