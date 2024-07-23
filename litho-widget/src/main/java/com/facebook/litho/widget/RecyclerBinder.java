@@ -140,7 +140,7 @@ public class RecyclerBinder
   private final boolean mEnableStableIds;
   private final @Nullable RunnableHandler mAsyncInsertHandler;
   private final boolean mAcquireStateHandlerOnRelease;
-  private final @Nullable LithoVisibilityEventsController mParentLifecycle;
+  private final @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIsSubAdapter;
@@ -422,7 +422,7 @@ public class RecyclerBinder
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
-              .parentLifecycleProvider(lifecycleProvider)
+              .lithoVisibilityEventsController(lifecycleProvider)
               .build();
         }
       };
@@ -444,7 +444,7 @@ public class RecyclerBinder
     private boolean acquireStateHandlerOnRelease = true;
     private @RecyclingStrategy int recyclingStrategy =
         ComponentsConfiguration.recyclerBinderStrategy;
-    private @Nullable LithoVisibilityEventsController lifecycleProvider;
+    private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
 
     private @Nullable List<PostDispatchDrawListener> additionalPostDispatchDrawListeners;
@@ -573,9 +573,9 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder lithoLifecycleProvider(
+    public Builder lithoVisibilityEventsController(
         LithoVisibilityEventsController lithoVisibilityEventsController) {
-      lifecycleProvider = lithoVisibilityEventsController;
+      this.lithoVisibilityEventsController = lithoVisibilityEventsController;
       return this;
     }
 
@@ -599,8 +599,8 @@ public class RecyclerBinder
       }
 
       componentContext = ComponentContext.makeCopyForNestedTree(c);
-      if (lifecycleProvider == null) {
-        lifecycleProvider = ComponentTree.getLithoVisibilityEventsController(c);
+      if (lithoVisibilityEventsController == null) {
+        lithoVisibilityEventsController = ComponentTree.getLithoVisibilityEventsController(c);
       }
 
       if (layoutInfo == null) {
@@ -628,7 +628,7 @@ public class RecyclerBinder
 
   @Override
   public void detach() {
-    if (mParentLifecycle != null) {
+    if (mLithoVisibilityEventsController != null) {
       return;
     }
 
@@ -709,7 +709,7 @@ public class RecyclerBinder
   private RecyclerBinder(Builder builder) {
     mRecyclerBinderConfig = builder.mRecyclerBinderConfig;
     mComponentContext = builder.componentContext;
-    mParentLifecycle = builder.lifecycleProvider;
+    mLithoVisibilityEventsController = builder.lithoVisibilityEventsController;
 
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
 
@@ -4265,7 +4265,7 @@ public class RecyclerBinder
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
         mComponentsConfiguration,
-        mParentLifecycle);
+        mLithoVisibilityEventsController);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {

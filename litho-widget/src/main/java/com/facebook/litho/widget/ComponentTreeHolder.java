@@ -56,9 +56,9 @@ public class ComponentTreeHolder {
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
-  private final @Nullable LithoVisibilityEventsController mParentLifecycle;
+  private final @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
   private @Nullable ComponentTreeHolderVisibilityEventsController
-      mComponentTreeHolderLifecycleProvider;
+      mComponentTreeHolderVisibilityEventsController;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @Nullable private StateUpdaterDelegator mStateUpdaterDelegator;
@@ -120,7 +120,7 @@ public class ComponentTreeHolder {
     private final ComponentsConfiguration componentsConfiguration;
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private @Nullable LithoVisibilityEventsController parentLifecycle;
+    private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable StateUpdaterDelegator stateUpdaterDelegator;
 
     private Builder(ComponentsConfiguration configuration) {
@@ -143,8 +143,9 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder parentLifecycleProvider(LithoVisibilityEventsController parentLifecycle) {
-      this.parentLifecycle = parentLifecycle;
+    public Builder lithoVisibilityEventsController(
+        LithoVisibilityEventsController lithoVisibilityEventsController) {
+      this.lithoVisibilityEventsController = lithoVisibilityEventsController;
       return this;
     }
 
@@ -173,7 +174,7 @@ public class ComponentTreeHolder {
     mLayoutHandler = builder.layoutHandler;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mId = sIdGenerator.getAndIncrement();
-    mParentLifecycle = builder.parentLifecycle;
+    mLithoVisibilityEventsController = builder.lithoVisibilityEventsController;
     mComponentsConfiguration = builder.componentsConfiguration;
     mStateUpdaterDelegator = builder.stateUpdaterDelegator;
   }
@@ -393,12 +394,13 @@ public class ComponentTreeHolder {
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
       ComponentTree.Builder builder;
-      if (mParentLifecycle != null) {
-        mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderVisibilityEventsController();
+      if (mLithoVisibilityEventsController != null) {
+        mComponentTreeHolderVisibilityEventsController =
+            new ComponentTreeHolderVisibilityEventsController();
       }
       builder =
           ComponentTree.create(
-              context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
+              context, mRenderInfo.getComponent(), mComponentTreeHolderVisibilityEventsController);
 
       String renderInfoLogTag = mRenderInfo.getLogTag();
 
@@ -475,8 +477,8 @@ public class ComponentTreeHolder {
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
 
-      if (mComponentTreeHolderLifecycleProvider != null) {
-        mComponentTreeHolderLifecycleProvider.moveToVisibilityState(DESTROYED);
+      if (mComponentTreeHolderVisibilityEventsController != null) {
+        mComponentTreeHolderVisibilityEventsController.moveToVisibilityState(DESTROYED);
 
         return;
       }
@@ -521,10 +523,10 @@ public class ComponentTreeHolder {
           LithoVisibilityEventsListener,
           AOSPLifecycleOwnerProvider {
 
-    public LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate;
+    private LithoVisibilityEventsControllerDelegate mLithoVisibilityEventsControllerDelegate;
 
     public ComponentTreeHolderVisibilityEventsController() {
-      mParentLifecycle.addListener(this);
+      mLithoVisibilityEventsController.addListener(this);
       mLithoVisibilityEventsControllerDelegate = new LithoVisibilityEventsControllerDelegate();
     }
 
@@ -556,7 +558,7 @@ public class ComponentTreeHolder {
       assertMainThread();
       mLithoVisibilityEventsControllerDelegate.moveToVisibilityState(lithoLifecycle);
       if (lithoLifecycle == DESTROYED) {
-        mParentLifecycle.removeListener(this);
+        mLithoVisibilityEventsController.removeListener(this);
         mComponentTree = null;
         mIsTreeValid = false;
       }
@@ -575,8 +577,9 @@ public class ComponentTreeHolder {
     @Override
     @Nullable
     public LifecycleOwner getLifecycleOwner() {
-      if (mParentLifecycle != null && mParentLifecycle instanceof AOSPLifecycleOwnerProvider) {
-        return ((AOSPLifecycleOwnerProvider) mParentLifecycle).getLifecycleOwner();
+      if (mLithoVisibilityEventsController != null
+          && mLithoVisibilityEventsController instanceof AOSPLifecycleOwnerProvider) {
+        return ((AOSPLifecycleOwnerProvider) mLithoVisibilityEventsController).getLifecycleOwner();
       }
 
       return null;

@@ -44,7 +44,8 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 class LithoRecyclerBinderLifecycleProviderTest {
 
-  private lateinit var lithoLifecycleProviderDelegate: LithoVisibilityEventsControllerDelegate
+  private lateinit var lithoVisibilityEventsControllerDelegate:
+      LithoVisibilityEventsControllerDelegate
   private lateinit var recyclerBinder: RecyclerBinder
   private lateinit var recyclerView: RecyclerView
 
@@ -52,12 +53,14 @@ class LithoRecyclerBinderLifecycleProviderTest {
 
   @Before
   fun setup() {
-    lithoLifecycleProviderDelegate = LithoVisibilityEventsControllerDelegate()
+    lithoVisibilityEventsControllerDelegate = LithoVisibilityEventsControllerDelegate()
     val c = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     recyclerView = RecyclerView(ApplicationProvider.getApplicationContext())
     recyclerView.layoutParams = ViewGroup.LayoutParams(10, 100)
     recyclerBinder =
-        RecyclerBinder.Builder().lithoLifecycleProvider(lithoLifecycleProviderDelegate).build(c)
+        RecyclerBinder.Builder()
+            .lithoVisibilityEventsController(lithoVisibilityEventsControllerDelegate)
+            .build(c)
     recyclerBinder.mount(recyclerView)
     val components: MutableList<RenderInfo> = ArrayList()
     val stepsList: MutableList<List<StepInfo>> = ArrayList()
@@ -79,7 +82,7 @@ class LithoRecyclerBinderLifecycleProviderTest {
   // either
   @Test
   fun lithoLifecycleProviderDelegateRecyclerBinderVisibleTest() {
-    lithoLifecycleProviderDelegate.moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE)
+    lithoVisibilityEventsControllerDelegate.moveToVisibilityState(LithoVisibilityState.HINT_VISIBLE)
     for (j in 0..19) {
       assertThat(recyclerBinder.getComponentAt(j)?.lithoVisibilityEventsController?.visibilityState)
           .describedAs("Visible event is expected to be dispatched")
@@ -89,7 +92,8 @@ class LithoRecyclerBinderLifecycleProviderTest {
 
   @Test
   fun lithoLifecycleProviderDelegateRecyclerBinderInvisibleTest() {
-    lithoLifecycleProviderDelegate.moveToVisibilityState(LithoVisibilityState.HINT_INVISIBLE)
+    lithoVisibilityEventsControllerDelegate.moveToVisibilityState(
+        LithoVisibilityState.HINT_INVISIBLE)
     for (j in 0..19) {
       assertThat(recyclerBinder.getComponentAt(j)?.lithoVisibilityEventsController?.visibilityState)
           .describedAs("Invisible event is expected to be dispatched")
