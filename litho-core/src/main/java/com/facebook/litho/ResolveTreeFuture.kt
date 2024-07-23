@@ -26,7 +26,6 @@ import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.debug.DebugEventAttribute.Source
 import com.facebook.rendercore.debug.DebugEventAttribute.Version
 import com.facebook.rendercore.debug.DebugEventDispatcher
-import java.util.HashMap
 
 class ResolveTreeFuture
 /** TODO(T137275959) */
@@ -45,6 +44,8 @@ constructor(
     private val extraAttribution: String?,
     private val source: Int
 ) : TreeFuture<ResolveResult>(componentTreeId, useCancellableFutures) {
+
+  private val disableSizeSpecEquivalentCheck = true
 
   constructor(
       c: ComponentContext,
@@ -142,13 +143,17 @@ constructor(
       return false
     }
 
-    // TODO(T137275959): delete on refactor
-    if (syncWidthSpec != that.syncWidthSpec) {
-      return false
+    if (!disableSizeSpecEquivalentCheck) {
+      if (syncWidthSpec != that.syncWidthSpec) {
+        return false
+      }
+
+      if (syncHeightSpec != that.syncHeightSpec) {
+        return false
+      }
     }
 
-    // TODO(T137275959): delete on refactor
-    return syncHeightSpec == that.syncHeightSpec
+    return true
   }
 
   internal interface ExecutionListener {
