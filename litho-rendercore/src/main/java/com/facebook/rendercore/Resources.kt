@@ -44,6 +44,12 @@ fun BaseResourcesScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): St
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
+/** Return a string for an attribute resource ID. */
+fun BaseResourcesScope.stringAttr(@AttrRes attrResId: Int, @StringRes defResId: Int = 0): String =
+    requireNotNull(resourceResolver.resolveStringAttr(attrResId, defResId)) {
+      "String resource not found for ID #0x${Integer.toHexString(attrResId)}"
+    }
+
 /**
  * @return a string for a resource ID and quantity, substituting the format arguments with
  *   [formatArgs].
