@@ -110,6 +110,9 @@ fun BaseResourcesScope.colorAttr(@AttrRes id: Int, @ColorRes defResId: Int = 0):
 
 fun BaseResourcesScope.intRes(@IntegerRes id: Int): Int = resourceResolver.resolveIntRes(id)
 
+fun BaseResourcesScope.intAttr(@AttrRes id: Int, @IntegerRes defResId: Int = 0): Int =
+    resourceResolver.resolveIntAttr(id, defResId)
+
 fun BaseResourcesScope.floatRes(@DimenRes id: Int): Float = resourceResolver.resolveFloatRes(id)
 
 fun BaseResourcesScope.floatAttr(@AttrRes id: Int, @DimenRes defResId: Int = 0): Float =
