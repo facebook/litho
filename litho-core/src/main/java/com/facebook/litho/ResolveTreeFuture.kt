@@ -45,7 +45,8 @@ constructor(
     private val source: Int
 ) : TreeFuture<ResolveResult>(componentTreeId, useCancellableFutures) {
 
-  private val disableSizeSpecEquivalentCheck = true
+  private val enableResolveWithoutSizeSpec =
+      componentContext.lithoConfiguration.componentsConfig.enableResolveWithoutSizeSpec
 
   constructor(
       c: ComponentContext,
@@ -143,7 +144,7 @@ constructor(
       return false
     }
 
-    if (!disableSizeSpecEquivalentCheck) {
+    if (!enableResolveWithoutSizeSpec) {
       if (syncWidthSpec != that.syncWidthSpec) {
         return false
       }

@@ -165,6 +165,11 @@ internal constructor(
      * more items were being loaded
      */
     @JvmField val enableStickyHeaderOffsetFix: Boolean = false,
+    /**
+     * This will remove size specs from the resolve phase, which could potentially improve the
+     * possibility of reusing resolve result.
+     */
+    @JvmField val enableResolveWithoutSizeSpec: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -358,6 +363,7 @@ internal constructor(
     private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
         baseConfig.sectionsRecyclerViewOnCreateHandler
     private var useStableIdsInRecyclerBinder = baseConfig.useStableIdsInRecyclerBinder
+    private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -468,6 +474,10 @@ internal constructor(
       useStableIdsInRecyclerBinder = enabled
     }
 
+    fun enableResolveWithoutSizeSpec(enabled: Boolean): Builder = also {
+      enableResolveWithoutSizeSpec = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldCacheLayouts = shouldCacheLayouts,
@@ -503,7 +513,9 @@ internal constructor(
           measureRecyclerWithPadding = measureRecyclerWithPadding,
           visibilityBoundsTransformer = visibilityBoundsTransformer,
           sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler,
-          useStableIdsInRecyclerBinder = useStableIdsInRecyclerBinder)
+          useStableIdsInRecyclerBinder = useStableIdsInRecyclerBinder,
+          enableResolveWithoutSizeSpec = enableResolveWithoutSizeSpec,
+      )
     }
   }
 }
