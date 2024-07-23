@@ -112,6 +112,9 @@ fun BaseResourcesScope.intRes(@IntegerRes id: Int): Int = resourceResolver.resol
 
 fun BaseResourcesScope.floatRes(@DimenRes id: Int): Float = resourceResolver.resolveFloatRes(id)
 
+fun BaseResourcesScope.floatAttr(@AttrRes id: Int, @DimenRes defResId: Int = 0): Float =
+    resourceResolver.resolveFloatAttr(id, defResId)
+
 /** Resolve a dimen resource ID as a [Dimen] value. */
 fun BaseResourcesScope.dimenRes(@DimenRes id: Int): Dimen =
     resourceResolver.resolveDimenSizeRes(id).px
