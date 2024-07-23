@@ -115,3 +115,7 @@ fun BaseResourcesScope.floatRes(@DimenRes id: Int): Float = resourceResolver.res
 /** Resolve a dimen resource ID as a [Dimen] value. */
 fun BaseResourcesScope.dimenRes(@DimenRes id: Int): Dimen =
     resourceResolver.resolveDimenSizeRes(id).px
+
+/** Return a dimen for an attribute resource ID. */
+fun BaseResourcesScope.dimenAttr(@AttrRes id: Int, @DimenRes defResId: Int = 0): Dimen =
+    resourceResolver.resolveDimenOffsetAttr(id, defResId).px
