@@ -1236,20 +1236,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     /**
      * @see #flexBasisPx
      */
-    public T flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /**
-     * @see #flexBasisPx
-     */
-    public T flexBasisAttr(@AttrRes int resId) {
-      return flexBasisAttr(resId, 0);
-    }
-
-    /**
-     * @see #flexBasisPx
-     */
     public T flexBasisDip(@Dimension(unit = DP) float flexBasis) {
       return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
     }
@@ -1278,13 +1264,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     public T flexBasisPx(@Px int flexBasis) {
       mComponent.getOrCreateCommonProps().flexBasisPx(flexBasis);
       return getThis();
-    }
-
-    /**
-     * @see #flexBasisPx
-     */
-    public T flexBasisRes(@DimenRes int resId) {
-      return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     /**
