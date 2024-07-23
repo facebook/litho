@@ -18,6 +18,7 @@ package com.facebook.rendercore
 
 import android.graphics.drawable.Drawable
 import androidx.annotation.AttrRes
+import androidx.annotation.BoolRes
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
@@ -48,6 +49,18 @@ fun BaseResourcesScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): St
 fun BaseResourcesScope.stringAttr(@AttrRes attrResId: Int, @StringRes defResId: Int = 0): String =
     requireNotNull(resourceResolver.resolveStringAttr(attrResId, defResId)) {
       "String resource not found for ID #0x${Integer.toHexString(attrResId)}"
+    }
+
+/** Return a boolean for a resource ID. */
+fun BaseResourcesScope.boolRes(@BoolRes id: Int): Boolean =
+    requireNotNull(resourceResolver.resolveBoolRes(id)) {
+      "Boolean resource not found for ID #0x${Integer.toHexString(id)}"
+    }
+
+/** Return a boolean for an attribute resource ID. */
+fun BaseResourcesScope.boolAttr(@AttrRes attrResId: Int, @BoolRes defResId: Int = 0): Boolean =
+    requireNotNull(resourceResolver.resolveBoolAttr(attrResId, defResId)) {
+      "Boolean resource not found for ID #0x${Integer.toHexString(attrResId)}"
     }
 
 /**
