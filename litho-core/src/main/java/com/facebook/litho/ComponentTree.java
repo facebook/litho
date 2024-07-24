@@ -2788,7 +2788,12 @@ public class ComponentTree
           throw new IllegalArgumentException(
               "The lifecycle owner has been set from the parent, owner = " + owner);
         }
-        wrapper.setDelegate(owner);
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+          wrapper.setDelegate(owner);
+        } else {
+          mMainThreadHandler.post(
+              () -> wrapper.setDelegate(owner), "LifecycleOwnerWrapper.setDelegate");
+        }
       } else {
         throw new NullPointerException("The treePropContainer cannot be null");
       }

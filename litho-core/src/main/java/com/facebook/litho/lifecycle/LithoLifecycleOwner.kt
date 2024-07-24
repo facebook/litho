@@ -18,6 +18,7 @@
 
 package com.facebook.litho.lifecycle
 
+import androidx.annotation.UiThread
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -41,8 +42,9 @@ internal constructor(
   private var latestState = State.RESUMED
 
   override val currentState: State
-    get() = synchronized(this) { delegate?.lifecycle?.currentState ?: latestState }
+    @UiThread @Synchronized get() = delegate?.lifecycle?.currentState ?: latestState
 
+  @UiThread
   @Synchronized
   override fun addObserver(observer: LifecycleObserver) {
     // add new observer
@@ -55,6 +57,7 @@ internal constructor(
     // dispatched when the delegate is set
   }
 
+  @UiThread
   @Synchronized
   override fun removeObserver(observer: LifecycleObserver) {
     val delegate = delegate
@@ -65,6 +68,7 @@ internal constructor(
 
   override val lifecycle: Lifecycle = this
 
+  @UiThread
   @Synchronized
   fun setDelegate(value: LifecycleOwner?) {
     if (value == this) {
