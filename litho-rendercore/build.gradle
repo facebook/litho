@@ -68,6 +68,7 @@ dependencies {
   // Android Support Library
   compileOnly deps.supportAnnotations
   implementation deps.supportCore
+  implementation deps.lifecycle
 
   testImplementation deps.assertjCore
   testImplementation deps.junit

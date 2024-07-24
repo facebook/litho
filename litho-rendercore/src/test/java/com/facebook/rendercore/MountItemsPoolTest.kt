@@ -17,8 +17,10 @@
 package com.facebook.rendercore
 
 import android.app.Activity
+import android.app.Service
 import android.content.Context
 import android.view.View
+import androidx.lifecycle.LifecycleService
 import com.facebook.rendercore.MountItemsPool.acquireMountContent
 import com.facebook.rendercore.MountItemsPool.clear
 import com.facebook.rendercore.MountItemsPool.onContextDestroyed
@@ -34,6 +36,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.android.controller.ActivityController
+import org.robolectric.android.controller.ServiceController
 
 @RunWith(RobolectricTestRunner::class)
 class MountItemsPoolTest {
@@ -44,17 +47,25 @@ class MountItemsPoolTest {
 
   private lateinit var activity: Activity
 
+  private lateinit var serviceController: ServiceController<LifecycleService>
+
+  private lateinit var service: Service
+
   @Before
   fun setup() {
     clear()
     setMountContentPoolFactory(null)
     activityController = Robolectric.buildActivity(Activity::class.java).create()
     activity = activityController.get()
+    serviceController = Robolectric.buildService(LifecycleService::class.java).create()
+    service = serviceController.get()
+    RenderCoreConfig.useLifecycleObserverInMountPools = true
   }
 
   @After
   fun cleanup() {
     setMountContentPoolFactory(null)
+    RenderCoreConfig.useLifecycleObserverInMountPools = false
   }
 
   @Test
@@ -148,6 +159,28 @@ class MountItemsPoolTest {
 
     // Ensure different context is unaffected by destroying activity context.
     Java6Assertions.assertThat(content1).isSameAs(content2)
+  }
+
+  @Test
+  fun testDestroyingServiceReleasesThePool() {
+    val testRenderUnit = TestRenderUnit(0)
+
+    val content1 = acquireMountContent(service, testRenderUnit)
+    release(service, testRenderUnit, content1)
+    val content2 = acquireMountContent(service, testRenderUnit)
+
+    // Ensure that the content is reused
+    Java6Assertions.assertThat(content1).isSameAs(content2)
+
+    // Release the content
+    release(service, testRenderUnit, content2)
+
+    // Destroy the service
+    serviceController.destroy()
+
+    val content3 = acquireMountContent(service, testRenderUnit)
+    // Ensure that the content acquired after destroying the service is different
+    Java6Assertions.assertThat(content3).isNotSameAs(content2)
   }
 
   @Test

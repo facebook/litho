@@ -44,4 +44,10 @@ object RenderCoreConfig {
 
   /** This flag is used to enable automatic removal of View listeners from ComponentHost. */
   @JvmField var removeComponentHostListeners: Boolean = false
+
+  /**
+   * This flag is used to enable using LifecycleObserver in MountItemsPool in order to clean the
+   * pools when the LifecycleOwner gets destroyed.
+   */
+  @JvmField var useLifecycleObserverInMountPools: Boolean = false
 }

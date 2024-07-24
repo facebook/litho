@@ -27,6 +27,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.util.Pools
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.concurrent.GuardedBy
@@ -57,6 +59,10 @@ object MountItemsPool {
   // This Map is used as a set and the values are ignored.
   @GuardedBy("mountContentLock")
   private val destroyedRootContexts: WeakHashMap<Context, Boolean> = WeakHashMap<Context, Boolean>()
+
+  @GuardedBy("mountContentLock")
+  private val contextsWithLifecycleObservers: WeakHashMap<Context, Boolean> =
+      WeakHashMap<Context, Boolean>()
 
   private var activityCallbacks: PoolsActivityCallback? = null
 
@@ -183,7 +189,7 @@ object MountItemsPool {
         if (destroyedRootContexts.containsKey(rootContext)) {
           return null
         }
-        ensureActivityCallbacks(context)
+        ensureLifecycleCallbacks(rootContext)
         poolsMap = HashMap()
         mountContentPoolsByContext[context] = poolsMap
       }
@@ -212,6 +218,7 @@ object MountItemsPool {
     synchronized(mountContentLock) {
       mountContentPoolsByContext.clear()
       destroyedRootContexts.clear()
+      contextsWithLifecycleObservers.clear()
     }
   }
 
@@ -239,15 +246,24 @@ object MountItemsPool {
     return currentContext
   }
 
-  private fun ensureActivityCallbacks(context: Context) {
-    if (activityCallbacks == null && !isManualCallbacks) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-        throw RuntimeException(
-            "Activity callbacks must be invoked manually below ICS (API level 14)")
+  private fun ensureLifecycleCallbacks(context: Context) {
+    if (!isManualCallbacks) {
+      if (context is LifecycleOwner && RenderCoreConfig.useLifecycleObserverInMountPools) {
+        synchronized(mountContentLock) {
+          if (!contextsWithLifecycleObservers.containsKey(context)) {
+            contextsWithLifecycleObservers[context] = true
+            context.lifecycle.addObserver(PoolsLifecycleObserver())
+          }
+        }
+      } else if (activityCallbacks == null) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+          throw RuntimeException(
+              "Activity callbacks must be invoked manually below ICS (API level 14)")
+        }
+        activityCallbacks = PoolsActivityCallback()
+        (context.applicationContext as Application).registerActivityLifecycleCallbacks(
+            activityCallbacks)
       }
-      activityCallbacks = PoolsActivityCallback()
-      (context.applicationContext as Application).registerActivityLifecycleCallbacks(
-          activityCallbacks)
     }
   }
 
@@ -336,6 +352,21 @@ object MountItemsPool {
 
     override fun onActivityDestroyed(activity: Activity) {
       onContextDestroyed(activity)
+    }
+  }
+
+  private class PoolsLifecycleObserver : DefaultLifecycleObserver {
+    override fun onCreate(owner: LifecycleOwner) {
+      // we know owner is a Context because we checked this when adding the lifecycle observer
+      onContextCreated(owner as Context)
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+      // we know owner is a Context because we checked this when adding the lifecycle observer
+      val context = owner as Context
+      onContextDestroyed(context)
+      owner.lifecycle.removeObserver(this)
+      synchronized(mountContentLock) { contextsWithLifecycleObservers.remove(context) }
     }
   }
 
