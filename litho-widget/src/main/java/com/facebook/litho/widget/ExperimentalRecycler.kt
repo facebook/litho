@@ -179,9 +179,9 @@ class ExperimentalRecycler(
 
                     sectionsRecyclerView.setColorSchemeColors(refreshProgressBarColor)
 
-                    itemDecorations?.forEach { recyclerView.addItemDecoration(it) }
-
                     sectionsRecyclerView.setItemAnimator(itemAnimator)
+
+                    itemDecorations?.forEach { recyclerView.addItemDecoration(it) }
 
                     binder.mount(recyclerView)
 
@@ -193,8 +193,6 @@ class ExperimentalRecycler(
                             DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
                       }
 
-                      itemDecorations?.forEach { recyclerView.removeItemDecoration(it) }
-
                       if (edgeFactory != null) {
                         recyclerView.edgeEffectFactory =
                             sectionsRecyclerView.defaultEdgeEffectFactory
@@ -203,6 +201,8 @@ class ExperimentalRecycler(
                       snapHelper?.attachToRecyclerView(null)
 
                       sectionsRecyclerView.resetItemAnimator()
+
+                      itemDecorations?.forEach { recyclerView.removeItemDecoration(it) }
 
                       binder.unmount(recyclerView)
                     }

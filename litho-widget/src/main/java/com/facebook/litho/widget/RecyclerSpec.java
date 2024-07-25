@@ -255,6 +255,9 @@ class RecyclerSpec {
     }
     sectionsRecycler.setColorSchemeColors(refreshProgressBarColor);
 
+    sectionsRecycler.setItemAnimator(
+        itemAnimator != RecyclerSpec.itemAnimator ? itemAnimator : new NoUpdateItemAnimator());
+
     if (itemDecorations != null) {
       for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
         if (itemDecoration instanceof ItemDecorationWithMeasureFunction) {
@@ -263,9 +266,6 @@ class RecyclerSpec {
         recyclerView.addItemDecoration(itemDecoration);
       }
     }
-
-    sectionsRecycler.setItemAnimator(
-        itemAnimator != RecyclerSpec.itemAnimator ? itemAnimator : new NoUpdateItemAnimator());
 
     binder.mount(recyclerView);
   }
@@ -410,15 +410,6 @@ class RecyclerSpec {
           DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR);
     }
 
-    if (itemDecorations != null) {
-      for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
-        if (itemDecoration instanceof ItemDecorationWithMeasureFunction) {
-          ((ItemDecorationWithMeasureFunction) itemDecoration).setMeasure(null);
-        }
-        recyclerView.removeItemDecoration(itemDecoration);
-      }
-    }
-
     if (edgeEffectFactory != null) {
       recyclerView.setEdgeEffectFactory(sectionsRecycler.getDefaultEdgeEffectFactory());
     }
@@ -428,6 +419,15 @@ class RecyclerSpec {
     }
 
     sectionsRecycler.resetItemAnimator();
+
+    if (itemDecorations != null) {
+      for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
+        if (itemDecoration instanceof ItemDecorationWithMeasureFunction) {
+          ((ItemDecorationWithMeasureFunction) itemDecoration).setMeasure(null);
+        }
+        recyclerView.removeItemDecoration(itemDecoration);
+      }
+    }
 
     binder.unmount(recyclerView);
   }
