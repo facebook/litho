@@ -22,9 +22,11 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
+import javax.annotation.Nullable;
 
 @LayoutSpec
 public class BasicLayoutSpec {
+  @Nullable
   @OnCreateLayout
   static Component onCreateLayout(
       ComponentContext context,
