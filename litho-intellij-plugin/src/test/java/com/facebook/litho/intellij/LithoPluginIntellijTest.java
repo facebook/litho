@@ -39,6 +39,7 @@ import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Before;
 
@@ -115,6 +116,7 @@ public class LithoPluginIntellijTest {
     }
 
     // Package-private to be used in lambda
+    @Nullable
     String getContentOrNull(String clsName) {
       try {
         return getContent(clsName);
