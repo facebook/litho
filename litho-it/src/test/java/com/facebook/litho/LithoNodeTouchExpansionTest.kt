@@ -41,7 +41,9 @@ class LithoNodeTouchExpansionTest {
   fun setup() {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val resolveContext = context.setRenderStateContextForTests()
-    node = requireNotNull(Resolver.resolve(resolveContext, context, Column.create(context).build()))
+    node =
+        requireNotNull(
+            Resolver.resolveTree(resolveContext, context, Column.create(context).build()))
     node.mutableNodeInfo().touchHandler = EventHandlerTestUtil.create(1, null)
     lithoLayoutContext =
         LithoLayoutContext(

@@ -38,6 +38,8 @@ import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.layout.LayoutDirection.Companion.INHERIT
+import com.facebook.litho.layout.LayoutDirection.Companion.isNullOrInherit
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.FastMath
@@ -75,7 +77,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   internal var id: Int = idGenerator.getAndIncrement()
   internal var children: MutableList<LithoNode> = ArrayList(4)
-  internal var layoutDirection: LayoutDirection? = null
+  internal var _layoutDirection: LayoutDirection? = null
   internal var justifyContent: YogaJustify? = null
   internal var alignContent: YogaAlign? = null
   internal var alignItems: YogaAlign? = null
@@ -125,9 +127,6 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     get() =
         (privateFlags and PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET == 0L ||
             importantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-
-  val isLayoutDirectionInherit: Boolean
-    get() = layoutDirection?.isInherit ?: true
 
   var nodeInfo: NodeInfo? = null
     internal set
@@ -362,16 +361,19 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
 
   open fun layoutDirection(direction: LayoutDirection) {
     privateFlags = privateFlags or PFLAG_LAYOUT_DIRECTION_IS_SET
-    layoutDirection = direction
+    _layoutDirection = direction
   }
+
+  val layoutDirection: LayoutDirection
+    get() = checkNotNull(_layoutDirection)
 
   open fun wrapInView() {
     isForceViewWrapping = true
   }
 
-  @JvmOverloads
   fun applyParentDependentCommonProps(
       context: CalculationContext,
+      parentLayoutDirection: LayoutDirection,
       parentImportantForAccessibility: Int =
           ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
       parentEnabledState: Int = NodeInfo.ENABLED_UNSET,
@@ -401,6 +403,12 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     }
 
     isHostDuplicateParentStateEnabled = isDuplicateParentStateEnabled
+    _layoutDirection =
+        if (_layoutDirection.isNullOrInherit()) {
+          parentLayoutDirection
+        } else {
+          _layoutDirection ?: INHERIT
+        }
     _needsHostView = needsHostView(this)
 
     // We need to take into account flattening when setting duplicate parent state. The parent after
@@ -419,6 +427,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       getChildAt(i)
           .applyParentDependentCommonProps(
               context = context,
+              parentLayoutDirection = layoutDirection,
               parentImportantForAccessibility = importantForAccessibility,
               parentEnabledState = (nodeInfo?.enabledState ?: NodeInfo.ENABLED_UNSET),
               parentDuplicatesParentState = isDuplicateParentStateEnabled)

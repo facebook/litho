@@ -450,7 +450,7 @@ object LithoNodeUtils {
           attrs.foreground = lithoNode.foreground
         }
       }
-      attrs.layoutDirection = result.layoutDirection
+      attrs.layoutDirection = lithoNode.layoutDirection
       attrs.layerType = lithoNode.layerType
       attrs.layoutPaint = lithoNode.layerPaint
       if (lithoNode.hasStateListAnimatorResSet()) {

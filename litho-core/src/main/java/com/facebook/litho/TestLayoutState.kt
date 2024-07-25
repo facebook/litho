@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.ComponentsSystrace.isTracing
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.LayoutCache
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaFlexDirection
@@ -67,6 +68,8 @@ object TestLayoutState {
             null,
             null)
     c.setLithoLayoutContext(lsc)
+    root.applyParentDependentCommonProps(
+        resolveContext, LayoutDirection.fromContext(c.androidContext))
     Layout.measureTree(lsc, c.androidContext, root, widthSpec, heightSpec, null)
     c.clearCalculationStateContext()
     return root

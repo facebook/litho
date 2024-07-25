@@ -344,12 +344,10 @@ internal object Layout {
 
       // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
       holderResult.node.copyInto(newNode)
-      newNode.applyParentDependentCommonProps(lithoLayoutContext)
-
-      // If the resolved tree inherits the layout direction, then set it now.
-      if (newNode.isLayoutDirectionInherit) {
-        newNode.layoutDirection(holderResult.layoutDirection)
-      }
+      newNode.applyParentDependentCommonProps(
+          context = lithoLayoutContext,
+          parentLayoutDirection = holderResult.node.layoutDirection,
+      )
 
       val layoutCache: LayoutCache =
           if (newNode.tailComponentContext.lithoConfiguration.componentsConfig
@@ -440,8 +438,8 @@ internal object Layout {
       holder: NestedTreeHolderResult,
       nestedTree: LithoLayoutResult
   ): Boolean =
-      nestedTree.node.isLayoutDirectionInherit ||
-          nestedTree.layoutDirection == holder.layoutDirection
+      nestedTree.node.layoutDirection.isInherit ||
+          nestedTree.node.layoutDirection == holder.node.layoutDirection
 
   /** DiffNode state should be retrieved from the committed LayoutState. */
   private fun getDiffNodeScopedContext(diffNode: DiffNode): ComponentContext =

@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.graphics.Rect
 import androidx.annotation.Px
-import com.facebook.litho.layout.LayoutDirection
 import com.facebook.rendercore.LayoutResult
 
 /** This is the default implementation of a [LayoutResult] for Litho. */
@@ -97,9 +96,6 @@ open class LithoLayoutResult(
         Rect(left, top, right, bottom)
       }
     }
-
-  val layoutDirection: LayoutDirection
-    get() = layoutOutput.layoutDirection
 
   val contentRenderUnit: LithoRenderUnit?
     get() = layoutOutput.contentRenderUnit

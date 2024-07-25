@@ -22,6 +22,7 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.debug.LithoDebugEvent.ComponentResolveStart
 import com.facebook.litho.debug.LithoDebugEventAttributes
+import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.debug.DebugEventAttribute
@@ -64,7 +65,8 @@ object Resolver {
     if (!isReconcilable) {
       node = resolve(resolveContext, c, component)
       if (node != null && !resolveContext.isLayoutInterrupted) {
-        node.applyParentDependentCommonProps(resolveContext)
+        node.applyParentDependentCommonProps(
+            resolveContext, LayoutDirection.fromContext(c.androidContext))
       }
 
       // This needs to finish layout on the UI thread.
@@ -364,7 +366,10 @@ object Resolver {
       resumeResolvingTree(resolveContext, root.getChildAt(i))
     }
 
-    root.applyParentDependentCommonProps(resolveContext)
+    root.applyParentDependentCommonProps(
+        context = resolveContext,
+        parentLayoutDirection =
+            LayoutDirection.fromContext(root.headComponentContext.androidContext))
 
     return root
   }
@@ -537,13 +542,18 @@ object Resolver {
         layout = resolveWithGlobalKey(resolveContext, parentContext, next, nextKey)
         if (layout != null) {
           if (parent == null) {
-            layout.applyParentDependentCommonProps(resolveContext)
+            layout.applyParentDependentCommonProps(
+                context = resolveContext,
+                parentLayoutDirection = LayoutDirection.fromContext(parentContext.androidContext),
+            )
           } else {
             layout.applyParentDependentCommonProps(
                 context = resolveContext,
+                parentLayoutDirection = parent.layoutDirection,
                 parentImportantForAccessibility = parent.importantForAccessibility,
                 parentEnabledState = parent.nodeInfo?.enabledState ?: NodeInfo.ENABLED_UNSET,
-                parentDuplicatesParentState = parent.isDuplicateParentStateEnabled)
+                parentDuplicatesParentState = parent.isDuplicateParentStateEnabled,
+            )
           }
         }
       }

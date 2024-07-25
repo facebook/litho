@@ -637,6 +637,9 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       node.background(background)
       node.paddingFromBackground = paddingFromBackground
     }
+
+    _layoutProps?.layoutDirection?.let { node.layoutDirection(it) }
+
     if ((privateFlags and PFLAG_TEST_KEY_IS_SET) != 0) {
       node.testKey(_testKey)
     }
@@ -972,7 +975,9 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     @Px private var flexBasisPx: Int = 0
     private var flexBasisPercent: Float = 0f
     private var aspectRatio: Float = 0f
-    private var layoutDirection: LayoutDirection? = null
+    internal var layoutDirection: LayoutDirection? = null
+      private set
+
     private var alignSelf: YogaAlign? = null
     private var positionType: YogaPositionType? = null
     private var positions: Edges? = null
