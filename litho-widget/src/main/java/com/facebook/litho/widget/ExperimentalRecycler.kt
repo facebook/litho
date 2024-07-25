@@ -200,11 +200,11 @@ class ExperimentalRecycler(
                             sectionsRecyclerView.defaultEdgeEffectFactory
                       }
 
-                      binder.unmount(recyclerView)
-
                       snapHelper?.attachToRecyclerView(null)
 
                       sectionsRecyclerView.resetItemAnimator()
+
+                      binder.unmount(recyclerView)
                     }
                   }
             }

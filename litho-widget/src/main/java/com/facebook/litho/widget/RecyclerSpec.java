@@ -423,13 +423,13 @@ class RecyclerSpec {
       recyclerView.setEdgeEffectFactory(sectionsRecycler.getDefaultEdgeEffectFactory());
     }
 
-    binder.unmount(recyclerView);
-
     if (snapHelper != null) {
       snapHelper.attachToRecyclerView(null);
     }
 
     sectionsRecycler.resetItemAnimator();
+
+    binder.unmount(recyclerView);
   }
 
   @ShouldUpdate(onMount = true)
