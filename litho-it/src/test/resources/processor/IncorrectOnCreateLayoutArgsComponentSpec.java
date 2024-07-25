@@ -20,9 +20,11 @@ import android.content.Context;
 import com.facebook.litho.Component;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import javax.annotation.Nullable;
 
 @LayoutSpec
 public class IncorrectOnCreateLayoutArgsComponentSpec {
+  @Nullable
   @OnCreateLayout
   static Component onCreateLayout(
       Context context /* error: Expected com.facebook.litho.ComponentContext */) {
