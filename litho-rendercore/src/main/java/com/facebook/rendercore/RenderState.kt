@@ -210,7 +210,10 @@ constructor(
       committedResolvedTree = result.resolvedNode
       committedResolvedFrameId = future.frameId
       committedState = result.resolvedState
-      pendingStateUpdates.removeAll(future.stateUpdatesToApply)
+      val appliedUpdates = result.appliedStateUpdates
+      if (!appliedUpdates.isNullOrEmpty()) {
+        pendingStateUpdates.removeAll(appliedUpdates)
+      }
       didCommit = true
     }
     if (resolveFuture == future) {

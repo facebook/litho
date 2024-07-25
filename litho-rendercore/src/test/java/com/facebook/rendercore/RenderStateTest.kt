@@ -369,24 +369,41 @@ class RenderStateTest {
     assertThat(appliedStateUpdates.get()).hasSize(1)
   }
 
+  @LooperMode(LooperMode.Mode.PAUSED)
   @Test
-  fun enqueueStateUpdate_whenResolveWithStateUpdates_appliesAndClearsStateUpdates() {
-    val appliedStateUpdates = AtomicReference<List<*>>()
+  fun `only applied state updates are cleared after commit`() {
+    val pendingUpdates = AtomicReference<List<TestStateUpdate>>()
     val renderState: RenderState<Any?, Any?, TestStateUpdate> =
         RenderState(RuntimeEnvironment.getApplication(), emptyDelegate, null, null)
-    renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply ->
-      appliedStateUpdates.set(stateUpdatesToApply)
+    renderState.setTree { _, _, _, stateUpdatesToApply ->
+      pendingUpdates.set(stateUpdatesToApply)
       ResolveResult(TestNode(), Any())
     }
-    renderState.enqueueStateUpdateSync(TestStateUpdate())
-    assertThat(appliedStateUpdates.get()).hasSize(1)
-    renderState.setTree { resolveContext, committedTree, committedState, stateUpdatesToApply
-      -> // Below we check that these 'stateUpdatesToApply' are empty, meaning that
-      // 'pendingStateUpdates' were empty.
-      appliedStateUpdates.set(stateUpdatesToApply)
-      ResolveResult(TestNode(), Any())
+
+    val updateOne = TestStateUpdate()
+    val updateTwo = TestStateUpdate()
+    renderState.enqueueStateUpdateSync(updateOne)
+    renderState.enqueueStateUpdateSync(updateTwo)
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+    assertThat(pendingUpdates.get()).hasSize(2)
+
+    // consume the first update
+    renderState.setTree { _, _, _, stateUpdatesToApply ->
+      ResolveResult(TestNode(), Any(), appliedStateUpdates = listOf(stateUpdatesToApply[0]))
     }
-    assertThat(appliedStateUpdates.get()).isEmpty()
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+    renderState.setTree { _, _, _, stateUpdatesToApply ->
+      pendingUpdates.set(stateUpdatesToApply)
+      ResolveResult(TestNode(), Any(), stateUpdatesToApply)
+    }
+
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+    // expect only update one to have been consumed
+    assertThat(pendingUpdates.get()).hasSize(1)
+    assertThat(pendingUpdates.get()).containsOnly(updateTwo)
   }
 
   @Test
