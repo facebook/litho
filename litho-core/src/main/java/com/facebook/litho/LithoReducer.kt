@@ -924,7 +924,7 @@ internal object LithoReducer {
         LithoNodeUtils.createViewAttributes(
             unit,
             component,
-            result,
+            (result as? LithoLayoutResult)?.node,
             type,
             unit.importantForAccessibility,
             reductionState.componentContext.lithoConfiguration.componentsConfig
