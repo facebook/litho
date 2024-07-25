@@ -19,6 +19,7 @@ package com.facebook.litho.view
 import android.animation.StateListAnimator
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -35,6 +36,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.FocusChangedEvent
 import com.facebook.litho.InterceptTouchEvent
+import com.facebook.litho.LayerType
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
@@ -79,6 +81,7 @@ internal enum class ObjectField : StyleItemField {
   KEYBOARD_NAVIGATION_CLUSTER,
   ADD_TOUCH_EXCLUSION_ZONE,
   TOOLTIP_TEXT,
+  LAYER_TYPE,
 }
 
 /** Enums for [FloatStyleItem]. */
@@ -162,6 +165,10 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
       ObjectField.ADD_TOUCH_EXCLUSION_ZONE ->
           commonProps.addSystemGestureExclusionZone(value as (Rect) -> Rect)
       ObjectField.TOOLTIP_TEXT -> commonProps.tooltipText(value as String?)
+      ObjectField.LAYER_TYPE -> {
+        val (layerType, paint) = value as Pair<Int, Paint?>
+        commonProps.layerType(layerType, paint)
+      }
     }
   }
 }
@@ -728,3 +735,17 @@ inline fun Style.addSystemGestureExclusionZone(noinline exclusion: (bounds: Rect
  */
 inline fun Style.tooltipText(tooltipText: String?): Style =
     this + ObjectStyleItem(ObjectField.TOOLTIP_TEXT, tooltipText)
+
+/**
+ * Specifies the type of layer backing this view. The layer can be [LayerType.LAYER_TYPE_NOT_SET],
+ * [LayerType.LAYER_TYPE_NONE], [LayerType.LAYER_TYPE_SOFTWARE] or [LayerType.LAYER_TYPE_HARDWARE].
+ *
+ * @param layerType The type of layer to use with this view, must be one of
+ *   [LayerType.LAYER_TYPE_NOT_SET], [LayerType.LAYER_TYPE_NONE], [LayerType.LAYER_TYPE_SOFTWARE] or
+ *   [LayerType.LAYER_TYPE_HARDWARE].
+ * @param paint The paint used to compose the layer. This argument is optional and can be null. It
+ *   is ignored when the layer type is [LayerType.LAYER_TYPE_NONE].
+ * @see [android.view.View.setLayerType]
+ */
+inline fun Style.layerType(@LayerType layerType: Int, paint: Paint? = null): Style =
+    this + ObjectStyleItem(ObjectField.LAYER_TYPE, Pair(layerType, paint))

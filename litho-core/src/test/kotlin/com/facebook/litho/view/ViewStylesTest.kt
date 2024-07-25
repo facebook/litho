@@ -21,11 +21,13 @@ import android.graphics.drawable.ColorDrawable
 import android.text.Layout
 import android.util.SparseArray
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewOutlineProvider
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.LayerType
 import com.facebook.litho.LithoView
 import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.Row
@@ -781,6 +783,20 @@ class ViewStylesTest {
         .attachToWindow()
 
     assertThat(lithoViewRule.lithoView.tooltipText).isEqualTo("Tooltip Text")
+  }
+
+  @Test
+  fun layerType_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px).layerType(LayerType.LAYER_TYPE_HARDWARE))
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.layerType).isEqualTo(View.LAYER_TYPE_HARDWARE)
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {
