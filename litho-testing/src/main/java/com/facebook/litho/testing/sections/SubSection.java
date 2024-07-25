@@ -18,6 +18,7 @@ package com.facebook.litho.testing.sections;
 
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionLifecycle;
+import javax.annotation.Nullable;
 
 /**
  * Allows convenient type matching comparison for instances of {@link SectionLifecycle}s. Useful for
@@ -50,7 +51,7 @@ public class SubSection {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
 
     if (!(o instanceof SubSection)) {
       return false;
