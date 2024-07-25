@@ -69,6 +69,7 @@ public class TestLayoutSpec<S extends View> implements TestTag {
     return new TestTreeProp(prop6);
   }
 
+  @Nullable
   @OnCreateLayout
   static <S extends View> Component onCreateLayout(
       ComponentContext context,
