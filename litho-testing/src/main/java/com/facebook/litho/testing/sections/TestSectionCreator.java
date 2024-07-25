@@ -208,7 +208,7 @@ public class TestSectionCreator {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
       if (forceShouldUpdate) {
         return false;
       }
