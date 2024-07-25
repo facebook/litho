@@ -21,6 +21,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /** Model that is an abstract representation of a {@link com.facebook.litho.annotations.Event}. */
@@ -44,7 +45,7 @@ public class EventDeclarationModel {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     EventDeclarationModel that = (EventDeclarationModel) o;
