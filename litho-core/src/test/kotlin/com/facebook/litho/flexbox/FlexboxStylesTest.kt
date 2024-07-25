@@ -949,4 +949,24 @@ class FlexboxStylesTest {
 
     assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.isBaselineDefined).isEqualTo(true)
   }
+
+  @Test
+  fun gap_whenSet_isRespected() {
+    val gap = 10
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px).gap(all = gap.px)) {
+            child(Row(style = Style.width(10.px).height(10.px).wrapInView()))
+            child(Row(style = Style.width(20.px).height(20.px).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(0, 0, 10, 10) }
+              child<ComponentHost> { bounds(10 + gap, 0, 20, 20) }
+            })
+  }
 }

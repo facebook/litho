@@ -28,6 +28,7 @@ import com.facebook.rendercore.Dimen
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaGutter
 import com.facebook.yoga.YogaPositionType
 
 /** Enums for [FlexboxDimenStyleItem]. */
@@ -43,6 +44,9 @@ internal enum class FlexboxDimenField : StyleItemField {
   POSITION_RIGHT,
   POSITION_HORIZONTAL,
   POSITION_VERTICAL,
+  GAP_COLUMN,
+  GAP_ROW,
+  GAP_ALL,
 }
 
 /** Enums for [FloatStyleItem]. */
@@ -97,6 +101,9 @@ internal data class FlexboxDimenStyleItem(
       FlexboxDimenField.POSITION_HORIZONTAL ->
           commonProps.positionPx(YogaEdge.HORIZONTAL, pixelValue)
       FlexboxDimenField.POSITION_VERTICAL -> commonProps.positionPx(YogaEdge.VERTICAL, pixelValue)
+      FlexboxDimenField.GAP_COLUMN -> commonProps.gap(YogaGutter.COLUMN, pixelValue)
+      FlexboxDimenField.GAP_ROW -> commonProps.gap(YogaGutter.ROW, pixelValue)
+      FlexboxDimenField.GAP_ALL -> commonProps.gap(YogaGutter.ALL, pixelValue)
     }
   }
 }
@@ -302,3 +309,19 @@ inline fun Style.isReferenceBaseline(isReferenceBaseline: Boolean): Style =
 
 inline fun Style.useHeightAsBaseline(useHeightAsBaseline: Boolean): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.USE_HEIGHT_AS_BASELINE, useHeightAsBaseline)
+
+/**
+ * Gap will add spacing between the rows and columns of a flex container. You can specify if you
+ * want the gaps to be between only the rows, only the columns, or both.
+ *
+ * See https://yogalayout.dev/ for a web-based playground for trying out flexbox layouts.
+ */
+inline fun Style.gap(
+    column: Dimen? = null,
+    row: Dimen? = null,
+    all: Dimen? = null,
+): Style =
+    this +
+        column?.let { FlexboxDimenStyleItem(FlexboxDimenField.GAP_COLUMN, it) } +
+        row?.let { FlexboxDimenStyleItem(FlexboxDimenField.GAP_ROW, it) } +
+        all?.let { FlexboxDimenStyleItem(FlexboxDimenField.GAP_ALL, it) }
