@@ -36,6 +36,7 @@ import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SnapUtil;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 
 @LayoutSpec
 public class FeedImageComponentSpec {
@@ -68,7 +69,8 @@ public class FeedImageComponentSpec {
     return ComponentRenderInfo.create().component(createImageComponent(c, model).build()).build();
   }
 
-  private static Component.Builder createImageComponent(ComponentContext c, String image) {
+  private static Component.Builder createImageComponent(
+      ComponentContext c, @Nullable String image) {
     return FrescoVitoImage2.create(c)
         .uri(image != null ? Uri.parse(image) : null)
         .imageAspectRatio(2f);
