@@ -93,7 +93,6 @@ public class RecyclerSpecTest {
     verifyAddOnScrollListenerWasCalledNTimes(mRecyclerView, size);
     assertThat(mRecyclerView.getTouchInterceptor()).isSameAs(touchInterceptor);
 
-    verify(binder).bind(mRecyclerView);
     assertThat(mRecyclerView.isLayoutRequested()).isTrue();
     assertThat(mSectionsRecyclerView.hasBeenDetachedFromWindow()).isFalse();
     verify(snapHelper).attachToRecyclerView(mRecyclerView);
@@ -116,7 +115,6 @@ public class RecyclerSpecTest {
         onItemTouchListener,
         scrollListeners);
 
-    verify(binder).unbind(mRecyclerView);
     verifyRemoveOnScrollListenerWasCalledNTimes(mRecyclerView, size);
     assertThat(mSectionsRecyclerView.getOnRefreshListener()).isNull();
   }

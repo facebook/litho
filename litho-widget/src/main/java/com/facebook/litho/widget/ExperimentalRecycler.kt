@@ -246,8 +246,6 @@ class ExperimentalRecycler(
                   snapHelper?.attachToRecyclerView(recyclerView)
                 }
 
-                binder.bind(recyclerView)
-
                 if (recyclerEventsController != null) {
                   recyclerEventsController.setSectionsRecyclerView(sectionsRecyclerView)
                   recyclerEventsController.snapHelper = snapHelper
@@ -260,8 +258,6 @@ class ExperimentalRecycler(
 
                 onUnbind {
                   sectionsRecyclerView.setSectionsRecyclerViewLogger(null)
-
-                  binder.unbind(recyclerView)
 
                   if (recyclerEventsController != null) {
                     recyclerEventsController.setSectionsRecyclerView(null)
@@ -311,12 +307,8 @@ class ExperimentalRecycler(
                 val recyclerView: RecyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
                 binder.mount(recyclerView)
-                binder.bind(recyclerView)
 
-                onUnbind {
-                  binder.unbind(recyclerView)
-                  binder.unmount(recyclerView)
-                }
+                onUnbind { binder.unmount(recyclerView) }
               }
             }
 

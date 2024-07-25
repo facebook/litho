@@ -2178,16 +2178,6 @@ public class RecyclerBinder
     }
   }
 
-  @Override
-  public void bind(RecyclerView view) {
-    // Nothing to do here.
-  }
-
-  @Override
-  public void unbind(RecyclerView view) {
-    // Nothing to do here.
-  }
-
   /*
    * Print the view hierarchy to help identify the incorrect usage of Recycler.
    */

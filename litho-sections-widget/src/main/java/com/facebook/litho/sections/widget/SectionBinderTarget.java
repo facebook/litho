@@ -72,16 +72,6 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
-  public void bind(RecyclerView view) {
-    mRecyclerBinder.bind(view);
-  }
-
-  @Override
-  public void unbind(RecyclerView view) {
-    mRecyclerBinder.unbind(view);
-  }
-
-  @Override
   public void unmount(RecyclerView view) {
     mRecyclerBinder.unmount(view);
   }

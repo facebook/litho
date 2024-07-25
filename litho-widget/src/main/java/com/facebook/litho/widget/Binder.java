@@ -58,19 +58,6 @@ public interface Binder<V extends ViewGroup> {
   void mount(V view);
 
   /**
-   * Bind this {@link Binder} to a {@link View}. Remember to call {@link
-   * ViewGroup#notifyDataSetChanged()} when your {@link Component}s are ready to be used.
-   */
-  void bind(V view);
-
-  /**
-   * Call this method when the view is unbound.
-   *
-   * @param view the view being unbound.
-   */
-  void unbind(V view);
-
-  /**
    * Call this method when the view is unmounted.
    *
    * @param view the view being unmounted.

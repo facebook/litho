@@ -331,8 +331,6 @@ class RecyclerSpec {
       snapHelper.attachToRecyclerView(recyclerView);
     }
 
-    binder.bind(recyclerView);
-
     if (recyclerEventsController != null) {
       recyclerEventsController.setSectionsRecyclerView(sectionsRecycler);
       recyclerEventsController.setSnapHelper(snapHelper);
@@ -363,8 +361,6 @@ class RecyclerSpec {
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout "
               + "before unmounting");
     }
-
-    binder.unbind(recyclerView);
 
     if (recyclerEventsController != null) {
       recyclerEventsController.setSectionsRecyclerView(null);
