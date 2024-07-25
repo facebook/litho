@@ -37,6 +37,7 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
+import javax.annotation.Nullable;
 
 @LayoutSpec
 public class StoryFooterComponentSpec {
@@ -140,6 +141,7 @@ public class StoryFooterComponentSpec {
     commentText.set(commentText.get() == true ? false : true);
   }
 
+  @Nullable
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c, @State Diff<Boolean> commentText) {
     if (commentText.getPrevious() == null) {
