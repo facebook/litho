@@ -105,7 +105,7 @@ public class PropDefaultModel {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (o instanceof PropDefaultModel) {
       final PropDefaultModel p = (PropDefaultModel) o;
       return mType.equals(p.mType)
