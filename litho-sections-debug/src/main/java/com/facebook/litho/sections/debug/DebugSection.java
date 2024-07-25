@@ -115,6 +115,7 @@ public final class DebugSection {
   /**
    * @return a Rect containing the bounds of the views inside theSection represented by this node.
    */
+  @Nullable
   public Rect getBounds() {
     List<?> children = getSectionChildren();
     int count = children.size();
