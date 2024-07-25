@@ -23,6 +23,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @LayoutSpec
 public class TestWrappedComponentPropSpec {
@@ -38,7 +39,7 @@ public class TestWrappedComponentPropSpec {
   @OnCreateLayout
   static Component onCreateLayout(
       ComponentContext c,
-      @Prop(optional = true) ComponentWrapper wrapper,
+      @Nullable @Prop(optional = true) ComponentWrapper wrapper,
       @Prop(optional = true) List<Component> componentList) {
     if (wrapper != null) {
       return Row.create(c).child(wrapper.mComponent).build();
