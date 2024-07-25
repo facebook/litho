@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import javax.annotation.Nullable;
 
 /** A sad, standard Java implementation of an immutable List. */
 public final class ImmutableList<E> implements List<E> {
@@ -176,7 +177,7 @@ public final class ImmutableList<E> implements List<E> {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     return mBackingList.equals(obj);
   }
 
