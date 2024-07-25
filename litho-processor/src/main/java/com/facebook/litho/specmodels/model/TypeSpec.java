@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.TypeName;
 import java.util.Objects;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 /**
  * This class represents a partial representation of the {@link javax.lang.model.type.TypeMirror}
@@ -69,7 +70,7 @@ public class TypeSpec {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     final TypeSpec typeSpec = (TypeSpec) o;
