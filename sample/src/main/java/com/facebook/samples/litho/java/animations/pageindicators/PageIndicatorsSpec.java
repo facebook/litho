@@ -29,6 +29,7 @@ import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
+import javax.annotation.Nullable;
 
 @LayoutSpec
 class PageIndicatorsSpec {
@@ -100,6 +101,7 @@ class PageIndicatorsSpec {
     }
   }
 
+  @Nullable
   @OnCreateTransition
   static Transition onCreateTransition(
       ComponentContext c, @Prop int size, @Prop int movingDirection) {
