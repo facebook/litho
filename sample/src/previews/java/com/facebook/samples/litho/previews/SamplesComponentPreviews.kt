@@ -24,7 +24,14 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 
-/* Litho docs: Litho Android Studio UI Preview  */
+/*
+Litho Playground Previews in Android Studio:
+1. Connect the device to your computer.
+2. Install the litho sample app: % buck2 install -r litho
+3. Click [Init] on the preview panel
+
+Docs: https://fburl.com/litho_preview
+*/
 class SamplesComponentPreviews {
 
   fun preview_AnimatedBadgeKotlin(c: ComponentContext): Component = AnimatedBadgeKotlin()
