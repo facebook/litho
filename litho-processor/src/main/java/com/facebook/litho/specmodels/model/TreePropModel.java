@@ -20,6 +20,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -64,7 +65,7 @@ public class TreePropModel implements MethodParamModel {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (o instanceof TreePropModel) {
       final TreePropModel p = (TreePropModel) o;
       return mParamModel.equals(p.mParamModel);
