@@ -27,6 +27,7 @@ import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @GroupSectionSpec
 class TestDataDiffSectionNullSpec {
@@ -41,6 +42,7 @@ class TestDataDiffSectionNullSpec {
         .build();
   }
 
+  @Nullable
   @OnEvent(RenderEvent.class)
   static RenderInfo onRender(SectionContext c, @FromEvent String model) {
     return null;
