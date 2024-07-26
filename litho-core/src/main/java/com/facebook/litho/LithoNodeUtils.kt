@@ -411,8 +411,6 @@ object LithoNodeUtils {
       @ImportantForAccessibility importantForAccessibility: Int,
       disableBgFgOutputs: Boolean
   ): ViewAttributes? {
-
-    val nodeInfo: NodeInfo? = unit.nodeInfo
     val willMountView: Boolean =
         when (type) {
           OutputUnitType.HOST -> true
@@ -422,6 +420,24 @@ object LithoNodeUtils {
           else -> false
         }
 
+    return createViewAttributes(
+        nodeInfo = unit.nodeInfo,
+        component = component,
+        willMountView = willMountView,
+        importantForAccessibility = importantForAccessibility,
+        disableBgFgOutputs = disableBgFgOutputs,
+        lithoNode = lithoNode)
+  }
+
+  @JvmStatic
+  private fun createViewAttributes(
+      nodeInfo: NodeInfo?,
+      component: Component,
+      willMountView: Boolean,
+      @ImportantForAccessibility importantForAccessibility: Int,
+      disableBgFgOutputs: Boolean,
+      lithoNode: LithoNode?
+  ): ViewAttributes? {
     if (nodeInfo == null && !willMountView) {
       return null
     }
@@ -455,6 +471,7 @@ object LithoNodeUtils {
 
       attrs.systemGestureExclusionZones = lithoNode.systemGestureExclusionZones
     }
+
     return attrs
   }
 }
