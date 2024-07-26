@@ -30,7 +30,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
 
   private final boolean mEnableAsyncLayoutsDuringInitRange;
   boolean mTreeValid;
-  private ComponentTree mComponentTree;
+  @Nullable private ComponentTree mComponentTree;
   private RenderInfo mRenderInfo;
   boolean mLayoutAsyncCalled;
   boolean mLayoutSyncCalled;
