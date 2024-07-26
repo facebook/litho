@@ -28,4 +28,7 @@ enum class PrimitiveRecyclerBinderStrategy {
    * @see [com.facebook.litho.widget.ExperimentalRecycler.SplitBindersMountBehavior]
    */
   SPLIT_BINDERS,
+
+  /** In this strategy we only remove the item decoration binding from the original approach. */
+  RECYCLER_SPEC_EQUIVALENT_AND_ITEM_DECORATION
 }
