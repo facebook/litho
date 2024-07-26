@@ -17,6 +17,7 @@
 package com.facebook.litho.animation;
 
 import com.facebook.litho.TransitionId;
+import javax.annotation.Nullable;
 
 /**
  * Represents the animation specification for a single property: - What transition key it's for -
@@ -50,7 +51,7 @@ public class PropertyAnimation {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }
