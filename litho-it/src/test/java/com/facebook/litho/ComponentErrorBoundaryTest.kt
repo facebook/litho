@@ -45,7 +45,6 @@ import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodParent
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
 import com.facebook.yoga.YogaEdge
-import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.core.Is
@@ -214,53 +213,69 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnCreateLayoutCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_LAYOUT, "onCreateLayout crash", false)
+    crashingScenarioLayoutHelper(
+        LifecycleStep.ON_CREATE_LAYOUT, "onCreateLayout crash", expectHierarchy = false)
   }
 
   @Test
   fun testOnCreateTreePropCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_TREE_PROP, "onCreateTreeProp crash", false)
+    crashingScenarioLayoutHelper(
+        LifecycleStep.ON_CREATE_TREE_PROP, "onCreateTreeProp crash", expectHierarchy = false)
   }
 
   @Test
   fun testOnCreateInitialStateCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CREATE_INITIAL_STATE, "onCreateInitialState crash", false)
+        LifecycleStep.ON_CREATE_INITIAL_STATE,
+        "onCreateInitialState crash",
+        expectHierarchy = false)
   }
 
   @Test
   fun testOnCalculateCachedValueCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CALCULATE_CACHED_VALUE, "onCalculateCachedValue crash", false)
+        LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+        "onCalculateCachedValue crash",
+        expectHierarchy = false)
   }
 
   @Test
   fun testOnCreateTransitionCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CREATE_TRANSITION, "onCreateTransition crash", false)
+        LifecycleStep.ON_CREATE_TRANSITION, "onCreateTransition crash", expectHierarchy = false)
   }
 
   @Test
   fun testOnAttachedCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutHelper(LifecycleStep.ON_ATTACHED, "onAttached crash", true)
+    crashingScenarioLayoutHelper(
+        LifecycleStep.ON_ATTACHED, "onAttached crash", expectHierarchy = true)
   }
 
   @Test
   fun testOnRegisterRangesCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_REGISTER_RANGES, "onRegisterRanges crash", false, false)
+        LifecycleStep.ON_REGISTER_RANGES,
+        "onRegisterRanges crash",
+        releaseAfter = false,
+        expectHierarchy = false)
   }
 
   @Test
   fun testOnEnteredRangeCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_ENTERED_RANGE, "onEnteredRange crash", false, true)
+        LifecycleStep.ON_ENTERED_RANGE,
+        "onEnteredRange crash",
+        releaseAfter = false,
+        expectHierarchy = true)
   }
 
   @Test
   fun testOnExitedRangeCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_EXITED_RANGE, "onExitedRange crash", true, true)
+        LifecycleStep.ON_EXITED_RANGE,
+        "onExitedRange crash",
+        releaseAfter = true,
+        expectHierarchy = true)
   }
 
   @Test
@@ -460,7 +475,10 @@ class ComponentErrorBoundaryTest {
   @Test
   fun testOnFocusedEventVisibleCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_FOCUSED_EVENT_VISIBLE, "onFocusedEventVisible crash", false, true)
+        LifecycleStep.ON_FOCUSED_EVENT_VISIBLE,
+        "onFocusedEventVisible crash",
+        releaseAfter = false,
+        true)
   }
 
   @Test
@@ -475,7 +493,10 @@ class ComponentErrorBoundaryTest {
   @Test
   fun testOnVisibilityChangedCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_VISIBILITY_CHANGED, "onVisibilityChanged crash", false, true)
+        LifecycleStep.ON_VISIBILITY_CHANGED,
+        "onVisibilityChanged crash",
+        releaseAfter = false,
+        expectHierarchy = true)
   }
 
   @Test
@@ -570,38 +591,59 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnMountCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_MOUNT, "Crashed on ON_MOUNT", false, true)
+    crashingScenarioMountHelper(
+        LifecycleStep.ON_MOUNT, "Crashed on ON_MOUNT", unmountAfter = false, expectHierarchy = true)
   }
 
   @Test
   fun testOnUnMountCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_UNMOUNT, "Crashed on ON_UNMOUNT", true, true)
+    crashingScenarioMountHelper(
+        LifecycleStep.ON_UNMOUNT,
+        "Crashed on ON_UNMOUNT",
+        unmountAfter = true,
+        expectHierarchy = true)
   }
 
   @Test
   fun testOnBindCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_BIND, "Crashed on ON_BIND", false, true)
+    crashingScenarioMountHelper(
+        LifecycleStep.ON_BIND, "Crashed on ON_BIND", unmountAfter = false, expectHierarchy = true)
   }
 
   @Test
   fun testOnUnBindCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_UNBIND, "Crashed on ON_UNBIND", true, true)
+    crashingScenarioMountHelper(
+        LifecycleStep.ON_UNBIND,
+        "Crashed on ON_UNBIND",
+        unmountAfter = true,
+        expectHierarchy = true)
   }
 
   @Test
   fun testOnPrepareCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_PREPARE, "Crashed on ON_PREPARE", false, false)
+    crashingScenarioMountHelper(
+        LifecycleStep.ON_PREPARE,
+        "Crashed on ON_PREPARE",
+        unmountAfter = false,
+        expectHierarchy = false)
   }
 
   @Test
   fun testOnMeasureCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_MEASURE, "Crashed on ON_MEASURE", false, true)
+    crashingScenarioMountHelper(
+        LifecycleStep.ON_MEASURE,
+        "Crashed on ON_MEASURE",
+        unmountAfter = false,
+        expectHierarchy = true)
   }
 
   @Test
   fun testOnBoundsDefinedCrashWithTestErrorBoundary() {
     crashingScenarioMountHelper(
-        LifecycleStep.ON_BOUNDS_DEFINED, "Crashed on ON_BOUNDS_DEFINED", false, false)
+        LifecycleStep.ON_BOUNDS_DEFINED,
+        "Crashed on ON_BOUNDS_DEFINED",
+        unmountAfter = false,
+        expectHierarchy = false)
   }
 
   @Test
@@ -611,7 +653,10 @@ class ComponentErrorBoundaryTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("Crashed on ON_CREATE_MOUNT_CONTENT")
     crashingScenarioMountHelper(
-        LifecycleStep.ON_CREATE_MOUNT_CONTENT, "Crashed on ON_CREATE_MOUNT_CONTENT", false, true)
+        LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+        "Crashed on ON_CREATE_MOUNT_CONTENT",
+        unmountAfter = false,
+        expectHierarchy = true)
   }
 
   @Test
