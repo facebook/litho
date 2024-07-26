@@ -17,6 +17,7 @@
 package com.facebook.litho.animation;
 
 import com.facebook.litho.TransitionId;
+import javax.annotation.Nullable;
 
 /**
  * A pair of transition key and {@link AnimatedProperty} which can be used to identify a single
@@ -41,7 +42,7 @@ public final class PropertyHandle {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }
