@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import javax.annotation.Nullable;
 
 /**
  * Represents a unique id used for transitions, that is assigned to {@link AnimatableItem} based on
@@ -65,7 +66,7 @@ public class TransitionId {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }
