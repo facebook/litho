@@ -63,7 +63,7 @@ public class TransitionsExtension
         OnItemCallbacks<TransitionsExtension.TransitionsExtensionState> {
 
   private static final TransitionsExtension sDefaultInstance = new TransitionsExtension(null);
-  private static TransitionsExtension sDebugInstance;
+  @Nullable private static TransitionsExtension sDebugInstance;
   private final @Nullable String mDebugTag;
 
   private TransitionsExtension(final @Nullable String debugTag) {
