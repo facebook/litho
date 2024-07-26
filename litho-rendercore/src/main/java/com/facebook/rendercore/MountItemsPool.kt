@@ -41,7 +41,7 @@ import javax.annotation.concurrent.GuardedBy
  */
 object MountItemsPool {
 
-  private val mountItemPoolsReleaseValidator: MountItemPoolsReleaseValidator? = null
+  private var mountItemPoolsReleaseValidator: MountItemPoolsReleaseValidator? = null
 
   /** A factory used to create [MountItemsPool.ItemPool]s. */
   fun interface Factory {
@@ -126,7 +126,7 @@ object MountItemsPool {
     }
 
     if (mountItemPoolsReleaseValidator != null && mountContent is View) {
-      mountItemPoolsReleaseValidator.assertValidRelease(
+      mountItemPoolsReleaseValidator?.assertValidRelease(
           mountContent, listOf(poolableMountContent.getPoolableContentType().name))
     }
 
@@ -368,6 +368,18 @@ object MountItemsPool {
       owner.lifecycle.removeObserver(this)
       synchronized(mountContentLock) { contextsWithLifecycleObservers.remove(context) }
     }
+  }
+
+  /**
+   * Enables the validation step which verifies if the content is released with listeners to the
+   * pool. This should only be used for debugging and logging purposes.
+   */
+  fun enableItemsReleaseValidation(
+      failOnDetection: Boolean,
+      excludedPatterns: Set<Regex> = emptySet()
+  ) {
+    mountItemPoolsReleaseValidator =
+        MountItemPoolsReleaseValidator(failOnDetection, excludedPatterns)
   }
 
   /** Content item pools that RenderCore uses to recycle content (such as Views) */
