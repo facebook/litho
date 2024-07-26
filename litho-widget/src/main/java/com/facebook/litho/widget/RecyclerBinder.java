@@ -2062,11 +2062,7 @@ public class RecyclerBinder
       if (initialComponentPosition >= 0) {
         final ComponentTreeHolderRangeInfo holderRangeInfo =
             new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
-        initRange(
-            mMeasuredSize.width,
-            mMeasuredSize.height,
-            holderRangeInfo,
-            mLayoutInfo.getScrollDirection());
+        initRange(mMeasuredSize.width, mMeasuredSize.height, holderRangeInfo);
       }
     }
 
@@ -2348,10 +2344,7 @@ public class RecyclerBinder
           final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
           if (holderForRangeInfo != null) {
             initRange(
-                SizeSpec.getSize(widthSpec),
-                SizeSpec.getSize(heightSpec),
-                holderForRangeInfo,
-                scrollDirection);
+                SizeSpec.getSize(widthSpec), SizeSpec.getSize(heightSpec), holderForRangeInfo);
           }
         }
 
@@ -2455,7 +2448,7 @@ public class RecyclerBinder
     if (!hasComputedRange()) {
       final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
       if (holderForRangeInfo != null) {
-        initRange(maxWidth, maxHeight, holderForRangeInfo, mLayoutInfo.getScrollDirection());
+        initRange(maxWidth, maxHeight, holderForRangeInfo);
       }
     }
 
@@ -2735,8 +2728,7 @@ public class RecyclerBinder
 
   @VisibleForTesting
   @GuardedBy("this")
-  void initRange(
-      int width, int height, ComponentTreeHolderRangeInfo holderRangeInfo, int scrollDirection) {
+  void initRange(int width, int height, ComponentTreeHolderRangeInfo holderRangeInfo) {
     if (mHasManualEstimatedViewportCount) {
       return;
     }

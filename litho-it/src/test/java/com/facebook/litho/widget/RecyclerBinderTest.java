@@ -4724,8 +4724,7 @@ public class RecyclerBinderTest {
         SizeSpec.getSize(widthSpec),
         SizeSpec.getSize(heightSpec),
         new RecyclerBinder.ComponentTreeHolderRangeInfo(
-            0, recyclerBinder.getComponentTreeHolders()),
-        OrientationHelper.VERTICAL);
+            0, recyclerBinder.getComponentTreeHolders()));
 
     ThreadTestingUtils.failSilentlyIfInterrupted(() -> lockTest.await(5, TimeUnit.SECONDS));
 
