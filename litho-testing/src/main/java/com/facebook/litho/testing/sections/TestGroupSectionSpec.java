@@ -34,6 +34,7 @@ import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @GroupSectionSpec
 public class TestGroupSectionSpec {
@@ -42,8 +43,8 @@ public class TestGroupSectionSpec {
   protected static Children onCreateChildren(
       SectionContext c,
       @Prop List data,
-      @Prop(optional = true) Comparator isSameItemComparator,
-      @Prop(optional = true) Comparator isSameContentComparator) {
+      @Nullable @Prop(optional = true) Comparator isSameItemComparator,
+      @Nullable @Prop(optional = true) Comparator isSameContentComparator) {
 
     DataDiffSection.Builder builder =
         DataDiffSection.<Object>create(c)
