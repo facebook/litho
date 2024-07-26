@@ -109,7 +109,8 @@ public class TextStyle implements Cloneable {
     return textStyle;
   }
 
-  public static void maybeSetTextAlignment(final TextStyle textStyle, final Integer textAlign) {
+  public static void maybeSetTextAlignment(
+      final TextStyle textStyle, @Nullable final Integer textAlign) {
     if (textAlign != null) {
       final TextAlignment textAlignment;
       switch (textAlign) {
