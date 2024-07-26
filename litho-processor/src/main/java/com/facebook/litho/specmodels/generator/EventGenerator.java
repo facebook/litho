@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the event methods for a Component. */
@@ -332,6 +333,7 @@ public class EventGenerator {
   /**
    * @return the name of the defined ComponentContext param on this event method.
    */
+  @Nullable
   static String getContextParamName(SpecModel specModel, SpecMethodModel eventMethodModel) {
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final ImmutableList<MethodParamModel> models = eventMethodModel.methodParams;
