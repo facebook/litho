@@ -16,13 +16,15 @@
 
 package com.facebook.samples.litho.java.stateupdates;
 
+import javax.annotation.Nullable;
+
 public class ExternalEventObserver {
 
   public interface Listener {
     void onMyEvent();
   }
 
-  private Listener mListener;
+  @Nullable private Listener mListener;
 
   public void setListener(Listener listener) {
     mListener = listener;
