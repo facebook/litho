@@ -23,10 +23,12 @@ import androidx.annotation.IdRes
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator
 import androidx.recyclerview.widget.SnapHelper
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Size
 import com.facebook.litho.State
 import com.facebook.litho.Style
@@ -34,6 +36,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.eventHandler
 import com.facebook.litho.useState
+import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.dp
 import com.facebook.rendercore.primitives.LayoutBehavior
@@ -89,7 +92,7 @@ class ExperimentalRecycler(
 
   companion object {
     // This is the default value for refresh spinner background from RecyclerSpec.
-    private const val DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = 0xFFFAFAFA.toInt()
+    internal const val DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = 0xFFFAFAFA.toInt()
   }
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -152,55 +155,39 @@ class ExperimentalRecycler(
                   itemDecorations) { sectionsRecyclerView ->
                     val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
-                    recyclerView.contentDescription = contentDescription
-                    recyclerView.setHasFixedSize(hasFixedSize)
-                    recyclerView.clipToPadding = isClipToPaddingEnabled
-                    sectionsRecyclerView.clipToPadding = isClipToPaddingEnabled
-                    if (!paddingAdditionDisabled) {
-                      ViewCompat.setPaddingRelative(
-                          recyclerView, leftPadding, topPadding, rightPadding, bottomPadding)
-                    }
-                    recyclerView.clipChildren = isClipChildrenEnabled
-                    sectionsRecyclerView.clipChildren = isClipChildrenEnabled
-                    recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
-                    sectionsRecyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
-                    recyclerView.scrollBarStyle = scrollBarStyle
-                    recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
-                    recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
-                    recyclerView.setFadingEdgeLength(fadingEdgeLength.dp.toPixels())
-                    recyclerView.id = recyclerViewId
-                    recyclerView.overScrollMode = overScrollMode
-                    edgeFactory?.let { recyclerView.edgeEffectFactory = it }
-
-                    if (refreshProgressBarBackgroundColor != null) {
-                      sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
-                          refreshProgressBarBackgroundColor)
-                    }
-
-                    sectionsRecyclerView.setColorSchemeColors(refreshProgressBarColor)
-
-                    sectionsRecyclerView.setItemAnimator(itemAnimator)
+                    bindLegacyMountBinder(
+                        sectionsRecyclerView = sectionsRecyclerView,
+                        contentDescription = contentDescription,
+                        hasFixedSize = hasFixedSize,
+                        isClipToPaddingEnabled = isClipToPaddingEnabled,
+                        paddingAdditionDisabled = paddingAdditionDisabled,
+                        leftPadding = leftPadding,
+                        topPadding = topPadding,
+                        rightPadding = rightPadding,
+                        bottomPadding = bottomPadding,
+                        isClipChildrenEnabled = isClipChildrenEnabled,
+                        isNestedScrollingEnabled = isNestedScrollingEnabled,
+                        scrollBarStyle = scrollBarStyle,
+                        isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
+                        isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                        fadingEdgeLength = fadingEdgeLength,
+                        recyclerViewId = recyclerViewId,
+                        overScrollMode = overScrollMode,
+                        edgeFactory = edgeFactory,
+                        refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                        refreshProgressBarColor = refreshProgressBarColor,
+                        itemAnimator = itemAnimator)
 
                     itemDecorations?.forEach { recyclerView.addItemDecoration(it) }
 
                     binder.mount(recyclerView)
 
                     onUnbind {
-                      recyclerView.id = View.NO_ID
-
-                      if (refreshProgressBarBackgroundColor != null) {
-                        sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
-                            DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
-                      }
-
-                      if (edgeFactory != null) {
-                        recyclerView.edgeEffectFactory =
-                            sectionsRecyclerView.defaultEdgeEffectFactory
-                      }
-
-                      snapHelper?.attachToRecyclerView(null)
-
-                      sectionsRecyclerView.resetItemAnimator()
+                      unbindLegacyMountBinder(
+                          sectionsRecyclerView = sectionsRecyclerView,
+                          refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                          edgeFactory = edgeFactory,
+                          snapHelper = snapHelper)
 
                       itemDecorations?.forEach { recyclerView.removeItemDecoration(it) }
 
@@ -212,71 +199,23 @@ class ExperimentalRecycler(
             // RecyclerSpec's @OnBind and @OnUnbind
             withDescription("recycler-equivalent-bind") {
               bind(Any()) { sectionsRecyclerView ->
-                sectionsRecyclerView.setSectionsRecyclerViewLogger(sectionsViewLogger)
-
-                // contentDescription should be set on the recyclerView itself, and not the
-                // sectionsRecycler.
-                sectionsRecyclerView.contentDescription = null
-
-                sectionsRecyclerView.isEnabled = isPullToRefreshEnabled && onRefresh != null
-
-                if (onRefresh != null) {
-                  sectionsRecyclerView.setOnRefreshListener { onRefresh() }
-                }
-
-                val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
-
-                if (onScrollListeners != null) {
-                  for (i in onScrollListeners.indices) {
-                    recyclerView.addOnScrollListener(onScrollListeners[i])
-                  }
-                }
-
-                if (touchInterceptor != null) {
-                  recyclerView.setTouchInterceptor(touchInterceptor)
-                }
-
-                if (onItemTouchListener != null) {
-                  recyclerView.addOnItemTouchListener(onItemTouchListener)
-                }
-
-                // We cannot detach the snap helper in unbind, so it may be possible for it to
-                // get attached twice which causes SnapHelper to raise an exception.
-                if (recyclerView.onFlingListener == null) {
-                  snapHelper?.attachToRecyclerView(recyclerView)
-                }
-
-                if (recyclerEventsController != null) {
-                  recyclerEventsController.setSectionsRecyclerView(sectionsRecyclerView)
-                  recyclerEventsController.snapHelper = snapHelper
-                }
-
-                if (sectionsRecyclerView.hasBeenDetachedFromWindow()) {
-                  recyclerView.requestLayout()
-                  sectionsRecyclerView.setHasBeenDetachedFromWindow(false)
-                }
+                bindLegacyAttachBinder(
+                    sectionsRecyclerView = sectionsRecyclerView,
+                    sectionsViewLogger = sectionsViewLogger,
+                    isPullToRefreshEnabled = isPullToRefreshEnabled,
+                    onRefresh = onRefresh,
+                    onScrollListeners = onScrollListeners,
+                    touchInterceptor = touchInterceptor,
+                    onItemTouchListener = onItemTouchListener,
+                    snapHelper = snapHelper,
+                    recyclerEventsController = recyclerEventsController)
 
                 onUnbind {
-                  sectionsRecyclerView.setSectionsRecyclerViewLogger(null)
-
-                  if (recyclerEventsController != null) {
-                    recyclerEventsController.setSectionsRecyclerView(null)
-                    recyclerEventsController.snapHelper = null
-                  }
-
-                  if (onScrollListeners != null) {
-                    for (i in onScrollListeners.indices) {
-                      recyclerView.removeOnScrollListener(onScrollListeners[i])
-                    }
-                  }
-
-                  if (onItemTouchListener != null) {
-                    recyclerView.removeOnItemTouchListener(onItemTouchListener)
-                  }
-
-                  recyclerView.setTouchInterceptor(null)
-
-                  sectionsRecyclerView.setOnRefreshListener(null)
+                  unbindLegacyAttachBinder(
+                      sectionsRecyclerView = sectionsRecyclerView,
+                      recyclerEventsController = recyclerEventsController,
+                      onScrollListeners = onScrollListeners,
+                      onItemTouchListener = onItemTouchListener)
                 }
               }
             }
@@ -332,120 +271,51 @@ class ExperimentalRecycler(
                   overScrollMode,
                   edgeFactory,
                   itemAnimator?.javaClass) { sectionsRecyclerView ->
-                    val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+                    bindLegacyMountBinder(
+                        sectionsRecyclerView = sectionsRecyclerView,
+                        contentDescription = contentDescription,
+                        hasFixedSize = hasFixedSize,
+                        isClipToPaddingEnabled = isClipToPaddingEnabled,
+                        paddingAdditionDisabled = paddingAdditionDisabled,
+                        leftPadding = leftPadding,
+                        topPadding = topPadding,
+                        rightPadding = rightPadding,
+                        bottomPadding = bottomPadding,
+                        isClipChildrenEnabled = isClipChildrenEnabled,
+                        isNestedScrollingEnabled = isNestedScrollingEnabled,
+                        scrollBarStyle = scrollBarStyle,
+                        isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
+                        isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                        fadingEdgeLength = fadingEdgeLength,
+                        recyclerViewId = recyclerViewId,
+                        overScrollMode = overScrollMode,
+                        edgeFactory = edgeFactory,
+                        refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                        refreshProgressBarColor = refreshProgressBarColor,
+                        itemAnimator = itemAnimator)
 
-                    recyclerView.contentDescription = contentDescription
-                    recyclerView.setHasFixedSize(hasFixedSize)
-                    recyclerView.clipToPadding = isClipToPaddingEnabled
-                    sectionsRecyclerView.clipToPadding = isClipToPaddingEnabled
-                    if (!paddingAdditionDisabled) {
-                      ViewCompat.setPaddingRelative(
-                          recyclerView, leftPadding, topPadding, rightPadding, bottomPadding)
-                    }
-
-                    recyclerView.clipChildren = isClipChildrenEnabled
-                    sectionsRecyclerView.clipChildren = isClipChildrenEnabled
-                    recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
-                    sectionsRecyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
-                    recyclerView.scrollBarStyle = scrollBarStyle
-                    recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
-                    recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
-                    recyclerView.setFadingEdgeLength(fadingEdgeLength.dp.toPixels())
-                    recyclerView.id = recyclerViewId
-                    recyclerView.overScrollMode = overScrollMode
-                    edgeFactory?.let { recyclerView.edgeEffectFactory = it }
-
-                    if (refreshProgressBarBackgroundColor != null) {
-                      sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
-                          refreshProgressBarBackgroundColor)
-                    }
-
-                    sectionsRecyclerView.setColorSchemeColors(refreshProgressBarColor)
-
-                    sectionsRecyclerView.setItemAnimator(itemAnimator)
-
-                    sectionsRecyclerView.setSectionsRecyclerViewLogger(sectionsViewLogger)
-
-                    // @OnBind in RecyclerSpec
-
-                    // contentDescription should be set on the recyclerView itself, and not the
-                    // sectionsRecycler.
-                    sectionsRecyclerView.contentDescription = null
-
-                    sectionsRecyclerView.isEnabled = isPullToRefreshEnabled && onRefresh != null
-
-                    if (onRefresh != null) {
-                      sectionsRecyclerView.setOnRefreshListener { onRefresh() }
-                    }
-
-                    if (onScrollListeners != null) {
-                      for (i in onScrollListeners.indices) {
-                        recyclerView.addOnScrollListener(onScrollListeners[i])
-                      }
-                    }
-
-                    if (touchInterceptor != null) {
-                      recyclerView.setTouchInterceptor(touchInterceptor)
-                    }
-
-                    if (onItemTouchListener != null) {
-                      recyclerView.addOnItemTouchListener(onItemTouchListener)
-                    }
-
-                    // We cannot detach the snap helper in unbind, so it may be possible for it to
-                    // get attached twice which causes SnapHelper to raise an exception.
-                    if (recyclerView.onFlingListener == null) {
-                      snapHelper?.attachToRecyclerView(recyclerView)
-                    }
-
-                    if (recyclerEventsController != null) {
-                      recyclerEventsController.setSectionsRecyclerView(sectionsRecyclerView)
-                      recyclerEventsController.snapHelper = snapHelper
-                    }
-
-                    if (sectionsRecyclerView.hasBeenDetachedFromWindow()) {
-                      recyclerView.requestLayout()
-                      sectionsRecyclerView.setHasBeenDetachedFromWindow(false)
-                    }
-
+                    bindLegacyAttachBinder(
+                        sectionsRecyclerView = sectionsRecyclerView,
+                        sectionsViewLogger = sectionsViewLogger,
+                        isPullToRefreshEnabled = isPullToRefreshEnabled,
+                        onRefresh = onRefresh,
+                        onScrollListeners = onScrollListeners,
+                        touchInterceptor = touchInterceptor,
+                        onItemTouchListener = onItemTouchListener,
+                        snapHelper = snapHelper,
+                        recyclerEventsController = recyclerEventsController)
                     onUnbind {
-                      recyclerView.id = View.NO_ID
+                      unbindLegacyAttachBinder(
+                          sectionsRecyclerView = sectionsRecyclerView,
+                          recyclerEventsController = recyclerEventsController,
+                          onScrollListeners = onScrollListeners,
+                          onItemTouchListener = onItemTouchListener)
 
-                      if (refreshProgressBarBackgroundColor != null) {
-                        sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
-                            DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
-                      }
-
-                      if (edgeFactory != null) {
-                        recyclerView.edgeEffectFactory =
-                            sectionsRecyclerView.defaultEdgeEffectFactory
-                      }
-
-                      snapHelper?.attachToRecyclerView(null)
-
-                      sectionsRecyclerView.resetItemAnimator()
-
-                      // @OnUnbind in RecyclerSpec
-                      sectionsRecyclerView.setSectionsRecyclerViewLogger(null)
-
-                      if (recyclerEventsController != null) {
-                        recyclerEventsController.setSectionsRecyclerView(null)
-                        recyclerEventsController.snapHelper = null
-                      }
-
-                      if (onScrollListeners != null) {
-                        for (i in onScrollListeners.indices) {
-                          recyclerView.removeOnScrollListener(onScrollListeners[i])
-                        }
-                      }
-
-                      if (onItemTouchListener != null) {
-                        recyclerView.removeOnItemTouchListener(onItemTouchListener)
-                      }
-
-                      recyclerView.setTouchInterceptor(null)
-
-                      sectionsRecyclerView.setOnRefreshListener(null)
+                      unbindLegacyMountBinder(
+                          sectionsRecyclerView = sectionsRecyclerView,
+                          refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                          edgeFactory = edgeFactory,
+                          snapHelper = snapHelper)
                     }
                   }
             }
@@ -495,4 +365,188 @@ private class RecyclerLayoutBehavior(
     return PrimitiveLayoutResult(
         max(sizeConstraints.minWidth, size.width), max(sizeConstraints.minHeight, size.height))
   }
+}
+
+/**
+ * Binds the [sectionsRecyclerView] to the data according to the behavior that was present in the
+ * initial version of the RecyclerSpec regarding mount binders ([RecyclerSpec.onMount].
+ */
+private fun ResourcesScope.bindLegacyMountBinder(
+    sectionsRecyclerView: SectionsRecyclerView,
+    contentDescription: CharSequence?,
+    hasFixedSize: Boolean,
+    isClipToPaddingEnabled: Boolean,
+    paddingAdditionDisabled: Boolean,
+    leftPadding: Int,
+    topPadding: Int,
+    rightPadding: Int,
+    bottomPadding: Int,
+    isClipChildrenEnabled: Boolean,
+    isNestedScrollingEnabled: Boolean,
+    scrollBarStyle: Int,
+    isHorizontalFadingEdgeEnabled: Boolean,
+    isVerticalFadingEdgeEnabled: Boolean,
+    fadingEdgeLength: Int,
+    @IdRes recyclerViewId: Int,
+    overScrollMode: Int,
+    edgeFactory: RecyclerView.EdgeEffectFactory?,
+    @ColorInt refreshProgressBarBackgroundColor: Int?,
+    @ColorInt refreshProgressBarColor: Int,
+    itemAnimator: ItemAnimator?
+): LithoRecyclerView {
+  val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+
+  recyclerView.contentDescription = contentDescription
+  recyclerView.setHasFixedSize(hasFixedSize)
+  recyclerView.clipToPadding = isClipToPaddingEnabled
+  sectionsRecyclerView.clipToPadding = isClipToPaddingEnabled
+  if (!paddingAdditionDisabled) {
+    ViewCompat.setPaddingRelative(
+        recyclerView, leftPadding, topPadding, rightPadding, bottomPadding)
+  }
+  recyclerView.clipChildren = isClipChildrenEnabled
+  sectionsRecyclerView.clipChildren = isClipChildrenEnabled
+  recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
+  sectionsRecyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
+  recyclerView.scrollBarStyle = scrollBarStyle
+  recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
+  recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
+  recyclerView.setFadingEdgeLength(fadingEdgeLength.dp.toPixels())
+  recyclerView.id = recyclerViewId
+  recyclerView.overScrollMode = overScrollMode
+  edgeFactory?.let { recyclerView.edgeEffectFactory = it }
+
+  if (refreshProgressBarBackgroundColor != null) {
+    sectionsRecyclerView.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor)
+  }
+
+  sectionsRecyclerView.setColorSchemeColors(refreshProgressBarColor)
+
+  sectionsRecyclerView.setItemAnimator(itemAnimator)
+
+  return recyclerView
+}
+
+/**
+ * Unbinds the [sectionsRecyclerView] to the data according to the behavior that was present in the
+ * initial version of the RecyclerSpec regarding mount binders ([RecyclerSpec.onUnmount].
+ */
+private fun unbindLegacyMountBinder(
+    sectionsRecyclerView: SectionsRecyclerView,
+    @ColorInt refreshProgressBarBackgroundColor: Int?,
+    edgeFactory: RecyclerView.EdgeEffectFactory?,
+    snapHelper: SnapHelper?
+) {
+  val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+
+  recyclerView.id = View.NO_ID
+
+  if (refreshProgressBarBackgroundColor != null) {
+    sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
+        ExperimentalRecycler.DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+  }
+
+  if (edgeFactory != null) {
+    recyclerView.edgeEffectFactory = sectionsRecyclerView.defaultEdgeEffectFactory
+  }
+
+  snapHelper?.attachToRecyclerView(null)
+
+  sectionsRecyclerView.resetItemAnimator()
+}
+
+/**
+ * Binds the [sectionsRecyclerView] to the data according to the behavior that was present in the
+ * initial version of the RecyclerSpec regarding the attach binders ([RecyclerSpec.onBind]).
+ */
+private fun bindLegacyAttachBinder(
+    sectionsRecyclerView: SectionsRecyclerView,
+    sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger?,
+    isPullToRefreshEnabled: Boolean,
+    onRefresh: (() -> Unit)?,
+    onScrollListeners: List<RecyclerView.OnScrollListener>?,
+    touchInterceptor: TouchInterceptor?,
+    onItemTouchListener: RecyclerView.OnItemTouchListener?,
+    snapHelper: SnapHelper?,
+    recyclerEventsController: RecyclerEventsController?
+): LithoRecyclerView {
+  val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+
+  sectionsRecyclerView.setSectionsRecyclerViewLogger(sectionsViewLogger)
+
+  // contentDescription should be set on the recyclerView itself, and not the
+  // sectionsRecycler.
+  sectionsRecyclerView.contentDescription = null
+
+  sectionsRecyclerView.isEnabled = isPullToRefreshEnabled && onRefresh != null
+
+  if (onRefresh != null) {
+    sectionsRecyclerView.setOnRefreshListener { onRefresh() }
+  }
+
+  if (onScrollListeners != null) {
+    for (i in onScrollListeners.indices) {
+      recyclerView.addOnScrollListener(onScrollListeners[i])
+    }
+  }
+
+  if (touchInterceptor != null) {
+    recyclerView.setTouchInterceptor(touchInterceptor)
+  }
+
+  if (onItemTouchListener != null) {
+    recyclerView.addOnItemTouchListener(onItemTouchListener)
+  }
+
+  // We cannot detach the snap helper in unbind, so it may be possible for it to
+  // get attached twice which causes SnapHelper to raise an exception.
+  if (recyclerView.onFlingListener == null) {
+    snapHelper?.attachToRecyclerView(recyclerView)
+  }
+
+  if (recyclerEventsController != null) {
+    recyclerEventsController.setSectionsRecyclerView(sectionsRecyclerView)
+    recyclerEventsController.snapHelper = snapHelper
+  }
+
+  if (sectionsRecyclerView.hasBeenDetachedFromWindow()) {
+    recyclerView.requestLayout()
+    sectionsRecyclerView.setHasBeenDetachedFromWindow(false)
+  }
+
+  return recyclerView
+}
+
+/**
+ * Unbinds the [sectionsRecyclerView] to the data according to the behavior that was present in the
+ * initial version of the RecyclerSpec regarding the attach binders ([RecyclerSpec.onUnbind]).
+ */
+private fun unbindLegacyAttachBinder(
+    sectionsRecyclerView: SectionsRecyclerView,
+    recyclerEventsController: RecyclerEventsController?,
+    onScrollListeners: List<RecyclerView.OnScrollListener>?,
+    onItemTouchListener: RecyclerView.OnItemTouchListener?,
+) {
+  val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+
+  sectionsRecyclerView.setSectionsRecyclerViewLogger(null)
+
+  if (recyclerEventsController != null) {
+    recyclerEventsController.setSectionsRecyclerView(null)
+    recyclerEventsController.snapHelper = null
+  }
+
+  if (onScrollListeners != null) {
+    for (i in onScrollListeners.indices) {
+      recyclerView.removeOnScrollListener(onScrollListeners[i])
+    }
+  }
+
+  if (onItemTouchListener != null) {
+    recyclerView.removeOnItemTouchListener(onItemTouchListener)
+  }
+
+  recyclerView.setTouchInterceptor(null)
+
+  sectionsRecyclerView.setOnRefreshListener(null)
 }
