@@ -49,7 +49,7 @@ public class ExpandableElementMeSpec {
       @Prop String messageText,
       @Prop String timestamp,
       @Prop(optional = true) boolean seen,
-      @State Boolean expanded) {
+      @Nullable @State Boolean expanded) {
     final boolean isExpanded = expanded == null ? false : expanded;
     return Column.create(c)
         .paddingDip(YogaEdge.TOP, 8)
@@ -72,7 +72,7 @@ public class ExpandableElementMeSpec {
   }
 
   @OnEvent(ClickEvent.class)
-  static void onClick(ComponentContext c, @State Boolean expanded) {
+  static void onClick(ComponentContext c, @Nullable @State Boolean expanded) {
     final boolean isExpanded = expanded == null ? false : expanded;
     ExpandableElementMe.updateExpandedStateSync(c, !isExpanded);
   }
@@ -87,7 +87,7 @@ public class ExpandableElementMeSpec {
   static Transition onCreateTransition(
       ComponentContext c,
       @Prop(optional = true) boolean forceAnimateOnAppear,
-      @State Boolean expanded) {
+      @Nullable @State Boolean expanded) {
     if (!forceAnimateOnAppear && expanded == null) {
       return null;
     }
