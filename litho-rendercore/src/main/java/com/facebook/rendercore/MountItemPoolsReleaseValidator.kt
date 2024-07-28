@@ -34,6 +34,7 @@ import java.lang.reflect.Field
 internal class MountItemPoolsReleaseValidator(
     private val failOnDetection: Boolean = false,
     private val excludedPatterns: Set<Regex> = emptySet(),
+    private val onInvalidRelease: ((exception: InvalidReleaseToMountPoolException) -> Unit)? = null,
     /**
      * These are fields the client can add for custom fields they want to inspect. If you have a
      * custom view you can define a specific extraction that verifies if a listener was properly
@@ -119,6 +120,8 @@ internal class MountItemPoolsReleaseValidator(
         append("\n")
       }
 
+      onInvalidRelease?.invoke(InvalidReleaseToMountPoolException(result))
+
       if (failOnDetection) {
         assert(false) { result }
       } else {
@@ -170,3 +173,9 @@ internal class MountItemPoolsReleaseValidator(
 }
 
 private const val TAG = "MountReleaseValidator"
+
+/**
+ * This exception is thrown when a view is released to the pool but it has a listener or any other
+ * view property that was not cleaned up.
+ */
+class InvalidReleaseToMountPoolException(message: String) : RuntimeException(message)

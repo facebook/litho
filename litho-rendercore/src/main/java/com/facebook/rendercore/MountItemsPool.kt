@@ -376,10 +376,14 @@ object MountItemsPool {
    */
   fun enableItemsReleaseValidation(
       failOnDetection: Boolean,
-      excludedPatterns: Set<Regex> = emptySet()
+      excludedPatterns: Set<Regex> = emptySet(),
+      onInvalidRelease: (exception: InvalidReleaseToMountPoolException) -> Unit
   ) {
     mountItemPoolsReleaseValidator =
-        MountItemPoolsReleaseValidator(failOnDetection, excludedPatterns)
+        MountItemPoolsReleaseValidator(
+            failOnDetection = failOnDetection,
+            excludedPatterns = excludedPatterns,
+            onInvalidRelease = onInvalidRelease)
   }
 
   /** Content item pools that RenderCore uses to recycle content (such as Views) */
