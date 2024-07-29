@@ -63,7 +63,7 @@ public class TestSectionCreator {
    *     Section}s as children.
    */
   public static class ChildrenSectionTest extends TestSection {
-    private final Section[] mChildren;
+    @Nullable private final Section[] mChildren;
     public boolean onDataRendered = false;
     public ChangesInfo mChangesInfo;
 
@@ -127,7 +127,7 @@ public class TestSectionCreator {
    *     with a list of {@link Change}s.
    */
   private static class ChangeSetSection extends TestSection {
-    private final Change[] mChanges;
+    @Nullable private final Change[] mChanges;
 
     ChangeSetSection(
         int initialCount,
