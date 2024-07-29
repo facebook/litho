@@ -930,7 +930,9 @@ public abstract class BaseMountingView extends ComponentHost
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing();
       }
 
-      mLithoHostListenerCoordinator.enableViewAttributes();
+      if (!ComponentsConfiguration.defaultInstance.useViewAttributesBinder) {
+        mLithoHostListenerCoordinator.enableViewAttributes();
+      }
       mLithoHostListenerCoordinator.enableDynamicProps();
     }
 

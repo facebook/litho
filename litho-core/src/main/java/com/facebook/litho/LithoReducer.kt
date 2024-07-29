@@ -920,14 +920,19 @@ internal object LithoReducer {
     }
 
     val attrs: ViewAttributes? =
-        LithoNodeUtils.createViewAttributes(
-            unit,
-            component,
-            (result as? LithoLayoutResult)?.node,
-            type,
-            unit.importantForAccessibility,
-            reductionState.componentContext.lithoConfiguration.componentsConfig
-                .shouldAddRootHostViewOrDisableBgFgOutputs)
+        if (reductionState.componentContext.lithoConfiguration.componentsConfig
+            .useViewAttributesBinder) {
+          null
+        } else {
+          LithoNodeUtils.createViewAttributes(
+              unit,
+              component,
+              (result as? LithoLayoutResult)?.node,
+              type,
+              unit.importantForAccessibility,
+              reductionState.componentContext.lithoConfiguration.componentsConfig
+                  .shouldAddRootHostViewOrDisableBgFgOutputs)
+        }
 
     if (attrs != null) {
       reductionState.renderUnitsWithViewAttributes[id] = attrs
