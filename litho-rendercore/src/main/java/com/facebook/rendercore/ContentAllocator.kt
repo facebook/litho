@@ -50,14 +50,6 @@ interface ContentAllocator<Content : Any> {
   val poolingPolicy: PoolingPolicy
     get() = PoolingPolicy.Default
 
-  fun createRecyclingPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ItemPool? {
-    return if (poolSizeOverride > UNSET_POOL_SIZE) {
-      DefaultItemPool(javaClass, poolSizeOverride)
-    } else {
-      onCreateMountContentPool()
-    }
-  }
-
   /**
    * This API informs the framework to fill the content pool for this Mountable ahead of time. The
    * default value is `false`, i.e. content is not pre-allocated. Pre-allocation of the content can
@@ -71,7 +63,10 @@ interface ContentAllocator<Content : Any> {
   fun poolSize(): Int = DEFAULT_MAX_PREALLOCATION
 
   /** Creates the content pool the framework should use for this [ContentAllocator] */
-  fun onCreateMountContentPool(): ItemPool = DefaultItemPool(javaClass, poolSize())
+  fun onCreateMountContentPool(poolSizeOverride: Int = UNSET_POOL_SIZE): ItemPool? {
+    val size = if (poolSizeOverride > UNSET_POOL_SIZE) poolSizeOverride else poolSize()
+    return DefaultItemPool(javaClass, size)
+  }
 
   companion object {
     /** Default size of the content pool. */

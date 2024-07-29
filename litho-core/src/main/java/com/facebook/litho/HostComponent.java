@@ -47,13 +47,6 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new HostMountContentPool(
-        ComponentsConfiguration.hostComponentPoolSize,
-        mPoolingPolicy.canAcquireContent || mPoolingPolicy.canReleaseContent);
-  }
-
-  @Override
   public PoolingPolicy getPoolingPolicy() {
     return mPoolingPolicy;
   }
@@ -66,6 +59,12 @@ class HostComponent extends SpecGeneratedComponent {
   @Override
   protected Object onCreateMountContent(Context c) {
     return new ComponentHost(c, mUnsafeModificationPolicy);
+  }
+
+  @Override
+  public MountItemsPool.ItemPool onCreateMountContentPool(int poolSizeOverride) {
+    return new HostMountContentPool(
+        poolSizeOverride, mPoolingPolicy.canAcquireContent || mPoolingPolicy.canReleaseContent);
   }
 
   @Override
@@ -134,7 +133,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   public int poolSize() {
-    return 45;
+    return ComponentsConfiguration.hostComponentPoolSize;
   }
 
   @Override

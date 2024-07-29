@@ -76,10 +76,10 @@ private constructor(
     isShouldUpdateResultCached = false
   }
 
-  override fun createRecyclingPool(poolSizeOverride: Int): ItemPool? {
+  override fun onCreateMountContentPool(poolSizeOverride: Int): ItemPool? {
     return try {
       if (component is SpecGeneratedComponent) {
-        component.createRecyclingPool()
+        component.onCreateMountContentPool(poolSizeOverride)
       } else {
         null
       }

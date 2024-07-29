@@ -258,7 +258,7 @@ public final class DelegateMethodDescriptions {
           .accessType(Modifier.PUBLIC)
           .returnType(ClassNames.MOUNT_CONTENT_POOL)
           .name("onCreateMountContentPool")
-          .definedParameterTypes(ImmutableList.<TypeName>of())
+          .definedParameterTypes(ImmutableList.<TypeName>of(TypeName.INT))
           .optionalParameterTypes(ImmutableList.of(INJECT_PROP))
           .build();
 

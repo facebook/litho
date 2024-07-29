@@ -47,7 +47,7 @@ class HostMountContentPool(maxSize: Int, isEnabled: Boolean) : ItemPool {
       return false
     }
 
-    return pool?.release(item) ?: false
+    return pool.release(item)
   }
 
   override fun maybePreallocateContent(c: Context, contentAllocator: ContentAllocator<*>): Boolean =

@@ -203,7 +203,7 @@ object MountItemsPool {
 
       if (pool == null) {
         pool =
-            allocator.createRecyclingPool(poolSize)
+            allocator.onCreateMountContentPool(poolSize)
                 ?: DefaultItemPool(poolableContentType, poolSize)
       }
 

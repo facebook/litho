@@ -134,7 +134,10 @@ object CrashingMountableSpec {
 
   @JvmStatic
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(@InjectProp lifecycle: LifecycleStep): MountItemsPool.ItemPool {
+  fun onCreateMountContentPool(
+      poolSize: Int,
+      @InjectProp lifecycle: LifecycleStep
+  ): MountItemsPool.ItemPool {
     if (lifecycle == LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL) {
       throw MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL)
     }

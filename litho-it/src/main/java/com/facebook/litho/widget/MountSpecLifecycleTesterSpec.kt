@@ -122,7 +122,7 @@ object MountSpecLifecycleTesterSpec {
 
   @JvmStatic
   @OnCreateMountContentPool
-  fun onCreateMountContentPool(): MountItemsPool.ItemPool = TrackingMountContentPool(1)
+  fun onCreateMountContentPool(poolSize: Int): MountItemsPool.ItemPool = TrackingMountContentPool(1)
 
   @JvmStatic
   @UiThread

@@ -477,9 +477,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  public MountItemsPool.ItemPool onCreateMountContentPool() {
+  public MountItemsPool.ItemPool onCreateMountContentPool(int size) {
     MountItemsPool.ItemPool _result;
-    _result = (MountItemsPool.ItemPool) TestMountSpec.onCreateMountContentPool();
+    _result = (MountItemsPool.ItemPool) TestMountSpec.onCreateMountContentPool(size);
     return _result;
   }
 

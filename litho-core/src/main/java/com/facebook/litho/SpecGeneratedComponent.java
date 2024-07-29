@@ -58,7 +58,6 @@ public abstract class SpecGeneratedComponent extends Component
         EventTriggerTarget,
         HasEventTrigger {
 
-  private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
   private final String mSimpleName;
@@ -817,12 +816,6 @@ public abstract class SpecGeneratedComponent extends Component
     return getClass();
   }
 
-  @Nullable
-  @Override
-  public MountItemsPool.ItemPool createRecyclingPool(int poolSize) {
-    return onCreateMountContentPool();
-  }
-
   /**
    * @return true if this component can be preallocated.
    */
@@ -835,8 +828,8 @@ public abstract class SpecGeneratedComponent extends Component
    * @return the MountContentPool that should be used to recycle mount content for this mount spec.
    */
   @Override
-  public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new MountItemsPool.DefaultItemPool(getPoolableContentType(), poolSize());
+  public MountItemsPool.ItemPool onCreateMountContentPool(int poolSizeOverride) {
+    return new MountItemsPool.DefaultItemPool(getPoolableContentType(), poolSizeOverride);
   }
 
   @ThreadSafe
