@@ -430,8 +430,47 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
               parentDuplicatesParentState = isDuplicateParentStateEnabled)
     }
 
+    addViewAttributesBinderIfForPrimitive()
+
     // Sets mFrozen as true to avoid anymore mutation.
     frozen = true
+  }
+
+  /**
+   * This method will setup the [ViewAttributesViewBinder] if this node wraps a [Primitive]. This
+   * should be called after all the node properties were set, so that we have all the available
+   * information to create the view attributes.
+   *
+   * This is also only called for [PrimitiveLithoRenderUnit], as the handling for MountSpecs is done
+   * during the creation of the [MountSpecLithoRenderUnit].
+   *
+   * This method is specific for [Primitive] because of how we structure Render Units in primitives.
+   * At each layout phase, we create a [com.facebook.litho.PrimitiveLithoRenderUnit], which will
+   * wrap the RenderUnit that is created in the Resolve phase. This means that if we added mount
+   * binders to each of the [com.facebook.litho.PrimitiveLithoRenderUnit], then we could create
+   * comodification exceptions. To avoid it, we add the [ViewAttributesBinder] to the shared Render
+   * Unit.
+   */
+  private fun addViewAttributesBinderIfForPrimitive() {
+    val componentContext = headComponentContext
+    val nodePrimitive = primitive
+
+    if (componentContext.lithoConfiguration.componentsConfig.useViewAttributesBinder &&
+        nodePrimitive != null) {
+      val viewAttributes: ViewAttributes? =
+          LithoNodeUtils.createViewAttributesForBinder(
+              context = componentContext,
+              lithoNode = this,
+              component = headComponent,
+              willMountView = willMountView,
+              importantForAccessibility = importantForAccessibility,
+          )
+
+      if (viewAttributes != null) {
+        val viewAttributesBinder = ViewAttributesViewBinder.create(viewAttributes)
+        nodePrimitive.renderUnit.addOptionalMountBinder(viewAttributesBinder)
+      }
+    }
   }
 
   fun addComponentNeedingPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {

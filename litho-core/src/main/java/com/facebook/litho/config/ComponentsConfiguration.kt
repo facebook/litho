@@ -170,6 +170,11 @@ internal constructor(
      * possibility of reusing resolve result.
      */
     @JvmField val enableResolveWithoutSizeSpec: Boolean = false,
+    /**
+     * When enable, we will use a RenderUnit.Binder to bind the view attributes instead of the
+     * [com.facebook.litho.LithoViewAttributesExtension]
+     */
+    @JvmField val useViewAttributesBinder: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

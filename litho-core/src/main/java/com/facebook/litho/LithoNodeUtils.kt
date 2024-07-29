@@ -84,7 +84,19 @@ object LithoNodeUtils {
             } else {
               node.customDelegateBindersForMountSpec
             },
-        debugKey = getLithoNodeDebugKey(node, OutputUnitType.CONTENT))
+        debugKey = getLithoNodeDebugKey(node, OutputUnitType.CONTENT),
+        viewAttributes =
+            if (node.needsHostView() || node.primitive != null || !node.willMountView) {
+              null
+            } else {
+              createViewAttributesForBinder(
+                  context = context,
+                  lithoNode = node,
+                  component = component,
+                  willMountView = true,
+                  importantForAccessibility = node.importantForAccessibility,
+              )
+            })
   }
 
   /** Creates a [LithoRenderUnit] for the host output iff the result needs a host view. */
@@ -94,7 +106,8 @@ object LithoNodeUtils {
       return null
     }
 
-    val hostComponent: HostComponent = HostComponent.create(node.tailComponentContext)
+    val context = node.tailComponentContext
+    val hostComponent: HostComponent = HostComponent.create(context)
 
     // We need to pass common dynamic props to the host component, as they only could be applied to
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
@@ -104,9 +117,7 @@ object LithoNodeUtils {
         mergeCommonDynamicProps(node.scopedComponentInfos)
     hostComponent.setCommonDynamicProps(commonDynamicProps)
 
-    val id: Long =
-        node.tailComponentContext.calculateLayoutOutputId(
-            node.tailComponentKey, OutputUnitType.HOST)
+    val id: Long = context.calculateLayoutOutputId(node.tailComponentKey, OutputUnitType.HOST)
 
     return createRenderUnit(
         id = id,
@@ -120,13 +131,22 @@ object LithoNodeUtils {
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
             if (node.needsHostView()) node.customDelegateBindersForMountSpec else null,
-        debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST))
+        debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
+        viewAttributes =
+            createViewAttributesForBinder(
+                context = context,
+                lithoNode = node,
+                component = hostComponent,
+                willMountView = true,
+                importantForAccessibility = node.importantForAccessibility,
+            ))
   }
 
   /** Creates a [LithoRenderUnit] for the root host */
   @JvmStatic
   fun createRootHostRenderUnit(node: LithoNode): LithoRenderUnit {
-    val hostComponent: HostComponent = HostComponent.create(node.tailComponentContext)
+    val context = node.tailComponentContext
+    val hostComponent: HostComponent = HostComponent.create(context)
 
     // We need to pass common dynamic props to the host component, as they only could be applied to
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
@@ -149,7 +169,15 @@ object LithoNodeUtils {
         isMountViewSpec = true,
         customDelegateBindersForMountSpec =
             if (node.willMountView) null else node.customDelegateBindersForMountSpec,
-        debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST))
+        debugKey = getLithoNodeDebugKey(node, OutputUnitType.HOST),
+        viewAttributes =
+            createViewAttributesForBinder(
+                context = context,
+                lithoNode = node,
+                component = hostComponent,
+                willMountView = true,
+                importantForAccessibility = node.importantForAccessibility,
+            ))
   }
 
   /** Creates a [LithoRenderUnit] for the background output iff the result has a background. */
@@ -263,7 +291,8 @@ object LithoNodeUtils {
             },
         duplicateParentState = node.isDuplicateParentStateEnabled,
         hasHostView = node.needsHostView(),
-        debugKey = getLithoNodeDebugKey(node, outputType))
+        debugKey = getLithoNodeDebugKey(node, outputType),
+        viewAttributes = null)
   }
 
   /** Generic method to create a [LithoRenderUnit]. */
@@ -283,6 +312,7 @@ object LithoNodeUtils {
       customDelegateBindersForMountSpec: Map<Class<*>, RenderUnit.DelegateBinder<Any, Any, Any>>? =
           null,
       debugKey: String? = null,
+      viewAttributes: ViewAttributes?
   ): LithoRenderUnit {
     var flags = 0
     val nodeInfo: NodeInfo? = node.nodeInfo
@@ -349,6 +379,10 @@ object LithoNodeUtils {
       for (binder in customDelegateBindersForMountSpec.values) {
         renderUnit.addOptionalMountBinder(binder)
       }
+    }
+
+    if (viewAttributes != null) {
+      renderUnit.addOptionalMountBinder(ViewAttributesViewBinder.create(viewAttributes))
     }
 
     return renderUnit
@@ -427,6 +461,35 @@ object LithoNodeUtils {
         importantForAccessibility = importantForAccessibility,
         disableBgFgOutputs = disableBgFgOutputs,
         lithoNode = lithoNode)
+  }
+
+  /**
+   * This is used to determine the set of [ViewAttributes] that are to be used in the scope of the
+   * ViewAttributesViewBinder.
+   *
+   * If [com.facebook.litho.config.ComponentsConfiguration.useViewAttributesBinder] is not enabled,
+   * it will return `null`.
+   */
+  @JvmStatic
+  internal fun createViewAttributesForBinder(
+      context: ComponentContext,
+      lithoNode: LithoNode,
+      component: Component,
+      willMountView: Boolean,
+      @ImportantForAccessibility importantForAccessibility: Int,
+  ): ViewAttributes? {
+    return if (context.lithoConfiguration.componentsConfig.useViewAttributesBinder) {
+      createViewAttributes(
+          nodeInfo = lithoNode.nodeInfo,
+          component = component,
+          willMountView = willMountView,
+          importantForAccessibility = importantForAccessibility,
+          disableBgFgOutputs =
+              context.lithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs,
+          lithoNode = lithoNode)
+    } else {
+      null
+    }
   }
 
   @JvmStatic
