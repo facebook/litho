@@ -2294,12 +2294,6 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return getThis();
     }
 
-    @Deprecated
-    public T visibilityOutputTag(@Nullable String visibilityOutputTag) {
-      mComponent.getOrCreateCommonProps().visibilityOutputTag(visibilityOutputTag);
-      return getThis();
-    }
-
     private @Nullable Component getOwner() {
       return mContext.getComponentScope();
     }

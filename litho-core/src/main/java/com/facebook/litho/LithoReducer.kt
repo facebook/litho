@@ -337,7 +337,6 @@ internal object LithoReducer {
         renderTreeNode?.renderUnit?.id ?: 0,
         node.visibleHeightRatio,
         node.visibleWidthRatio,
-        node.visibilityOutputTag,
         visibleHandler,
         invisibleHandler,
         focusedHandler,

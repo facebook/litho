@@ -616,10 +616,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     otherProps.layerType(type, paint)
   }
 
-  fun visibilityOutputTag(visibilityOutputTag: String?) {
-    otherProps.visibilityOutputTag(visibilityOutputTag)
-  }
-
   fun copyLayoutProps(layoutProps: LayoutProps) {
     _layoutProps?.copyInto(layoutProps)
   }
@@ -694,7 +690,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
     @DrawableRes private var stateListAnimatorRes: Int = 0
     private var layerType = LayerType.LAYER_TYPE_NOT_SET
     private var layerPaint: Paint? = null
-    private var visibilityOutputTag: String? = null
 
     private var systemGestureExclusionZones: MutableList<(Rect) -> Rect>? = null
 
@@ -811,10 +806,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
       layerPaint = paint
     }
 
-    fun visibilityOutputTag(visibilityOutputTag: String?) {
-      this.visibilityOutputTag = visibilityOutputTag
-    }
-
     fun addSystemGestureExclusionZone(exclusion: (Rect) -> Rect) {
       (systemGestureExclusionZones
               ?: ArrayList<(Rect) -> Rect>().also { systemGestureExclusionZones = it })
@@ -887,7 +878,6 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         node.stateListAnimatorRes(stateListAnimatorRes)
       }
       node.layerType(layerType, layerPaint)
-      node.visibilityOutputTag(visibilityOutputTag)
 
       systemGestureExclusionZones?.let { node.addSystemGestureExclusionZones(it) }
     }
