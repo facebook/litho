@@ -92,19 +92,25 @@ object MountItemsPool {
         }
 
     return if (content != null) {
-      content
-    } else {
-      val isTracing = RenderCoreSystrace.isTracing()
-      if (isTracing) {
-        RenderCoreSystrace.beginSection(
-            "MountItemsPool:createMountContent ${poolableMountContent.getPoolableContentType().simpleName}")
-      }
-      val content = poolableMountContent.createPoolableContent(context)
-      if (isTracing) {
-        RenderCoreSystrace.endSection()
-      }
-      content
-    }
+          content
+        } else {
+          val isTracing = RenderCoreSystrace.isTracing()
+          if (isTracing) {
+            RenderCoreSystrace.beginSection(
+                "MountItemsPool:createMountContent ${poolableMountContent.getPoolableContentType().simpleName}")
+          }
+          val content = poolableMountContent.createPoolableContent(context)
+          if (isTracing) {
+            RenderCoreSystrace.endSection()
+          }
+
+          content
+        }
+        .also { content ->
+          if (content is View) {
+            mountItemPoolsReleaseValidator?.registerAcquiredViewState(content)
+          }
+        }
   }
 
   @JvmStatic

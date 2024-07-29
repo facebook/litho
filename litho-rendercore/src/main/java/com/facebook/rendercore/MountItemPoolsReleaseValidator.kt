@@ -24,6 +24,7 @@ import android.widget.TextView
 import androidx.core.view.children
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import java.lang.reflect.Field
+import java.util.WeakHashMap
 
 /**
  * Inspects a [View] to understand if it has any view properties that were not cleaned up before the
@@ -42,6 +43,8 @@ internal class MountItemPoolsReleaseValidator(
      */
     extraFields: List<FieldExtractionDefinition> = emptyList()
 ) {
+
+  private val pooledViewsToInitialState = WeakHashMap<View, Set<FieldState>>()
 
   private val fields =
       setOf(
@@ -87,6 +90,15 @@ internal class MountItemPoolsReleaseValidator(
             }
           }) + extraFields
 
+  fun registerAcquiredViewState(view: View) {
+    pooledViewsToInitialState[view] =
+        fields.map { field -> FieldState(field.id, field.extractor(view)) }.toSet()
+
+    if (view is ViewGroup) {
+      view.children.forEach { child -> registerAcquiredViewState(child) }
+    }
+  }
+
   fun assertValidRelease(view: View, hierarchyIdentifiers: List<String>) {
     if (!BuildConfig.DEBUG) {
       return
@@ -108,25 +120,34 @@ internal class MountItemPoolsReleaseValidator(
       return
     }
 
-    val unreleasedFields = fields.filter { field -> field.extractor(view) != null }
-    if (unreleasedFields.isNotEmpty()) {
-      val result = buildString {
-        append("Improper release detected: ${currentHierarchyIdentifier}\n")
-        unreleasedFields.forEach { field -> append("- ${field.id} | ${field.extractor(view)}\n") }
+    val beforeReleaseFieldsState =
+        fields.map { field -> FieldState(field.id, field.extractor(view)) }.toSet()
 
-        if (view is TextView) {
-          append("- text=${view.text}\n")
+    val afterPoolFieldsState = pooledViewsToInitialState.remove(view)
+    if (beforeReleaseFieldsState != afterPoolFieldsState) {
+      val differentFieldsState =
+          if (afterPoolFieldsState == null) beforeReleaseFieldsState
+          else beforeReleaseFieldsState.minus(afterPoolFieldsState)
+
+      val unreleasedFields = differentFieldsState.filter { field -> field.value != null }
+      if (unreleasedFields.isNotEmpty()) {
+        val result = buildString {
+          append("Improper release detected: ${currentHierarchyIdentifier}\n")
+          unreleasedFields.forEach { field -> append("- ${field.id} | ${field.value}\n") }
+
+          if (view is TextView) {
+            append("- text=${view.text}\n")
+          }
+          append("\n")
         }
-        append("\n")
-      }
 
-      onInvalidRelease?.invoke(InvalidReleaseToMountPoolException(result))
+        onInvalidRelease?.invoke(InvalidReleaseToMountPoolException(result))
 
-      if (failOnDetection) {
-        assert(false) { result }
-      } else {
-        Log.d(TAG, currentHierarchyIdentifier)
-        Log.d(TAG, result)
+        if (failOnDetection) {
+          assert(false) { result }
+        } else {
+          Log.d(TAG, result)
+        }
       }
     }
   }
@@ -170,6 +191,8 @@ internal class MountItemPoolsReleaseValidator(
 
   @DataClassGenerate
   data class FieldExtractionDefinition(val id: String, val extractor: (View) -> Any?)
+
+  @DataClassGenerate data class FieldState(val id: String, val value: Any?)
 }
 
 private const val TAG = "MountReleaseValidator"
