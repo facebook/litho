@@ -382,7 +382,15 @@ object LithoNodeUtils {
     }
 
     if (viewAttributes != null) {
-      renderUnit.addOptionalMountBinder(ViewAttributesViewBinder.create(viewAttributes))
+      renderUnit.addOptionalMountBinder(
+          ViewAttributesViewBinder.create(
+              ViewAttributesViewBinder.Model(
+                  renderUnit = renderUnit,
+                  viewAttributes = viewAttributes,
+                  cloneStateListAnimators =
+                      node.headComponentContext.lithoConfiguration.componentsConfig
+                          .cloneStateListAnimators,
+                  isRootHost = id == MountState.ROOT_HOST_ID)))
     }
 
     return renderUnit

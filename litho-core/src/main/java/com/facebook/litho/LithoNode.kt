@@ -467,7 +467,15 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
           )
 
       if (viewAttributes != null) {
-        val viewAttributesBinder = ViewAttributesViewBinder.create(viewAttributes)
+        val viewAttributesBinder =
+            ViewAttributesViewBinder.create(
+                ViewAttributesViewBinder.Model(
+                    renderUnit = nodePrimitive.renderUnit,
+                    viewAttributes = viewAttributes,
+                    isRootHost = false,
+                    cloneStateListAnimators =
+                        componentContext.lithoConfiguration.componentsConfig
+                            .cloneStateListAnimators))
         nodePrimitive.renderUnit.addOptionalMountBinder(viewAttributesBinder)
       }
     }
