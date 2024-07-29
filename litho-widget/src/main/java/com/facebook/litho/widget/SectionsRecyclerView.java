@@ -62,7 +62,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
    * When we set an ItemAnimator during mount, we want to store the one that was already set on the
    * RecyclerView so that we can reset it during unmount.
    */
-  private ItemAnimator mDetachedItemAnimator;
+  @Nullable private ItemAnimator mDetachedItemAnimator;
 
   public SectionsRecyclerView(Context context, RecyclerView recyclerView) {
     super(context);
