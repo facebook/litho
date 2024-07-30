@@ -48,6 +48,7 @@ import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
+import javax.annotation.Nullable;
 
 /** Comment to be copied in generated section */
 @GroupSectionSpec(events = TestEvent.class, isPublic = false)
@@ -69,6 +70,7 @@ public class FullGroupSectionSpec<T> implements TestTag {
     return prop2;
   }
 
+  @Nullable
   @OnCreateChildren
   protected static <T> Children onCreateChildren(
       SectionContext c,
