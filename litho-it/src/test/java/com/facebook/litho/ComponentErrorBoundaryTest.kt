@@ -46,6 +46,7 @@ import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
 import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.reflect.KClass
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.core.Is
 import org.junit.After
@@ -703,13 +704,16 @@ class ComponentErrorBoundaryTest {
       crashFromStep: LifecycleStep,
       expectedMessage: String,
       unmountAfter: Boolean,
-      expectHierarchy: Boolean
-  ) {
-    val crashingComponent =
+      expectHierarchy: Boolean,
+      crashingComponentClass: KClass<*> = CrashingMountable::class,
+      crashingComponentCreator: (crashFromStep: LifecycleStep) -> Component = {
         CrashingMountable.create(lithoViewRule.context)
             .someStringProp("someString")
             .lifecycle(crashFromStep)
             .build()
+      },
+  ) {
+    val crashingComponent = crashingComponentCreator(crashFromStep)
     val errorOutput: List<Exception> = ArrayList()
     val component =
         TestErrorBoundary.create(lithoViewRule.context)
@@ -728,7 +732,7 @@ class ComponentErrorBoundaryTest {
         val item = lithoViewRule.lithoView.mountDelegateTarget.getMountItemAt(i)
         item?.renderTreeNode?.let {
           assertThat(LithoRenderUnit.getRenderUnit(it).component)
-              .isNotInstanceOf(CrashingMountable::class.java)
+              .isNotInstanceOf(crashingComponentClass.java)
         }
       }
     }
@@ -741,7 +745,8 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
       assertThat(errorOutput[0].message).contains(expectedMessage)
       assertThat(errorOutput[0].message)
-          .contains("layout_stack:", "CrashingMountable", "->", "TestErrorBoundary")
+          .contains(
+              "layout_stack:", "${crashingComponentClass.simpleName}", "->", "TestErrorBoundary")
     } else {
       assertThat(errorOutput[0])
           .isInstanceOf(MountPhaseException::class.java)
