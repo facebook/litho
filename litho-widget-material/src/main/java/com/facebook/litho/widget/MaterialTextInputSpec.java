@@ -104,6 +104,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int inputType = TextInputSpec.inputType;
   @PropDefault protected static final int rawInputType = TextInputSpec.rawInputType;
   @PropDefault protected static final int imeOptions = TextInputSpec.imeOptions;
+  @PropDefault protected static final String privateImeOptions = TextInputSpec.privateImeOptions;
   @PropDefault protected static final int cursorDrawableRes = TextInputSpec.cursorDrawableRes;
   @PropDefault static final boolean multiline = TextInputSpec.multiline;
   @PropDefault protected static final int minLines = TextInputSpec.minLines;
@@ -158,6 +159,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
+      @Prop(optional = true) String privateImeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
@@ -205,6 +207,7 @@ class MaterialTextInputSpec {
             rawInputType,
             keyListener,
             imeOptions,
+            privateImeOptions,
             inputFilters,
             multiline,
             ellipsize,
@@ -260,6 +263,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) Diff<Integer> inputType,
       @Prop(optional = true) Diff<Integer> rawInputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
+      @Prop(optional = true) Diff<String> privateImeOptions,
       @Prop(optional = true, varArg = "inputFilter") Diff<List<InputFilter>> inputFilters,
       @Prop(optional = true) Diff<TextUtils.TruncateAt> ellipsize,
       @Prop(optional = true) Diff<Boolean> multiline,
@@ -301,6 +305,7 @@ class MaterialTextInputSpec {
             inputType,
             rawInputType,
             imeOptions,
+            privateImeOptions,
             inputFilters,
             ellipsize,
             multiline,
@@ -359,6 +364,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
+      @Prop(optional = true) String privateImeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) int minLines,
@@ -406,6 +412,7 @@ class MaterialTextInputSpec {
         rawInputType,
         keyListener,
         imeOptions,
+        privateImeOptions,
         inputFilters,
         multiline,
         ellipsize,
