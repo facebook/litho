@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 public class NavigatableDemoActivity extends AppCompatActivity {
 
-  private Demos.DemoItem mDataModel;
+  @Nullable private Demos.DemoItem mDataModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
