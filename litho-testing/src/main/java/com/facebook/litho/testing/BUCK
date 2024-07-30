@@ -29,6 +29,8 @@ load(
     "make_dep_path",
 )
 
+oncall("components_for_android")
+
 litho_android_test_library(
     name = "whitebox",
     srcs = glob(["Whitebox.java"]),

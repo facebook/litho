@@ -19,6 +19,8 @@ load(
     "make_dep_path",
 )
 
+oncall("components_for_android")
+
 litho_android_library(
     name = "litho",
     srcs = glob(

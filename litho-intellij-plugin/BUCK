@@ -4,6 +4,8 @@ load(
     "make_dep_path",
 )
 
+oncall("litho_components_for_android")
+
 fb_java_binary(
     name = "litho-intellij-plugin",
     tests = [

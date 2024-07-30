@@ -56,6 +56,8 @@ load(
     "make_dep_path",
 )
 
+oncall("components_for_android")
+
 fb_android_library(
     name = "litho",
     srcs = glob([
