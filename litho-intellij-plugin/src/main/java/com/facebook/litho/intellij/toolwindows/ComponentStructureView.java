@@ -78,8 +78,8 @@ class ComponentStructureView implements Disposable {
 
   private final AtomicBoolean isVisible = new AtomicBoolean(false);
   private final Project project;
-  private ContentManager contentManager;
-  private Content contentContainer;
+  @Nullable private ContentManager contentManager;
+  @Nullable private Content contentContainer;
   @VisibleForTesting @Nullable StructureView structureView;
 
   static ComponentStructureView getInstance(Project project) {
