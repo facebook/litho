@@ -28,7 +28,9 @@ import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.core.util.Pools
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.facebook.rendercore.utils.ThreadUtils.runOnUiThread
 import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.concurrent.GuardedBy
@@ -258,7 +260,9 @@ object MountItemsPool {
         synchronized(mountContentLock) {
           if (!contextsWithLifecycleObservers.containsKey(context)) {
             contextsWithLifecycleObservers[context] = true
-            context.lifecycle.addObserver(PoolsLifecycleObserver())
+            runOnUiThread {
+              context.lifecycle.addObserver(PoolsLifecycleObserver(context.lifecycle.currentState))
+            }
           }
         }
       } else if (activityCallbacks == null) {
@@ -361,10 +365,16 @@ object MountItemsPool {
     }
   }
 
-  private class PoolsLifecycleObserver : DefaultLifecycleObserver {
+  private class PoolsLifecycleObserver(private val initialState: Lifecycle.State) :
+      DefaultLifecycleObserver {
     override fun onCreate(owner: LifecycleOwner) {
-      // we know owner is a Context because we checked this when adding the lifecycle observer
-      onContextCreated(owner as Context)
+      // When the lifecycle observer is attached to an owner that has already been created, the
+      // onCreate method will be invoked but we want to call onContextCreated only when the owner
+      // switches to created for the first time.
+      if (!initialState.isAtLeast(Lifecycle.State.CREATED)) {
+        // we know owner is a Context because we checked this when adding the lifecycle observer
+        onContextCreated(owner as Context)
+      }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {

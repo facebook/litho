@@ -27,6 +27,7 @@ import com.facebook.rendercore.MountItemsPool.onContextDestroyed
 import com.facebook.rendercore.MountItemsPool.prefillMountContentPool
 import com.facebook.rendercore.MountItemsPool.release
 import com.facebook.rendercore.MountItemsPool.setMountContentPoolFactory
+import java.lang.Thread
 import org.assertj.core.api.Java6Assertions
 import org.junit.After
 import org.junit.Before
@@ -167,6 +168,33 @@ class MountItemsPoolTest {
 
     val content1 = acquireMountContent(service, testRenderUnit)
     release(service, testRenderUnit, content1)
+    val content2 = acquireMountContent(service, testRenderUnit)
+
+    // Ensure that the content is reused
+    Java6Assertions.assertThat(content1).isSameAs(content2)
+
+    // Release the content
+    release(service, testRenderUnit, content2)
+
+    // Destroy the service
+    serviceController.destroy()
+
+    val content3 = acquireMountContent(service, testRenderUnit)
+    // Ensure that the content acquired after destroying the service is different
+    Java6Assertions.assertThat(content3).isNotSameAs(content2)
+  }
+
+  @Test
+  fun testAcquiringContentOnBgThreadAndDestroyingServiceReleasesThePool() {
+    val testRenderUnit = TestRenderUnit(0)
+
+    var content1: Any? = null
+    val bgThread = Thread { content1 = acquireMountContent(service, testRenderUnit) }
+    bgThread.start()
+    bgThread.join()
+    Robolectric.flushForegroundThreadScheduler()
+
+    release(service, testRenderUnit, checkNotNull(content1))
     val content2 = acquireMountContent(service, testRenderUnit)
 
     // Ensure that the content is reused
