@@ -18,13 +18,14 @@ package com.facebook.litho.animation;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s. */
 public class SequenceBinding extends BaseAnimationBinding {
 
   private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
-  private Resolver mResolver;
+  @Nullable private Resolver mResolver;
   private int mCurrentIndex = 0;
   private boolean mIsActive = false;
 
