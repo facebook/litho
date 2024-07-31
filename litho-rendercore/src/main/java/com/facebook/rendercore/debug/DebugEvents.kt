@@ -34,6 +34,7 @@ sealed class DebugEvent(
 ) {
 
   companion object {
+    val NoId = { "" }
     const val All = "*"
     const val RenderTreeCommitted = "RenderCore.RenderTreeCommitted"
     const val RenderTreeCalculated = "RenderCore.RenderTreeCalculated"

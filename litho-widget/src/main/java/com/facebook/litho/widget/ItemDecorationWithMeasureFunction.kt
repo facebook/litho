@@ -20,6 +20,11 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import com.facebook.litho.debug.LithoDebugEvent
+import com.facebook.rendercore.LogLevel
+import com.facebook.rendercore.debug.DebugEvent
+import com.facebook.rendercore.debug.DebugEventAttribute
+import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.utils.ThreadUtils
 
 /**
@@ -29,7 +34,7 @@ import com.facebook.rendercore.utils.ThreadUtils
  * because the [RecyclerView] gets the insets from the [ItemDecoration] before the [View] is
  * measured, so the measured size of the view is 0, and the insets would not be correct.
  */
-abstract class ItemDecorationWithMeasureFunction() : ItemDecoration() {
+abstract class ItemDecorationWithMeasureFunction : ItemDecoration() {
 
   internal var measure: (View.() -> Unit)? = null
     @JvmName("setMeasure")
@@ -48,12 +53,25 @@ abstract class ItemDecorationWithMeasureFunction() : ItemDecoration() {
       parent: RecyclerView,
       state: RecyclerView.State
   ) {
+
+    val measureFunctionToUse: View.() -> Unit =
+        measure
+            ?: NoOpMeasure.also {
+              DebugEventDispatcher.dispatch(
+                  type = LithoDebugEvent.DebugInfo,
+                  renderStateId = DebugEvent.NoId,
+                  logLevel = LogLevel.ERROR,
+              ) {
+                it[DebugEventAttribute.Name] = "ItemDecorationWithNullMeasureFunction"
+              }
+            }
+
     getItemOffsets(
         outRect,
         view,
         parent,
         state,
-        checkNotNull(measure) { "measure function is null" },
+        measureFunctionToUse,
     )
   }
 
@@ -64,4 +82,8 @@ abstract class ItemDecorationWithMeasureFunction() : ItemDecoration() {
       state: RecyclerView.State,
       measure: View.() -> Unit
   )
+
+  companion object {
+    val NoOpMeasure: View.() -> Unit = {}
+  }
 }
