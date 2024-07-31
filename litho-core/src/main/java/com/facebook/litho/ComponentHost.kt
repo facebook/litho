@@ -242,7 +242,7 @@ open class ComponentHost(
   constructor(context: ComponentContext) : this(context.androidContext, null, null)
 
   init {
-    setWillNotDraw(true)
+    setWillNotDraw(ComponentsConfiguration.defaultInstance.enableHostWillNotDraw)
     isChildrenDrawingOrderEnabled = true
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context))
   }

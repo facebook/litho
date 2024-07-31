@@ -175,6 +175,8 @@ internal constructor(
      * [com.facebook.litho.LithoViewAttributesExtension]
      */
     @JvmField val useViewAttributesBinder: Boolean = false,
+    /** This will skip calling `onDraw` for ComponentHost. */
+    @JvmField val enableHostWillNotDraw: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -369,6 +371,7 @@ internal constructor(
         baseConfig.sectionsRecyclerViewOnCreateHandler
     private var useStableIdsInRecyclerBinder = baseConfig.useStableIdsInRecyclerBinder
     private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
+    private var enableHostWillNotDraw = baseConfig.enableHostWillNotDraw
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -520,6 +523,7 @@ internal constructor(
           sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler,
           useStableIdsInRecyclerBinder = useStableIdsInRecyclerBinder,
           enableResolveWithoutSizeSpec = enableResolveWithoutSizeSpec,
+          enableHostWillNotDraw = enableHostWillNotDraw,
       )
     }
   }
