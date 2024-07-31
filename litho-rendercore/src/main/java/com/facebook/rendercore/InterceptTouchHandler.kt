@@ -20,5 +20,5 @@ import android.view.MotionEvent
 import android.view.View
 
 interface InterceptTouchHandler {
-  fun onInterceptTouchEvent(view: View, ev: MotionEvent): Boolean
+  fun onInterceptTouchEvent(view: View, ev: MotionEvent): Boolean?
 }
