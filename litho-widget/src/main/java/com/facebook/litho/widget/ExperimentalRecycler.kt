@@ -98,16 +98,38 @@ class ExperimentalRecycler(
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     val measureVersion = useState { 0 }
 
+    val measureChild: State<View.() -> Unit> = useState {
+      {
+        val position = (layoutParams as RecyclerView.LayoutParams).viewLayoutPosition
+        measure(binder.getChildWidthSpec(position), binder.getChildWidthSpec(position))
+      }
+    }
+
     val mountBehavior =
         when (binderStrategy) {
           PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT ->
               RecyclerSpecEquivalentMountBehavior(
-                  measureVersion, onRefresh, onScrollListeners, recyclerEventsController)
+                  measureVersion,
+                  onRefresh,
+                  onScrollListeners,
+                  recyclerEventsController,
+                  measureChild.value,
+              )
           PrimitiveRecyclerBinderStrategy.SPLIT_BINDERS ->
-              SplitBindersMountBehavior(onRefresh, onScrollListeners, recyclerEventsController)
+              SplitBindersMountBehavior(
+                  onRefresh,
+                  onScrollListeners,
+                  recyclerEventsController,
+                  measureChild.value,
+              )
           PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT_AND_ITEM_DECORATION ->
               RecyclerSpecEquivalentAndItemDecorationMountBehavior(
-                  measureVersion, onRefresh, onScrollListeners, recyclerEventsController)
+                  measureVersion,
+                  onRefresh,
+                  onScrollListeners,
+                  recyclerEventsController,
+                  measureChild.value,
+              )
         }
 
     return LithoPrimitive(
@@ -118,9 +140,10 @@ class ExperimentalRecycler(
                 startPadding = leftPadding,
                 endPadding = rightPadding,
                 topPadding = topPadding,
-                bottomPadding = bottomPadding) {
-                  measureVersion.update { v -> v + 1 }
-                },
+                bottomPadding = bottomPadding,
+            ) {
+              measureVersion.update { v -> v + 1 }
+            },
         mountBehavior = mountBehavior,
         style = style)
   }
@@ -129,7 +152,8 @@ class ExperimentalRecycler(
       measureVersion: State<Int>,
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
-      recyclerEventsController: RecyclerEventsController?
+      recyclerEventsController: RecyclerEventsController?,
+      measureChild: View.() -> Unit,
   ): MountBehavior<SectionsRecyclerView> =
       MountBehavior(
           ViewAllocator { context -> SectionsRecyclerView(context, LithoRecyclerView(context)) }) {
@@ -155,48 +179,60 @@ class ExperimentalRecycler(
                   refreshProgressBarBackgroundColor,
                   refreshProgressBarColor,
                   itemAnimator?.javaClass,
-                  itemDecorations) { sectionsRecyclerView ->
-                    val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+                  itemDecorations,
+                  measureChild,
+              ) { sectionsRecyclerView ->
+                val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
-                    bindLegacyMountBinder(
-                        sectionsRecyclerView = sectionsRecyclerView,
-                        contentDescription = contentDescription,
-                        hasFixedSize = hasFixedSize,
-                        isClipToPaddingEnabled = isClipToPaddingEnabled,
-                        paddingAdditionDisabled = paddingAdditionDisabled,
-                        leftPadding = leftPadding,
-                        topPadding = topPadding,
-                        rightPadding = rightPadding,
-                        bottomPadding = bottomPadding,
-                        isClipChildrenEnabled = isClipChildrenEnabled,
-                        isNestedScrollingEnabled = isNestedScrollingEnabled,
-                        scrollBarStyle = scrollBarStyle,
-                        isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
-                        isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
-                        fadingEdgeLength = fadingEdgeLength,
-                        recyclerViewId = recyclerViewId,
-                        overScrollMode = overScrollMode,
-                        edgeFactory = edgeFactory,
-                        refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                        refreshProgressBarColor = refreshProgressBarColor,
-                        itemAnimator = itemAnimator)
+                bindLegacyMountBinder(
+                    sectionsRecyclerView = sectionsRecyclerView,
+                    contentDescription = contentDescription,
+                    hasFixedSize = hasFixedSize,
+                    isClipToPaddingEnabled = isClipToPaddingEnabled,
+                    paddingAdditionDisabled = paddingAdditionDisabled,
+                    leftPadding = leftPadding,
+                    topPadding = topPadding,
+                    rightPadding = rightPadding,
+                    bottomPadding = bottomPadding,
+                    isClipChildrenEnabled = isClipChildrenEnabled,
+                    isNestedScrollingEnabled = isNestedScrollingEnabled,
+                    scrollBarStyle = scrollBarStyle,
+                    isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
+                    isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                    fadingEdgeLength = fadingEdgeLength,
+                    recyclerViewId = recyclerViewId,
+                    overScrollMode = overScrollMode,
+                    edgeFactory = edgeFactory,
+                    refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                    refreshProgressBarColor = refreshProgressBarColor,
+                    itemAnimator = itemAnimator)
 
-                    itemDecorations?.forEach { recyclerView.addItemDecoration(it) }
+                itemDecorations?.forEach { decoration ->
+                  if (decoration is ItemDecorationWithMeasureFunction) {
+                    decoration.measure = measureChild
+                  }
+                  recyclerView.addItemDecoration(decoration)
+                }
 
-                    binder.mount(recyclerView)
+                binder.mount(recyclerView)
 
-                    onUnbind {
-                      unbindLegacyMountBinder(
-                          sectionsRecyclerView = sectionsRecyclerView,
-                          refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                          edgeFactory = edgeFactory,
-                          snapHelper = snapHelper)
+                onUnbind {
+                  unbindLegacyMountBinder(
+                      sectionsRecyclerView = sectionsRecyclerView,
+                      refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+                      edgeFactory = edgeFactory,
+                      snapHelper = snapHelper)
 
-                      itemDecorations?.forEach { recyclerView.removeItemDecoration(it) }
+                  binder.unmount(recyclerView)
 
-                      binder.unmount(recyclerView)
+                  itemDecorations?.forEach { decoration ->
+                    recyclerView.removeItemDecoration(decoration)
+                    if (decoration is ItemDecorationWithMeasureFunction) {
+                      decoration.measure = null
                     }
                   }
+                }
+              }
             }
 
             // RecyclerSpec's @OnBind and @OnUnbind
@@ -228,7 +264,8 @@ class ExperimentalRecycler(
       measureVersion: State<Int>,
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
-      recyclerEventsController: RecyclerEventsController?
+      recyclerEventsController: RecyclerEventsController?,
+      measureChild: View.() -> Unit
   ): MountBehavior<SectionsRecyclerView> =
       MountBehavior(
           ViewAllocator { context -> SectionsRecyclerView(context, LithoRecyclerView(context)) }) {
@@ -236,12 +273,24 @@ class ExperimentalRecycler(
             shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
 
             withDescription("recycler-decorations") {
-              bind(itemDecorations) { sectionsRecyclerView ->
+              bind(itemDecorations, measureChild) { sectionsRecyclerView ->
                 val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
-                itemDecorations?.forEach(recyclerView::addItemDecoration)
+                itemDecorations?.forEach { decoration ->
+                  if (decoration is ItemDecorationWithMeasureFunction) {
+                    decoration.measure = measureChild
+                  }
+                  recyclerView.addItemDecoration(decoration)
+                }
 
-                onUnbind { itemDecorations?.forEach(recyclerView::removeItemDecoration) }
+                onUnbind {
+                  itemDecorations?.forEach { decoration ->
+                    recyclerView.removeItemDecoration(decoration)
+                    if (decoration is ItemDecorationWithMeasureFunction) {
+                      decoration.measure = null
+                    }
+                  }
+                }
               }
             }
 
@@ -340,7 +389,8 @@ class ExperimentalRecycler(
   private fun PrimitiveComponentScope.SplitBindersMountBehavior(
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
-      recyclerEventsController: RecyclerEventsController?
+      recyclerEventsController: RecyclerEventsController?,
+      measureChild: View.() -> Unit
   ): MountBehavior<SectionsRecyclerView> =
       MountBehavior(
           ViewAllocator { context -> SectionsRecyclerView(context, LithoRecyclerView(context)) }) {
@@ -427,12 +477,24 @@ class ExperimentalRecycler(
             }
 
             withDescription("recycler-decorations") {
-              bind(itemDecorations) { sectionsRecyclerView ->
+              bind(itemDecorations, measureChild) { sectionsRecyclerView ->
                 val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
-                itemDecorations?.forEach(recyclerView::addItemDecoration)
+                itemDecorations?.forEach { decoration ->
+                  if (decoration is ItemDecorationWithMeasureFunction) {
+                    decoration.measure = measureChild
+                  }
+                  recyclerView.addItemDecoration(decoration)
+                }
 
-                onUnbind { itemDecorations?.forEach(recyclerView::removeItemDecoration) }
+                onUnbind {
+                  itemDecorations?.forEach { decoration ->
+                    if (decoration is ItemDecorationWithMeasureFunction) {
+                      decoration.measure = null
+                    }
+                    recyclerView.removeItemDecoration(decoration)
+                  }
+                }
               }
             }
           }
