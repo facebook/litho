@@ -456,13 +456,14 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     val nodePrimitive = primitive
 
     if (componentContext.lithoConfiguration.componentsConfig.useViewAttributesBinder &&
-        nodePrimitive != null) {
+        nodePrimitive != null &&
+        willMountView) {
       val viewAttributes: ViewAttributes? =
           LithoNodeUtils.createViewAttributesForBinder(
               context = componentContext,
               lithoNode = this,
-              component = headComponent,
-              willMountView = willMountView,
+              component = tailComponent,
+              willMountView = true,
               importantForAccessibility = importantForAccessibility,
           )
 
