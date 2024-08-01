@@ -47,27 +47,30 @@ class ComponentsConfigurationTest {
 
   @Test
   fun testSetFlagThroughComponentConfigToComponentTree() {
-    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = true)
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(isReconciliationEnabled = true)
     val componentTree =
         ComponentTree.create(componentContext)
             .componentsConfiguration(ComponentsConfiguration.defaultInstance)
             .build()
     val componentsConfiguration = componentTree.context.mLithoConfiguration.componentsConfig
 
-    assertThat(componentsConfiguration.shouldCacheLayouts).isTrue
+    assertThat(componentsConfiguration.isReconciliationEnabled).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testSetFlagThroughComponentConfigToComponentTreeWithRecyclerCollectionComponent() {
-    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = false)
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(isReconciliationEnabled = false)
 
     val recyclerBinderConfiguration =
         RecyclerBinderConfiguration.create()
             .recyclerBinderConfig(
                 RecyclerBinderConfig(
                     componentsConfiguration =
-                        ComponentsConfiguration.defaultInstance.copy(shouldCacheLayouts = true)))
+                        ComponentsConfiguration.defaultInstance.copy(
+                            isReconciliationEnabled = true)))
             .build()
 
     legacyLithoViewRule
@@ -92,17 +95,19 @@ class ComponentsConfigurationTest {
     assertThat(childView).isNotNull
     val componentsConfiguration =
         childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig
-    assertThat(componentsConfiguration?.shouldCacheLayouts).isTrue
+    assertThat(componentsConfiguration?.isReconciliationEnabled).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testOverrideDefaultBuilder() {
-    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = true)
-    assertThat(ComponentsConfiguration.defaultInstance.shouldCacheLayouts).isTrue
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(isReconciliationEnabled = true)
+    assertThat(ComponentsConfiguration.defaultInstance.isReconciliationEnabled).isTrue
 
-    ComponentsConfiguration.defaultInstance = defaultConfiguration.copy(shouldCacheLayouts = false)
-    assertThat(ComponentsConfiguration.defaultInstance.shouldCacheLayouts).isFalse
+    ComponentsConfiguration.defaultInstance =
+        defaultConfiguration.copy(isReconciliationEnabled = false)
+    assertThat(ComponentsConfiguration.defaultInstance.isReconciliationEnabled).isFalse
 
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }

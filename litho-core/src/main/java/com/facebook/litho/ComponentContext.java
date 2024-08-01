@@ -782,8 +782,7 @@ public class ComponentContext {
   }
 
   public boolean shouldCacheLayouts() {
-    return isReconciliationEnabled()
-        && mLithoConfiguration.componentsConfig.getShouldCacheLayouts();
+    return isReconciliationEnabled();
   }
 
   public final boolean shouldUseNonRebindingEventHandlers() {

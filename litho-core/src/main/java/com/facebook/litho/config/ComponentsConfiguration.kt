@@ -41,7 +41,6 @@ import com.facebook.rendercore.visibility.VisibilityBoundsTransformer
  */
 data class ComponentsConfiguration
 internal constructor(
-    val shouldCacheLayouts: Boolean = true,
     val disableNestedTreeCaching: Boolean = true,
     val shouldAddHostViewForRootComponent: Boolean = false,
     @JvmField
@@ -332,7 +331,6 @@ internal constructor(
   class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
 
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
-    private var shouldCacheLayouts = baseConfig.shouldCacheLayouts
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
     private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
@@ -371,8 +369,6 @@ internal constructor(
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
     }
-
-    fun shouldCacheLayouts(enabled: Boolean): Builder = also { shouldCacheLayouts = enabled }
 
     fun isReconciliationEnabled(enabled: Boolean): Builder = also {
       isReconciliationEnabled = enabled
@@ -483,7 +479,6 @@ internal constructor(
 
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
-          shouldCacheLayouts = shouldCacheLayouts,
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
           isReconciliationEnabled = isReconciliationEnabled,
           preAllocationHandler = preAllocationHandler,
