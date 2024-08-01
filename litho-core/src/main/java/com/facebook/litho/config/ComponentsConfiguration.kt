@@ -301,11 +301,6 @@ internal constructor(
      * NaN or Infinity.
      */
     @JvmField var enableLoggingForInvalidAspectRatio: Boolean = false
-    /**
-     * This flag is used to enable a change where a state update is skipped if the current and new
-     * state value are null.
-     */
-    @JvmField var enableSkipNullStateUpdates: Boolean = false
     /** This flag is used to enable a fix for the ANR issue with sticky header RecyclerView. */
     @JvmField var enableFixForStickyHeader: Boolean = false
 

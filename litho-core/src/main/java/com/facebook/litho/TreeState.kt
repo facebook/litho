@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.util.Pair
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.Component.RenderData
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.internal.HookKey
 import com.facebook.rendercore.annotations.UIState
 
@@ -245,9 +244,7 @@ class TreeState {
   ): Boolean {
     val stateHandler = getStateHandler(isNestedTree)
     val committedState = stateHandler.getStateContainer(globalKey) as KStateContainer?
-    if (committedState != null &&
-        (ComponentsConfiguration.enableSkipNullStateUpdates ||
-            committedState.states.getOrNull(hookStateIndex) != null)) {
+    if (committedState != null) {
       val committedStateWithUpdatesApplied =
           stateHandler.getStateContainerWithHookUpdates(globalKey)
       if (committedStateWithUpdatesApplied != null) {

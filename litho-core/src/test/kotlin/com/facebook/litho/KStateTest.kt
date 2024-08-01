@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.view.View
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.accessibility.contentDescription
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -604,12 +603,7 @@ class KStateTest {
 
     lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
 
-    // TODO clean up when experiment concluded
-    if (ComponentsConfiguration.enableSkipNullStateUpdates) {
-      assertThat(renderCount.get()).isEqualTo(1)
-    } else {
-      assertThat(renderCount.get()).isEqualTo(2)
-    }
+    assertThat(renderCount.get()).isEqualTo(1)
   }
 
   private class CountDownLatchComponent(
