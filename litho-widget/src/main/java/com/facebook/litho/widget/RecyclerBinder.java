@@ -2801,15 +2801,6 @@ public class RecyclerBinder
     }
   }
 
-  private void setRangeSize(int itemWidth, int itemHeight, int width, int height) {
-    if (mHasManualEstimatedViewportCount) {
-      throw new RuntimeException(
-          "Cannot override range size when manual estimated viewport count is set");
-    }
-    mEstimatedViewportCount =
-        Math.max(mLayoutInfo.approximateRangeSize(itemWidth, itemHeight, width, height), 1);
-  }
-
   @GuardedBy("this")
   private void resetMeasuredSize(int width) {
     // we will set a range anyway if it's null, no need to do this now.
