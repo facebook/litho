@@ -19,7 +19,6 @@ package com.facebook.litho
 import androidx.annotation.UiThread
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.litho.annotations.Hook
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.utils.areObjectsEquivalent
 
 /**
@@ -105,11 +104,7 @@ private class UseEffectAttachable(
   @UiThread
   override fun shouldUpdate(nextAttachable: Attachable): Boolean {
     val next = nextAttachable as UseEffectAttachable
-    return if (ComponentsConfiguration.enableCompareHooksDepsWithEquivalence) {
-      !areObjectsEquivalent(deps, next.deps)
-    } else {
-      !deps.contentDeepEquals(next.deps)
-    }
+    return !areObjectsEquivalent(deps, next.deps)
   }
 }
 
