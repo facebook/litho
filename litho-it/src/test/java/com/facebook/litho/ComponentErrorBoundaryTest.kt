@@ -71,17 +71,11 @@ class ComponentErrorBoundaryTest {
   @Rule
   @JvmField
   val lithoViewRule =
-      LegacyLithoViewRule(
-          componentsConfiguration =
-              ComponentsConfiguration.create()
-                  // Disable reconciliation so that the onCreateLayout is called for layout.
-                  .isReconciliationEnabled(false)
-                  .build())
+      LegacyLithoViewRule(componentsConfiguration = ComponentsConfiguration.create().build())
 
   @Rule @JvmField val expectedException = ExpectedException.none()
 
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
-  private var currentReconciliationValue = false
 
   @Before
   fun assumeDebugAndChangeConfig() {
