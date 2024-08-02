@@ -65,8 +65,6 @@ inline fun ResourcesScope.LazyGrid(
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean =
-        context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     childEquivalenceIncludesCommonProps: Boolean = true,
     alwaysDetectDuplicates: Boolean = false,
     fadingEdgeLength: Dimen? = null,
@@ -88,7 +86,6 @@ inline fun ResourcesScope.LazyGrid(
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
-              isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
               columns = columns,
               enableStableIds = enableStableIds),

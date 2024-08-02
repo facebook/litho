@@ -67,8 +67,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean =
-        context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     isIncrementalMountEnabled: Boolean = true,
     childEquivalenceIncludesCommonProps: Boolean = true,
     alwaysDetectDuplicates: Boolean = false,
@@ -91,7 +89,6 @@ inline fun ResourcesScope.LazyStaggeredGrid(
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
-              isReconciliationEnabled = isReconciliationEnabled,
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
               staggeredGridlayoutInfoFactory = staggeredGridlayoutInfoFactory,

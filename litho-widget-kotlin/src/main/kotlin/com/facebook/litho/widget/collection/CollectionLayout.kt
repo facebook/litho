@@ -44,8 +44,6 @@ abstract class CollectionLayout(
     reverse: Boolean,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean =
-        componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     isIncrementalMountEnabled: Boolean =
         componentContext.lithoConfiguration.componentsConfig.incrementalMountEnabled,
     hasDynamicItemHeight: Boolean = false,
@@ -68,7 +66,6 @@ abstract class CollectionLayout(
                           hasDynamicItemHeight = hasDynamicItemHeight,
                           componentsConfiguration =
                               componentContext.lithoConfiguration.componentsConfig.copy(
-                                  isReconciliationEnabled = isReconciliationEnabled,
                                   preAllocationHandler = preAllocationHandler,
                                   incrementalMountEnabled = isIncrementalMountEnabled),
                           rangeRatio = rangeRatio ?: RecyclerBinderConfig.DEFAULT_RANGE_RATIO,
@@ -130,8 +127,6 @@ internal object CollectionLayouts {
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean =
-          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
       preAllocationHandler: PreAllocationHandler?,
@@ -145,7 +140,6 @@ internal object CollectionLayouts {
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
-              isReconciliationEnabled = isReconciliationEnabled,
               hasDynamicItemHeight = crossAxisWrapMode.hasDynamicItemHeight,
               canMeasureRecycler = crossAxisWrapMode.canMeasureRecycler,
               mainAxisWrapContent = mainAxisWrapContent,
@@ -177,8 +171,6 @@ internal object CollectionLayouts {
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean =
-          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       columns: Int = 2,
       preAllocationHandler: PreAllocationHandler?,
       enableStableIds: Boolean
@@ -190,7 +182,6 @@ internal object CollectionLayouts {
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
-              isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
               isCircular = false,
               enableStableIds = enableStableIds) {
@@ -219,8 +210,6 @@ internal object CollectionLayouts {
       reverse: Boolean = false,
       rangeRatio: Float? = null,
       useBackgroundChangeSets: Boolean = false,
-      isReconciliationEnabled: Boolean =
-          componentContext.lithoConfiguration.componentsConfig.isReconciliationEnabled,
       isIncrementalMountEnabled: Boolean = true,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE,
@@ -236,7 +225,6 @@ internal object CollectionLayouts {
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
-              isReconciliationEnabled = isReconciliationEnabled,
               isIncrementalMountEnabled = isIncrementalMountEnabled,
               preAllocationHandler = preAllocationHandler,
               isCircular = false,

@@ -66,8 +66,6 @@ inline fun ResourcesScope.LazyList(
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
-    isReconciliationEnabled: Boolean =
-        context.lithoConfiguration.componentsConfig.isReconciliationEnabled,
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
     childEquivalenceIncludesCommonProps: Boolean = true,
@@ -91,7 +89,6 @@ inline fun ResourcesScope.LazyList(
               reverse = reverse,
               rangeRatio = rangeRatio,
               useBackgroundChangeSets = useBackgroundChangeSets,
-              isReconciliationEnabled = isReconciliationEnabled,
               preAllocationHandler = preAllocationHandler,
               crossAxisWrapMode = crossAxisWrapMode,
               mainAxisWrapContent = mainAxisWrapContent,
