@@ -104,7 +104,6 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int inputType = TextInputSpec.inputType;
   @PropDefault protected static final int rawInputType = TextInputSpec.rawInputType;
   @PropDefault protected static final int imeOptions = TextInputSpec.imeOptions;
-  @PropDefault protected static final String privateImeOptions = TextInputSpec.privateImeOptions;
   @PropDefault protected static final int cursorDrawableRes = TextInputSpec.cursorDrawableRes;
   @PropDefault static final boolean multiline = TextInputSpec.multiline;
   @PropDefault protected static final int minLines = TextInputSpec.minLines;
@@ -159,7 +158,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) String privateImeOptions,
+      @Prop(optional = true) @Nullable String privateImeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
@@ -364,7 +363,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) String privateImeOptions,
+      @Prop(optional = true) @Nullable String privateImeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) int minLines,

@@ -228,7 +228,6 @@ class TextInputSpec {
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
   @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
-  @PropDefault protected static final String privateImeOptions = "";
   @PropDefault protected static final int cursorDrawableRes = -1;
   @PropDefault static final boolean multiline = false;
   @PropDefault protected static final int minLines = 1;
@@ -291,7 +290,7 @@ class TextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) String privateImeOptions,
+      @Prop(optional = true) @Nullable String privateImeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
@@ -534,7 +533,9 @@ class TextInputSpec {
     editText.setTypeface(typeface, 0);
     editText.setGravity(gravity);
     editText.setImeOptions(imeOptions);
-    editText.setPrivateImeOptions(privateImeOptions);
+    if (privateImeOptions != null) {
+      editText.setPrivateImeOptions(privateImeOptions);
+    }
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);
     editText.setLongClickable(editable);
@@ -831,7 +832,7 @@ class TextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) String privateImeOptions,
+      @Prop(optional = true) @Nullable String privateImeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) int minLines,
@@ -954,6 +955,7 @@ class TextInputSpec {
     }
     editText.setTextState(null);
     editText.removeOnWindowFocusChangeListener();
+    editText.setPrivateImeOptions(null);
     mountedView.set(null);
   }
 
