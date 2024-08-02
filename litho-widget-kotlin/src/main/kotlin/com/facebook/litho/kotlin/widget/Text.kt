@@ -75,7 +75,9 @@ inline fun ResourcesScope.Text(
     @AttrRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0,
     dynamicTextColor: DynamicValue<Int>? = null,
-    testKey: String? = null
+    testKey: String? = null,
+    @ColorInt outlineColor: Int? = null,
+    outlineWidth: Dimen = 0.dp,
 ): Text {
   val builder =
       Text.create(context, defStyleAttr, defStyleRes)
@@ -89,6 +91,8 @@ inline fun ResourcesScope.Text(
           .shadowRadiusPx(shadowRadius.toPixels().toFloat())
           .shadowDxPx(shadowDx.toPixels().toFloat())
           .shadowDyPx(shadowDy.toPixels().toFloat())
+          .outlineWidthPx(outlineWidth.toPixels().toFloat())
+          .apply { outlineColor?.let { outlineColor(outlineColor) } }
           .alignment(alignment)
           .breakStrategy(breakStrategy)
           .verticalGravity(verticalGravity)
