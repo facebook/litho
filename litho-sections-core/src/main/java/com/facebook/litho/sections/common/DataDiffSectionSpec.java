@@ -387,8 +387,8 @@ public class DataDiffSectionSpec<T> {
     private final @Nullable List<? extends T> mPreviousData;
     private final @Nullable List<? extends T> mNextData;
     private final SectionContext mSectionContext;
-    private final EventHandler<OnCheckIsSameItemEvent<T>> mIsSameItemEventHandler;
-    private final EventHandler<OnCheckIsSameContentEvent<T>> mIsSameContentEventHandler;
+    @Nullable private final EventHandler<OnCheckIsSameItemEvent<T>> mIsSameItemEventHandler;
+    @Nullable private final EventHandler<OnCheckIsSameContentEvent<T>> mIsSameContentEventHandler;
 
     private final ThreadLocal<OnCheckIsSameItemEvent> mIsSameItemEventStates;
     private final OnCheckIsSameItemEvent mIsSameItemEventSingleton;
