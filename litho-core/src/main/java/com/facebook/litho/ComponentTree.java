@@ -864,6 +864,12 @@ public class ComponentTree
       return false;
     }
 
+    final @Nullable TreeState committedTreeState = mTreeState;
+    if (getLithoConfiguration().componentsConfig.getUseNonRebindingEventHandlers()
+        && committedTreeState != null) {
+      bindEventHandlersAndTriggers(mMainThreadLayoutState, committedTreeState);
+    }
+
     dispatchOnAttached();
 
     if (mLithoView != null) {
@@ -2288,9 +2294,7 @@ public class ComponentTree
       final boolean isCreateLayoutInProgress,
       final @Nullable TreePropContainer treePropContainer,
       final Component rootComponent) {
-    List<ScopedComponentInfo> scopedSpecComponentInfos = null;
     List<MeasureListener> measureListeners = null;
-    List<Pair<String, EventHandler<?>>> createdEventHandlers = null;
 
     int rootWidth = 0;
     int rootHeight = 0;
@@ -2349,15 +2353,13 @@ public class ComponentTree
         logFinishLayout(source, extraAttribution, layoutState, committedNewLayout);
       }
 
-      final TreeState localTreeState = layoutState.getTreeState();
+      final TreeState stateToCommit = layoutState.getTreeState();
       if (committedNewLayout) {
-        scopedSpecComponentInfos = layoutState.consumeScopedSpecComponentInfos();
-        createdEventHandlers = layoutState.consumeCreatedEventHandlers();
-        if (localTreeState != null) {
-          final TreeState treeState = mTreeState;
-          if (treeState != null) { // we could have been released
-            treeState.commitLayoutState(localTreeState);
-            treeState.bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
+        final TreeState committedState = mTreeState; /* ComponentTree maybe been released */
+        if (committedState != null) {
+          committedState.commitLayoutState(stateToCommit);
+          if (!getLithoConfiguration().componentsConfig.getUseNonRebindingEventHandlers()) {
+            bindEventHandlersAndTriggers(layoutState, committedState);
           }
         }
 
@@ -2409,6 +2411,12 @@ public class ComponentTree
         mPreAllocator.execute(tag);
       }
     }
+  }
+
+  private static void bindEventHandlersAndTriggers(LayoutState layoutState, TreeState treeState) {
+    List<ScopedComponentInfo> scopes = layoutState.consumeScopedSpecComponentInfos();
+    List<Pair<String, EventHandler<?>>> handlers = layoutState.consumeCreatedEventHandlers();
+    treeState.bindEventAndTriggerHandlers(handlers, scopes);
   }
 
   /**
