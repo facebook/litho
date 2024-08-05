@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.util.Lists
@@ -170,11 +169,7 @@ class HooksStateHandlerTest {
     handler.putCachedValue(GLOBAL_KEY, 0, input, value)
     assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isEqualTo(value)
     handler.putCachedValue(GLOBAL_KEY, 0, newInput, newValue)
-    if (ComponentsConfiguration.useNewCacheValueLogic) {
-      assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isNull()
-    } else {
-      assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isNotNull()
-    }
+    assertThat(handler.getCachedValue(GLOBAL_KEY, 0, input)).isNull()
     assertThat(handler.getCachedValue(GLOBAL_KEY, 0, newInput)).isEqualTo(newValue)
   }
 

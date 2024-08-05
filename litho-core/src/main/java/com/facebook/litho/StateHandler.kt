@@ -21,8 +21,14 @@ import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.SpecGeneratedComponent.TransitionContainer
 import com.facebook.litho.StateContainer.StateUpdate
-import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.debug.LithoDebugEvent
 import com.facebook.litho.stats.LithoStats
+import com.facebook.rendercore.LogLevel
+import com.facebook.rendercore.debug.DebugEvent
+import com.facebook.rendercore.debug.DebugEventAttribute.Description
+import com.facebook.rendercore.debug.DebugEventAttribute.Name
+import com.facebook.rendercore.debug.DebugEventAttribute.Source
+import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.transitions.TransitionUtils
 import com.facebook.rendercore.utils.areObjectsEquivalent
 import javax.annotation.concurrent.GuardedBy
@@ -84,7 +90,7 @@ class StateHandler {
   @GuardedBy("this") private val neededStateContainers = HashSet<String>()
 
   /** Map of all cached values that are stored for the current ComponentTree. */
-  @GuardedBy("this") private var cachedValues: MutableMap<CacheKey, Any>? = null
+  @GuardedBy("this") private var cachedValues: MutableMap<CacheKey, CacheValue>? = null
 
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
   // of the component the update applies to
@@ -360,47 +366,28 @@ class StateHandler {
 
   @Synchronized
   fun getCachedValue(globalKey: String, index: Int, cachedValueInputs: Any): Any? {
-    val cacheKey =
-        if (ComponentsConfiguration.useNewCacheValueLogic) StableCacheKey(globalKey, index)
-        else CachedValueKey(globalKey, index, cachedValueInputs)
+    val cacheKey = CacheKey(globalKey, index)
+    val cacheValue = cachedValues?.get(cacheKey) ?: return null
 
-    val cacheValue = cachedValues?.get(cacheKey)
-    return if (cacheValue is CacheValue) getCachedValueNew(cacheValue, cachedValueInputs)
-    else cacheValue
+    if (areObjectsEquivalent(cacheValue.inputs, cachedValueInputs)) {
+      if (cacheValue.inputsHash != cachedValueInputs.hashCode()) {
+        // Log mutable input detection
+        DebugEventDispatcher.dispatch(LithoDebugEvent.DebugInfo, DebugEvent.NoId, LogLevel.ERROR) {
+            attribute ->
+          attribute[Name] = "StateHandler:MutableTypeUsedAsCachedValueDep"
+          attribute[Description] = "Unexpected mutable value used as CachedValue dep"
+          attribute[Source] = cachedValueInputs.javaClass.name
+        }
+        return null
+      }
+      return cacheValue.value
+    }
+    return null
   }
 
   @Synchronized
   fun putCachedValue(globalKey: String, index: Int, cachedValueInputs: Any, cachedValue: Any?) {
-    if (ComponentsConfiguration.useNewCacheValueLogic) {
-      putCachedValueNew(globalKey, index, cachedValueInputs, cachedValue)
-    } else {
-      putCachedValueOld(globalKey, index, cachedValueInputs, cachedValue)
-    }
-  }
-
-  private fun putCachedValueOld(
-      globalKey: String,
-      index: Int,
-      cachedValueInputs: Any,
-      cachedValue: Any?
-  ) {
-    if (cachedValue == null) {
-      return
-    }
-    val cachedValueKey = CachedValueKey(globalKey, index, cachedValueInputs)
-    if (cachedValues == null) {
-      cachedValues = LinkedHashMap()
-    }
-    cachedValues?.put(cachedValueKey, cachedValue)
-  }
-
-  private fun putCachedValueNew(
-      globalKey: String,
-      index: Int,
-      cachedValueInputs: Any,
-      cachedValue: Any?
-  ) {
-    val cacheKey = StableCacheKey(globalKey, index)
+    val cacheKey = CacheKey(globalKey, index)
     if (cachedValue == null) {
       cachedValues?.remove(cacheKey)
       return
@@ -410,21 +397,6 @@ class StateHandler {
     }
     val value = CacheValue(cachedValueInputs, cachedValueInputs.hashCode(), cachedValue)
     cachedValues?.put(cacheKey, value)
-  }
-
-  private fun getCachedValueNew(cacheValue: CacheValue, cacheInputs: Any): Any? {
-    if (areObjectsEquivalent(cacheValue.inputs, cacheInputs)) {
-      if (cacheValue.inputsHash != cacheInputs.hashCode()) {
-        // Log mutable input detection
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
-            "StateHandler:MutableTypeUsedAsCachedValueDep",
-            "Unexpected mutable value used as CachedValue dep: ${cacheInputs.javaClass.name}")
-        return null
-      }
-      return cacheValue.value
-    }
-    return null
   }
 
   /**
@@ -685,16 +657,6 @@ class StateHandler {
 
 sealed interface StateUpdateApplier
 
-private sealed interface CacheKey
-
-@DataClassGenerate
-private data class CachedValueKey(
-    val globalKey: String,
-    val index: Int,
-    val cachedValueInputs: Any
-) : CacheKey
-
-@DataClassGenerate
-private data class StableCacheKey(val globalKey: String, val index: Int) : CacheKey
+@DataClassGenerate private data class CacheKey(val globalKey: String, val index: Int)
 
 private class CacheValue(val inputs: Any, val inputsHash: Int, val value: Any)
