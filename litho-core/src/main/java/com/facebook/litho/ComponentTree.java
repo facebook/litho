@@ -2560,6 +2560,7 @@ public class ComponentTree
       for (OnReleaseListener listener : mOnReleaseListeners) {
         listener.onReleased();
       }
+      mOnReleaseListeners = null;
     }
     if (mTreeState != null) {
       mTreeState.clearUnusedTriggerHandlers();
