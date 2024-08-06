@@ -100,7 +100,7 @@ import kotlin.jvm.functions.Function1;
 
 /**
  * This binder class is used to asynchronously layout Components given a list of {@link Component}
- * and attaching them to a {@link RecyclerSpec}.
+ * and attaching them to a {@link Recycler}.
  */
 @ThreadSafe
 public class RecyclerBinder

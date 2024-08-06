@@ -21,7 +21,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.LithoView
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
-import com.facebook.litho.widget.ExperimentalRecycler
+import com.facebook.litho.widget.LegacyRecycler
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 import kotlin.reflect.KClass
@@ -35,14 +35,14 @@ class TestCollection {
 
   private var recyclerBinder: RecyclerBinder
 
-  constructor(recycler: Recycler) {
+  constructor(recycler: LegacyRecycler) {
     val binder =
         Whitebox.getInternalState<Binder<RecyclerView>>(recycler, "binder") as SectionBinderTarget
 
     this.recyclerBinder = binder.recyclerBinder
   }
 
-  constructor(recycler: ExperimentalRecycler) {
+  constructor(recycler: Recycler) {
     val binder = recycler.binder as SectionBinderTarget
     this.recyclerBinder = binder.recyclerBinder
   }

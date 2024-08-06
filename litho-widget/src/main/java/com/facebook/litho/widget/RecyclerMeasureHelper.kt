@@ -26,7 +26,7 @@ import java.lang.IllegalStateException
 
 /**
  * Calculates which is the size spec taking into account the [totalPadding]. This is temporarily
- * defined as helper method because we are on the process of migrating from [RecyclerSpec] to
+ * defined as helper method because we are on the process of migrating from [LegacyRecyclerSpec] to
  * [ExperimentalRecycler]
  */
 internal fun maybeGetSpecWithPadding(

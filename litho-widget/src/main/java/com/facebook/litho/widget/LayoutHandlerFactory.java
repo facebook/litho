@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public interface LayoutHandlerFactory {
   /**
    * @return a new {@link RunnableHandler} that will be used to compute the layouts of the children
-   *     of the {@link RecyclerSpec}.
+   *     of the {@link Recycler}.
    */
   @Nullable
   RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo);

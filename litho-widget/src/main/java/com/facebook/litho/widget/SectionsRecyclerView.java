@@ -40,8 +40,8 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 /**
- * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
- * and pull-to-refresh
+ * Wrapper that encapsulates all the features {@link Recycler} provides such as sticky header and
+ * pull-to-refresh
  */
 public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLithoViewChildren {
 

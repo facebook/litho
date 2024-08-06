@@ -75,7 +75,7 @@ public interface LayoutInfo extends ViewportInfo {
       int recyclerMeasuredHeight);
 
   /**
-   * @param widthSpec the widthSpec used to measure the parent {@link RecyclerSpec}.
+   * @param widthSpec the widthSpec used to measure the parent {@link Recycler}.
    * @param renderInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
    * @return the widthSpec to be used to measure the size of the components within this {@link
    *     RecyclerBinder}.
@@ -83,7 +83,7 @@ public interface LayoutInfo extends ViewportInfo {
   int getChildWidthSpec(int widthSpec, RenderInfo renderInfo);
 
   /**
-   * @param heightSpec the heightSpec used to measure the parent {@link RecyclerSpec}.
+   * @param heightSpec the heightSpec used to measure the parent {@link Recycler}.
    * @param renderInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
    * @return the heightSpec to be used to measure the size of the components within this {@link
    *     RecyclerBinder}.
@@ -99,7 +99,7 @@ public interface LayoutInfo extends ViewportInfo {
   ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight);
 
   /**
-   * @param maxHeight the max height of the parent {@link RecyclerSpec}.
+   * @param maxHeight the max height of the parent {@link Recycler}.
    * @param componentTreeHolders the list of {@link ComponentTreeHolder} in this {@link
    *     RecyclerBinder}.
    * @return the measured height of this {@link RecyclerBinder}.

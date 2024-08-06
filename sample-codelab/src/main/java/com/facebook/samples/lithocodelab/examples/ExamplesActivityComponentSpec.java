@@ -98,7 +98,7 @@ class ExamplesActivityComponentSpec {
         .addRow("State", ExamplesActivityComponent.onClickState(c))
         .addRow("Recycler Binder", ExamplesActivityComponent.onClickRecyclerBinder(c));
 
-    return Recycler.create(c).binder(recyclerBinder).build();
+    return new Recycler(recyclerBinder);
   }
 
   @OnEvent(ClickEvent.class)

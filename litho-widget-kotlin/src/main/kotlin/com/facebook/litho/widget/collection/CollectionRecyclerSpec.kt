@@ -46,7 +46,6 @@ import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
-import com.facebook.litho.widget.ExperimentalRecycler
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.litho.widget.PTRRefreshEvent
 import com.facebook.litho.widget.Recycler
@@ -132,74 +131,39 @@ object CollectionRecyclerSpec {
           else -> itemAnimator
         }
 
-    return if (primitiveRecyclerBinderStrategy == null) {
-      Recycler.create(c)
-          .leftPadding(startPadding)
-          .rightPadding(endPadding)
-          .topPadding(topPadding)
-          .bottomPadding(bottomPadding)
-          .recyclerEventsController(internalRecyclerEventsController)
-          .refreshHandler(if (!pullToRefreshEnabled) null else CollectionRecycler.onRefresh(c))
-          .pullToRefresh(internalPullToRefreshEnabled)
-          .itemDecoration(itemDecoration)
-          .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
-          .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
-          .fadingEdgeLengthDip(fadingEdgeLength.toFloat())
-          .onScrollListeners(onScrollListeners)
-          .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
-          .snapHelper(recyclerConfiguration.snapHelper)
-          .touchInterceptor(touchInterceptor)
-          .onItemTouchListener(itemTouchListener)
-          .binder(binder)
-          .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
-          .touchHandler(recyclerTouchEventHandler)
-          .sectionsViewLogger(sectionsViewLogger)
-          .itemAnimator(itemAnimatorToUse)
-          .apply {
-            clipToPadding?.let { clipToPadding(it) }
-            clipChildren?.let { clipChildren(it) }
-            nestedScrollingEnabled?.let { nestedScrollingEnabled(it) }
-            scrollBarStyle?.let { scrollBarStyle(it) }
-            recyclerViewId?.let { recyclerViewId(it) }
-            overScrollMode?.let { overScrollMode(it) }
-            refreshProgressBarColor?.let { refreshProgressBarColor(it) }
-          }
-          .build()
-    } else {
-      ExperimentalRecycler(
-          binderStrategy = primitiveRecyclerBinderStrategy,
-          binder = binder,
-          isClipToPaddingEnabled = clipToPadding ?: true,
-          isClipChildrenEnabled = clipChildren ?: true,
-          isNestedScrollingEnabled = nestedScrollingEnabled ?: true,
-          scrollBarStyle = scrollBarStyle ?: View.SCROLLBARS_INSIDE_OVERLAY,
-          leftPadding = startPadding,
-          rightPadding = endPadding,
-          topPadding = topPadding,
-          bottomPadding = bottomPadding,
-          recyclerEventsController = internalRecyclerEventsController,
-          isPullToRefreshEnabled = internalPullToRefreshEnabled,
-          onRefresh =
-              if (internalPullToRefreshEnabled) {
-                { refreshContent(c, sectionTree) }
-              } else null,
-          itemDecorations = itemDecoration?.let { listOf(it) },
-          isHorizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
-          isVerticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
-          fadingEdgeLength = fadingEdgeLength,
-          onScrollListeners = onScrollListeners?.filterNotNull(),
-          refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-          snapHelper = recyclerConfiguration.snapHelper,
-          touchInterceptor = touchInterceptor,
-          onItemTouchListener = itemTouchListener,
-          excludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
-          sectionsViewLogger = sectionsViewLogger,
-          itemAnimator = itemAnimatorToUse,
-          refreshProgressBarColor = refreshProgressBarColor ?: Color.BLACK,
-          recyclerViewId = recyclerViewId ?: View.NO_ID,
-          overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
-          style = StyleCompat.touchHandler(recyclerTouchEventHandler).build())
-    }
+    return Recycler(
+        binderStrategy = primitiveRecyclerBinderStrategy,
+        binder = binder,
+        isClipToPaddingEnabled = clipToPadding ?: true,
+        isClipChildrenEnabled = clipChildren ?: true,
+        isNestedScrollingEnabled = nestedScrollingEnabled ?: true,
+        scrollBarStyle = scrollBarStyle ?: View.SCROLLBARS_INSIDE_OVERLAY,
+        leftPadding = startPadding,
+        rightPadding = endPadding,
+        topPadding = topPadding,
+        bottomPadding = bottomPadding,
+        recyclerEventsController = internalRecyclerEventsController,
+        isPullToRefreshEnabled = internalPullToRefreshEnabled,
+        onRefresh =
+            if (internalPullToRefreshEnabled) {
+              { refreshContent(c, sectionTree) }
+            } else null,
+        itemDecorations = itemDecoration?.let { listOf(it) },
+        isHorizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
+        isVerticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
+        fadingEdgeLength = fadingEdgeLength,
+        onScrollListeners = onScrollListeners?.filterNotNull(),
+        refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
+        snapHelper = recyclerConfiguration.snapHelper,
+        touchInterceptor = touchInterceptor,
+        onItemTouchListener = itemTouchListener,
+        excludeFromIncrementalMount = shouldExcludeFromIncrementalMount,
+        sectionsViewLogger = sectionsViewLogger,
+        itemAnimator = itemAnimatorToUse,
+        refreshProgressBarColor = refreshProgressBarColor ?: Color.BLACK,
+        recyclerViewId = recyclerViewId ?: View.NO_ID,
+        overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
+        style = StyleCompat.touchHandler(recyclerTouchEventHandler).build())
   }
 
   @JvmStatic

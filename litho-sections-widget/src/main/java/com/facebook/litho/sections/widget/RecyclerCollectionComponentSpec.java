@@ -65,7 +65,6 @@ import com.facebook.litho.sections.SectionLifecycle;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.widget.Binder;
-import com.facebook.litho.widget.ExperimentalRecycler;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.LithoRecyclerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
@@ -260,96 +259,52 @@ public class RecyclerCollectionComponentSpec {
     listenersToUse.add(
         new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo));
 
-    if (primitiveRecyclerBinderStrategy == null) {
-      final Recycler.Builder recycler =
-          Recycler.create(c)
-              .clipToPadding(clipToPadding)
-              .leftPadding(leftPadding)
-              .rightPadding(rightPadding)
-              .topPadding(topPadding)
-              .bottomPadding(bottomPadding)
-              .disableAddingPadding(disableAddingPadding)
-              .clipChildren(clipChildren)
-              .nestedScrollingEnabled(nestedScrollingEnabled)
-              .scrollBarStyle(scrollBarStyle)
-              .recyclerViewId(recyclerViewId)
-              .overScrollMode(overScrollMode)
-              .edgeEffectFactory(edgeEffectFactory)
-              .recyclerEventsController(internalEventsController)
-              .refreshHandler(
-                  !canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
-              .pullToRefresh(canPTR)
-              .itemDecorations(itemDecorations)
-              .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
-              .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
-              .fadingEdgeLengthDip(fadingEdgeLength)
-              .onScrollListeners(listenersToUse)
-              .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
-              .refreshProgressBarColor(refreshProgressBarColor)
-              .snapHelper(snapHelper)
-              .touchInterceptor(touchInterceptor)
-              .onItemTouchListener(itemTouchListener)
-              .binder(binder)
-              .shouldExcludeFromIncrementalMount(shouldExcludeFromIncrementalMount)
-              .itemAnimator(recyclerItemAnimator)
-              .flexShrink(0)
-              .touchHandler(recyclerTouchEventHandler)
-              .sectionsViewLogger(sectionsViewLogger)
-              .contentDescription(recyclerContentDescription);
+    JavaStyle javaStyle = StyleCompat.touchHandler(recyclerTouchEventHandler).flexShrink(0f);
 
-      if (shouldNotWrapContent) {
-        recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
-      }
-
-      recyclerComponent = recycler.build();
-    } else {
-      JavaStyle javaStyle = StyleCompat.touchHandler(recyclerTouchEventHandler).flexShrink(0f);
-
-      if (shouldNotWrapContent) {
-        javaStyle.positionType(ABSOLUTE).positionPx(ALL, 0);
-      }
-
-      recyclerComponent =
-          new ExperimentalRecycler(
-              primitiveRecyclerBinderStrategy,
-              binder,
-              true,
-              clipToPadding,
-              leftPadding,
-              topPadding,
-              rightPadding,
-              bottomPadding,
-              refreshProgressBarBackgroundColor,
-              refreshProgressBarColor,
-              clipChildren,
-              nestedScrollingEnabled,
-              scrollBarStyle,
-              itemDecorations,
-              horizontalFadingEdgeEnabled,
-              verticalFadingEdgeEnabled,
-              fadingEdgeLength,
-              edgeEffectFactory,
-              recyclerViewId,
-              overScrollMode,
-              recyclerContentDescription,
-              recyclerItemAnimator,
-              internalEventsController,
-              listenersToUse,
-              snapHelper,
-              canPTR,
-              touchInterceptor,
-              itemTouchListener,
-              canPTR
-                  ? () -> {
-                    refreshContent(c, sectionTree, ignoreLoadingUpdates);
-                    return Unit.INSTANCE;
-                  }
-                  : null,
-              sectionsViewLogger,
-              shouldExcludeFromIncrementalMount,
-              disableAddingPadding,
-              javaStyle.build());
+    if (shouldNotWrapContent) {
+      javaStyle.positionType(ABSOLUTE).positionPx(ALL, 0);
     }
+
+    recyclerComponent =
+        new Recycler(
+            binder,
+            primitiveRecyclerBinderStrategy,
+            true,
+            clipToPadding,
+            leftPadding,
+            topPadding,
+            rightPadding,
+            bottomPadding,
+            refreshProgressBarBackgroundColor,
+            refreshProgressBarColor,
+            clipChildren,
+            nestedScrollingEnabled,
+            scrollBarStyle,
+            itemDecorations,
+            horizontalFadingEdgeEnabled,
+            verticalFadingEdgeEnabled,
+            fadingEdgeLength,
+            edgeEffectFactory,
+            recyclerViewId,
+            overScrollMode,
+            recyclerContentDescription,
+            recyclerItemAnimator,
+            internalEventsController,
+            listenersToUse,
+            snapHelper,
+            canPTR,
+            touchInterceptor,
+            itemTouchListener,
+            canPTR
+                ? () -> {
+                  refreshContent(c, sectionTree, ignoreLoadingUpdates);
+                  return Unit.INSTANCE;
+                }
+                : null,
+            sectionsViewLogger,
+            shouldExcludeFromIncrementalMount,
+            disableAddingPadding,
+            javaStyle.build());
 
     final ContainerBuilder containerBuilder =
         Column.create(c).flexShrink(0).alignContent(FLEX_START).child(recyclerComponent);

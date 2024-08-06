@@ -38,7 +38,7 @@ class SampleActivity : Activity() {
             .layoutInfo(LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
             .build(context)
 
-    val component = Recycler.create(context).binder(recyclerBinder).build()
+    val component = Recycler(binder = recyclerBinder)
 
     addContent(recyclerBinder, context)
 

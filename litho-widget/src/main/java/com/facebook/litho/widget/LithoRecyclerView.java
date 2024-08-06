@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Extension of {@link RecyclerView} that allows to add more features needed for @{@link
- * RecyclerSpec}
+ * com.facebook.litho.widget.Recycler}
  */
 public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDrawListener {
 

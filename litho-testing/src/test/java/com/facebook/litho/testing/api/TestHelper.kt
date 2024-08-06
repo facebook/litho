@@ -17,20 +17,10 @@
 package com.facebook.litho.testing.api
 
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.widget.ExperimentalRecycler
 import com.facebook.litho.widget.Recycler
 
-/**
- * Returns the name of the recycler component that is currently in use. This will depend on the
- * [com.facebook.litho.ComponentsConfiguration#primitiveRecyclerEnabled]
- */
+// TODO: Remove this since we have shipped the new API and no longer need to abstract into a method.
+/** Returns the name of the recycler component that is currently in use. */
 internal fun recyclerComponentName(componentContext: ComponentContext): String {
-  val recyclerInUse =
-      if (componentContext.lithoConfiguration.componentsConfig.primitiveRecyclerBinderStrategy !=
-          null) {
-        ExperimentalRecycler::class.java
-      } else {
-        Recycler::class.java
-      }
-  return recyclerInUse.simpleName
+  return Recycler::class.java.simpleName
 }

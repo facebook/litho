@@ -23,7 +23,7 @@ import com.facebook.litho.LithoView;
 public interface LithoViewFactory {
 
   /**
-   * @return a new {@link LithoView} that will be used to host children of the {@link RecyclerSpec}.
+   * @return a new {@link LithoView} that will be used to host children of the {@link Recycler}.
    */
   LithoView createLithoView(ComponentContext context);
 }

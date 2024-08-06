@@ -47,17 +47,15 @@ import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.toHeightSpec
 import com.facebook.rendercore.toWidthSpec
+import java.lang.IllegalStateException
 import kotlin.math.max
 
-/**
- * This is an experimental version of the [RecyclerSpec] implemented with Primitives.
- *
- * Please do not use this code outside of Litho as this is still under experimentation.
- */
-class ExperimentalRecycler(
+class Recycler
+@JvmOverloads
+constructor(
+    val binder: Binder<RecyclerView>,
     private val binderStrategy: PrimitiveRecyclerBinderStrategy =
         PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT,
-    val binder: Binder<RecyclerView>,
     private val hasFixedSize: Boolean = true,
     private val isClipToPaddingEnabled: Boolean = true,
     private val leftPadding: Int = 0,
@@ -540,7 +538,7 @@ private class RecyclerLayoutBehavior(
 
 /**
  * Binds the [sectionsRecyclerView] to the data according to the behavior that was present in the
- * initial version of the RecyclerSpec regarding mount binders ([RecyclerSpec.onMount].
+ * initial version of the RecyclerSpec regarding mount binders (previously `RecyclerSpec.onMount`).
  */
 private fun ResourcesScope.bindLegacyMountBinder(
     sectionsRecyclerView: SectionsRecyclerView,
@@ -600,7 +598,8 @@ private fun ResourcesScope.bindLegacyMountBinder(
 
 /**
  * Unbinds the [sectionsRecyclerView] to the data according to the behavior that was present in the
- * initial version of the RecyclerSpec regarding mount binders ([RecyclerSpec.onUnmount].
+ * initial version of the RecyclerSpec regarding mount binders (previously
+ * `RecyclerSpec.onUnmount`).
  */
 private fun unbindLegacyMountBinder(
     sectionsRecyclerView: SectionsRecyclerView,
@@ -614,7 +613,7 @@ private fun unbindLegacyMountBinder(
 
   if (refreshProgressBarBackgroundColor != null) {
     sectionsRecyclerView.setProgressBackgroundColorSchemeColor(
-        ExperimentalRecycler.DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+        Recycler.DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
   }
 
   if (edgeFactory != null) {
@@ -628,7 +627,8 @@ private fun unbindLegacyMountBinder(
 
 /**
  * Binds the [sectionsRecyclerView] to the data according to the behavior that was present in the
- * initial version of the RecyclerSpec regarding the attach binders ([RecyclerSpec.onBind]).
+ * initial version of the RecyclerSpec regarding the attach binders (previously
+ * RecyclerSpec.onBind).
  */
 private fun bindLegacyAttachBinder(
     sectionsRecyclerView: SectionsRecyclerView,
@@ -690,7 +690,8 @@ private fun bindLegacyAttachBinder(
 
 /**
  * Unbinds the [sectionsRecyclerView] to the data according to the behavior that was present in the
- * initial version of the RecyclerSpec regarding the attach binders ([RecyclerSpec.onUnbind]).
+ * initial version of the RecyclerSpec regarding the attach binders (previously
+ * `RecyclerSpec.onUnbind`).
  */
 private fun unbindLegacyAttachBinder(
     sectionsRecyclerView: SectionsRecyclerView,

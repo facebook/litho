@@ -80,12 +80,15 @@ import kotlin.jvm.functions.Function1;
  * @prop recyclerViewId View ID for the RecyclerView.
  * @prop recyclerEventsController Controller to pass events from outside the component.
  * @prop onScrollListener Listener for RecyclerView's scroll events.
+ *     <p>This component is deprecated and will be removed in the future. Please use {@link
+ *     Recycler} instead.
  */
+@Deprecated
 @MountSpec(
     hasChildLithoViews = true,
     isPureRender = true,
     events = {PTRRefreshEvent.class})
-class RecyclerSpec {
+class LegacyRecyclerSpec {
 
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
   @PropDefault static final boolean hasFixedSize = true;
@@ -141,7 +144,7 @@ class RecyclerSpec {
         measureOutput,
         widthSpecToUse,
         heightSpecToUse,
-        (binder.canMeasure() || binder.isWrapContent()) ? Recycler.onRemeasure(c) : null);
+        (binder.canMeasure() || binder.isWrapContent()) ? LegacyRecycler.onRemeasure(c) : null);
 
     measuredWidth.set(measureOutput.width);
     measuredHeight.set(measureOutput.height);
@@ -256,7 +259,9 @@ class RecyclerSpec {
     sectionsRecycler.setColorSchemeColors(refreshProgressBarColor);
 
     sectionsRecycler.setItemAnimator(
-        itemAnimator != RecyclerSpec.itemAnimator ? itemAnimator : new NoUpdateItemAnimator());
+        itemAnimator != LegacyRecyclerSpec.itemAnimator
+            ? itemAnimator
+            : new NoUpdateItemAnimator());
 
     if (itemDecorations != null) {
       for (RecyclerView.ItemDecoration itemDecoration : itemDecorations) {
@@ -296,7 +301,7 @@ class RecyclerSpec {
             ? new OnRefreshListener() {
               @Override
               public void onRefresh() {
-                Recycler.dispatchPTRRefreshEvent(refreshHandler);
+                LegacyRecycler.dispatchPTRRefreshEvent(refreshHandler);
               }
             }
             : null);
@@ -403,7 +408,7 @@ class RecyclerSpec {
               + "before unmounting");
     }
 
-    recyclerView.setId(RecyclerSpec.recyclerViewId);
+    recyclerView.setId(LegacyRecyclerSpec.recyclerViewId);
 
     if (refreshProgressBarBackgroundColor != null) {
       sectionsRecycler.setProgressBackgroundColorSchemeColor(
@@ -537,7 +542,7 @@ class RecyclerSpec {
 
   @OnEvent(ReMeasureEvent.class)
   protected static void onRemeasure(ComponentContext c, @State int measureVersion) {
-    Recycler.onUpdateMeasureAsync(c, measureVersion + 1);
+    LegacyRecycler.onUpdateMeasureAsync(c, measureVersion + 1);
   }
 
   @OnCreateInitialState

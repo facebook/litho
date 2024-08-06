@@ -125,12 +125,11 @@ internal constructor(
      * This defines which strategy we will use to bind the
      * [com.facebook.litho.sections.widget.ExperimentalRecycler].
      *
-     * If `null` we will not use the experimental version of a Recycler, and will rely on the
-     * MountSpec based one, which is the [com.facebook.litho.widget.RecyclerSpec]
-     *
      * @see [PrimitiveRecyclerBinderStrategy] for more details.
      */
-    @JvmField val primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy? = null,
+    @JvmField
+    val primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy =
+        PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT,
     /**
      * This flag is used to enable a fix for the issue where components that match the host view
      * size do not get unmounted when they go out of the viewport.
@@ -412,7 +411,7 @@ internal constructor(
     }
 
     fun primitiveRecyclerBinderStrategy(
-        primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy?
+        primitiveRecyclerBinderStrategy: PrimitiveRecyclerBinderStrategy
     ): Builder = also { this.primitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy }
 
     fun enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner(

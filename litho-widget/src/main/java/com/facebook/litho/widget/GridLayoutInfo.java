@@ -136,7 +136,7 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   /**
-   * @param widthSpec the widthSpec used to measure the parent {@link RecyclerSpec}.
+   * @param widthSpec the widthSpec used to measure the parent {@link Recycler}.
    * @return widthSpec of a child that is of span size 1
    */
   @Override
@@ -165,7 +165,7 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   /**
-   * @param heightSpec the heightSpec used to measure the parent {@link RecyclerSpec}.
+   * @param heightSpec the heightSpec used to measure the parent {@link Recycler}.
    * @return heightSpec of a child that is of span size 1
    */
   @Override

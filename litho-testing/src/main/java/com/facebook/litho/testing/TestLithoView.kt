@@ -36,7 +36,7 @@ import com.facebook.litho.componentsfinder.getRootComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
-import com.facebook.litho.widget.ExperimentalRecycler
+import com.facebook.litho.widget.LegacyRecycler
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.collection.LazyCollection
 import com.google.common.base.Predicate
@@ -378,15 +378,14 @@ internal constructor(
 
   /** Returns the first [LazyCollection] from the ComponentTree, or null if not found. */
   fun findCollectionComponent(): TestCollection? {
+    val legacyRecycler = findComponent(LegacyRecycler::class.java) as LegacyRecycler?
+    if (legacyRecycler != null) {
+      return TestCollection(legacyRecycler)
+    }
+
     val recycler = findComponent(Recycler::class.java) as Recycler?
     if (recycler != null) {
       return TestCollection(recycler)
-    }
-
-    val experimentalRecycler =
-        findComponent(ExperimentalRecycler::class.java) as ExperimentalRecycler?
-    if (experimentalRecycler != null) {
-      return TestCollection(experimentalRecycler)
     }
 
     return null

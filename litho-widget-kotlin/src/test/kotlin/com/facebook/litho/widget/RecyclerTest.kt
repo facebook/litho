@@ -25,11 +25,10 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoViewRule
-import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentRenderInfo
-import com.facebook.litho.widget.ExperimentalRecycler
 import com.facebook.litho.widget.LinearLayoutInfo
+import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
@@ -43,10 +42,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
-/** Tests for [ExperimentaRecycler] */
+/** Tests for [Recycler] */
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class ExperimentaRecyclerTest {
+class RecyclerTest {
 
   @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()
 
@@ -71,11 +70,11 @@ class ExperimentaRecyclerTest {
   fun `ExperimentalRecycler should render with default values`() {
     val testLithoView =
         lithoViewRule.render {
-          ExperimentalRecycler(binder = recyclerBinder, style = Style.width(100.px).height(100.px))
+          Recycler(binder = recyclerBinder, style = Style.width(100.px).height(100.px))
         }
 
     // should find an ExperimentalRecycler in the tree
-    assertNotNull(testLithoView.findComponent(ExperimentalRecycler::class))
+    assertNotNull(testLithoView.findComponent(Recycler::class))
 
     val sectionsRecyclerView =
         testLithoView.lithoView.getMountItemAt(0).content as SectionsRecyclerView
@@ -108,7 +107,7 @@ class ExperimentaRecyclerTest {
 
     val testLithoView =
         lithoViewRule.render {
-          ExperimentalRecycler(
+          Recycler(
               binder = recyclerBinder,
               itemDecorations = listOf(itemDecoration),
               style = Style.width(100.px).height(100.px))
@@ -126,7 +125,7 @@ class ExperimentaRecyclerTest {
     val recyclerEventsController = RecyclerEventsController()
     val testLithoView =
         lithoViewRule.render {
-          ExperimentalRecycler(
+          Recycler(
               binder = recyclerBinder,
               recyclerEventsController = recyclerEventsController,
               style = Style.width(100.px).height(100.px))
@@ -143,7 +142,7 @@ class ExperimentaRecyclerTest {
     val itemAnimator = DefaultItemAnimator()
     val testLithoView =
         lithoViewRule.render {
-          ExperimentalRecycler(
+          Recycler(
               binder = recyclerBinder,
               itemAnimator = itemAnimator,
               style = Style.width(100.px).height(100.px))
