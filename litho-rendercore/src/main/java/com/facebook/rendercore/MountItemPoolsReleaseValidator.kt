@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore
 
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -82,6 +83,8 @@ internal class MountItemPoolsReleaseValidator(
             getListenerFieldFromViewListenerInfo(it, "mOnApplyWindowInsetsListener")
           },
           FieldExtractionDefinition("tag") { it.tag },
+          FieldExtractionDefinition("background") { getBackgroundFromView(it) },
+          FieldExtractionDefinition("foreground") { getForegroundFromView(it) },
           FieldExtractionDefinition("seekBarListener") {
             if (it is SeekBar) {
               getFieldFromSeekBar(it)
@@ -174,6 +177,34 @@ internal class MountItemPoolsReleaseValidator(
       listenerInfoField.isAccessible = true
       val listener = listenerInfoField.get(view) as? SeekBar.OnSeekBarChangeListener
       listener
+    } catch (e: NoSuchFieldException) {
+      null
+    } catch (e: IllegalAccessException) {
+      null
+    }
+  }
+
+  private fun getBackgroundFromView(view: View): Drawable? {
+    return try {
+      val backgroundField = View::class.java.getDeclaredField("mBackground")
+      backgroundField.isAccessible = true
+      backgroundField.get(view) as Drawable?
+    } catch (e: NoSuchFieldException) {
+      null
+    } catch (e: IllegalAccessException) {
+      null
+    }
+  }
+
+  private fun getForegroundFromView(view: View): Drawable? {
+    return try {
+      val foregroundField = View::class.java.getDeclaredField("mForegroundInfo")
+      foregroundField.isAccessible = true
+      val foregroundInfo = foregroundField.get(view) ?: return null
+
+      val drawableField: Field = foregroundInfo.javaClass.getDeclaredField("mDrawable")
+      drawableField.isAccessible = true
+      drawableField.get(foregroundInfo) as Drawable?
     } catch (e: NoSuchFieldException) {
       null
     } catch (e: IllegalAccessException) {
