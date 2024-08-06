@@ -24,7 +24,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.core.view.children
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import java.lang.reflect.Field
 import java.util.WeakHashMap
 
 /**
@@ -155,67 +154,46 @@ internal class MountItemPoolsReleaseValidator(
     }
   }
 
-  private fun getListenerFieldFromViewListenerInfo(view: View, fieldName: String): Any? {
-    return try {
-      val listenerInfoField: Field = View::class.java.getDeclaredField("mListenerInfo")
-      listenerInfoField.isAccessible = true
-      val listenerInfo = listenerInfoField.get(view) ?: return null
+  private fun getListenerFieldFromViewListenerInfo(view: View, fieldName: String): Any? =
+      view.safeAccessViewField<View>("mListenerInfo")?.safeAccessObjectField(fieldName)
 
-      val listenerInfoGivenField: Field = listenerInfo.javaClass.getDeclaredField(fieldName)
-      listenerInfoGivenField.isAccessible = true
-      listenerInfoGivenField.get(listenerInfo)
-    } catch (e: NoSuchFieldException) {
-      null
-    } catch (e: IllegalAccessException) {
-      null
-    }
-  }
+  private fun getFieldFromSeekBar(view: SeekBar): SeekBar.OnSeekBarChangeListener? =
+      view.safeAccessViewField<SeekBar>("mOnSeekBarChangeListener")
+          as? SeekBar.OnSeekBarChangeListener
 
-  private fun getFieldFromSeekBar(view: SeekBar): Any? {
-    return try {
-      val listenerInfoField = SeekBar::class.java.getDeclaredField("mOnSeekBarChangeListener")
-      listenerInfoField.isAccessible = true
-      val listener = listenerInfoField.get(view) as? SeekBar.OnSeekBarChangeListener
-      listener
-    } catch (e: NoSuchFieldException) {
-      null
-    } catch (e: IllegalAccessException) {
-      null
-    }
-  }
+  private fun getBackgroundFromView(view: View): Drawable? =
+      view.safeAccessViewField<View>("mBackground") as? Drawable
 
-  private fun getBackgroundFromView(view: View): Drawable? {
-    return try {
-      val backgroundField = View::class.java.getDeclaredField("mBackground")
-      backgroundField.isAccessible = true
-      backgroundField.get(view) as Drawable?
-    } catch (e: NoSuchFieldException) {
-      null
-    } catch (e: IllegalAccessException) {
-      null
-    }
-  }
-
-  private fun getForegroundFromView(view: View): Drawable? {
-    return try {
-      val foregroundField = View::class.java.getDeclaredField("mForegroundInfo")
-      foregroundField.isAccessible = true
-      val foregroundInfo = foregroundField.get(view) ?: return null
-
-      val drawableField: Field = foregroundInfo.javaClass.getDeclaredField("mDrawable")
-      drawableField.isAccessible = true
-      drawableField.get(foregroundInfo) as Drawable?
-    } catch (e: NoSuchFieldException) {
-      null
-    } catch (e: IllegalAccessException) {
-      null
-    }
-  }
+  private fun getForegroundFromView(view: View): Drawable? =
+      view.safeAccessViewField<View>("mForegroundInfo")?.safeAccessObjectField("mDrawable")
+          as? Drawable
 
   private fun getReadableResourceName(view: View): String? {
     return try {
       view.context.resources.getResourceEntryName(view.id)
     } catch (e: Exception) {
+      null
+    }
+  }
+
+  private inline fun <reified T> T.safeAccessViewField(fieldName: String): Any? {
+    return try {
+      val field = T::class.java.getDeclaredField(fieldName)
+      field.isAccessible = true
+      field.get(this)
+    } catch (e: Exception) {
+      // ignore
+      null
+    }
+  }
+
+  private fun Any.safeAccessObjectField(fieldName: String): Any? {
+    return try {
+      val field = this::class.java.getDeclaredField(fieldName)
+      field.isAccessible = true
+      field.get(this)
+    } catch (e: Exception) {
+      // ignore
       null
     }
   }
