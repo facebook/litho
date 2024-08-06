@@ -32,7 +32,8 @@ import java.util.WeakHashMap
  *
  * This should only be used for debugging purposes.
  */
-internal class MountItemPoolsReleaseValidator(
+class MountItemPoolsReleaseValidator
+internal constructor(
     private val failOnDetection: Boolean = false,
     private val excludedPatterns: Set<Regex> = emptySet(),
     private val onInvalidRelease: ((exception: InvalidReleaseToMountPoolException) -> Unit)? = null,
@@ -46,55 +47,56 @@ internal class MountItemPoolsReleaseValidator(
 
   private val pooledViewsToInitialState = WeakHashMap<View, Set<FieldState>>()
 
-  private val fields =
-      setOf(
-          FieldExtractionDefinition("touchListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnTouchListener")
-          },
-          FieldExtractionDefinition("clickListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnClickListener")
-          },
-          FieldExtractionDefinition("longClickListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnLongClickListener")
-          },
-          FieldExtractionDefinition("focusChangeListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnFocusChangeListener")
-          },
-          FieldExtractionDefinition("scrollChangeListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnScrollChangeListener")
-          },
-          FieldExtractionDefinition("layoutChangeListeners") {
-            getListenerFieldFromViewListenerInfo(it, "mOnLayoutChangeListeners")
-          },
-          FieldExtractionDefinition("attachStateChangeListeners") {
-            getListenerFieldFromViewListenerInfo(it, "mOnAttachStateChangeListeners")
-          },
-          FieldExtractionDefinition("dragListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnDragListener")
-          },
-          FieldExtractionDefinition("keyListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnKeyListener")
-          },
-          FieldExtractionDefinition("contextClickListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnContextClickListener")
-          },
-          FieldExtractionDefinition("applyWindowInsetsListener") {
-            getListenerFieldFromViewListenerInfo(it, "mOnApplyWindowInsetsListener")
-          },
-          FieldExtractionDefinition("tag") { it.tag },
-          FieldExtractionDefinition("background") { getBackgroundFromView(it) },
-          FieldExtractionDefinition("foreground") { getForegroundFromView(it) },
-          FieldExtractionDefinition("seekBarListener") {
-            if (it is SeekBar) {
-              getFieldFromSeekBar(it)
-            } else {
-              null
-            }
-          }) + extraFields
+  private val fields: Map<String, FieldExtractionDefinition> =
+      (setOf(
+              FieldExtractionDefinition("touchListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnTouchListener")
+              },
+              FieldExtractionDefinition("clickListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnClickListener")
+              },
+              FieldExtractionDefinition("longClickListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnLongClickListener")
+              },
+              FieldExtractionDefinition("focusChangeListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnFocusChangeListener")
+              },
+              FieldExtractionDefinition("scrollChangeListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnScrollChangeListener")
+              },
+              FieldExtractionDefinition("layoutChangeListeners") {
+                getListenerFieldFromViewListenerInfo(it, "mOnLayoutChangeListeners")
+              },
+              FieldExtractionDefinition("attachStateChangeListeners") {
+                getListenerFieldFromViewListenerInfo(it, "mOnAttachStateChangeListeners")
+              },
+              FieldExtractionDefinition("dragListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnDragListener")
+              },
+              FieldExtractionDefinition("keyListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnKeyListener")
+              },
+              FieldExtractionDefinition("contextClickListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnContextClickListener")
+              },
+              FieldExtractionDefinition("applyWindowInsetsListener") {
+                getListenerFieldFromViewListenerInfo(it, "mOnApplyWindowInsetsListener")
+              },
+              FieldExtractionDefinition("background") { getBackgroundFromView(it) },
+              FieldExtractionDefinition("foreground") { getForegroundFromView(it) },
+              FieldExtractionDefinition("tag") { it.tag },
+              FieldExtractionDefinition("seekBarListener") {
+                if (it is SeekBar) {
+                  getFieldFromSeekBar(it)
+                } else {
+                  null
+                }
+              }) + extraFields)
+          .associateBy { it.id }
 
   fun registerAcquiredViewState(view: View) {
     pooledViewsToInitialState[view] =
-        fields.map { field -> FieldState(field.id, field.extractor(view)) }.toSet()
+        fields.values.map { field -> FieldState(field.id, field.extractor(view)) }.toSet()
 
     if (view is ViewGroup) {
       view.children.forEach { child -> registerAcquiredViewState(child) }
@@ -123,7 +125,7 @@ internal class MountItemPoolsReleaseValidator(
     }
 
     val beforeReleaseFieldsState =
-        fields.map { field -> FieldState(field.id, field.extractor(view)) }.toSet()
+        fields.values.map { field -> FieldState(field.id, field.extractor(view)) }.toSet()
 
     val afterPoolFieldsState = pooledViewsToInitialState.remove(view)
     if (beforeReleaseFieldsState != afterPoolFieldsState) {
