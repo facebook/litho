@@ -264,7 +264,7 @@ public class EventValidationTest {
     assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject3);
     assertThat(validationErrors.get(1).message)
         .isEqualTo(
-            "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, @TreeProp,"
+            "Param must be annotated with one of @FromEvent, @Prop, @TreeProp,"
                 + " @CachedValue, @State or @Param.");
   }
 
@@ -372,7 +372,7 @@ public class EventValidationTest {
     assertThat(validationErrors.size()).isEqualTo(1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, @TreeProp,"
+            "Param must be annotated with one of @FromEvent, @Prop, @TreeProp,"
                 + " @CachedValue, @State, @Param, @TestAnnotation");
   }
 

@@ -19,7 +19,6 @@ package com.facebook.litho.intellij.completion;
 import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_PARAMETER_ANNOTATION;
 
 import com.facebook.litho.annotations.CachedValue;
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -92,8 +91,6 @@ public class LayoutSpecMethodParameterAnnotationsContributor extends CompletionC
           return State.class;
         case TREE_PROP:
           return TreeProp.class;
-        case INJECT_PROP:
-          return InjectProp.class;
         case PARAM:
           return Param.class;
         case CACHED_VALUE:

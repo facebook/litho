@@ -504,8 +504,6 @@ public class DelegateMethodValidation {
         return methodParamModel instanceof DiffStateParamModel;
       case PARAM:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class);
-      case INJECT_PROP:
-        return MethodParamModelUtils.isAnnotatedWith(methodParamModel, InjectProp.class);
       case PREPARE_INTER_STAGE_OUTPUT:
       case INTER_STAGE_OUTPUT:
         return methodParamModel.getTypeName() instanceof ParameterizedTypeName
@@ -584,8 +582,6 @@ public class DelegateMethodValidation {
         return "@State Diff<T> someStateName";
       case PARAM:
         return "@Param T someParamName";
-      case INJECT_PROP:
-        return "@InjectProp T someInjectPropName";
       case INTER_STAGE_OUTPUT:
         return "Output<T> someOutputName";
       case PROP_OUTPUT:

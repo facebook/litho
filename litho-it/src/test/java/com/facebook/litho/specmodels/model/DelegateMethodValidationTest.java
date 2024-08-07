@@ -219,7 +219,7 @@ public class DelegateMethodValidationTest {
         .isEqualTo(
             "Argument at index 0 (someBool) is not a valid parameter, should be one of the"
                 + " following: @Prop T somePropName. @TreeProp T someTreePropName. @State T"
-                + " someStateName. @InjectProp T someInjectPropName. @CachedValue T value, where"
+                + " someStateName. @CachedValue T value, where"
                 + " the cached value has a corresponding @OnCalculateCachedValue method. ");
   }
 
@@ -254,7 +254,7 @@ public class DelegateMethodValidationTest {
         .isEqualTo(
             "Argument at index 1 (arg) is not a valid parameter, should be one of the following: "
                 + "@Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. "
-                + "@InjectProp T someInjectPropName. @CachedValue T value, where the cached value "
+                + "@CachedValue T value, where the cached value "
                 + "has a corresponding @OnCalculateCachedValue method. ");
   }
 
@@ -543,7 +543,7 @@ public class DelegateMethodValidationTest {
         .isEqualTo(
             "Argument at index 2 (unmatched) is not a valid parameter, should be one of the"
                 + " following: @Prop T somePropName. @TreeProp T someTreePropName. @State T"
-                + " someStateName. @InjectProp T someInjectPropName. @CachedValue T value, where"
+                + " someStateName. @CachedValue T value, where"
                 + " the cached value has a corresponding @OnCalculateCachedValue method. Or one of"
                 + " the following, where no annotations should be added to the parameter:"
                 + " java.lang.Integer matched. char unmatched. ");
@@ -594,7 +594,7 @@ public class DelegateMethodValidationTest {
             "Argument at index 1 (unmatched) is not a valid parameter, should be one of the"
                 + " following: @Prop T somePropName. @TreeProp T someTreePropName. StateValue<T>"
                 + " stateName, where a state param with type T and name stateName is declared"
-                + " elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the"
+                + " elsewhere in the spec. Or one of the"
                 + " following, where no annotations should be added to the parameter:"
                 + " com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
   }
@@ -645,7 +645,7 @@ public class DelegateMethodValidationTest {
             "Argument at index 1 (unmatched) is not a valid parameter, should be one of the"
                 + " following: @Prop T somePropName. @TreeProp T someTreePropName. StateValue<T>"
                 + " stateName, where a state param with type T and name stateName is declared"
-                + " elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the"
+                + " elsewhere in the spec. Or one of the"
                 + " following, where no annotations should be added to the parameter:"
                 + " com.facebook.litho.StateValue<java.lang.Object> unmatched. ");
   }
@@ -715,7 +715,7 @@ public class DelegateMethodValidationTest {
             "Argument at index 1 (name1) is not a valid parameter, should be one of the "
                 + "following: @Prop T somePropName. @TreeProp T someTreePropName. "
                 + "StateValue<T> stateName, where a state param with type T and name stateName is "
-                + "declared elsewhere in the spec. @InjectProp T someInjectPropName. Or one of the "
+                + "declared elsewhere in the spec. Or one of the "
                 + "following, where no annotations should be added to the parameter: "
                 + "com.facebook.litho.StateValue<?> name1. ");
   }
@@ -862,7 +862,7 @@ public class DelegateMethodValidationTest {
         .isEqualTo(
             "Argument at index 1 (name1) is not a valid parameter, should be one of the "
                 + "following: @Prop T somePropName. @TreeProp T someTreePropName. "
-                + "@InjectProp T someInjectPropName. Or one of the following, where no annotations "
+                + "Or one of the following, where no annotations "
                 + "should be added to the parameter: com.facebook.litho.StateValue<?> name1. ");
   }
 }

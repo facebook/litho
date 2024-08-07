@@ -51,7 +51,6 @@ public final class DelegateMethodDescription {
     STATE_OUTPUT,
     STATE_VALUE,
     DIFF,
-    INJECT_PROP,
     CACHED_VALUE,
   }
 

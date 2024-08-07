@@ -36,6 +36,8 @@ import com.facebook.litho.widget.CrashFromLayoutFromStyle
 import com.facebook.litho.widget.CrashKotlinComponent
 import com.facebook.litho.widget.CrashingMountable
 import com.facebook.litho.widget.CrashingMountableSpec.MountPhaseException
+import com.facebook.litho.widget.CreateMountContentCrashing
+import com.facebook.litho.widget.CreateMountPoolCrashing
 import com.facebook.litho.widget.DynamicPropCrasher
 import com.facebook.litho.widget.OnErrorNotPresentChild
 import com.facebook.litho.widget.OnErrorPassUpChildTester
@@ -651,7 +653,11 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_CREATE_MOUNT_CONTENT,
         "Crashed on ON_CREATE_MOUNT_CONTENT",
         unmountAfter = false,
-        expectHierarchy = true)
+        expectHierarchy = true,
+        crashingComponentClass = CreateMountContentCrashing::class,
+    ) { _ ->
+      CreateMountContentCrashing.create(lithoViewRule.context).build()
+    }
   }
 
   @Test
@@ -660,7 +666,10 @@ class ComponentErrorBoundaryTest {
         LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL,
         "Crashed on ON_CREATE_MOUNT_CONTENT_POOL",
         false,
-        true)
+        true,
+        crashingComponentClass = CreateMountPoolCrashing::class) { _ ->
+          CreateMountPoolCrashing.create(lithoViewRule.context).build()
+        }
   }
 
   @Test

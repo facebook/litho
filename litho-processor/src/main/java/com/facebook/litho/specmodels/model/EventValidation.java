@@ -20,7 +20,6 @@ import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.vali
 
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -45,13 +44,7 @@ import javax.lang.model.type.MirroredTypeException;
 public class EventValidation {
   private static final List<Class<? extends Annotation>> sDefaultPermittedAnnotations =
       ImmutableList.of(
-          FromEvent.class,
-          Prop.class,
-          InjectProp.class,
-          TreeProp.class,
-          CachedValue.class,
-          State.class,
-          Param.class);
+          FromEvent.class, Prop.class, TreeProp.class, CachedValue.class, State.class, Param.class);
 
   static List<SpecModelValidationError> validate(
       SpecModel specModel,
@@ -157,8 +150,8 @@ public class EventValidation {
 
           if (!hasPermittedAnnotation(methodParam, extraPermittedEventParamAnnotations)) {
             String errorMessage =
-                "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, "
-                    + "@TreeProp, @CachedValue, @State";
+                "Param must be annotated with one of @FromEvent, @Prop, @TreeProp, "
+                    + "@CachedValue, @State";
 
             if (extraPermittedEventParamAnnotations != null
                 && !extraPermittedEventParamAnnotations.isEmpty()) {

@@ -25,7 +25,7 @@ import com.facebook.litho.Diff
 import com.facebook.litho.LifecycleStep
 import com.facebook.litho.Size
 import com.facebook.litho.TrackingMountContentPool
-import com.facebook.litho.annotations.InjectProp
+import com.facebook.litho.annotations.ExcuseMySpec
 import com.facebook.litho.annotations.MountSpec
 import com.facebook.litho.annotations.OnBind
 import com.facebook.litho.annotations.OnBoundsDefined
@@ -37,10 +37,12 @@ import com.facebook.litho.annotations.OnPrepare
 import com.facebook.litho.annotations.OnUnbind
 import com.facebook.litho.annotations.OnUnmount
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ShouldUpdate
 import com.facebook.litho.annotations.State
 import com.facebook.rendercore.MountItemsPool
 
+@ExcuseMySpec(reason = Reason.LEGACY)
 @MountSpec(isPureRender = true)
 object CrashingMountableSpec {
 
@@ -64,12 +66,9 @@ object CrashingMountableSpec {
   @JvmStatic
   @UiThread
   @OnCreateMountContent
-  fun onCreateMountContent(c: Context, @InjectProp lifecycle: LifecycleStep): TextView {
+  fun onCreateMountContent(c: Context): TextView {
     val view = TextView(c)
     view.text = "Hello World"
-    if (lifecycle == LifecycleStep.ON_CREATE_MOUNT_CONTENT) {
-      throw MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT)
-    }
     return view
   }
 
@@ -136,11 +135,7 @@ object CrashingMountableSpec {
   @OnCreateMountContentPool
   fun onCreateMountContentPool(
       poolSize: Int,
-      @InjectProp lifecycle: LifecycleStep
   ): MountItemsPool.ItemPool {
-    if (lifecycle == LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL) {
-      throw MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL)
-    }
     return TrackingMountContentPool(1)
   }
 
@@ -148,9 +143,10 @@ object CrashingMountableSpec {
   @ShouldUpdate(onMount = true)
   fun shouldUpdate(
       @Prop someStringProp: Diff<String>,
-      @InjectProp lifecycle: LifecycleStep
+      @Prop lifecycle: Diff<LifecycleStep>
   ): Boolean {
-    if (lifecycle == LifecycleStep.SHOULD_UPDATE) {
+    if (lifecycle.previous == LifecycleStep.SHOULD_UPDATE ||
+        lifecycle.next == LifecycleStep.SHOULD_UPDATE) {
       throw MountPhaseException(LifecycleStep.SHOULD_UPDATE)
     }
     return someStringProp.previous != someStringProp.next
