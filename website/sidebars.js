@@ -268,7 +268,6 @@ module.exports = {
                   'testing/subcomponent-testing',
                   'testing/prop-matching',
                   'testing/testing-treeprops',
-                  'testing/injectprop-matching',
                   'testing/event-handler-testing',
                   'testing/sections-testing',
                 ],
