@@ -525,19 +525,30 @@ public class DelegateMethodValidation {
   }
 
   public static String getOptionalParamsError(DelegateMethodDescription delegateMethodDescription) {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder
-        .append(", should be one of the following: ")
-        .append(
-            getStringRepresentationOfParamTypes(delegateMethodDescription.optionalParameterTypes));
+    final ImmutableList<OptionalParameterType> optionalParameterTypes =
+        delegateMethodDescription.optionalParameterTypes;
+    final ImmutableList<MethodParamModel> optionalParameters =
+        delegateMethodDescription.optionalParameters;
 
-    if (!delegateMethodDescription.optionalParameters.isEmpty()) {
+    if (optionalParameters.isEmpty() && optionalParameterTypes.isEmpty()) {
+      return ".  No additional parameters are allowed.";
+    }
+
+    final boolean hasOptionalParameterTypes = !optionalParameterTypes.isEmpty();
+
+    StringBuilder stringBuilder = new StringBuilder();
+
+    if (hasOptionalParameterTypes) {
       stringBuilder
-          .append(
-              "Or one of the following, where no annotations should be added to the parameter: ")
-          .append(
-              getStringRepresentationOfOptionalParams(
-                  delegateMethodDescription.optionalParameters));
+          .append(", should be one of the following: ")
+          .append(getStringRepresentationOfParamTypes(optionalParameterTypes));
+    }
+
+    if (!optionalParameters.isEmpty()) {
+      stringBuilder
+          .append(hasOptionalParameterTypes ? "Or " : ".  Should be ")
+          .append("one of the following, where no annotations should be added to the parameter: ")
+          .append(getStringRepresentationOfOptionalParams(optionalParameters));
     }
 
     return stringBuilder.toString();

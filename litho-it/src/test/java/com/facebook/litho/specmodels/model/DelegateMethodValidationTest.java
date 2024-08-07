@@ -224,6 +224,35 @@ public class DelegateMethodValidationTest {
   }
 
   @Test
+  public void testDelegateMethodDoesNotHaveAnyOptionalParametersAllowed() {
+    when(mMountSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateMountContent.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.OBJECT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(TypeName.BOOLEAN), "someBool", mMethodParamObject1)))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Argument at index 0 (someBool) is not a valid parameter.  No additional "
+                + "parameters are allowed.");
+  }
+
+  @Test
   public void testDelegateMethodHasIncorrectOptionalParams() {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
