@@ -288,6 +288,7 @@ public class RecyclerBinder
 
   @VisibleForTesting int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
   @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
+  private final boolean mSnapForPagination;
   private int mCurrentOffset;
   private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
   // The estimated number of items needed to fill the viewport.
@@ -775,6 +776,7 @@ public class RecyclerBinder
     mPostponeViewRecycle = mRecyclerBinderConfig.postponeViewRecycle;
     mPostponeViewRecycleDelayMs = mRecyclerBinderConfig.postponeViewRecycleDelayMs;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
+    mSnapForPagination = mRecyclerBinderConfig.enableSnapForPagination;
 
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(builder.componentViewType);
@@ -1183,6 +1185,9 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemInserted(operation.mPosition);
     final boolean shouldUpdate =
         mViewportManager.insertAffectsVisibleRange(operation.mPosition, 1, mEstimatedViewportCount);
+    if (shouldUpdate && mSnapForPagination) {
+      scrollToPosition(mCurrentLastVisiblePosition);
+    }
     mViewportManager.setShouldUpdate(shouldUpdate);
   }
 
@@ -1409,8 +1414,12 @@ public class RecyclerBinder
 
     mInternalAdapter.notifyItemInserted(position);
 
-    mViewportManager.setShouldUpdate(
-        mViewportManager.insertAffectsVisibleRange(position, 1, mEstimatedViewportCount));
+    boolean shouldAffectVisibleRange =
+        mViewportManager.insertAffectsVisibleRange(position, 1, mEstimatedViewportCount);
+    if (shouldAffectVisibleRange && mSnapForPagination) {
+      scrollToPosition(mCurrentLastVisiblePosition);
+    }
+    mViewportManager.setShouldUpdate(shouldAffectVisibleRange);
   }
 
   private Size getInitialMeasuredSize(
@@ -1538,9 +1547,13 @@ public class RecyclerBinder
 
     mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
 
-    mViewportManager.setShouldUpdate(
+    boolean shouldAffectVisibleRange =
         mViewportManager.insertAffectsVisibleRange(
-            position, renderInfos.size(), mEstimatedViewportCount));
+            position, renderInfos.size(), mEstimatedViewportCount);
+    if (shouldAffectVisibleRange && mSnapForPagination) {
+      scrollToPosition(mCurrentLastVisiblePosition);
+    }
+    mViewportManager.setShouldUpdate(shouldAffectVisibleRange);
   }
 
   /** See {@link RecyclerBinder#updateItemAt(int, Component)}. */

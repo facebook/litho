@@ -157,7 +157,12 @@ data class RecyclerBinderConfig(
      * orientation is vertical, or measure the parent width by the width of children if the
      * orientation is horizontal.
      */
-    @JvmField val wrapContent: Boolean = false
+    @JvmField val wrapContent: Boolean = false,
+    /**
+     * Turn on this flag would make Recycler stick to the last unseen item while pagination, which
+     * is only supposed to be used in full screen size surfaces like Reels.
+     */
+    @JvmField val enableSnapForPagination: Boolean = false,
 ) {
 
   init {
@@ -216,6 +221,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
   private var wrapContent = configuration.wrapContent
+  private var enableSnapForPagination = configuration.enableSnapForPagination
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -281,6 +287,11 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.wrapContent = wrapContent
   }
 
+  fun enableSnapForPagination(enableSnapForPagination: Boolean): RecyclerBinderConfigBuilder =
+      also {
+        this.enableSnapForPagination = enableSnapForPagination
+      }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
@@ -298,6 +309,8 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         rangeRatio = rangeRatio,
         layoutHandlerFactory = layoutHandlerFactory,
         enableStableIds = enableStableIds,
-        wrapContent = wrapContent)
+        wrapContent = wrapContent,
+        enableSnapForPagination = enableSnapForPagination,
+    )
   }
 }
