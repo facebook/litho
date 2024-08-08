@@ -113,7 +113,6 @@ internal constructor(
      */
     @JvmField val cloneStateListAnimators: Boolean = false,
     @JvmField val enableFacadeStateUpdater: Boolean = false,
-    @JvmField val skipSecondIsInWorkingRangeCheck: Boolean = false,
     @JvmField val enableVisibilityFixForNestedLithoView: Boolean = false,
     /**
      * This flag is used to enable the use of default item animators in lazy collections, so that
@@ -344,7 +343,6 @@ internal constructor(
         baseConfig.useFineGrainedViewAttributesExtension
     private var cloneStateListAnimators = baseConfig.cloneStateListAnimators
     private var enableFacadeStateUpdater = baseConfig.enableFacadeStateUpdater
-    private var skipSecondIsInWorkingRangeCheck = baseConfig.skipSecondIsInWorkingRangeCheck
     private var enableVisibilityFixForNestedLithoView =
         baseConfig.enableVisibilityFixForNestedLithoView
     private var useDefaultItemAnimatorInLazyCollections =
@@ -433,10 +431,6 @@ internal constructor(
       enableFacadeStateUpdater = enabled
     }
 
-    fun skipSecondIsInWorkingRangeCheck(enabled: Boolean): Builder = also {
-      skipSecondIsInWorkingRangeCheck = enabled
-    }
-
     fun enableVisibilityFixForNestedLithoView(enabled: Boolean): Builder = also {
       enableVisibilityFixForNestedLithoView = enabled
     }
@@ -497,7 +491,6 @@ internal constructor(
           useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
           cloneStateListAnimators = cloneStateListAnimators,
           enableFacadeStateUpdater = enableFacadeStateUpdater,
-          skipSecondIsInWorkingRangeCheck = skipSecondIsInWorkingRangeCheck,
           enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
           enableFixForIM = enableFixForIM,

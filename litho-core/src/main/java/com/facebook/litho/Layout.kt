@@ -202,10 +202,7 @@ internal object Layout {
 
     val workingRange: WorkingRangeContainer =
         reductionState.workingRangeContainer.getOrCreate {
-          WorkingRangeContainer(
-                  result.context.lithoConfiguration.componentsConfig
-                      .skipSecondIsInWorkingRangeCheck)
-              .also { reductionState.workingRangeContainer = it }
+          WorkingRangeContainer().also { reductionState.workingRangeContainer = it }
         }
     val component: Component = result.node.tailComponent
     for (registration in registrations) {

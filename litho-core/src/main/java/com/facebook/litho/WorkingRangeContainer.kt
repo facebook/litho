@@ -28,7 +28,7 @@ import kotlin.jvm.JvmField
  * event to components to trigger their delegated methods.
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-class WorkingRangeContainer(private val skipSecondIsInWorkingRangeCheck: Boolean = false) {
+class WorkingRangeContainer {
 
   /**
    * Use [java.util.HashMap] to store the working range of each component. The key is composed with
@@ -78,9 +78,7 @@ class WorkingRangeContainer(private val skipSecondIsInWorkingRangeCheck: Boolean
         val component = scopedComponentInfo.component as SpecGeneratedComponent
         val globalKey = scopedContext.globalKey
         val isInRange = statusHandler.isInRange(rangeTuple.name, globalKey)
-        val isOutOfRange =
-            if (skipSecondIsInWorkingRangeCheck) !isInRange
-            else !statusHandler.isInRange(rangeTuple.name, globalKey)
+        val isOutOfRange = !statusHandler.isInRange(rangeTuple.name, globalKey)
 
         if (isOutOfRange &&
             isEnteringRange(
