@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore
 
-import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -82,8 +82,14 @@ internal constructor(
               FieldExtractionDefinition("applyWindowInsetsListener") {
                 getListenerFieldFromViewListenerInfo(it, "mOnApplyWindowInsetsListener")
               },
-              FieldExtractionDefinition("background") { getBackgroundFromView(it) },
-              FieldExtractionDefinition("foreground") { getForegroundFromView(it) },
+              FieldExtractionDefinition("background") { it.background },
+              FieldExtractionDefinition("foreground") {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                  it.foreground
+                } else {
+                  null
+                }
+              },
               FieldExtractionDefinition("tag") { it.tag },
               FieldExtractionDefinition("seekBarListener") {
                 if (it is SeekBar) {
@@ -162,13 +168,6 @@ internal constructor(
   private fun getFieldFromSeekBar(view: SeekBar): SeekBar.OnSeekBarChangeListener? =
       view.safeAccessViewField<SeekBar>("mOnSeekBarChangeListener")
           as? SeekBar.OnSeekBarChangeListener
-
-  private fun getBackgroundFromView(view: View): Drawable? =
-      view.safeAccessViewField<View>("mBackground") as? Drawable
-
-  private fun getForegroundFromView(view: View): Drawable? =
-      view.safeAccessViewField<View>("mForegroundInfo")?.safeAccessObjectField("mDrawable")
-          as? Drawable
 
   private fun getReadableResourceName(view: View): String? {
     return try {
