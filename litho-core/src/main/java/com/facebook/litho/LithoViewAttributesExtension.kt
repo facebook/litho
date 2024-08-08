@@ -160,7 +160,9 @@ private constructor(
 
     override fun getNewViewAttributes(id: Long): ViewAttributes? = toBeCommittedUnits?.get(id)
 
-    override fun onUnitMounted(id: Long) = Unit
+    override fun onUnitMounted(id: Long) {
+      toBeCommittedUnits?.get(id)?.let { currentUnits[id] = it }
+    }
 
     override fun onUnitUnmounted(id: Long) {
       currentUnits.remove(id)
