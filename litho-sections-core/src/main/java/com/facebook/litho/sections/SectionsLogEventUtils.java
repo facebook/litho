@@ -17,10 +17,12 @@
 package com.facebook.litho.sections;
 
 import androidx.annotation.IntDef;
+import com.facebook.infer.annotation.Nullsafe;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Utility class for creating common logging events. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SectionsLogEventUtils {
 
   @IntDef({
