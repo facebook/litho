@@ -96,7 +96,7 @@ public class CachedValueValidation {
               new SpecModelValidationError(
                   param.getRepresentedObject(),
                   "@OnCalculateCachedValue methods may only take ComponentContext, @Prop,"
-                      + " @TreeProp, @InjectProp and @State as params."));
+                      + " @TreeProp, and @State as params."));
         }
       }
     }
