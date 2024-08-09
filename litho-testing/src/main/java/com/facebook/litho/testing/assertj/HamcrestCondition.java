@@ -16,12 +16,14 @@
 
 package com.facebook.litho.testing.assertj;
 
+import com.facebook.infer.annotation.Nullsafe;
 import org.assertj.core.api.Condition;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
 /** Wraps a Hamcrest {@link Matcher<T>} in an AssertJ Condition. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class HamcrestCondition<T> extends Condition<T> {
 
   private final Matcher<T> matcher;
