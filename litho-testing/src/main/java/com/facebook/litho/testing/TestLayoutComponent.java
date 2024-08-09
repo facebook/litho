@@ -18,6 +18,7 @@ package com.facebook.litho.testing;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.StyleRes;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -27,6 +28,7 @@ import com.facebook.litho.Wrapper;
  * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
  *     instead
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public class TestLayoutComponent extends TestComponent {
 
