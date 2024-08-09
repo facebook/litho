@@ -20,6 +20,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StyleRes;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -32,6 +33,7 @@ import javax.annotation.Nullable;
  * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
  *     instead
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public class TestViewComponent extends TestComponent {
 
@@ -64,12 +66,14 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onMount(
       ComponentContext c, Object convertView, InterStagePropsContainer interStagePropsContainer) {
     onMountCalled();
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onUnmount(
       ComponentContext c,
       Object mountedContent,
@@ -83,6 +87,7 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onMeasure(
       ComponentContext c,
       ComponentLayout layout,
@@ -100,6 +105,7 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
@@ -108,6 +114,7 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onBind(
       ComponentContext c,
       Object mountedContent,
@@ -116,6 +123,7 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onUnbind(
       ComponentContext c,
       Object mountedContent,
