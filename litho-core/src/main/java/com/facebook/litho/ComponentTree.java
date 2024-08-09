@@ -44,6 +44,7 @@ import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeSpecsMatch;
 import static com.facebook.litho.lifecycle.LithoLifecycleOwner.LifecycleOwnerTreeProp;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Async;
 import static com.facebook.rendercore.debug.DebugEventAttribute.HeightSpec;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
 import static com.facebook.rendercore.debug.DebugEventAttribute.WidthSpec;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
@@ -2300,7 +2301,8 @@ public class ComponentTree
     int rootHeight = 0;
     boolean committedNewLayout = false;
     synchronized (this) {
-      if (getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec) {
+      if (getLithoConfiguration().componentsConfig.enableLoggingForRenderInFlight
+          || getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec) {
         final int resolvedRootId = mRoot != null ? mRoot.getId() : INVALID_ID;
         final boolean isRootNotCompatibleAndWithoutResolveFuture =
             layoutState.getResolveResult().component.getId() != resolvedRootId
@@ -2315,11 +2317,15 @@ public class ComponentTree
               () -> String.valueOf(mId),
               LogLevel.ERROR,
               attributes -> {
+                attributes.put(Name, "RenderInFlight");
                 attributes.put(DebugEventAttribute.Version, layoutVersion);
                 attributes.put(DebugEventAttribute.Source, layoutSourceToString(source));
                 attributes.put("Root", rootComponent.getSimpleName());
                 attributes.put(DebugEventAttribute.Width, layoutState.getWidth());
                 attributes.put(DebugEventAttribute.Height, layoutState.getHeight());
+                attributes.put(
+                    "withoutSizeSpec",
+                    getLithoConfiguration().componentsConfig.enableResolveWithoutSizeSpec);
                 return Unit.INSTANCE;
               });
         }

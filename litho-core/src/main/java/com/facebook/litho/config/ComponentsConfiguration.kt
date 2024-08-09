@@ -174,6 +174,8 @@ internal constructor(
     @JvmField val useViewAttributesBinder: Boolean = false,
     /** This will skip calling `onDraw` for ComponentHost. */
     @JvmField val enableHostWillNotDraw: Boolean = false,
+    /** This will enable logging for render in-flight */
+    @JvmField val enableLoggingForRenderInFlight: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
@@ -321,7 +323,7 @@ internal constructor(
    * overriding specific configurations. For Kotlin one can use directly the named parameters on the
    * [ComponentsConfiguration] constructor.
    */
-  class Builder internal constructor(private var baseConfig: ComponentsConfiguration) {
+  class Builder internal constructor(private val baseConfig: ComponentsConfiguration) {
 
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
     private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
@@ -357,6 +359,7 @@ internal constructor(
     private var useStableIdsInRecyclerBinder = baseConfig.useStableIdsInRecyclerBinder
     private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
     private var enableHostWillNotDraw = baseConfig.enableHostWillNotDraw
+    private var enableLoggingForRenderInFlight = baseConfig.enableLoggingForRenderInFlight
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -465,6 +468,10 @@ internal constructor(
       enableResolveWithoutSizeSpec = enabled
     }
 
+    fun enableLoggingForRenderInFlight(enabled: Boolean): Builder = also {
+      enableLoggingForRenderInFlight = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
@@ -501,6 +508,7 @@ internal constructor(
           useStableIdsInRecyclerBinder = useStableIdsInRecyclerBinder,
           enableResolveWithoutSizeSpec = enableResolveWithoutSizeSpec,
           enableHostWillNotDraw = enableHostWillNotDraw,
+          enableLoggingForRenderInFlight = enableLoggingForRenderInFlight,
       )
     }
   }
