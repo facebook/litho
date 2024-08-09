@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -60,7 +59,6 @@ public class StateValidationTest {
     when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.JAVA_CLASS);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.<StateParamModel>of());
     when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
     when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
     when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
@@ -342,36 +340,6 @@ public class StateValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo("The parameter name of @Prop \"sameName\" and @State \"sameName\" collide!");
-  }
-
-  @Test
-  public void testStateAndInjectPropWithSameName() {
-    final StateParamModel stateValue = mock(StateParamModel.class);
-    when(stateValue.getName()).thenReturn("sameName");
-    final InjectPropModel injectProp = mock(InjectPropModel.class);
-    when(injectProp.getName()).thenReturn("sameName");
-    when(injectProp.getRepresentedObject()).thenReturn(mRepresentedObject1);
-
-    final InjectProp injectPropAnnotation =
-        new InjectProp() {
-          @Override
-          public Class<? extends Annotation> annotationType() {
-            return InjectProp.class;
-          }
-        };
-    when(injectProp.getAnnotations())
-        .thenReturn(ImmutableList.<Annotation>of(injectPropAnnotation));
-
-    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue));
-    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.of(injectProp));
-
-    final List<SpecModelValidationError> validationErrors =
-        StateValidation.validateStateValues(mSpecModel);
-    assertThat(validationErrors).hasSize(1);
-    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message)
-        .isEqualTo(
-            "The parameter name of @InjectProp \"sameName\" and @State \"sameName\" collide!");
   }
 
   @Test

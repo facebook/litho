@@ -48,8 +48,6 @@ public class SpecModelImplTest {
   SimpleMethodParamModel mMethodParamModel;
   TreePropModel mTreePropModel1;
   TreePropModel mTreePropModel2;
-  InjectPropModel mInjectPropModel;
-
   SpecMethodModel<DelegateMethod, Void> mMethodModel1;
   SpecMethodModel<DelegateMethod, Void> mMethodModel2;
 
@@ -122,9 +120,6 @@ public class SpecModelImplTest {
             false,
             null,
             "");
-
-    mInjectPropModel =
-        new InjectPropModel(MockMethodParamModel.newBuilder().name("injectProp").build());
 
     mTreePropModel1 =
         new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop1").build());
@@ -281,7 +276,6 @@ public class SpecModelImplTest {
     final List<MethodParamModel> params1 = new ArrayList<>();
     params1.add(mPropModel1);
     params1.add(mPropModel2);
-    params1.add(mInjectPropModel);
 
     final List<MethodParamModel> params2 = new ArrayList<>();
     params2.add(mPropModel1);
@@ -314,14 +308,10 @@ public class SpecModelImplTest {
             .build();
 
     final ImmutableList<PropModel> props = specModel.getProps();
-    final ImmutableList<InjectPropModel> injectProps = specModel.getInjectProps();
 
     assertThat(props).hasSize(3);
-    assertThat(injectProps).hasSize(1);
 
     assertThat(props.stream().map(PropModel::getName).collect(Collectors.toList()))
         .containsExactly("savedOne", "savedThree", "savedTwo");
-    assertThat(injectProps.stream().map(InjectPropModel::getName).collect(Collectors.toList()))
-        .containsExactly("savedFour");
   }
 }

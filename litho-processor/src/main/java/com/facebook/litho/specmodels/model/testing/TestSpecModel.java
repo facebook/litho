@@ -28,7 +28,6 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
-import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PrepareInterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -66,7 +65,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
       String qualifiedSpecClassName,
       String componentClassName,
       ImmutableList<PropModel> props,
-      ImmutableList<InjectPropModel> injectProps,
       ImmutableList<BuilderMethodModel> builderMethodModels,
       ImmutableList<PropJavadocModel> propJavadocs,
       ImmutableList<TypeVariableName> typeVariables,
@@ -80,7 +78,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
             .componentClassName(componentClassName)
             .componentClass(ClassNames.COMPONENT)
             .props(props)
-            .injectProps(injectProps)
             .extraBuilderMethods(builderMethodModels)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
@@ -170,16 +167,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   @Override
   public ImmutableList<PropModel> getProps() {
     return mSpecModel.getProps();
-  }
-
-  @Override
-  public ImmutableList<InjectPropModel> getRawInjectProps() {
-    return mSpecModel.getRawInjectProps();
-  }
-
-  @Override
-  public ImmutableList<InjectPropModel> getInjectProps() {
-    return mSpecModel.getInjectProps();
   }
 
   @Override

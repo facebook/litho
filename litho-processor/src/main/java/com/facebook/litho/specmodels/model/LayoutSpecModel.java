@@ -163,16 +163,6 @@ public class LayoutSpecModel implements SpecModel {
   }
 
   @Override
-  public ImmutableList<InjectPropModel> getRawInjectProps() {
-    return mSpecModel.getRawInjectProps();
-  }
-
-  @Override
-  public ImmutableList<InjectPropModel> getInjectProps() {
-    return mSpecModel.getInjectProps();
-  }
-
-  @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
     return mSpecModel.getPropDefaults();
   }

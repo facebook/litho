@@ -95,14 +95,12 @@ public class DelegateMethodValidationTest {
     // Initialize potential fields read from spec with empty
     when(mLayoutSpecModel.getStateValues()).thenReturn(ImmutableList.of());
     when(mLayoutSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mLayoutSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mLayoutSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
     when(mLayoutSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
     when(mLayoutSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     when(mMountSpecModel.getStateValues()).thenReturn(ImmutableList.of());
     when(mMountSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
-    when(mMountSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mMountSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
     when(mMountSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
     when(mMountSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());

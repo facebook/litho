@@ -20,7 +20,6 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.isAl
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodName;
 
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
@@ -293,12 +292,6 @@ public class DelegateMethodValidation {
         specModel.getStateValues(),
         interStageOutputMethodAnnotation,
         State.class,
-        validationErrors);
-    validateDuplicateName(
-        interStageInputParamName,
-        specModel.getInjectProps(),
-        interStageOutputMethodAnnotation,
-        InjectProp.class,
         validationErrors);
     validateDuplicateName(
         interStageInputParamName,

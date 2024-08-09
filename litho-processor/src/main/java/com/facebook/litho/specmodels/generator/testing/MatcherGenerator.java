@@ -23,9 +23,7 @@ import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
-import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -119,11 +117,6 @@ public final class MatcherGenerator {
 
     for (final PropModel prop : specModel.getProps()) {
       generatePropsBuilderMethods(specModel, prop).addToTypeSpec(propsBuilderClassBuilder);
-    }
-
-    for (final InjectPropModel prop : specModel.getInjectProps()) {
-      generatePropsBuilderMethods(specModel, prop.toPropModel())
-          .addToTypeSpec(propsBuilderClassBuilder);
     }
 
     propsBuilderClassBuilder
@@ -660,21 +653,6 @@ public final class MatcherGenerator {
               MatcherGenerator::generateFieldExtractorBlock));
     }
 
-    for (InjectPropModel prop : specModel.getInjectProps()) {
-      if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
-        builder.add(
-            generateComponentMatchBlock(
-                new FieldExtractorSpec(
-                    enclosedSpecModel, prop, getPropValueName(prop) + "Component"),
-                MatcherGenerator::generateInjectedFieldExtractorBlock));
-      }
-
-      builder.add(
-          generateValuePropMatchBlock(
-              new FieldExtractorSpec(enclosedSpecModel, prop, getPropValueName(prop)),
-              MatcherGenerator::generateInjectedFieldExtractorBlock));
-    }
-
     builder.addStatement("return true");
 
     return builder.build();
@@ -700,28 +678,6 @@ public final class MatcherGenerator {
             propType,
             fieldExtractorSpec.varName,
             fieldExtractorSpec.propModel.getName())
-        .build();
-  }
-
-  private static CodeBlock generateInjectedFieldExtractorBlock(
-      FieldExtractorSpec fieldExtractorSpec) {
-    final DependencyInjectionHelper diHelper =
-        fieldExtractorSpec.specModel.getDependencyInjectionHelper();
-
-    if (diHelper == null) {
-      return CodeBlock.builder().build();
-    }
-
-    final String getterName =
-        diHelper.generateTestingFieldAccessor(
-                fieldExtractorSpec.specModel, new InjectPropModel(fieldExtractorSpec.propModel))
-            .name;
-    return CodeBlock.builder()
-        .addStatement(
-            "final $T $L = impl.$L()",
-            fieldExtractorSpec.propModel.getTypeName(),
-            fieldExtractorSpec.varName,
-            getterName)
         .build();
   }
 
@@ -827,12 +783,6 @@ public final class MatcherGenerator {
     public final MethodParamModel propModel;
 
     private FieldExtractorSpec(SpecModel specModel, MethodParamModel propModel, String varName) {
-      this.specModel = specModel;
-      this.propModel = propModel;
-      this.varName = varName;
-    }
-
-    private FieldExtractorSpec(SpecModel specModel, InjectPropModel propModel, String varName) {
       this.specModel = specModel;
       this.propModel = propModel;
       this.varName = varName;

@@ -27,7 +27,6 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
 import com.facebook.litho.specmodels.model.HasPureRender;
-import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PrepareInterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -72,8 +71,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       mUpdateStateWithTransitionMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropModel> mRawProps;
-  private final ImmutableList<InjectPropModel> mRawInjectProps;
-  private final ImmutableList<InjectPropModel> mInjectProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
@@ -120,8 +117,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods,
       ImmutableList<PropModel> rawProps,
       ImmutableList<PropModel> props,
-      ImmutableList<InjectPropModel> rawInjectProps,
-      ImmutableList<InjectPropModel> injectProps,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<StateParamModel> stateValues,
@@ -166,8 +161,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mUpdateStateWithTransitionMethods = updateStateWithTransitionMethods;
     mRawProps = rawProps;
     mProps = props;
-    mRawInjectProps = rawInjectProps;
-    mInjectProps = injectProps;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues = stateValues;
@@ -270,16 +263,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<PropModel> getProps() {
     return mProps;
-  }
-
-  @Override
-  public ImmutableList<InjectPropModel> getRawInjectProps() {
-    return mRawInjectProps;
-  }
-
-  @Override
-  public ImmutableList<InjectPropModel> getInjectProps() {
-    return mInjectProps;
   }
 
   @Override
@@ -492,8 +475,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
         mUpdateStateWithTransitionMethods = ImmutableList.of();
     private ImmutableList<PropModel> mProps = ImmutableList.of();
-    private ImmutableList<InjectPropModel> mRawInjectProps = ImmutableList.of();
-    private ImmutableList<InjectPropModel> mInjectProps = ImmutableList.of();
     private ImmutableList<PropDefaultModel> mPropDefaults = ImmutableList.of();
     private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
     private ImmutableList<StateParamModel> mStateValues = ImmutableList.of();
@@ -598,16 +579,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
     public Builder props(ImmutableList<PropModel> props) {
       mProps = props;
-      return this;
-    }
-
-    public Builder rawInjectProps(ImmutableList<InjectPropModel> rawInjectProps) {
-      mRawInjectProps = rawInjectProps;
-      return this;
-    }
-
-    public Builder injectProps(ImmutableList<InjectPropModel> injectProps) {
-      mInjectProps = injectProps;
       return this;
     }
 
@@ -784,8 +755,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mUpdateStateWithTransitionMethods,
           mRawProps,
           mProps,
-          mRawInjectProps,
-          mInjectProps,
           mPropDefaults,
           mTypeVariables,
           mStateValues,

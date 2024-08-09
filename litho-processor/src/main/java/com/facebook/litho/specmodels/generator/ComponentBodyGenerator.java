@@ -78,7 +78,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the implementation of a Component. */
@@ -145,7 +144,6 @@ public class ComponentBodyGenerator {
     }
 
     builder
-        .addTypeSpecDataHolder(generateInjectedFields(specModel))
         .addTypeSpecDataHolder(generateProps(specModel, runMode))
         .addTypeSpecDataHolder(generateTreeProps(specModel, runMode))
         .addTypeSpecDataHolder(generateOptionalField(optionalField))
@@ -408,29 +406,6 @@ public class ComponentBodyGenerator {
   private static boolean isKotlinPropDefaultWithGetterMethod(
       final SpecModel specModel, final PropDefaultModel propDefault) {
     return KotlinSpecHelper.isKotlinSpec(specModel) && propDefault.isGetterMethodAccessor();
-  }
-
-  public static TypeSpecDataHolder generateInjectedFields(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-
-    if (specModel.hasInjectedDependencies()) {
-      typeSpecDataHolder.addTypeSpecDataHolder(
-          specModel
-              .getDependencyInjectionHelper()
-              .generateInjectedFields(specModel, specModel.getInjectProps()));
-
-      final List<MethodSpec> testAccessors =
-          specModel.getInjectProps().stream()
-              .map(
-                  p ->
-                      specModel
-                          .getDependencyInjectionHelper()
-                          .generateTestingFieldAccessor(specModel, p))
-              .collect(Collectors.toList());
-      typeSpecDataHolder.addMethods(testAccessors);
-    }
-
-    return typeSpecDataHolder.build();
   }
 
   static TypeSpecDataHolder generateTreeProps(SpecModel specModel, EnumSet<RunMode> runMode) {

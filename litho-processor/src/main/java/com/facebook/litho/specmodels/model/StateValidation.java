@@ -18,7 +18,6 @@ package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -82,7 +81,6 @@ public class StateValidation {
     final Set<String> stateNameSet =
         stateValues.stream().map(StateParamModel::getName).collect(Collectors.toSet());
     validateDuplicateName(stateNameSet, specModel.getProps(), validationErrors);
-    validateDuplicateName(stateNameSet, specModel.getInjectProps(), validationErrors);
     validateDuplicateName(stateNameSet, specModel.getTreeProps(), validationErrors);
     validateInterStagePropsDuplicateName(
         stateNameSet, specModel.getInterStageInputs(), validationErrors);
@@ -205,8 +203,7 @@ public class StateValidation {
       if (stateNameSet.contains(model.getName())) {
         final Annotation paramAnnotation =
             model.getAnnotations().stream()
-                .filter(
-                    it -> it instanceof Prop || it instanceof InjectProp || it instanceof TreeProp)
+                .filter(it -> it instanceof Prop || it instanceof TreeProp)
                 .findFirst()
                 .get();
 

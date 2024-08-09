@@ -57,8 +57,6 @@ public final class SpecModelImpl implements SpecModel {
       mUpdateStateWithTransitionMethods;
   private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<PropModel> mProps;
-  private final ImmutableList<InjectPropModel> mInjectProps;
-  private final ImmutableList<InjectPropModel> mRawInjectProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
@@ -94,7 +92,6 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods,
       ImmutableList<PropModel> props,
-      ImmutableList<InjectPropModel> injectProps,
       ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -138,18 +135,6 @@ public final class SpecModelImpl implements SpecModel {
         props.isEmpty()
             ? getProps(rawPropsWithoutDiffProps, cachedPropNames, delegateMethods)
             : props;
-    mRawInjectProps =
-        getRawInjectProps(
-            delegateMethods,
-            eventMethods,
-            triggerMethods,
-            workingRangeRegisterMethod,
-            workingRangeMethods,
-            updateStateMethods);
-    mInjectProps =
-        injectProps.isEmpty()
-            ? getInjectProps(mRawInjectProps, cachedPropNames, mRawProps.size())
-            : injectProps;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues =
@@ -278,19 +263,6 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<PropModel> getProps() {
     return mProps;
-  }
-
-  /**
-   * @return the list of injected props without name cache adjustments.
-   */
-  @Override
-  public ImmutableList<InjectPropModel> getRawInjectProps() {
-    return mRawInjectProps;
-  }
-
-  @Override
-  public ImmutableList<InjectPropModel> getInjectProps() {
-    return mInjectProps;
   }
 
   @Override
@@ -530,15 +502,6 @@ public final class SpecModelImpl implements SpecModel {
     return name != null ? prop.withName(name) : prop;
   }
 
-  private static InjectPropModel updateInjectPropWithCachedName(
-      InjectPropModel prop, @Nullable List<String> cachedPropNames, int index) {
-    final String name =
-        cachedPropNames != null && index < cachedPropNames.size()
-            ? cachedPropNames.get(index)
-            : null;
-    return name != null ? prop.withName(name) : prop;
-  }
-
   /** Extract props without taking deduplication and name caching into account. */
   private static ImmutableList<PropModel> getRawProps(
       ImmutableList<PropModel> rawPropsWithoutDiffProps,
@@ -695,97 +658,6 @@ public final class SpecModelImpl implements SpecModel {
     props.addAll(additionalProps);
 
     return ImmutableList.copyOf(new ArrayList<>(props));
-  }
-
-  private static ImmutableList<InjectPropModel> getRawInjectProps(
-      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
-      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
-      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
-      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
-      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-
-    final List<InjectPropModel> props = new ArrayList<>();
-
-    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
-      for (MethodParamModel param : delegateMethod.methodParams) {
-        if (param instanceof InjectPropModel) {
-          props.add((InjectPropModel) param);
-        }
-      }
-    }
-
-    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
-      for (MethodParamModel param : eventMethod.methodParams) {
-        if (param instanceof InjectPropModel) {
-          props.add((InjectPropModel) param);
-        }
-      }
-    }
-
-    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
-      for (MethodParamModel param : triggerMethod.methodParams) {
-        if (param instanceof InjectPropModel) {
-          props.add((InjectPropModel) param);
-        }
-      }
-    }
-
-    if (workingRangeRegisterMethod != null) {
-      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
-        if (param instanceof InjectPropModel) {
-          props.add((InjectPropModel) param);
-        }
-      }
-    }
-
-    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
-      if (workingRangeMethod.enteredRangeModel != null) {
-        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
-          if (param instanceof InjectPropModel) {
-            props.add((InjectPropModel) param);
-          }
-        }
-      }
-      if (workingRangeMethod.exitedRangeModel != null) {
-        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
-          if (param instanceof InjectPropModel) {
-            props.add((InjectPropModel) param);
-          }
-        }
-      }
-    }
-
-    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
-      for (MethodParamModel param : updateStateMethod.methodParams) {
-        if (param instanceof InjectPropModel) {
-          props.add((InjectPropModel) param);
-        }
-      }
-    }
-
-    return ImmutableList.copyOf(props);
-  }
-
-  private static ImmutableList<InjectPropModel> getInjectProps(
-      ImmutableList<InjectPropModel> rawInjectProps,
-      ImmutableList<String> cachedPropNames,
-      int propOffset) {
-
-    // Update names from cache.
-    final List<InjectPropModel> renamedProps =
-        IntStream.range(0, rawInjectProps.size())
-            .mapToObj(
-                i ->
-                    updateInjectPropWithCachedName(
-                        rawInjectProps.get(i), cachedPropNames, i + propOffset))
-            .collect(Collectors.toList());
-
-    final Set<InjectPropModel> dedupedRenamedProps =
-        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
-    dedupedRenamedProps.addAll(renamedProps);
-
-    return ImmutableList.copyOf(new ArrayList<>(dedupedRenamedProps));
   }
 
   private static ImmutableList<StateParamModel> getStateValues(
@@ -1217,7 +1089,6 @@ public final class SpecModelImpl implements SpecModel {
     private Object mRepresentedObject;
     private SpecElementType mSpecElementType;
     private ImmutableList<PropModel> mProps;
-    private ImmutableList<InjectPropModel> mInjectProps;
 
     private Builder() {}
 
@@ -1354,11 +1225,6 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
-    public Builder injectProps(ImmutableList<InjectPropModel> injectPropModels) {
-      mInjectProps = injectPropModels;
-      return this;
-    }
-
     public Builder dependencyInjectionHelper(
         @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
       mDependencyInjectionHelper = dependencyInjectionHelper;
@@ -1392,7 +1258,6 @@ public final class SpecModelImpl implements SpecModel {
           mUpdateStateMethodModels,
           mUpdateStateWithTransitionMethodModels,
           mProps,
-          mInjectProps,
           mCachedPropNames,
           mTypeVariableNames,
           mPropDefaultModels,
@@ -1435,10 +1300,6 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mProps == null) {
         mProps = ImmutableList.of();
-      }
-
-      if (mInjectProps == null) {
-        mInjectProps = ImmutableList.of();
       }
 
       if (mDelegateMethodModels == null) {

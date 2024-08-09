@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import java.io.BufferedReader;
@@ -96,10 +95,6 @@ public class PropNameInterStageStore {
     try (Writer writer =
         new BufferedWriter(new OutputStreamWriter(outputFile.openOutputStream()))) {
       for (final PropModel propModel : specModel.getRawProps()) {
-        writer.write(propModel.getName() + "\n");
-      }
-
-      for (final InjectPropModel propModel : specModel.getRawInjectProps()) {
         writer.write(propModel.getName() + "\n");
       }
     }

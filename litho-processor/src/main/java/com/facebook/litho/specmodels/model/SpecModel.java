@@ -103,16 +103,6 @@ public interface SpecModel {
   ImmutableList<PropModel> getProps();
 
   /**
-   * @return the list of injected props without name cache adjustments.
-   */
-  ImmutableList<InjectPropModel> getRawInjectProps();
-
-  /**
-   * @return the set of injected props that are defined by the spec.
-   */
-  ImmutableList<InjectPropModel> getInjectProps();
-
-  /**
    * @return the set of prop defaults defined by the spec.
    */
   ImmutableList<PropDefaultModel> getPropDefaults();

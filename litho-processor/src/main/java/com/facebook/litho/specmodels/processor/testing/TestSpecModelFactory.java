@@ -127,7 +127,6 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
         element.getQualifiedName().toString(),
         "",
         enclosedSpecModel.getProps(),
-        enclosedSpecModel.getInjectProps(),
         enclosedSpecModel.getExtraBuilderMethods(),
         enclosedSpecModel.getPropJavadocs(),
         enclosedSpecModel.getTypeVariables(),
