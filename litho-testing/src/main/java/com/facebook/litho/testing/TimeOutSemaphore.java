@@ -17,6 +17,7 @@
 package com.facebook.litho.testing;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * Semaphore wrapper that automatically times out in 5 seconds so that we don't forget to do it and
  * hang tests or not check for whether the lock was successfully acquired.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TimeOutSemaphore {
 
   private final Semaphore mSemaphore;
