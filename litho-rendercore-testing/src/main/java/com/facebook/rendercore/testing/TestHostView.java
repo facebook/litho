@@ -17,11 +17,13 @@
 package com.facebook.rendercore.testing;
 
 import android.content.Context;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.HostView;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestHostView extends HostView {
 
   private final List bindOrder;
@@ -53,6 +55,7 @@ public class TestHostView extends HostView {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void moveItem(MountItem item, int oldIndex, int newIndex) {
     super.moveItem(item, oldIndex, newIndex);
     mMoveCount++;
