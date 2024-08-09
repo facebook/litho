@@ -195,14 +195,12 @@ public class MatcherGeneratorTest {
   public void testPropMatcherNameGenerator() {
     assertThat(MatcherGenerator.getPropMatcherName(makePropModel("myProp")))
         .isEqualTo("mMyPropMatcher");
-    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("\u2020Prop")))
-        .isEqualTo("m\u2020PropMatcher");
+    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("†Prop")))
+        .isEqualTo("m†PropMatcher");
     // Small letter o with stroke to capital O with stroke.
-    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("\u00F8de")))
-        .isEqualTo("m\u00D8deMatcher");
+    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("øde"))).isEqualTo("mØdeMatcher");
     // Phabricator doesn't want poo in the source. :(
-    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("\uD83D\uDCA9")))
-        .isEqualTo("m\uD83D\uDCA9Matcher");
+    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("💩"))).isEqualTo("m💩Matcher");
   }
 
   public static PropModel makePropModel(String name) {
