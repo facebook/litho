@@ -19,6 +19,7 @@ package com.facebook.litho.sections.debug;
 import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.CollectionsUtils;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.Section;
@@ -32,6 +33,7 @@ import java.util.List;
  * purpose of this class is for tools such as Stetho's UI inspector to be able to insert Section
  * information when visualising a component hierarchy.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class DebugSection {
 
   private final List<View> mViews;
@@ -89,6 +91,7 @@ public final class DebugSection {
       return childViews;
     } else {
       final List<DebugSection> childrenDebugSections = new ArrayList<>();
+      // NULLSAFE_FIXME[Nullable Dereference]
       for (Section child : mSectionDebugNode.getChildren()) {
         final DebugSection debugSection = new DebugSection(child, mViews);
         if (debugSection.getSectionChildren().size() > 0) {
@@ -138,9 +141,13 @@ public final class DebugSection {
       DebugSection lastSection = (DebugSection) children.get(count - 1);
       Rect first = firstSection.getBounds();
       Rect last = lastSection.getBounds();
+      // NULLSAFE_FIXME[Nullable Dereference]
       rect.left = first.left;
+      // NULLSAFE_FIXME[Nullable Dereference]
       rect.top = first.top;
+      // NULLSAFE_FIXME[Nullable Dereference]
       rect.right = last.right;
+      // NULLSAFE_FIXME[Nullable Dereference]
       rect.bottom = last.bottom;
     }
 
