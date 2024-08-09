@@ -18,8 +18,10 @@ package com.facebook.litho.testing.viewtree;
 
 import android.content.res.Resources.NotFoundException;
 import androidx.test.core.app.ApplicationProvider;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Utility methods for {@link ViewTreeAssert}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ViewTreeUtil {
 
   /**
