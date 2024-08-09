@@ -18,6 +18,7 @@ package com.facebook.rendercore.testing;
 
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.testing.match.MatchNode;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.junit.ComparisonFailure;
  * Utility to match a rendered View hierarchy against an expected View hierarchy. See {@link
  * ViewMatchNode}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewAssertions {
 
   public static MatchAssertionBuilder assertThat(View view) {
