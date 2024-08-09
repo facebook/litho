@@ -16,8 +16,10 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import junit.framework.AssertionFailedError;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ThreadTestingUtils {
 
   /**
