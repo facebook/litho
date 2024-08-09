@@ -16,11 +16,9 @@
 
 package com.facebook.litho.testing.processor;
 
-import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
@@ -31,7 +29,6 @@ import com.facebook.litho.specmodels.processor.testing.TestSpecModelFactory;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -101,36 +98,6 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
           "$L instance = new $L(context.getAndroidContext());\n",
           specModel.getComponentName(),
           specModel.getComponentName());
-    }
-
-    @Override
-    public TypeSpecDataHolder generateInjectedFields(
-        SpecModel specModel, ImmutableList<InjectPropModel> injectPropParams) {
-      final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
-
-      for (MethodParamModel injectedParam : injectPropParams) {
-        final FieldSpec.Builder fieldBuilder =
-            FieldSpec.builder(injectedParam.getTypeName(), injectedParam.getName());
-        for (AnnotationSpec extAnnotation : injectedParam.getExternalAnnotations()) {
-          fieldBuilder.addAnnotation(extAnnotation);
-        }
-
-        builder.addField(fieldBuilder.build());
-      }
-
-      return builder.build();
-    }
-
-    @Override
-    public MethodSpec generateTestingFieldAccessor(
-        SpecModel specModel, InjectPropModel injectedParam) {
-      return MethodSpec.methodBuilder(
-              "get"
-                  + injectedParam.getName().substring(0, 1).toUpperCase()
-                  + injectedParam.getName().substring(1))
-          .returns(injectedParam.getTypeName())
-          .addStatement("return $N", injectedParam.getName())
-          .build();
     }
 
     @Override

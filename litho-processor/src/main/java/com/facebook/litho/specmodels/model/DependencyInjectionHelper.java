@@ -16,7 +16,6 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
@@ -43,23 +42,6 @@ public interface DependencyInjectionHelper {
 
   /** Generate the code needed to inject a new instance of the given SpecModel called 'instance' */
   CodeBlock generateFactoryMethodsComponentInstance(SpecModel specModel);
-
-  /**
-   * Generate the necessary code to handle the {@link com.facebook.litho.annotations.InjectProp}
-   * annotation. Field with the same name of the parameter should be returned to be usable.
-   *
-   * @param specModel the model holding the spec being generated
-   * @param injectPropParams a list of the models for the injected params
-   */
-  TypeSpecDataHolder generateInjectedFields(
-      SpecModel specModel, ImmutableList<InjectPropModel> injectPropParams);
-
-  /**
-   * Generate an accessor for each injected field. This is used to generate matchers for TestSpecs
-   * and can be necessary for DI mechanisms which do not allow direct access to the generated
-   * fields. For instance, when field values are wrapped in a lazy wrapper.
-   */
-  MethodSpec generateTestingFieldAccessor(SpecModel specModel, InjectPropModel injectPropModel);
 
   /**
    * Generate accessor code for each injected field. This is used to generate access from methods

@@ -90,8 +90,7 @@ public class CachedValueValidation {
             && !(MethodParamModelUtils.isSectionContextParam(param))
             && !(param instanceof TreePropModel)
             && !(param instanceof PropModel)
-            && !(param instanceof StateParamModel)
-            && !(param instanceof InjectPropModel)) {
+            && !(param instanceof StateParamModel)) {
           validationErrors.add(
               new SpecModelValidationError(
                   param.getRepresentedObject(),
