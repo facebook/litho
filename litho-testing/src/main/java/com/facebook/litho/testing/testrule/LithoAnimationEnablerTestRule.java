@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.testrule;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -24,6 +25,7 @@ import org.junit.runner.Description;
  * A test rule to be able to turn on/off Litho animations with different granularity, i.e. at
  * class-level, test method level or at code block level.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoAnimationEnablerTestRule extends TestWatcher {
 
   private final boolean mOriginalValue =
