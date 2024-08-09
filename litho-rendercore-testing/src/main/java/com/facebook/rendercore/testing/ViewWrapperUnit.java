@@ -22,11 +22,13 @@ import android.content.Context;
 import android.util.SparseArray;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.PoolingPolicy;
 import com.facebook.rendercore.RenderUnit;
 import java.util.Collections;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocator<View> {
 
   private final View view;
