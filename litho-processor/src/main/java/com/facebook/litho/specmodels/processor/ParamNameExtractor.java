@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.util.Name;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ParamNameExtractor {
   static List<String> getNames(ExecutableElement method) {
     final List<? extends VariableElement> params = method.getParameters();
