@@ -40,7 +40,6 @@ litho_robolectric4_test(
             "*Test.kt",
         ],
     ),
-    contacts = ["oncall+components_for_android@xmail.facebook.com"],
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],

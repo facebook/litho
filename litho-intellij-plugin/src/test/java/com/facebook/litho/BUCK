@@ -19,7 +19,6 @@ fb_java_test(
         "intellij/logging/DebounceEventLoggerTest.java",
         "specmodels/processor/PsiTypeUtilsTest.java",
     ],
-    contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "17",
     target = "17",
     visibility = ["PUBLIC"],
