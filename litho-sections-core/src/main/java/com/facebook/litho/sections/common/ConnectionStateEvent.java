@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -24,12 +25,18 @@ import com.facebook.litho.annotations.Event;
  * com.facebook.litho.sections.fb.datasources.BaseGraphQLConnectionSection} as the connection state
  * of {@link com.facebook.litho.sections.fb.datasources.GraphQLConnectionService} changes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class ConnectionStateEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public RenderSectionEvent.FetchState fetchState;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Object connectionData;
   public boolean isEmpty;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Throwable fetchError;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public RenderSectionEvent.DataSource dataSource;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public RenderSectionEvent.FetchType fetchType;
 }
