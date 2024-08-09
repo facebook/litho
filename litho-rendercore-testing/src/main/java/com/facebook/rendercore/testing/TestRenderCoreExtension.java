@@ -17,12 +17,14 @@
 package com.facebook.rendercore.testing;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestRenderCoreExtension extends RenderCoreExtension {
 
   private final LayoutResultVisitor mLayoutResultVisitor;
@@ -47,8 +49,11 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
       final @Nullable LayoutResultVisitor layoutResultVisitor,
       final @Nullable MountExtension mountExtension,
       final @Nullable Supplier inputSupplier) {
+    // NULLSAFE_FIXME[Field Not Nullable]
     mLayoutResultVisitor = layoutResultVisitor;
+    // NULLSAFE_FIXME[Field Not Nullable]
     mMountExtension = mountExtension;
+    // NULLSAFE_FIXME[Field Not Nullable]
     mInputSupplier = inputSupplier;
   }
 
