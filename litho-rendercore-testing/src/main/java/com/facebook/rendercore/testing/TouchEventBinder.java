@@ -19,8 +19,10 @@ package com.facebook.rendercore.testing;
 import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.RenderUnit;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchEventBinder implements RenderUnit.Binder<ViewWrapperUnit, View, Void> {
 
   private final View.OnTouchListener mListener;
