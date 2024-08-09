@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.Is;
@@ -24,6 +25,7 @@ import org.hamcrest.core.Is;
  * Base class used to share common properties used in TestSpec builders. Mirrors relevant properties
  * from {@link com.facebook.litho.Component.Builder}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class BaseMatcher<T extends BaseMatcher<T>> {
   @Nullable Matcher<EventHandler<ClickEvent>> mClickHandlerMatcher;
   @Nullable Matcher<EventHandler<LongClickEvent>> mLongClickHandlerMatcher;
