@@ -16,7 +16,10 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Exception thrown when the graph is not legal (e.g. doesn't represent a DAG). */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BadGraphSetupException extends RuntimeException {
 
   public BadGraphSetupException(String detailMessage) {
