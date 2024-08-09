@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import java.util.Set;
  * This class manages the {@link Section}s global keys for a {@link SectionTree}. It provides
  * methods for detecting duplicate keys.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class KeyHandler {
 
   private final Set<String> mKnownGlobalKeys;
