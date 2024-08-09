@@ -24,5 +24,6 @@ import java.lang.annotation.RetentionPolicy;
  * automatically supplied via dependency injection. In order to use this annotation,
  * DependencyInjectionHelper.generateInjectedMembers() needs to be properly implemented.
  */
+@Deprecated
 @Retention(RetentionPolicy.CLASS)
 public @interface InjectProp {}
