@@ -16,6 +16,7 @@ fb_core_android_library(
         "PUBLIC",
     ],
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_ASSERTJ_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),

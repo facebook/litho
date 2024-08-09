@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.specmodels;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.TypeSpec;
@@ -28,6 +29,7 @@ import javax.annotation.concurrent.Immutable;
 import org.assertj.core.util.Lists;
 
 /** A simple implementation of {@link MockMethodParamModel} for use in tests. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Immutable
 public class MockMethodParamModel implements MethodParamModel {
   private final TypeSpec mTypeSpec;
@@ -87,10 +89,13 @@ public class MockMethodParamModel implements MethodParamModel {
 
   public static class Builder {
 
+    // NULLSAFE_FIXME[Field Not Initialized]
     private TypeName mType;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private String mName;
     private List<Class<? extends Annotation>> mAnnotations = ImmutableList.of();
     private List<AnnotationSpec> mExternalAnnotations = ImmutableList.of();
+    // NULLSAFE_FIXME[Field Not Initialized]
     private Object mRepresentedObject;
 
     public Builder type(TypeName type) {
@@ -109,11 +114,13 @@ public class MockMethodParamModel implements MethodParamModel {
     }
 
     public Builder annotations(Class<? extends Annotation>... annotations) {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       mAnnotations = Lists.newArrayList(annotations);
       return this;
     }
 
     public Builder externalAnnotations(AnnotationSpec... externalAnnotations) {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       mExternalAnnotations = Lists.newArrayList(externalAnnotations);
       return this;
     }
