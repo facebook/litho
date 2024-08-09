@@ -62,6 +62,7 @@ litho_android_library(
     autoglob = False,
     language = "JAVA",
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_JAVA_TARGET,
     ],
 )

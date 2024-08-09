@@ -16,7 +16,10 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Helper class to access Litho internals for benchmark testing. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BenchmarkTestHelper {
   private static final int[] LAYOUT_SIZE_OUT = new int[2];
 
