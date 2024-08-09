@@ -19,6 +19,7 @@ package com.facebook.litho.testing.subcomponents;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
@@ -39,6 +40,7 @@ import javax.annotation.concurrent.Immutable;
  * Wraps a {@link DebugComponent} exposing only information that are safe to use for test
  * assertions.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Immutable
 public class InspectableComponent {
   private final DebugComponent mComponent;
@@ -69,10 +71,13 @@ public class InspectableComponent {
     while (!queue.isEmpty()) {
       final DebugComponent childComponent = queue.remove();
 
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (childComponent.getComponent() == component) {
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         return new InspectableComponent(childComponent);
       }
 
+      // NULLSAFE_FIXME[Nullable Dereference]
       queue.addAll(childComponent.getChildComponents());
     }
 
@@ -280,6 +285,7 @@ public class InspectableComponent {
     sb.append("InspectableComponent of ");
     sb.append(getSimpleName());
     sb.append(" with hierarchy\n");
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     sb.append(LithoViewTestHelper.viewToString(mComponent.getLithoView()));
 
     return sb.toString();
