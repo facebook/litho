@@ -59,16 +59,3 @@ If you are getting this error when running a Litho unit test, go through these s
 
 - Follow the instructions under [Unit Testing - Caveats](/docs/testing/unit-testing#caveats) for your setup.
 - Relaunch the gradle daemon with `./gradlew --stop`.
-
-### `@InjectProp` fails for generated components
-
-When using parallel build systems like Buck, it can be difficult for the build
-system to determine the correct order to generate sources in. This can lead to
-essential type information being unavailable, making it impossible to determine
-the fully qualified name. If a component A tries to use `@InjectProp` for
-another generated component B, this can fail if B is part of the same
-compilation unit, but sits in a different package.
-
-The easiest workaround for this is to help the compiler by moving
-either the referencing or the referenced component into a separate build module.
-Splitting build modules by package is considered a good practice with Buck.
