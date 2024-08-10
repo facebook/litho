@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import androidx.collection.SimpleArrayMap;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import javax.annotation.concurrent.GuardedBy;
  *
  * <p>Data flows through the graph on each frame, from input nodes to output nodes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DataFlowGraph {
 
   private static final String STATE_NOT_INTIALIZED_FOR_VALUE_NODE =
@@ -65,6 +67,7 @@ public class DataFlowGraph {
    */
   @VisibleForTesting
   public static void setInstance(@Nullable DataFlowGraph dataFlowGraph) {
+    // NULLSAFE_FIXME[Field Not Nullable]
     sInstance = dataFlowGraph;
   }
 
@@ -199,7 +202,9 @@ public class DataFlowGraph {
     while (!nodesToProcess.isEmpty()) {
       final ValueNode next = nodesToProcess.pollFirst();
       mSortedNodes.add(next);
+      // NULLSAFE_FIXME[Nullable Dereference]
       for (ValueNode input : next.getAllInputs()) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         final int outputsLeft = nodesToOutputsLeft.get(input) - 1;
         nodesToOutputsLeft.put(input, outputsLeft);
         if (outputsLeft == 0) {
@@ -247,6 +252,7 @@ public class DataFlowGraph {
   private boolean areInputsFinished(ValueNode node) {
     for (ValueNode input : node.getAllInputs()) {
       final NodeState nodeState = mNodeStates.get(input);
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (!nodeState.isFinished) {
         return false;
       }
@@ -264,6 +270,7 @@ public class DataFlowGraph {
       final ArrayList<ValueNode> nodesToCheck = binding.getAllNodes();
       for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
         final NodeState nodeState = mNodeStates.get(nodesToCheck.get(j));
+        // NULLSAFE_FIXME[Nullable Dereference]
         if (!nodeState.isFinished) {
           allAreFinished = false;
           break;
@@ -306,7 +313,9 @@ public class DataFlowGraph {
     for (int i = 0, size = nodes.size(); i < size; i++) {
       final ValueNode node = nodes.get(i);
       final NodeState nodeState = mNodeStates.get(node);
+      // NULLSAFE_FIXME[Nullable Dereference]
       nodeState.refCount--;
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (nodeState.refCount == 0) {
         mNodeStates.remove(node);
       }
