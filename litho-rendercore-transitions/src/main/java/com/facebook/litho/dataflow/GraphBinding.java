@@ -17,6 +17,7 @@
 package com.facebook.litho.dataflow;
 
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 
 /**
@@ -27,11 +28,13 @@ import java.util.ArrayList;
  *
  * <p>NB: ValueNodes can be referenced by multiple GraphBindings (e.g. a view property).
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class GraphBinding {
 
   private final DataFlowGraph mDataFlowGraph;
   private final Bindings mBindings = new Bindings();
   private final ArrayList<ValueNode> mAllNodes = new ArrayList<>();
+  // NULLSAFE_FIXME[Field Not Initialized]
   private BindingListener mListener;
   private boolean mIsActive = false;
   private boolean mHasBeenActivated = false;
