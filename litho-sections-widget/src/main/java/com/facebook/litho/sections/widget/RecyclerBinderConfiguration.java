@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
@@ -25,6 +26,7 @@ import com.facebook.litho.widget.RecyclerBinderConfig;
 import com.facebook.rendercore.RunnableHandler;
 
 /** Configuration setting for {@link RecyclerBinder}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RecyclerBinderConfiguration {
   // TODO T34627443 make all fields final after removing setters
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -79,6 +81,7 @@ public class RecyclerBinderConfiguration {
 
   public static class Builder {
 
+    // NULLSAFE_FIXME[Field Not Initialized]
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
