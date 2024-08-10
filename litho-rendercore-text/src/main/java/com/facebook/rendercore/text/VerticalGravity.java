@@ -16,7 +16,10 @@
 
 package com.facebook.rendercore.text;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Enum for setting vertical gravity of a text within its layout. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum VerticalGravity {
   TOP,
   CENTER,
