@@ -17,12 +17,14 @@
 package com.facebook.litho.sections;
 
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.StateContainer;
 
 /**
  * A utility elevating some of the visibility constraints internal classes, including {@link
  * SectionLifecycle}, {@link SectionContext} and {@link Section} to ease testing.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @VisibleForTesting
 public final class SectionLifecycleTestUtil {
   private SectionLifecycleTestUtil() {}
@@ -33,6 +35,7 @@ public final class SectionLifecycleTestUtil {
 
   public static Children createChildren(
       SectionLifecycle sectionLifecycle, SectionContext c, Section component) {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return sectionLifecycle.createChildren(c);
   }
 
