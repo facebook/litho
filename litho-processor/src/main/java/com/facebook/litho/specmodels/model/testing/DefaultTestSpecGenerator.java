@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.model.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
@@ -25,6 +26,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DefaultTestSpecGenerator implements TestSpecGenerator {
 
   @Override
