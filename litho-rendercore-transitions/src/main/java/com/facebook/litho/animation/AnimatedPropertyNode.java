@@ -17,6 +17,7 @@
 package com.facebook.litho.animation;
 
 import android.graphics.drawable.Drawable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.ValueNode;
 import java.lang.ref.WeakReference;
@@ -30,6 +31,7 @@ import javax.annotation.Nullable;
  * on the current mount content. Otherwise, this node will set the property of the given mount
  * content to that input value and pass on that value as an output.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AnimatedPropertyNode extends ValueNode {
 
   private final AnimatedProperty mAnimatedProperty;
