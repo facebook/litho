@@ -16,6 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,11 +39,14 @@ import javax.annotation.Nullable;
  * new value for this frame based on the node's parents (i.e. nodes it depends on) and the current
  * frame time.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ValueNode {
 
   public static final String DEFAULT_INPUT = "default_input";
 
+  // NULLSAFE_FIXME[Field Not Nullable]
   private Map<String, ValueNode> mInputs = null;
+  // NULLSAFE_FIXME[Field Not Nullable]
   private ArrayList<ValueNode> mOutputs = null;
   private float mValue;
   private long mTimeNs = 0;
