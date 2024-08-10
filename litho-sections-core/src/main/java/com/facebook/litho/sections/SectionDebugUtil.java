@@ -17,9 +17,11 @@
 package com.facebook.litho.sections;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.StateContainer;
 
 /** Exposes methods needed for debugging tools like Stetho and Flipper. Do not use! */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SectionDebugUtil {
   /** Visible for debugging purposes, do not use! */
   public static @Nullable StateContainer getStateContainerDebug(Section section) {
