@@ -17,6 +17,7 @@
 package com.facebook.litho.animation;
 
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.dataflow.BindingListener;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.ValueNode;
@@ -26,6 +27,7 @@ import com.facebook.litho.dataflow.ValueNode;
  * Subclasses should define their animation by creating a {@link GraphBinding} in {@link
  * #setupBinding}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class TransitionAnimationBinding extends BaseAnimationBinding {
 
   private final GraphBinding mGraphBinding;
