@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -32,6 +33,7 @@ import javax.annotation.Nullable;
  * the given {@link Transition.TransitionUnit} - {@link
  * TransitionManager#createAnimationsForTransitionUnit(Transition.TransitionUnit)}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class TransitionIdMap<V> {
   private final Map<String, TransitionId> mGlobalIds = new LinkedHashMap<>();
   private final Map<String, Map<String, TransitionId>> mScopedIdsByOwner = new LinkedHashMap<>();
@@ -114,7 +116,9 @@ class TransitionIdMap<V> {
       case TransitionId.Type.SCOPED:
         final String owner = id.mExtraData;
         Map<String, TransitionId> siblingsIds = mScopedIdsByOwner.get(owner);
+        // NULLSAFE_FIXME[Nullable Dereference]
         siblingsIds.remove(id.mReference);
+        // NULLSAFE_FIXME[Nullable Dereference]
         if (siblingsIds.isEmpty()) {
           mScopedIdsByOwner.remove(owner);
         }
