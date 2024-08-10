@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.helper;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
@@ -32,6 +33,7 @@ import com.facebook.rendercore.visibility.VisibilityUtils;
  * <p>Since this requires a bunch of private APIs, and we haven't reached a conclusion of whether
  * they should be public we are making aggressive use of reflection through Whitebox to call them
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class VisibilityEventsHelper {
 
   /**
