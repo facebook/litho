@@ -16,7 +16,10 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** A node that passes through its input value to its outputs. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SimpleNode extends ValueNode {
 
   @Override
