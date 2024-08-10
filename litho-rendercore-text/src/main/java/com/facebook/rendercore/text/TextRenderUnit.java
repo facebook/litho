@@ -21,10 +21,12 @@ import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAllocator<RCTextView> {
   private long mId;
 
