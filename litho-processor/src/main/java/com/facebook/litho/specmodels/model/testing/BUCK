@@ -27,11 +27,12 @@ fb_java_library(
     ],
     visibility = LITHO_VISIBILITY,
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+        "//third-party/java/androidx/annotation/annotation:annotation",
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
-        "//third-party/java/androidx/annotation/annotation:annotation",
     ],
 )
