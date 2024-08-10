@@ -16,12 +16,15 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * A {@link ValueNode} that will update its value from its "initial" input to its "end" input
  * according to the given input within expected range [0, 1]. For example {@link MappingNode} could
  * accept values emmited by {@link InterpolatorNode}. The node can also extrapolate beyond the
  * output range if input goes beyond the expected input range.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MappingNode extends ValueNode {
 
   public static final String INITIAL_INPUT = "initial";
