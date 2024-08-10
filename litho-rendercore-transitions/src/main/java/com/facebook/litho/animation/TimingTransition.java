@@ -18,6 +18,7 @@ package com.facebook.litho.animation;
 
 import android.view.animation.Interpolator;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.InterpolatorNode;
 import com.facebook.litho.dataflow.MappingNode;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 /**
  * Animation for the transition of a single {@link PropertyAnimation} over a fixed amount of time.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TimingTransition extends TransitionAnimationBinding {
 
   private final int mDurationMs;
@@ -34,6 +36,7 @@ public class TimingTransition extends TransitionAnimationBinding {
   private final @Nullable Interpolator mInterpolator;
 
   public TimingTransition(int durationMs, PropertyAnimation propertyAnimation) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     this(durationMs, propertyAnimation, null);
   }
 
