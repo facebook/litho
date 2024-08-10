@@ -24,14 +24,15 @@ litho_android_library(
     ],
     deps = LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET + [
         ":res",
-        LITHO_RENDERCORE_TARGET,
-        LITHO_TEXTLAYOUTBUILDER_TARGET,
-        LITHO_INFERANNOTATIONS_TARGET,
-        LITHO_RENDERCORE_PRIMITIVES_TARGET,
         "//fbandroid/android_res/rendercore:rendercore",
         "//fbandroid/java/com/facebook/proguard/annotations:annotations",
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         "//third-party/java/androidx/core/core-ktx:core-ktx",
         "//third-party/java/androidx/customview/customview:customview",
+        LITHO_INFERANNOTATIONS_TARGET,
+        LITHO_RENDERCORE_PRIMITIVES_TARGET,
+        LITHO_RENDERCORE_TARGET,
+        LITHO_TEXTLAYOUTBUILDER_TARGET,
     ],
 )
 

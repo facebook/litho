@@ -18,6 +18,7 @@ package com.facebook.rendercore.text.accessibility;
 
 import android.text.style.ClickableSpan;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Extends the ClickableSpan class to include a dedicated field for the accessibility label. This is
@@ -25,6 +26,7 @@ import androidx.annotation.Nullable;
  * easily obtainable from its actual contents. For example, the number of likers for a story might
  * want to set the accessibility label to the corresponding plurals resource.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class RCAccessibleClickableSpan extends ClickableSpan {
 
   private @Nullable String mAccessibilityLabel;
