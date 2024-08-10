@@ -16,12 +16,14 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.animation.AnimatedProperty;
 
 /**
  * Components should implement an event of this type in order to receive a callback when a {@link
  * Transition} ends.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TransitionEndEvent {
   public String transitionKey;
   public AnimatedProperty property;
