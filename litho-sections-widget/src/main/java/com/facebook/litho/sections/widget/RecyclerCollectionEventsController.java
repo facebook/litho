@@ -24,6 +24,7 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 
 import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.RecyclerEventsController;
@@ -35,6 +36,7 @@ import javax.annotation.Nullable;
  * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a
  * RecyclerCollection component to trigger events from outside the component hierarchy.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RecyclerCollectionEventsController extends RecyclerEventsController {
 
   @Nullable private SectionTree mSectionTree;
@@ -161,6 +163,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
    * @param snapTarget target that takes into account snapping behavior.
    */
   private void requestScrollToPositionInner(boolean animated, int defaultTarget, int snapTarget) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     requestScrollToPositionInner(animated, defaultTarget, snapTarget, null);
   }
 
