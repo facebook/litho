@@ -23,5 +23,8 @@ fb_android_library(
     visibility = [
         "PUBLIC",
     ],
-    deps = DEPS + ["//third-party/java/androidx/annotation/annotation:annotation"],
+    deps = DEPS + [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+        "//third-party/java/androidx/annotation/annotation:annotation",
+    ],
 )
