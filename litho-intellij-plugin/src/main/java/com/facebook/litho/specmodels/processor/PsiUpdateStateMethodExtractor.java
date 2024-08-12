@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 import static com.facebook.litho.specmodels.processor.DelegateMethodExtractor.getPermittedMethodParamAnnotations;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -33,6 +34,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiUpdateStateMethodExtractor {
 
   public static ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getOnUpdateStateMethods(
@@ -65,6 +67,7 @@ public class PsiUpdateStateMethodExtractor {
                 .annotations(ImmutableList.<Annotation>of(onUpdateStateAnnotation))
                 .modifiers(PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()))
                 .name(psiMethod.getName())
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
                 .typeVariables(ImmutableList.<TypeVariableName>of())
                 .methodParams(copyOf(methodParams))
