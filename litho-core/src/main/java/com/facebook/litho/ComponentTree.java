@@ -2159,9 +2159,19 @@ public class ComponentTree
           "Cannot generate output for async layout calculation (source = " + source + ")");
     }
 
-    if (isAsync && !forceSyncCalculation) {
+    if (ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
       synchronized (mCurrentDoLayoutRunnableLock) {
         if (mCurrentDoLayoutRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
+          mCurrentDoLayoutRunnable = null;
+        }
+      }
+    }
+
+    if (isAsync && !forceSyncCalculation) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
+        if (mCurrentDoLayoutRunnable != null
+            && !ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
           mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
         }
         mCurrentDoLayoutRunnable =
@@ -2202,10 +2212,13 @@ public class ComponentTree
       boolean isCreateLayoutInProgress,
       final int widthSpec,
       final int heightSpec) {
-    synchronized (mCurrentDoLayoutRunnableLock) {
-      if (mCurrentDoLayoutRunnable != null) {
-        mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
-        mCurrentDoLayoutRunnable = null;
+
+    if (!ComponentsConfiguration.enableFixForTheRaceOfAsyncUpdates) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
+        if (mCurrentDoLayoutRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
+          mCurrentDoLayoutRunnable = null;
+        }
       }
     }
 
