@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.foldings;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.lang.ASTNode;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 /** Uses folding to display the default value of {@code @Prop}-annotated parameters. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DefaultPropertyFoldingBuilder extends FoldingBuilderEx {
   private static final String FOLDING_GROUP_NAME = "DefaultProperties";
   private static final Key<String> FOLDING_KEY =
