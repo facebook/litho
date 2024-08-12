@@ -18,10 +18,12 @@ package com.facebook.rendercore.testing;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.PoolingPolicy;
 import com.facebook.rendercore.RenderUnit;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DrawableWrapperUnit extends RenderUnit<Drawable>
     implements ContentAllocator<Drawable> {
 
