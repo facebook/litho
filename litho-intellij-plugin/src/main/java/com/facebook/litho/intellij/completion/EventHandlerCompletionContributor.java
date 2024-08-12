@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.completion;
 
 import static com.facebook.litho.intellij.LithoPluginUtils.resolveEventName;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
@@ -50,6 +51,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /** Offers completion for the {@code @EventHandler} method parameters in the Litho Spec class. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class EventHandlerCompletionContributor extends CompletionContributor {
   public EventHandlerCompletionContributor() {
     extend(CompletionType.BASIC, codeReferencePattern(), typeCompletionProvider());
@@ -99,10 +101,12 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
             implementedEventHandlers = parentModel.getEventMethods();
 
         implementedEventHandlers.stream()
+            // NULLSAFE_FIXME[Nullable Dereference]
             .filter(handler -> eventQualifiedName.equals(handler.typeModel.getReflectionName()))
             .map(
                 handler ->
                     createLookupElement(
+                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         eventHandlerSetter.getMethodExpression().getReferenceName(),
                         parentModel.getComponentName(),
                         handler))
@@ -122,6 +126,7 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
     return LookupElementBuilder.create(componentName + "." + methodName + "()")
         .withLookupStrings(Arrays.asList(methodName, methodCallName))
         .withPresentableText(methodName)
+        // NULLSAFE_FIXME[Nullable Dereference]
         .withTypeText("EventHandler<" + handler.typeModel.getReflectionName() + ">")
         .withInsertHandler(
             (context, elem) -> {
