@@ -48,6 +48,7 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayout;
 import com.facebook.rendercore.text.accessibility.AccessibilityUtils;
@@ -58,14 +59,18 @@ import java.util.List;
  * A custom Android View that behaves like a TextView providing support for spans, custom drawing
  * and truncations.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class RCTextView extends View {
   private static final String ACCESSIBILITY_CLASS_BUTTON = "android.widget.Button";
   // See TextView#getTextForAccessibility()
   private static final int SAFE_PARCELABLE_SIZE = 1000000;
   @Nullable private final RCTextAccessibilityDelegate mRCTextAccessibilityDelegate;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private CharSequence mText;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private ClickableSpan[] mClickableSpans;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Layout mLayout;
   private float mLayoutTranslationX;
   private float mLayoutTranslationY;
@@ -74,11 +79,14 @@ public class RCTextView extends View {
   private int mHighlightColor;
   private int mHighlightCornerRadius;
   private boolean mIsExplicitlyTruncated;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private ImageSpan[] mImageSpans;
   private int mSelectionStart;
   private int mSelectionEnd;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Path mSelectionPath;
   private boolean mSelectionPathNeedsUpdate;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Paint mHighlightPaint;
   private boolean mIsSettingDefaultAccessibilityDelegate = false;
 
@@ -161,6 +169,7 @@ public class RCTextView extends View {
   }
 
   private void drawLayout(Canvas canvas) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
   }
 
@@ -185,10 +194,12 @@ public class RCTextView extends View {
       mLinkColor = textLayout.textStyle.textColor;
     } else {
       mColorStateList = colorStateList;
+      // NULLSAFE_FIXME[Nullable Dereference]
       mLinkColor = mColorStateList.getDefaultColor();
       if (mLayout != null) {
         mLayout
             .getPaint()
+            // NULLSAFE_FIXME[Nullable Dereference]
             .setColor(mColorStateList.getColorForState(getDrawableState(), mLinkColor));
       }
     }
@@ -208,7 +219,9 @@ public class RCTextView extends View {
 
       for (int i = 0, size = mImageSpans.length; i < size; i++) {
         Drawable drawable = mImageSpans[i].getDrawable();
+        // NULLSAFE_FIXME[Nullable Dereference]
         drawable.setCallback(this);
+        // NULLSAFE_FIXME[Nullable Dereference]
         drawable.setVisible(true, false);
       }
     }
@@ -224,7 +237,9 @@ public class RCTextView extends View {
   }
 
   public void unmount() {
+    // NULLSAFE_FIXME[Field Not Nullable]
     mText = null;
+    // NULLSAFE_FIXME[Field Not Nullable]
     mLayout = null;
     mLayoutTranslationX = 0;
     mLayoutTranslationY = 0;
@@ -235,11 +250,15 @@ public class RCTextView extends View {
     if (mImageSpans != null) {
       for (int i = 0, size = mImageSpans.length; i < size; i++) {
         Drawable drawable = mImageSpans[i].getDrawable();
+        // NULLSAFE_FIXME[Nullable Dereference]
         drawable.setCallback(null);
+        // NULLSAFE_FIXME[Nullable Dereference]
         drawable.setVisible(false, false);
       }
+      // NULLSAFE_FIXME[Field Not Nullable]
       mImageSpans = null;
     }
+    // NULLSAFE_FIXME[Field Not Nullable]
     mClickableSpans = null;
     setContentDescription("");
 
