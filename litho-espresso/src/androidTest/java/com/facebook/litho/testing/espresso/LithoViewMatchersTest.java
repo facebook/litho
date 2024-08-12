@@ -26,6 +26,7 @@ import android.widget.TextView;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.runner.AndroidJUnit4;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -36,9 +37,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link LithoViewMatchers} */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @RunWith(AndroidJUnit4.class)
 public class LithoViewMatchersTest {
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private LithoView mView;
 
   @UiThreadTest
@@ -46,8 +49,10 @@ public class LithoViewMatchersTest {
   public void before() throws Throwable {
     ComponentsConfiguration.isEndToEndTestRun = true;
     final ComponentContext mComponentContext =
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         new ComponentContext(InstrumentationRegistry.getTargetContext());
     final Component mTextComponent = MyComponent.create(mComponentContext).text("foobar").build();
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     mView = LithoView.create(InstrumentationRegistry.getTargetContext(), mTextComponent);
     ViewHelpers.setupView(mView).setExactWidthPx(200).setExactHeightPx(100).layout();
   }
