@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.padding
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
@@ -42,9 +41,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class PostRecyclingStateUpdaterTest {
 
-  private val configuration: ComponentsConfiguration =
-      ComponentsConfiguration.defaultInstance.copy(enableFacadeStateUpdater = true)
-  @Rule @JvmField val lithoViewRule = LithoViewRule(componentsConfiguration = configuration)
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
   lateinit var stateRef: AtomicReference<Int>
 
   @Test

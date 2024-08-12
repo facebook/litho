@@ -426,18 +426,12 @@ public class ComponentTreeHolder {
                   ? null
                   : mComponentTreeMeasureListenerFactory.create(this));
 
-      if (treeComponentConfiguration.enableFacadeStateUpdater) {
-        if (mStateUpdaterDelegator == null) {
-          mStateUpdaterDelegator = new StateUpdaterDelegator();
-        }
-        builder.stateUpdater(mStateUpdaterDelegator);
+      if (mStateUpdaterDelegator == null) {
+        mStateUpdaterDelegator = new StateUpdaterDelegator();
       }
-
+      builder.stateUpdater(mStateUpdaterDelegator);
       mComponentTree = builder.build();
-
-      if (treeComponentConfiguration.enableFacadeStateUpdater) {
-        mStateUpdaterDelegator.attachStateUpdater(mComponentTree);
-      }
+      mStateUpdaterDelegator.attachStateUpdater(mComponentTree);
 
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
