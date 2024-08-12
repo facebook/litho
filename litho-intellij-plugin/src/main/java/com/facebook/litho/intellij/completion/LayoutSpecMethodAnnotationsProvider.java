@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -36,6 +37,7 @@ import java.util.Set;
  *
  * @see LayoutSpecModelFactory
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class LayoutSpecMethodAnnotationsProvider extends CompletionProvider<CompletionParameters> {
   static final CompletionProvider<CompletionParameters> INSTANCE =
       new LayoutSpecMethodAnnotationsProvider();
