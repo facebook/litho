@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.Annotation;
@@ -28,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class AnnotatorUtils {
   private AnnotatorUtils() {}
 
