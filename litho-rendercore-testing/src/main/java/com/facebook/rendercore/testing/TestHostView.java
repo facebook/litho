@@ -22,6 +22,7 @@ import com.facebook.rendercore.HostView;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestHostView extends HostView {
@@ -55,8 +56,7 @@ public class TestHostView extends HostView {
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
-  public void moveItem(MountItem item, int oldIndex, int newIndex) {
+  public void moveItem(@Nullable MountItem item, int oldIndex, int newIndex) {
     super.moveItem(item, oldIndex, newIndex);
     mMoveCount++;
   }
