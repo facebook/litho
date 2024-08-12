@@ -21,6 +21,7 @@ import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SINGLE
 import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.Diff;
@@ -52,6 +53,7 @@ import java.util.Map;
  * @prop isFullSpan It is {@code false} by default making section fit one column. Set it to {@code
  *     true} if this section should span all columns in a multi-column layout.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DiffSectionSpec
 public class SingleComponentSectionSpec {
 
@@ -106,6 +108,7 @@ public class SingleComponentSectionSpec {
                   context,
                   component,
                   componentsLogger)
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -146,6 +149,7 @@ public class SingleComponentSectionSpec {
         || isPrevFullSpan != isNextFullSpan
         || !customAttributesEqual
         || !isComponentEquivalent(
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             prevComponent, nextComponent, shouldCompareComponentCommonPropsValue)) {
       changeSet.update(
           0,
@@ -155,6 +159,7 @@ public class SingleComponentSectionSpec {
                   context,
                   component,
                   componentsLogger)
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -181,8 +186,11 @@ public class SingleComponentSectionSpec {
       Diff<Component> component,
       @Nullable Diff<ComponentsLogger> componentsLogger) {
     if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV, component.getPrevious());
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_NEXT, component.getNext());
     }
 
