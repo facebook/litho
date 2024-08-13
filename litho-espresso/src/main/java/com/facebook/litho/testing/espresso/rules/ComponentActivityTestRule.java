@@ -19,6 +19,7 @@ package com.facebook.litho.testing.espresso.rules;
 import android.app.Instrumentation;
 import android.view.ViewGroup;
 import androidx.test.InstrumentationRegistry;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -30,8 +31,10 @@ import com.facebook.litho.testing.espresso.LithoActivityTestRule;
  * Activity. Developers wishing to use this rule can use {@link #setComponent} (along with {@link
  * #getComponentContext}) to show the Component they want rendered.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentActivity> {
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private volatile ComponentContext mComponentContext;
 
   public ComponentActivityTestRule() {
@@ -41,12 +44,14 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
   @Override
   protected synchronized void afterActivityLaunched() {
     super.afterActivityLaunched();
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     mComponentContext = new ComponentContext(getActivity());
   }
 
   @Override
   protected synchronized void afterActivityFinished() {
     super.afterActivityFinished();
+    // NULLSAFE_FIXME[Field Not Nullable]
     mComponentContext = null;
   }
 
@@ -67,6 +72,7 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
         new Runnable() {
           @Override
           public void run() {
+            // NULLSAFE_FIXME[Not Vetted Third-Party]
             getActivity().setComponent(component);
           }
         });
@@ -80,6 +86,7 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
         new Runnable() {
           @Override
           public void run() {
+            // NULLSAFE_FIXME[Not Vetted Third-Party]
             getActivity().setComponentTree(componentTree);
           }
         });
@@ -90,6 +97,7 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
    * @return the LithoView associated with the Activity.
    */
   public LithoView getLithoView() {
+    // NULLSAFE_FIXME[Nullable Dereference, Not Vetted Third-Party]
     return (LithoView) ((ViewGroup) getActivity().findViewById(android.R.id.content)).getChildAt(0);
   }
 }
