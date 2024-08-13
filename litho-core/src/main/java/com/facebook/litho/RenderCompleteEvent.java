@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -27,6 +28,7 @@ import com.facebook.litho.annotations.Event;
  * @param timestampMillis is the timestamp when the component is rendered complete, computed using
  *     SystemClock.uptimeMillis.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class RenderCompleteEvent {
 
@@ -36,6 +38,7 @@ public class RenderCompleteEvent {
     FAILED_EXCEED_MAX_ATTEMPTS
   }
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   public RenderState renderState;
   public long timestampMillis;
 }
