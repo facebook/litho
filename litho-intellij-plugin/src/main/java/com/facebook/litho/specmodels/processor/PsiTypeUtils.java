@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.TypeSpec;
 import com.google.common.annotations.VisibleForTesting;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 /** Converts {@link PsiType} to {@link TypeName}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class PsiTypeUtils {
   private static final Pattern EXTENDS_PATTERN = Pattern.compile("\\? extends ([^ ]+)");
   private static final Pattern SUPER_PATTERN = Pattern.compile("\\? super ([^ ]+)");
@@ -163,10 +165,12 @@ class PsiTypeUtils {
     }
     Matcher matcher = SUPER_PATTERN.matcher(wildcardTypeName);
     if (matcher.find()) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       return WildcardTypeName.supertypeOf(guessClassName(matcher.group(1)));
     }
     matcher = EXTENDS_PATTERN.matcher(wildcardTypeName);
     if (matcher.find()) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       return WildcardTypeName.subtypeOf(guessClassName(matcher.group(1)));
     }
     return guessClassName(wildcardTypeName);
