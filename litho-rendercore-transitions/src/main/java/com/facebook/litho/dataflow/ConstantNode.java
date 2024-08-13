@@ -16,7 +16,10 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** A dataflow node that returns a constant value. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ConstantNode extends ValueNode {
 
   private final float mValue;
