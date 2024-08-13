@@ -25,4 +25,6 @@ interface VisibilityBoundsTransformer {
   fun getTransformedLocalVisibleRect(host: ViewGroup): Rect?
 
   fun getViewportRect(view: View): Rect
+
+  fun shouldUseTransformedVisibleRect(visibilityOutput: VisibilityOutput): Boolean
 }

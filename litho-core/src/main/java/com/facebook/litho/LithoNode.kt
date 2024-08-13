@@ -191,6 +191,9 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
   var layerType: Int = LayerType.LAYER_TYPE_NOT_SET
     internal set
 
+  var visibilityOutputTag: String? = null
+    internal set
+
   var importantForAccessibility: Int = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO
     internal set
 
@@ -614,6 +617,10 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
       layerType = type
       layerPaint = paint
     }
+  }
+
+  fun visibilityOutputTag(visibilityOutputTag: String?) {
+    this.visibilityOutputTag = visibilityOutputTag
   }
 
   fun fullImpressionHandler(fullImpressionHandler: EventHandler<FullImpressionVisibleEvent>?) {
