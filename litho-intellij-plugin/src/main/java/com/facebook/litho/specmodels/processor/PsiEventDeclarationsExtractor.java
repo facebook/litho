@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiEventDeclarationsExtractor {
 
   public static ImmutableList<EventDeclarationModel> getEventDeclarations(
@@ -73,6 +75,7 @@ public class PsiEventDeclarationsExtractor {
 
     return new EventDeclarationModel(
         PsiTypeUtils.guessClassName(valueType.getCanonicalText()),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         getReturnType(valueClass),
         getFields(valueClass),
         psiExpression);
