@@ -26,9 +26,11 @@ import com.facebook.flipper.plugins.common.MainThreadFlipperReceiver;
 import com.facebook.flipper.plugins.inspector.ApplicationWrapper;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.ObjectTracker;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoView;
 import java.util.Stack;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class GenerateLithoAccessibilityRenderExtensionCommand
     implements InspectorFlipperPlugin.ExtensionCommand {
 
@@ -65,6 +67,7 @@ public final class GenerateLithoAccessibilityRenderExtensionCommand
 
         // change property and rerender
         System.setProperty("is_accessibility_enabled", forceLithoAXRender + "");
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         forceRerenderAllLithoViews(forceLithoAXRender, applicationWrapper);
       }
     };
