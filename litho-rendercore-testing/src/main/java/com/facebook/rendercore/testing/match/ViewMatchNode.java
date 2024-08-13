@@ -21,6 +21,7 @@ import static com.facebook.rendercore.testing.ViewAssertions.MatchAssertionBuild
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import org.assertj.core.api.Java6Assertions;
 
@@ -53,6 +54,7 @@ import org.assertj.core.api.Java6Assertions;
  *                              .prop("text", "My subtitle"))));
  * </pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewMatchNode extends MatchNode {
 
   public static ViewMatchNode forType(Class type) {
@@ -60,9 +62,13 @@ public class ViewMatchNode extends MatchNode {
   }
 
   private final ArrayList<ViewMatchNode> mChildren = new ArrayList<>();
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Rect mBounds;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Rect mPadding;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Rect mAbsoluteBounds;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Class mRootType;
 
   private ViewMatchNode(Class type) {
@@ -102,6 +108,7 @@ public class ViewMatchNode extends MatchNode {
     View view = (View) o;
 
     if (mBounds != null) {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       Java6Assertions.assertThat(
               new Rect(view.getLeft(), view.getTop(), view.getWidth(), view.getHeight()))
           .describedAs(getDescription("Bounds on " + viewToString(view)))
@@ -110,12 +117,14 @@ public class ViewMatchNode extends MatchNode {
 
     if (mAbsoluteBounds != null) {
       final Rect bounds = getAbsoluteBounds(view, mRootType);
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       Java6Assertions.assertThat(bounds)
           .describedAs(getDescription("Absolute bounds on " + viewToString(view)))
           .isEqualTo(mAbsoluteBounds);
     }
 
     if (mPadding != null) {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       Java6Assertions.assertThat(
               new Rect(
                   view.getPaddingLeft(),
@@ -127,11 +136,13 @@ public class ViewMatchNode extends MatchNode {
     }
 
     if (!(view instanceof ViewGroup)) {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       Java6Assertions.assertThat(mChildren)
           .describedAs(getDescription("Child count on " + viewToString(view)))
           .isEmpty();
     } else {
       final ViewGroup viewGroup = (ViewGroup) view;
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       Java6Assertions.assertThat(viewGroup.getChildCount())
           .describedAs(getDescription("Child count on " + viewToString(view)))
           .isEqualTo(mChildren.size());
