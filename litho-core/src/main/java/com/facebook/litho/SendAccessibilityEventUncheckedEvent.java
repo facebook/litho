@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -26,9 +27,13 @@ import com.facebook.litho.annotations.Event;
  * androidx.core.view.AccessibilityDelegateCompat#sendAccessibilityEventUnchecked( View,
  * AccessibilityEvent)}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class SendAccessibilityEventUncheckedEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public View host;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public AccessibilityEvent event;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public AccessibilityDelegateCompat superDelegate;
 }
