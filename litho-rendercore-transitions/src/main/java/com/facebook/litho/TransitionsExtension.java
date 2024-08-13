@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.ErrorReporter;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Extension for performing transitions. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TransitionsExtension
     extends MountExtension<
         TransitionsExtensionInput, TransitionsExtension.TransitionsExtensionState>
@@ -92,8 +94,10 @@ public class TransitionsExtension
     private static final int UNSET = -1;
     private final Map<RenderUnit, AnimatableItem> mLockedDisappearingMountitems = new HashMap<>();
     private final Map<MountItem, Host> mCurrentlyDisappearingItems = new HashMap<>();
+    // NULLSAFE_FIXME[Field Not Initialized]
     private TransitionsExtensionInput mInput;
     private int mLastMountedTreeId = UNSET;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private TransitionManager mTransitionManager;
     private final HashSet<TransitionId> mAnimatingTransitionIds = new HashSet<>();
 
@@ -148,9 +152,11 @@ public class TransitionsExtension
 
         for (int i = 0, size = animatableItemGroup.size(); i < size; i++) {
           final int position =
+              // NULLSAFE_FIXME[Nullable Dereference]
               mState.mLastTransitionsExtensionInput.getPositionForId(
                   animatableItemGroup.getAt(i).getId());
           updateAnimationLockCount(
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               mExtensionState, mState.mLastTransitionsExtensionInput, position, false);
         }
       }
@@ -162,6 +168,7 @@ public class TransitionsExtension
       if (transitionEndHandler != null) {
         transitionEndHandler.call(
             new TransitionEndEvent(
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
       }
     }
@@ -183,10 +190,12 @@ public class TransitionsExtension
     final TransitionsExtensionState state = extensionState.getState();
     final AnimatableItem animatableItem =
         state.mLockedDisappearingMountitems.get(mountItem.getRenderTreeNode().getRenderUnit());
+    // NULLSAFE_FIXME[Nullable Dereference]
     final TransitionId transitionId = animatableItem.getTransitionId();
     final OutputUnitsAffinityGroup<MountItem> group =
         state.mDisappearingMountItems.get(transitionId);
     if (group != null) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       final boolean isRoot = group.get(animatableItem.getOutputType()) != null;
       // We only start unmount disappearing item on the root of the disappearing animation. The rest
       // will be unmounted after the animation finishes.
@@ -203,6 +212,7 @@ public class TransitionsExtension
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void beforeMount(
       ExtensionState<TransitionsExtensionState> extensionState,
       TransitionsExtensionInput input,
@@ -214,6 +224,7 @@ public class TransitionsExtension
       state.mLastTransitionsExtensionInput = null;
     }
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     updateTransitions(extensionState, input, mDebugTag, input.getTracer());
     extractDisappearingItems(extensionState, input);
   }
@@ -354,6 +365,7 @@ public class TransitionsExtension
       if (shouldAnimateTransitions(state, input)) {
         collectAllTransitions(extensionState, input);
         if (hasTransitionsToAnimate(state)) {
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           createNewTransitions(extensionState, input, state.mRootTransition, debugTag);
         }
       }
@@ -376,6 +388,7 @@ public class TransitionsExtension
     final TransitionsExtensionState state = extensionState.getState();
 
     final Map<TransitionId, ?> nextMountedTransitionIds = input.getTransitionIdMapping();
+    // NULLSAFE_FIXME[Nullable Dereference]
     for (TransitionId transitionId : nextMountedTransitionIds.keySet()) {
       final OutputUnitsAffinityGroup<MountItem> disappearingItem =
           state.mDisappearingMountItems.remove(transitionId);
@@ -426,20 +439,26 @@ public class TransitionsExtension
     if (extensionState.getState().mDebugTag != null) {
       for (int i = 0, size = input.getMountableOutputCount(); i < size; i++) {
         final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
+        // NULLSAFE_FIXME[Nullable Dereference]
         if (extensionState.ownsReference(renderTreeNode.getRenderUnit().getId())) {
           final AnimatableItem animatableItem =
+              // NULLSAFE_FIXME[Nullable Dereference]
               input.getAnimatableItem(renderTreeNode.getRenderUnit().getId());
           Log.d(
               extensionState.getState().mDebugTag,
               ""
                   + i
                   + " ["
+                  // NULLSAFE_FIXME[Nullable Dereference]
                   + animatableItem.getId()
                   + "] ("
+                  // NULLSAFE_FIXME[Nullable Dereference]
                   + animatableItem.getTransitionId()
                   + ") host => ("
+                  // NULLSAFE_FIXME[Nullable Dereference]
                   + (renderTreeNode.getParent() == null
                       ? "root"
+                      // NULLSAFE_FIXME[Nullable Dereference]
                       : renderTreeNode.getParent().getRenderUnit().getId())
                   + ")");
         }
@@ -540,6 +559,7 @@ public class TransitionsExtension
     if (state.mTransitionManager == null) {
       state.mTransitionManager =
           new TransitionManager(
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               new AnimationCompleteListener(extensionState), debugTag, state.mInput.getTracer());
     }
   }
@@ -561,6 +581,7 @@ public class TransitionsExtension
 
     final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> nextTransitionIds =
         input.getTransitionIdMapping();
+    // NULLSAFE_FIXME[Nullable Dereference]
     for (TransitionId transitionId : nextTransitionIds.keySet()) {
       if (state.mTransitionManager.isAnimating(transitionId)) {
         state.mAnimatingTransitionIds.add(transitionId);
@@ -584,9 +605,11 @@ public class TransitionsExtension
             state
                 .mLastTransitionsExtensionInput
                 .getMountableOutputAt(index)
+                // NULLSAFE_FIXME[Nullable Dereference]
                 .getRenderUnit()
                 .getId());
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     final TransitionId transitionId = animatableItem.getTransitionId();
     if (transitionId == null) {
       return false;
@@ -651,7 +674,9 @@ public class TransitionsExtension
         extensionState
             .getState()
             .mLastTransitionsExtensionInput
+            // NULLSAFE_FIXME[Nullable Dereference]
             .getMountableOutputAt(index)
+            // NULLSAFE_FIXME[Nullable Dereference]
             .getRenderUnit()
             .getId();
     if (extensionState.ownsReference(id)) {
@@ -703,6 +728,7 @@ public class TransitionsExtension
       for (int i = index; i <= lastDescendantIndex; i++) {
         mountItemAtIndexIfNeeded(i, extensionState);
 
+        // NULLSAFE_FIXME[Nullable Dereference]
         final RenderTreeNode node = mountTarget.getMountItemAt(i).getRenderTreeNode();
         final RenderUnit renderUnit = node.getRenderUnit();
 
@@ -730,6 +756,7 @@ public class TransitionsExtension
 
       // Moving item to the root if needed.
       remountHostToRootIfNeeded(
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           extensionState, remountIndex, disappearingItem, newTransitionsExtensionInput.getTracer());
 
       mapDisappearingItemWithTransitionId(state, disappearingItem);
@@ -797,6 +824,7 @@ public class TransitionsExtension
                   .getState()
                   .mLockedDisappearingMountitems
                   .get(mountItem.getRenderTreeNode().getRenderUnit());
+          // NULLSAFE_FIXME[Nullable Dereference]
           final TransitionId transitionId = item.getTransitionId();
           throw new RuntimeException(
               "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
@@ -821,6 +849,7 @@ public class TransitionsExtension
             .getState()
             .mLockedDisappearingMountitems
             .get(group.getMostSignificantUnit().getRenderTreeNode().getRenderUnit())
+            // NULLSAFE_FIXME[Nullable Dereference]
             .getTransitionId());
 
     for (int i = 0, size = group.size(); i < size; i++) {
@@ -831,8 +860,10 @@ public class TransitionsExtension
   private static void mapDisappearingItemWithTransitionId(
       TransitionsExtensionState state, MountItem item) {
     final AnimatableItem animatableItem =
+        // NULLSAFE_FIXME[Nullable Dereference]
         state.mLastTransitionsExtensionInput.getAnimatableItem(
             item.getRenderTreeNode().getRenderUnit().getId());
+    // NULLSAFE_FIXME[Nullable Dereference]
     final TransitionId transitionId = animatableItem.getTransitionId();
     OutputUnitsAffinityGroup<MountItem> disappearingGroup =
         state.mDisappearingMountItems.get(transitionId);
@@ -840,12 +871,14 @@ public class TransitionsExtension
       disappearingGroup = new OutputUnitsAffinityGroup<>();
       state.mDisappearingMountItems.put(transitionId, disappearingGroup);
     }
+    // NULLSAFE_FIXME[Nullable Dereference]
     final @OutputUnitType int type = animatableItem.getOutputType();
     if (disappearingGroup.get(type) != null) {
       ErrorReporter.report(
           LogLevel.ERROR,
           "OutputUnitsAffinityGroup:mapDissapearingItemsWithTransitionId",
           "Disappearing pair already exists for, component: "
+              // NULLSAFE_FIXME[Nullable Dereference]
               + state.mLastTransitionsExtensionInput.getRootName()
               + ", transition_id: "
               + transitionId
@@ -889,8 +922,11 @@ public class TransitionsExtension
     Host host = originalHost;
     while (host != rootHost) {
       // We use getX/Y here to also account for translation set on the parent.
+      // NULLSAFE_FIXME[Nullable Dereference]
       left += host.getX();
+      // NULLSAFE_FIXME[Nullable Dereference]
       top += host.getY();
+      // NULLSAFE_FIXME[Nullable Dereference]
       host = (Host) host.getParent();
     }
 
@@ -932,6 +968,7 @@ public class TransitionsExtension
     }
 
     final Systracer tracer = state.mInput.getTracer();
+    // NULLSAFE_FIXME[Nullable Dereference]
     tracer.beginSection("updateAnimatingMountContent");
 
     // Group mount content (represents current LayoutStates only) into groups and pass it to the
@@ -947,14 +984,18 @@ public class TransitionsExtension
       final AnimatableItem animatableItem =
           state.mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit().getId());
 
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (animatableItem.getTransitionId() == null) {
         continue;
       }
+      // NULLSAFE_FIXME[Nullable Dereference]
       final @OutputUnitType int type = animatableItem.getOutputType();
       OutputUnitsAffinityGroup<Object> group =
+          // NULLSAFE_FIXME[Nullable Dereference]
           animatingContent.get(animatableItem.getTransitionId());
       if (group == null) {
         group = new OutputUnitsAffinityGroup<>();
+        // NULLSAFE_FIXME[Nullable Dereference]
         animatingContent.put(animatableItem.getTransitionId(), group);
       }
       group.replace(type, mountItem.getContent());
@@ -977,6 +1018,7 @@ public class TransitionsExtension
       state.mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
     }
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     tracer.endSection();
   }
 
@@ -1002,6 +1044,7 @@ public class TransitionsExtension
     final int lastDescendantIndex = findLastDescendantIndex(input, index);
     for (int i = index; i <= lastDescendantIndex; i++) {
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
+      // NULLSAFE_FIXME[Nullable Dereference]
       final long id = renderTreeNode.getRenderUnit().getId();
       if (increment) {
         if (!extensionState.ownsReference(id)) {
@@ -1015,6 +1058,7 @@ public class TransitionsExtension
     }
 
     // Update parents
+    // NULLSAFE_FIXME[Nullable Dereference]
     RenderTreeNode parentRenderTreeNode = input.getMountableOutputAt(index).getParent();
     while (parentRenderTreeNode != null && parentRenderTreeNode.getParent() != null) {
       final long id = parentRenderTreeNode.getRenderUnit().getId();
@@ -1034,6 +1078,7 @@ public class TransitionsExtension
   private static int findLastDescendantIndex(TransitionsExtensionInput input, int index) {
     final RenderTreeNode rootRenderTreeNode = input.getMountableOutputAt(index);
     for (int i = index + 1, size = input.getMountableOutputCount(); i < size; i++) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       RenderTreeNode parentRenderTreeNode = input.getMountableOutputAt(i).getParent();
       // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
       // reach the root, then it's not a descendant and we can stop.
