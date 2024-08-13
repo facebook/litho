@@ -4,9 +4,12 @@ package com.facebook.rendercore;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class CenterNode implements Node {
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Node mChildNode;
 
   @Override
@@ -56,6 +59,7 @@ public class CenterNode implements Node {
 
     @Override
     public RenderUnit getRenderUnit() {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
 
