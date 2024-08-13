@@ -32,6 +32,8 @@ import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Z;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
+import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -63,12 +65,12 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LithoDebugConfigurations;
+import com.facebook.litho.debug.DebugInfoReporter;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceResolver;
-import com.facebook.rendercore.utils.CommonUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -85,6 +87,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 /**
@@ -367,6 +370,17 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       } else {
         calculationContext.recordEventHandler(c.getGlobalKey(), eventHandler);
       }
+    } else {
+      eventHandler.dispatchInfo.isBound = true;
+      if (ComponentsConfiguration.isEventHandlerRebindLoggingEnabled) {
+        final String component = getSectionNameForTracing(reference);
+        DebugInfoReporter.report(
+            "EventHandlerCreatedAfterLayout",
+            attributes -> {
+              attributes.put(Source, component);
+              return Unit.INSTANCE;
+            });
+      }
     }
     return eventHandler;
   }
@@ -406,7 +420,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
   public interface RenderData {}
 
   public String getSimpleName() {
-    return CommonUtils.getSectionNameForTracing(getClass());
+    return getSectionNameForTracing(getClass());
   }
 
   /**

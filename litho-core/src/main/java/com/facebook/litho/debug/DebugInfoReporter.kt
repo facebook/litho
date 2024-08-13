@@ -31,6 +31,7 @@ object DebugInfoReporter {
 
   /** @param [category] the debug event category. It is saved as the 'name' attribute in QPL */
   @JvmStatic
+  @JvmOverloads
   fun report(
       category: String,
       renderStateId: Int = RenderState.NO_ID,
