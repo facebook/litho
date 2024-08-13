@@ -12,11 +12,13 @@ import android.text.Layout;
 import android.text.TextUtils;
 import android.text.style.LineBackgroundSpan;
 import androidx.annotation.ColorInt;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** Draws a rounded background behind text. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RoundedBackgroundColorSpan implements LineBackgroundSpan {
   private final Paint mPaint;
   private final List<Path> mPaths;
