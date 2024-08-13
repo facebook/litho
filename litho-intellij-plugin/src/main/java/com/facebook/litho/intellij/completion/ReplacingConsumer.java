@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.PrioritizedLookupElement;
@@ -29,6 +30,7 @@ import java.util.Optional;
  *
  * <p>It should be passed before other consumers.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ReplacingConsumer implements Consumer<CompletionResult> {
   private final CompletionResultSet result;
   private final boolean removeIrrelevant;
