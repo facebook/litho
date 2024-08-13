@@ -27,7 +27,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.text.TextDirectionHeuristicCompat;
 import androidx.core.text.TextDirectionHeuristicsCompat;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextStyle implements Cloneable {
 
   static final int UNSET = -1;
@@ -60,6 +62,7 @@ public class TextStyle implements Cloneable {
   int breakStrategy = UNSET;
   int hyphenationFrequency = 0;
   int justificationMode = 0;
+  // NULLSAFE_FIXME[Field Not Initialized]
   TextDirectionHeuristicCompat textDirection;
   boolean clipToBounds = true;
   VerticalGravity verticalGravity = VerticalGravity.TOP;
@@ -74,6 +77,7 @@ public class TextStyle implements Cloneable {
   int manualCapSpacing = Integer.MIN_VALUE;
   float extraSpacingLeft = 0;
   float extraSpacingRight = 0;
+  // NULLSAFE_FIXME[Field Not Nullable]
   RoundedBackgroundProps roundedBackgroundProps = null;
   @Nullable String accessibilityLabel;
 
