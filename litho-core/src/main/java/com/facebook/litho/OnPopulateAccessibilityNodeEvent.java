@@ -18,14 +18,18 @@ package com.facebook.litho;
 
 import android.view.View;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
  * Components should implement an event of this type in order to be notified so that they can
  * implement their own accessibility support.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class OnPopulateAccessibilityNodeEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public View host;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public AccessibilityNodeInfoCompat accessibilityNode;
 }
