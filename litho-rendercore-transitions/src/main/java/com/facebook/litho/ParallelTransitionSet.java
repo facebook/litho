@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.ParallelBinding;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
 /**
  * A {@link TransitionSet} that runs its child transitions in parallel, optionally with a stagger.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ParallelTransitionSet extends TransitionSet {
 
   private final int mStaggerMs;
