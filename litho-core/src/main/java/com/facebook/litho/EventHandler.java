@@ -16,18 +16,15 @@
 
 package com.facebook.litho;
 
-import static com.facebook.rendercore.debug.DebugEventAttribute.Name;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Source;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.debug.LithoDebugEvent;
+import com.facebook.litho.debug.DebugInfoReporter;
 import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.Function;
-import com.facebook.rendercore.LogLevel;
-import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.utils.CommonUtils;
 import kotlin.Unit;
 
@@ -64,12 +61,9 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
       final EventDispatchInfo info = dispatchInfo;
       final boolean isUnbound = (info == null) || !info.isBound;
       if (isUnbound && mode != EventHandlerRebindMode.NONE) {
-        DebugEventDispatcher.dispatch(
-            LithoDebugEvent.DebugInfo,
-            () -> "-1",
-            LogLevel.DEBUG,
+        DebugInfoReporter.report(
+            UnboundEventHandler,
             (attribute) -> {
-              attribute.put(Name, UnboundEventHandler);
               attribute.put("event", CommonUtils.getSectionNameForTracing(event.getClass()));
               attribute.put(Source, this.toString());
               attribute.put("hasDispatchInfo", info != null);
