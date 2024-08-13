@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.processor.MountSpecModelFactory.DELE
 import static com.facebook.litho.specmodels.processor.MountSpecModelFactory.INTER_STAGE_INPUT_ANNOTATIONS;
 import static com.facebook.litho.specmodels.processor.MountSpecModelFactory.PREPARE_INTER_STAGE_INPUT_ANNOTATIONS;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -42,6 +43,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 /** Factory for creating {@link MountSpecModel}s. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiMountSpecModelFactory {
   private final List<Class<? extends Annotation>> mMountSpecDelegateMethodAnnotations;
   private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
@@ -119,6 +121,7 @@ public class PsiMountSpecModelFactory {
   }
 
   private static TypeName getMountType(PsiClass psiClass) {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     String onCreateMountContentClassName = OnCreateMountContent.class.getTypeName();
     for (PsiMethod psiMethod : psiClass.getAllMethods()) {
       final PsiAnnotation onCreateMountContentAnnotation =
@@ -142,12 +145,14 @@ public class PsiMountSpecModelFactory {
       PsiType returnType = initialReturnType;
       while (returnType != null && !returnType.getPresentableText().equals("void")) {
         if (returnType.getCanonicalText().equals(ClassNames.VIEW_NAME)) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           if (initialReturnType.getPresentableText().contains("Drawable")) {
             return ClassNames.COMPONENT_MOUNT_TYPE_NONE;
           } else {
             return ClassNames.COMPONENT_MOUNT_TYPE_VIEW;
           }
         } else if (returnType.getCanonicalText().equals(ClassNames.DRAWABLE_NAME)) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           if (initialReturnType.getPresentableText().contains("Drawable")) {
             return ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE;
           } else {
