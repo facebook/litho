@@ -48,10 +48,19 @@ object DynamicPropsExtension :
     val state: DynamicPropsExtensionState = extensionState.state
     state.currentInput = null
     state.previousInput = null
+    state.disappearingHostInput = null
   }
 
   override fun afterMount(extensionState: ExtensionState<DynamicPropsExtensionState>) {
     val state: DynamicPropsExtensionState = extensionState.state
+    // We will unmount disappearing units in TransitionExtension, in which case we never have a
+    // chance to maintain a correct input state like what we do inside beforeMount/afterMount.
+    // Therefore, we need to use an extra field to save the dynamic prop information for the unbind
+    // event.
+    state.disappearingHostInput = state.previousInput
+    // We have to clear previous input to force extension to unmount dynamic props based on
+    // current input, when we unmount units rather than updates units. Otherwise, it will end up
+    // having dynamic props unset improperly.
     state.previousInput = null
   }
 
@@ -80,7 +89,9 @@ object DynamicPropsExtension :
   ) {
     val state: DynamicPropsExtensionState = extensionState.state
     val dynamicValueOutput: DynamicValueOutput? =
-        state.previousInput?.get(renderUnit.id) ?: state.currentInput?.get(renderUnit.id)
+        state.previousInput?.get(renderUnit.id)
+            ?: state.currentInput?.get(renderUnit.id)
+            ?: state.disappearingHostInput?.get(renderUnit.id)
     if (dynamicValueOutput != null) {
       state.dynamicPropsManager.onUnbindComponent(
           dynamicValueOutput.component, dynamicValueOutput.commonDynamicProps, content)
@@ -127,5 +138,6 @@ object DynamicPropsExtension :
     @get:VisibleForTesting val dynamicPropsManager: DynamicPropsManager = DynamicPropsManager()
     internal var currentInput: Map<Long, DynamicValueOutput>? = null
     internal var previousInput: Map<Long, DynamicValueOutput>? = null
+    internal var disappearingHostInput: Map<Long, DynamicValueOutput>? = null
   }
 }
