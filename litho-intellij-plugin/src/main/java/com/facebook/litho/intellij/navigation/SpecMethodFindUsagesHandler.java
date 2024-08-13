@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.find.findUsages.FindUsagesHandler;
@@ -34,6 +35,7 @@ import java.util.function.Function;
  * Adds usages of corresponding Generated class's methods to the search results of the Spec class's
  * method.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SpecMethodFindUsagesHandler extends FindUsagesHandler {
   private final Function<PsiClass, PsiClass> findGeneratedClass;
 
