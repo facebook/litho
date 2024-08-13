@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.google.common.annotations.VisibleForTesting;
@@ -45,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** Completes suggestion with a chain of method calls. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MethodChainLookupElement extends LookupElementDecorator<LookupElement> {
   private static final String TEMPLATE_INSERT_PLACEHOLDER = "insert_placeholder";
   private static final String TEMPLATE_INSERT_PLACEHOLDER_C = "insert_placeholder_c";
