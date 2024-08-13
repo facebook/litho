@@ -16,6 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.dataflow.springs.Spring;
 import com.facebook.litho.dataflow.springs.SpringConfig;
 
@@ -23,6 +24,7 @@ import com.facebook.litho.dataflow.springs.SpringConfig;
  * A node that implements spring physics: it takes an initial value ("initial" input) and end value
  * ("end" input) and animates that value on each frame, outputting the progress over time.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SpringNode extends ValueNode implements NodeCanFinish {
 
   public static final double NS_PER_SECOND = 1000_000_000.;
@@ -33,6 +35,7 @@ public class SpringNode extends ValueNode implements NodeCanFinish {
   private long mLastFrameTimeNs = Long.MIN_VALUE;
 
   public SpringNode() {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     this(null);
   }
 
