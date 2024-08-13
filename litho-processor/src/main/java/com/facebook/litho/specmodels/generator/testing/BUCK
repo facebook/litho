@@ -27,6 +27,7 @@ fb_java_library(
     ],
     visibility = LITHO_VISIBILITY,
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),

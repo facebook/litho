@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator.testing;
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.annotation;
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -48,6 +49,7 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the matcher builder for a test Component. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class MatcherGenerator {
 
   private static final String BUILDER = "Matcher";
