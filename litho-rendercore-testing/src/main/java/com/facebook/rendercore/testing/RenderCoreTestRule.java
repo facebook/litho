@@ -24,6 +24,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.Node;
@@ -47,6 +48,7 @@ import org.junit.runners.model.Statement;
  * using {@link ViewAssertions}. The utility has methods to override the default {@link RootHost},
  * {@link RenderTreeHost}, width, and height specs.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RenderCoreTestRule implements TestRule {
 
   public static final int DEFAULT_WIDTH_SPEC = makeMeasureSpec(1080, EXACTLY);
@@ -55,6 +57,7 @@ public class RenderCoreTestRule implements TestRule {
   private static final RenderState.Delegate DELEGATE =
       new RenderState.Delegate() {
         @Override
+        // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
         public void commit(
             int layoutVersion,
             RenderTree current,
@@ -66,6 +69,7 @@ public class RenderCoreTestRule implements TestRule {
         public void commitToUI(@Nullable RenderTree tree, @Nullable Object o, int frameVersion) {}
       };
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Context context;
   private @Nullable RootHost rootHost;
   private @Nullable RenderTreeHost renderTreeHost;
@@ -202,6 +206,7 @@ public class RenderCoreTestRule implements TestRule {
     final View rootHostView = (View) getRootHost();
 
     renderState = getRenderState();
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     renderState.setTree(new IdentityResolveFunc(getRootNode()));
     getRootHost().setRenderState(renderState);
 
@@ -263,6 +268,7 @@ public class RenderCoreTestRule implements TestRule {
     }
 
     @Override
+    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
     public ResolveResult resolve(
         ResolveContext resolveContext,
         Node committedTree,
