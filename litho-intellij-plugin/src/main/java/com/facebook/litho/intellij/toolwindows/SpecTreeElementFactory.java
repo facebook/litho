@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.toolwindows;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -37,6 +38,7 @@ import javax.swing.Icon;
 import org.jetbrains.annotations.Nullable;
 
 /** Factory with helper methods for creating {@link TreeElement}s for Litho classes. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class SpecTreeElementFactory {
 
   static StructureViewTreeElement createTree(SpecModel model) {
@@ -118,6 +120,7 @@ class SpecTreeElementFactory {
     return new PresentableTreeElement(
         methodModel.name.toString()
             + " (@"
+            // NULLSAFE_FIXME[Nullable Dereference]
             + StringUtil.getShortName(methodModel.typeModel.getReflectionName())
             + ")",
         methodModel.representedObject,
@@ -200,6 +203,7 @@ class SpecTreeElementFactory {
       if (value instanceof Iconable) {
         return ((Iconable) value).getIcon(Iconable.ICON_FLAG_READ_STATUS);
       }
+      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
 
