@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
@@ -27,6 +28,7 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 
 /** Extractor provides {@link Modifier}s. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class PsiModifierExtractor {
   private static final Modifier[] EMPTY = new Modifier[0];
 
