@@ -24,6 +24,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreConfig;
@@ -48,6 +49,7 @@ import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 
 /** Extension for performing incremental mount. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState>
     implements VisibleBoundsCallbacks<IncrementalMountExtensionState>,
@@ -99,6 +101,7 @@ public class IncrementalMountExtension
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void beforeMount(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final IncrementalMountExtensionInput input,
@@ -222,6 +225,7 @@ public class IncrementalMountExtension
    * @param localVisibleRect the current local visible rect of the root host.
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void onVisibleBoundsChanged(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final Rect localVisibleRect) {
