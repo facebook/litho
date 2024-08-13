@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.treeprops;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -26,6 +27,7 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 
 /** Variation of {@link RootComponentSpec} exercising a DiffSection. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @LayoutSpec
 public class RootDiffingComponentSpec {
   @OnCreateLayout
