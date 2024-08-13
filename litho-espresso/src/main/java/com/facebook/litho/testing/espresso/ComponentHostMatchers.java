@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 import android.view.View;
 import androidx.test.espresso.matcher.ViewMatchers;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +31,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 /** Espresso matchers for {@link ComponentHost}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentHostMatchers {
 
   /**
@@ -88,15 +90,19 @@ public class ComponentHostMatchers {
           getMountItemCount.setAccessible(true);
           getMountItemAt.setAccessible(true);
 
+          // NULLSAFE_FIXME[Nullable Dereference]
           int count = (int) getMountItemCount.invoke(host);
           for (int i = 0; i < count; i++) {
             Object mountItem = getMountItemAt.invoke(host, i);
+            // NULLSAFE_FIXME[Nullable Dereference]
             Method getComponent = mountItem.getClass().getDeclaredMethod("getComponent");
             getComponent.setAccessible(true);
             Component component = (Component) getComponent.invoke(mountItem);
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             if (lifecycleMatcher.matches(component)) {
               return true;
             }
+            // NULLSAFE_FIXME[Nullable Dereference]
             mTypes.append(" " + component.getClass().getName());
           }
 
@@ -159,31 +165,38 @@ public class ComponentHostMatchers {
   }
 
   public static Matcher<ComponentHost> withContentDescription(CharSequence text) {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return wrapped(ViewMatchers.withContentDescription(is(text)));
   }
 
   public static Matcher<ComponentHost> withContentDescription(
       final Matcher<CharSequence> textMatcher) {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return wrapped(ViewMatchers.withContentDescription(textMatcher));
   }
 
   public static Matcher<ComponentHost> withTagValue(Matcher<Object> value) {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return wrapped(ViewMatchers.withTagValue(value));
   }
 
   public static Matcher<ComponentHost> withTagKey(int key) {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return wrapped(ViewMatchers.withTagKey(key));
   }
 
   public static Matcher<ComponentHost> withTagKey(int key, Matcher<Object> value) {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return wrapped(ViewMatchers.withTagKey(key, value));
   }
 
   public static Matcher<ComponentHost> isClickable() {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return wrapped(ViewMatchers.isClickable());
   }
 
   public static Matcher<View> componentHost() {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return componentHost(any(ComponentHost.class));
   }
 

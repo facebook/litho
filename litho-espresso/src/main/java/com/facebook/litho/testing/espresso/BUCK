@@ -21,6 +21,7 @@ fb_core_android_library(
         "PUBLIC",
     ],
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
         LITHO_ESPRESSO_TARGET,
         LITHO_HAMCREST_TARGET,
