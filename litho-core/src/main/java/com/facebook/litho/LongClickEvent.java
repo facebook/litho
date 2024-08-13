@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -42,7 +43,9 @@ import com.facebook.litho.annotations.Event;
  * }
  * </pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event(returnType = boolean.class)
 public class LongClickEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public View view;
 }
