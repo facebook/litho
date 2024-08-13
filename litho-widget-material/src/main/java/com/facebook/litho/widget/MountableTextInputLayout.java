@@ -19,10 +19,11 @@ package com.google.android.material.textfield;
 
 import android.content.Context;
 import android.view.View;
+import javax.annotation.Nullable;
 
 public class MountableTextInputLayout extends TextInputLayout {
 
-  private View.OnFocusChangeListener onFocusChangeListener = null;
+  @Nullable private View.OnFocusChangeListener onFocusChangeListener = null;
 
   public MountableTextInputLayout(Context context) {
     super(context, null);
