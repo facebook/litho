@@ -16,6 +16,7 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.SpringNode;
 import com.facebook.litho.dataflow.springs.SpringConfig;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 /** Animation for the transition of a single {@link PropertyAnimation} on a spring. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SpringTransition extends TransitionAnimationBinding {
 
   private final PropertyAnimation mPropertyAnimation;
@@ -34,6 +36,7 @@ public class SpringTransition extends TransitionAnimationBinding {
   }
 
   public SpringTransition(PropertyAnimation propertyAnimation) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     this(propertyAnimation, null);
   }
 
@@ -44,6 +47,7 @@ public class SpringTransition extends TransitionAnimationBinding {
 
   @Override
   protected void setupBinding(Resolver resolver) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     final SpringNode springNode = new SpringNode(mSpringConfig);
     final ConstantNode initial =
         new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
