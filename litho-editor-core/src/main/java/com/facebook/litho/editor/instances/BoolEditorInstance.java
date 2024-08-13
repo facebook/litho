@@ -16,12 +16,14 @@
 
 package com.facebook.litho.editor.instances;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.editor.Editor;
 import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BoolEditorInstance implements Editor {
 
   @Override
