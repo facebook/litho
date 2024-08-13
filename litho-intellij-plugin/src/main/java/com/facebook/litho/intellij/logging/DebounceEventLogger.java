@@ -16,11 +16,13 @@
 
 package com.facebook.litho.intellij.logging;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Map;
 
 /** Only logs an event if a particular timespanMillis has passed without it logging another event */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebounceEventLogger implements EventLogger {
   private final EventLogger eventLogger;
   private final long timespanMillis;
