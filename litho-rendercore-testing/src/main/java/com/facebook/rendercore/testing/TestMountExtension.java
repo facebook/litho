@@ -18,19 +18,24 @@ package com.facebook.rendercore.testing;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestMountExtension extends MountExtension<Object, Object> {
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Object input;
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   protected Void createState() {
     return null;
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void beforeMount(ExtensionState<Object> state, Object o, @Nullable Rect localVisibleRect) {
     super.beforeMount(state, o, localVisibleRect);
     this.input = o;
