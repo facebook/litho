@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -48,6 +49,7 @@ import org.jetbrains.kotlin.psi.KtSuperTypeCallEntry;
 import org.jetbrains.kotlin.psi.KtSuperTypeList;
 import org.jetbrains.kotlin.psi.KtTypeReference;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class KComponentRequiredPropMethodContributor extends CompletionContributor {
 
   private static final CompletionContributor kotlinCompletionContributor =
