@@ -493,6 +493,44 @@ class DynamicPropsTest {
   }
 
   @Test
+  fun `verify that dynamic value outputs is empty when there's no dynamic values specified`() {
+    val component1 =
+        Wrapper.create(context)
+            .delegate(
+                Row.create(context)
+                    .alignContent(YogaAlign.CENTER)
+                    .widthPx(80)
+                    .heightPx(80)
+                    .backgroundColor(Color.RED)
+                    .build())
+            .build()
+    val component2 =
+        Column.create(context)
+            .child(
+                Wrapper.create(context)
+                    .delegate(
+                        Row.create(context)
+                            .alignContent(YogaAlign.STRETCH)
+                            .widthPx(80)
+                            .heightPx(80)
+                            .backgroundColor(Color.RED)
+                            .build()))
+            .build()
+
+    legacyLithoViewRule
+        .setRoot(Column.create(context).child(component1).child(component2))
+        .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
+        .attachToWindow()
+        .measure()
+        .layout()
+    val lithoView = legacyLithoViewRule.lithoView
+
+    assertThat(lithoView.componentTree!!.committedLayoutState!!.dynamicValueOutputs)
+        .describedAs("We should not collect empty dynamic values output for each component")
+        .isEmpty()
+  }
+
+  @Test
   fun testCommonPropsDontDisappearAfterUpdateFromSpecGeneratedComponentUsingWrapperWithDynamicProps() {
     val alphaDV = DynamicValue(0.5f)
     val component1 =

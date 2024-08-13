@@ -19,8 +19,10 @@ package com.facebook.litho
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.SparseArray
+import androidx.core.util.isNotEmpty
 import androidx.core.view.ViewCompat
 import com.facebook.litho.Component.MountType
+import com.facebook.litho.DynamicPropsManager.Companion.hasCustomDynamicProps
 import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -45,8 +47,8 @@ object LithoNodeUtils {
     // We need to merge dynamic props from all scoped component infos in order to cover cases where
     // a non-SpecGeneratedComponent such as Primitive is wrapped in a Wrapper. If we don't merge
     // then DynamicCommonProps added through the Wrapper will be lost.
-    val commonDynamicProps: SparseArray<DynamicValue<*>> =
-        mergeCommonDynamicProps(node.scopedComponentInfos)
+    val commonDynamicProps: SparseArray<DynamicValue<*>>? =
+        mergeCommonDynamicProps(node.scopedComponentInfos, component.hasCustomDynamicProps())
 
     if (component.mountType == MountType.NONE) {
       return null
@@ -113,9 +115,9 @@ object LithoNodeUtils {
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    val commonDynamicProps: SparseArray<DynamicValue<*>> =
+    val commonDynamicProps: SparseArray<DynamicValue<*>>? =
         mergeCommonDynamicProps(node.scopedComponentInfos)
-    hostComponent.setCommonDynamicProps(commonDynamicProps)
+    hostComponent.commonDynamicProps = commonDynamicProps
 
     val id: Long = context.calculateLayoutOutputId(node.tailComponentKey, OutputUnitType.HOST)
 
@@ -158,9 +160,9 @@ object LithoNodeUtils {
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    val commonDynamicProps: SparseArray<DynamicValue<*>> =
+    val commonDynamicProps: SparseArray<DynamicValue<*>>? =
         mergeCommonDynamicProps(node.scopedComponentInfos)
-    hostComponent.setCommonDynamicProps(commonDynamicProps)
+    hostComponent.commonDynamicProps = commonDynamicProps
 
     return createRenderUnit(
         id = MountState.ROOT_HOST_ID, // The root host (LithoView) always has ID 0
@@ -409,8 +411,9 @@ object LithoNodeUtils {
   }
 
   private fun mergeCommonDynamicProps(
-      infos: List<ScopedComponentInfo>
-  ): SparseArray<DynamicValue<*>> {
+      infos: List<ScopedComponentInfo>,
+      hasCustomDynamicProps: Boolean = false
+  ): SparseArray<DynamicValue<*>>? {
     val mergedDynamicProps = SparseArray<DynamicValue<*>>()
     for (info in infos) {
       val commonProps: CommonProps? = info.commonProps
@@ -423,7 +426,14 @@ object LithoNodeUtils {
         }
       }
     }
-    return mergedDynamicProps
+    return if (mergedDynamicProps.isNotEmpty() || hasCustomDynamicProps) {
+      // In order to bind custom dynamic value we have to provide an empty container to do
+      // the mappings for DynamicPropsExtension
+      mergedDynamicProps
+    } else {
+      // Return null to avoid allocating an empty set of dynamic values
+      null
+    }
   }
 
   private fun getLithoNodeDebugKey(node: LithoNode, @OutputUnitType outputUnitType: Int): String? =

@@ -53,7 +53,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       content: Any
   ) {
     val hasCommonDynamicPropsToBind = hasCommonDynamicPropsToBind(commonDynamicProps, content)
-    if (!hasCommonDynamicPropsToBind && !hasCustomDynamicProps(component)) {
+    if (!hasCommonDynamicPropsToBind && !component.hasCustomDynamicProps()) {
       return
     }
     val dynamicValues: MutableSet<DynamicValue<Any?>?> = HashSet()
@@ -93,7 +93,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       content: Any
   ) {
     if (!hasCommonDynamicPropsToBind(commonDynamicProps, content) &&
-        !hasCustomDynamicProps(component)) {
+        !component.hasCustomDynamicProps()) {
       return
     }
     contents.remove(component)
@@ -294,8 +294,8 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
       return isNotNullOrEmpty(commonDynamicProps) && content is View
     }
 
-    private fun hasCustomDynamicProps(component: Component): Boolean {
-      return (component is SpecGeneratedComponent && component.dynamicProps.isNotEmpty())
+    fun Component.hasCustomDynamicProps(): Boolean {
+      return (this is SpecGeneratedComponent && dynamicProps.isNotEmpty())
     }
 
     @Suppress("UNCHECKED_CAST")

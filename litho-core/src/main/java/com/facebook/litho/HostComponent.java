@@ -163,7 +163,7 @@ class HostComponent extends SpecGeneratedComponent {
    * @param commonDynamicProps common dynamic props to set.
    * @see LayoutState#createHostLayoutOutput(LayoutState, LithoNode, boolean)
    */
-  void setCommonDynamicProps(SparseArray<DynamicValue<?>> commonDynamicProps) {
+  void setCommonDynamicProps(@Nullable SparseArray<DynamicValue<?>> commonDynamicProps) {
     mCommonDynamicProps = commonDynamicProps;
   }
 
