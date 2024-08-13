@@ -16,7 +16,10 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Exception thrown when a node tries to calculate and propagate an illegal value (e.g. NaN). */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IllegalValueException extends RuntimeException {
 
   public IllegalValueException(String detailMessage) {
