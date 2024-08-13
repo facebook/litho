@@ -71,6 +71,15 @@ class RenderResultFuture<State, RenderContext>(
             sizeConstraints)
       })
 
+  constructor(
+      previousResult: RenderResult<State, RenderContext>?,
+      setRootId: Int,
+      widthSpec: Int,
+      heightSpec: Int,
+      callable: Callable<RenderResult<State, RenderContext>>
+  ) : this(
+      previousResult, setRootId, SizeConstraints.fromMeasureSpecs(widthSpec, heightSpec), callable)
+
   override fun onResultReady(result: RenderResult<State, RenderContext>) {
     super.onResultReady(result)
     previousResult = null
