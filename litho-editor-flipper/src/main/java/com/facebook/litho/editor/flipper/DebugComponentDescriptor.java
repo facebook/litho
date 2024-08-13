@@ -37,6 +37,7 @@ import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.Component;
 import com.facebook.litho.DebugComponent;
@@ -62,6 +63,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   private Map<
@@ -139,7 +141,9 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   @Override
   public String getName(DebugComponent node) throws Exception {
     NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (componentDescriptor.getClass() != ObjectDescriptor.class) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       return componentDescriptor.getName(node.getComponent());
     }
     return node.getComponent().getSimpleName();
@@ -171,7 +175,9 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   @Override
   public List<Named<FlipperObject>> getData(DebugComponent node) throws Exception {
     NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (componentDescriptor.getClass() != ObjectDescriptor.class) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       return componentDescriptor.getData(node.getComponent());
     }
 
@@ -409,12 +415,14 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     if (hostView != null) {
       try {
+        // NULLSAFE_FIXME[Nullable Dereference]
         extraInfo.put("linkedNode", descriptor.getId(hostView));
       } catch (Exception ignored) {
         // doesn't have linked node descriptor
       }
     } else if (lithoView != null) {
       try {
+        // NULLSAFE_FIXME[Nullable Dereference]
         extraInfo.put("linkedNode", descriptor.getId(lithoView)).put("expandWithParent", true);
       } catch (Exception ignored) {
         // doesn't add linked node descriptor
@@ -447,9 +455,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     if (!node.isRoot()) {
       margin =
           new Rect(
+              // NULLSAFE_FIXME[Nullable Dereference]
               hasNode ? (int) layout.getLayoutMargin(YogaEdge.START) : 0,
+              // NULLSAFE_FIXME[Nullable Dereference]
               hasNode ? (int) layout.getLayoutMargin(YogaEdge.TOP) : 0,
+              // NULLSAFE_FIXME[Nullable Dereference]
               hasNode ? (int) layout.getLayoutMargin(YogaEdge.END) : 0,
+              // NULLSAFE_FIXME[Nullable Dereference]
               hasNode ? (int) layout.getLayoutMargin(YogaEdge.BOTTOM) : 0);
     } else {
       // Margin not applied if you're at the root
@@ -458,9 +470,13 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     final Rect padding =
         new Rect(
+            // NULLSAFE_FIXME[Nullable Dereference]
             hasNode ? (int) layout.getLayoutPadding(YogaEdge.START) : 0,
+            // NULLSAFE_FIXME[Nullable Dereference]
             hasNode ? (int) layout.getLayoutPadding(YogaEdge.TOP) : 0,
+            // NULLSAFE_FIXME[Nullable Dereference]
             hasNode ? (int) layout.getLayoutPadding(YogaEdge.END) : 0,
+            // NULLSAFE_FIXME[Nullable Dereference]
             hasNode ? (int) layout.getLayoutPadding(YogaEdge.BOTTOM) : 0);
 
     final Rect contentBounds = node.getBoundsInLithoView();
@@ -512,7 +528,9 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   public String getDecoration(DebugComponent node) throws Exception {
     if (node.getComponent() != null) {
       NodeDescriptor componentDescriptor = descriptorForClass(node.getComponent().getClass());
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (componentDescriptor.getClass() != ObjectDescriptor.class) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         return componentDescriptor.getDecoration(node.getComponent());
       }
     }
@@ -522,6 +540,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   @Override
   public boolean matches(String query, DebugComponent node) throws Exception {
     NodeDescriptor descriptor = descriptorForClass(Object.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.matches(query, node) || getId(node).equals(query);
   }
 
@@ -535,24 +554,31 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         node.setForegroundColor(value.asInt());
         break;
       case "direction":
+        // NULLSAFE_FIXME[Nullable Dereference]
         node.setLayoutDirection(YogaDirection.valueOf(value.asString().toUpperCase()));
         break;
       case "flex-direction":
+        // NULLSAFE_FIXME[Nullable Dereference]
         node.setFlexDirection(YogaFlexDirection.valueOf(value.asString().toUpperCase()));
         break;
       case "justify-content":
+        // NULLSAFE_FIXME[Nullable Dereference]
         node.setJustifyContent(YogaJustify.valueOf(value.asString().toUpperCase()));
         break;
       case "align-items":
+        // NULLSAFE_FIXME[Nullable Dereference]
         node.setAlignItems(YogaAlign.valueOf(value.asString().toUpperCase()));
         break;
       case "align-self":
+        // NULLSAFE_FIXME[Nullable Dereference]
         node.setAlignSelf(YogaAlign.valueOf(value.asString().toUpperCase()));
         break;
       case "align-content":
+        // NULLSAFE_FIXME[Nullable Dereference]
         node.setAlignContent(YogaAlign.valueOf(value.asString().toUpperCase()));
         break;
       case "position-type":
+        // NULLSAFE_FIXME[Nullable Dereference]
         node.setPositionType(YogaPositionType.valueOf(value.asString().toUpperCase()));
         break;
       case "flex-grow":
@@ -562,39 +588,49 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         node.setFlexShrink(value.asFloat());
         break;
       case "flex-basis":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setFlexBasis(YogaValue.parse(value.asString()));
         break;
       case "width":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setWidth(YogaValue.parse(value.asString()));
         break;
       case "min-width":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setMinWidth(YogaValue.parse(value.asString()));
         break;
       case "max-width":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setMaxWidth(YogaValue.parse(value.asString()));
         break;
       case "height":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setHeight(YogaValue.parse(value.asString()));
         break;
       case "min-height":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setMinHeight(YogaValue.parse(value.asString()));
         break;
       case "max-height":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setMaxHeight(YogaValue.parse(value.asString()));
         break;
       case "aspect-ratio":
         node.setAspectRatio(value.asFloat());
         break;
       case "margin":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setMargin(edgeFromString(path[1]), YogaValue.parse(value.asString()));
         break;
       case "padding":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setPadding(edgeFromString(path[1]), YogaValue.parse(value.asString()));
         break;
       case "border":
         node.setBorderWidth(edgeFromString(path[1]), value.asFloat());
         break;
       case "position":
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         node.setPosition(edgeFromString(path[1]), YogaValue.parse(value.asString()));
         break;
       case "alpha":
