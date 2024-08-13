@@ -18,6 +18,7 @@ package com.facebook.litho.editor;
 
 import android.graphics.drawable.ColorDrawable;
 import android.util.Pair;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Style;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.editor.instances.AtomicBooleanEditorInstance;
@@ -52,6 +53,7 @@ import javax.annotation.Nullable;
  *
  * @see com.facebook.litho.editor.Editor
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class EditorRegistry {
 
   private EditorRegistry() {}
