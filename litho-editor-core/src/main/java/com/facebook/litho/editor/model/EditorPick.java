@@ -16,10 +16,12 @@
 
 package com.facebook.litho.editor.model;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class EditorPick extends EditorValue {
 
   public final Set<String> values;
