@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.services;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 /** Provider of generated Litho files information. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoGeneratedFileProvider {
   private final Map<String, PsiClass> componentFQNToSpec = new HashMap<>();
 
@@ -54,6 +56,7 @@ public class LithoGeneratedFileProvider {
                 .findClassesByShortName(
                     project,
                     searchScope,
+                    // NULLSAFE_FIXME[Parameter Not Nullable]
                     LithoPluginUtils.getLithoComponentSpecNameFromComponent(shortName)))
         .filter(
             cls -> {
@@ -89,6 +92,7 @@ public class LithoGeneratedFileProvider {
    */
   public @Nullable String createFileContent(String fqn) {
     final PsiClass specCls = componentFQNToSpec.get(fqn);
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     final Pair<String, String> content = createFileContent(specCls);
     if (content == null) return null;
 
