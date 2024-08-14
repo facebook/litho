@@ -16,7 +16,6 @@
 
 package com.facebook.litho.testing.assertj;
 
-import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.StateValue;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
@@ -32,7 +31,6 @@ import org.assertj.core.api.Assertions;
  *
  * @param <T> Type of the underlying state value.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 public class StateValueAssert<T> extends AbstractAssert<StateValueAssert<T>, StateValue<T>> {
 
   public static <T> StateValueAssert<T> assertThat(StateValue<T> actual) {
@@ -45,10 +43,8 @@ public class StateValueAssert<T> extends AbstractAssert<StateValueAssert<T>, Sta
 
   /** Equivalent to calling <code>assertThat(value.get()).isEqualTo(value)</code>. */
   public StateValueAssert<T> valueEqualTo(T value) {
-    // NULLSAFE_FIXME[Nullable Dereference]
     Assertions.assertThat(actual.get())
         .overridingErrorMessage(
-            // NULLSAFE_FIXME[Nullable Dereference]
             "Expected state value to equal to <%s>, but was <%s>.", value, actual.get())
         .isEqualTo(value);
 
