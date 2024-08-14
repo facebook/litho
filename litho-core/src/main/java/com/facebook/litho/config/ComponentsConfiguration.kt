@@ -307,6 +307,9 @@ internal constructor(
      */
     @JvmField var enableFixForTheRaceOfAsyncUpdates: Boolean = false
 
+    /** This flag is used to enable a fix for the primitive component measurement issue. */
+    @JvmField var enablePrimitiveMeasurementFix: Boolean = false
+
     /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
