@@ -395,7 +395,7 @@ class ComponentTreeTest {
     if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
       assertThat(c.treePropContainer?.get(Any::class.java)).isEqualTo("hello world")
     } else {
-      assertThat(c.treePropContainer).isSameAs(treePropContainer)
+      assertThat(c.treePropContainer).isEqualTo(treePropContainer)
     }
   }
 

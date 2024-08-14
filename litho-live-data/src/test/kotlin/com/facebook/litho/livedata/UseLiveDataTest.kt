@@ -236,8 +236,8 @@ class UseLiveDataTest {
     val tree = lithoView.componentTree!!
     tree.release()
     Assertions.assertThat(liveData.hasObservers()).isFalse
-    val owner = tree.getContext().getTreePropContainer()?.get(LifecycleOwnerTreeProp)
-    Assertions.assertThat((owner as LifecycleOwnerWrapper)?.hasObservers()).isFalse
+    val owner = tree.getTreeProp(LifecycleOwnerTreeProp)
+    Assertions.assertThat((owner as LifecycleOwnerWrapper).hasObservers()).isFalse
 
     ComponentsConfiguration.defaultInstance =
         ComponentsConfiguration.defaultInstance.copy(enableLifecycleOwnerWrapper = false)
