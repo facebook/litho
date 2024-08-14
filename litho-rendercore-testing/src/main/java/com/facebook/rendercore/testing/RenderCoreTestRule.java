@@ -268,11 +268,10 @@ public class RenderCoreTestRule implements TestRule {
     }
 
     @Override
-    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
     public ResolveResult resolve(
         ResolveContext resolveContext,
-        Node committedTree,
-        Object committedState,
+        @Nullable Node committedTree,
+        @Nullable Object committedState,
         List stateUpdatesToApply) {
       return new ResolveResult(root, null);
     }
