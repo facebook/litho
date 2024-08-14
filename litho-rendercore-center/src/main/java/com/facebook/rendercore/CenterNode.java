@@ -57,9 +57,9 @@ public class CenterNode implements Node {
       mChildLayoutResult = child;
     }
 
+    @Nullable
     @Override
     public RenderUnit getRenderUnit() {
-      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
 
