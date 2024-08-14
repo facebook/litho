@@ -76,7 +76,8 @@ public class LithoTestRunner extends RobolectricTestRunner {
     return Arrays.asList(
         PostponeViewRecycleConfigurationConfiguration.class,
         FineGrainedLithoViewAttributesStateExtensionConfiguration.class,
-        IncrementalMountConfiguration.class);
+        IncrementalMountConfiguration.class,
+        ComponentTreePropContainerConfiguration.class);
   }
 
   @Override
