@@ -175,6 +175,11 @@ internal constructor(
     @JvmField val enableLoggingForRenderInFlight: Boolean = false,
     /** This will make sure context is not nullable for host render unit and drawable render unit */
     @JvmField val enableNonNullableContext: Boolean = false,
+    /**
+     * This will unset TPs from the CT's context, and use the one present in the CT directly as the
+     * ultimate source of truth.
+     */
+    @JvmField val useComponentTreePropContainerAsSourceOfTruth: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =
