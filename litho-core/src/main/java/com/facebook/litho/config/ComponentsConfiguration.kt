@@ -47,8 +47,6 @@ internal constructor(
     val useIncrementalMountGapWorker: Boolean = IncrementalMountExtensionConfigs.useGapWorker,
     val useNonRebindingEventHandlers: Boolean = false,
     internal val shouldDisableBgFgOutputs: Boolean = false,
-    /** Whether the [ComponentTree] should be using State Reconciliation. */
-    @JvmField val isReconciliationEnabled: Boolean = true,
     /** The handler [ComponentTree] will be used to run the pre-allocation process */
     @JvmField val preAllocationHandler: PreAllocationHandler? = null,
     @JvmField val avoidRedundantPreAllocations: Boolean = false,
@@ -327,7 +325,6 @@ internal constructor(
   class Builder internal constructor(private val baseConfig: ComponentsConfiguration) {
 
     private var shouldAddHostViewForRootComponent = baseConfig.shouldAddHostViewForRootComponent
-    private var isReconciliationEnabled = baseConfig.isReconciliationEnabled
     private var preAllocationHandler = baseConfig.preAllocationHandler
     private var incrementalMountEnabled = baseConfig.incrementalMountEnabled
     private var componentHostPoolingPolicy = baseConfig.componentHostPoolingPolicy
@@ -364,10 +361,6 @@ internal constructor(
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
-    }
-
-    fun isReconciliationEnabled(enabled: Boolean): Builder = also {
-      isReconciliationEnabled = enabled
     }
 
     fun withPreAllocationHandler(handler: PreAllocationHandler?): Builder = also {
@@ -476,7 +469,6 @@ internal constructor(
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
-          isReconciliationEnabled = isReconciliationEnabled,
           preAllocationHandler = preAllocationHandler,
           incrementalMountEnabled = incrementalMountEnabled,
           componentHostPoolingPolicy = componentHostPoolingPolicy,

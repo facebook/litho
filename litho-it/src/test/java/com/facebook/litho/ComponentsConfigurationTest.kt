@@ -48,21 +48,21 @@ class ComponentsConfigurationTest {
   @Test
   fun testSetFlagThroughComponentConfigToComponentTree() {
     ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(isReconciliationEnabled = true)
+        defaultConfiguration.copy(incrementalMountEnabled = true)
     val componentTree =
         ComponentTree.create(componentContext)
             .componentsConfiguration(ComponentsConfiguration.defaultInstance)
             .build()
     val componentsConfiguration = componentTree.context.mLithoConfiguration.componentsConfig
 
-    assertThat(componentsConfiguration.isReconciliationEnabled).isTrue
+    assertThat(componentsConfiguration.incrementalMountEnabled).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testSetFlagThroughComponentConfigToComponentTreeWithRecyclerCollectionComponent() {
     ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(isReconciliationEnabled = false)
+        defaultConfiguration.copy(incrementalMountEnabled = false)
 
     val recyclerBinderConfiguration =
         RecyclerBinderConfiguration.create()
@@ -70,7 +70,7 @@ class ComponentsConfigurationTest {
                 RecyclerBinderConfig(
                     componentsConfiguration =
                         ComponentsConfiguration.defaultInstance.copy(
-                            isReconciliationEnabled = true)))
+                            incrementalMountEnabled = true)))
             .build()
 
     legacyLithoViewRule
@@ -95,19 +95,19 @@ class ComponentsConfigurationTest {
     assertThat(childView).isNotNull
     val componentsConfiguration =
         childView?.componentTree?.context?.mLithoConfiguration?.componentsConfig
-    assertThat(componentsConfiguration?.isReconciliationEnabled).isTrue
+    assertThat(componentsConfiguration?.incrementalMountEnabled).isTrue
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }
 
   @Test
   fun testOverrideDefaultBuilder() {
     ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(isReconciliationEnabled = true)
-    assertThat(ComponentsConfiguration.defaultInstance.isReconciliationEnabled).isTrue
+        defaultConfiguration.copy(incrementalMountEnabled = true)
+    assertThat(ComponentsConfiguration.defaultInstance.incrementalMountEnabled).isTrue
 
     ComponentsConfiguration.defaultInstance =
-        defaultConfiguration.copy(isReconciliationEnabled = false)
-    assertThat(ComponentsConfiguration.defaultInstance.isReconciliationEnabled).isFalse
+        defaultConfiguration.copy(incrementalMountEnabled = false)
+    assertThat(ComponentsConfiguration.defaultInstance.incrementalMountEnabled).isFalse
 
     ComponentsConfiguration.defaultInstance = defaultConfiguration
   }

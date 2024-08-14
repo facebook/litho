@@ -749,10 +749,6 @@ public class ComponentContext {
     return c.mLithoConfiguration.componentsConfig.visibilityProcessingEnabled;
   }
 
-  public boolean isReconciliationEnabled() {
-    return mLithoConfiguration.componentsConfig.isReconciliationEnabled;
-  }
-
   public boolean isPrimitiveVerticalScrollEnabled() {
     return false; // TODO: wire up with config
   }
@@ -782,7 +778,7 @@ public class ComponentContext {
   }
 
   public boolean shouldCacheLayouts() {
-    return isReconciliationEnabled();
+    return true;
   }
 
   public final boolean shouldUseNonRebindingEventHandlers() {

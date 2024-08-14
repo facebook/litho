@@ -1029,10 +1029,6 @@ public class ComponentTree
     return ComponentContext.isVisibilityProcessingEnabled(mContext);
   }
 
-  public boolean isReconciliationEnabled() {
-    return mContext.mLithoConfiguration.componentsConfig.isReconciliationEnabled;
-  }
-
   public synchronized @Nullable Component getRoot() {
     return mRoot;
   }

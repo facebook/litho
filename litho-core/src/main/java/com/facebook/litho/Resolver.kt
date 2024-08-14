@@ -434,7 +434,7 @@ object Resolver {
       currentLayoutResult: LithoNode? = null,
   ): Boolean {
 
-    if (currentLayoutResult == null || !c.isReconciliationEnabled) {
+    if (currentLayoutResult == null) {
       return false
     }
 

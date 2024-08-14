@@ -27,8 +27,6 @@ import com.facebook.litho.RenderCompleteEvent;
 /** {@link RenderInfo} that can render components. */
 public class ComponentRenderInfo extends BaseRenderInfo {
 
-  public static final String RECONCILIATION_ENABLED = "is_reconciliation_enabled";
-
   private final Component mComponent;
   @Nullable private final EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;
   @Nullable private final ComponentsLogger mComponentsLogger;
