@@ -116,6 +116,7 @@ constructor(
               )
           PrimitiveRecyclerBinderStrategy.SPLIT_BINDERS ->
               SplitBindersMountBehavior(
+                  measureVersion,
                   onRefresh,
                   onScrollListeners,
                   recyclerEventsController,
@@ -384,6 +385,7 @@ constructor(
    * - Binder<RecyclerView>: This will bind/unbind the [binder].
    */
   private fun PrimitiveComponentScope.SplitBindersMountBehavior(
+      measureVersion: State<Int>,
       onRefresh: (() -> Unit)?,
       onScrollListeners: List<RecyclerView.OnScrollListener>?,
       recyclerEventsController: RecyclerEventsController?,
@@ -393,35 +395,44 @@ constructor(
         doesMountRenderTreeHosts = true
         shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
 
-        withDescription("recycler-binder") {
-          bind(binder) { sectionsRecyclerView ->
-            val recyclerView: RecyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+        withDescription("recycler-decorations") {
+          bind(itemDecorations, measureChild) { sectionsRecyclerView ->
+            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
 
-            binder.mount(recyclerView)
+            itemDecorations?.forEach { decoration ->
+              if (decoration is ItemDecorationWithMeasureFunction) {
+                decoration.measure = measureChild
+              }
+              recyclerView.addItemDecoration(decoration)
+            }
 
-            onUnbind { binder.unmount(recyclerView) }
+            onUnbind {
+              itemDecorations?.forEach { decoration ->
+                recyclerView.removeItemDecoration(decoration)
+                if (decoration is ItemDecorationWithMeasureFunction) {
+                  decoration.measure = null
+                }
+              }
+            }
           }
         }
 
-        withDescription("recycler-content") {
+        withDescription("recycler-equivalent-mount") {
           bind(
-              contentDescription,
+              measureVersion.value,
               hasFixedSize,
               isClipToPaddingEnabled,
-              paddingAdditionDisabled,
               leftPadding,
               topPadding,
               rightPadding,
               bottomPadding,
               isClipChildrenEnabled,
-              isNestedScrollingEnabled,
               scrollBarStyle,
               isHorizontalFadingEdgeEnabled,
               isVerticalFadingEdgeEnabled,
               fadingEdgeLength,
-              recyclerViewId,
-              overScrollMode,
-              edgeFactory,
+              refreshProgressBarBackgroundColor,
+              refreshProgressBarColor,
               itemAnimator?.javaClass) { sectionsRecyclerView ->
                 bindLegacyMountBinder(
                     sectionsRecyclerView = sectionsRecyclerView,
@@ -446,23 +457,7 @@ constructor(
                     refreshProgressBarColor = refreshProgressBarColor,
                     itemAnimator = itemAnimator)
 
-                bindLegacyAttachBinder(
-                    sectionsRecyclerView = sectionsRecyclerView,
-                    sectionsViewLogger = sectionsViewLogger,
-                    isPullToRefreshEnabled = isPullToRefreshEnabled,
-                    onRefresh = onRefresh,
-                    onScrollListeners = onScrollListeners,
-                    touchInterceptor = touchInterceptor,
-                    onItemTouchListener = onItemTouchListener,
-                    snapHelper = snapHelper,
-                    recyclerEventsController = recyclerEventsController)
                 onUnbind {
-                  unbindLegacyAttachBinder(
-                      sectionsRecyclerView = sectionsRecyclerView,
-                      recyclerEventsController = recyclerEventsController,
-                      onScrollListeners = onScrollListeners,
-                      onItemTouchListener = onItemTouchListener)
-
                   unbindLegacyMountBinder(
                       sectionsRecyclerView = sectionsRecyclerView,
                       refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
@@ -472,24 +467,33 @@ constructor(
               }
         }
 
-        withDescription("recycler-decorations") {
-          bind(itemDecorations, measureChild) { sectionsRecyclerView ->
+        withDescription("recycler-binder") {
+          bind(binder) { sectionsRecyclerView ->
             val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
+            binder.mount(recyclerView)
+            onUnbind { binder.unmount(recyclerView) }
+          }
+        }
 
-            itemDecorations?.forEach { decoration ->
-              if (decoration is ItemDecorationWithMeasureFunction) {
-                decoration.measure = measureChild
-              }
-              recyclerView.addItemDecoration(decoration)
-            }
+        withDescription("recycler-equivalent-bind") {
+          bind(Any()) { sectionsRecyclerView ->
+            bindLegacyAttachBinder(
+                sectionsRecyclerView = sectionsRecyclerView,
+                sectionsViewLogger = sectionsViewLogger,
+                isPullToRefreshEnabled = isPullToRefreshEnabled,
+                onRefresh = onRefresh,
+                onScrollListeners = onScrollListeners,
+                touchInterceptor = touchInterceptor,
+                onItemTouchListener = onItemTouchListener,
+                snapHelper = snapHelper,
+                recyclerEventsController = recyclerEventsController)
 
             onUnbind {
-              itemDecorations?.forEach { decoration ->
-                if (decoration is ItemDecorationWithMeasureFunction) {
-                  decoration.measure = null
-                }
-                recyclerView.removeItemDecoration(decoration)
-              }
+              unbindLegacyAttachBinder(
+                  sectionsRecyclerView = sectionsRecyclerView,
+                  recyclerEventsController = recyclerEventsController,
+                  onScrollListeners = onScrollListeners,
+                  onItemTouchListener = onItemTouchListener)
             }
           }
         }
