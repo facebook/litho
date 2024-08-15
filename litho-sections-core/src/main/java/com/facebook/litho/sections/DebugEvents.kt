@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections;
+@file:JvmName("DebugEvents")
 
-public class DebugEvents {
+package com.facebook.litho.sections
 
-  public static final String SET_ROOT = "Section.SetRoot";
-  public static final String CALCULATE_CHANGE_SET = "Section.CalculateChangeSet";
-  public static final String CREATE_CHILDREN = "Section.OnCreateChildren";
+object DebugEvents {
+
+  const val SET_ROOT = "Section.SetRoot"
+
+  const val CALCULATE_CHANGE_SET = "Section.CalculateChangeSet"
+
+  const val CREATE_CHILDREN = "Section.OnCreateChildren"
 }
