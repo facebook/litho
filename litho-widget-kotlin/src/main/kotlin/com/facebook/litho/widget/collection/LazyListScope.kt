@@ -167,4 +167,23 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
           componentFunction = { componentCreationScope.componentFunction(item) })
     }
   }
+
+  fun <T> child(
+      item: T,
+      id: (T) -> Any,
+      deps: (T) -> Array<Any?>,
+      isSticky: ((T) -> Boolean)? = null,
+      parentWidthPercent: ((T) -> Float)? = null,
+      parentHeightPercent: ((T) -> Float)? = null,
+      componentFunction: ComponentCreationScope.(T) -> Component?,
+  ) {
+    val componentCreationScope = ComponentCreationScope(context)
+    children.add(
+        id = id(item),
+        deps = deps(item),
+        isSticky = isSticky?.invoke(item) ?: false,
+        parentWidthPercent = parentWidthPercent?.invoke(item) ?: -1f,
+        parentHeightPercent = parentHeightPercent?.invoke(item) ?: -1f,
+        componentFunction = { componentCreationScope.componentFunction(item) })
+  }
 }
