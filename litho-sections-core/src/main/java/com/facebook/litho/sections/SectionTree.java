@@ -20,6 +20,7 @@ import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Stack;
+import static com.facebook.litho.sections.DebugEvents.APPLY_CHANGE_SET;
 import static com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet.SET_ROOT_ASYNC;
 import static com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet.UPDATE_STATE_ASYNC;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Async;
@@ -65,6 +66,7 @@ import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
+import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
@@ -1605,46 +1607,69 @@ public class SectionTree {
     }
     boolean appliedChanges = false;
     final List<Change> changes = new ArrayList<>();
-    try {
-      for (int i = 0, size = changeSets.size(); i < size; i++) {
-        final ChangeSet changeSet = changeSets.get(i);
 
-        if (changeSet.getChangeCount() > 0) {
-          for (int j = 0, changeSize = changeSet.getChangeCount(); j < changeSize; j++) {
-            final Change change = changeSet.getChangeAt(j);
-            switch (change.getType()) {
-              case Change.INSERT:
-                appliedChanges = true;
-                mTarget.insert(change.getIndex(), change.getRenderInfo());
-                break;
-              case Change.INSERT_RANGE:
-                appliedChanges = true;
-                mTarget.insertRange(change.getIndex(), change.getCount(), change.getRenderInfos());
-                break;
-              case Change.UPDATE:
-                appliedChanges = true;
-                mTarget.update(change.getIndex(), change.getRenderInfo());
-                break;
-              case Change.UPDATE_RANGE:
-                appliedChanges = true;
-                mTarget.updateRange(change.getIndex(), change.getCount(), change.getRenderInfos());
-                break;
-              case Change.DELETE:
-                appliedChanges = true;
-                mTarget.delete(change.getIndex());
-                break;
-              case Change.DELETE_RANGE:
-                appliedChanges = true;
-                mTarget.deleteRange(change.getIndex(), change.getCount());
-                break;
-              case Change.MOVE:
-                appliedChanges = true;
-                mTarget.move(change.getIndex(), change.getToIndex());
+    try {
+
+      final @Nullable Integer traceId =
+          DebugEventDispatcher.generateTraceIdentifier(APPLY_CHANGE_SET);
+      if (traceId != null) {
+        DebugEventDispatcher.beginTrace(
+            traceId, APPLY_CHANGE_SET, String.valueOf(RenderState.NO_ID));
+      }
+
+      try {
+
+        for (int i = 0, size = changeSets.size(); i < size; i++) {
+          final ChangeSet changeSet = changeSets.get(i);
+
+          if (changeSet.getChangeCount() > 0) {
+            for (int j = 0, changeSize = changeSet.getChangeCount(); j < changeSize; j++) {
+              final Change change = changeSet.getChangeAt(j);
+              switch (change.getType()) {
+                case Change.INSERT:
+                  appliedChanges = true;
+                  mTarget.insert(change.getIndex(), change.getRenderInfo());
+                  break;
+                case Change.INSERT_RANGE:
+                  appliedChanges = true;
+                  mTarget.insertRange(
+                      change.getIndex(), change.getCount(), change.getRenderInfos());
+                  break;
+                case Change.UPDATE:
+                  appliedChanges = true;
+                  mTarget.update(change.getIndex(), change.getRenderInfo());
+                  break;
+                case Change.UPDATE_RANGE:
+                  appliedChanges = true;
+                  mTarget.updateRange(
+                      change.getIndex(), change.getCount(), change.getRenderInfos());
+                  break;
+                case Change.DELETE:
+                  appliedChanges = true;
+                  mTarget.delete(change.getIndex());
+                  break;
+                case Change.DELETE_RANGE:
+                  appliedChanges = true;
+                  mTarget.deleteRange(change.getIndex(), change.getCount());
+                  break;
+                case Change.MOVE:
+                  appliedChanges = true;
+                  mTarget.move(change.getIndex(), change.getToIndex());
+              }
             }
+            mTarget.dispatchLastEvent();
           }
-          mTarget.dispatchLastEvent();
+          changes.addAll(changeSet.getChanges());
         }
-        changes.addAll(changeSet.getChanges());
+
+      } finally {
+        if (traceId != null) {
+          final HashMap<String, Object> attributes = new HashMap<>();
+          attributes.put("section", currentSection.getSimpleName());
+          attributes.put("size", changes.size());
+          // TODO(T198956736): Add break down of change set to the trace
+          DebugEventDispatcher.endTrace(traceId, attributes);
+        }
       }
 
       final boolean isDataChanged = appliedChanges;
