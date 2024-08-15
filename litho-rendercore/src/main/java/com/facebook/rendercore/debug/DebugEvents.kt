@@ -271,6 +271,7 @@ object DebugEventDispatcher {
       }
 
   @JvmStatic
+  @JvmOverloads
   fun beginTrace(
       traceIdentifier: Int,
       type: String,
@@ -320,7 +321,11 @@ object DebugEventDispatcher {
   }
 
   @JvmStatic
-  fun endTrace(traceIdentifier: Int) {
+  @JvmOverloads
+  fun endTrace(
+      traceIdentifier: Int,
+      attributes: Map<String, Any?> = emptyMap(),
+  ) {
     val last = traceIdsToEvents.remove(traceIdentifier) ?: return
     val type = last.type
 
@@ -339,13 +344,14 @@ object DebugEventDispatcher {
     }
 
     val endTime = System.nanoTime()
+
     val event =
         DebugProcessEvent(
             type = type,
             timestamp = last.timestamp, // for calender time
             renderStateId = last.renderStateId,
             durationNs = Duration(value = endTime - last.startTime),
-            attributes = last.attributes,
+            attributes = last.attributes + attributes,
         )
 
     subscribersToNotify.forEach { it.onEvent(event) }

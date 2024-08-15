@@ -362,17 +362,26 @@ class DebugEventsTest {
     DebugEventDispatcher.subscribe(TestEventsSubscriber(All, listener = { events.add(it) }))
 
     val traceId = DebugEventDispatcher.generateTraceIdentifier(TestEvent)
+
     DebugEventDispatcher.beginTrace(
-        traceId!!, TestEvent, TestRenderStateId, mutableMapOf(TestAttr to 1))
+        traceId!!,
+        TestEvent,
+        TestRenderStateId,
+        mutableMapOf(TestAttr to 1),
+    )
+
     assertThat(events).isEmpty()
 
-    DebugEventDispatcher.endTrace(traceId)
+    DebugEventDispatcher.endTrace(traceId, mutableMapOf("other-attr" to "other-value"))
+
     assertThat(events).hasSize(1)
 
     val event = events.last()
+
     assertThat(event.type).isEqualTo(TestEvent)
     assertThat(event.renderStateId).isEqualTo(TestRenderStateId)
     assertThat(event.attribute<Int>(TestAttr)).isEqualTo(1)
+    assertThat(event.attribute<String>("other-attr")).isEqualTo("other-value")
   }
 
   @Test
