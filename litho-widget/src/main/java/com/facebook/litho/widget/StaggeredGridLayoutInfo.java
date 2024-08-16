@@ -222,7 +222,7 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
     private boolean mEagerlyClearsSpanAssignmentsOnUpdates;
     private boolean mInvalidatesItemDecorationsOnUpdates;
     // We hold this staggered grid result to avoid unnecessary int[] creations.
-    private int[] mStaggeredGridResult;
+    @Nullable private int[] mStaggeredGridResult;
 
     // Pairs with mInvalidatesItemDecorationsOnUpdates to store the RecyclerView requiring
     // invalidation, since the RecyclerView isn't available as a member.
