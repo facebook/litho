@@ -653,7 +653,7 @@ constructor(
     }
   }
 
-  open fun needsUpdate(newRenderUnit: RenderUnit<MOUNT_CONTENT>): Boolean = this !== newRenderUnit
+  open fun shouldUpdate(newRenderUnit: RenderUnit<MOUNT_CONTENT>): Boolean = this !== newRenderUnit
 
   open fun <T : Binder<*, *, *>?> findAttachBinderByClass(klass: Class<T>): T? {
     return attachBinderTypeToDelegateMap?.get(klass)?.binder as T?

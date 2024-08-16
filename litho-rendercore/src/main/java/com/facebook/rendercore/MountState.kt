@@ -845,7 +845,7 @@ constructor(
     currentMountItem.update(renderTreeNode)
     currentRenderUnit.onStartUpdateRenderUnit()
     mountDelegate?.startNotifyVisibleBoundsChangedSection()
-    if (currentRenderUnit.needsUpdate(renderUnit) ||
+    if (currentRenderUnit.shouldUpdate(renderUnit) ||
         !isEqualOrEquivalentTo(currentLayoutData, newLayoutData)) {
       val traceIdentifier =
           DebugEventDispatcher.generateTraceIdentifier(DebugEvent.RenderUnitUpdated)
