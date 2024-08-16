@@ -82,6 +82,7 @@ class TransitionsComponent : KComponent() {
                               context, TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
                           .background(RoundedRect(0xffba7bb5, 8.dp))))
           child(ContainersComponent())
+          child(TriStateComponent())
         }
   }
 }
