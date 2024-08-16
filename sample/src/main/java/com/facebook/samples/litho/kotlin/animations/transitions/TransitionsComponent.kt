@@ -83,6 +83,7 @@ class TransitionsComponent : KComponent() {
                           .background(RoundedRect(0xffba7bb5, 8.dp))))
           child(ContainersComponent())
           child(TriStateComponent())
+          child(DeltaDemoComponent())
         }
   }
 }
