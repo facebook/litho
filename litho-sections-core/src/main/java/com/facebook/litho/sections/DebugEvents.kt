@@ -24,7 +24,7 @@ object DebugEvents {
 
   const val CALCULATE_CHANGE_SET = "Section.CalculateChangeSet"
 
-  const val APPLY_CHANGE_SET = "Section.CalculateChangeSet"
+  const val APPLY_CHANGE_SET = "Section.ApplyChangeSet"
 
   const val CREATE_CHILDREN = "Section.OnCreateChildren"
 }
