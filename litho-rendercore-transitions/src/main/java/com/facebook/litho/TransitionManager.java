@@ -195,9 +195,9 @@ public class TransitionManager {
       new TransitionsAnimationBindingListener();
   private final RootAnimationListener mRootAnimationListener = new RootAnimationListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
-  private final OnAnimationCompleteListener mOnAnimationCompleteListener;
-  private AnimationBinding mRootAnimationToRun;
-  private final String mDebugTag;
+  @Nullable private final OnAnimationCompleteListener mOnAnimationCompleteListener;
+  @Nullable private AnimationBinding mRootAnimationToRun;
+  @Nullable private final String mDebugTag;
   private final Map<Host, Boolean> mOverriddenClipChildrenFlags = new LinkedHashMap<>();
   private final Systracer mTracer;
 
