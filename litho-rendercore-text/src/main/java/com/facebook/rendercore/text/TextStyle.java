@@ -78,7 +78,7 @@ public class TextStyle implements Cloneable {
   float extraSpacingLeft = 0;
   float extraSpacingRight = 0;
   // NULLSAFE_FIXME[Field Not Nullable]
-  RoundedBackgroundProps roundedBackgroundProps = null;
+  @Nullable RoundedBackgroundProps roundedBackgroundProps = null;
   @Nullable String accessibilityLabel;
 
   public void setAccessibilityLabel(String accessibilityLabel) {
