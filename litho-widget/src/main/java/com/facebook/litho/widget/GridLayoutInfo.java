@@ -29,6 +29,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class GridLayoutInfo implements LayoutInfo {
 
@@ -41,7 +42,7 @@ public class GridLayoutInfo implements LayoutInfo {
   private final GridLayoutManager mGridLayoutManager;
   private final GridSpanSizeLookup mGridSpanSizeLookup;
 
-  private RenderInfoCollection mRenderInfoCollection;
+  @Nullable private RenderInfoCollection mRenderInfoCollection;
 
   public GridLayoutInfo(GridLayoutManager gridLayoutManager) {
     mGridLayoutManager = gridLayoutManager;
