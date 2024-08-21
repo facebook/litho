@@ -21,7 +21,9 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoConfiguration;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.RenderUnitIdGenerator;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.state.StateUpdatesTestHelper;
@@ -53,12 +55,26 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   private final ComponentContext mComponentContext;
 
   public static ComponentAssert assertThat(ComponentContext componentContext, Component component) {
+    componentContext.mLithoConfiguration =
+        new LithoConfiguration(
+            componentContext.mLithoConfiguration.componentsConfig,
+            componentContext.mLithoConfiguration.areTransitionsEnabled,
+            componentContext.mLithoConfiguration.renderUnitIdGenerator != null
+                ? componentContext.mLithoConfiguration.renderUnitIdGenerator
+                : new RenderUnitIdGenerator(0));
     return new ComponentAssert(componentContext, component);
   }
 
   public static ComponentAssert assertThat(Component.Builder<?> builder) {
     // mContext is freed up during build() so we need to get a reference to it before.
     final ComponentContext context = Whitebox.getInternalState(builder, "mContext");
+    context.mLithoConfiguration =
+        new LithoConfiguration(
+            context.mLithoConfiguration.componentsConfig,
+            context.mLithoConfiguration.areTransitionsEnabled,
+            context.mLithoConfiguration.renderUnitIdGenerator != null
+                ? context.mLithoConfiguration.renderUnitIdGenerator
+                : new RenderUnitIdGenerator(0));
     return new ComponentAssert(context, builder.build());
   }
 
