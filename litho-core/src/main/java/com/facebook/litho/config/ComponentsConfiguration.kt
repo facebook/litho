@@ -316,6 +316,11 @@ internal constructor(
     @JvmField var enablePrimitiveMeasurementFix: Boolean = false
 
     /**
+     * This flag is used to enable using PrimitiveComponent implementation of an Image component.
+     */
+    @JvmField var usePrimitiveImage: Boolean = false
+
+    /**
      * This method is only used so that Java clients can have a builder like approach to override a
      * configuration.
      */

@@ -21,11 +21,13 @@ import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.LithoView
 import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.Style
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.ExperimentalImage
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
@@ -40,6 +42,7 @@ class VerticalScrollTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
+  @OptIn(ExperimentalLithoApi::class)
   @Test
   fun `VerticalScroll Component should render`() {
     lithoViewRule
@@ -47,7 +50,7 @@ class VerticalScrollTest {
           VerticalScroll(
               style = Style.width(100.px).height(100.px),
           ) {
-            Image(
+            ExperimentalImage(
                 drawable = ColorDrawable(Color.RED),
                 style = Style.width(100.px).height(500.px),
             )
@@ -80,11 +83,12 @@ class VerticalScrollTest {
         }
   }
 
+  @OptIn(ExperimentalLithoApi::class)
   @Test
   fun `same instance should be equivalent`() {
     val component =
         VerticalScroll(style = Style.width(100.px).height(100.px)) {
-          Image(
+          ExperimentalImage(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(500.px),
           )
@@ -94,12 +98,13 @@ class VerticalScrollTest {
     assertThat(component).isEquivalentTo(component, true)
   }
 
+  @OptIn(ExperimentalLithoApi::class)
   @Test
   fun `components with same prop values should be equivalent`() {
     val color = ColorDrawable(Color.RED)
     val a =
         VerticalScroll(style = Style.width(100.px).height(100.px)) {
-          Image(
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
@@ -107,7 +112,7 @@ class VerticalScrollTest {
 
     val b =
         VerticalScroll(style = Style.width(100.px).height(100.px)) {
-          Image(
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
@@ -117,11 +122,12 @@ class VerticalScrollTest {
     assertThat(a).isEquivalentTo(b, true)
   }
 
+  @OptIn(ExperimentalLithoApi::class)
   @Test
   fun `components with different prop values should not be equivalent`() {
     val a =
         VerticalScroll(style = Style.width(100.px).height(100.px)) {
-          Image(
+          ExperimentalImage(
               drawable = ColorDrawable(Color.RED), // red here
               style = Style.width(100.px).height(500.px),
           )
@@ -129,7 +135,7 @@ class VerticalScrollTest {
 
     val b =
         VerticalScroll(style = Style.width(100.px).height(100.px)) {
-          Image(
+          ExperimentalImage(
               drawable = ColorDrawable(Color.BLUE), // blue here
               style = Style.width(100.px).height(500.px),
           )
@@ -140,12 +146,13 @@ class VerticalScrollTest {
         .isInstanceOf(AssertionError::class.java)
   }
 
+  @OptIn(ExperimentalLithoApi::class)
   @Test
   fun `components with different style values should not be equivalent`() {
     val color = ColorDrawable(Color.RED)
     val a =
         VerticalScroll(style = Style.width(100.px).height(100.px) /* 100 here */) {
-          Image(
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
@@ -153,7 +160,7 @@ class VerticalScrollTest {
 
     val b =
         VerticalScroll(style = Style.width(200.px).height(200.px) /* 200 here */) {
-          Image(
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )

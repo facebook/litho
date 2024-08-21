@@ -21,11 +21,13 @@ import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.LithoView
 import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.Style
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.ExperimentalImage
 import com.facebook.litho.widget.HorizontalScrollLithoView
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
@@ -38,11 +40,12 @@ import org.junit.runner.RunWith
 class HorizontalScrollTest {
   @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()
 
+  @OptIn(ExperimentalLithoApi::class)
   @Test
   fun `HorizontalScroll Component should render`() {
     val component =
         HorizontalScroll(style = Style.width(100.px).height(500.px)) {
-          Image(
+          ExperimentalImage(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(500.px),
           )

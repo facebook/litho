@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.primitives.widgets
+package com.facebook.litho.widget
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
@@ -24,13 +24,16 @@ import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
+import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.rendercore.Size
 import com.facebook.rendercore.SizeConstraints
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
+import com.facebook.rendercore.utils.exact
 import com.facebook.rendercore.utils.withAspectRatio
+import kotlin.math.max
 
 /**
  * A component to render a [Drawable].
@@ -41,9 +44,10 @@ import com.facebook.rendercore.utils.withAspectRatio
  * @param drawable The [Drawable] to render.
  * @param scaleType The [ScaleType] to scale or transform the [drawable].
  */
-class Image(
-    private val drawable: Drawable,
-    private val scaleType: ScaleType = ScaleType.FIT_XY,
+@ExperimentalLithoApi
+class ExperimentalImage(
+    private val drawable: Drawable?,
+    private val scaleType: ScaleType = ScaleType.FIT_CENTER,
     private val style: Style? = null
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -51,15 +55,18 @@ class Image(
         layoutBehavior = ImageLayoutBehavior(drawable, scaleType),
         mountBehavior =
             // start_image_primitive_mount_behavior_example
-            MountBehavior(DrawableAllocator(poolSize = 30) { MatrixDrawable<Drawable>() }) {
-              bindWithLayoutData<PrimitiveImageLayoutData>(drawable, scaleType) {
-                  content,
-                  layoutData ->
-                content.mount(drawable, layoutData.matrix)
-                content.bind(layoutData.width, layoutData.height)
-                onUnbind { content.unmount() }
-              }
-            }
+            MountBehavior(
+                DrawableAllocator(poolSize = 30, canPreallocate = true) {
+                  MatrixDrawable<Drawable>()
+                }) {
+                  bindWithLayoutData<PrimitiveImageLayoutData>(drawable, scaleType) {
+                      content,
+                      layoutData ->
+                    content.mount(drawable, layoutData.matrix)
+                    content.bind(layoutData.width, layoutData.height)
+                    onUnbind { content.unmount() }
+                  }
+                }
         // end_image_primitive_mount_behavior_example
         ,
         style = style)
@@ -67,15 +74,27 @@ class Image(
 }
 
 internal class ImageLayoutBehavior(
-    private val drawable: Drawable,
-    private val scaleType: ScaleType
+    private val drawable: Drawable?,
+    private val scaleType: ScaleType,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
+    val exactSize = Size.exact(sizeConstraints)
+    // return 0 size when drawable is null or its intrinsic size is <=0 but size constraints are not
+    // exact, but when exact size constraints exist we want to respect them
+    if (drawable == null ||
+        (exactSize == Size.Invalid &&
+            (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0))) {
+      return PrimitiveLayoutResult(
+          size = Size(0, 0), layoutData = PrimitiveImageLayoutData(0, 0, null))
+    }
+
     val intrinsicWidth = drawable.intrinsicWidth
     val intrinsicHeight = drawable.intrinsicHeight
 
-    val size =
-        if (!sizeConstraints.hasBoundedWidth && !sizeConstraints.hasBoundedHeight) {
+    val computedSize =
+        if (exactSize != Size.Invalid) {
+          exactSize
+        } else if (!sizeConstraints.hasBoundedWidth && !sizeConstraints.hasBoundedHeight) {
           Size(intrinsicWidth, intrinsicHeight)
         } else {
           Size.withAspectRatio(
@@ -84,6 +103,8 @@ internal class ImageLayoutBehavior(
               intrinsicWidth,
               intrinsicHeight)
         }
+
+    val size = Size(max(0, computedSize.width), max(0, computedSize.height))
 
     val matrix =
         if (scaleType == ScaleType.FIT_XY || intrinsicWidth <= 0 || intrinsicHeight <= 0) {
