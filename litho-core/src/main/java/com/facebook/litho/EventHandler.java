@@ -26,6 +26,7 @@ import com.facebook.litho.debug.DebugInfoReporter;
 import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.utils.CommonUtils;
+import com.facebook.rendercore.utils.ThreadUtils;
 import kotlin.Unit;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
@@ -69,6 +70,17 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
               attribute.put("hasDispatchInfo", info != null);
               return Unit.INSTANCE;
             });
+      }
+
+      if (mode == EventHandlerRebindMode.REBIND && !ThreadUtils.isMainThread()) {
+        throw new RuntimeException(
+            "EventHandlingViolation. Event "
+                + CommonUtils.getSectionNameForTracing(event.getClass())
+                + " was dispatched from a non-UI thread ("
+                + Thread.currentThread().getName()
+                + "). This is only allowed for events that are marked as non-rebinding. Please "
+                + "annotate the event class with @Event(mode = EventHandlerRebindMode.NONE) to "
+                + "mark it as non-rebinding. Please use the Litho Support group for support.");
       }
     }
 
