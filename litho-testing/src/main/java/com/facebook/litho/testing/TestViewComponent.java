@@ -66,18 +66,18 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onMount(
-      ComponentContext c, Object convertView, InterStagePropsContainer interStagePropsContainer) {
+      @Nullable ComponentContext c,
+      Object convertView,
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     onMountCalled();
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onUnmount(
-      ComponentContext c,
+      @Nullable ComponentContext c,
       Object mountedContent,
-      InterStagePropsContainer interStagePropsContainer) {
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     onUnmountCalled();
   }
 
@@ -87,14 +87,13 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onMeasure(
       ComponentContext c,
       ComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
-      InterStagePropsContainer interStagePropsContainer) {
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
 
@@ -105,29 +104,26 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
-      InterStagePropsContainer interStagePropsContainer) {
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     onDefineBoundsCalled();
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onBind(
-      ComponentContext c,
+      @Nullable ComponentContext c,
       Object mountedContent,
-      InterStagePropsContainer interStagePropsContainer) {
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     onBindCalled();
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   protected void onUnbind(
-      ComponentContext c,
+      @Nullable ComponentContext c,
       Object mountedContent,
-      InterStagePropsContainer interStagePropsContainer) {
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     onUnbindCalled();
   }
 
