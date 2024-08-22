@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.logging;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.application.ApplicationManager;
@@ -28,6 +29,7 @@ import java.util.concurrent.Executor;
 /**
  * Provides logger to track common user flow events: completion action usage, dialog opening, etc.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class LithoLoggerProvider {
 
   private LithoLoggerProvider() {}
