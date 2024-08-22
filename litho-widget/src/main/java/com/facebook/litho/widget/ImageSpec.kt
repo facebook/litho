@@ -25,6 +25,7 @@ import com.facebook.litho.annotations.ExperimentalLithoApi
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.Reason
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.config.ComponentsConfiguration
@@ -40,22 +41,26 @@ import com.facebook.litho.config.ComponentsConfiguration
 @LayoutSpec
 object ImageSpec {
 
+  @PropDefault val useIntrinsicSize: Boolean = true
+
   @OptIn(ExperimentalLithoApi::class)
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
       @Prop(resType = ResType.DRAWABLE) drawable: Drawable?,
       @Prop(optional = true) scaleType: ImageView.ScaleType?,
+      @Prop(optional = true) useIntrinsicSize: Boolean,
   ): Component {
     return if (ComponentsConfiguration.usePrimitiveImage &&
         // Currently there is a measurement bug that causes the image to be measured incorrectly
         // so we only want to use the primitive implementation when the fix is enabled.
         ComponentsConfiguration.enablePrimitiveMeasurementFix) {
-      ExperimentalImage(drawable, scaleType ?: ImageView.ScaleType.FIT_CENTER)
+      ExperimentalImage(drawable, scaleType ?: ImageView.ScaleType.FIT_CENTER, useIntrinsicSize)
     } else {
       ImageComponent.create(c)
           .drawable(drawable)
           .scaleType(scaleType ?: ImageView.ScaleType.FIT_CENTER)
+          .useIntrinsicSize(useIntrinsicSize)
           .build()
     }
   }

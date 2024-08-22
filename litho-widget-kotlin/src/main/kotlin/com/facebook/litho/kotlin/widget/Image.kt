@@ -29,4 +29,11 @@ inline fun ResourcesScope.Image(
     drawable: Drawable,
     style: Style? = null,
     scaleType: ScaleType = ScaleType.FIT_CENTER,
-): Image = Image.create(context).drawable(drawable).scaleType(scaleType).kotlinStyle(style).build()
+    useIntrinsicSize: Boolean = true,
+): Image =
+    Image.create(context)
+        .drawable(drawable)
+        .scaleType(scaleType)
+        .useIntrinsicSize(useIntrinsicSize)
+        .kotlinStyle(style)
+        .build()

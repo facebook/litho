@@ -43,16 +43,19 @@ import kotlin.math.max
  *
  * @param drawable The [Drawable] to render.
  * @param scaleType The [ScaleType] to scale or transform the [drawable].
+ * @param useIntrinsicSize Whether to use the intrinsic size of the [drawable] for component
+ *   measurement.
  */
 @ExperimentalLithoApi
 class ExperimentalImage(
     private val drawable: Drawable?,
     private val scaleType: ScaleType = ScaleType.FIT_CENTER,
+    private val useIntrinsicSize: Boolean = true,
     private val style: Style? = null
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
-        layoutBehavior = ImageLayoutBehavior(drawable, scaleType),
+        layoutBehavior = ImageLayoutBehavior(drawable, scaleType, useIntrinsicSize),
         mountBehavior =
             // start_image_primitive_mount_behavior_example
             MountBehavior(
@@ -76,6 +79,7 @@ class ExperimentalImage(
 internal class ImageLayoutBehavior(
     private val drawable: Drawable?,
     private val scaleType: ScaleType,
+    private val useIntrinsicSize: Boolean,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(sizeConstraints: SizeConstraints): PrimitiveLayoutResult {
     val exactSize = Size.exact(sizeConstraints)
@@ -97,11 +101,12 @@ internal class ImageLayoutBehavior(
         } else if (!sizeConstraints.hasBoundedWidth && !sizeConstraints.hasBoundedHeight) {
           Size(intrinsicWidth, intrinsicHeight)
         } else {
-          Size.withAspectRatio(
-              sizeConstraints,
-              intrinsicWidth.toFloat() / intrinsicHeight.toFloat(),
-              intrinsicWidth,
-              intrinsicHeight)
+          val aspectRatio = intrinsicWidth.toFloat() / intrinsicHeight.toFloat()
+          if (useIntrinsicSize) {
+            Size.withAspectRatio(sizeConstraints, aspectRatio, intrinsicWidth, intrinsicHeight)
+          } else {
+            Size.withAspectRatio(sizeConstraints, aspectRatio)
+          }
         }
 
     val size = Size(max(0, computedSize.width), max(0, computedSize.height))

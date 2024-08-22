@@ -41,6 +41,7 @@ import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.drawable.DrawableUtils;
@@ -58,6 +59,8 @@ import javax.annotation.Nullable;
 public class ImageComponentSpec {
 
   private static final ScaleType[] SCALE_TYPE = ScaleType.values();
+
+  @PropDefault static final boolean useIntrinsicSize = true;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -85,7 +88,8 @@ public class ImageComponentSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable) {
+      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable,
+      @Prop(optional = true) boolean useIntrinsicSize) {
     if (drawable == null
         || drawable.getIntrinsicWidth() <= 0
         || drawable.getIntrinsicHeight() <= 0) {
@@ -104,8 +108,12 @@ public class ImageComponentSpec {
     }
 
     final float aspectRatio = intrinsicWidth / (float) intrinsicHeight;
-    MeasureUtils.measureWithAspectRatio(
-        widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size);
+    if (useIntrinsicSize) {
+      MeasureUtils.measureWithAspectRatio(
+          widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size);
+    } else {
+      MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, size);
+    }
   }
 
   @OnBoundsDefined
@@ -176,8 +184,10 @@ public class ImageComponentSpec {
   @ShouldUpdate(onMount = true)
   static boolean shouldUpdate(
       @Prop(optional = true) Diff<ScaleType> scaleType,
-      @Prop(resType = ResType.DRAWABLE) Diff<Drawable> drawable) {
+      @Prop(resType = ResType.DRAWABLE) Diff<Drawable> drawable,
+      @Prop(optional = true) Diff<Boolean> useIntrinsicSize) {
     return scaleType.getNext() != scaleType.getPrevious()
-        || !DrawableUtils.isEquivalentTo(drawable.getNext(), drawable.getPrevious());
+        || !DrawableUtils.isEquivalentTo(drawable.getNext(), drawable.getPrevious())
+        || useIntrinsicSize.getNext() != useIntrinsicSize.getPrevious();
   }
 }
