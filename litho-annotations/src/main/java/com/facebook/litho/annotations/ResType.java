@@ -26,6 +26,7 @@ import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntegerRes;
 import androidx.annotation.StringRes;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * This enum's constants are used to mark that {@link Prop} can receive resources of a corresponding
@@ -69,6 +70,7 @@ import androidx.annotation.StringRes;
  * @see ColorInt
  * @see AttrRes
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum ResType {
   /** Prop is not related to Android resources. */
   NONE,
