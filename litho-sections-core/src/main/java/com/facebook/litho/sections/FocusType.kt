@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections;
+package com.facebook.litho.sections
 
 /** Can be used for requesting focus to a part of a Section. */
-public enum FocusType {
+enum class FocusType {
   START,
   END
 }
