@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.intellij.openapi.project.Project;
@@ -29,15 +30,18 @@ import java.util.List;
 import javax.lang.model.element.TypeElement;
 
 /** Helper for extracting annotations from a given {@link TypeElement}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiAnnotationExtractor {
 
   public static ImmutableList<AnnotationSpec> extractValidAnnotations(
       Project project, PsiClass psiClass) {
     final List<AnnotationSpec> annotations = new ArrayList<>();
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     for (PsiAnnotation annotation : psiClass.getModifierList().getAnnotations()) {
       if (isValidAnnotation(project, annotation)) {
         annotations.add(
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             AnnotationSpec.builder(PsiTypeUtils.guessClassName(annotation.getQualifiedName()))
                 .build());
       }
@@ -54,10 +58,12 @@ public class PsiAnnotationExtractor {
    */
   private static boolean isValidAnnotation(Project project, PsiAnnotation psiAnnotation) {
     final String text = psiAnnotation.getQualifiedName();
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (text.startsWith("com.facebook.")) {
       return false;
     }
     PsiClass annotationClass =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         PsiSearchUtils.getInstance().findClass(project, psiAnnotation.getQualifiedName());
     if (annotationClass == null) {
       return false;
