@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.widget
 
 /**
  * Enum for setting vertical gravity of a component. Currently used to design where to vertically
  * align text in a text component.
  */
-public enum VerticalGravity {
+enum class VerticalGravity {
   TOP,
   CENTER,
   BOTTOM
