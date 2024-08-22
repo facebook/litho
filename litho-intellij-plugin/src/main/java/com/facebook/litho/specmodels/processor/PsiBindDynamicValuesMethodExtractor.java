@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnBindDynamicValue;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiBindDynamicValuesMethodExtractor {
   public static ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>>
       getOnBindDynamicValuesMethods(PsiClass psiClass) {
