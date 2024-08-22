@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.processor.DelegateMethodExtractor.ge
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getTypeVariables;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnExitedRange;
 import com.facebook.litho.annotations.OnRegisterRanges;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class PsiWorkingRangesMethodExtractor {
 
   @Nullable
@@ -66,6 +68,7 @@ class PsiWorkingRangesMethodExtractor {
             .annotations(ImmutableList.of())
             .modifiers(PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()))
             .name(psiMethod.getName())
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
             .typeVariables(ImmutableList.copyOf(getTypeVariables(psiMethod)))
             .methodParams(ImmutableList.copyOf(methodParams))
@@ -95,6 +98,7 @@ class PsiWorkingRangesMethodExtractor {
                 OnEnteredRange.class.getName());
         final String name = enteredRangeAnnotation.name();
         models.putIfAbsent(name, new WorkingRangeMethodModel(name));
+        // NULLSAFE_FIXME[Nullable Dereference]
         models.get(name).enteredRangeModel = enteredRangeMethod;
       }
 
@@ -110,6 +114,7 @@ class PsiWorkingRangesMethodExtractor {
                 OnExitedRange.class.getName());
         final String name = exitedRangeAnnotation.name();
         models.putIfAbsent(name, new WorkingRangeMethodModel(name));
+        // NULLSAFE_FIXME[Nullable Dereference]
         models.get(name).exitedRangeModel = exitedRangeMethod;
       }
     }
@@ -132,18 +137,21 @@ class PsiWorkingRangesMethodExtractor {
             ImmutableList.of());
 
     PsiAnnotation psiAnnotation = AnnotationUtil.findAnnotation(psiMethod, annotationQualifiedName);
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     PsiNameValuePair valuePair = AnnotationUtil.findDeclaredAttribute(psiAnnotation, "name");
 
     return SpecMethodModel.<EventMethod, WorkingRangeDeclarationModel>builder()
         .annotations(ImmutableList.of())
         .modifiers(PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()))
         .name(psiMethod.getName())
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
         .typeVariables(ImmutableList.copyOf(getTypeVariables(psiMethod)))
         .methodParams(ImmutableList.copyOf(methodParams))
         .representedObject(psiMethod)
         .typeModel(
             new WorkingRangeDeclarationModel(
+                // NULLSAFE_FIXME[Nullable Dereference]
                 valuePair.getLiteralValue(), valuePair.getNameIdentifier()))
         .build();
   }
