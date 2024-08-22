@@ -30,18 +30,21 @@ import com.facebook.flipper.plugins.inspector.Named;
 import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.debug.DebugSection;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
 
   @Override
   public void invalidate(final DebugSection debugSection) {
     super.invalidate(debugSection);
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     new ErrorReportingRunnable(mConnection) {
       @Override
       protected void runOrThrow() throws Exception {
@@ -150,6 +153,7 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
       for (int i = 0; i < childCount; i++) {
         final Object child = getChildAt(node, i);
         final NodeDescriptor descriptor = descriptorForClass(child.getClass());
+        // NULLSAFE_FIXME[Nullable Dereference]
         descriptor.setHighlighted(child, selected, isAlignmentMode);
       }
     }
@@ -224,6 +228,7 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
       for (int i = 0; i < childCount; i++) {
         DebugSection child = (DebugSection) getChildAt(node, i);
         Rect bounds = child.getBounds();
+        // NULLSAFE_FIXME[Nullable Dereference]
         final boolean hit = touch.containedIn(bounds.left, bounds.top, bounds.right, bounds.bottom);
         if (hit) {
           touch.continueWithOffset(i, 0, 0);
@@ -237,12 +242,14 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
   @Override
   public String getDecoration(DebugSection node) throws Exception {
     // TODO T39526148
+    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
   @Override
   public boolean matches(String query, DebugSection node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(Object.class);
+    // NULLSAFE_FIXME[Nullable Dereference]
     return descriptor.matches(query, node);
   }
 
