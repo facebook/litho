@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Extracts delegate methods from the given input. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiDelegateMethodExtractor {
 
   public static ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods(
@@ -60,6 +62,7 @@ public class PsiDelegateMethodExtractor {
                 ImmutableList.copyOf(methodAnnotations),
                 PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()),
                 psiMethod.getName(),
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()),
                 ImmutableList.<TypeVariableName>of(),
                 ImmutableList.copyOf(methodParams),
