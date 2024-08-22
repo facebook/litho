@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.COMPONENTS_PACKAGE;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.intellij.codeInsight.AnnotationUtil;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Extracts methods from the given input. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiMethodExtractorUtils {
 
   static List<TypeVariableName> getTypeVariables(PsiMethod method) {
@@ -52,6 +54,7 @@ public class PsiMethodExtractorUtils {
             .filter(PsiType.class::isInstance)
             .map(bound -> PsiTypeUtils.getTypeName((PsiType) bound))
             .toArray(TypeName[]::new);
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     return TypeVariableName.get(typeName, typeBounds);
   }
 
@@ -123,6 +126,7 @@ public class PsiMethodExtractorUtils {
 
       PsiNameValuePair[] paramAttributes = annotationOnParam.getParameterList().getAttributes();
       for (PsiNameValuePair attribute : paramAttributes) {
+        // NULLSAFE_FIXME[Nullable Dereference, Parameter Not Nullable]
         annotationSpec.addMember(attribute.getName(), attribute.getDetachedValue().getText());
       }
 
