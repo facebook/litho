@@ -17,11 +17,13 @@
 package com.facebook.litho.editor.flipper;
 
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.sections.debug.DebugSection;
 import com.facebook.litho.widget.LithoRecyclerView;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class LithoFlipperDescriptors {
 
   public static void add(DescriptorMapping descriptorMapping) {
