@@ -22,6 +22,7 @@ import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.core.FlipperValue;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.SetDataOperations;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.editor.EditorRegistry;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
@@ -46,6 +47,7 @@ import javax.annotation.Nullable;
  * <p>It provides methods to convert from FlipperDynamic, and to provide the description of a Prop
  * or State as a FlipperObject, FlipperArray or FlipperValue.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class FlipperEditor {
   /**
@@ -128,6 +130,7 @@ public class FlipperEditor {
       SetDataOperations.FlipperValueHint hint, FlipperDynamic dynamic) {
     switch (hint) {
       case STRING:
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         return EditorValue.string(dynamic.asString());
       case NUMBER:
         return EditorValue.number(dynamic.asDouble());
