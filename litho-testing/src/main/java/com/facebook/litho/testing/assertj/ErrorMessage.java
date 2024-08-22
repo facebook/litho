@@ -17,10 +17,12 @@
 package com.facebook.litho.testing.assertj;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import java.lang.reflect.Field;
 
 /** Utility class for error messages related to the testing api assertions */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ErrorMessage {
 
   /**
