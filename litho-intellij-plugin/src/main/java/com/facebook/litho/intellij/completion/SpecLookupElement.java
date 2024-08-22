@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.intellij.codeInsight.completion.InsertHandler;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Lookup item renders an element with Litho type. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class SpecLookupElement extends LookupElementDecorator<LookupElement> {
   private static final Map<String, LookupElement> CACHE = new HashMap<>(20);
   private final InsertHandler<LookupElement> insertHandler;
