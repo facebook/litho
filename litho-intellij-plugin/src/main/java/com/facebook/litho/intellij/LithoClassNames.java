@@ -16,7 +16,10 @@
 
 package com.facebook.litho.intellij;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Contains Litho class names. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoClassNames {
   private LithoClassNames() {}
 
