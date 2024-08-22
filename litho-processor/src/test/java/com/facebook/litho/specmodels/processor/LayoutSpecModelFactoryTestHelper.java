@@ -19,20 +19,17 @@ package com.facebook.litho.specmodels.processor;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 
 public class LayoutSpecModelFactoryTestHelper {
   public static void create_forLayoutSpec_populateGenericSpecInfo(
-      LayoutSpecModel mLayoutSpecModel, DependencyInjectionHelper mDependencyInjectionHelper) {
+      LayoutSpecModel mLayoutSpecModel) {
     assertThat(mLayoutSpecModel.getSpecName()).isEqualTo("TestLayoutSpec");
     assertThat(mLayoutSpecModel.getComponentName()).isEqualTo("TestLayoutComponentName");
     assertThat(mLayoutSpecModel.getDelegateMethods()).hasSize(4);
     assertThat(mLayoutSpecModel.getProps()).hasSize(4);
     assertThat(mLayoutSpecModel.getStateValues()).hasSize(2);
-    assertThat(mLayoutSpecModel.getDependencyInjectionHelper())
-        .isSameAs(mDependencyInjectionHelper);
   }
 
   public static void create_forLayoutSpec_populateOnAttachInfo(LayoutSpecModel mLayoutSpecModel) {

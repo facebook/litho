@@ -137,21 +137,21 @@ public class ComponentGenerateService {
   @Nullable
   private static SpecModel createModel(PsiClass specCls) {
     final LayoutSpecModel layoutSpecModel =
-        LAYOUT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
+        LAYOUT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls);
     if (layoutSpecModel != null) {
       return layoutSpecModel;
     }
     final MountSpecModel mountSpecModel =
-        MOUNT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
+        MOUNT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls);
     if (mountSpecModel != null) {
       return mountSpecModel;
     }
     final GroupSectionSpecModel groupSectionSpecModel =
-        GROUP_SECTION_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
+        GROUP_SECTION_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls);
     if (groupSectionSpecModel != null) {
       return groupSectionSpecModel;
     }
-    return DIFF_SECTION_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
+    return DIFF_SECTION_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls);
   }
 
   private static String createFileContentFromModel(String clsQualifiedName, SpecModel specModel) {

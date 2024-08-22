@@ -39,7 +39,6 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.processor.AnnotationExtractor;
@@ -130,9 +129,8 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSection
       TypeElement element,
       Messager messager,
       EnumSet<RunMode> runMode,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
-    return createModel(elements, types, element, messager, dependencyInjectionHelper, runMode);
+    return createModel(elements, types, element, messager, runMode);
   }
 
   public DiffSectionSpecModel createModel(
@@ -140,7 +138,6 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSection
       Types types,
       TypeElement element,
       Messager messager,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       EnumSet<RunMode> runMode) {
     ImmutableList<SpecMethodModel<DelegateMethod, Void>> unsupportedMethods =
         DelegateMethodExtractor.getDelegateMethods(
@@ -185,7 +182,6 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSection
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(DiffSectionSpec.class).isPublic(),
         SpecElementTypeDeterminator.determine(element),
-        dependencyInjectionHelper,
         element,
         mSpecGenerator,
         FieldsExtractor.extractFields(element));

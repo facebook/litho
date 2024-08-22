@@ -27,7 +27,6 @@ import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.intellij.openapi.project.Project;
@@ -61,10 +60,7 @@ public class PsiDiffSectionSpecModelFactory {
   }
 
   @Nullable
-  public DiffSectionSpecModel createWithPsi(
-      Project project,
-      PsiClass psiClass,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+  public DiffSectionSpecModel createWithPsi(Project project, PsiClass psiClass) {
     final DiffSectionSpec diffSectionSpecAnnotation =
         PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, DiffSectionSpec.class);
     if (diffSectionSpecAnnotation == null) {
@@ -100,7 +96,6 @@ public class PsiDiffSectionSpecModelFactory {
         ImmutableList.of(),
         diffSectionSpecAnnotation.isPublic(),
         SpecElementType.JAVA_CLASS,
-        dependencyInjectionHelper,
         psiClass,
         mDiffSectionSpecGenerator,
         PsiFieldsExtractor.extractFields(psiClass));

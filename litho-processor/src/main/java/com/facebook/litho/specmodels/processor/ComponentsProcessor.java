@@ -28,7 +28,7 @@ import javax.lang.model.SourceVersion;
 public class ComponentsProcessor extends AbstractComponentsProcessor {
 
   public ComponentsProcessor() {
-    super(ImmutableList.of(new LayoutSpecModelFactory(), new MountSpecModelFactory()), null);
+    super(ImmutableList.of(new LayoutSpecModelFactory(), new MountSpecModelFactory()));
   }
 
   @Override

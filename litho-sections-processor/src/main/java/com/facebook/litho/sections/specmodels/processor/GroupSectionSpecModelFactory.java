@@ -38,7 +38,6 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.processor.AnnotationExtractor;
@@ -127,9 +126,8 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
       TypeElement element,
       Messager messager,
       EnumSet<RunMode> runMode,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
-    return createModel(elements, types, element, messager, dependencyInjectionHelper, runMode);
+    return createModel(elements, types, element, messager, runMode);
   }
 
   public GroupSectionSpecModel createModel(
@@ -137,7 +135,6 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
       Types types,
       TypeElement element,
       Messager messager,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       EnumSet<RunMode> runMode) {
     ImmutableList<SpecMethodModel<DelegateMethod, Void>> unsupportedMethods =
         DelegateMethodExtractor.getDelegateMethods(
@@ -181,7 +178,6 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(GroupSectionSpec.class).isPublic(),
         SpecElementTypeDeterminator.determine(element),
-        dependencyInjectionHelper,
         element,
         mSpecGenerator,
         FieldsExtractor.extractFields(element));

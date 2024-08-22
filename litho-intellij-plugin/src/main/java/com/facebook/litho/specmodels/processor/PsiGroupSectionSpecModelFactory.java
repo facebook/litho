@@ -26,7 +26,6 @@ import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.intellij.openapi.project.Project;
@@ -63,10 +62,7 @@ public class PsiGroupSectionSpecModelFactory {
    *     only.
    */
   @Nullable
-  public GroupSectionSpecModel createWithPsi(
-      Project project,
-      PsiClass psiClass,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+  public GroupSectionSpecModel createWithPsi(Project project, PsiClass psiClass) {
     GroupSectionSpec groupSectionSpecAnnotation =
         PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, GroupSectionSpec.class);
     if (groupSectionSpecAnnotation == null) {
@@ -102,7 +98,6 @@ public class PsiGroupSectionSpecModelFactory {
         ImmutableList.of(),
         groupSectionSpecAnnotation.isPublic(),
         SpecElementType.JAVA_CLASS,
-        dependencyInjectionHelper,
         psiClass,
         mGroupSectionSpecGenerator,
         PsiFieldsExtractor.extractFields(psiClass));

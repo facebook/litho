@@ -20,7 +20,6 @@ import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
 import com.facebook.annotationprocessors.common.ProcessorBase;
 import com.facebook.litho.specmodels.internal.RunMode;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.JavaFile;
 import java.io.IOException;
@@ -30,7 +29,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -42,7 +40,6 @@ import javax.tools.Diagnostic;
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends ProcessorBase {
 
-  @Nullable private final DependencyInjectionHelperFactory mDependencyInjectionHelperFactory;
   private final List<SpecModelFactory> mSpecModelFactories;
   private final boolean mShouldSavePropNames;
   private PropNameInterStageStore mPropNameInterStageStore;
@@ -56,18 +53,13 @@ public abstract class AbstractComponentsProcessor extends ProcessorBase {
         }
       };
 
-  protected AbstractComponentsProcessor(
-      List<SpecModelFactory> specModelFactories,
-      @Nullable DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
-    this(specModelFactories, dependencyInjectionHelperFactory, true);
+  protected AbstractComponentsProcessor(List<SpecModelFactory> specModelFactories) {
+    this(specModelFactories, true);
   }
 
   protected AbstractComponentsProcessor(
-      List<SpecModelFactory> specModelFactories,
-      @Nullable DependencyInjectionHelperFactory dependencyInjectionHelperFactory,
-      boolean shouldSavePropNames) {
+      List<SpecModelFactory> specModelFactories, boolean shouldSavePropNames) {
     mSpecModelFactories = specModelFactories;
-    mDependencyInjectionHelperFactory = dependencyInjectionHelperFactory;
     mShouldSavePropNames = shouldSavePropNames;
   }
 
@@ -109,9 +101,6 @@ public abstract class AbstractComponentsProcessor extends ProcessorBase {
                   (TypeElement) element,
                   processingEnv.getMessager(),
                   mRunMode,
-                  mDependencyInjectionHelperFactory == null
-                      ? null
-                      : mDependencyInjectionHelperFactory.create((TypeElement) element, mRunMode),
                   mInterStageStore);
 
           validate(specModel, mRunMode);

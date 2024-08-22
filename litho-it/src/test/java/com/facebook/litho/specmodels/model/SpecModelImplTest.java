@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
@@ -26,7 +25,6 @@ import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -247,69 +245,5 @@ public class SpecModelImplTest {
 
     assertThat(specModel.getTreeProps()).hasSize(2);
     assertThat(specModel.getTreeProps()).contains(mTreePropModel1, mTreePropModel2);
-
-    assertThat(specModel.getDependencyInjectionHelper()).isNull();
-  }
-
-  @Test
-  public void testCreateSpecModelImplWithDependencyInjection() {
-    DependencyInjectionHelper diGenerator = mock(DependencyInjectionHelper.class);
-    SpecModel specModel =
-        SpecModelImpl.newBuilder()
-            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-            .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
-            .triggerMethods(ImmutableList.of(mTriggerMethodModel))
-            .workingRangeMethods(ImmutableList.of(mWorkingRangeMethodModel))
-            .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
-            .propDefaults(ImmutableList.of(mPropDefaultModel1))
-            .dependencyInjectionHelper(diGenerator)
-            .representedObject(new Object())
-            .build();
-
-    assertThat(specModel.getDependencyInjectionHelper()).isSameAs(diGenerator);
-  }
-
-  @Test
-  public void testOffsetRegressionForInjectProp() {
-    final List<MethodParamModel> params1 = new ArrayList<>();
-    params1.add(mPropModel1);
-    params1.add(mPropModel2);
-
-    final List<MethodParamModel> params2 = new ArrayList<>();
-    params2.add(mPropModel1);
-
-    final SpecMethodModel<DelegateMethod, Void> method1 =
-        SpecMethodModel.<DelegateMethod, Void>builder()
-            .annotations(ImmutableList.of())
-            .modifiers(ImmutableList.of())
-            .name("method1")
-            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
-            .methodParams(ImmutableList.copyOf(params1))
-            .build();
-    final SpecMethodModel<DelegateMethod, Void> method2 =
-        SpecMethodModel.<DelegateMethod, Void>builder()
-            .annotations(ImmutableList.of())
-            .modifiers(ImmutableList.of())
-            .name("method2")
-            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
-            .methodParams(ImmutableList.copyOf(params2))
-            .build();
-
-    DependencyInjectionHelper diGenerator = mock(DependencyInjectionHelper.class);
-    SpecModel specModel =
-        SpecModelImpl.newBuilder()
-            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-            .delegateMethods(ImmutableList.of(method1, method2))
-            .cachedPropNames(ImmutableList.of("savedOne", "savedTwo", "savedThree", "savedFour"))
-            .dependencyInjectionHelper(diGenerator)
-            .representedObject(new Object())
-            .build();
-
-    final ImmutableList<PropModel> props = specModel.getProps();
-
-    assertThat(props).hasSize(3);
-
-    assertThat(props.stream().map(PropModel::getName).collect(Collectors.toList()))
-        .containsExactly("savedOne", "savedThree", "savedTwo");
   }
 }

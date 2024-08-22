@@ -22,7 +22,6 @@ import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.FieldModel;
@@ -80,7 +79,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       SpecElementType specElementType,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject,
       SpecGenerator<GroupSectionSpecModel> groupSectionSpecGenerator,
       ImmutableList<FieldModel> fields) {
@@ -103,7 +101,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
-            .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
             .fields(fields)
@@ -322,11 +319,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public boolean isStateful() {
     return mSpecModel.isStateful();
-  }
-
-  @Override
-  public DependencyInjectionHelper getDependencyInjectionHelper() {
-    return mSpecModel.getDependencyInjectionHelper();
   }
 
   @Override

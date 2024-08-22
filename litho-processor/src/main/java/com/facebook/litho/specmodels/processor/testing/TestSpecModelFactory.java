@@ -19,7 +19,6 @@ package com.facebook.litho.specmodels.processor.testing;
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.testing.DefaultTestSpecGenerator;
 import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
@@ -60,17 +59,14 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
    * to {@link SpecModelFactory#create(Elements, Types, TypeElement, Messager, EnumSet,
-   * DependencyInjectionHelper, InterStageStore)}.
+   * InterStageStore)}.
    */
   @Override
   public Set<Element> extract(RoundEnvironment roundEnvironment) {
     return (Set<Element>) roundEnvironment.getElementsAnnotatedWith(TestSpec.class);
   }
 
-  /**
-   * Create a {@link SpecModel} from the given {@link TypeElement} and an optional {@link
-   * DependencyInjectionHelper}.
-   */
+  /** Create a {@link SpecModel} from the given {@link TypeElement}. */
   @Override
   public TestSpecModel create(
       Elements elements,
@@ -78,7 +74,6 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       TypeElement element,
       Messager messager,
       EnumSet<RunMode> runMode,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
 
     validateElementIsInterface(element);
@@ -93,14 +88,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
     }
 
     final SpecModel enclosedSpecModel =
-        getEnclosedSpecModel(
-            elements,
-            types,
-            valueElement,
-            messager,
-            dependencyInjectionHelper,
-            interStageStore,
-            runMode);
+        getEnclosedSpecModel(elements, types, valueElement, messager, interStageStore, runMode);
 
     if (enclosedSpecModel == null) {
       final String error;
@@ -132,8 +120,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
         enclosedSpecModel.getTypeVariables(),
         enclosedSpecModel,
         mTestSpecGenerator,
-        JavadocExtractor.getClassJavadoc(elements, element),
-        enclosedSpecModel.getDependencyInjectionHelper());
+        JavadocExtractor.getClassJavadoc(elements, element));
   }
 
   private void validateElementIsEmpty(TypeElement element) {
@@ -175,7 +162,6 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       Types types,
       TypeElement element,
       Messager messager,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore,
       EnumSet<RunMode> runMode) {
     final List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
@@ -193,14 +179,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       }
 
       if (factory != null) {
-        return factory.create(
-            elements,
-            types,
-            element,
-            messager,
-            runMode,
-            dependencyInjectionHelper,
-            interStageStore);
+        return factory.create(elements, types, element, messager, runMode, interStageStore);
       }
     }
     return null;

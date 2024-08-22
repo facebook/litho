@@ -23,7 +23,6 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
@@ -59,10 +58,7 @@ public class PsiLayoutSpecModelFactory {
    *     class. Access is allowed from event dispatch thread or inside read-action only.
    */
   @Nullable
-  public LayoutSpecModel createWithPsi(
-      Project project,
-      PsiClass psiClass,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+  public LayoutSpecModel createWithPsi(Project project, PsiClass psiClass) {
     LayoutSpec layoutSpecAnnotation =
         PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class);
     if (layoutSpecAnnotation == null) {
@@ -108,7 +104,6 @@ public class PsiLayoutSpecModelFactory {
         classJavadoc,
         propJavadocs,
         layoutSpecAnnotation.isPublic(),
-        dependencyInjectionHelper,
         SpecElementType.JAVA_CLASS,
         psiClass,
         mLayoutSpecGenerator,

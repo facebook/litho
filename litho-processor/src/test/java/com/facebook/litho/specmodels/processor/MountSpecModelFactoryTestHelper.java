@@ -22,7 +22,6 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BindDynamicValueMethod;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MountSpecModel;
@@ -30,7 +29,7 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 
 public class MountSpecModelFactoryTestHelper {
   public static void create_forMountSpecWithExplicitMountType_populateGenericSpecInfo(
-      MountSpecModel mountSpecModel, DependencyInjectionHelper mDependencyInjectionHelper) {
+      MountSpecModel mountSpecModel) {
     assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpecWithExplicitMountType");
     assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
     assertThat(mountSpecModel.getMountType()).isEqualTo(ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE);
@@ -61,8 +60,6 @@ public class MountSpecModelFactoryTestHelper {
 
     assertThat(mountSpecModel.isPublic()).isFalse();
     assertThat(mountSpecModel.isPureRender()).isTrue();
-
-    assertThat(mountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
 
     assertThat(mountSpecModel.getTriggerMethods()).hasSize(1);
     SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethodModel =

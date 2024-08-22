@@ -75,7 +75,6 @@ public final class SpecModelImpl implements SpecModel {
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
-  @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
 
   private SpecModelImpl(
@@ -103,7 +102,6 @@ public final class SpecModelImpl implements SpecModel {
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       SpecElementType specElementType,
       Object representedObject) {
     mSpecName = getSpecName(qualifiedSpecClassName);
@@ -186,7 +184,6 @@ public final class SpecModelImpl implements SpecModel {
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
-    mDependencyInjectionHelper = dependencyInjectionHelper;
     mSpecElementType = specElementType;
     mRepresentedObject = representedObject;
   }
@@ -396,12 +393,6 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public boolean isStateful() {
     return true;
-  }
-
-  @Nullable
-  @Override
-  public DependencyInjectionHelper getDependencyInjectionHelper() {
-    return mDependencyInjectionHelper;
   }
 
   @Override
@@ -1078,7 +1069,6 @@ public final class SpecModelImpl implements SpecModel {
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
     private boolean mIsPublic;
-    @Nullable private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
     private SpecElementType mSpecElementType;
     private ImmutableList<PropModel> mProps;
@@ -1218,12 +1208,6 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
-    public Builder dependencyInjectionHelper(
-        @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
-      mDependencyInjectionHelper = dependencyInjectionHelper;
-      return this;
-    }
-
     public Builder representedObject(Object representedObject) {
       mRepresentedObject = representedObject;
       return this;
@@ -1263,7 +1247,6 @@ public final class SpecModelImpl implements SpecModel {
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
-          mDependencyInjectionHelper,
           mSpecElementType,
           mRepresentedObject);
     }

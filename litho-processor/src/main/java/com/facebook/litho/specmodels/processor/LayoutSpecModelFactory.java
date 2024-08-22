@@ -27,7 +27,6 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import java.lang.annotation.Annotation;
@@ -83,10 +82,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
     return (Set<Element>) roundEnvironment.getElementsAnnotatedWith(LayoutSpec.class);
   }
 
-  /**
-   * Create a {@link LayoutSpecModel} from the given {@link TypeElement} and an optional {@link
-   * DependencyInjectionHelper}.
-   */
+  /** Create a {@link LayoutSpecModel} from the given {@link TypeElement}. */
   @Override
   public LayoutSpecModel create(
       Elements elements,
@@ -94,7 +90,6 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
       TypeElement element,
       Messager messager,
       EnumSet<RunMode> runMode,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
 
     return new LayoutSpecModel(
@@ -141,7 +136,6 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(LayoutSpec.class).isPublic(),
-        dependencyInjectionHelper,
         SpecElementTypeDeterminator.determine(element),
         element,
         mLayoutSpecGenerator,

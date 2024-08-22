@@ -19,7 +19,6 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.DelegateMethodGenerator.generateDelegates;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -30,7 +29,6 @@ import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -54,9 +52,6 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class DelegateMethodGeneratorTest {
   private static final String TEST_QUALIFIED_SPEC_NAME = "com.facebook.litho.TestSpec";
-
-  private final DependencyInjectionHelper mDependencyInjectionHelper =
-      mock(DependencyInjectionHelper.class);
 
   private SpecModel mSpecModelWithoutDI;
   private SpecModel mSpecModelWithDI;
@@ -123,7 +118,6 @@ public class DelegateMethodGeneratorTest {
             .componentClass(ClassNames.COMPONENT)
             .contextClassName(ClassNames.COMPONENT_CONTEXT)
             .delegateMethods(ImmutableList.of(mDelegateMethodModel))
-            .dependencyInjectionHelper(mDependencyInjectionHelper)
             .representedObject(new Object())
             .build();
   }

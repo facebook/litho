@@ -18,11 +18,9 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateConstructor;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
@@ -36,33 +34,21 @@ import org.junit.runners.JUnit4;
 public class PreambleGeneratorTest {
   private static final String TEST_QUALIFIED_SPEC_NAME = "com.facebook.litho.TestSpec";
 
-  private final DependencyInjectionHelper mDependencyInjectionHelper =
-      mock(DependencyInjectionHelper.class);
-
-  private SpecModel mSpecModelWithoutDI;
-  private SpecModel mSpecModelWithDI;
+  private SpecModel mSpecModel;
 
   @Before
   public void setUp() {
-    mSpecModelWithoutDI =
+    mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
             .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
-            .representedObject(new Object())
-            .build();
-
-    mSpecModelWithDI =
-        SpecModelImpl.newBuilder()
-            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-            .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
-            .dependencyInjectionHelper(mDependencyInjectionHelper)
             .representedObject(new Object())
             .build();
   }
 
   @Test
   public void testGenerateConstructor() {
-    TypeSpecDataHolder typeSpecDataHolder = generateConstructor(mSpecModelWithoutDI);
+    TypeSpecDataHolder typeSpecDataHolder = generateConstructor(mSpecModel);
 
     assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);

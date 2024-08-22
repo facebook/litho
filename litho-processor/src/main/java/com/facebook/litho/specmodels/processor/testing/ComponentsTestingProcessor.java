@@ -29,7 +29,7 @@ import javax.lang.model.SourceVersion;
 public class ComponentsTestingProcessor extends AbstractComponentsProcessor {
 
   public ComponentsTestingProcessor() {
-    super(ImmutableList.of(new TestSpecModelFactory()), null);
+    super(ImmutableList.of(new TestSpecModelFactory()));
   }
 
   @Override

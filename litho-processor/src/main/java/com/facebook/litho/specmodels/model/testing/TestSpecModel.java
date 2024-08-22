@@ -23,7 +23,6 @@ import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.FieldModel;
@@ -70,8 +69,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
       ImmutableList<TypeVariableName> typeVariables,
       SpecModel enclosedSpecModel,
       TestSpecGenerator testSpecGenerator,
-      String classJavadoc,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      String classJavadoc) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -83,7 +81,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
             .propJavadocs(propJavadocs)
             .typeVariables(typeVariables)
             .representedObject(enclosedSpecModel)
-            .dependencyInjectionHelper(dependencyInjectionHelper)
             .build();
     mEnclosedSpecModel = enclosedSpecModel;
     mTestSpecGenerator = testSpecGenerator;
@@ -307,12 +304,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   @Override
   public boolean isStateful() {
     return mSpecModel.isStateful();
-  }
-
-  @Override
-  @Nullable
-  public DependencyInjectionHelper getDependencyInjectionHelper() {
-    return mSpecModel.getDependencyInjectionHelper();
   }
 
   @Override

@@ -20,7 +20,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.sections.specmodels.model.GroupSectionSpecModel;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -28,14 +27,11 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 
 public class GroupSectionSpecModelFactoryTestHelper {
   public static void create_forGroupSectionSpec_populateGenericSpecInfo(
-      GroupSectionSpecModel groupSectionSpecModel,
-      DependencyInjectionHelper mDependencyInjectionHelper) {
+      GroupSectionSpecModel groupSectionSpecModel) {
     assertThat(groupSectionSpecModel.getSpecName()).isEqualTo("TestGroupSectionSpec");
     assertThat(groupSectionSpecModel.getDelegateMethods()).hasSize(4);
     assertThat(groupSectionSpecModel.getProps()).hasSize(5);
     assertThat(groupSectionSpecModel.getStateValues()).hasSize(2);
-    assertThat(groupSectionSpecModel.getDependencyInjectionHelper())
-        .isSameAs(mDependencyInjectionHelper);
   }
 
   public static void create_forGroupSectionSpec_populateServiceInfo(

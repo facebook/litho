@@ -16,11 +16,8 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import static org.mockito.Mockito.mock;
-
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
@@ -29,8 +26,6 @@ import org.junit.Test;
 
 public class PsiLayoutSpecModelFactoryTest extends LithoPluginIntellijTest {
   private final PsiLayoutSpecModelFactory mFactory = new PsiLayoutSpecModelFactory();
-  private final DependencyInjectionHelper mDependencyInjectionHelper =
-      mock(DependencyInjectionHelper.class);
 
   private LayoutSpecModel mLayoutSpecModel;
 
@@ -48,16 +43,13 @@ public class PsiLayoutSpecModelFactoryTest extends LithoPluginIntellijTest {
             () -> {
               mLayoutSpecModel =
                   mFactory.createWithPsi(
-                      psiFile.getProject(),
-                      LithoPluginUtils.getFirstLayoutSpec(psiFile).get(),
-                      mDependencyInjectionHelper);
+                      psiFile.getProject(), LithoPluginUtils.getFirstLayoutSpec(psiFile).get());
             });
   }
 
   @Test
   public void createWithPsi_forLayoutSpec_populateGenericSpecInfo() {
-    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateGenericSpecInfo(
-        mLayoutSpecModel, mDependencyInjectionHelper);
+    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateGenericSpecInfo(mLayoutSpecModel);
   }
 
   @Test

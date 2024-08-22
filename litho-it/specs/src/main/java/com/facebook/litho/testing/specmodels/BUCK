@@ -28,7 +28,7 @@ fb_core_android_library(
         make_dep_path("litho-it/processor/src/main/java/com/facebook/litho/testing/processor:processor"),
     ],
     annotation_processors = [
-        "com.facebook.litho.testing.processor.TestingDIComponentProcessor",
+        "com.facebook.litho.testing.processor.TestingGenericComponentProcessor",
     ],
     source = "8",
     target = "8",

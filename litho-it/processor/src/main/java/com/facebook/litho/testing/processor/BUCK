@@ -12,7 +12,7 @@ load(
 
 fb_java_library(
     name = "processor",
-    srcs = ["TestingDIComponentProcessor.java"],
+    srcs = ["TestingGenericComponentProcessor.java"],
     source = "8",
     target = "8",
     visibility = [

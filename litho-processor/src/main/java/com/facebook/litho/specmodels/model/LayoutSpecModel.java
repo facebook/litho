@@ -53,7 +53,6 @@ public class LayoutSpecModel implements SpecModel {
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
-      DependencyInjectionHelper dependencyInjectionHelper,
       SpecElementType specElementType,
       Object representedObject,
       SpecGenerator<LayoutSpecModel> layoutSpecGenerator,
@@ -81,7 +80,6 @@ public class LayoutSpecModel implements SpecModel {
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
-            .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
             .fields(fields)
@@ -300,11 +298,6 @@ public class LayoutSpecModel implements SpecModel {
   @Override
   public boolean shouldGenerateCopyMethod() {
     return true;
-  }
-
-  @Override
-  public DependencyInjectionHelper getDependencyInjectionHelper() {
-    return mSpecModel.getDependencyInjectionHelper();
   }
 
   @Override

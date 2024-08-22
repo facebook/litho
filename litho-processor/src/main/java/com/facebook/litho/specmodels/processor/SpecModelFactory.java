@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.RunMode;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import java.util.EnumSet;
 import java.util.Set;
@@ -33,21 +32,18 @@ import javax.lang.model.util.Types;
  * A factory for a {@link SpecModel}. It first performs an {@link #extract(RoundEnvironment)} step
  * in which it selects the elements it wants to process from the annotation processor's round
  * environment and then creates a {@link SpecModel} for each extracted element in {@link
- * #create(Elements, Types, TypeElement, Messager, EnumSet, DependencyInjectionHelper,
- * InterStageStore)}.
+ * #create(Elements, Types, TypeElement, Messager, EnumSet, InterStageStore)}.
  */
 public interface SpecModelFactory<T extends SpecModel> {
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link #create(Elements, Types, TypeElement, Messager, EnumSet, DependencyInjectionHelper,
-   * InterStageStore)}.
+   * to {@link #create(Elements, Types, TypeElement, Messager, EnumSet, InterStageStore)}.
    */
   Set<Element> extract(RoundEnvironment roundEnvironment);
 
   /**
-   * Create a {@link SpecModel} from the given {@link TypeElement} and an optional {@link
-   * DependencyInjectionHelper}. The optional {@link InterStageStore} can be used to augment name
-   * lookups in Java 7.
+   * Create a {@link SpecModel} from the given {@link TypeElement}. The optional {@link
+   * InterStageStore} can be used to augment name lookups in Java 7.
    */
   T create(
       Elements elements,
@@ -55,6 +51,5 @@ public interface SpecModelFactory<T extends SpecModel> {
       TypeElement element,
       Messager messager,
       EnumSet<RunMode> runMode,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore propNameInterStageStore);
 }

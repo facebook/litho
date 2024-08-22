@@ -17,12 +17,10 @@
 package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
@@ -32,8 +30,6 @@ import org.junit.Test;
 
 public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
   private final PsiMountSpecModelFactory mFactory = new PsiMountSpecModelFactory();
-  private final DependencyInjectionHelper mDependencyInjectionHelper =
-      mock(DependencyInjectionHelper.class);
 
   private PsiFile mPsiFile;
 
@@ -54,8 +50,7 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
         "TestMountSpecWithExplicitMountType",
         mountSpecModel ->
             MountSpecModelFactoryTestHelper
-                .create_forMountSpecWithExplicitMountType_populateGenericSpecInfo(
-                    mountSpecModel, mDependencyInjectionHelper));
+                .create_forMountSpecWithExplicitMountType_populateGenericSpecInfo(mountSpecModel));
   }
 
   @Test
@@ -103,8 +98,7 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
                       mPsiFile.getProject(),
                       LithoPluginUtils.getFirstClass(
                               mPsiFile, cls -> specName.equals(cls.getName()))
-                          .get(),
-                      mDependencyInjectionHelper);
+                          .get());
               assertion.accept(mountSpecModel);
             });
   }

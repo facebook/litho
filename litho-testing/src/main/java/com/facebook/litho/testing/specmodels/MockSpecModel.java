@@ -21,7 +21,6 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.FieldModel;
@@ -83,7 +82,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
-  @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
   private final TypeSpec mGeneratedTypeSpec;
   private final ClassName mContextClass;
@@ -128,7 +126,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject,
       TypeSpec generatedTypeSpec,
       ClassName contextClass,
@@ -171,7 +168,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
-    mDependencyInjectionHelper = dependencyInjectionHelper;
     mRepresentedObject = representedObject;
     mGeneratedTypeSpec = generatedTypeSpec;
     mContextClass = contextClass;
@@ -402,12 +398,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     return mEnclosedSpecModel.isStateful();
   }
 
-  @Nullable
-  @Override
-  public DependencyInjectionHelper getDependencyInjectionHelper() {
-    return mDependencyInjectionHelper;
-  }
-
   @Override
   public SpecElementType getSpecElementType() {
     return mSpecElementType;
@@ -479,7 +469,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs = ImmutableList.of();
     private boolean mIsPublic;
-    private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
     private TypeSpec mGeneratedTypeSpec;
     private ClassName mContextClass;
@@ -634,11 +623,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder dependencyInjectionHelper(DependencyInjectionHelper dependencyInjectionHelper) {
-      mDependencyInjectionHelper = dependencyInjectionHelper;
-      return this;
-    }
-
     public Builder representedObject(Object representedObject) {
       mRepresentedObject = representedObject;
       return this;
@@ -753,7 +737,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
-          mDependencyInjectionHelper,
           mRepresentedObject,
           mGeneratedTypeSpec,
           mContextClass,
@@ -807,7 +790,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mDiffs, builder.mDiffs)
           && Objects.equals(mClassJavadoc, builder.mClassJavadoc)
           && Objects.equals(mPropJavadocs, builder.mPropJavadocs)
-          && Objects.equals(mDependencyInjectionHelper, builder.mDependencyInjectionHelper)
           && Objects.equals(mRepresentedObject, builder.mRepresentedObject)
           && Objects.equals(mGeneratedTypeSpec, builder.mGeneratedTypeSpec)
           && Objects.equals(mContextClass, builder.mContextClass)
@@ -851,7 +833,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
-          mDependencyInjectionHelper,
           mRepresentedObject,
           mGeneratedTypeSpec,
           mContextClass,

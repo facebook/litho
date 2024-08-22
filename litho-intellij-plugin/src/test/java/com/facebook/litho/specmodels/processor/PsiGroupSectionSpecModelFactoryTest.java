@@ -16,13 +16,10 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import static org.mockito.Mockito.mock;
-
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.sections.specmodels.model.GroupSectionSpecModel;
 import com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactoryTestHelper;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
 import org.junit.Before;
@@ -30,8 +27,6 @@ import org.junit.Test;
 
 public class PsiGroupSectionSpecModelFactoryTest extends LithoPluginIntellijTest {
   private final PsiGroupSectionSpecModelFactory mFactory = new PsiGroupSectionSpecModelFactory();
-  private final DependencyInjectionHelper mDependencyInjectionHelper =
-      mock(DependencyInjectionHelper.class);
 
   private GroupSectionSpecModel mGroupSectionSpecModel;
 
@@ -52,8 +47,7 @@ public class PsiGroupSectionSpecModelFactoryTest extends LithoPluginIntellijTest
                       psiFile.getProject(),
                       LithoPluginUtils.getFirstClass(
                               psiFile, cls -> cls.getName().equals("TestGroupSectionSpec"))
-                          .get(),
-                      mDependencyInjectionHelper);
+                          .get());
             });
   }
 
@@ -63,8 +57,7 @@ public class PsiGroupSectionSpecModelFactoryTest extends LithoPluginIntellijTest
         .invokeAndWait(
             () -> {
               GroupSectionSpecModelFactoryTestHelper
-                  .create_forGroupSectionSpec_populateGenericSpecInfo(
-                      mGroupSectionSpecModel, mDependencyInjectionHelper);
+                  .create_forGroupSectionSpec_populateGenericSpecInfo(mGroupSectionSpecModel);
             });
   }
 

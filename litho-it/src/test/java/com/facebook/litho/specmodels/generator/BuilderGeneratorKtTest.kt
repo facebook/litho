@@ -83,7 +83,7 @@ class BuilderGeneratorKtTest {
 
     val specModel =
         layoutSpecModelFactory.create(
-            elements, types, typeElement, messager, RunMode.normal(), null, null)
+            elements, types, typeElement, messager, RunMode.normal(), null)
     val dataHolder = BuilderGenerator.generate(specModel)
     assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
     assertThat(dataHolder.typeSpecs.get(0).toString())
@@ -149,7 +149,7 @@ class BuilderGeneratorKtTest {
 
     val specModel =
         layoutSpecModelFactory.create(
-            elements, types, typeElement, messager, RunMode.normal(), null, null)
+            elements, types, typeElement, messager, RunMode.normal(), null)
     val dataHolder = BuilderGenerator.generate(specModel)
     assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
     assertThat(dataHolder.typeSpecs.get(0).toString())

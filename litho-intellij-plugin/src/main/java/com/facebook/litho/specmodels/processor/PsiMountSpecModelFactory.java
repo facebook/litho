@@ -27,7 +27,6 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DefaultMountSpecGenerator;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecGenerator;
@@ -63,10 +62,7 @@ public class PsiMountSpecModelFactory {
    * @return a new {@link MountSpecModel} or null
    */
   @Nullable
-  public MountSpecModel createWithPsi(
-      Project project,
-      PsiClass psiClass,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+  public MountSpecModel createWithPsi(Project project, PsiClass psiClass) {
     final MountSpec mountSpecAnnotation =
         PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, MountSpec.class);
     if (mountSpecAnnotation == null) {
@@ -107,7 +103,6 @@ public class PsiMountSpecModelFactory {
         ImmutableList.of(),
         ImmutableList.of(),
         mountSpecAnnotation.isPublic(),
-        dependencyInjectionHelper,
         mountSpecAnnotation.isPureRender(),
         mountSpecAnnotation.hasChildLithoViews(),
         mountSpecAnnotation.poolSize(),

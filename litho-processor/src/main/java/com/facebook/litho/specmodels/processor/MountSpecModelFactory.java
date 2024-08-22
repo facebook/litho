@@ -34,7 +34,6 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DefaultMountSpecGenerator;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.squareup.javapoet.TypeName;
@@ -94,10 +93,7 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
     return (Set<Element>) roundEnvironment.getElementsAnnotatedWith(MountSpec.class);
   }
 
-  /**
-   * Create a {@link MountSpecModel} from the given {@link TypeElement} and an optional {@link
-   * DependencyInjectionHelper}.
-   */
+  /** Create a {@link MountSpecModel} from the given {@link TypeElement}. */
   @Override
   public MountSpecModel create(
       Elements elements,
@@ -105,7 +101,6 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
       TypeElement element,
       Messager messager,
       EnumSet<RunMode> runMode,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     return new MountSpecModel(
         element.getQualifiedName().toString(),
@@ -165,7 +160,6 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         TagExtractor.extractTagsFromSpecClass(types, element, runMode),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(MountSpec.class).isPublic(),
-        dependencyInjectionHelper,
         element.getAnnotation(MountSpec.class).isPureRender(),
         element.getAnnotation(MountSpec.class).hasChildLithoViews(),
         element.getAnnotation(MountSpec.class).poolSize(),

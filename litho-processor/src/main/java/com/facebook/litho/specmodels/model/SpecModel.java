@@ -25,7 +25,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.EnumSet;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /** A model that represents a ComponentSpec. */
 public interface SpecModel {
@@ -237,14 +236,6 @@ public interface SpecModel {
    * @return whether or not this component is stateful.
    */
   boolean isStateful();
-
-  /**
-   * @return null if this spec does not use dependency injection, otherwise return the generator
-   *     that should be used to generate the correct methods for dependency injection to work for
-   *     this component.
-   */
-  @Nullable
-  DependencyInjectionHelper getDependencyInjectionHelper();
 
   /**
    * @return The source type this spec is generated from, e.g. class or singleton.

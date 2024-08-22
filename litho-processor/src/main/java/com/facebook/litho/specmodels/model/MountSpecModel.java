@@ -57,7 +57,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<TagModel> tags,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
       boolean hasChildLithosViews,
       int poolSize,
@@ -89,7 +88,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
-            .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
             .fields(fields)
@@ -316,11 +314,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public boolean isStateful() {
     return false;
-  }
-
-  @Override
-  public DependencyInjectionHelper getDependencyInjectionHelper() {
-    return mSpecModel.getDependencyInjectionHelper();
   }
 
   @Override
