@@ -3,6 +3,8 @@ $dokka.linkExtension:html
 
 module:litho-annotations
 com.facebook.litho.annotations
+module:litho-compose
+com.facebook.litho
 module:litho-core
 com.facebook.litho
 com.facebook.litho.accessibility

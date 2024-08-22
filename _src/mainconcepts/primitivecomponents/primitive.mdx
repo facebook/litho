@@ -54,7 +54,7 @@ This stage of the Primitive's lifecycle can only occur on the main thread.
 
 Each Primitive needs to create the content it hosts (either a `View` or a `Drawable`) by providing [a ViewAllocator or a DrawableAllocator](https://github.com/facebook/litho/blob/75655943f348c0347d534e6931fb53b2f7f16195/litho-rendercore-primitives/src/main/java/com/facebook/rendercore/primitives/ContentAllocator.kt#L34-L64) to the `MountBehavior`, as shown in the following example:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/Image.kt start=start_image_primitive_mount_behavior_example end=end_image_primitive_mount_behavior_example
+```kotlin file=litho-widget/src/main/java/com/facebook/litho/widget/ExperimentalImage.kt start=start_image_primitive_mount_behavior_example end=end_image_primitive_mount_behavior_example
 ```
 
 :::note
@@ -73,7 +73,7 @@ Properties can be set and unset on the content using `bindTo`, `bind`, and `bind
 
 The following code shows a component that appropriately sets and unsets the properties on the content:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/primitives/widgets/Image.kt start=start_image_primitive_mount_behavior_example end=end_image_primitive_mount_behavior_example
+```kotlin file=litho-widget/src/main/java/com/facebook/litho/widget/ExperimentalImage.kt start=start_image_primitive_mount_behavior_example end=end_image_primitive_mount_behavior_example
 ```
 
 Methods like `bind` and `bindWithLayoutData` take dependencies as an argument. Any time dependencies changes between layouts, the `onUnbind {}` callback will be invoked, followed by `bind` or `bindWithLayoutData`. Dependencies should include **all** the props/state that are used to configure the content inside bind/bindWithLayoutData/onUnbind calls.
