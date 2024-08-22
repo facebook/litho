@@ -29,6 +29,7 @@ import android.view.View.OnTouchListener
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.rendercore.RenderUnit.RenderType
+import com.facebook.rendercore.renderunits.HostRenderUnit
 import com.facebook.rendercore.testing.DrawableWrapperUnit
 import com.facebook.rendercore.testing.LayoutResultWrappingNode
 import com.facebook.rendercore.testing.RenderCoreTestRule
@@ -206,6 +207,25 @@ class HostViewTest {
     val host = renderCoreTestRule.rootHost as HostView
     val event = MotionEvent.obtain(200, 300, MotionEvent.ACTION_DOWN, 10.0f, 10.0f, 0)
     host.onTouchEvent(event)
+    Java6Assertions.assertThat(point.x).describedAs("touch x is").isEqualTo(10)
+    Java6Assertions.assertThat(point.y).describedAs("touch y is").isEqualTo(10)
+  }
+
+  @Test
+  fun onHostRenderUnitWithTouchListener_shouldHandleTouchEvent() {
+    val unit = HostRenderUnit(1)
+    val point = Point(0, 0)
+    unit.onTouchListener = OnTouchListener { v, event ->
+      point.x = event.x.toInt()
+      point.y = event.y.toInt()
+      true
+    }
+    val root: LayoutResult =
+        SimpleLayoutResult.create().renderUnit(unit).width(100).height(100).build()
+    renderCoreTestRule.useRootNode(LayoutResultWrappingNode(root)).render()
+    val host = (renderCoreTestRule.rootHost as HostView).getChildAt(0) as HostView
+    val event = MotionEvent.obtain(200, 300, MotionEvent.ACTION_BUTTON_PRESS, 10.0f, 10.0f, 0)
+    host.dispatchTouchEvent(event)
     Java6Assertions.assertThat(point.x).describedAs("touch x is").isEqualTo(10)
     Java6Assertions.assertThat(point.y).describedAs("touch y is").isEqualTo(10)
   }
