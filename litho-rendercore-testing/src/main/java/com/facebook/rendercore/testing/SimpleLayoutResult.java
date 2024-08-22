@@ -17,6 +17,7 @@
 package com.facebook.rendercore.testing;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import java.util.List;
  *     .build()
  * </pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SimpleLayoutResult implements LayoutResult {
 
   private final @Nullable RenderUnit<?> mRenderUnit;
@@ -76,6 +78,7 @@ public class SimpleLayoutResult implements LayoutResult {
     this.paddingLeft = paddingLeft;
     mChildren = children;
     mRenderUnit = renderUnit;
+    // NULLSAFE_FIXME[Field Not Nullable]
     mLayoutData = layoutData;
   }
 
@@ -85,6 +88,7 @@ public class SimpleLayoutResult implements LayoutResult {
   }
 
   public SimpleLayoutResult(RenderUnit<?> renderUnit, int x, int y, int width, int height) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     this(renderUnit, null, x, y, width, height);
   }
 
