@@ -19,6 +19,7 @@ fb_java_library(
         make_dep_path("litho-it/..."),
     ],
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_ANNOTATIONPROCESSORS_COMMON_TARGET,
         LITHO_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),

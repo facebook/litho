@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -45,6 +46,7 @@ import javax.lang.model.element.Modifier;
  * <p>This is only to be used for tests as the generated code is rather useless for any production
  * use cases.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
 
