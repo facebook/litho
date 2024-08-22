@@ -16,8 +16,10 @@
 
 package com.facebook.litho.intellij.actions.templates;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.TemplateProvider;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class GroupSectionSpecTemplateProvider implements TemplateProvider {
 
   @Override
