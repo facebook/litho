@@ -168,6 +168,21 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
     }
   }
 
+  /**
+   * Add the [item] by applying [componentFunction] to it. Similar to [children] but for a single
+   * element
+   *
+   * @param item Data model to be rendered as child
+   * @param id A function to create a unique id from data model
+   * @param deps A function to create a list of deps from data model
+   * @param isSticky A function that indicates if the child should fix to the top of the collection
+   *   when it is scrolled out of view
+   * @param parentWidthPercent A function that sets the fill width of the child based on the parent
+   *   container's size
+   * @param parentHeightPercent A function that sets the fill height of the child based on the
+   *   parent container's size
+   * @param componentFunction A function that generates a [Component] from a data model
+   */
   fun <T> child(
       item: T,
       id: (T) -> Any,
