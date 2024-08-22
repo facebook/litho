@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -29,6 +30,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SectionSpecMethodAnnotationsProvider extends CompletionProvider<CompletionParameters> {
   static final String ANNOTATION_PREFIX = "SectionSpec";
   static final CompletionProvider<CompletionParameters> INSTANCE =
