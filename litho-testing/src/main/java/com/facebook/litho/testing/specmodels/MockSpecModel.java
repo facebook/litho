@@ -83,7 +83,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
-  private final boolean mHasInjectedDependencies;
   @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
   private final TypeSpec mGeneratedTypeSpec;
@@ -129,7 +128,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
-      boolean hasInjectedDependencies,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject,
       TypeSpec generatedTypeSpec,
@@ -173,7 +171,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
-    mHasInjectedDependencies = hasInjectedDependencies;
     mDependencyInjectionHelper = dependencyInjectionHelper;
     mRepresentedObject = representedObject;
     mGeneratedTypeSpec = generatedTypeSpec;
@@ -376,11 +373,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public boolean hasInjectedDependencies() {
-    return mHasInjectedDependencies;
-  }
-
-  @Override
   public boolean shouldCheckIdInIsEquivalentToMethod() {
     return mShouldCheckIdInIsEquivalentToMethod;
   }
@@ -487,7 +479,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs = ImmutableList.of();
     private boolean mIsPublic;
-    private boolean mHasInjectedDependencies;
     private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
     private TypeSpec mGeneratedTypeSpec;
@@ -643,11 +634,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder hasInjectedDependencies(boolean hasInjectedDependencies) {
-      mHasInjectedDependencies = hasInjectedDependencies;
-      return this;
-    }
-
     public Builder dependencyInjectionHelper(DependencyInjectionHelper dependencyInjectionHelper) {
       mDependencyInjectionHelper = dependencyInjectionHelper;
       return this;
@@ -767,7 +753,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
-          mHasInjectedDependencies,
           mDependencyInjectionHelper,
           mRepresentedObject,
           mGeneratedTypeSpec,
@@ -793,7 +778,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       if (o == null || getClass() != o.getClass()) return false;
       final Builder builder = (Builder) o;
       return mIsPublic == builder.mIsPublic
-          && mHasInjectedDependencies == builder.mHasInjectedDependencies
           && mHasDeepCopy == builder.mHasDeepCopy
           && mShouldCheckIdInIsEquivalentToMethod == builder.mShouldCheckIdInIsEquivalentToMethod
           && mIsStylingSupported == builder.mIsStylingSupported
@@ -867,7 +851,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
-          mHasInjectedDependencies,
           mDependencyInjectionHelper,
           mRepresentedObject,
           mGeneratedTypeSpec,

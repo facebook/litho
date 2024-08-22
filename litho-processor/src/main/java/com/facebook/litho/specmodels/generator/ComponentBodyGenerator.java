@@ -199,12 +199,9 @@ public class ComponentBodyGenerator {
     final TypeSpec.Builder renderInfoClassBuilder =
         TypeSpec.classBuilder(className)
             .addSuperinterface(ClassNames.RENDER_DATA)
-            .addAnnotation(Generated.class);
-
-    if (!specModel.hasInjectedDependencies()) {
-      renderInfoClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
-      renderInfoClassBuilder.addTypeVariables(specModel.getTypeVariables());
-    }
+            .addAnnotation(Generated.class)
+            .addModifiers(Modifier.STATIC, Modifier.PRIVATE)
+            .addTypeVariables(specModel.getTypeVariables());
 
     final String copyParamName = "info";
     final String recordParamName = "component";

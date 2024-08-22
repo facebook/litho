@@ -41,11 +41,6 @@ public class SpecModelValidation {
       @Nullable List<Class<? extends Annotation>> extraPermittedEventParamAnnotations,
       EnumSet<RunMode> runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    final DependencyInjectionHelper dependencyInjectionHelper =
-        specModel.getDependencyInjectionHelper();
-    if (specModel.hasInjectedDependencies() && dependencyInjectionHelper != null) {
-      validationErrors.addAll(dependencyInjectionHelper.validate(specModel));
-    }
     validationErrors.addAll(validateName(specModel));
     validationErrors.addAll(
         PropValidation.validate(specModel, reservedPropNames, permittedCommonProps, runMode));

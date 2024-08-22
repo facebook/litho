@@ -19,7 +19,6 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateConstructor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethod;
@@ -27,8 +26,6 @@ import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
-import com.squareup.javapoet.MethodSpec;
-import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +61,7 @@ public class PreambleGeneratorTest {
   }
 
   @Test
-  public void testGenerateConstructorWithoutDependencyInjection() {
+  public void testGenerateConstructor() {
     TypeSpecDataHolder typeSpecDataHolder = generateConstructor(mSpecModelWithoutDI);
 
     assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
@@ -73,28 +70,5 @@ public class PreambleGeneratorTest {
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo("private Constructor() {\n  super(\"Test\");\n" + "}\n");
-  }
-
-  @Test
-  public void testGenerateConstructorWithDependencyInjection() {
-    final MethodSpec constructor =
-        MethodSpec.constructorBuilder()
-            .addModifiers(Modifier.PUBLIC)
-            .addStatement("final Object testObject = new TestObject()")
-            .build();
-
-    when(mDependencyInjectionHelper.generateConstructor(mSpecModelWithDI)).thenReturn(constructor);
-
-    TypeSpecDataHolder typeSpecDataHolder = generateConstructor(mSpecModelWithDI);
-
-    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
-    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
-
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo(
-            "public Constructor() {\n"
-                + "  super(\"Test\");\n  final Object testObject = new TestObject();\n"
-                + "}\n");
   }
 }

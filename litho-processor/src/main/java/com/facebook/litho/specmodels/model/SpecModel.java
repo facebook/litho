@@ -214,11 +214,6 @@ public interface SpecModel {
   boolean isStylingSupported();
 
   /**
-   * @return whether this spec uses dependency injection.
-   */
-  boolean hasInjectedDependencies();
-
-  /**
    * @return whether or not to check component id in isEquivalentTo() method.
    */
   boolean shouldCheckIdInIsEquivalentToMethod();

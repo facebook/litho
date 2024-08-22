@@ -280,11 +280,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public boolean hasInjectedDependencies() {
-    return mSpecModel.hasInjectedDependencies();
-  }
-
-  @Override
   public boolean shouldCheckIdInIsEquivalentToMethod() {
     return mSpecModel.shouldCheckIdInIsEquivalentToMethod();
   }

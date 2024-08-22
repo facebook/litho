@@ -83,17 +83,11 @@ public class BuilderGenerator {
             .addModifiers(Modifier.PUBLIC)
             .addModifiers(Modifier.STATIC)
             .returns(getBuilderType(specModel))
-            .addParameter(specModel.getContextClass(), "context");
-
-    if (specModel.hasInjectedDependencies()) {
-      factoryMethod.addCode(
-          specModel
-              .getDependencyInjectionHelper()
-              .generateFactoryMethodsComponentInstance(specModel));
-    } else {
-      factoryMethod.addStatement(
-          "$L instance = new $L()", specModel.getComponentName(), specModel.getComponentName());
-    }
+            .addParameter(specModel.getContextClass(), "context")
+            .addStatement(
+                "$L instance = new $L()",
+                specModel.getComponentName(),
+                specModel.getComponentName());
 
     if (specModel.isStylingSupported()) {
       dataHolder.addMethod(generateDelegatingCreateBuilderMethod(specModel));

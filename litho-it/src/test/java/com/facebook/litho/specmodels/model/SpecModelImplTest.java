@@ -248,7 +248,6 @@ public class SpecModelImplTest {
     assertThat(specModel.getTreeProps()).hasSize(2);
     assertThat(specModel.getTreeProps()).contains(mTreePropModel1, mTreePropModel2);
 
-    assertThat(specModel.hasInjectedDependencies()).isFalse();
     assertThat(specModel.getDependencyInjectionHelper()).isNull();
   }
 
@@ -267,7 +266,6 @@ public class SpecModelImplTest {
             .representedObject(new Object())
             .build();
 
-    assertThat(specModel.hasInjectedDependencies()).isTrue();
     assertThat(specModel.getDependencyInjectionHelper()).isSameAs(diGenerator);
   }
 

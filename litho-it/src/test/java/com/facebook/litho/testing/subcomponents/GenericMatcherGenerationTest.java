@@ -55,8 +55,7 @@ public class GenericMatcherGenerationTest {
   @Test
   public void testGenericPropMatching() {
     final ComponentContext c = mLegacyLithoViewRule.getContext();
-    final Component component =
-        new MyGeneric<>(c.getAndroidContext()).create(c).genericProp(mGenericProp).build();
+    final Component component = MyGeneric.create(c).genericProp(mGenericProp).build();
     final Condition<InspectableComponent> matcher =
         TestMyGeneric.matcher(c).genericProp(mGenericProp).build();
 

@@ -37,21 +37,9 @@ public class PreambleGenerator {
    */
   static TypeSpecDataHolder generateConstructor(SpecModel specModel) {
     final MethodSpec.Builder constructorBuilder =
-        MethodSpec.constructorBuilder().addStatement("super($S)", specModel.getComponentName());
-
-    if (specModel.hasInjectedDependencies()) {
-      final MethodSpec diConstructor =
-          specModel.getDependencyInjectionHelper().generateConstructor(specModel);
-
-      constructorBuilder
-          .addAnnotations(diConstructor.annotations)
-          .addCode(diConstructor.code)
-          .addModifiers(diConstructor.modifiers)
-          .addParameters(diConstructor.parameters);
-    } else {
-      constructorBuilder.addModifiers(Modifier.PRIVATE);
-    }
-
+        MethodSpec.constructorBuilder()
+            .addStatement("super($S)", specModel.getComponentName())
+            .addModifiers(Modifier.PRIVATE);
     return TypeSpecDataHolder.newBuilder().addMethod(constructorBuilder.build()).build();
   }
 }

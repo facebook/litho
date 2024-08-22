@@ -59,7 +59,8 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(mountSpecModel.getComponentName())
             .superclass(ClassNames.SPEC_GENERATED_COMPONENT)
-            .addTypeVariables(mountSpecModel.getTypeVariables());
+            .addTypeVariables(mountSpecModel.getTypeVariables())
+            .addModifiers(Modifier.FINAL);
 
     if (SpecModelUtils.isTypeElement(mountSpecModel)) {
       typeSpec.addOriginatingElement((TypeElement) mountSpecModel.getRepresentedObject());
@@ -67,10 +68,6 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
 
     if (mountSpecModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
-    }
-
-    if (!mountSpecModel.hasInjectedDependencies()) {
-      typeSpec.addModifiers(Modifier.FINAL);
     }
 
     TypeSpecDataHolder.newBuilder()

@@ -289,11 +289,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public boolean hasInjectedDependencies() {
-    return mSpecModel.hasInjectedDependencies();
-  }
-
-  @Override
   public boolean hasDeepCopy() {
     return false;
   }

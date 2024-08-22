@@ -34,7 +34,6 @@ public class GroupSectionSpecModelFactoryTestHelper {
     assertThat(groupSectionSpecModel.getDelegateMethods()).hasSize(4);
     assertThat(groupSectionSpecModel.getProps()).hasSize(5);
     assertThat(groupSectionSpecModel.getStateValues()).hasSize(2);
-    assertThat(groupSectionSpecModel.hasInjectedDependencies()).isTrue();
     assertThat(groupSectionSpecModel.getDependencyInjectionHelper())
         .isSameAs(mDependencyInjectionHelper);
   }

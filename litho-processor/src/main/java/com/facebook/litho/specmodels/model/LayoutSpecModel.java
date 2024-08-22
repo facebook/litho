@@ -273,11 +273,6 @@ public class LayoutSpecModel implements SpecModel {
   }
 
   @Override
-  public boolean hasInjectedDependencies() {
-    return mSpecModel.hasInjectedDependencies();
-  }
-
-  @Override
   public boolean shouldCheckIdInIsEquivalentToMethod() {
     return true;
   }

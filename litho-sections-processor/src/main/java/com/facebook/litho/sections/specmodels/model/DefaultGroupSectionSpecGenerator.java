@@ -58,7 +58,8 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(specModel.getComponentName())
             .superclass(SectionClassNames.SECTION)
-            .addTypeVariables(specModel.getTypeVariables());
+            .addTypeVariables(specModel.getTypeVariables())
+            .addModifiers(Modifier.FINAL);
 
     if (SpecModelUtils.isTypeElement(specModel)) {
       typeSpec.addOriginatingElement((TypeElement) specModel.getRepresentedObject());
@@ -66,10 +67,6 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
 
     if (specModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
-    }
-
-    if (!specModel.hasInjectedDependencies()) {
-      typeSpec.addModifiers(Modifier.FINAL);
     }
 
     TypeSpecDataHolder.newBuilder()

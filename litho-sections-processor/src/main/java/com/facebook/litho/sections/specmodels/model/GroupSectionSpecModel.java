@@ -295,11 +295,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public boolean hasInjectedDependencies() {
-    return mSpecModel.hasInjectedDependencies();
-  }
-
-  @Override
   public boolean shouldCheckIdInIsEquivalentToMethod() {
     return false;
   }

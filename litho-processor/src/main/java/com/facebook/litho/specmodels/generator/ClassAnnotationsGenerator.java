@@ -17,33 +17,15 @@
 package com.facebook.litho.specmodels.generator;
 
 import com.facebook.litho.annotations.Generated;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.AnnotationSpec;
 
 /** Generates class-level annotations for a given {@link SpecModel}. */
 public class ClassAnnotationsGenerator {
   public static TypeSpecDataHolder generate(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder holder = TypeSpecDataHolder.newBuilder();
-
-    if (specModel.hasInjectedDependencies()) {
-      DependencyInjectionHelper dependencyInjectionHelper =
-          specModel.getDependencyInjectionHelper();
-      for (AnnotationSpec annotation : specModel.getClassAnnotations()) {
-        if (dependencyInjectionHelper.isValidGeneratedComponentAnnotation(annotation)) {
-          holder.addAnnotation(annotation);
-        }
-      }
-      for (AnnotationSpec additionalClassAnnotation :
-          dependencyInjectionHelper.getAdditionalClassAnnotations(specModel)) {
-        holder.addAnnotation(additionalClassAnnotation);
-      }
-    } else {
-      holder.addAnnotations(specModel.getClassAnnotations());
-    }
-
-    holder.addAnnotation(AnnotationSpec.builder(Generated.class).build());
-
-    return holder.build();
+    return TypeSpecDataHolder.newBuilder()
+        .addAnnotations(specModel.getClassAnnotations())
+        .addAnnotation(AnnotationSpec.builder(Generated.class).build())
+        .build();
   }
 }

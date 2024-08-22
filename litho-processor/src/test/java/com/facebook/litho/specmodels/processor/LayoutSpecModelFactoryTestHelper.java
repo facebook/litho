@@ -31,7 +31,6 @@ public class LayoutSpecModelFactoryTestHelper {
     assertThat(mLayoutSpecModel.getDelegateMethods()).hasSize(4);
     assertThat(mLayoutSpecModel.getProps()).hasSize(4);
     assertThat(mLayoutSpecModel.getStateValues()).hasSize(2);
-    assertThat(mLayoutSpecModel.hasInjectedDependencies()).isTrue();
     assertThat(mLayoutSpecModel.getDependencyInjectionHelper())
         .isSameAs(mDependencyInjectionHelper);
   }

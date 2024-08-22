@@ -75,7 +75,6 @@ public final class SpecModelImpl implements SpecModel {
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
-  private final boolean mHasInjectedDependencies;
   @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
 
@@ -187,7 +186,6 @@ public final class SpecModelImpl implements SpecModel {
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
-    mHasInjectedDependencies = dependencyInjectionHelper != null;
     mDependencyInjectionHelper = dependencyInjectionHelper;
     mSpecElementType = specElementType;
     mRepresentedObject = representedObject;
@@ -373,11 +371,6 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public boolean isStylingSupported() {
     throw new RuntimeException("Don't delegate to this method!");
-  }
-
-  @Override
-  public boolean hasInjectedDependencies() {
-    return mHasInjectedDependencies;
   }
 
   @Override

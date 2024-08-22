@@ -62,7 +62,6 @@ public class MountSpecModelFactoryTestHelper {
     assertThat(mountSpecModel.isPublic()).isFalse();
     assertThat(mountSpecModel.isPureRender()).isTrue();
 
-    assertThat(mountSpecModel.hasInjectedDependencies()).isTrue();
     assertThat(mountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
 
     assertThat(mountSpecModel.getTriggerMethods()).hasSize(1);
