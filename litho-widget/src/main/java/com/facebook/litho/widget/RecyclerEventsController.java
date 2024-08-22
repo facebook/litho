@@ -122,6 +122,14 @@ public class RecyclerEventsController {
     sectionsRecyclerView.post(mClearRefreshRunnable);
   }
 
+  public boolean isRefreshing() {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null) {
+      return false;
+    }
+    return sectionsRecyclerView.isRefreshing();
+  }
+
   public void showRefreshing() {
     SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
     if (sectionsRecyclerView == null || sectionsRecyclerView.isRefreshing()) {

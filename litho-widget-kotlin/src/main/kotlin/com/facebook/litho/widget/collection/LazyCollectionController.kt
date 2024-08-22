@@ -47,6 +47,10 @@ class LazyCollectionController {
   val recyclerView: RecyclerView?
     @UiThread get() = recyclerEventsController?.recyclerView
 
+  /** Tells if the refresh indicator is currently shown or not */
+  val isRefreshing: Boolean
+    @UiThread get() = recyclerEventsController?.isRefreshing ?: false
+
   /**
    * Toggle the refresh indicator based off a boolean. It is not necessary to call this within the
    * [LazyCollection]'s `onPullToRefresh` callback as it will be triggered automatically.
