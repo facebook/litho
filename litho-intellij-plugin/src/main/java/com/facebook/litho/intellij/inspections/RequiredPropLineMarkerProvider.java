@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RequiredPropLineMarkerProvider implements LineMarkerProvider {
   private final Function<PsiMethodCallExpression, PsiClass> generatedClassResolver;
 
