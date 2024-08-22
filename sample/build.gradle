@@ -49,6 +49,7 @@ dependencies {
     implementation(project(':litho-editor-flipper')) {
         exclude group:'com.facebook.flipper'
     }
+    implementation project(':litho-compose')
     implementation project(':litho-fresco')
     implementation project(':litho-fresco-kotlin')
     implementation project(':litho-live-data')

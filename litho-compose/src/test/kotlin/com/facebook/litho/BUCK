@@ -1,0 +1,55 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("@fbsource//tools/build_defs/android:litho_jni.bzl", "LITHO_JNI_DEPS")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_MOCKITO_KOTLIN_V2_TARGET",
+    "LITHO_RENDERCORE_TESTING_TARGET",
+    "LITHO_ROBOLECTRIC_V4_TARGET",
+    "LITHO_SOLOADER_TARGET",
+    "LITHO_TESTING_ASSERTJ_TARGET",
+    "LITHO_WIDGET_KOTLIN_COLLECTION_TARGET",
+    "LITHO_WIDGET_KOTLIN_TARGET",
+    "LITHO_YOGA_TARGET",
+    "litho_robolectric4_test",
+    "make_dep_path",
+)
+
+oncall("components_for_android")
+
+litho_robolectric4_test(
+    name = "litho-compose",
+    srcs = glob(["**/*.kt"]),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    fork_mode = "per_test",
+    jni_deps = LITHO_JNI_DEPS,
+    language = "KOTLIN",
+    provided_deps = [
+        LITHO_ROBOLECTRIC_V4_TARGET,
+    ],
+    source = "8",
+    target = "8",
+    target_sdk_levels = ["33"],
+    deps = [
+        LITHO_TESTING_ASSERTJ_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_MOCKITO_KOTLIN_V2_TARGET,
+        LITHO_RENDERCORE_TESTING_TARGET,
+        LITHO_WIDGET_KOTLIN_COLLECTION_TARGET,
+        LITHO_WIDGET_KOTLIN_TARGET,
+        LITHO_SOLOADER_TARGET,
+        LITHO_YOGA_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+    ],
+)
