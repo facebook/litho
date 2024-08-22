@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
@@ -23,6 +24,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SectionDeclarationHandler extends GotoDeclarationHandlerBase {
   private static final String EVENT = EventLogger.VALUE_NAVIGATION_CLASS_SECTION;
 
