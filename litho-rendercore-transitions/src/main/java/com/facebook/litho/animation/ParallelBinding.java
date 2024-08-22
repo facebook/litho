@@ -21,6 +21,7 @@ import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * An {@link AnimationBinding} that's composed of other {@link AnimationBinding}s running in
@@ -31,13 +32,13 @@ public class ParallelBinding extends BaseAnimationBinding {
   private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
   private final HashSet<AnimationBinding> mBindingsFinished = new HashSet<>();
-  private final ChoreographerCompat.FrameCallback mStaggerCallback;
+  @Nullable private final ChoreographerCompat.FrameCallback mStaggerCallback;
   private final int mStaggerMs;
   private int mNextIndexToStart = 0;
   private int mChildrenFinished = 0;
   private boolean mHasStarted = false;
   private boolean mIsActive = false;
-  private Resolver mResolver;
+  @Nullable private Resolver mResolver;
 
   public ParallelBinding(int staggerMs, List<AnimationBinding> bindings) {
     mStaggerMs = staggerMs;
