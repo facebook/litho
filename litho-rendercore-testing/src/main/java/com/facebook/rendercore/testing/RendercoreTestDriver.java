@@ -19,6 +19,7 @@ package com.facebook.rendercore.testing;
 import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderResult;
@@ -45,6 +46,7 @@ import java.util.List;
  *       .render();
  * </pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RendercoreTestDriver {
 
   public static NodeBuilderPart forHost(RootHost rootHost) {
@@ -84,6 +86,7 @@ public class RendercoreTestDriver {
 
     @Nullable private final RootHost mRootHost;
     @Nullable private final RenderTreeHost mRenderTreeHost;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private Node mRootNode;
     private int mWidthSpec;
     private int mHeightSpec;
@@ -139,6 +142,7 @@ public class RendercoreTestDriver {
               rootHostAsView.getContext(),
               new RenderState.Delegate() {
                 @Override
+                // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
                 public void commit(
                     int layoutVersion,
                     RenderTree current,
