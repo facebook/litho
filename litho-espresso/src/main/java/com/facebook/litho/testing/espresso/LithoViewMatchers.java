@@ -19,6 +19,7 @@ package com.facebook.litho.testing.espresso;
 import static org.hamcrest.Matchers.any;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import org.hamcrest.BaseMatcher;
@@ -32,6 +33,7 @@ import org.hamcrest.TypeSafeMatcher;
  * <p>This does only allow shallow matching on LithoViews and currently doesn't support targeting
  * individual components.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoViewMatchers {
 
   /**
@@ -54,6 +56,7 @@ public class LithoViewMatchers {
   }
 
   public static Matcher<View> lithoView() {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return lithoView(any(LithoView.class));
   }
 
