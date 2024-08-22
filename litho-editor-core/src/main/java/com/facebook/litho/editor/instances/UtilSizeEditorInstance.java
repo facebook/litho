@@ -17,6 +17,7 @@
 package com.facebook.litho.editor.instances;
 
 import android.util.Size;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.editor.Editor;
 import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorString;
@@ -30,6 +31,7 @@ import java.util.Locale;
  * An editor for android.util.Size, which is represented by the text "width=WIDTH_NUMBER
  * height=HEIGHT_NUMBER", where both numbers are integers.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class UtilSizeEditorInstance implements Editor {
   private static final String WIDTH_FIELD_STR = "width";
   private static final String HEIGHT_FIELD_STR = "height";
