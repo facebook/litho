@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections;
+package com.facebook.litho.sections
 
-import com.facebook.litho.annotations.Event;
-import com.facebook.litho.annotations.EventHandlerRebindMode;
-import javax.annotation.Nullable;
+import com.facebook.litho.annotations.Event
+import com.facebook.litho.annotations.EventHandlerRebindMode
+import kotlin.jvm.JvmField
 
 /**
  * Sections should implement this method to receive events about their children's loading state. An
  * example of the correct usage is:
- *
- * <pre>
- * <code>
- *
- * {@literal @}OnEvent(LoadingEvent.class)
- *  static void onLoadingStateChanged(
- *     SectionContext context,
- *     {@literal @}FromEvent LoadingState loadingState,
- *     {@literal @}Prop int someProp) {
- *       context.updateLoadingState(loadingState);
- *  }
- * </code>
- * </pre>
+ * ```
+ * @OnEvent(LoadingEvent.class)
+ * static void onLoadingStateChanged(
+ *  SectionContext context,
+ *  @FromEvent LoadingState loadingState,
+ *  @Prop int someProp) {
+ *    context.updateLoadingState(loadingState);
+ * }
+ * ```
  */
 @Event(mode = EventHandlerRebindMode.NONE)
-public class LoadingEvent {
-  public enum LoadingState {
+class LoadingEvent {
+
+  enum class LoadingState {
     INITIAL_LOAD,
     LOADING,
     SUCCEEDED,
@@ -47,9 +44,11 @@ public class LoadingEvent {
   }
 
   // Whether after this loading event the dataset is still empty
-  public boolean isEmpty;
+  @JvmField var isEmpty = false
+
   // Either INITIAL_LOAD, LOADING, SUCCEEDED OR FAILED
-  public LoadingState loadingState;
+  lateinit var loadingState: LoadingState
+
   // The reason for LOAD_FAILED events.
-  @Nullable public Throwable t;
+  @JvmField var t: Throwable? = null
 }
