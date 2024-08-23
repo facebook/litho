@@ -32,5 +32,6 @@ android {
     dependencies {
         // We want to export the Java APIs
         api project(':yoga')
+        compileOnly deps.inferAnnotations
     }
 }

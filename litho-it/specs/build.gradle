@@ -45,4 +45,5 @@ dependencies {
     implementation deps.assertjCore
     implementation deps.hamcrestLibrary
     implementation deps.mockitoCore
+    compileOnly deps.inferAnnotations
 }

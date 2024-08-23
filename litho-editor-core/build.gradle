@@ -34,6 +34,7 @@ android {
         compileOnly deps.jsr305
         compileOnly deps.proguardAnnotations
         compileOnly deps.supportAnnotations
+        compileOnly deps.inferAnnotations
     }
     namespace 'com.facebook.litho.editor'
     lint {

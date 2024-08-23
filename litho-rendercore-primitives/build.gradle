@@ -53,6 +53,7 @@ dependencies {
 
     compileOnly deps.proguardAnnotations
     compileOnly deps.supportAnnotations
+    compileOnly deps.inferAnnotations
 }
 
 apply plugin: "com.vanniktech.maven.publish"

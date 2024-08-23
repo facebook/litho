@@ -45,6 +45,7 @@ android {
         compileOnly deps.jsr305
         compileOnly deps.proguardAnnotations
         compileOnly project(':litho-annotations')
+        compileOnly deps.inferAnnotations
 
         testImplementation deps.junit
         testImplementation deps.robolectric

@@ -56,4 +56,6 @@ dependencies {
 
   // SoLoader
   implementation 'com.facebook.soloader:soloader:0.10.5+'
+
+  compileOnly deps.inferAnnotations
 }

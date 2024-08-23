@@ -57,6 +57,7 @@ dependencies {
     implementation deps.jsr305
 
     compileOnly deps.proguardAnnotations
+    compileOnly deps.inferAnnotations
 }
 
 kotlin {

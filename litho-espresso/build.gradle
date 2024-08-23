@@ -39,6 +39,7 @@ dependencies {
     implementation deps.supportEspresso
     implementation deps.supportAppCompat
     implementation deps.soloader
+    compileOnly deps.inferAnnotations
 
     androidTestCompileOnly deps.supportAppCompat
     androidTestImplementation project(':litho-widget')

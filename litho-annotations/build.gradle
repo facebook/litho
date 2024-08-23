@@ -28,6 +28,7 @@ sourceCompatibility = rootProject.sourceCompatibilityVersion
 dependencies {
     // Android Support Library
     compileOnly deps.supportAnnotations
+    compileOnly deps.inferAnnotations
 }
 
 apply plugin: "com.vanniktech.maven.publish"

@@ -57,6 +57,7 @@ dependencies {
     implementation project(':litho-rendercore-text')
 
     compileOnly deps.supportAnnotations
+    compileOnly deps.inferAnnotations
     implementation deps.supportCore
 }
 

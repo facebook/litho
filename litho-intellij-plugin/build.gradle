@@ -53,6 +53,8 @@ dependencies {
     implementation project(':litho-processor')
     implementation deps.javapoet
 
+    compileOnly deps.inferAnnotations
+
     // Testing
     testImplementation deps.junit
     testImplementation deps.mockitoCore

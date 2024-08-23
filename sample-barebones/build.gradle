@@ -52,6 +52,7 @@ dependencies {
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib
+    compileOnly deps.inferAnnotations
 }
 repositories {
     mavenCentral()

@@ -25,4 +25,5 @@ dependencies {
     implementation project(':litho-processor')
     implementation deps.jsr305
     implementation deps.javapoet
+    compileOnly deps.inferAnnotations
 }

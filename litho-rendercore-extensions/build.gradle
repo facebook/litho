@@ -49,6 +49,7 @@ android {
 
 dependencies {
     api project(':litho-rendercore-primitives')
+    compileOnly deps.inferAnnotations
 }
 
 apply plugin: "com.vanniktech.maven.publish"

@@ -59,6 +59,8 @@ dependencies {
     testAnnotationProcessor project(':litho-sections-processor')
     testImplementation project(':litho-testing')
 
+    compileOnly deps.inferAnnotations
+
     // Testing deps
     testImplementation deps.kotlinStandardLib
     testImplementation deps.assertjCore
