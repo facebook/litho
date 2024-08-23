@@ -16,12 +16,14 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.SpringNode;
 import com.facebook.litho.dataflow.ValueNode;
 import java.util.ArrayList;
 
 /** Animation for the transition of the position of a mount content on a quadratic Bezier curve. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BezierTransition extends TransitionAnimationBinding {
 
   private final PropertyAnimation mXPropertyAnimation;
