@@ -16,11 +16,13 @@
 
 package com.facebook.annotationprocessors.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ProcessorBase extends AbstractProcessor {
 
   @Override

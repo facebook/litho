@@ -9,4 +9,7 @@ fb_java_library(
     name = "common",
     srcs = ["ProcessorBase.java"],
     visibility = ["PUBLIC"],
+    deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+    ],
 )
