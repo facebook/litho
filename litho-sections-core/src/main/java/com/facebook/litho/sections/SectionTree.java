@@ -19,7 +19,6 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
-import static com.facebook.litho.debug.LithoDebugEventAttributes.Stack;
 import static com.facebook.litho.sections.DebugEvents.APPLY_CHANGE_SET;
 import static com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet.SET_ROOT_ASYNC;
 import static com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet.UPDATE_STATE_ASYNC;
@@ -53,7 +52,6 @@ import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugInfo;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugListener;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
@@ -426,7 +424,6 @@ public class SectionTree {
             attributes.put(Id, hashCode());
             attributes.put(Name, (section != null ? section.getSimpleName() : "null"));
             attributes.put(Async, mAsyncPropUpdates && !isFirstSetRoot);
-            attributes.put(Stack, LithoDebugEvent.generateStateTrace());
             return Unit.INSTANCE;
           });
     }
@@ -1156,7 +1153,6 @@ public class SectionTree {
             attributes.put(Id, hashCode());
             attributes.put(Source, SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
             attributes.put(Async, source == SET_ROOT_ASYNC || source == UPDATE_STATE_ASYNC);
-            attributes.put(Stack, LithoDebugEvent.generateStateTrace());
             return Unit.INSTANCE;
           });
     }
