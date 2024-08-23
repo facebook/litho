@@ -16,11 +16,14 @@
 
 package com.facebook.rendercore.text;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Enumeration of text alignment values. These values differ from {@link
  * android.text.Layout.Alignment} and View.TEXT_ALIGNMENT_* because this full list of values is not
  * supported by either implementation.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum TextAlignment {
 
   /**
