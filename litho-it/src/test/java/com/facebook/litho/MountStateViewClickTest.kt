@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -92,7 +93,8 @@ class MountStateViewClickTest {
             object : InlineLayoutSpec() {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>)
+                      .clickHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
@@ -108,7 +110,8 @@ class MountStateViewClickTest {
             object : InlineLayoutSpec() {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .longClickHandler(c.newEventHandler(1) as? EventHandler<LongClickEvent>)
+                      .longClickHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })

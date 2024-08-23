@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestLayoutComponent
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions
@@ -39,18 +40,18 @@ class LayoutStateEventHandlerTest {
     rootComponent =
         object : InlineLayoutSpec() {
           protected override fun onCreateLayout(c: ComponentContext): Component {
-            assertCorrectEventHandler(c.newEventHandler(1), 1, rootComponent)
+            assertCorrectEventHandler(EventHandlerTestHelper.create(c, 1), 1, rootComponent)
             Wrapper.create(c).delegate(nestedComponent).build()
-            assertCorrectEventHandler(c.newEventHandler(2), 2, rootComponent)
+            assertCorrectEventHandler(EventHandlerTestHelper.create(c, 2), 2, rootComponent)
             Wrapper.create(c).delegate(nestedComponent).build()
-            assertCorrectEventHandler(c.newEventHandler(3), 3, rootComponent)
+            assertCorrectEventHandler(EventHandlerTestHelper.create(c, 3), 3, rootComponent)
             return TestLayoutComponent.create(c).build()
           }
         }
     nestedComponent =
         object : InlineLayoutSpec() {
           protected override fun onCreateLayout(c: ComponentContext): Component {
-            assertCorrectEventHandler(c.newEventHandler(1), 1, nestedComponent)
+            assertCorrectEventHandler(EventHandlerTestHelper.create(c, 1), 1, nestedComponent)
             return TestLayoutComponent.create(c).build()
           }
         }

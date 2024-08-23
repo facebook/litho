@@ -36,6 +36,7 @@ import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.TestSizeDependentComponent
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.Whitebox
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentCaching
@@ -143,7 +144,9 @@ class LayoutStateCalculateTest {
                           .child(
                               Column.create(c)
                                   .child(TestDrawableComponent.create(c))
-                                  .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>)
+                                  .clickHandler(
+                                      EventHandlerTestHelper.create(c, 1)
+                                          as? EventHandler<ClickEvent>)
                                   .widthPx(50)
                                   .heightPx(50)
                                   .touchExpansionPx(YogaEdge.ALL, 5)))
@@ -176,7 +179,8 @@ class LayoutStateCalculateTest {
                   .child(
                       Column.create(c)
                           .child(TestDrawableComponent.create(c))
-                          .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>))
+                          .clickHandler(
+                              EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>))
                   .build()
         }
     val layoutState =
@@ -204,7 +208,8 @@ class LayoutStateCalculateTest {
                   .child(
                       Column.create(c)
                           .child(TestDrawableComponent.create(c))
-                          .longClickHandler(c.newEventHandler(1) as? EventHandler<LongClickEvent>))
+                          .longClickHandler(
+                              EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>))
                   .build()
         }
     val layoutState =
@@ -233,7 +238,8 @@ class LayoutStateCalculateTest {
                       Column.create(c)
                           .child(TestDrawableComponent.create(c))
                           .focusChangeHandler(
-                              c.newEventHandler(1) as? EventHandler<FocusChangedEvent>))
+                              EventHandlerTestHelper.create(c, 1)
+                                  as? EventHandler<FocusChangedEvent>))
                   .build()
         }
     val layoutState =
@@ -262,7 +268,8 @@ class LayoutStateCalculateTest {
                       Column.create(c)
                           .child(TestDrawableComponent.create(c))
                           .interceptTouchHandler(
-                              c.newEventHandler(1) as? EventHandler<InterceptTouchEvent>))
+                              EventHandlerTestHelper.create(c, 1)
+                                  as? EventHandler<InterceptTouchEvent>))
                   .build()
         }
     val layoutState =
@@ -290,7 +297,8 @@ class LayoutStateCalculateTest {
                   .child(
                       Column.create(c)
                           .child(TestDrawableComponent.create(c))
-                          .touchHandler(c.newEventHandler(1) as? EventHandler<TouchEvent>))
+                          .touchHandler(
+                              EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>))
                   .build()
         }
     val layoutState =
@@ -1340,7 +1348,9 @@ class LayoutStateCalculateTest {
                       Column.create(c)
                           .child(
                               TestDrawableComponent.create(c)
-                                  .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>)
+                                  .clickHandler(
+                                      EventHandlerTestHelper.create(c, 1)
+                                          as? EventHandler<ClickEvent>)
                                   .enabled(false)))
                   .build()
         }
@@ -1406,7 +1416,9 @@ class LayoutStateCalculateTest {
                           .child(TestViewComponent.create(c).enabled(true))
                           .child(
                               TestDrawableComponent.create(c)
-                                  .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>))
+                                  .clickHandler(
+                                      EventHandlerTestHelper.create(c, 1)
+                                          as? EventHandler<ClickEvent>))
                           .child(TestDrawableComponent.create(c).enabled(false)))
                   .child(
                       Column.create(c)
@@ -1644,7 +1656,7 @@ class LayoutStateCalculateTest {
           override fun onCreateLayout(c: ComponentContext): Component? =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
-                  .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>)
+                  .clickHandler(EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
                   .viewTags(SparseArray())
                   .build()
         }
@@ -1674,7 +1686,8 @@ class LayoutStateCalculateTest {
           override fun onCreateLayout(c: ComponentContext): Component? =
               Column.create(c)
                   .child(TestDrawableComponent.create(c))
-                  .longClickHandler(c.newEventHandler(1) as? EventHandler<LongClickEvent>)
+                  .longClickHandler(
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
                   .viewTags(SparseArray())
                   .build()
         }

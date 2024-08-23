@@ -45,16 +45,6 @@ class NoOpEventHandlerTest {
   }
 
   @Test(expected = RuntimeException::class)
-  fun testComponentContextThrowsExceptionWithoutComponentScope() {
-    val componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-    assertThat(
-            componentContext
-                .newEventHandler<Any>(1, arrayOfNulls(1))
-                .isEquivalentTo(getNoOpEventHandler<Any>()))
-        .isTrue
-  }
-
-  @Test(expected = RuntimeException::class)
   fun testComponentLifeCycleThrowsExceptionWithoutComponentScope() {
     val componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val component: Component? = null

@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.Color
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
@@ -48,7 +49,7 @@ class LegacyDuplicateParentChildrenStateTest {
           protected override fun onCreateLayout(c: ComponentContext): Component {
             return Column.create(c)
                 .duplicateParentState(true)
-                .clickHandler(c.newEventHandler(1) as EventHandler<ClickEvent>)
+                .clickHandler(EventHandlerTestHelper.create(c, 1) as EventHandler<ClickEvent>)
                 .child(
                     Column.create(c)
                         .duplicateParentState(false)
@@ -59,15 +60,18 @@ class LegacyDuplicateParentChildrenStateTest {
                         .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
                     Column.create(c)
-                        .clickHandler(c.newEventHandler(2) as EventHandler<ClickEvent>)
+                        .clickHandler(
+                            EventHandlerTestHelper.create(c, 2) as EventHandler<ClickEvent>)
                         .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
                     Column.create(c)
-                        .clickHandler(c.newEventHandler(3) as EventHandler<ClickEvent>)
+                        .clickHandler(
+                            EventHandlerTestHelper.create(c, 3) as EventHandler<ClickEvent>)
                         .child(SimpleMountSpecTester.create(c).duplicateParentState(false)))
                 .child(
                     Column.create(c)
-                        .clickHandler(c.newEventHandler(3) as EventHandler<ClickEvent>)
+                        .clickHandler(
+                            EventHandlerTestHelper.create(c, 3) as EventHandler<ClickEvent>)
                         .backgroundColor(Color.RED)
                         .foregroundColor(Color.RED))
                 .child(Column.create(c).backgroundColor(Color.BLUE).foregroundColor(Color.BLUE))

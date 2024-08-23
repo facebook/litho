@@ -20,9 +20,13 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import androidx.annotation.Nullable;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventDispatchInfo;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.NoOpEventHandler;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -76,5 +80,29 @@ public class EventHandlerTestHelper {
 
     return new EventHandler<>(
         0, EventHandlerRebindMode.REBIND, new EventDispatchInfo(() -> dispatcher, null), null);
+  }
+
+  public static EventHandler create(ComponentContext c, int id) {
+    if (c.getComponentScope() == null || !(c.getComponentScope() instanceof HasEventDispatcher)) {
+      return NoOpEventHandler.getNoOpEventHandler();
+    }
+
+    return new EventHandler<>(
+        id,
+        EventHandlerRebindMode.REBIND,
+        new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c),
+        null);
+  }
+
+  public static EventHandler create(ComponentContext c, int id, @Nullable Object[] params) {
+    if (c.getComponentScope() == null || !(c.getComponentScope() instanceof HasEventDispatcher)) {
+      return NoOpEventHandler.getNoOpEventHandler();
+    }
+
+    return new EventHandler<>(
+        id,
+        EventHandlerRebindMode.REBIND,
+        new EventDispatchInfo((HasEventDispatcher) c.getComponentScope(), c),
+        params);
   }
 }

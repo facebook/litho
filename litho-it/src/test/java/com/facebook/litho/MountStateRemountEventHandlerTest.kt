@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -56,7 +57,8 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .longClickHandler(c.newEventHandler(1) as? EventHandler<LongClickEvent>)
+                      .longClickHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .child(SimpleMountSpecTester.create(c))
                       .build()
@@ -69,7 +71,8 @@ class MountStateRemountEventHandlerTest {
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
-                  .longClickHandler(c.newEventHandler(1) as? EventHandler<LongClickEvent>)
+                  .longClickHandler(
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
                   .child(SimpleMountSpecTester.create(c))
                   .child(SimpleMountSpecTester.create(c))
                   .build()
@@ -91,7 +94,8 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .focusChangeHandler(c.newEventHandler(1) as? EventHandler<FocusChangedEvent>)
+                      .focusChangeHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .child(SimpleMountSpecTester.create(c))
                       .build()
@@ -104,7 +108,8 @@ class MountStateRemountEventHandlerTest {
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
-                  .focusChangeHandler(c.newEventHandler(1) as? EventHandler<FocusChangedEvent>)
+                  .focusChangeHandler(
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
                   .child(SimpleMountSpecTester.create(c))
                   .child(SimpleMountSpecTester.create(c))
                   .build()
@@ -127,7 +132,8 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .touchHandler(c.newEventHandler(1) as? EventHandler<TouchEvent>)
+                      .touchHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .child(SimpleMountSpecTester.create(c))
                       .build()
@@ -140,7 +146,7 @@ class MountStateRemountEventHandlerTest {
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
-                  .touchHandler(c.newEventHandler(2) as? EventHandler<TouchEvent>)
+                  .touchHandler(EventHandlerTestHelper.create(c, 2) as? EventHandler<TouchEvent>)
                   .child(SimpleMountSpecTester.create(c))
                   .child(SimpleMountSpecTester.create(c))
                   .build()
@@ -160,7 +166,8 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>)
+                      .clickHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .child(SimpleMountSpecTester.create(c))
                       .build()
@@ -188,7 +195,8 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .longClickHandler(c.newEventHandler(1) as? EventHandler<LongClickEvent>)
+                      .longClickHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .child(SimpleMountSpecTester.create(c))
                       .build()
@@ -220,7 +228,8 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .focusChangeHandler(c.newEventHandler(1) as? EventHandler<FocusChangedEvent>)
+                      .focusChangeHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .child(SimpleMountSpecTester.create(c))
                       .build()
@@ -253,7 +262,8 @@ class MountStateRemountEventHandlerTest {
             object : InlineLayoutSpec(COMPONENT_IDENTITY) {
               override fun onCreateLayout(c: ComponentContext): Component =
                   Column.create(c)
-                      .touchHandler(c.newEventHandler(1) as? EventHandler<TouchEvent>)
+                      .touchHandler(
+                          EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>)
                       .child(SimpleMountSpecTester.create(c))
                       .child(SimpleMountSpecTester.create(c))
                       .build()
@@ -292,7 +302,7 @@ class MountStateRemountEventHandlerTest {
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
-                  .clickHandler(c.newEventHandler(1) as? EventHandler<ClickEvent>)
+                  .clickHandler(EventHandlerTestHelper.create(c, 1) as? EventHandler<ClickEvent>)
                   .child(SimpleMountSpecTester.create(c))
                   .child(SimpleMountSpecTester.create(c))
                   .build()
@@ -322,7 +332,8 @@ class MountStateRemountEventHandlerTest {
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
-                  .longClickHandler(c.newEventHandler(1) as? EventHandler<LongClickEvent>)
+                  .longClickHandler(
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<LongClickEvent>)
                   .child(SimpleMountSpecTester.create(c))
                   .child(SimpleMountSpecTester.create(c))
                   .build()
@@ -355,7 +366,8 @@ class MountStateRemountEventHandlerTest {
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
-                  .focusChangeHandler(c.newEventHandler(1) as? EventHandler<FocusChangedEvent>)
+                  .focusChangeHandler(
+                      EventHandlerTestHelper.create(c, 1) as? EventHandler<FocusChangedEvent>)
                   .child(SimpleMountSpecTester.create(c))
                   .child(SimpleMountSpecTester.create(c))
                   .build()
@@ -388,7 +400,7 @@ class MountStateRemountEventHandlerTest {
         object : InlineLayoutSpec(COMPONENT_IDENTITY) {
           override fun onCreateLayout(c: ComponentContext): Component =
               Column.create(c)
-                  .touchHandler(c.newEventHandler(1) as? EventHandler<TouchEvent>)
+                  .touchHandler(EventHandlerTestHelper.create(c, 1) as? EventHandler<TouchEvent>)
                   .child(SimpleMountSpecTester.create(c))
                   .child(SimpleMountSpecTester.create(c))
                   .build()

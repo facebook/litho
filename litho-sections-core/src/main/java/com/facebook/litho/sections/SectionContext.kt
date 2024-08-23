@@ -98,7 +98,7 @@ constructor(
   }
 
   /** TODO: Add rebind mode to this API. */
-  override fun <E> newEventHandler(id: Int, params: Array<Any>?): EventHandler<E> {
+  fun <E> newEventHandler(id: Int, params: Array<Any>?): EventHandler<E> {
     val section =
         scope?.get() ?: throw IllegalStateException("Called newEventHandler on a released Section")
     return EventHandler(id, EventHandlerRebindMode.REBIND, EventDispatchInfo(section, this), params)
