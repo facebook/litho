@@ -18,6 +18,7 @@ package com.facebook.litho.testing.testrunner;
 
 import android.os.Build;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.ElementType;
@@ -44,6 +45,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.internal.bytecode.Sandbox;
 import org.robolectric.util.ReflectionHelpers;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoTestRunner extends RobolectricTestRunner {
 
   private final List<Class<? extends LithoLocalTestRunConfiguration>> mLocalTestRunConfigs;
@@ -59,6 +61,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
   public LithoTestRunner(final Class<?> testClass) throws InitializationError {
     super(testClass);
     @Nullable
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     LocalConfigurations annotation = getTestClass().getAnnotation(LocalConfigurations.class);
     if (annotation != null) {
       mLocalTestRunConfigs = Arrays.asList(annotation.value());
@@ -82,11 +85,13 @@ public class LithoTestRunner extends RobolectricTestRunner {
 
   @Override
   protected Config buildGlobalConfig() {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     return Config.Builder.defaults().setSdk(Build.VERSION_CODES.TIRAMISU).build();
   }
 
   @Override
   protected List<FrameworkMethod> getChildren() {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     final List<FrameworkMethod> children = super.getChildren();
 
     final List<Class<? extends LithoTestRunConfiguration>> configs = new ArrayList<>();
@@ -147,6 +152,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
         // doNotAcquireClass, however doing leads to the dreaded "Cannot load NodeConfig" error due
         // to the change in classloader config, thus we hack around it with reflection instead.
         Class<LithoTestRunner> testConfig =
+            // NULLSAFE_FIXME[Not Vetted Third-Party]
             lithoMethod.sandbox.bootstrappedClass(LithoTestRunConfiguration.class);
         try {
           testConfig
@@ -170,6 +176,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
         // error due to the change in classloader config, thus we hack around it with reflection
         // instead.
         Class<LithoTestRunner> localTestConfig =
+            // NULLSAFE_FIXME[Not Vetted Third-Party]
             lithoMethod.sandbox.bootstrappedClass(LithoLocalTestRunConfiguration.class);
         try {
           localTestConfig
@@ -191,6 +198,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
       // See comment in beforeTest above
       if (lithoMethod.configurationInstance != null) {
         Class<LithoTestRunner> testConfig =
+            // NULLSAFE_FIXME[Not Vetted Third-Party, Nullable Dereference]
             lithoMethod.sandbox.bootstrappedClass(LithoTestRunConfiguration.class);
         try {
           testConfig
@@ -204,6 +212,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
 
       if (lithoMethod.localConfigurationInstance != null) {
         Class<LithoTestRunner> localTestConfig =
+            // NULLSAFE_FIXME[Not Vetted Third-Party, Nullable Dereference]
             lithoMethod.sandbox.bootstrappedClass(LithoLocalTestRunConfiguration.class);
         try {
           localTestConfig
@@ -251,6 +260,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
     @SuppressWarnings("ReflectionMethodUse")
     @Override
     public String getName() {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       StringBuilder name = new StringBuilder(super.getName());
 
       String variant =
