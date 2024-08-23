@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentHost;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -31,6 +32,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /** Function objects used for extracting specific information out of Android classes */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ViewExtractors {
 
   private ViewExtractors() {}
@@ -50,11 +52,13 @@ public final class ViewExtractors {
           }
           if (text == null) {
             return String.format(
+                // NULLSAFE_FIXME[Nullable Dereference]
                 "No text found, view is %s", getVisibilityString(input.getVisibility()));
           }
 
           return String.format(
               "Found text: \"%s\", view is %s",
+              // NULLSAFE_FIXME[Nullable Dereference]
               Strings.nullToEmpty(text.toString()), getVisibilityString(input.getVisibility()));
         }
       };
