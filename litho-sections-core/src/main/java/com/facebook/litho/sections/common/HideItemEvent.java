@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -24,7 +25,9 @@ import com.facebook.litho.annotations.Event;
  *
  * @param model the edge model object.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class HideItemEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Object model;
 }
