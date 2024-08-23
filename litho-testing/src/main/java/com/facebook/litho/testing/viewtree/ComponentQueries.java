@@ -19,6 +19,7 @@ package com.facebook.litho.testing.viewtree;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.MatrixDrawable;
 import com.google.common.base.Predicate;
@@ -28,6 +29,7 @@ import java.util.regex.Pattern;
 import org.robolectric.Shadows;
 
 /** Utility APIs to query the state of components. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ComponentQueries {
 
   /**
@@ -93,6 +95,7 @@ class ComponentQueries {
 
     final String drawnDrawableDescription = ViewPredicates.getDrawnDrawableDescription(drawable);
     if (!drawnDrawableDescription.isEmpty()) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       return ViewPredicates.getDrawnDrawableDescription(containingDrawable)
           .contains(drawnDrawableDescription);
     }
@@ -103,7 +106,9 @@ class ComponentQueries {
     // equals().
 
     // For Drawables created from a resource we can compare the resource ID they were created with.
+    // NULLSAFE_FIXME[Parameter Not Nullable, Not Vetted Third-Party]
     int containingDrawableResId = Shadows.shadowOf(containingDrawable).getCreatedFromResId();
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     int drawableResId = Shadows.shadowOf(drawable).getCreatedFromResId();
     if (drawableResId != View.NO_ID && containingDrawableResId == drawableResId) {
       return true;
