@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -25,6 +26,7 @@ import org.junit.runners.model.Statement;
  * Looper while still executing those tasks on a background thread. Normal usage of ShadowLooper
  * will execute on the calling thread, which in tests will execute code on the main thread.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BackgroundLayoutLooperRule implements TestRule {
 
   BaseThreadLooperController threadLooperController = new ThreadLooperController();
@@ -55,6 +57,7 @@ public class BackgroundLayoutLooperRule implements TestRule {
   }
 
   public TimeOutSemaphore runToEndOfTasksAsync() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return threadLooperController.runToEndOfTasksAsync();
   }
 }
