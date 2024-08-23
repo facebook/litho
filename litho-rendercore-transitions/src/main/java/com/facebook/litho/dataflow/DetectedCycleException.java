@@ -16,7 +16,10 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Exception thrown when a runtime cycle is detected. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DetectedCycleException extends BadGraphSetupException {
 
   public DetectedCycleException(String detailMessage) {
