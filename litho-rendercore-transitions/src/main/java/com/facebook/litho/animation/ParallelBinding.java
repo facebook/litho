@@ -16,6 +16,7 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import javax.annotation.Nullable;
  * An {@link AnimationBinding} that's composed of other {@link AnimationBinding}s running in
  * parallel, possibly starting on a stagger.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ParallelBinding extends BaseAnimationBinding {
 
   private final List<AnimationBinding> mBindings;
@@ -143,10 +145,12 @@ public class ParallelBinding extends BaseAnimationBinding {
   }
 
   private void startNextBindingForStagger() {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     mBindings.get(mNextIndexToStart).start(mResolver);
     mNextIndexToStart++;
 
     if (mNextIndexToStart < mBindings.size()) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       ChoreographerCompatImpl.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
     }
   }
