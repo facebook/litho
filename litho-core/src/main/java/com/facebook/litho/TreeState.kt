@@ -211,11 +211,8 @@ class TreeState {
       key: String
   ): StateContainer {
     return getStateHandler(scopedContext.isNestedTreeContext)
-        .createOrGetStateContainerForComponent(
-            scopedContext,
-            component,
-            key,
-        )
+        .createOrGetComponentState(scopedContext, component, key)
+        .value
   }
 
   fun removePendingStateUpdate(key: String, isNestedTree: Boolean) {

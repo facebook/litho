@@ -62,6 +62,22 @@ class InitialStateContainer {
     pendingStateHandlers.add(stateHandler)
   }
 
+  fun createOrGetComponentState(
+      component: Component,
+      scopedContext: ComponentContext,
+      key: String
+  ): ComponentState {
+    val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
+
+    return synchronized(stateLock) {
+      val state =
+          initialStates.getOrPut(key) {
+            createInitialStateContainer(context = scopedContext, component = component)
+          }
+      state
+    }
+  }
+
   /**
    * If an initial state for this component has already been created just transfers it to it.
    * Otherwise onCreateInitialState gets called for the component and its result cached.
@@ -71,15 +87,7 @@ class InitialStateContainer {
       scopedContext: ComponentContext,
       key: String
   ): StateContainer {
-    val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
-
-    return synchronized(stateLock) {
-      val state =
-          initialStates.getOrPut(key) {
-            createInitialStateContainer(context = scopedContext, component = component)
-          }
-      state.value
-    }
+    return createOrGetComponentState(component, scopedContext, key).value
   }
 
   private fun createInitialStateContainer(

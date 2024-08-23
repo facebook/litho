@@ -144,25 +144,25 @@ class StateHandler {
    */
   fun getStateContainer(key: String): StateContainer? = _stateContainers[key]?.value
 
-  fun createOrGetStateContainerForComponent(
+  fun createOrGetComponentState(
       scopedContext: ComponentContext,
       component: Component,
       key: String
-  ): StateContainer {
-    val currentStateContainer: StateContainer? = synchronized(this) { _stateContainers[key]?.value }
+  ): ComponentState {
+    val current: ComponentState? = synchronized(this) { _stateContainers[key] }
 
-    return if (currentStateContainer != null) {
+    return if (current != null) {
       neededStateContainers.add(key)
-      currentStateContainer
+      current
     } else {
-      val initialState =
-          initialStateContainer.createOrGetInitialStateForComponent(
+      val state =
+          initialStateContainer.createOrGetComponentState(
               component,
               scopedContext,
               key,
           )
-      addStateContainer(key, initialState)
-      initialState
+      addState(key, state)
+      state
     }
   }
 
@@ -237,6 +237,12 @@ class StateHandler {
   @Synchronized
   fun removePendingStateUpdate(key: String) {
     _pendingStateUpdates.remove(key)
+  }
+
+  @Synchronized
+  fun addState(key: String, state: ComponentState) {
+    neededStateContainers.add(key)
+    _stateContainers[key] = state
   }
 
   /**
