@@ -16,9 +16,11 @@
 
 package com.facebook.litho.testing.testrunner;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.Systracer;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NoOpComponentsSystrace implements Systracer {
 
   public static final NoOpComponentsSystrace sInstance = new NoOpComponentsSystrace();
