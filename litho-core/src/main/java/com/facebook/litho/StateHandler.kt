@@ -22,6 +22,7 @@ import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClas
 import com.facebook.litho.SpecGeneratedComponent.TransitionContainer
 import com.facebook.litho.StateContainer.StateUpdate
 import com.facebook.litho.debug.LithoDebugEvent
+import com.facebook.litho.state.ComponentState
 import com.facebook.litho.stats.LithoStats
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.debug.DebugEvent
@@ -81,7 +82,7 @@ class StateHandler {
   /**
    * Maps a component key to a component object that retains the current state values for that key.
    */
-  @GuardedBy("this") private val _stateContainers: MutableMap<String, StateContainer> = HashMap()
+  @GuardedBy("this") private val _stateContainers: MutableMap<String, ComponentState> = HashMap()
 
   /**
    * Contains all keys of components that were present in the current ComponentTree and therefore
@@ -141,14 +142,14 @@ class StateHandler {
    * StateContainer in this StateHandler should be accessed using this method as it will also ensure
    * that the state is marked as needed
    */
-  fun getStateContainer(key: String): StateContainer? = _stateContainers[key]
+  fun getStateContainer(key: String): StateContainer? = _stateContainers[key]?.value
 
   fun createOrGetStateContainerForComponent(
       scopedContext: ComponentContext,
       component: Component,
       key: String
   ): StateContainer {
-    val currentStateContainer: StateContainer? = synchronized(this) { _stateContainers[key] }
+    val currentStateContainer: StateContainer? = synchronized(this) { _stateContainers[key]?.value }
 
     return if (currentStateContainer != null) {
       neededStateContainers.add(key)
@@ -208,16 +209,13 @@ class StateHandler {
   ) {
     for ((key, _) in _pendingStateUpdates) {
       try {
-        var stateContainer = _stateContainers[key]
-        if (stateContainer == null) {
-          stateContainer = initialStateContainer.getInitialStateForComponent(key)
-        }
-        if (stateContainer == null) {
-          continue
-        }
-        val newStateContainer = stateContainer.clone()
-        _stateContainers[key] = newStateContainer
-        applyStateUpdates(key, newStateContainer)
+        val current = _stateContainers[key]
+        val currentValue =
+            current?.value ?: initialStateContainer.getInitialStateForComponent(key) ?: continue
+
+        val newValue = currentValue.clone()
+        _stateContainers[key] = current?.copy(value = newValue) ?: ComponentState(value = newValue)
+        applyStateUpdates(key, newValue)
       } catch (ex: Exception) {
 
         // Remove pending state update from ComponentTree's state handler since we don't want to
@@ -250,7 +248,8 @@ class StateHandler {
   @Synchronized
   fun addStateContainer(key: String, state: StateContainer) {
     neededStateContainers.add(key)
-    _stateContainers[key] = state
+    val current = _stateContainers[key]
+    _stateContainers[key] = current?.copy(value = state) ?: ComponentState(value = state)
   }
 
   fun applyLazyStateUpdatesForContainer(
@@ -344,7 +343,7 @@ class StateHandler {
   }
 
   @get:Synchronized
-  val stateContainers: Map<String, StateContainer>
+  val stateContainers: Map<String, ComponentState>
     get() = _stateContainers
 
   @get:Synchronized
@@ -452,7 +451,7 @@ class StateHandler {
    * Copies the list of given state containers into the map that holds the current state containers
    * of components.
    */
-  private fun copyCurrentStateContainers(stateContainers: Map<String, StateContainer>) {
+  private fun copyCurrentStateContainers(stateContainers: Map<String, ComponentState>) {
 
     synchronized(this) {
       _stateContainers.clear()
@@ -503,7 +502,8 @@ class StateHandler {
    */
   private fun runHooks() {
     for ((key, value) in pendingHookUpdates) {
-      val stateContainer = _stateContainers[key]
+      val current = _stateContainers[key]
+      val stateContainer = current?.value
       /* currentState could be null if the state is removed from the StateHandler before the update runs */
       if (stateContainer is KStateContainer) {
         var kStateContainer: KStateContainer = stateContainer
@@ -511,7 +511,8 @@ class StateHandler {
         for (hookUpdate in value) {
           kStateContainer = hookUpdate.getUpdatedStateContainer(kStateContainer)
         }
-        _stateContainers[key] = kStateContainer
+
+        _stateContainers[key] = current.copy(value = kStateContainer)
       }
     }
     appliedHookUpdates.putAll(pendingHookUpdates)
@@ -526,7 +527,7 @@ class StateHandler {
     val stateContainer: StateContainer?
     val updaters: List<HookUpdater>?
     synchronized(this) {
-      stateContainer = _stateContainers[globalKey] ?: return null
+      stateContainer = _stateContainers[globalKey]?.value ?: return null
       updaters = pendingHookUpdates[globalKey]?.let { ArrayList(it) }
     }
 

@@ -117,7 +117,7 @@ class StateUpdateTest {
 
   private fun getInitialStates(componentTree: ComponentTree): Map<String, StateContainer> {
     val stateHandler = getResolveState(componentTree)
-    return stateHandler.initialStateContainer.initialStates
+    return stateHandler.initialStateContainer.initialStates.mapValues { it.value.value }
   }
 
   @Test

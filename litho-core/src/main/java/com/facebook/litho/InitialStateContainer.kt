@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.litho.ComponentsSystrace.beginSection
 import com.facebook.litho.ComponentsSystrace.endSection
 import com.facebook.litho.ComponentsSystrace.isTracing
+import com.facebook.litho.state.ComponentState
 import java.util.Collections
 import java.util.HashMap
 import java.util.HashSet
@@ -42,7 +43,7 @@ class InitialStateContainer {
   // only get and set for a key while holding a lock for that specific key.
   @JvmField
   @VisibleForTesting
-  val initialStates = Collections.synchronizedMap(HashMap<String, StateContainer>())
+  val initialStates = Collections.synchronizedMap(HashMap<String, ComponentState>())
 
   @GuardedBy("this") private val createInitialStateLocks: MutableMap<String, Any> = HashMap()
 
@@ -73,16 +74,18 @@ class InitialStateContainer {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     return synchronized(stateLock) {
-      initialStates.getOrPut(key) {
-        createInitialStateContainer(context = scopedContext, component = component)
-      }
+      val state =
+          initialStates.getOrPut(key) {
+            createInitialStateContainer(context = scopedContext, component = component)
+          }
+      state.value
     }
   }
 
   private fun createInitialStateContainer(
       context: ComponentContext,
       component: Component
-  ): StateContainer {
+  ): ComponentState {
     val isTracing = isTracing
     if (isTracing) {
       beginSection("create-initial-state:${component.simpleName}")
@@ -91,14 +94,14 @@ class InitialStateContainer {
     if (isTracing) {
       endSection()
     }
-    return state
+    return ComponentState(value = state)
   }
 
   fun getInitialStateForComponent(key: String): StateContainer? {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     synchronized(stateLock) {
-      return initialStates[key]
+      return initialStates[key]?.value
     }
   }
 
@@ -115,7 +118,8 @@ class InitialStateContainer {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     return synchronized(stateLock) {
-      val initialHookStates = initialStates[key] as KStateContainer?
+      val state = initialStates[key]
+      val initialHookStates = state?.value as KStateContainer?
 
       // sequences are guaranteed to be used in order. If the states list size is greater than
       // hookIndex we should be guaranteed to find the state
@@ -139,7 +143,7 @@ class InitialStateContainer {
       check(hookIndex < hookStates.states.size) {
         ("Unexpected useState hook sequence encountered: $hookIndex (states size: ${hookStates.states.size}). This usually indicates that the useState hook is being called from within a conditional, loop, or after an early-exit condition. See https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks for more information on the Rules of Hooks.")
       }
-      initialStates[key] = hookStates
+      initialStates[key] = state?.copy(value = hookStates) ?: ComponentState(value = hookStates)
       hookStates
     }
   }
