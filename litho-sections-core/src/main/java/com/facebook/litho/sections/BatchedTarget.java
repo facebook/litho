@@ -17,6 +17,7 @@
 package com.facebook.litho.sections;
 
 import android.util.SparseArray;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
@@ -34,6 +35,7 @@ import java.util.Locale;
  * com.facebook.litho.sections.SectionTree.Target} expects us to pass in {@link RenderInfo} with the
  * insert/update/remove calls.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class BatchedTarget implements SectionTree.Target {
 
   private static final int TYPE_NONE = Integer.MAX_VALUE;
@@ -189,6 +191,7 @@ class BatchedTarget implements SectionTree.Target {
           mSectionTreeTag,
           index,
           offset,
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           mComponentInfoSparseArray.get(index),
           Thread.currentThread().getName());
     }
@@ -199,6 +202,7 @@ class BatchedTarget implements SectionTree.Target {
       mSectionsDebugLogger.logRequestFocus(
           mSectionTreeTag,
           index,
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           mComponentInfoSparseArray.get(index),
           Thread.currentThread().getName());
     }
@@ -218,11 +222,13 @@ class BatchedTarget implements SectionTree.Target {
             logInsertIterative(mLastEventPosition, renderInfosInsert);
           }
         } else {
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           mTarget.insert(mLastEventPosition, mComponentInfoSparseArray.get(mLastEventPosition));
           if (ENABLE_LOGGER) {
             mSectionsDebugLogger.logInsert(
                 mSectionTreeTag,
                 mLastEventPosition,
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 mComponentInfoSparseArray.get(mLastEventPosition),
                 Thread.currentThread().getName());
           }
@@ -251,11 +257,13 @@ class BatchedTarget implements SectionTree.Target {
             logUpdateIterative(mLastEventPosition, renderInfosUpdate);
           }
         } else {
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           mTarget.update(mLastEventPosition, mComponentInfoSparseArray.get(mLastEventPosition));
           if (ENABLE_LOGGER) {
             mSectionsDebugLogger.logUpdate(
                 mSectionTreeTag,
                 mLastEventPosition,
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 mComponentInfoSparseArray.get(mLastEventPosition),
                 Thread.currentThread().getName());
           }
