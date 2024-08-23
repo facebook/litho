@@ -16,11 +16,13 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
 /** An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SequenceBinding extends BaseAnimationBinding {
 
   private final List<AnimationBinding> mBindings;
@@ -73,6 +75,7 @@ public class SequenceBinding extends BaseAnimationBinding {
     } else {
       AnimationBinding next = mBindings.get(mCurrentIndex);
       next.addListener(mChildListener);
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       next.start(mResolver);
     }
   }
