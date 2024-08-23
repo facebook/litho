@@ -16,9 +16,11 @@
 
 package com.facebook.litho.testing.assertj;
 
+import com.facebook.infer.annotation.Nullsafe;
 import org.hamcrest.Matcher;
 
 /** Tests if the argument is a string that contains a substring. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class CharSequenceContains extends SubCharSequenceMatcher {
   CharSequenceContains(CharSequence substring) {
     super(substring);
