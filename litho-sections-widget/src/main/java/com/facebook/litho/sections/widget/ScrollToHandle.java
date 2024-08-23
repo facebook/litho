@@ -17,14 +17,17 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Px;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Handle;
 import com.facebook.litho.annotations.Event;
 
 /**
  * An event that is triggered when a scroll action to a section with a given Handle is requested.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class ScrollToHandle {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Handle target;
   public @Px int offset;
 }
