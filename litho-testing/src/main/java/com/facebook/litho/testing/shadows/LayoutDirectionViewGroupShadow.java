@@ -17,11 +17,13 @@
 package com.facebook.litho.testing.shadows;
 
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.Nullsafe;
 import org.robolectric.annotation.Implements;
 
 /**
  * Robolectric shadow view does not support layout direction so we must implement our custom shadow.
  * We must have ViewGroup and View shadows as Robolectric forces us to have the whole hierarchy.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Implements(ViewGroup.class)
 public class LayoutDirectionViewGroupShadow extends LayoutDirectionViewShadow {}

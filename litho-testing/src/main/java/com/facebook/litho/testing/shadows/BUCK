@@ -18,6 +18,7 @@ litho_android_library(
         make_dep_path("litho-it/src/test/..."),
     ],
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_ROBOLECTRIC_V4_TARGET,
         LITHO_YOGA_TARGET,
     ],
