@@ -16,11 +16,13 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ParamNameExtractor {
 
   static List<String> getNames(ExecutableElement method) {

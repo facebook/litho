@@ -12,4 +12,7 @@ fb_java_library(
     source = "8",
     target = "8",
     visibility = ["PUBLIC"],
+    deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+    ],
 )
