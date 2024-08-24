@@ -19,11 +19,13 @@ package com.facebook.litho.widget;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
 import org.robolectric.Shadows;
 
 /** Helpers to match against {@link TestImageSpec}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestImageConditions {
 
   /**
@@ -53,6 +55,7 @@ public class TestImageConditions {
 
         Image impl = (Image) value.getComponent();
         final Drawable propValueDrawable = impl.drawable;
+        // NULLSAFE_FIXME[Not Vetted Third-Party, Parameter Not Nullable, Nullable Dereference]
         return Shadows.shadowOf(((BitmapDrawable) propValueDrawable).getBitmap())
                 .getCreatedFromResId()
             == resId;
