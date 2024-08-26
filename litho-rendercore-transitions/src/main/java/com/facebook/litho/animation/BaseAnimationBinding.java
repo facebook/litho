@@ -17,12 +17,14 @@
 package com.facebook.litho.animation;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A base implementation of {@link AnimationBinding} interface, that takes care of adding/removing
  * listeners and provides helper methods for dealing with them
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 abstract class BaseAnimationBinding implements AnimationBinding {
   private CopyOnWriteArrayList<AnimationBindingListener> mListeners = new CopyOnWriteArrayList<>();
   @Nullable private Object mTag;
@@ -57,6 +59,7 @@ abstract class BaseAnimationBinding implements AnimationBinding {
   final boolean shouldStart() {
     for (int index = mListeners.size() - 1; index >= 0; index--) {
       final AnimationBindingListener listener = mListeners.get(index);
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (!listener.shouldStart(this)) {
         return false;
       }
@@ -70,6 +73,7 @@ abstract class BaseAnimationBinding implements AnimationBinding {
   final void notifyCanceledBeforeStart() {
     for (int index = mListeners.size() - 1; index >= 0; index--) {
       final AnimationBindingListener listener = mListeners.get(index);
+      // NULLSAFE_FIXME[Nullable Dereference]
       listener.onCanceledBeforeStart(this);
     }
   }
@@ -78,6 +82,7 @@ abstract class BaseAnimationBinding implements AnimationBinding {
   final void notifyWillStart() {
     for (int index = mListeners.size() - 1; index >= 0; index--) {
       final AnimationBindingListener listener = mListeners.get(index);
+      // NULLSAFE_FIXME[Nullable Dereference]
       listener.onWillStart(this);
     }
   }
@@ -86,6 +91,7 @@ abstract class BaseAnimationBinding implements AnimationBinding {
   final void notifyFinished() {
     for (int index = mListeners.size() - 1; index >= 0; index--) {
       final AnimationBindingListener listener = mListeners.get(index);
+      // NULLSAFE_FIXME[Nullable Dereference]
       listener.onFinish(this);
     }
   }
@@ -96,6 +102,7 @@ abstract class BaseAnimationBinding implements AnimationBinding {
   final void notifyScheduledToStartLater() {
     for (int index = mListeners.size() - 1; index >= 0; index--) {
       final AnimationBindingListener listener = mListeners.get(index);
+      // NULLSAFE_FIXME[Nullable Dereference]
       listener.onScheduledToStartLater(this);
     }
   }
