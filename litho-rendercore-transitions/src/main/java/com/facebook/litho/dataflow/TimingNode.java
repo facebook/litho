@@ -16,10 +16,13 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * A {@link ValueNode} that will linearly update its value from 0 to 1.0 over the course of the
  * given duration.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TimingNode extends ValueNode implements NodeCanFinish {
 
   private static final int MS_IN_NANOS = 1000000;
