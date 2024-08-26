@@ -104,9 +104,6 @@ constructor(
     /** Returns a key that can be used for debugging purposes. */
     get() = id.toString()
 
-  open val renderContentType: Class<*>
-    get() = javaClass
-
   open fun onStartUpdateRenderUnit(): Unit = Unit
 
   open fun onEndUpdateRenderUnit(): Unit = Unit

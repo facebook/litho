@@ -43,7 +43,7 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
 
   @Override
   public Class<?> getPoolableContentType() {
-    return getRenderContentType();
+    return drawable.getClass();
   }
 
   @Override
@@ -54,11 +54,6 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   @Override
   public long getId() {
     return id;
-  }
-
-  @Override
-  public Class<?> getRenderContentType() {
-    return drawable.getClass();
   }
 
   @Override

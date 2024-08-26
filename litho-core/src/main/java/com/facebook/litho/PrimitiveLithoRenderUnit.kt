@@ -136,8 +136,6 @@ private constructor(
     return primitiveRenderUnit.containsOptionalMountBinder(delegateBinder)
   }
 
-  override val renderContentType: Class<*> = primitiveRenderUnit.javaClass
-
   override val description: String = primitiveRenderUnit.description
 
   override fun addOptionalMountBinder(binder: DelegateBinder<*, in Any, *>) {

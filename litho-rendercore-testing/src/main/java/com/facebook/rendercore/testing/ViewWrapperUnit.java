@@ -56,7 +56,7 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
 
   @Override
   public Class<?> getPoolableContentType() {
-    return getRenderContentType();
+    return view.getClass();
   }
 
   @Override
@@ -67,11 +67,6 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
   @Override
   public long getId() {
     return id;
-  }
-
-  @Override
-  public Class<?> getRenderContentType() {
-    return view.getClass();
   }
 
   @Override

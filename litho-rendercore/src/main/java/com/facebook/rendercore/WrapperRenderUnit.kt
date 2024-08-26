@@ -35,8 +35,6 @@ class WrapperRenderUnit<ContentType : Any>(private val renderUnit: RenderUnit<Co
 
   override fun doesMountRenderTreeHosts(): Boolean = renderUnit.doesMountRenderTreeHosts()
 
-  override val renderContentType: Class<*> = renderUnit.renderContentType
-
   override val description: String = renderUnit.description
 
   override fun <T> getExtra(@IdRes key: Int): T? = renderUnit.getExtra(key)

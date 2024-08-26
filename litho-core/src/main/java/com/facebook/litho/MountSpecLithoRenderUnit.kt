@@ -96,7 +96,7 @@ private constructor(
   }
 
   override fun getPoolableContentType(): Class<*> {
-    return renderContentType
+    return component.javaClass
   }
 
   override val poolingPolicy: PoolingPolicy =
@@ -117,8 +117,6 @@ private constructor(
   override val description: String = component.simpleName
 
   override val contentAllocator: ContentAllocator<Any> = this
-
-  override val renderContentType: Class<*> = component.javaClass
 
   companion object {
 

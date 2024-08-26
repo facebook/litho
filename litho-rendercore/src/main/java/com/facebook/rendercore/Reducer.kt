@@ -194,7 +194,7 @@ object Reducer {
   private class RootHostRenderUnit : RenderUnit<Any>(RenderType.VIEW), ContentAllocator<Any> {
     override fun createContent(context: Context): Any = Unit
 
-    override fun getPoolableContentType(): Class<*> = renderContentType
+    override fun getPoolableContentType(): Class<*> = javaClass
 
     override val contentAllocator: ContentAllocator<Any> = this
 
