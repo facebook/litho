@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.testing.match;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * A list of match nodes -- this can be used to match a list of actual objects against a list of
  * match nodes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MatchNodeList {
 
   private final List<MatchNode> mList;
