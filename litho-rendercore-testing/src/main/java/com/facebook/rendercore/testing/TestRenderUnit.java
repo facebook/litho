@@ -18,10 +18,12 @@ package com.facebook.rendercore.testing;
 
 import android.content.Context;
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestRenderUnit extends RenderUnit implements ContentAllocator<View> {
 
   static AtomicLong sIdGenerator = new AtomicLong();
