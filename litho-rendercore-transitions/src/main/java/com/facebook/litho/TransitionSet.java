@@ -16,11 +16,13 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.animation.AnimationBinding;
 import java.util.ArrayList;
 import java.util.List;
 
 /** A set of {@link Transition}s. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class TransitionSet extends Transition {
 
   private final ArrayList<Transition> mChildren = new ArrayList<>();
