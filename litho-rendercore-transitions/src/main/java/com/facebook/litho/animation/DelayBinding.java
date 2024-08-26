@@ -19,6 +19,7 @@ package com.facebook.litho.animation;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /** An {@link AnimationBinding} that adds a delay to the provided {@link AnimationBinding} */
 public class DelayBinding extends BaseAnimationBinding {
@@ -27,7 +28,7 @@ public class DelayBinding extends BaseAnimationBinding {
   private final int mDelayMs;
   private boolean mHasStarted = false;
   private boolean mIsActive = false;
-  private Resolver mResolver;
+  @Nullable private Resolver mResolver;
 
   public DelayBinding(int mDelayMs, AnimationBinding mBinding) {
     this.mDelayMs = mDelayMs;
