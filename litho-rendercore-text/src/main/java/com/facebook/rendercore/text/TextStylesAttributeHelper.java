@@ -30,9 +30,11 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.RenderCoreSystrace;
 import java.util.WeakHashMap;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextStylesAttributeHelper {
 
   private static final TextUtils.TruncateAt[] TRUNCATE_AT = TextUtils.TruncateAt.values();
@@ -154,6 +156,7 @@ public class TextStylesAttributeHelper {
       int textStyleInt = 0;
 
       if (attr == R.styleable.RenderCoreText_android_textColor) {
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         textStyle.setTextColorStateList(a.getColorStateList(attr));
       } else if (attr == R.styleable.RenderCoreText_android_textSize) {
         textStyle.textSize = a.getDimensionPixelSize(attr, 0);
