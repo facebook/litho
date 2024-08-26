@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.DelayBinding;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
  * A {@link TransitionSet} that, however, designed to have exactly one transition child to which the
  * specified apply would be applied
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DelayTransitionSet extends TransitionSet {
 
   private final int mDelayMs;
