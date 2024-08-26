@@ -18,8 +18,10 @@ package com.facebook.litho.animation;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** A {@link RuntimeValue} for dimension properties like x/y/width/height. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DimensionValue implements RuntimeValue {
 
   /**
