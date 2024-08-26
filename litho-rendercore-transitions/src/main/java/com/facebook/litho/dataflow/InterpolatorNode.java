@@ -17,11 +17,13 @@
 package com.facebook.litho.dataflow;
 
 import android.animation.TimeInterpolator;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * A {@link ValueNode} that will update its value by mapping an input value between 0 to 1.0
  * representing elapsed fraction of animation to a value that represents interpolated fraction.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class InterpolatorNode extends ValueNode {
 
   private final TimeInterpolator mInterpolator;
