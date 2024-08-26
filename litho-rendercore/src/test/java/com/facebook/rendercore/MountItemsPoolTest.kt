@@ -60,13 +60,11 @@ class MountItemsPoolTest {
     activity = activityController.get()
     serviceController = Robolectric.buildService(LifecycleService::class.java).create()
     service = serviceController.get()
-    RenderCoreConfig.useLifecycleObserverInMountPools = true
   }
 
   @After
   fun cleanup() {
     setMountContentPoolFactory(null)
-    RenderCoreConfig.useLifecycleObserverInMountPools = false
   }
 
   @Test

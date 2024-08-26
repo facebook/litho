@@ -256,7 +256,7 @@ object MountItemsPool {
 
   private fun ensureLifecycleCallbacks(context: Context) {
     if (!isManualCallbacks) {
-      if (context is LifecycleOwner && RenderCoreConfig.useLifecycleObserverInMountPools) {
+      if (context is LifecycleOwner) {
         synchronized(mountContentLock) {
           if (!contextsWithLifecycleObservers.containsKey(context)) {
             contextsWithLifecycleObservers[context] = true
