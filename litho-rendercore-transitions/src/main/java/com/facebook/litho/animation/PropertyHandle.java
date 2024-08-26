@@ -16,6 +16,7 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.TransitionId;
 import javax.annotation.Nullable;
 
@@ -23,6 +24,7 @@ import javax.annotation.Nullable;
  * A pair of transition key and {@link AnimatedProperty} which can be used to identify a single
  * animating component property at runtime.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class PropertyHandle {
 
   private final TransitionId mTransitionId;
