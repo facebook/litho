@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Node;
@@ -23,6 +24,7 @@ import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestNode implements Node {
 
   static final AtomicLong sIdGenerator = new AtomicLong();
@@ -31,7 +33,9 @@ public class TestNode implements Node {
   private int mY;
   private int mWidth = 100;
   private int mHeight = 100;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Object mLayoutData;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private RenderUnit mRenderUnit;
   private long mId = sIdGenerator.getAndIncrement();
 
