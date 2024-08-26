@@ -19,10 +19,12 @@ package com.facebook.litho.choreographercompat;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.Choreographer;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.WorkContinuationInstrumenter;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** See {@link ChoreographerCompatImpl}. Interface exists for mocking out in tests. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ChoreographerCompat {
 
   void postFrameCallback(FrameCallback callbackWrapper);
@@ -38,7 +40,9 @@ public interface ChoreographerCompat {
    */
   abstract class FrameCallback {
 
+    // NULLSAFE_FIXME[Field Not Initialized]
     private Runnable mRunnable;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private Choreographer.FrameCallback mFrameCallback;
 
     final AtomicReference<Object> mTokenReference = new AtomicReference<>();
