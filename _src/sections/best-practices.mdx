@@ -131,7 +131,6 @@ Their API is similar to other Litho Events, where a function needs to be annotat
 @OnEvent(OnCheckIsSameItemEvent.class)
 protected static Boolean onCheckIsSameItemEvent(
   SectionContext c,
-  @InjectProp SomeHelper helper,
   @FromEvent BookmarkFolderItemComponentGraphQL previousItem,
   @FromEvent BookmarkFolderItemComponentGraphQL nextItem) {
 
@@ -143,7 +142,6 @@ protected static Boolean onCheckIsSameItemEvent(
 @OnEvent(OnCheckIsSameContentEvent.class)
 protected static boolean onCheckIsSameContent(
   SectionContext c,
-  @InjectProp SomeHelper helper,
   @FromEvent BookmarkFolderItemComponentGraphQL previousItem,
   @FromEvent BookmarkFolderItemComponentGraphQL nextItem) {
 
