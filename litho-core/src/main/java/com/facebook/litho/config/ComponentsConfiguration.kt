@@ -153,13 +153,6 @@ internal constructor(
      */
     @JvmField val performExactSameSpecsCheck: Boolean = true,
     /**
-     * Applies a fix for sticky header offsets to ensure the header is properly restored to the
-     * right position when scrolling back to the top of the list. There was a bug where the header
-     * was incorrectly positioned if the content was scrolled to the top of the list very fast while
-     * more items were being loaded
-     */
-    @JvmField val enableStickyHeaderOffsetFix: Boolean = false,
-    /**
      * This will remove size specs from the resolve phase, which could potentially improve the
      * possibility of reusing resolve result.
      */
