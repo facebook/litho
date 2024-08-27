@@ -99,7 +99,7 @@ object MountItemsPool {
           val isTracing = RenderCoreSystrace.isTracing()
           if (isTracing) {
             RenderCoreSystrace.beginSection(
-                "MountItemsPool:createMountContent ${poolableMountContent.getPoolableContentType().simpleName}")
+                "MountItemsPool:createMountContent ${poolableMountContent.poolableContentTypeName}")
           }
           val content = poolableMountContent.createPoolableContent(context)
           if (isTracing) {
@@ -135,7 +135,7 @@ object MountItemsPool {
 
     if (mountItemPoolsReleaseValidator != null && mountContent is View) {
       mountItemPoolsReleaseValidator?.assertValidRelease(
-          mountContent, listOf(poolableMountContent.getPoolableContentType().name))
+          mountContent, listOf(poolableMountContent.poolableContentTypeName))
     }
 
     pool.release(mountContent)
@@ -333,6 +333,12 @@ object MountItemsPool {
     return currentContext === baseCtx
   }
 
+  private val ContentAllocator<*>.poolableContentTypeName: String
+    get() {
+      val poolableContentType: Any = getPoolableContentType()
+      return (poolableContentType as? Class<*>)?.simpleName ?: poolableContentType.toString()
+    }
+
   /** Empty implementation of the [Application.ActivityLifecycleCallbacks] interface */
   @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
   private class PoolsActivityCallback : Application.ActivityLifecycleCallbacks {
@@ -434,12 +440,12 @@ object MountItemsPool {
     fun maybePreallocateContent(c: Context, contentAllocator: ContentAllocator<*>): Boolean
   }
 
-  open class DefaultItemPool(poolableContentType: Class<*>, private val maxPoolSize: Int) :
-      ItemPool {
+  open class DefaultItemPool(poolableContentType: Any, private val maxPoolSize: Int) : ItemPool {
 
     private val pool: Pools.SynchronizedPool<Any> = Pools.SynchronizedPool(maxPoolSize)
 
-    private val debugIdentifier: String = poolableContentType.name
+    private val debugIdentifier: String =
+        (poolableContentType as? Class<*>)?.name ?: poolableContentType.toString()
 
     private val currentPoolSize: AtomicInteger = AtomicInteger(0)
 

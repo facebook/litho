@@ -95,7 +95,7 @@ private constructor(
     return component.createMountContent(c)
   }
 
-  override fun getPoolableContentType(): Class<*> {
+  override fun getPoolableContentType(): Any {
     return component.javaClass
   }
 

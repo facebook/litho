@@ -55,7 +55,7 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
   }
 
   @Override
-  public Class<?> getPoolableContentType() {
+  public Object getPoolableContentType() {
     return view.getClass();
   }
 

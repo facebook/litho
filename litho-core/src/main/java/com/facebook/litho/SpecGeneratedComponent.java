@@ -812,7 +812,7 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
-  public Class<?> getPoolableContentType() {
+  public Object getPoolableContentType() {
     return getClass();
   }
 

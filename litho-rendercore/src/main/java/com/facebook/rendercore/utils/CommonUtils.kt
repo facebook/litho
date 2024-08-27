@@ -30,6 +30,15 @@ object CommonUtils {
     return if (simpleName.length < 5) "<cls>$name</cls>" else kclass.simpleName
   }
 
+  /**
+   * This API is used for tracing. It's the same as getSectionNameForTracing(Class), but it uses
+   * [contentType] instead of the class name.
+   */
+  @JvmStatic
+  fun getSectionNameForTracing(contentType: Any): String {
+    return "contentType:$contentType".take(127)
+  }
+
   /** Utility to re-throw exceptions. */
   @JvmStatic
   fun rethrow(e: Exception) {

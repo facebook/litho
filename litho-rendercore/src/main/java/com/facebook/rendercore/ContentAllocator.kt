@@ -39,7 +39,7 @@ interface ContentAllocator<Content : Any> {
   fun createPoolableContent(context: Context): Content = createContent(context)
 
   /** Returns the class of the content of the mountable content. */
-  fun getPoolableContentType(): Class<*> {
+  fun getPoolableContentType(): Any {
     return javaClass
   }
 
