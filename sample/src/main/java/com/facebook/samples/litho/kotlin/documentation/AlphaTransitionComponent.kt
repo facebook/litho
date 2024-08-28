@@ -35,9 +35,9 @@ import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
 
+// component_start
 class AlphaTransitionKComponent : KComponent() {
 
-  // component_start
   override fun ComponentScope.render(): Component {
     val isHalfAlpha = useState { false }
     useTransition(Transition.create(SQUARE_KEY).animate(AnimatedProperties.ALPHA))
@@ -52,7 +52,8 @@ class AlphaTransitionKComponent : KComponent() {
                       .alpha(if (isHalfAlpha.value) 0.5f else 1.0f)))
     }
   }
-  // component_end
 }
+
+// component_end
 
 private const val SQUARE_KEY: String = "square"

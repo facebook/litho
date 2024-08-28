@@ -50,6 +50,7 @@ class DeltaDemoComponent : KComponent() {
   }
 
   @OptIn(ExperimentalLithoApi::class)
+  // start_example
   override fun ComponentScope.render(): Component {
     val number = useState { 0 }
     val delta = useBinding(0)
@@ -57,12 +58,7 @@ class DeltaDemoComponent : KComponent() {
       val diff = diffOf(number.value)
       val previous = diff.previous
       val next = diff.next
-      val d =
-          when {
-            previous == null -> next ?: 0
-            next == null -> error("Should not happen")
-            else -> next - previous
-          }
+      val d = if (previous == null || next == null) next ?: 0 else next - previous
       delta.set(d)
       Transition.create(Transition.TransitionKeyType.GLOBAL, "bubble")
           .animate(AnimatedProperties.SCALE)
@@ -86,6 +82,8 @@ class DeltaDemoComponent : KComponent() {
                 .background(RoundedRect(0xff6ab071, 8.dp))
                 .onClick { number.update(Random.nextInt(MIN, MAX)) })
   }
+
+  // end_example
 
   private fun lerp(fraction: Float, from: Float, to: Float): Float = from + fraction * (to - from)
 }

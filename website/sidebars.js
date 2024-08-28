@@ -139,6 +139,7 @@ module.exports = {
         'kotlin/kotlin-intro',
         'kotlin/kotlin-api-basics',
         'kotlin/hooks-for-spec-developers',
+        'kotlin/kotlin-transitions',
         'kotlin/kotlin-flexbox-containers',
         'kotlin/event-handling',
         'kotlin/migrating-from-mountspecs-to-primitives',

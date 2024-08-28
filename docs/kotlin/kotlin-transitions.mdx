@@ -1,0 +1,77 @@
+---
+id: kotlin-transitions
+title: Transitions
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+Transitions are an important concept in Litho, and the Kotlin API provides a set of powerful hooks for transition support. This makes it possible to replicate the behaviors of both `@OnCreateTransition` and `@OnUpdateStateWithTransition` in Kotlin.
+
+## useTransition APIs
+`useTransition` registers a transition (or set of transitions) to be applied when the current layout is committed. Two variants of this API are available for different use-cases.
+
+When a transition is unconditional, and does not have any dependencies, such case can be represented by the simple and efficient useTransition API. This corresponds to the simplest use-case of the Spec API's `@OnCreateTransition`.
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin_transition'},
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/AlphaTransitionComponent.kt start=component_start end=component_end
+```
+
+  </TabItem>
+  <TabItem value="java_transition">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/AlphaTransitionComponentSpec.java start=start end=end
+```
+
+  </TabItem>
+</Tabs>
+
+However, for more complex use-cases where the transition is directly anchored to a set of dependencies. These may be states, props, or derived values. In such case, the more powerful `useTransition` with dependency API may be used. This API makes it possible to re-evaluate the transition whenever any of the dependencies change. It also provides access to the previous and next values of the declared dependency so that they may participate in the evaluation of the resulting transition. This ensures full parity with all variations of `@OnCreateTransition` as well as the transition part of `@OnUpdateStateWithTransition`
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin_transition'},
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/transitions/TriStateComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+</Tabs>
+
+## Which useTransition to use when?
+| Scenario                                                                          | simple useTransition | useTransition with dependencies |
+| --------------------------------------------------------------------------------- | -------------------- | ------------------------------- |
+| The same transition is always applied unconditionally                             | ✅                   |                                 |
+| Transition only needs access to the current value of state, prop or derived value | ✅                   |                                 |
+| Transition may change depending on some value                                     |                      | ✅                              |
+| Transition is only applied whenever specific value changes                        |                      | ✅                              |
+| Resulting transition depends on the previous and/or next value of some dependency |                      | ✅                              |
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin_transition'},
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/transitions/DeltaDemoComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+</Tabs>
+
+## Migrating from @OnCreateTransition/@OnUpdateStateWithTransition
+TBD

@@ -47,6 +47,7 @@ class TriStateComponent : KComponent() {
 
   @OptIn(ExperimentalLithoApi::class)
   override fun ComponentScope.render(): Component {
+    // start_example
     val state = useState { TriState.HEIGHT }
     useTransition(state.value) {
       val diff = diffOf(state.value)
@@ -63,6 +64,7 @@ class TriStateComponent : KComponent() {
           .animate(*AnimatedProperties.AUTO_LAYOUT_PROPERTIES)
           .animator(animator)
     }
+    // end_example
     return Column {
       child(
           Row(
