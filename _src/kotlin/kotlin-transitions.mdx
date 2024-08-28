@@ -1,0 +1,319 @@
+---
+id: kotlin-transitions
+title: Transitions
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+Transitions are an important concept in Litho, and the Kotlin API provides a set of powerful hooks for transition support. This makes it possible to replicate the behaviors of both `@OnCreateTransition` and `@OnUpdateStateWithTransition` in Kotlin.
+
+## useTransition APIs
+`useTransition` registers a transition (or set of transitions) to be applied when the current layout is committed. Two variants of this API are available for different use-cases.
+
+When a transition is unconditional, and does not have any dependencies, such case can be represented by the simple and efficient useTransition API. This corresponds to the simplest use-case of the Spec API's `@OnCreateTransition`.
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin_transition'},
+    {label: 'Java API', value: 'java_transition'}
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/AlphaTransitionComponent.kt start=component_start end=component_end
+```
+
+  </TabItem>
+  <TabItem value="java_transition">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/AlphaTransitionComponentSpec.java start=start end=end
+```
+
+  </TabItem>
+</Tabs>
+
+However, for more complex use-cases where the transition is directly anchored to a set of dependencies. These may be states, props, or derived values. In such case, the more powerful `useTransition` with dependency API may be used. This API makes it possible to re-evaluate the transition whenever any of the dependencies change. It also provides access to the previous and next values of the declared dependency so that they may participate in the evaluation of the resulting transition. This ensures full parity with all variations of `@OnCreateTransition` as well as the transition part of `@OnUpdateStateWithTransition`
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin_transition'},
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/transitions/TriStateComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+</Tabs>
+
+## Which useTransition to use when?
+| Scenario                                                                          | simple useTransition | useTransition with dependencies |
+| --------------------------------------------------------------------------------- | -------------------- | ------------------------------- |
+| The same transition is always applied unconditionally                             | ✅                   |                                 |
+| Transition only needs access to the current value of state, prop or derived value | ✅                   |                                 |
+| Transition may change depending on some value                                     |                      | ✅                              |
+| Transition is only applied whenever specific value changes                        |                      | ✅                              |
+| Resulting transition depends on the previous and/or next value of some dependency |                      | ✅                              |
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin_transition'},
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/transitions/DeltaDemoComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+</Tabs>
+
+## Migrating from @OnCreateTransition/@OnUpdateStateWithTransition
+The table below shows a comparison of different scenarios implemented via Spec-Gen API and their equivalent Kotlin API
+
+### Scenarios
+#### Simple transition without parameters
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun createTransition(context: ComponentContext): Transition {
+  return Transition.allLayout()
+}
+```
+</td><td>
+
+```kotlin
+useTransition(Transition.allLayout())
+```
+</td></tr>
+</table>
+
+#### Transition needs only current value of state/prop/derived value
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun createTransition(
+  context: ComponentContext
+  @State someEnum: EnumType
+): Transition {
+  return when(someEnum) {
+    EnumType.VALUE_1 -> Transition.parallel(...)
+    EnumType.VALUE_2 -> Transition.create(...)
+    else -> null
+}
+```
+</td><td>
+
+```kotlin
+useTransition(
+  when(someEnum) {
+    EnumType.VALUE_1 -> Transition.parallel(...)
+    EnumType.VALUE_2 -> Transition.create(...)
+    else -> null
+  }
+)
+```
+</td></tr>
+</table>
+
+#### Evaluate transition only if state has changed
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun createTransition(
+  context: ComponentContext,
+  @State isEnabled: Diff<Boolean>
+): Transition {
+  val hasStateChanged = isEnabled.previous != isEnabled.next
+  return if (hasStateChanged) {
+    Transition.allLayout()
+  } else {
+    null
+  }
+}
+```
+</td><td>
+
+```kotlin
+useTransition(isEnabled) {
+  Transition.allLayout()
+}
+```
+</td></tr>
+</table>
+
+#### Dependency change from specific value to another
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun onCreateTransition(
+  c: ComponentContext,
+  @Prop storyContext: StoryContext,
+  @State hidden: Diff<Boolean>,
+  @State collapsed: Diff<Boolean>,
+): Transition? {
+  if (collapsed.previous == false && collapsed.next == true) {
+    return …
+  }
+  if (collapsed.previous == true && collapsed.next == false) {
+    return …
+  }
+  if (hidden.previous == false && hidden.next == true) {
+    return …
+  }
+  ...
+  return null
+}
+```
+</td><td>
+
+```kotlin
+useTransition(storyContext, hidden, collapsed) {
+  val hidden = diffOf(hidden)
+  val collapsed = diffOf(collapsed)
+  if (collapsed.previous == false && collapsed.next == true) {
+    return@useTransition …
+  }
+  if (collapsed.previous == true && collapsed.next == false) {
+    return@useTransition …
+  }
+  if (hidden.previous == false && hidden.next == true) {
+    return@useTransition …
+  }
+  ...
+  null
+}
+```
+</td></tr>
+</table>
+
+#### Another complex use-case
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun onCreateTransition(
+  c: ComponentContext,
+  @Prop playerType: PlayerType,
+  @State visibility: Diff<Visibility>
+): Transition {
+  when {
+    visibility.previous == INVISIBLE -> return ...
+
+    visibility.next == INVISIBLE -> return ...
+
+    visibility.previous == PARTLY_VISIBLE &&
+      visibility.next == VISIBLE -> return ...
+
+    visibility.previous == VISIBLE &&
+      visibility.next == PARTLY_VISIBLE -> return ...
+
+    else -> return ...
+  }
+}
+```
+</td>
+<td>
+
+```kotlin
+useTransition(playerType, visibility) {
+  val visibility = diffOf(visibility)
+  when {
+    visibility.previous == INVISIBLE -> Transition(...)
+
+    visibility.next == INVISIBLE -> Transition(...)
+
+    visibility.previous == PARTLY_VISIBLE &&
+      visibility.next == VISIBLE -> Transition(...)
+
+    visibility.previous == VISIBLE &&
+      visibility.next == PARTLY_VISIBLE -> Transition(...)
+
+    else -> Transition(...)
+  }
+}
+```
+</td></tr>
+</table>
+
+#### Interplay of state and transition
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnEvent(ClickEvent::class)
+fun triggerClickEvent(c: ComponentContext) {
+  SomeComponent.onUpdateShiftWithTransition(c, newShiftValue)
+}
+
+@OnUpdateStateWithTransition
+fun onUpdateShift(
+  shiftPx: StateValue<Int>, 
+  newShiftValue: Int
+): Transition {
+  shiftPx.set(newShiftValue)
+  return Transition.create(SHIFT_TRANSITION_KEY)
+    .animate(AnimatedProperties.Y)
+}
+```
+</td><td>
+
+```kotlin
+fun ComponentScope.render() {
+  ...
+  useTransition(shiftPx) {
+    Transition.create(SHIFT_TRANSITION_KEY)
+      .animate(AnimatedProperties.Y)
+  }
+  ...
+  return SomeComponent(
+    style = Style.onClick { shiftPx.update(newShiftValue) })
+}
+```
+</td></tr>
+</table>
