@@ -19,6 +19,7 @@ When a transition is unconditional, and does not have any dependencies, such cas
   defaultValue="kotlin_transition"
   values={[
     {label: 'Kotlin API', value: 'kotlin_transition'},
+    {label: 'Java API', value: 'java_transition'}
   ]}>
   <TabItem value="kotlin_transition">
 
@@ -74,4 +75,245 @@ However, for more complex use-cases where the transition is directly anchored to
 </Tabs>
 
 ## Migrating from @OnCreateTransition/@OnUpdateStateWithTransition
-TBD
+The table below shows a comparison of different scenarios implemented via Spec-Gen API and their equivalent Kotlin API
+
+### Scenarios
+#### Simple transition without parameters
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun createTransition(context: ComponentContext): Transition {
+  return Transition.allLayout()
+}
+```
+</td><td>
+
+```kotlin
+useTransition(Transition.allLayout())
+```
+</td></tr>
+</table>
+
+#### Transition needs only current value of state/prop/derived value
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun createTransition(
+  context: ComponentContext
+  @State someEnum: EnumType
+): Transition {
+  return when(someEnum) {
+    EnumType.VALUE_1 -> Transition.parallel(...)
+    EnumType.VALUE_2 -> Transition.create(...)
+    else -> null
+}
+```
+</td><td>
+
+```kotlin
+useTransition(
+  when(someEnum) {
+    EnumType.VALUE_1 -> Transition.parallel(...)
+    EnumType.VALUE_2 -> Transition.create(...)
+    else -> null
+  }
+)
+```
+</td></tr>
+</table>
+
+#### Evaluate transition only if state has changed
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun createTransition(
+  context: ComponentContext,
+  @State isEnabled: Diff<Boolean>
+): Transition {
+  val hasStateChanged = isEnabled.previous != isEnabled.next
+  return if (hasStateChanged) {
+    Transition.allLayout()
+  } else {
+    null
+  }
+}
+```
+</td><td>
+
+```kotlin
+useTransition(isEnabled) {
+  Transition.allLayout()
+}
+```
+</td></tr>
+</table>
+
+#### Dependency change from specific value to another
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun onCreateTransition(
+  c: ComponentContext,
+  @Prop storyContext: StoryContext,
+  @State hidden: Diff<Boolean>,
+  @State collapsed: Diff<Boolean>,
+): Transition? {
+  if (collapsed.previous == false && collapsed.next == true) {
+    return …
+  }
+  if (collapsed.previous == true && collapsed.next == false) {
+    return …
+  }
+  if (hidden.previous == false && hidden.next == true) {
+    return …
+  }
+  ...
+  return null
+}
+```
+</td><td>
+
+```kotlin
+useTransition(storyContext, hidden, collapsed) {
+  val hidden = diffOf(hidden)
+  val collapsed = diffOf(collapsed)
+  if (collapsed.previous == false && collapsed.next == true) {
+    return@useTransition …
+  }
+  if (collapsed.previous == true && collapsed.next == false) {
+    return@useTransition …
+  }
+  if (hidden.previous == false && hidden.next == true) {
+    return@useTransition …
+  }
+  ...
+  null
+}
+```
+</td></tr>
+</table>
+
+#### Another complex use-case
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnCreateTransition
+fun onCreateTransition(
+  c: ComponentContext,
+  @Prop playerType: PlayerType,
+  @State visibility: Diff<Visibility>
+): Transition {
+  when {
+    visibility.previous == INVISIBLE -> return ...
+
+    visibility.next == INVISIBLE -> return ...
+
+    visibility.previous == PARTLY_VISIBLE &&
+      visibility.next == VISIBLE -> return ...
+
+    visibility.previous == VISIBLE &&
+      visibility.next == PARTLY_VISIBLE -> return ...
+
+    else -> return ...
+  }
+}
+```
+</td>
+<td>
+
+```kotlin
+useTransition(playerType, visibility) {
+  val visibility = diffOf(visibility)
+  when {
+    visibility.previous == INVISIBLE -> Transition(...)
+
+    visibility.next == INVISIBLE -> Transition(...)
+
+    visibility.previous == PARTLY_VISIBLE &&
+      visibility.next == VISIBLE -> Transition(...)
+
+    visibility.previous == VISIBLE &&
+      visibility.next == PARTLY_VISIBLE -> Transition(...)
+
+    else -> Transition(...)
+  }
+}
+```
+</td></tr>
+</table>
+
+#### Interplay of state and transition
+
+<table>
+<tr>
+<th>Spec-Gen API</th>
+<th>Kotlin API</th>
+</tr>
+<tr><td>
+
+```kotlin
+@OnEvent(ClickEvent::class)
+fun triggerClickEvent(c: ComponentContext) {
+  SomeComponent.onUpdateShiftWithTransition(c, newShiftValue)
+}
+
+@OnUpdateStateWithTransition
+fun onUpdateShift(
+  shiftPx: StateValue<Int>, 
+  newShiftValue: Int
+): Transition {
+  shiftPx.set(newShiftValue)
+  return Transition.create(SHIFT_TRANSITION_KEY)
+    .animate(AnimatedProperties.Y)
+}
+```
+</td><td>
+
+```kotlin
+fun ComponentScope.render() {
+  ...
+  useTransition(shiftPx) {
+    Transition.create(SHIFT_TRANSITION_KEY)
+      .animate(AnimatedProperties.Y)
+  }
+  ...
+  return SomeComponent(
+    style = Style.onClick { shiftPx.update(newShiftValue) })
+}
+```
+</td></tr>
+</table>
