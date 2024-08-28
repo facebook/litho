@@ -24,7 +24,6 @@ import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.annotations.FromEvent;
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -64,7 +63,6 @@ public class EventMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(Prop.class);
     METHOD_PARAM_ANNOTATIONS.add(State.class);
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
-    METHOD_PARAM_ANNOTATIONS.add(InjectProp.class);
     METHOD_PARAM_ANNOTATIONS.add(CachedValue.class);
   }
 

@@ -21,7 +21,6 @@ import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMe
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
 
 import com.facebook.litho.annotations.CachedValue;
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnExitedRange;
 import com.facebook.litho.annotations.OnRegisterRanges;
@@ -56,7 +55,6 @@ public class WorkingRangesMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(Prop.class);
     METHOD_PARAM_ANNOTATIONS.add(State.class);
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
-    METHOD_PARAM_ANNOTATIONS.add(InjectProp.class);
     METHOD_PARAM_ANNOTATIONS.add(CachedValue.class);
   }
 

@@ -20,7 +20,6 @@ import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LOC
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.PREDICATE_NEEDS_STATE;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
@@ -143,16 +142,6 @@ public class TreePropGenerator {
                 methodParamModel.getTypeName(),
                 ClassNames.COMPONENT);
           }
-        } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, InjectProp.class)) {
-          boolean isLazy =
-              runMode.contains(RunMode.ABI)
-                  ? !methodParamModel.getTypeSpec().toString().contains("Lazy<")
-                  : methodParamModel.getTypeSpec().isSubType(LAZY_CLASS_NAME);
-          block.add(
-              "($T) $L$L",
-              methodParamModel.getTypeName(),
-              methodParamModel.getName(),
-              isLazy ? "" : ".get()");
         } else {
           block.add("$L", methodParamModel.getName());
         }
