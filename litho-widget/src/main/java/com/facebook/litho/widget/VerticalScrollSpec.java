@@ -80,7 +80,8 @@ public class VerticalScrollSpec {
   static void onCreateInitialState(
       ComponentContext context,
       StateValue<LithoScrollView.ScrollPosition> scrollPosition,
-      @Prop(optional = true) int initialScrollOffsetPixels) {
+      @Prop(optional = true) int initialScrollOffsetPixels,
+      @Prop(optional = true) boolean shouldCompareCommonProps) {
     LithoScrollView.ScrollPosition initialScrollPosition = new LithoScrollView.ScrollPosition();
     initialScrollPosition.y = initialScrollOffsetPixels;
     scrollPosition.set(initialScrollPosition);
@@ -271,8 +272,17 @@ public class VerticalScrollSpec {
       @Prop(optional = true) Diff<Boolean> scrollbarFadingEnabled,
       @Prop(optional = true) Diff<Boolean> fillViewport,
       @Prop(optional = true) Diff<Boolean> nestedScrollingEnabled,
-      @Prop(optional = true) Diff<Boolean> incrementalMountEnabled) {
-    return !childComponent.getPrevious().isEquivalentTo(childComponent.getNext())
+      @Prop(optional = true) Diff<Boolean> incrementalMountEnabled,
+      @Prop(optional = true) Diff<Boolean> shouldCompareCommonProps) {
+    if (!shouldCompareCommonProps.getPrevious().equals(shouldCompareCommonProps.getNext())) {
+      return true;
+    }
+    boolean compareCommonProps =
+        shouldCompareCommonProps.getNext() != null && shouldCompareCommonProps.getNext();
+
+    return !childComponent
+            .getPrevious()
+            .isEquivalentTo(childComponent.getNext(), compareCommonProps)
         || !scrollbarEnabled.getPrevious().equals(scrollbarEnabled.getNext())
         || !scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext())
         || !fillViewport.getPrevious().equals(fillViewport.getNext())
