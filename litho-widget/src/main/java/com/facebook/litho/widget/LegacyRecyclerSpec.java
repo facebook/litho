@@ -58,7 +58,6 @@ import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger;
 import java.util.List;
 import kotlin.Unit;
@@ -131,14 +130,10 @@ class LegacyRecyclerSpec {
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
 
-    ComponentsConfiguration configuration = c.getLithoConfiguration().componentsConfig;
-
     int widthSpecToUse =
-        RecyclerMeasureHelper.maybeGetSpecWithPadding(
-            configuration, widthSpec, leftPadding + rightPadding);
+        RecyclerMeasureHelper.maybeGetSpecWithPadding(widthSpec, leftPadding + rightPadding);
     int heightSpecToUse =
-        RecyclerMeasureHelper.maybeGetSpecWithPadding(
-            configuration, heightSpec, topPadding + bottomPadding);
+        RecyclerMeasureHelper.maybeGetSpecWithPadding(heightSpec, topPadding + bottomPadding);
 
     binder.measure(
         measureOutput,
@@ -161,26 +156,23 @@ class LegacyRecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight) {
-    ComponentsConfiguration configuration = context.getLithoConfiguration().componentsConfig;
 
     int layoutWidth = layout.getWidth();
     int layoutHeight = layout.getHeight();
 
     int width = layoutWidth;
-    if (configuration.measureRecyclerWithPadding
-        && (measuredWidth == null || measuredWidth != layoutWidth)) {
+    if (measuredWidth == null || measuredWidth != layoutWidth) {
       int spec =
           RecyclerMeasureHelper.maybeGetSpecWithPadding(
-              configuration, exactly(layoutWidth), leftPadding + rightPadding);
+              exactly(layoutWidth), leftPadding + rightPadding);
       width = SizeSpec.getSize(spec);
     }
 
     int height = layoutHeight;
-    if (configuration.measureRecyclerWithPadding
-        && (measuredHeight == null || measuredHeight != layoutHeight)) {
+    if (measuredHeight == null || measuredHeight != layoutHeight) {
       int spec =
           RecyclerMeasureHelper.maybeGetSpecWithPadding(
-              configuration, exactly(layoutHeight), topPadding + bottomPadding);
+              exactly(layoutHeight), topPadding + bottomPadding);
       height = SizeSpec.getSize(spec);
     }
 

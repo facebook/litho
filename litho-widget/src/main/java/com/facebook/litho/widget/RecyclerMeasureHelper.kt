@@ -18,7 +18,6 @@
 package com.facebook.litho.widget
 
 import com.facebook.litho.SizeSpec
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.utils.MeasureSpecUtils.atMost
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import com.facebook.rendercore.utils.MeasureSpecUtils.unspecified
@@ -30,19 +29,14 @@ import java.lang.IllegalStateException
  * [ExperimentalRecycler]
  */
 internal fun maybeGetSpecWithPadding(
-    configuration: ComponentsConfiguration,
     sizeSpec: Int,
     totalPadding: Int,
 ): Int {
-  return if (configuration.measureRecyclerWithPadding) {
-    val originalSize = SizeSpec.getSize(sizeSpec)
-    when (val specMode = SizeSpec.getMode(sizeSpec)) {
-      SizeSpec.UNSPECIFIED -> unspecified()
-      SizeSpec.AT_MOST -> atMost(maxOf(0, originalSize - totalPadding))
-      SizeSpec.EXACTLY -> exactly(maxOf(0, originalSize - totalPadding))
-      else -> throw IllegalStateException("Invalid spec mode: $specMode")
-    }
-  } else {
-    sizeSpec
+  val originalSize = SizeSpec.getSize(sizeSpec)
+  return when (val specMode = SizeSpec.getMode(sizeSpec)) {
+    SizeSpec.UNSPECIFIED -> unspecified()
+    SizeSpec.AT_MOST -> atMost(maxOf(0, originalSize - totalPadding))
+    SizeSpec.EXACTLY -> exactly(maxOf(0, originalSize - totalPadding))
+    else -> throw IllegalStateException("Invalid spec mode: $specMode")
   }
 }

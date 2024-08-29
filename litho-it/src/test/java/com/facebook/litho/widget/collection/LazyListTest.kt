@@ -20,11 +20,9 @@ import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
@@ -51,14 +49,6 @@ class LazyListTest {
 
   @Test
   fun `inner padding is taken into account when set on a LazyList`() {
-    val ct =
-        ComponentTree.create(
-                lithoTestRule.context,
-            )
-            .componentsConfiguration(
-                ComponentsConfiguration.defaultInstance.copy(measureRecyclerWithPadding = true))
-            .build()
-
     val tag = "lazy-list-tag"
     val height = 1000
     val width = 500
@@ -68,7 +58,7 @@ class LazyListTest {
     val lateralPadding = 10
 
     val lithoView =
-        lithoTestRule.render(componentTree = ct) {
+        lithoTestRule.render {
           TestGridComponent(
               tag = tag,
               outerPadding = outerPadding.px,

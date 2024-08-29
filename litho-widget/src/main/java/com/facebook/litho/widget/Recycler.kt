@@ -33,7 +33,6 @@ import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Size
 import com.facebook.litho.State
 import com.facebook.litho.Style
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PrimitiveRecyclerBinderStrategy
 import com.facebook.litho.eventHandler
 import com.facebook.litho.useState
@@ -135,7 +134,6 @@ constructor(
     return LithoPrimitive(
         layoutBehavior =
             RecyclerLayoutBehavior(
-                configuration = context.lithoConfiguration.componentsConfig,
                 binder = binder,
                 startPadding = leftPadding,
                 endPadding = rightPadding,
@@ -517,7 +515,6 @@ private fun SectionsRecyclerView.requireLithoRecyclerView(): LithoRecyclerView =
             "RecyclerView not found, it should not be removed from SwipeRefreshLayout")
 
 private class RecyclerLayoutBehavior(
-    private val configuration: ComponentsConfiguration,
     private val binder: Binder<RecyclerView>,
     private val startPadding: Int,
     private val endPadding: Int,
@@ -530,10 +527,8 @@ private class RecyclerLayoutBehavior(
 
     binder.measure(
         size,
-        maybeGetSpecWithPadding(
-            configuration, sizeConstraints.toWidthSpec(), startPadding + endPadding),
-        maybeGetSpecWithPadding(
-            configuration, sizeConstraints.toHeightSpec(), topPadding + bottomPadding),
+        maybeGetSpecWithPadding(sizeConstraints.toWidthSpec(), startPadding + endPadding),
+        maybeGetSpecWithPadding(sizeConstraints.toHeightSpec(), topPadding + bottomPadding),
         if (binder.canMeasure() || binder.isWrapContent) eventHandler { onRemeasure() } else null)
     return PrimitiveLayoutResult(
         max(sizeConstraints.minWidth, size.width), max(sizeConstraints.minHeight, size.height))

@@ -132,14 +132,6 @@ internal constructor(
      */
     @JvmField val enableFixForIM: Boolean = false,
     @JvmField val enableLifecycleOwnerWrapper: Boolean = false,
-    /**
-     * This flag is used to enable a fix for the issue where the Recycler is not measuring taking
-     * into any padding specified into it.
-     *
-     * @see [com.facebok.litho.widget.RecyclerSpec]
-     * @see [com.facebook.litho.widget.RecyclerLayoutBehavior]
-     */
-    @JvmField val measureRecyclerWithPadding: Boolean = false,
     @JvmField val visibilityBoundsTransformer: VisibilityBoundsTransformer? = null,
     @JvmField val sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? = null,
     /**
@@ -355,7 +347,6 @@ internal constructor(
     private var primitiveRecyclerBinderStrategy = baseConfig.primitiveRecyclerBinderStrategy
     private var enableFixForIM = baseConfig.enableFixForIM
     private var enableLifecycleOwnerWrapper = baseConfig.enableLifecycleOwnerWrapper
-    private var measureRecyclerWithPadding = baseConfig.measureRecyclerWithPadding
     private var visibilityBoundsTransformer = baseConfig.visibilityBoundsTransformer
     private var sectionsRecyclerViewOnCreateHandler: ((Object) -> Unit)? =
         baseConfig.sectionsRecyclerViewOnCreateHandler
@@ -444,10 +435,6 @@ internal constructor(
       enableLifecycleOwnerWrapper = enabled
     }
 
-    fun measureRecyclerWithPadding(enabled: Boolean): Builder = also {
-      measureRecyclerWithPadding = enabled
-    }
-
     fun visibilityBoundsTransformer(transformer: VisibilityBoundsTransformer?): Builder = also {
       visibilityBoundsTransformer = transformer
     }
@@ -500,7 +487,6 @@ internal constructor(
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,
           enableFixForIM = enableFixForIM,
           enableLifecycleOwnerWrapper = enableLifecycleOwnerWrapper,
-          measureRecyclerWithPadding = measureRecyclerWithPadding,
           visibilityBoundsTransformer = visibilityBoundsTransformer,
           sectionsRecyclerViewOnCreateHandler = sectionsRecyclerViewOnCreateHandler,
           useStableIdsInRecyclerBinder = useStableIdsInRecyclerBinder,
