@@ -437,7 +437,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     return false;
   }
 
-  public static class Builder {
+  public static final class Builder {
     private String mSpecName;
     private ClassName mSpecTypeName;
     private String mComponentName;

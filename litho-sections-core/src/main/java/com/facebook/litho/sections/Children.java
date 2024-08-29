@@ -44,7 +44,7 @@ public class Children {
     return mSections;
   }
 
-  public static class Builder {
+  public static final class Builder {
 
     private final Children mChildren = new Children();
 

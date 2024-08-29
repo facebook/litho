@@ -1044,7 +1044,7 @@ public final class SpecModelImpl implements SpecModel {
     return new Builder();
   }
 
-  public static class Builder {
+  public static final class Builder {
     private String mQualifiedSpecClassName;
     private String mComponentClassName;
     private ClassName mComponentClass;

@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class FlexBoxStyle {
   // All methods in this class are made static to help with inlining
-  public static class Builder {
+  public static final class Builder {
     // Must be kept in sync with FlexBoxBoxStyle default values in native code
     private static final Direction DEFAULT_DIRECTION = Direction.INHERIT;
     private static final FlexDirection DEFAULT_FLEX_DIRECTION = FlexDirection.ROW;

@@ -78,7 +78,7 @@ public class TestSizeDependentComponent extends SpecGeneratedComponent {
   boolean hasFixedSizes;
   boolean isDelegate;
 
-  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
+  public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
 
     TestSizeDependentComponent mTestSizeDependentComponent;
 

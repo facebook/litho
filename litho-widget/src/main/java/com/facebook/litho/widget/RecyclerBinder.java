@@ -428,7 +428,7 @@ public class RecyclerBinder
         }
       };
 
-  public static class Builder {
+  public static final class Builder {
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private LayoutInfo layoutInfo;

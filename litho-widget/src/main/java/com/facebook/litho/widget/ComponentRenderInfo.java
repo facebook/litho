@@ -95,7 +95,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     return mComponent.getSimpleName();
   }
 
-  public static class Builder extends BaseRenderInfo.Builder<Builder> {
+  public static final class Builder extends BaseRenderInfo.Builder<Builder> {
     private Component mComponent;
     private EventHandler<RenderCompleteEvent> mRenderCompleteEventEventHandler;
     @Nullable private ComponentsLogger mComponentsLogger;

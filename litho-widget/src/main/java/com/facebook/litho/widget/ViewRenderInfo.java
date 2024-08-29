@@ -80,7 +80,7 @@ public class ViewRenderInfo extends BaseRenderInfo {
     return "View (viewType=" + mViewType + ")";
   }
 
-  public static class Builder extends BaseRenderInfo.Builder<Builder> {
+  public static final class Builder extends BaseRenderInfo.Builder<Builder> {
     private ViewBinder viewBinder;
     private ViewCreator viewCreator;
     private boolean hasCustomViewType = false;

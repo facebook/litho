@@ -95,7 +95,7 @@ public final class SpecMethodModel<SpecMethod, A> {
         typeModel);
   }
 
-  public static class Builder<SpecMethod, A> {
+  public static final class Builder<SpecMethod, A> {
     private ImmutableList<Annotation> mAnnotations = ImmutableList.of();
     private ImmutableList<Modifier> mModifiers = ImmutableList.of();
     private CharSequence mName;

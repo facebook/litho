@@ -161,7 +161,7 @@ public class SimpleLayoutResult implements LayoutResult {
     return mChildren;
   }
 
-  public static class Builder {
+  public static final class Builder {
 
     private int x;
     private int y;

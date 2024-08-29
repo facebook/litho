@@ -139,7 +139,7 @@ public class EventCaseGenerator {
     return new Builder();
   }
 
-  public static class Builder {
+  public static final class Builder {
     private ClassName mContextClass;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethodModels;
     private boolean mWithErrorPropagation;

@@ -38,7 +38,7 @@ static class Text {
     static Builder create(ComponentContext context);
 }
 
-static class Builder {
+static final class Builder {
     static void clickHandler(com.facebook.litho.EventHandler<TypeClass> handler);
 }
 

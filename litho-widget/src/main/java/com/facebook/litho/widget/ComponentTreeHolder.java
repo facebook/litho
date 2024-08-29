@@ -114,7 +114,7 @@ public class ComponentTreeHolder {
     return new Builder(configuration);
   }
 
-  public static class Builder {
+  public static final class Builder {
 
     private RenderInfo renderInfo;
     private final ComponentsConfiguration componentsConfiguration;

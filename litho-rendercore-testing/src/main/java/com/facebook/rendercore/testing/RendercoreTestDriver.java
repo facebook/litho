@@ -82,7 +82,8 @@ public class RendercoreTestDriver {
     void renderWithRenderTree();
   }
 
-  private static class Builder implements NodeBuilderPart, LayoutBuilderPart, RenderBuilderPart {
+  private static final class Builder
+      implements NodeBuilderPart, LayoutBuilderPart, RenderBuilderPart {
 
     @Nullable private final RootHost mRootHost;
     @Nullable private final RenderTreeHost mRenderTreeHost;

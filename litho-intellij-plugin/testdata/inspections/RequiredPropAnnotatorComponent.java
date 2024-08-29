@@ -16,7 +16,7 @@
 
 class RequiredPropAnnotatorComponent {
 
-  class Builder {
+  final class Builder {
 
     @com.facebook.litho.annotations.RequiredProp(value="testRequiredPropName")
     void requiredProp() {}

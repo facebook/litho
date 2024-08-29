@@ -87,7 +87,7 @@ public class TestTransitionComponent extends TestComponent {
     return new Builder(context, defStyleAttr, defStyleRes, state);
   }
 
-  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
+  public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestTransitionComponent mState;
 
     private Builder(

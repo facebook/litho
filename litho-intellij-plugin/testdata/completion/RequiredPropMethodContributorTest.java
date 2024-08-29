@@ -28,7 +28,7 @@ class RequiredPropMethodContributorTest {
 
     void second() {}
 
-    static class Builder {
+    static final class Builder {
 
       @com.facebook.litho.annotations.RequiredProp(value="one")
       void one() {}

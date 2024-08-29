@@ -114,7 +114,7 @@ public final class DelegateMethodDescription {
         .exceptions(methodDescription.exceptions);
   }
 
-  public static class Builder {
+  public static final class Builder {
     private ImmutableList<AnnotationSpec> annotations;
     private Modifier accessType;
     private TypeName returnType;

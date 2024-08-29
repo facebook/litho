@@ -1966,7 +1966,7 @@ public class SectionTree {
   }
 
   /** A builder class that can be used to create a {@link SectionTree}. */
-  public static class Builder {
+  public static final class Builder {
 
     private final SectionContext mContext;
     private final Target mTarget;

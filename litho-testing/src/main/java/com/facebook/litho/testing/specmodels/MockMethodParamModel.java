@@ -87,7 +87,7 @@ public class MockMethodParamModel implements MethodParamModel {
     return new Builder();
   }
 
-  public static class Builder {
+  public static final class Builder {
 
     // NULLSAFE_FIXME[Field Not Initialized]
     private TypeName mType;

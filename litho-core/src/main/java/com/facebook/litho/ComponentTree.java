@@ -3084,7 +3084,7 @@ public class ComponentTree
   }
 
   /** A builder class that can be used to create a {@link ComponentTree}. */
-  public static class Builder {
+  public static final class Builder {
 
     // required
     private Component root;

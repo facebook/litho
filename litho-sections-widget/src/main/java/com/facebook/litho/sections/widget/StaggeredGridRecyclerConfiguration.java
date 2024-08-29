@@ -112,7 +112,7 @@ public class StaggeredGridRecyclerConfiguration implements RecyclerConfiguration
     }
   }
 
-  public static class Builder implements RecyclerConfiguration.Builder {
+  public static final class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
     public static final StaggeredGridLayoutInfoFactory STAGGERED_GRID_LAYOUT_INFO_FACTORY =

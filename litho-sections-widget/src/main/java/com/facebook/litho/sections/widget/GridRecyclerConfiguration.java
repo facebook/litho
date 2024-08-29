@@ -129,7 +129,7 @@ public class GridRecyclerConfiguration implements RecyclerConfiguration {
     }
   }
 
-  public static class Builder implements RecyclerConfiguration.Builder {
+  public static final class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
     static final GridLayoutInfoFactory GRID_LAYOUT_INFO_FACTORY =

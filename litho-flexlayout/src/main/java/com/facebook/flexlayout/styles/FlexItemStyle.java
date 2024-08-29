@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class FlexItemStyle {
   // All methods in this class are made static to help with inlining
-  public static class Builder {
+  public static final class Builder {
     // Must be kept in sync with FlexItemStyleBase default values in native code
     private static final float DEFAULT_FLEX_GROW = 0;
     private static final float DEFAULT_FLEX_SHRINK = 1;
