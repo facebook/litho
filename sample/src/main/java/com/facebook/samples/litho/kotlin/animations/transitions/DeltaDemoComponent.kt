@@ -55,9 +55,7 @@ class DeltaDemoComponent : KComponent() {
     val number = useState { 0 }
     val delta = useBinding(0)
     useTransition(number.value) {
-      val diff = diffOf(number.value)
-      val previous = diff.previous
-      val next = diff.next
+      val (previous, next) = diffOf(number.value)
       val d = if (previous == null || next == null) next ?: 0 else next - previous
       delta.set(d)
       Transition.create(Transition.TransitionKeyType.GLOBAL, "bubble")

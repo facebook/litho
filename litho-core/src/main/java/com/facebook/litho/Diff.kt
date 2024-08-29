@@ -29,5 +29,9 @@ import com.facebook.litho.annotations.State
  */
 class Diff<T>(val previous: T?, var next: T?) {
 
+  operator fun component1(): T? = previous
+
+  operator fun component2(): T? = next
+
   override fun toString(): String = "Diff{previous=${previous}, next=${next}}"
 }

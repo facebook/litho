@@ -50,9 +50,7 @@ class TriStateComponent : KComponent() {
     // start_example
     val state = useState { TriState.HEIGHT }
     useTransition(state.value) {
-      val diff = diffOf(state.value)
-      val previous = diff.previous
-      val next = diff.next
+      val (previous, next) = diffOf(state.value)
       val animator =
           when (if (previous == null || next == null) 0 else previous.ordinal + next.ordinal) {
             1 -> Transition.SPRING_WITH_OVERSHOOT
