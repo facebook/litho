@@ -578,7 +578,7 @@ class ViewAttributes {
       view.setTag(ComponentHost.COMPONENT_NODE_INFO_ID, nodeInfo)
     }
 
-    private fun unsetAccessibilityDelegate(view: View) {
+    fun unsetAccessibilityDelegate(view: View) {
       if (view !is ComponentHost && view.getTag(ComponentHost.COMPONENT_NODE_INFO_ID) == null) {
         return
       }
@@ -600,7 +600,7 @@ class ViewAttributes {
       view.isClickable = true
     }
 
-    private fun unsetClickHandler(view: View) {
+    fun unsetClickHandler(view: View) {
       view.setOnClickListener(null)
       view.isClickable = false
     }
@@ -621,7 +621,7 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetLongClickHandler(view: View) {
+    fun unsetLongClickHandler(view: View) {
       val listener = getComponentLongClickListener(view)
       if (listener != null) {
         listener.eventHandler = null
@@ -665,7 +665,7 @@ class ViewAttributes {
       listener.eventHandler = focusChangeHandler
     }
 
-    private fun unsetFocusChangeHandler(view: View) {
+    fun unsetFocusChangeHandler(view: View) {
       val listener = getComponentFocusChangeListener(view)
       if (listener != null) {
         listener.eventHandler = null
@@ -705,7 +705,7 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetTouchHandler(view: View) {
+    fun unsetTouchHandler(view: View) {
       val listener = getComponentTouchListener(view)
       if (listener != null) {
         listener.eventHandler = null
@@ -725,7 +725,7 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetInterceptTouchEventHandler(view: View) {
+    fun unsetInterceptTouchEventHandler(view: View) {
       if (view is ComponentHost) {
         view.setInterceptTouchEventHandler(null)
       }
@@ -755,7 +755,7 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetViewId(view: View) {
+    fun unsetViewId(view: View) {
       view.id = View.NO_ID
     }
 
@@ -776,11 +776,11 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetViewTag(view: View) {
+    fun unsetViewTag(view: View) {
       view.tag = null
     }
 
-    private fun unsetViewTags(view: View, viewTags: SparseArray<Any>?) {
+    fun unsetViewTags(view: View, viewTags: SparseArray<Any>?) {
       if (view is ComponentHost) {
         view.setViewTags(null)
       } else {
@@ -816,7 +816,7 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetAmbientShadowColor(view: View, @ColorInt ambientShadowColor: Int) {
+    fun unsetAmbientShadowColor(view: View, @ColorInt ambientShadowColor: Int) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ambientShadowColor != Color.BLACK) {
         // Android documentation says black is the default:
         // https://developer.android.com/reference/android/view/View#getOutlineAmbientShadowColor()
@@ -824,7 +824,7 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetSpotShadowColor(view: View, @ColorInt spotShadowColor: Int) {
+    fun unsetSpotShadowColor(view: View, @ColorInt spotShadowColor: Int) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && spotShadowColor != Color.BLACK) {
         // Android documentation says black is the default:
         // https://developer.android.com/reference/android/view/View#getOutlineSpotShadowColor()
@@ -878,7 +878,7 @@ class ViewAttributes {
       view.contentDescription = contentDescription
     }
 
-    private fun unsetContentDescription(view: View) {
+    fun unsetContentDescription(view: View) {
       view.contentDescription = null
     }
 
@@ -899,7 +899,7 @@ class ViewAttributes {
       }
     }
 
-    private fun unsetFocusable(view: View, flags: Int) {
+    fun unsetFocusable(view: View, flags: Int) {
       view.isFocusable = LithoMountData.isViewFocusable(flags)
     }
 
@@ -950,7 +950,7 @@ class ViewAttributes {
       ViewCompat.setTooltipText(view, tooltipText)
     }
 
-    private fun unsetTooltipText(view: View) {
+    fun unsetTooltipText(view: View) {
       ViewCompat.setTooltipText(view, null)
     }
 
@@ -1036,7 +1036,7 @@ class ViewAttributes {
     }
 
     @Suppress("deprecation")
-    private fun setBackgroundCompat(view: View, drawable: Drawable?) {
+    fun setBackgroundCompat(view: View, drawable: Drawable?) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
         view.setBackgroundDrawable(drawable)
       } else {
@@ -1047,11 +1047,15 @@ class ViewAttributes {
     private fun unsetViewForeground(view: View, attributes: ViewAttributes) {
       val foreground = attributes.foreground
       if (foreground != null) {
-        check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          ("MountState has a ViewAttributes with foreground however the current Android version doesn't support foreground on Views")
-        }
-        view.foreground = null
+        unsetForeground(view)
       }
+    }
+
+    fun unsetForeground(view: View) {
+      check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        ("MountState has a ViewAttributes with foreground however the current Android version doesn't support foreground on Views")
+      }
+      view.foreground = null
     }
 
     private fun setViewLayoutDirection(view: View, attributes: ViewAttributes) {
@@ -1061,7 +1065,7 @@ class ViewAttributes {
       view.layoutDirection = attributes.layoutDirection.getLayoutDirectionForView()
     }
 
-    private fun unsetViewLayoutDirection(view: View) {
+    fun unsetViewLayoutDirection(view: View) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
         return
       }
@@ -1101,11 +1105,17 @@ class ViewAttributes {
       if (attributes.stateListAnimator == null && attributes.stateListAnimatorRes == 0) {
         return
       }
+      unsetViewStateListAnimator(view)
+    }
+
+    fun unsetViewStateListAnimator(view: View) {
       check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         ("MountState has a ViewAttributes with stateListAnimator, however the current Android version doesn't support stateListAnimator on Views")
       }
-      view.stateListAnimator.jumpToCurrentState()
-      view.stateListAnimator = null
+      if (view.stateListAnimator != null) {
+        view.stateListAnimator.jumpToCurrentState()
+        view.stateListAnimator = null
+      }
     }
 
     private fun setViewLayerType(view: View, attributes: ViewAttributes) {

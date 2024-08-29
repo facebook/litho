@@ -163,6 +163,12 @@ internal constructor(
      * ultimate source of truth.
      */
     @JvmField val useComponentTreePropContainerAsSourceOfTruth: Boolean = false,
+
+    /**
+     * When enabled the framework will add an additional binder to Host RenderUnits to clean up view
+     * attributes that may have been added by non-litho code.
+     */
+    @JvmField val isHostViewAttributesCleanUpEnabled: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

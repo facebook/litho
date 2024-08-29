@@ -27,6 +27,7 @@ import com.facebook.litho.MountSpecLithoRenderUnit.UpdateState
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
+import com.facebook.litho.host.HostViewAttributesCleanupBinder
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.Primitive
@@ -386,16 +387,25 @@ object LithoNodeUtils {
       }
     }
 
+    val config = node.headComponentContext.lithoConfiguration.componentsConfig
+
     if (viewAttributes != null) {
       renderUnit.addOptionalMountBinder(
           ViewAttributesViewBinder.create(
               ViewAttributesViewBinder.Model(
                   renderUnit = renderUnit,
                   viewAttributes = viewAttributes,
-                  cloneStateListAnimators =
-                      node.headComponentContext.lithoConfiguration.componentsConfig
-                          .cloneStateListAnimators,
+                  cloneStateListAnimators = config.cloneStateListAnimators,
                   isRootHost = id == MountState.ROOT_HOST_ID)))
+    }
+
+    if (config.isHostViewAttributesCleanUpEnabled && component is HostComponent) {
+      renderUnit.addOptionalMountBinder(
+          RenderUnit.DelegateBinder.createDelegateBinder(
+              model = null,
+              binder = HostViewAttributesCleanupBinder(),
+          ) as RenderUnit.DelegateBinder<Any?, Any, Any>,
+      )
     }
 
     return renderUnit
