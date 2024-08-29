@@ -55,7 +55,7 @@ internal object ViewAttributesViewBinder :
           LithoMountData.getViewAttributeFlags(content)
         }
 
-    LithoViewAttributesExtension.setViewAttributes(
+    ViewAttributes.setViewAttributes(
         content = content,
         attributes = model.viewAttributes,
         unit = model.renderUnit,
@@ -75,6 +75,6 @@ internal object ViewAttributesViewBinder :
       throw IllegalStateException("Bind data should not be null")
     }
 
-    LithoViewAttributesExtension.unsetViewAttributes(content, model.viewAttributes, bindData)
+    ViewAttributes.unsetViewAttributes(content, model.viewAttributes, bindData)
   }
 }

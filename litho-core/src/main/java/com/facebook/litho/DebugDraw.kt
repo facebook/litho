@@ -201,6 +201,6 @@ internal object DebugDraw {
 
   private fun isInteractive(view: View): Boolean =
       view.hasOnClickListeners() ||
-          LithoViewAttributesExtension.getComponentLongClickListener(view) != null ||
-          LithoViewAttributesExtension.getComponentTouchListener(view) != null
+          ViewAttributes.getComponentLongClickListener(view) != null ||
+          ViewAttributes.getComponentTouchListener(view) != null
 }

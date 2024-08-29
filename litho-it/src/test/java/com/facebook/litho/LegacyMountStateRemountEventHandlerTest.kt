@@ -55,7 +55,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    val longClickListener = LithoViewAttributesExtension.getComponentLongClickListener(lithoView)
+    val longClickListener = ViewAttributes.getComponentLongClickListener(lithoView)
     assertThat(longClickListener).isNotNull
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
@@ -67,10 +67,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    assertThat(
-            longClickListener ===
-                LithoViewAttributesExtension.getComponentLongClickListener(lithoView))
-        .isTrue
+    assertThat(longClickListener === ViewAttributes.getComponentLongClickListener(lithoView)).isTrue
   }
 
   @Test
@@ -87,8 +84,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    val focusChangeListener =
-        LithoViewAttributesExtension.getComponentFocusChangeListener(lithoView)
+    val focusChangeListener = ViewAttributes.getComponentFocusChangeListener(lithoView)
     assertThat(focusChangeListener).isNotNull
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
@@ -100,9 +96,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    assertThat(
-            focusChangeListener ===
-                LithoViewAttributesExtension.getComponentFocusChangeListener(lithoView))
+    assertThat(focusChangeListener === ViewAttributes.getComponentFocusChangeListener(lithoView))
         .isTrue
   }
 
@@ -120,7 +114,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    val touchListener = LithoViewAttributesExtension.getComponentTouchListener(lithoView)
+    val touchListener = ViewAttributes.getComponentTouchListener(lithoView)
     assertThat(touchListener).isNotNull
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
@@ -131,8 +125,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    assertThat(LithoViewAttributesExtension.getComponentTouchListener(lithoView))
-        .isEqualTo(touchListener)
+    assertThat(ViewAttributes.getComponentTouchListener(lithoView)).isEqualTo(touchListener)
   }
 
   @Test
@@ -175,7 +168,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    assertThat(LithoViewAttributesExtension.getComponentLongClickListener(lithoView)).isNotNull
+    assertThat(ViewAttributes.getComponentLongClickListener(lithoView)).isNotNull
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component =
@@ -184,7 +177,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    val listener = LithoViewAttributesExtension.getComponentLongClickListener(lithoView)
+    val listener = ViewAttributes.getComponentLongClickListener(lithoView)
     assertThat(listener).isNotNull
     assertThat(listener?.eventHandler).isNull()
   }
@@ -203,7 +196,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    assertThat(LithoViewAttributesExtension.getComponentFocusChangeListener(lithoView)).isNotNull
+    assertThat(ViewAttributes.getComponentFocusChangeListener(lithoView)).isNotNull
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component =
@@ -212,7 +205,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    val listener = LithoViewAttributesExtension.getComponentFocusChangeListener(lithoView)
+    val listener = ViewAttributes.getComponentFocusChangeListener(lithoView)
     assertThat(listener).isNotNull
     assertThat(listener?.eventHandler).isNull()
   }
@@ -239,7 +232,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    val listener = LithoViewAttributesExtension.getComponentTouchListener(lithoView)
+    val listener = ViewAttributes.getComponentTouchListener(lithoView)
     assertThat(listener?.eventHandler).isNull()
   }
 
@@ -255,7 +248,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    assertThat(LithoViewAttributesExtension.getComponentLongClickListener(lithoView)).isNull()
+    assertThat(ViewAttributes.getComponentLongClickListener(lithoView)).isNull()
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component =
@@ -266,7 +259,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    val listener = LithoViewAttributesExtension.getComponentLongClickListener(lithoView)
+    val listener = ViewAttributes.getComponentLongClickListener(lithoView)
     assertThat(listener).isNotNull
     assertThat(listener?.eventHandler).isNotNull
   }
@@ -283,7 +276,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    assertThat(LithoViewAttributesExtension.getComponentFocusChangeListener(lithoView)).isNull()
+    assertThat(ViewAttributes.getComponentFocusChangeListener(lithoView)).isNull()
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component =
@@ -294,7 +287,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    val listener = LithoViewAttributesExtension.getComponentFocusChangeListener(lithoView)
+    val listener = ViewAttributes.getComponentFocusChangeListener(lithoView)
     assertThat(listener).isNotNull
     assertThat(listener?.eventHandler).isNotNull
   }
@@ -311,7 +304,7 @@ class LegacyMountStateRemountEventHandlerTest {
                       .child(SimpleMountSpecTester.create(c))
                       .build()
             })
-    assertThat(LithoViewAttributesExtension.getComponentTouchListener(lithoView)).isNull()
+    assertThat(ViewAttributes.getComponentTouchListener(lithoView)).isNull()
     lithoView.componentTree?.root =
         object : InlineLayoutSpec() {
           override fun onCreateLayout(c: ComponentContext): Component =
@@ -321,7 +314,7 @@ class LegacyMountStateRemountEventHandlerTest {
                   .child(SimpleMountSpecTester.create(c))
                   .build()
         }
-    val listener = LithoViewAttributesExtension.getComponentTouchListener(lithoView)
+    val listener = ViewAttributes.getComponentTouchListener(lithoView)
     assertThat(listener).isNotNull
     assertThat(listener?.eventHandler).isNotNull
   }
