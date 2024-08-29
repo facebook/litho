@@ -200,7 +200,7 @@ internal object LithoReducer {
           id = MountState.ROOT_HOST_ID,
           component = HostComponent.create(context),
           commonDynamicProps = null,
-          context = null,
+          context = context,
           nodeInfo = null,
           flags = 0,
           importantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
