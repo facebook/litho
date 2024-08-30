@@ -49,6 +49,9 @@ class HostViewAttributesCleanupBinder : RenderUnit.Binder<Any?, Host, Any> {
       bindData: Any?
   ) {
     unsetAllViewAttributes(content)
+    if (content is ComponentHost) {
+      content.cleanup()
+    }
   }
 }
 

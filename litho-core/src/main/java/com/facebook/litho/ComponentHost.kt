@@ -76,6 +76,7 @@ open class ComponentHost(
     attrs: AttributeSet?,
     private val unsafeModificationPolicy: UnsafeModificationPolicy?
 ) : Host(context, attrs), DisappearingHost, SupportsPivotTransform {
+
   private val mountItems: SparseArrayCompat<MountItem> = SparseArrayCompat()
   private var scrapMountItemsArray: SparseArrayCompat<MountItem>? = null
   private val viewMountItems = SparseArrayCompat<MountItem>()
@@ -93,6 +94,21 @@ open class ComponentHost(
   private var componentAccessibilityDelegate: ComponentAccessibilityDelegate? = null
   private var isComponentAccessibilityDelegateSet = false
   private var onLongClickListener: ComponentLongClickListener? = null
+  private var onInterceptTouchEventHandler: EventHandler<InterceptTouchEvent>? = null
+  private var pivotXPercent = UNSET
+  private var pivotYPercent = UNSET
+  /**
+   * Is `true` if and only if any accessible mounted child content has extra A11Y nodes. This is
+   * `false` by default, and is set for every mount, unmount, and update call.
+   */
+  private var implementsVirtualViews = false
+  /**
+   * This flag is used to understand if a view property (e.g, click listener) was modified under the
+   * context of a Litho operation or not. It is used to detect unsafe modifications and log them.
+   *
+   * @see {@link LithoViewAttributesExtension}
+   */
+  private var isSafeViewModificationsEnabled = false
 
   /**
    * Sets a focus change listener on this host.
@@ -211,28 +227,6 @@ open class ComponentHost(
       }
       return drawables
     }
-
-  private var onInterceptTouchEventHandler: EventHandler<InterceptTouchEvent>? = null
-  private var pivotXPercent = UNSET
-  private var pivotYPercent = UNSET
-
-  internal interface ExceptionLogMessageProvider {
-    val logMessage: StringBuilder?
-  }
-
-  /**
-   * Is `true` if and only if any accessible mounted child content has extra A11Y nodes. This is
-   * `false` by default, and is set for every mount, unmount, and update call.
-   */
-  private var implementsVirtualViews = false
-
-  /**
-   * This flag is used to understand if a view property (e.g, click listener) was modified under the
-   * context of a Litho operation or not. It is used to detect unsafe modifications and log them.
-   *
-   * @see {@link LithoViewAttributesExtension}
-   */
-  private var isSafeViewModificationsEnabled = false
 
   constructor(
       context: Context,
@@ -1372,6 +1366,33 @@ open class ComponentHost(
   override fun setOnFocusChangeListener(l: OnFocusChangeListener?) {
     checkUnsafeViewModification()
     super.setOnFocusChangeListener(l)
+  }
+
+  /** Clean up all fields to avoid being reused with an incorrect state. */
+  fun cleanup() {
+    mountItems.clear()
+    viewMountItems.clear()
+    drawableMountItems.clear()
+    scrapViewMountItemsArray = null
+    scrapMountItemsArray = null
+    scrapDrawableMountItems = null
+    disappearingItems = null
+    contentDescription = null
+    viewTags = null
+    childDrawingOrder = IntArray(0)
+    isChildDrawingOrderDirty = false
+    inLayout = false
+    hadChildWithDuplicateParentState = false
+    componentAccessibilityDelegate = null
+    isComponentAccessibilityDelegateSet = false
+    onLongClickListener = null
+    onInterceptTouchEventHandler = null
+    pivotXPercent = UNSET
+    pivotYPercent = UNSET
+    implementsVirtualViews = false
+    isSafeViewModificationsEnabled = false
+    componentTouchListener = null
+    touchExpansionDelegate = null
   }
 
   /**
