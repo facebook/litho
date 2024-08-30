@@ -87,6 +87,10 @@ class LazyCollection(
     private val onDataRendered: OnDataRendered? = null,
     private val childEquivalenceIncludesCommonProps: Boolean = true,
     private val alwaysDetectDuplicates: Boolean = false,
+    private val isLeftFadingEnabled: Boolean = true,
+    private val isRightFadingEnabled: Boolean = true,
+    private val isTopFadingEnabled: Boolean = true,
+    private val isBottomFadingEnabled: Boolean = true,
     private val fadingEdgeLength: Dimen? = null,
     private val shouldExcludeFromIncrementalMount: Boolean = false,
     private val lazyCollectionChildren: LazyCollectionChildren
@@ -200,6 +204,10 @@ class LazyCollection(
             } else {
               horizontalFadingEdgeEnabled(true)
             }
+            isLeftFadingEnabled(isLeftFadingEnabled)
+            isRightFadingEnabled(isRightFadingEnabled)
+            isTopFadingEnabled(isTopFadingEnabled)
+            isBottomFadingEnabled(isBottomFadingEnabled)
           }
         }
         .kotlinStyle(style)

@@ -140,6 +140,11 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault public static final boolean incrementalMount = true;
   @PropDefault public static final int refreshProgressBarColor = 0XFF4267B2; // blue
 
+  @PropDefault public static final boolean isLeftFadingEnabled = true;
+  @PropDefault public static final boolean isRightFadingEnabled = true;
+  @PropDefault public static final boolean isTopFadingEnabled = true;
+  @PropDefault public static final boolean isBottomFadingEnabled = true;
+
   @OnCreateLayout
   static @Nullable Component onCreateLayout(
       final ComponentContext c,
@@ -168,6 +173,10 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) EventHandler<TouchEvent> recyclerTouchEventHandler,
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
+      @Prop(optional = true) boolean isLeftFadingEnabled,
+      @Prop(optional = true) boolean isRightFadingEnabled,
+      @Prop(optional = true) boolean isTopFadingEnabled,
+      @Prop(optional = true) boolean isBottomFadingEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
@@ -283,6 +292,10 @@ public class RecyclerCollectionComponentSpec {
             itemDecorations,
             horizontalFadingEdgeEnabled,
             verticalFadingEdgeEnabled,
+            isLeftFadingEnabled,
+            isRightFadingEnabled,
+            isTopFadingEnabled,
+            isBottomFadingEnabled,
             fadingEdgeLength,
             edgeEffectFactory,
             recyclerViewId,

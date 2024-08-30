@@ -61,6 +61,10 @@ object CollectionRecyclerSpec {
   val recyclerConfiguration: RecyclerConfiguration = ListRecyclerConfiguration.create().build()
 
   @PropDefault val itemAnimator: RecyclerView.ItemAnimator = NoUpdateItemAnimator()
+  @PropDefault val isLeftFadingEnabled: Boolean = true
+  @PropDefault val isRightFadingEnabled: Boolean = true
+  @PropDefault val isTopFadingEnabled: Boolean = true
+  @PropDefault val isBottomFadingEnabled: Boolean = true
 
   @JvmStatic
   @OnCreateLayout
@@ -84,6 +88,10 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) recyclerTouchEventHandler: EventHandler<TouchEvent>?,
       @Prop(optional = true) horizontalFadingEdgeEnabled: Boolean,
       @Prop(optional = true) verticalFadingEdgeEnabled: Boolean,
+      @Prop(optional = true) isLeftFadingEnabled: Boolean,
+      @Prop(optional = true) isRightFadingEnabled: Boolean,
+      @Prop(optional = true) isTopFadingEnabled: Boolean,
+      @Prop(optional = true) isBottomFadingEnabled: Boolean,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) fadingEdgeLength: Int,
       @Prop(optional = true, resType = ResType.COLOR) refreshProgressBarBackgroundColor: Int?,
       @Prop(optional = true, resType = ResType.COLOR) refreshProgressBarColor: Int?,
@@ -151,6 +159,10 @@ object CollectionRecyclerSpec {
         itemDecorations = itemDecoration?.let { listOf(it) },
         isHorizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
         isVerticalFadingEdgeEnabled = verticalFadingEdgeEnabled,
+        isLeftFadingEnabled = isLeftFadingEnabled,
+        isRightFadingEnabled = isRightFadingEnabled,
+        isTopFadingEnabled = isTopFadingEnabled,
+        isBottomFadingEnabled = isBottomFadingEnabled,
         fadingEdgeLength = fadingEdgeLength,
         onScrollListeners = onScrollListeners?.filterNotNull(),
         refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,

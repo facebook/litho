@@ -69,6 +69,10 @@ constructor(
     private val itemDecorations: List<RecyclerView.ItemDecoration>? = null,
     private val isHorizontalFadingEdgeEnabled: Boolean = false,
     private val isVerticalFadingEdgeEnabled: Boolean = false,
+    private val isLeftFadingEnabled: Boolean = true,
+    private val isRightFadingEnabled: Boolean = true,
+    private val isTopFadingEnabled: Boolean = true,
+    private val isBottomFadingEnabled: Boolean = true,
     private val fadingEdgeLength: Int = 0,
     private val edgeFactory: RecyclerView.EdgeEffectFactory? = null,
     @IdRes private val recyclerViewId: Int = View.NO_ID,
@@ -196,6 +200,10 @@ constructor(
                 scrollBarStyle = scrollBarStyle,
                 isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
                 isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                isLeftFadingEnabled = isLeftFadingEnabled,
+                isRightFadingEnabled = isRightFadingEnabled,
+                isTopFadingEnabled = isTopFadingEnabled,
+                isBottomFadingEnabled = isBottomFadingEnabled,
                 fadingEdgeLength = fadingEdgeLength,
                 recyclerViewId = recyclerViewId,
                 overScrollMode = overScrollMode,
@@ -326,6 +334,10 @@ constructor(
                     scrollBarStyle = scrollBarStyle,
                     isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
                     isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                    isLeftFadingEnabled = isLeftFadingEnabled,
+                    isRightFadingEnabled = isRightFadingEnabled,
+                    isTopFadingEnabled = isTopFadingEnabled,
+                    isBottomFadingEnabled = isBottomFadingEnabled,
                     fadingEdgeLength = fadingEdgeLength,
                     recyclerViewId = recyclerViewId,
                     overScrollMode = overScrollMode,
@@ -447,6 +459,10 @@ constructor(
                     scrollBarStyle = scrollBarStyle,
                     isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
                     isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
+                    isLeftFadingEnabled = isLeftFadingEnabled,
+                    isRightFadingEnabled = isRightFadingEnabled,
+                    isTopFadingEnabled = isTopFadingEnabled,
+                    isBottomFadingEnabled = isBottomFadingEnabled,
                     fadingEdgeLength = fadingEdgeLength,
                     recyclerViewId = recyclerViewId,
                     overScrollMode = overScrollMode,
@@ -554,6 +570,10 @@ private fun ResourcesScope.bindLegacyMountBinder(
     scrollBarStyle: Int,
     isHorizontalFadingEdgeEnabled: Boolean,
     isVerticalFadingEdgeEnabled: Boolean,
+    isLeftFadingEnabled: Boolean,
+    isRightFadingEnabled: Boolean,
+    isTopFadingEnabled: Boolean,
+    isBottomFadingEnabled: Boolean,
     fadingEdgeLength: Int,
     @IdRes recyclerViewId: Int,
     overScrollMode: Int,
@@ -579,6 +599,10 @@ private fun ResourcesScope.bindLegacyMountBinder(
   recyclerView.scrollBarStyle = scrollBarStyle
   recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
   recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
+  recyclerView.setLeftFadingEnabled(isLeftFadingEnabled)
+  recyclerView.setRightFadingEnabled(isRightFadingEnabled)
+  recyclerView.setTopFadingEnabled(isTopFadingEnabled)
+  recyclerView.setBottomFadingEnabled(isBottomFadingEnabled)
   recyclerView.setFadingEdgeLength(fadingEdgeLength.dp.toPixels())
   recyclerView.id = recyclerViewId
   recyclerView.overScrollMode = overScrollMode

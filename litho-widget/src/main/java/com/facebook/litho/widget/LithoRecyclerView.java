@@ -31,6 +31,10 @@ import java.util.List;
  */
 public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDrawListener {
 
+  private boolean mLeftFadingEnabled = true;
+  private boolean mRightFadingEnabled = true;
+  private boolean mTopFadingEnabled = true;
+  private boolean mBottomFadingEnabled = true;
   private @Nullable TouchInterceptor mTouchInterceptor;
   private @Nullable List<PostDispatchDrawListener> mPostDispatchDrawListeners;
 
@@ -96,6 +100,58 @@ public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDr
   public void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener) {
     if (mPostDispatchDrawListeners != null) {
       mPostDispatchDrawListeners.remove(listener);
+    }
+  }
+
+  public void setLeftFadingEnabled(boolean leftFadingEnabled) {
+    this.mLeftFadingEnabled = leftFadingEnabled;
+  }
+
+  public void setRightFadingEnabled(boolean rightFadingEnabled) {
+    this.mRightFadingEnabled = rightFadingEnabled;
+  }
+
+  public void setTopFadingEnabled(boolean topFadingEnabled) {
+    this.mTopFadingEnabled = topFadingEnabled;
+  }
+
+  public void setBottomFadingEnabled(boolean bottomFadingEnabled) {
+    this.mBottomFadingEnabled = bottomFadingEnabled;
+  }
+
+  @Override
+  public float getLeftFadingEdgeStrength() {
+    if (mLeftFadingEnabled) {
+      return super.getLeftFadingEdgeStrength();
+    } else {
+      return 0f;
+    }
+  }
+
+  @Override
+  public float getRightFadingEdgeStrength() {
+    if (mRightFadingEnabled) {
+      return super.getRightFadingEdgeStrength();
+    } else {
+      return 0f;
+    }
+  }
+
+  @Override
+  public float getTopFadingEdgeStrength() {
+    if (mTopFadingEnabled) {
+      return super.getTopFadingEdgeStrength();
+    } else {
+      return 0f;
+    }
+  }
+
+  @Override
+  public float getBottomFadingEdgeStrength() {
+    if (mBottomFadingEnabled) {
+      return super.getBottomFadingEdgeStrength();
+    } else {
+      return 0f;
     }
   }
 

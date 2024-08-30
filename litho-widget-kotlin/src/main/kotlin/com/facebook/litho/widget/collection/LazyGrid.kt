@@ -67,6 +67,10 @@ inline fun ResourcesScope.LazyGrid(
     useBackgroundChangeSets: Boolean = false,
     childEquivalenceIncludesCommonProps: Boolean = true,
     alwaysDetectDuplicates: Boolean = false,
+    isLeftFadingEnabled: Boolean = true,
+    isRightFadingEnabled: Boolean = true,
+    isTopFadingEnabled: Boolean = true,
+    isBottomFadingEnabled: Boolean = true,
     fadingEdgeLength: Dimen? = null,
     preAllocationHandler: PreAllocationHandler? =
         context.lithoConfiguration.componentsConfig.preAllocationHandler,
@@ -118,6 +122,10 @@ inline fun ResourcesScope.LazyGrid(
       onDataRendered,
       childEquivalenceIncludesCommonProps,
       alwaysDetectDuplicates,
+      isLeftFadingEnabled,
+      isRightFadingEnabled,
+      isTopFadingEnabled,
+      isBottomFadingEnabled,
       fadingEdgeLength,
       shouldExcludeFromIncrementalMount,
       lazyGridScope.children)
