@@ -35,7 +35,8 @@ class LayoutCache(oldWriteCache: Map<Any, Any?>? = null) {
   }
 
   operator fun <T> get(uniqueId: Any): T? {
-    @Suppress("UNCHECKED_CAST") return readCache.get(uniqueId) as? T?
+    @Suppress("UNCHECKED_CAST")
+    return readCache.get(uniqueId) as? T?
   }
 
   val writeCacheData: Map<Any, Any?>

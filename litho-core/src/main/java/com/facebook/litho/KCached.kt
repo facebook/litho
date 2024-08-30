@@ -33,7 +33,8 @@ fun <T> ComponentScope.useCached(vararg inputs: Any?, calculator: () -> T): T {
       context.getCachedValue(globalKey, hookIndex, cacheInputs)
           ?: calculator().also { context.putCachedValue(globalKey, hookIndex, cacheInputs, it) }
 
-  @Suppress("UNCHECKED_CAST") return result as T
+  @Suppress("UNCHECKED_CAST")
+  return result as T
 }
 
 /**

@@ -35,8 +35,8 @@ import com.facebook.samples.litho.R
  * Text component which will display a greeting with the given name.
  *
  * @param name the name to display in the greeting message
- * @constructor Instantiates a new BootcampText component
  * @property name the name that will be displayed in the greeting message
+ * @constructor Instantiates a new BootcampText component
  */
 class ClickableText(private val name: String) : KComponent() {
   override fun ComponentScope.render(): Component {
