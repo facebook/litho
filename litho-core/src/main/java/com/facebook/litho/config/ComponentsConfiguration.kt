@@ -158,6 +158,8 @@ internal constructor(
     @JvmField val enableHostWillNotDraw: Boolean = false,
     /** This will enable logging for render in-flight */
     @JvmField val enableLoggingForRenderInFlight: Boolean = false,
+    /** This will make sure context is not nullable for host render unit and drawable render unit */
+    @JvmField val enableNonNullableContext: Boolean = false,
     /**
      * This will unset TPs from the CT's context, and use the one present in the CT directly as the
      * ultimate source of truth.
@@ -358,6 +360,7 @@ internal constructor(
     private var enableResolveWithoutSizeSpec = baseConfig.enableResolveWithoutSizeSpec
     private var enableHostWillNotDraw = baseConfig.enableHostWillNotDraw
     private var enableLoggingForRenderInFlight = baseConfig.enableLoggingForRenderInFlight
+    private var enableNonNullableContext = baseConfig.enableNonNullableContext
 
     fun shouldAddHostViewForRootComponent(enabled: Boolean): Builder = also {
       shouldAddHostViewForRootComponent = enabled
@@ -458,6 +461,10 @@ internal constructor(
       enableLoggingForRenderInFlight = enabled
     }
 
+    fun enableNonNullableContext(enabled: Boolean): Builder = also {
+      enableNonNullableContext = enabled
+    }
+
     fun build(): ComponentsConfiguration {
       return baseConfig.copy(
           shouldAddHostViewForRootComponent = shouldAddHostViewForRootComponent,
@@ -492,7 +499,7 @@ internal constructor(
           enableResolveWithoutSizeSpec = enableResolveWithoutSizeSpec,
           enableHostWillNotDraw = enableHostWillNotDraw,
           enableLoggingForRenderInFlight = enableLoggingForRenderInFlight,
-      )
+          enableNonNullableContext = enableNonNullableContext)
     }
   }
 }

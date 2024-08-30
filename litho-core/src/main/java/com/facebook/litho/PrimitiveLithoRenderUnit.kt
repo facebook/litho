@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho
 
 import android.content.Context
@@ -34,7 +33,7 @@ private constructor(
     flags: Int,
     importantForAccessibility: Int,
     val primitiveRenderUnit: PrimitiveRenderUnit<Any>,
-    context: ComponentContext,
+    context: ComponentContext?,
     debugKey: String?
 ) :
     LithoRenderUnit(
@@ -147,7 +146,7 @@ private constructor(
     fun create(
         component: Component,
         commonDynamicProps: SparseArray<DynamicValue<Any?>>?,
-        context: ComponentContext,
+        context: ComponentContext?,
         nodeInfo: NodeInfo?,
         flags: Int,
         importantForAccessibility: Int,

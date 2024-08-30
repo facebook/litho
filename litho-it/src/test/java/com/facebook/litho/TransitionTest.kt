@@ -16,9 +16,7 @@
 
 package com.facebook.litho
 
-import android.content.Context
 import android.graphics.Rect
-import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.Transition.RootBoundsTransition
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.animation.DimensionValue
@@ -27,7 +25,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.rendercore.transitions.TransitionUtils
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
@@ -35,13 +32,6 @@ import org.mockito.kotlin.whenever
 
 @RunWith(LithoTestRunner::class)
 class TransitionTest {
-
-  private lateinit var context: ComponentContext
-
-  @Before
-  fun setup() {
-    context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
-  }
 
   @Test
   fun testCollectRootBoundsTransitions() {
@@ -116,15 +106,7 @@ class TransitionTest {
         }
     val rootUnit: LithoRenderUnit =
         MountSpecLithoRenderUnit.create(
-            0,
-            component,
-            null,
-            context = context,
-            null,
-            0,
-            0,
-            MountSpecLithoRenderUnit.STATE_UNKNOWN,
-            null)
+            0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN, null)
     whenever(layoutState.getMountableOutputAt(0))
         .thenReturn(create(rootUnit, Rect(0, 0, 300, 100), null, null))
     val animateFrom =

@@ -43,7 +43,7 @@ private constructor(
     flags: Int,
     importantForAccessibility: Int,
     @UpdateState val updateState: Int,
-    context: ComponentContext,
+    context: ComponentContext?,
     debugKey: String?
 ) :
     LithoRenderUnit(
@@ -220,7 +220,7 @@ private constructor(
         id: Long,
         component: Component,
         commonDynamicProps: SparseArray<DynamicValue<Any?>>?,
-        context: ComponentContext,
+        context: ComponentContext?,
         nodeInfo: NodeInfo?,
         flags: Int,
         importantForAccessibility: Int,

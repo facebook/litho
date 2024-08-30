@@ -32,12 +32,12 @@ protected constructor(
     val flags: Int,
     importantForAccessibility: Int,
     renderType: RenderType,
-    @field:JvmField val componentContext: ComponentContext,
+    @field:JvmField val componentContext: ComponentContext?,
     private val _debugKey: String?
 ) : RenderUnit<Any>(renderType), TransitionRenderUnit {
 
   override val debugKey: String
-    get() = _debugKey ?: componentContext.globalKey
+    get() = _debugKey ?: componentContext?.globalKey ?: id.toString()
 
   // the A11Y prop for descendants has been corrected
   val importantForAccessibility: Int =
@@ -73,15 +73,15 @@ protected constructor(
     const val LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS = 1 shl 5
 
     @JvmStatic
-    fun getComponentContext(item: MountItem): ComponentContext =
+    fun getComponentContext(item: MountItem): ComponentContext? =
         (item.renderTreeNode.renderUnit as LithoRenderUnit).componentContext
 
     @JvmStatic
-    fun getComponentContext(node: RenderTreeNode): ComponentContext =
+    fun getComponentContext(node: RenderTreeNode): ComponentContext? =
         (node.renderUnit as LithoRenderUnit).componentContext
 
     @JvmStatic
-    fun getComponentContext(unit: LithoRenderUnit): ComponentContext = unit.componentContext
+    fun getComponentContext(unit: LithoRenderUnit): ComponentContext? = unit.componentContext
 
     @JvmStatic
     fun getRenderUnit(item: MountItem): LithoRenderUnit = getRenderUnit(item.renderTreeNode)

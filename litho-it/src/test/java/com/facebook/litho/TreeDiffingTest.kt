@@ -621,38 +621,6 @@ class TreeDiffingTest {
     }
   }
 
-  private fun createNode(component: Component): RenderTreeNode {
-    val unit: LithoRenderUnit =
-        MountSpecLithoRenderUnit.create(
-            0,
-            component,
-            null,
-            legacyLithoViewRule.context,
-            null,
-            0,
-            0,
-            MountSpecLithoRenderUnit.STATE_UNKNOWN,
-            null)
-    return create(
-        unit,
-        Rect(),
-        null,
-        LithoLayoutData(
-            0,
-            0,
-            0,
-            0,
-            null,
-            null,
-            if (component is SpecGeneratedComponent) {
-              component.isMountSizeDependent
-            } else {
-              false
-            },
-            null),
-        null)
-  }
-
   companion object {
 
     private lateinit var RedDrawable: Drawable
@@ -722,6 +690,30 @@ class TreeDiffingTest {
       assertThat(diffHeight != -1).isTrue
       assertThat(diffWidth != -1).isTrue
       assertThat(node.cachedMeasuresValid).isTrue
+    }
+
+    private fun createNode(component: Component): RenderTreeNode {
+      val unit: LithoRenderUnit =
+          MountSpecLithoRenderUnit.create(
+              0, component, null, null, null, 0, 0, MountSpecLithoRenderUnit.STATE_UNKNOWN, null)
+      return create(
+          unit,
+          Rect(),
+          null,
+          LithoLayoutData(
+              0,
+              0,
+              0,
+              0,
+              null,
+              null,
+              if (component is SpecGeneratedComponent) {
+                component.isMountSizeDependent
+              } else {
+                false
+              },
+              null),
+          null)
     }
   }
 }

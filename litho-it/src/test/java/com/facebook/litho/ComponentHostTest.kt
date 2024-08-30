@@ -648,7 +648,6 @@ class ComponentHostTest {
         MountItemTestHelper.create(
             if (content is Drawable) drawableComponent else viewComponent,
             content,
-            context,
             nodeInfo,
             if (content is Drawable) content.bounds else null,
             flags,
@@ -661,13 +660,7 @@ class ComponentHostTest {
     val nodeInfo = NodeInfo()
     val mountItem =
         MountItemTestHelper.create(
-            viewComponent,
-            view,
-            context,
-            nodeInfo,
-            null,
-            flags,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            viewComponent, view, nodeInfo, null, flags, View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     host.unmount(index, mountItem)
     return mountItem
   }
@@ -677,7 +670,6 @@ class ComponentHostTest {
         MountItemTestHelper.create(
             viewComponent,
             content,
-            context,
             null,
             Rect(1, 1, 1, 1),
             0,

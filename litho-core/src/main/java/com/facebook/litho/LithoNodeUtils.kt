@@ -126,7 +126,12 @@ object LithoNodeUtils {
         id = id,
         component = hostComponent,
         commonDynamicProps = commonDynamicProps,
-        context = context,
+        context =
+            if (context.lithoConfiguration.componentsConfig.enableNonNullableContext) {
+              context
+            } else {
+              null
+            },
         node = node,
         importantForAccessibility = node.importantForAccessibility,
         updateState = MountSpecLithoRenderUnit.STATE_UNKNOWN,
@@ -164,7 +169,6 @@ object LithoNodeUtils {
         id = MountState.ROOT_HOST_ID, // The root host (LithoView) always has ID 0
         component = hostComponent,
         commonDynamicProps = commonDynamicProps,
-        context = context,
         node = node,
         importantForAccessibility = node.importantForAccessibility,
         updateState =
@@ -284,7 +288,12 @@ object LithoNodeUtils {
         id = id,
         component = component,
         commonDynamicProps = null, /* Drawables don't bind dynamic props */
-        context = context,
+        context =
+            if (context.lithoConfiguration.componentsConfig.enableNonNullableContext) {
+              context
+            } else {
+              null
+            },
         node = node,
         importantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO,
         updateState =
@@ -307,7 +316,7 @@ object LithoNodeUtils {
       id: Long,
       component: Component,
       commonDynamicProps: SparseArray<DynamicValue<*>>? = null,
-      context: ComponentContext,
+      context: ComponentContext? = null,
       node: LithoNode,
       importantForAccessibility: Int,
       @UpdateState updateState: Int,

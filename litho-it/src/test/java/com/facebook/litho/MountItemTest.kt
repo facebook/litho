@@ -87,13 +87,7 @@ class MountItemTest {
 
   private fun create(content: Any): MountItem =
       MountItemTestHelper.create(
-          component,
-          content,
-          context,
-          nodeInfo,
-          null,
-          flags,
-          ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
+          component, content, nodeInfo, null, flags, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
 
   @Test
   fun testIsBound() {
@@ -210,7 +204,6 @@ class MountItemTest {
             TestDrawableComponent.create(context, true, true, true /* implementsAccessibility */)
                 .build(),
             content,
-            context,
             nodeInfo,
             null,
             flags,
@@ -225,7 +218,6 @@ class MountItemTest {
             TestDrawableComponent.create(context, true, true, true /* implementsAccessibility */)
                 .build(),
             content,
-            context,
             nodeInfo,
             null,
             flags,
@@ -240,7 +232,6 @@ class MountItemTest {
             TestDrawableComponent.create(context, true, true, true /* implementsAccessibility */)
                 .build(),
             content,
-            context,
             nodeInfo,
             null,
             flags,
