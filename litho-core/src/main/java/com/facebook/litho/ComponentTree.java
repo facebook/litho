@@ -373,9 +373,8 @@ public class ComponentTree
     }
 
     if (ComponentsConfiguration.defaultInstance.enableLifecycleOwnerWrapper) {
-      LifecycleOwner existingLifecycleOwner =
-          getLifecycleOwnerFromTreePropContainer(builder.treePropContainer);
-      mImplicitTreePropContainer = createImplicitTreePropContainer(existingLifecycleOwner);
+      LifecycleOwner implicitLifecycleOwner = getImplicitLifecycleOwner(builder.treePropContainer);
+      mImplicitTreePropContainer = createImplicitTreePropContainer(implicitLifecycleOwner);
     }
 
     if (useComponentTreePropContainerAsSourceOfTruth) {
@@ -2661,20 +2660,23 @@ public class ComponentTree
     return sDefaultLayoutThreadLooper;
   }
 
-  private TreePropContainer createImplicitTreePropContainer(
-      @Nullable LifecycleOwner lifecycleOwner) {
+  private TreePropContainer createImplicitTreePropContainer(LifecycleOwner lifecycleOwner) {
     final TreePropContainer treePropContainer = new TreePropContainer();
-    treePropContainer.put(LifecycleOwnerTreeProp, new LifecycleOwnerWrapper(lifecycleOwner));
+    treePropContainer.put(LifecycleOwnerTreeProp, lifecycleOwner);
     return treePropContainer;
   }
 
-  private @Nullable LifecycleOwner getLifecycleOwnerFromTreePropContainer(
-      @Nullable TreePropContainer inputTreeProps) {
-    final @Nullable LifecycleOwnerWrapper lifecycleOwnerWrapper =
-        inputTreeProps == null
-            ? null
-            : ((LifecycleOwnerWrapper) inputTreeProps.get(LifecycleOwnerTreeProp));
-    return lifecycleOwnerWrapper == null ? null : lifecycleOwnerWrapper.getDelegate();
+  private LifecycleOwner getImplicitLifecycleOwner(@Nullable TreePropContainer inputTreeProps) {
+    final @Nullable LifecycleOwner lifecycleOwner =
+        inputTreeProps == null ? null : inputTreeProps.get(LifecycleOwnerTreeProp);
+
+    if (lifecycleOwner == null) {
+      return new LifecycleOwnerWrapper(null);
+    } else if (lifecycleOwner instanceof LifecycleOwnerWrapper) {
+      return new LifecycleOwnerWrapper(((LifecycleOwnerWrapper) lifecycleOwner).getDelegate());
+    } else {
+      return lifecycleOwner;
+    }
   }
 
   @Nullable
@@ -2854,17 +2856,21 @@ public class ComponentTree
       if (treePropContainer == null) {
         throw new NullPointerException("The treePropContainer cannot be null");
       }
-      final LifecycleOwnerWrapper wrapper =
-          (LifecycleOwnerWrapper) treePropContainer.get(LifecycleOwnerTreeProp);
-      if (wrapper.getDelegate() != null && wrapper.getDelegate() != owner) {
-        throw new IllegalArgumentException(
-            "The lifecycle owner has been set from the parent, owner = " + owner);
-      }
-      if (Looper.myLooper() == Looper.getMainLooper()) {
-        wrapper.setDelegate(owner);
+      final LifecycleOwner lifecycleOwner = treePropContainer.get(LifecycleOwnerTreeProp);
+      if (lifecycleOwner instanceof LifecycleOwnerWrapper) {
+        final LifecycleOwnerWrapper wrapper = (LifecycleOwnerWrapper) lifecycleOwner;
+        if (wrapper.getDelegate() != null && wrapper.getDelegate() != owner) {
+          throw new IllegalArgumentException(
+              "The lifecycle owner has been set from the parent, owner = " + owner);
+        }
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+          wrapper.setDelegate(owner);
+        } else {
+          mMainThreadHandler.post(
+              () -> wrapper.setDelegate(owner), "LifecycleOwnerWrapper.setDelegate");
+        }
       } else {
-        mMainThreadHandler.post(
-            () -> wrapper.setDelegate(owner), "LifecycleOwnerWrapper.setDelegate");
+        treePropContainer.put(LifecycleOwnerTreeProp, lifecycleOwner);
       }
     } else {
       if (useComponentTreePropContainerAsSourceOfTruth) {
