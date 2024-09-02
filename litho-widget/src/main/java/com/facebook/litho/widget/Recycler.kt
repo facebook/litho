@@ -53,8 +53,7 @@ class Recycler
 @JvmOverloads
 constructor(
     val binder: Binder<RecyclerView>,
-    private val binderStrategy: PrimitiveRecyclerBinderStrategy =
-        PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT,
+    private val binderStrategy: PrimitiveRecyclerBinderStrategy? = null,
     private val hasFixedSize: Boolean = true,
     private val isClipToPaddingEnabled: Boolean = true,
     private val leftPadding: Int = 0,
@@ -108,15 +107,8 @@ constructor(
     }
 
     val mountBehavior =
-        when (binderStrategy) {
-          PrimitiveRecyclerBinderStrategy.RECYCLER_SPEC_EQUIVALENT ->
-              RecyclerSpecEquivalentMountBehavior(
-                  measureVersion,
-                  onRefresh,
-                  onScrollListeners,
-                  recyclerEventsController,
-                  measureChild.value,
-              )
+        when (binderStrategy
+            ?: context.lithoConfiguration.componentsConfig.primitiveRecyclerBinderStrategy) {
           PrimitiveRecyclerBinderStrategy.SPLIT_BINDERS ->
               SplitBindersMountBehavior(
                   measureVersion,
@@ -149,121 +141,6 @@ constructor(
         mountBehavior = mountBehavior,
         style = style)
   }
-
-  private fun PrimitiveComponentScope.RecyclerSpecEquivalentMountBehavior(
-      measureVersion: State<Int>,
-      onRefresh: (() -> Unit)?,
-      onScrollListeners: List<RecyclerView.OnScrollListener>?,
-      recyclerEventsController: RecyclerEventsController?,
-      measureChild: View.() -> Unit,
-  ): MountBehavior<SectionsRecyclerView> =
-      MountBehavior(ViewAllocator { context -> createSectionsRecyclerView(context) }) {
-        doesMountRenderTreeHosts = true
-        shouldExcludeFromIncrementalMount = excludeFromIncrementalMount
-
-        // RecyclerSpec's @OnMount and @OnUnmount
-        withDescription("recycler-equivalent-mount") {
-          bind(
-              measureVersion.value,
-              binder,
-              hasFixedSize,
-              isClipToPaddingEnabled,
-              leftPadding,
-              topPadding,
-              rightPadding,
-              bottomPadding,
-              isClipChildrenEnabled,
-              scrollBarStyle,
-              isHorizontalFadingEdgeEnabled,
-              isVerticalFadingEdgeEnabled,
-              fadingEdgeLength,
-              refreshProgressBarBackgroundColor,
-              refreshProgressBarColor,
-              itemAnimator?.javaClass,
-              itemDecorations,
-              measureChild,
-          ) { sectionsRecyclerView ->
-            val recyclerView = sectionsRecyclerView.requireLithoRecyclerView()
-
-            bindLegacyMountBinder(
-                sectionsRecyclerView = sectionsRecyclerView,
-                contentDescription = contentDescription,
-                hasFixedSize = hasFixedSize,
-                isClipToPaddingEnabled = isClipToPaddingEnabled,
-                paddingAdditionDisabled = paddingAdditionDisabled,
-                leftPadding = leftPadding,
-                topPadding = topPadding,
-                rightPadding = rightPadding,
-                bottomPadding = bottomPadding,
-                isClipChildrenEnabled = isClipChildrenEnabled,
-                isNestedScrollingEnabled = isNestedScrollingEnabled,
-                scrollBarStyle = scrollBarStyle,
-                isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled,
-                isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled,
-                isLeftFadingEnabled = isLeftFadingEnabled,
-                isRightFadingEnabled = isRightFadingEnabled,
-                isTopFadingEnabled = isTopFadingEnabled,
-                isBottomFadingEnabled = isBottomFadingEnabled,
-                fadingEdgeLength = fadingEdgeLength,
-                recyclerViewId = recyclerViewId,
-                overScrollMode = overScrollMode,
-                edgeFactory = edgeFactory,
-                refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                refreshProgressBarColor = refreshProgressBarColor,
-                itemAnimator = itemAnimator)
-
-            itemDecorations?.forEach { decoration ->
-              if (decoration is ItemDecorationWithMeasureFunction) {
-                decoration.measure = measureChild
-              }
-              recyclerView.addItemDecoration(decoration)
-            }
-
-            binder.mount(recyclerView)
-
-            onUnbind {
-              unbindLegacyMountBinder(
-                  sectionsRecyclerView = sectionsRecyclerView,
-                  refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
-                  edgeFactory = edgeFactory,
-                  snapHelper = snapHelper)
-
-              binder.unmount(recyclerView)
-
-              itemDecorations?.forEach { decoration ->
-                recyclerView.removeItemDecoration(decoration)
-                if (decoration is ItemDecorationWithMeasureFunction) {
-                  decoration.measure = null
-                }
-              }
-            }
-          }
-        }
-
-        // RecyclerSpec's @OnBind and @OnUnbind
-        withDescription("recycler-equivalent-bind") {
-          bind(Any()) { sectionsRecyclerView ->
-            bindLegacyAttachBinder(
-                sectionsRecyclerView = sectionsRecyclerView,
-                sectionsViewLogger = sectionsViewLogger,
-                isPullToRefreshEnabled = isPullToRefreshEnabled,
-                onRefresh = onRefresh,
-                onScrollListeners = onScrollListeners,
-                touchInterceptor = touchInterceptor,
-                onItemTouchListener = onItemTouchListener,
-                snapHelper = snapHelper,
-                recyclerEventsController = recyclerEventsController)
-
-            onUnbind {
-              unbindLegacyAttachBinder(
-                  sectionsRecyclerView = sectionsRecyclerView,
-                  recyclerEventsController = recyclerEventsController,
-                  onScrollListeners = onScrollListeners,
-                  onItemTouchListener = onItemTouchListener)
-            }
-          }
-        }
-      }
 
   private fun PrimitiveComponentScope.RecyclerSpecEquivalentAndItemDecorationMountBehavior(
       measureVersion: State<Int>,

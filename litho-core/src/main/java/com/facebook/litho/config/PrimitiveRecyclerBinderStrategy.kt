@@ -18,11 +18,6 @@ package com.facebook.litho.config
 
 enum class PrimitiveRecyclerBinderStrategy {
   /**
-   * This strategy will use the same approach as in the [com.facebook.litho.widget.RecyclerSpec].
-   */
-  RECYCLER_SPEC_EQUIVALENT,
-
-  /**
    * In this strategy we attempt to break the mount behavior with three different binders.
    *
    * @see [com.facebook.litho.widget.ExperimentalRecycler.SplitBindersMountBehavior]
