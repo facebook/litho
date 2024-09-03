@@ -24,7 +24,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class HostRecyclingTest {
 
-  @get:Rule val lithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule = LithoTestRule()
 
   private lateinit var fakeMountItemPools: ComponentHostAcquireTrackingMountItemsPool
 
@@ -113,11 +113,11 @@ class HostRecyclingTest {
   }
 
   private fun createLithoViewForTest(hostRecyclingEnabled: Boolean): TestLithoView {
-    return lithoViewRule.render(
+    return mLithoTestRule.render(
         heightPx = 400,
         widthPx = 400,
         componentTree =
-            ComponentTree.create(lithoViewRule.context)
+            ComponentTree.create(mLithoTestRule.context)
                 .componentsConfiguration(
                     ComponentsConfiguration.defaultInstance.copy(
                         componentHostPoolingPolicy =

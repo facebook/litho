@@ -20,7 +20,7 @@ import android.view.View
 import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.PrimitiveComponent
 import com.facebook.litho.PrimitiveComponentScope
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.ViewAllocator
@@ -39,7 +39,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(RobolectricTestRunner::class)
 class RecyclerBinderPreparationOrderTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `default traversal order should match RecyclerView layout order for primitive`() {
@@ -47,7 +47,7 @@ class RecyclerBinderPreparationOrderTest {
     val mountTracking = mutableListOf<Int>()
 
     val lithoView =
-        lithoViewRule.createTestLithoView {
+        mLithoTestRule.createTestLithoView {
           LazyList {
             (1..10).forEach { tag ->
               child(
@@ -61,7 +61,7 @@ class RecyclerBinderPreparationOrderTest {
           }
         }
 
-    lithoViewRule.act(lithoView) {
+    mLithoTestRule.act(lithoView) {
       lithoView.setSizeSpecs(exactly(1000), atMost(400))
       lithoView.measure()
     }
@@ -81,7 +81,7 @@ class RecyclerBinderPreparationOrderTest {
     val mountTracking = mutableListOf<Int>()
 
     val lithoView =
-        lithoViewRule.createTestLithoView {
+        mLithoTestRule.createTestLithoView {
           LazyList(reverse = true) {
             (1..10).forEach { tag ->
               child(
@@ -95,7 +95,7 @@ class RecyclerBinderPreparationOrderTest {
           }
         }
 
-    lithoViewRule.act(lithoView) {
+    mLithoTestRule.act(lithoView) {
       lithoView.setSizeSpecs(exactly(1000), atMost(400))
       lithoView.measure()
     }

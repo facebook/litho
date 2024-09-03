@@ -21,7 +21,7 @@ import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.visibility.onVisible
 import com.facebook.rendercore.px
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LithoViewVisibilityProcessingTest {
 
-  @get:Rule val lithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -57,8 +57,8 @@ class LithoViewVisibilityProcessingTest {
     val secondComponent = MyTestComponent(secondComponentOnVisibleCounter)
 
     /* We start out by rendering two different components in two different litho views */
-    val firstLithoView = lithoViewRule.render { firstComponent }.lithoView
-    val secondLithoView = lithoViewRule.render { secondComponent }.lithoView
+    val firstLithoView = mLithoTestRule.render { firstComponent }.lithoView
+    val secondLithoView = mLithoTestRule.render { secondComponent }.lithoView
 
     /* we verify that both components on visible callback was triggered */
     assertThat(firstComponentOnVisibleCounter.get()).isEqualTo(1)

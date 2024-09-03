@@ -25,7 +25,7 @@ import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionTree
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
@@ -45,7 +45,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LazyCollectionControllerTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   private fun getLazyCollectionRecyclerView(
       testLithoView: TestLithoView,
@@ -69,8 +69,8 @@ class LazyCollectionControllerTest {
 
     assertThat(lazyCollectionController.recyclerView).isNull()
 
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
-    lithoViewRule.idle()
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    mLithoTestRule.idle()
 
     assertThat(lazyCollectionController.recyclerView)
         .isSameAs(getLazyCollectionRecyclerView(testLithoView, "collection_tag"))
@@ -166,14 +166,14 @@ class LazyCollectionControllerTest {
           }
     }
 
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
-    lithoViewRule.idle()
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    mLithoTestRule.idle()
 
-    lithoViewRule.act(testLithoView) { lazyCollectionController.scrollToId(9) }
+    mLithoTestRule.act(testLithoView) { lazyCollectionController.scrollToId(9) }
 
     // Additional `setRoot()` to kick the test infra into applying RecyclerView changes
     testLithoView.setRoot(Test())
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     val recyclerView = getLazyCollectionRecyclerView(testLithoView, "collection_tag")
     assertThat(recyclerView).isNotNull

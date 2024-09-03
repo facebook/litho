@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicReference
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class TreePropsTest {
-  @JvmField @Rule val lithoTestRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val lithoTestRule: LithoTestRule = LithoTestRule()
 
   val TestAnyTreeProp: TreeProp<Any> = treePropOf { "string" }
   val TestIntTreeProp: TreeProp<Int> = treePropOf { 0 }

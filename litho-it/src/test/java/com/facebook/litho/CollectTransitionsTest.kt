@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class CollectTransitionsTest {
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
   private val wrappingContentWithTransition: InlineLayoutSpec =
       object : InlineLayoutSpec() {
         protected override fun onCreateLayout(c: ComponentContext): Component {
@@ -63,7 +63,7 @@ class CollectTransitionsTest {
     try {
       ComponentsConfiguration.isAnimationDisabled = false
       val testLithoView =
-          lithoViewRule.render(widthPx = 100, heightPx = 100) { wrappingContentWithTransition }
+          mLithoTestRule.render(widthPx = 100, heightPx = 100) { wrappingContentWithTransition }
       Assertions.assertThat(testLithoView.componentTree.mainThreadLayoutState!!.transitions)
           .hasSize(2)
     } finally {

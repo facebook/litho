@@ -44,7 +44,7 @@ import kotlin.reflect.KClass
 import org.robolectric.Shadows
 
 /**
- * Holder class for the result of [LithoViewRule.render] call, exposing methods to for finding the
+ * Holder class for the result of [LithoTestRule.render] call, exposing methods to for finding the
  * views/components and assertions
  *
  * ```

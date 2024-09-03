@@ -21,7 +21,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -45,7 +45,7 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(LithoTestRunner::class)
 class KBatchedStateUpdatesTest {
 
-  @get:Rule val lithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule = LithoTestRule()
 
   @get:Rule val expectedException = ExpectedException.none()
 
@@ -78,11 +78,11 @@ class KBatchedStateUpdatesTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+    mLithoTestRule.act(testLithoView) { clickOnTag("test_view") }
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 2")
@@ -134,11 +134,11 @@ class KBatchedStateUpdatesTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+    mLithoTestRule.act(testLithoView) { clickOnTag("test_view") }
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 5")
@@ -183,11 +183,11 @@ class KBatchedStateUpdatesTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
-    executeAndRunPendingBgTasks { lithoViewRule.act(testLithoView) { clickOnTag("test_view") } }
+    executeAndRunPendingBgTasks { mLithoTestRule.act(testLithoView) { clickOnTag("test_view") } }
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 3")
 
@@ -221,11 +221,11 @@ class KBatchedStateUpdatesTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+    mLithoTestRule.act(testLithoView) { clickOnTag("test_view") }
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 2")
@@ -276,11 +276,11 @@ class KBatchedStateUpdatesTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+    mLithoTestRule.act(testLithoView) { clickOnTag("test_view") }
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 5")
@@ -324,11 +324,11 @@ class KBatchedStateUpdatesTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
-    executeAndRunPendingBgTasks { lithoViewRule.act(testLithoView) { clickOnTag("test_view") } }
+    executeAndRunPendingBgTasks { mLithoTestRule.act(testLithoView) { clickOnTag("test_view") } }
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 3")
 

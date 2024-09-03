@@ -24,9 +24,8 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
-import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -45,13 +44,13 @@ import org.robolectric.annotation.LooperMode
 @RunWith(RobolectricTestRunner::class)
 class TestCollectionTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `test helpful error when recycler collection components recycler view is not mounted`() {
 
     val testView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           TestComponent(
               RecyclerCollectionComponent(
                   SingleComponentSection.create(SectionContext(context))
@@ -70,7 +69,7 @@ class TestCollectionTest {
   @Test
   fun `test helpful error when lazy list recycler view is unable to properly measure`() {
     assertThatThrownBy {
-          lithoViewRule.render {
+          mLithoTestRule.render {
             TestComponent(LazyList { child(id = 0, component = Text("child0")) })
           }
         }

@@ -26,7 +26,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TransitionTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.transition.transitionKey
@@ -53,7 +53,7 @@ import org.robolectric.annotation.LooperMode
 @SuppressLint("ColorConstantUsageIssue")
 @RunWith(LithoTestRunner::class)
 class TransitionsTest {
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   @JvmField @Rule val transitionTestRule = TransitionTestRule()
 
@@ -91,7 +91,7 @@ class TransitionsTest {
   @Test
   fun transitionAnimations_runTransitionsInSequence_elementsShouldAnimateOneAfterTheOtherOnUpdateStateWithTransition() {
     val component = StateWithTransitionTestComponent(stateCaller, testComponent)
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     val redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY)
     val greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY)
     val blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY)
@@ -105,7 +105,7 @@ class TransitionsTest {
         .describedAs("blueView should be at start position")
         .isEqualTo(1040f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     Assertions.assertThat(redView.x).describedAs("redView after 10 frames").isEqualTo(1040f)
     Assertions.assertThat(greenView.x).describedAs("greenView after 10 frames").isEqualTo(1040f)
@@ -141,7 +141,7 @@ class TransitionsTest {
                     .animate(AnimatedProperties.X)),
             testComponent)
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     val redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY)
     val greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY)
     val blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY)
@@ -155,7 +155,7 @@ class TransitionsTest {
         .describedAs("blueView should be at start position")
         .isEqualTo(1040f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(10)
     Assertions.assertThat(redView.x).describedAs("redView after 10 frames").isEqualTo(0f)
     Assertions.assertThat(greenView.x).describedAs("greenView after 10 frames").isEqualTo(1040f)
@@ -187,7 +187,7 @@ class TransitionsTest {
                     .animate(AnimatedProperties.X)),
             testComponent)
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     val redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY)
     val greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY)
     val blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY)
@@ -201,7 +201,7 @@ class TransitionsTest {
         .describedAs("blueView should be at start position")
         .isEqualTo(1040f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(10)
     Assertions.assertThat(redView.x).describedAs("redView after 10 frames").isEqualTo(0f)
     Assertions.assertThat(greenView.x).describedAs("greenView after 10 frames").isEqualTo(0f)
@@ -226,7 +226,7 @@ class TransitionsTest {
                     .animate(AnimatedProperties.X)),
             testComponent)
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     val redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY)
     val greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY)
     val blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY)
@@ -240,7 +240,7 @@ class TransitionsTest {
         .describedAs("blueView should be at start position")
         .isEqualTo(1040f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(5)
     Assertions.assertThat(redView.x).describedAs("redView after 5 frames").isEqualTo(610.2971f)
     Assertions.assertThat(greenView.x).describedAs("greenView after 5 frames").isEqualTo(1040f)
@@ -273,13 +273,13 @@ class TransitionsTest {
                     .animate(AnimatedProperties.X)),
             testComponent)
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     val redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY)
     Assertions.assertThat(redView.x)
         .describedAs("redView should be at start position")
         .isEqualTo(1040f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(10)
     Assertions.assertThat(redView.x).describedAs("redView after 10 frames").isEqualTo(1040f)
     transitionTestRule.step(10)

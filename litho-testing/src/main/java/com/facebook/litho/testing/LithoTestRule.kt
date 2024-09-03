@@ -39,6 +39,8 @@ import org.junit.runners.model.Statement
 import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 
+typealias LithoTestRule = LithoViewRule
+
 /**
  * This test utility allows clients to create a [TestLithoView] instance that allows to test
  * assertion on the view hierarchy rendered by a Litho components.
@@ -47,13 +49,13 @@ import org.robolectric.Shadows.shadowOf
  *  @RunWith(AndroidJUnit4::class)
  *  class LithoSampleTest {
  *
- *  @Rule @JvmField val lithoViewRule = LithoViewRule()
+ *  @Rule @JvmField val LithoTestRule = LithoTestRule()
  *  @Test
  *  fun test() {
- *   val testLithoView =  lithoViewRule.render { TestComponent() }
+ *   val testLithoView =  LithoTestRule.render { TestComponent() }
  *
  *    // or you can use setRoot/measure/layout for more fine-grained control
- *    val testLithoView = lithoViewRule.createTestLithoView().attachToWindow().setRoot(TestComponent()).measure().layout()
+ *    val testLithoView = LithoTestRule.createTestLithoView().attachToWindow().setRoot(TestComponent()).measure().layout()
  *    // Test your assertions on the TestLithoView instance.
  *    }
  * }
@@ -97,13 +99,13 @@ constructor(
     }
   }
 
-  fun useContext(c: ComponentContext): LithoViewRule {
+  fun useContext(c: ComponentContext): LithoTestRule {
     context = c
     return this
   }
 
   /** Sets a new [TreeProp] for the next layout pass. */
-  fun setTreeProp(klass: Class<*>, instance: Any?): LithoViewRule {
+  fun setTreeProp(klass: Class<*>, instance: Any?): LithoTestRule {
     val props = context.treePropContainer ?: TreePropContainer()
     props.put(klass, instance)
     context.treePropContainer = props
@@ -160,18 +162,18 @@ constructor(
   }
 
   /**
-   * Perform any interactions defined in the [InteractionScope] or on the [LithoViewRule].
+   * Perform any interactions defined in the [InteractionScope] or on the [LithoTestRule].
    *
    * During tests we need to make sure that everything is in sync in the Main Thread and in the
    * Background Thread, just like in real life use case. This functions takes off the responsibility
    * from you to use the Loopers and manage the thread synchronisation. You only need to pass here
-   * one of the defined interactions from [LithoViewRule] or [InteractionScope], and we will take
+   * one of the defined interactions from [LithoTestRule] or [InteractionScope], and we will take
    * care of all of the rest
    */
   fun act(
       testLithoView: TestLithoView,
       action: TestLithoView.InteractionsScope.() -> Unit
-  ): LithoViewRule {
+  ): LithoTestRule {
     testLithoView.InteractionsScope().action()
     idle()
     return this
@@ -191,8 +193,8 @@ constructor(
    * Creates a ComponentTree that will propagate exceptions.
    *
    * ```
-   * val componentTree = lithoViewRule.withThrowOnErrorHandler()
-   * val lithoView = lithoViewRule.render(componentTree = componentTree)
+   * val componentTree = LithoTestRule.withThrowOnErrorHandler()
+   * val lithoView = LithoTestRule.render(componentTree = componentTree)
    * ```
    */
   fun withThrowOnErrorHandler(): ComponentTree {

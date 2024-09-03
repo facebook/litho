@@ -27,7 +27,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Progress
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -49,14 +49,14 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class BinderStyleTest {
 
-  @get:Rule val lithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `MountSpec - binder invoked on mount and unmount`() {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
         }
 
@@ -79,7 +79,7 @@ class BinderStyleTest {
     val binder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render { ComponentWithTextViewPrimitive(style = Style.viewBinder(binder)) }
+        mLithoTestRule.render { ComponentWithTextViewPrimitive(style = Style.viewBinder(binder)) }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
     binder.assertNumOfBindInvocations(1)
@@ -100,7 +100,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder(shouldUpdate = true)
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
@@ -109,7 +109,7 @@ class BinderStyleTest {
     testBinder.assertBoundContentType(0, ComponentHost::class.java)
     testBinder.assertNoContentHasBeenUnbound()
 
-    lithoViewRule.act(lithoView) { clickOnText("Click me") }
+    mLithoTestRule.act(lithoView) { clickOnText("Click me") }
 
     testBinder.assertNumOfBindInvocations(2)
     testBinder.assertNumOfUnbindInvocations(1)
@@ -127,7 +127,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder(shouldUpdate = false)
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
@@ -136,7 +136,7 @@ class BinderStyleTest {
     testBinder.assertBoundContentType(0, ComponentHost::class.java)
     testBinder.assertNoContentHasBeenUnbound()
 
-    lithoViewRule.act(lithoView) { clickOnText("Click me") }
+    mLithoTestRule.act(lithoView) { clickOnText("Click me") }
 
     testBinder.assertNumOfBindInvocations(1)
     testBinder.assertNumOfUnbindInvocations(0)
@@ -155,7 +155,7 @@ class BinderStyleTest {
     val usedBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawableMountSpec(
               textStyle = Style.viewBinder(overridenBinder).viewBinder(usedBinder))
         }
@@ -186,7 +186,7 @@ class BinderStyleTest {
     val usedBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithTextViewPrimitive(
               style = Style.viewBinder(overridenBinder).viewBinder(usedBinder))
         }
@@ -216,7 +216,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
@@ -239,7 +239,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawablePrimitive(style = Style.viewBinder(testBinder))
         }
 
@@ -261,7 +261,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawableMountSpec(textStyle = Style.wrapInView().viewBinder(testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
@@ -284,7 +284,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawablePrimitive(style = Style.wrapInView().viewBinder(testBinder))
         }
 
@@ -306,7 +306,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithViewMountSpec(style = Style.wrapInView().viewBinder(testBinder))
         }
 
@@ -328,7 +328,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithTextViewPrimitive(style = Style.wrapInView().viewBinder(testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
@@ -351,7 +351,7 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithDrawableMountSpec(rootStyle = Style.viewBinder(testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")

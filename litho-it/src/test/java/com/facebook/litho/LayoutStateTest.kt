@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.SizeSpec.makeSizeSpec
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
@@ -28,11 +28,11 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LayoutStateTest {
 
-  @JvmField @Rule val legacyLithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLegacyLithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun toRenderTree_emptyMountableOutputs_hasPositionForRoot() {
-    val context = legacyLithoViewRule.context
+    val context = mLegacyLithoTestRule.context
     val result =
         ResolveTreeFuture.resolve(
             context,

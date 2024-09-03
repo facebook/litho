@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class LayoutStateCalculateTopsAndBottomsTest {
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun testCalculateTopsAndBottoms() {
@@ -54,7 +54,7 @@ class LayoutStateCalculateTopsAndBottomsTest {
                 .build()
           }
         }
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 50 + 20) { component }
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 50 + 20) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
     Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(5)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[0].bounds.top).isEqualTo(0)
@@ -93,7 +93,7 @@ class LayoutStateCalculateTopsAndBottomsTest {
                 .build()
           }
         }
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 50) { component }
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 50) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
     Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(4)
     Assertions.assertThat(layoutState.outputsOrderedByTopBounds[0].bounds.top).isEqualTo(0)

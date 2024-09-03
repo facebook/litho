@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.Size
@@ -36,14 +36,14 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class DynamicPropsOnForcedRemountTest {
 
-  @get:Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun `ensure that dynamic props still work after forced needs remount`() {
     val dynamicValue = DynamicValue("0001")
     val component = WrapperComponent(dynamicValue)
-    val lithoView = lithoViewRule.render(widthPx = 1080, heightPx = 840) { component }
-    lithoViewRule.idle()
+    val lithoView = mLithoTestRule.render(widthPx = 1080, heightPx = 840) { component }
+    mLithoTestRule.idle()
     LithoAssertions.assertThat(lithoView).hasVisibleText("0001")
     lithoView.detachFromWindow()
 

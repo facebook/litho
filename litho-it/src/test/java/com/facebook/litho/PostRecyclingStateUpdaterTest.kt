@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.core.padding
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -41,7 +41,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class PostRecyclingStateUpdaterTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
   lateinit var stateRef: AtomicReference<Int>
 
   @Test
@@ -49,7 +49,7 @@ class PostRecyclingStateUpdaterTest {
     val lazyCollectionController = LazyCollectionController()
 
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           getTestComponent(lazyCollectionController)
         }
 
@@ -62,7 +62,7 @@ class PostRecyclingStateUpdaterTest {
         .doesNotHaveVisibleText("100")
         .describedAs("ListItem with index 1 is visible, ListItem with index 100 is not visible")
 
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view_1") }
+    mLithoTestRule.act(testLithoView) { clickOnTag("test_view_1") }
     assertThat(stateRef.get()).describedAs("ListItem state is updated when clicked").isEqualTo(2)
 
     lazyCollectionController.scrollBy(0, 20000) // scroll to the end of the list
@@ -81,7 +81,7 @@ class PostRecyclingStateUpdaterTest {
         .describedAs(
             "After scrolling to the top of the list ListItem with index 1 is visible and ListItem with index 100 is not visible")
 
-    lithoViewRule.act(testLithoView) { clickOnTag("test_view_1") }
+    mLithoTestRule.act(testLithoView) { clickOnTag("test_view_1") }
 
     assertThat(stateRef.get())
         .describedAs("ListItem state is updated when clicked after the view was recycled")

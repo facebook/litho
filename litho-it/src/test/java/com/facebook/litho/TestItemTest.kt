@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.graphics.Rect
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
 import com.facebook.litho.widget.ComponentContainerWithSize
@@ -36,7 +36,7 @@ class TestItemTest {
 
   private lateinit var testItem: TestItem
 
-  @get:Rule val lithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -67,7 +67,7 @@ class TestItemTest {
     val isEnabled = ComponentsConfiguration.isEndToEndTestRun
     ComponentsConfiguration.isEndToEndTestRun = true
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               ComponentContainerWithSize.create(context).component(ParentComponent()).build()
             }

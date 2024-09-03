@@ -49,7 +49,7 @@ import com.facebook.litho.flexbox.position
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.DEFAULT_HEIGHT_SPEC
 import com.facebook.litho.testing.DEFAULT_WIDTH_SPEC
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TransitionTestRule
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -103,7 +103,7 @@ import org.robolectric.annotation.LooperMode
 @SuppressLint("ColorConstantUsageIssue")
 @RunWith(LithoTestRunner::class)
 class AnimationTest {
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
   @JvmField @Rule val transitionTestRule = TransitionTestRule()
 
   private val stateCaller = StateCaller()
@@ -116,7 +116,7 @@ class AnimationTest {
 
   @Test
   fun animationProperties_animatingPropertyX_elementShouldAnimateInTheXAxis() {
-    val testLithoView = lithoViewRule.render { animatingXPropertyComponent }
+    val testLithoView = mLithoTestRule.render { animatingXPropertyComponent }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -130,7 +130,7 @@ class AnimationTest {
         .isEqualTo(160f)
     stateCaller.update()
 
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // X after state update should be at 160 because is going to be animated.
     Assertions.assertThat(view.x).describedAs("view X axis after toggle").isEqualTo(160f)
@@ -169,7 +169,7 @@ class AnimationTest {
                   }
             }
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -181,7 +181,7 @@ class AnimationTest {
         .isEqualTo(160f)
     stateCaller.update()
 
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // X moves without animating
     Assertions.assertThat(view.x).describedAs("view X axis after toggle").isEqualTo(0f)
@@ -217,14 +217,14 @@ class AnimationTest {
               }
             }
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
     Assertions.assertThat(view.scaleX).describedAs("view scale X initial position").isEqualTo(2f)
     Assertions.assertThat(view.scaleY).describedAs("view scale Y initial position").isEqualTo(2f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     Assertions.assertThat(view.scaleX).describedAs("view X axis after toggle").isEqualTo(2f)
     Assertions.assertThat(view.scaleY).describedAs("view Y axis after toggle").isEqualTo(2f)
     transitionTestRule.step(5)
@@ -261,13 +261,13 @@ class AnimationTest {
                                 .viewTag(TRANSITION_KEY)))
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
     Assertions.assertThat(view.alpha).describedAs("view alpha initial state").isEqualTo(0.5f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     Assertions.assertThat(view.alpha).describedAs("view alpha after toggle").isEqualTo(0.5f)
     transitionTestRule.step(5)
 
@@ -297,13 +297,13 @@ class AnimationTest {
                                 .viewTag(TRANSITION_KEY)))
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
     Assertions.assertThat(view.rotation).describedAs("view rotation initial state").isEqualTo(0f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     Assertions.assertThat(view.rotation).describedAs("view rotation after toggle").isEqualTo(0f)
     transitionTestRule.step(5)
 
@@ -335,13 +335,13 @@ class AnimationTest {
                                 .viewTag(TRANSITION_KEY)))
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
     Assertions.assertThat(view.rotationY).describedAs("view rotationY initial state").isEqualTo(0f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     Assertions.assertThat(view.rotationY).describedAs("view rotationY after toggle").isEqualTo(0f)
     transitionTestRule.step(5)
 
@@ -374,14 +374,14 @@ class AnimationTest {
                                 .viewTag(TRANSITION_KEY)))
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
     Assertions.assertThat(view.height).describedAs("view height initial state").isEqualTo(40)
     Assertions.assertThat(view.width).describedAs("view width initial state").isEqualTo(40)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     Assertions.assertThat(view.height).describedAs("view height after toggle").isEqualTo(40)
     Assertions.assertThat(view.width).describedAs("view width after toggle").isEqualTo(80)
     transitionTestRule.step(5)
@@ -412,14 +412,14 @@ class AnimationTest {
                                 .viewTag(TRANSITION_KEY)))
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
     Assertions.assertThat(view.height).describedAs("view height initial state").isEqualTo(40)
     Assertions.assertThat(view.width).describedAs("view width initial state").isEqualTo(40)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     Assertions.assertThat(view.height).describedAs("view height after toggle").isEqualTo(80)
     Assertions.assertThat(view.width).describedAs("view width after toggle").isEqualTo(40)
     transitionTestRule.step(5)
@@ -455,7 +455,7 @@ class AnimationTest {
                     else null)
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     var view = testLithoView.findViewWithTagOrNull(TRANSITION_KEY)
@@ -463,7 +463,7 @@ class AnimationTest {
     // View should be null as state is null
     Assertions.assertThat(view).describedAs("view before appearing").isNull()
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // After state update we should have the view added but with alpha equal to 0
     view = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -501,7 +501,7 @@ class AnimationTest {
                     else null)
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
 
@@ -512,7 +512,7 @@ class AnimationTest {
     Assertions.assertThat(view).describedAs("view before disappearing").isNotNull
     Assertions.assertThat(view.alpha).describedAs("view before disappearing").isEqualTo(1f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     view = testLithoView.findViewWithTag(TRANSITION_KEY)
 
     // After state update, even if the row was removed from the component, it still not null as we
@@ -663,14 +663,14 @@ class AnimationTest {
                             })
                   }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
 
     // We move 100 frames to be sure any appearing animation finished.
     transitionTestRule.step(100)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     // We move an other 100 frames to be sure disappearing animations are done.
     transitionTestRule.step(100)
     transitionTestRule.step(100)
@@ -701,7 +701,7 @@ class AnimationTest {
                   }
             }
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -714,7 +714,7 @@ class AnimationTest {
         .describedAs("view Y axis should be at start position")
         .isEqualTo(160f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // X after state update should be at 160 because is going to be animated.
     Assertions.assertThat(view.x).describedAs("view X axis after toggle").isEqualTo(160f)
@@ -753,7 +753,7 @@ class AnimationTest {
                                     .viewTag(TRANSITION_KEY)))
                   }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -766,7 +766,7 @@ class AnimationTest {
         .describedAs("view Y axis should be at start position")
         .isEqualTo(160f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // X after state update should be at 160 because is going to be animated.
     Assertions.assertThat(view.x).describedAs("view X axis after toggle").isEqualTo(160f)
@@ -785,7 +785,7 @@ class AnimationTest {
 
   @Test
   fun animation_unmountingLithoViewMidAnimation_shouldNotCrash() {
-    val testLithoView = lithoViewRule.render { animatingXPropertyComponent }
+    val testLithoView = mLithoTestRule.render { animatingXPropertyComponent }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -798,7 +798,7 @@ class AnimationTest {
         .describedAs("view Y axis should be at start position")
         .isEqualTo(160f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // X after state update should be at 160 because is going to be animated.
     Assertions.assertThat(view.x).describedAs("view X axis after toggle").isEqualTo(160f)
@@ -822,7 +822,7 @@ class AnimationTest {
     val componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
 
     // We measure and layout this non animating component to initialize the transition extension.
-    val testLithoView = lithoViewRule.render { nonAnimatingComponent }
+    val testLithoView = mLithoTestRule.render { nonAnimatingComponent }
 
     // We need an other litho view where we are going to measure and layout an other similar tree
     // (the real difference here is that the root components are not animating)
@@ -890,7 +890,7 @@ class AnimationTest {
                         })
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     transitionTestRule.step(1)
@@ -907,7 +907,7 @@ class AnimationTest {
     // Update so the disappearing item triggers a disappear animation.
     // If there's a problem, a crash will occur here.
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // Restoring disable drawable outputs configuration
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent()
@@ -945,7 +945,7 @@ class AnimationTest {
                 }
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
 
@@ -955,7 +955,7 @@ class AnimationTest {
     // View should be null as state is null
     Assertions.assertThat(view).describedAs("view before appearing").isNull()
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     view = testLithoView.findViewWithTag(TRANSITION_KEY + 1)
     Assertions.assertThat(view).describedAs("view after toggle").isNotNull
     // After state update we should have the view added but with alpha equal to 0
@@ -963,20 +963,20 @@ class AnimationTest {
     transitionTestRule.step(11)
     // Update state again the element should not be there.
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     view = testLithoView.findViewWithTagOrNull(TRANSITION_KEY + 1)
     Assertions.assertThat(view).describedAs("view unmount mid animation").isNull()
     transitionTestRule.step(1)
     // Now if we do this again we expect the appearing items to the same thing.
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(1)
     view = testLithoView.findViewWithTag(TRANSITION_KEY + 1)
     Assertions.assertThat(view).describedAs("view after toggle").isNotNull
     // After state update we should have the view added but with alpha equal to 0
     Assertions.assertThat(view.alpha).describedAs("view after toggle").isEqualTo(0f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     view = testLithoView.findViewWithTagOrNull(TRANSITION_KEY + 1)
     Assertions.assertThat(view).describedAs("view unmount mid animation").isNull()
   }
@@ -1054,14 +1054,14 @@ class AnimationTest {
                             })
                   }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
 
     // We move 100 frames to be sure any appearing animation finished.
     transitionTestRule.step(100)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     // We move an other 100 frames to be sure disappearing animations are done.
     transitionTestRule.step(100)
     transitionTestRule.step(100)
@@ -1071,15 +1071,15 @@ class AnimationTest {
 
   @Test
   fun animationTransitionsExtension_reUsingLithoViewWithSameComponentTrees_shouldNotCrash() {
-    val componentContext = lithoViewRule.context
-    val testLithoView = lithoViewRule.createTestLithoView()
+    val componentContext = mLithoTestRule.context
+    val testLithoView = mLithoTestRule.createTestLithoView()
     val animatingComponentTree = ComponentTree.create(componentContext).build()
     animatingComponentTree.root = animatingXPropertyComponent
     testLithoView.useComponentTree(animatingComponentTree)
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(5)
     val lithoView1 = testLithoView.lithoView
     lithoView1.componentTree = null
@@ -1088,7 +1088,7 @@ class AnimationTest {
     testLithoView.useLithoView(lithoView2).attachToWindow().measure().layout()
     animatingComponentTree.root = nonAnimatingComponent
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(1)
     lithoView2.componentTree = null
     lithoView1.componentTree = animatingComponentTree
@@ -1116,7 +1116,7 @@ class AnimationTest {
                           .position(top = if (!state) 0.px else 100.px)
                           .transitionKey(context, TRANSITION_KEY))
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val lithoView: View = testLithoView.lithoView
@@ -1135,7 +1135,7 @@ class AnimationTest {
         .describedAs("view Height should be at start position")
         .isEqualTo(414)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // X after state update should be at 0 because is going to be animated.
     Assertions.assertThat(lithoView.x).describedAs("view X axis after toggle").isEqualTo(0f)
@@ -1235,7 +1235,7 @@ class AnimationTest {
                                     .viewTag(TRANSITION_KEY)))
                   }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val view = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -1243,7 +1243,7 @@ class AnimationTest {
 
     // Start the transition by changing the state
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // Advance to the mid point of the transition
     transitionTestRule.step(6)
@@ -1252,7 +1252,7 @@ class AnimationTest {
     // Trigger a new transition that interrupts the current transition and  returns the component to
     // its original position. NB: The Transition is fixed time, so it will take longer to return
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // Advance to the mid point of the return transition
     transitionTestRule.step(6)
@@ -1290,7 +1290,7 @@ class AnimationTest {
               }
             }
 
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
 
@@ -1304,7 +1304,7 @@ class AnimationTest {
     // Update state on both
     stateCaller.update()
     innerStateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     // We look for the same view
     innerView = testLithoView.findViewWithTag("TestAnimationMount")
     Assertions.assertThat(innerLithoView)
@@ -1317,7 +1317,7 @@ class AnimationTest {
     val secondLithoView = LithoView(activityController.get())
     secondLithoView.componentTree = null
     val component = animatingXPropertyComponent
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     val fl = FrameLayout(activityController.get())
     val componentTree = testLithoView.componentTree
     fl.addView(testLithoView.lithoView)
@@ -1337,7 +1337,7 @@ class AnimationTest {
     secondLithoView.componentTree = componentTree
     view = secondLithoView.findViewWithTag(TRANSITION_KEY)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // X after state update should be at 160 because is going to be animated.
     Assertions.assertThat(view.x).describedAs("view X axis after toggle").isEqualTo(160f)
@@ -1381,7 +1381,7 @@ class AnimationTest {
                     })
               }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val location = IntArray(2)
@@ -1393,7 +1393,7 @@ class AnimationTest {
     // Update state on both
     stateCaller.update()
     innerStateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // We look for the same view
     animatingView = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -1457,7 +1457,7 @@ class AnimationTest {
                             })
                   }
             }
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     val location = IntArray(2)
@@ -1469,7 +1469,7 @@ class AnimationTest {
     // Update state on both
     stateCaller.update()
     innerStateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // We look for the same view
     animatingView = testLithoView.findViewWithTag(TRANSITION_KEY)
@@ -1520,9 +1520,9 @@ class AnimationTest {
             }
 
     val nonAnimatingComponent = nonAnimatingComponent
-    val newComponentTree = ComponentTree.create(lithoViewRule.context).build()
+    val newComponentTree = ComponentTree.create(mLithoTestRule.context).build()
     newComponentTree.root = nonAnimatingComponent
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
 
@@ -1533,7 +1533,7 @@ class AnimationTest {
     Assertions.assertThat(view).describedAs("view before disappearing").isNotNull
     Assertions.assertThat(view.alpha).describedAs("view before disappearing").isEqualTo(1f)
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     view = testLithoView.findViewWithTag(TRANSITION_KEY)
 
     // After state update, even if the row was removed from the component, it still not null as we
@@ -1561,14 +1561,14 @@ class AnimationTest {
   @Test
   fun animation_clipChildren_shouldBeFalseDuringAnimation() {
     val component = animatingXPropertyComponent
-    val testLithoView = lithoViewRule.render { component }
+    val testLithoView = mLithoTestRule.render { component }
     activityController.get().setContentView(testLithoView.lithoView)
     activityController.resume().visible()
     Assertions.assertThat(testLithoView.lithoView.clipChildren)
         .describedAs("before animation, clip children is set to true")
         .isTrue
     stateCaller.update()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     transitionTestRule.step(5)
     Assertions.assertThat(testLithoView.lithoView.clipChildren)
         .describedAs("during animation, clip children is set to false")

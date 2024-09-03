@@ -27,7 +27,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.flexbox.aspectRatio
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.viewTag
@@ -45,7 +45,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class LazyListTest {
 
-  @get:Rule val lithoTestRule = LithoViewRule()
+  @get:Rule val lithoTestRule = LithoTestRule()
 
   @Test
   fun `inner padding is taken into account when set on a LazyList`() {

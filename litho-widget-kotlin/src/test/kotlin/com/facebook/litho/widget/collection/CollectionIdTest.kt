@@ -18,7 +18,7 @@ package com.facebook.litho.widget.collection
 
 import com.facebook.litho.Component
 import com.facebook.litho.EmptyComponent
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
@@ -32,11 +32,11 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CollectionIdTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   private fun emptyComponent(): EmptyComponent = EmptyComponent()
 
-  private fun textComponent(): Component = Text.create(lithoViewRule.context).text("Hello").build()
+  private fun textComponent(): Component = Text.create(mLithoTestRule.context).text("Hello").build()
 
   private fun LazyCollectionChildren.getIds(): List<Any?> = collectionChildren.map { it.id }
 

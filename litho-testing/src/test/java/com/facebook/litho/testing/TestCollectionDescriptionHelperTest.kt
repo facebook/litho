@@ -52,11 +52,11 @@ import org.mockito.kotlin.mock
 @RunWith(LithoTestRunner::class)
 class TestCollectionDescriptionHelperTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `prints just recycler string when no children`() {
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { LazyList {} }
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { LazyList {} }
     val testCollection = testLithoView.findCollectionComponent()!!
 
     assertThat(TestCollectionDescriptionHelper.collectionToString(testCollection))
@@ -66,7 +66,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints recycler with fully visible child item info with id`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList {
             child(id = "identifier", deps = emptyArray()) { Column(style = Style.height(50.px)) }
           }
@@ -89,7 +89,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints recycler with partially visible child item info with id`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList {
             child(id = "identifier", deps = emptyArray()) { Column(style = Style.height(150.px)) }
           }
@@ -112,7 +112,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints recycler with invisible child item info without id set`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList { child(Column(style = Style.height(0.px))) }
         }
     val testCollection = testLithoView.findCollectionComponent()!!
@@ -133,7 +133,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints recycler with multiple children including fallback`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           LazyList {
             child(Column(style = Style.height(10.px)))
             child(id = "row", component = Row(style = Style.height(100.px)))
@@ -164,7 +164,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints sections recycler with mock components`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
@@ -202,7 +202,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints sections recycler with TextView child`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
@@ -251,7 +251,7 @@ class TestCollectionDescriptionHelperTest {
     val gradientDrawable = GradientDrawable()
 
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
@@ -297,7 +297,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints sections recycler with views where some are not visible`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =
@@ -350,7 +350,7 @@ class TestCollectionDescriptionHelperTest {
   @Test
   fun `prints sections recycler with mixed view and component children`() {
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) {
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) {
           RecyclerCollectionComponent(
               style = Style.widthPercent(100f).heightPercent(100f),
               section =

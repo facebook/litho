@@ -25,7 +25,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
@@ -46,7 +46,7 @@ class AnimatedTest {
 
   // TODO(t112256774): Re-enable AnimatedTest tests. See https://fburl.com/h50b38s9 for more details
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   private lateinit var listener: AnimationFinishListener
   private lateinit var listener2: AnimationFinishListener
@@ -109,7 +109,7 @@ class AnimatedTest {
   fun timingAnimation_whenAnimationFinish_alphaValueChange() {
     val alphaProgress = DynamicValue(0f)
     val animation = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
-    val testLithoview = lithoViewRule.render { TestComponent(alphaProgress = alphaProgress) }
+    val testLithoview = mLithoTestRule.render { TestComponent(alphaProgress = alphaProgress) }
 
     val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("initial value")
@@ -405,7 +405,9 @@ class AnimatedTest {
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
     val animation2 = Animated.timing(target = xProgress, to = 200f, duration = 1000)
     val testLithoview =
-        lithoViewRule.render { TestComponent(alphaProgress = alphaProgress, xProgress = xProgress) }
+        mLithoTestRule.render {
+          TestComponent(alphaProgress = alphaProgress, xProgress = xProgress)
+        }
 
     val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")
@@ -452,7 +454,9 @@ class AnimatedTest {
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
     val animation2 = Animated.timing(target = xProgress, to = 200f, duration = 1000)
     val testLithoview =
-        lithoViewRule.render { TestComponent(alphaProgress = alphaProgress, xProgress = xProgress) }
+        mLithoTestRule.render {
+          TestComponent(alphaProgress = alphaProgress, xProgress = xProgress)
+        }
 
     val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")

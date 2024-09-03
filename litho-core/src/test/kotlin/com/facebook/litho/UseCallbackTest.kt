@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -36,7 +36,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class UseCallbackTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun useCallbackWithCollection_whenUseCallbackCapturesState_stateInCallbackIsUpToDate() {
@@ -75,7 +75,7 @@ class UseCallbackTest {
 
     val selectionEvents = mutableListOf<List<Int>>()
     val lithoView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               onSelectedChanged = { list -> selectionEvents.add(list) },
@@ -84,11 +84,11 @@ class UseCallbackTest {
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
     assertThat(renderCount.get()).isEqualTo(5)
@@ -122,7 +122,7 @@ class UseCallbackTest {
 
     val rowClickedEvents = mutableListOf<String>()
     val lithoView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithUseCallback(
               data = listOf(1, 2, 3, 4, 5),
               rowClickedTag = "setRoot1",
@@ -132,8 +132,8 @@ class UseCallbackTest {
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
-    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(renderCount.get()).isEqualTo(5)
 
@@ -143,12 +143,12 @@ class UseCallbackTest {
             rowClickedTag = "setRoot2",
             onRowClick = { data -> rowClickedEvents.add(data) },
             renderCount = renderCount))
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
-    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(renderCount.get()).isEqualTo(5)
     assertThat(rowClickedEvents).containsExactly("setRoot1", "setRoot1", "setRoot2", "setRoot2")
@@ -195,7 +195,7 @@ class UseCallbackTest {
 
     val selectionEvents = mutableListOf<List<Int>>()
     val lithoView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               onSelectedChanged = { list -> selectionEvents.add(list) },
@@ -204,8 +204,8 @@ class UseCallbackTest {
 
     assertThat(renderCount.get()).isEqualTo(5)
 
-    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
-    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_1") }
+    mLithoTestRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(renderCount.get()).isEqualTo(5)
     assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))

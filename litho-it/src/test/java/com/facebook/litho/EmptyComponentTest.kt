@@ -16,8 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.core.height
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
@@ -33,7 +32,7 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(LithoTestRunner::class)
 class EmptyComponentTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `two EmptyComponents should be equivalent and have equivalent props`() {
@@ -50,12 +49,12 @@ class EmptyComponentTest {
 
   @Test
   fun `setting a null root renders an empty component`() {
-    val lithoView = lithoViewRule.render { Text.create(context).text("Hello World").build() }
+    val lithoView = mLithoTestRule.render { Text.create(context).text("Hello World").build() }
     lithoView.setSizeSpecs(exactly(1000), unspecified())
 
     LithoViewAssert.assertThat(lithoView.lithoView).hasVisibleText("Hello World")
 
-    lithoViewRule.act(lithoView) { lithoView.setRoot(null) }
+    mLithoTestRule.act(lithoView) { lithoView.setRoot(null) }
     lithoView.measure().layout()
     ShadowLooper.idleMainLooper()
 

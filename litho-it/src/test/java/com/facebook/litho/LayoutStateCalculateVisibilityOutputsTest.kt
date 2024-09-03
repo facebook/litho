@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -36,7 +36,7 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class LayoutStateCalculateVisibilityOutputsTest {
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   @Before
   @Throws(Exception::class)
@@ -231,7 +231,7 @@ class LayoutStateCalculateVisibilityOutputsTest {
   }
 
   private fun calculateLayoutState(component: Component, widthPx: Int, heightPx: Int): LayoutState {
-    val testLithoView = lithoViewRule.render(widthPx = widthPx, heightPx = heightPx) { component }
+    val testLithoView = mLithoTestRule.render(widthPx = widthPx, heightPx = heightPx) { component }
     return testLithoView.componentTree.mainThreadLayoutState!!
   }
 }

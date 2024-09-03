@@ -23,7 +23,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
@@ -41,7 +41,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CollectionOnNearViewportTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   private fun getLazyCollectionRecyclerView(
       testLithoView: TestLithoView,
@@ -70,19 +70,19 @@ class CollectionOnNearViewportTest {
           }
     }
 
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
-    lithoViewRule.idle()
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    mLithoTestRule.idle()
 
     assertThat(enterCounts).containsExactly(1, 1, 1, 0, 0)
 
     val recyclerView = getLazyCollectionRecyclerView(testLithoView, "collection_tag")
 
     // Scroll one item
-    lithoViewRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
+    mLithoTestRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
     assertThat(enterCounts).containsExactly(1, 1, 1, 1, 0)
 
     // Scroll another item
-    lithoViewRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
+    mLithoTestRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
     assertThat(enterCounts).containsExactly(1, 1, 1, 1, 1)
   }
 
@@ -107,8 +107,8 @@ class CollectionOnNearViewportTest {
             )
           }
     }
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
-    lithoViewRule.idle()
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    mLithoTestRule.idle()
 
     // Item 4's enter callback has already been triggered
     assertThat(enterCounts).containsExactly(1, 1, 1, 0, 1)
@@ -116,11 +116,11 @@ class CollectionOnNearViewportTest {
     val recyclerView = getLazyCollectionRecyclerView(testLithoView, "collection_tag")
 
     // Scroll one item
-    lithoViewRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
+    mLithoTestRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
     assertThat(enterCounts).containsExactly(1, 1, 1, 1, 1)
 
     // Scroll another item
-    lithoViewRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
+    mLithoTestRule.act(testLithoView) { recyclerView?.scrollBy(0, 50) }
     assertThat(enterCounts).containsExactly(1, 1, 1, 1, 1)
   }
 
@@ -158,16 +158,16 @@ class CollectionOnNearViewportTest {
           }
     }
 
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test(Item.Item1) }
-    lithoViewRule.idle()
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test(Item.Item1) }
+    mLithoTestRule.idle()
 
     assertThat(item1EnterCount.get()).isEqualTo(1)
     assertThat(item2EnterCount.get()).isEqualTo(0)
 
-    lithoViewRule.render(lithoView = testLithoView.lithoView, widthPx = 100, heightPx = 100) {
+    mLithoTestRule.render(lithoView = testLithoView.lithoView, widthPx = 100, heightPx = 100) {
       Test(Item.Item2)
     }
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     assertThat(item1EnterCount.get()).isEqualTo(1)
     assertThat(item2EnterCount.get()).isEqualTo(1)

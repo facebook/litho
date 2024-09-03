@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -34,7 +34,7 @@ import org.robolectric.shadows.ShadowLooper
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class KStateSkipSameValueTest {
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `skip state update if new value is the same as old value during layout`() {
@@ -54,7 +54,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -81,7 +81,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -107,7 +107,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -131,8 +131,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
-    lithoViewRule.idle()
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.idle()
 
     Assertions.assertThat(renderCount.get()).isEqualTo(2)
   }
@@ -155,8 +155,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
-    lithoViewRule.idle()
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.idle()
 
     Assertions.assertThat(renderCount.get()).isEqualTo(2)
   }
@@ -177,8 +177,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
-    lithoViewRule.idle()
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.idle()
 
     Assertions.assertThat(renderCount.get()).isEqualTo(2)
   }
@@ -212,7 +212,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent() }
+    mLithoTestRule.render { RootComponent() }
 
     for (i in 0..10) {
       for (listener in listeners) {
@@ -247,7 +247,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    val lithoView = lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    val lithoView = mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -276,8 +276,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    val lithoView = lithoViewRule.render { RootComponent(renderCount = renderCount) }
-    lithoViewRule.act(lithoView) { clickOnTag("clickTag") }
+    val lithoView = mLithoTestRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.act(lithoView) { clickOnTag("clickTag") }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -305,7 +305,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -332,7 +332,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -358,7 +358,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -382,8 +382,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
-    lithoViewRule.idle()
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.idle()
 
     Assertions.assertThat(renderCount.get()).isEqualTo(2)
   }
@@ -405,8 +405,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
-    lithoViewRule.idle()
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.idle()
 
     Assertions.assertThat(renderCount.get()).isEqualTo(2)
   }
@@ -427,8 +427,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent(renderCount = renderCount) }
-    lithoViewRule.idle()
+    mLithoTestRule.render { RootComponent(renderCount = renderCount) }
+    mLithoTestRule.idle()
 
     Assertions.assertThat(renderCount.get()).isEqualTo(2)
   }
@@ -462,7 +462,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    lithoViewRule.render { RootComponent() }
+    mLithoTestRule.render { RootComponent() }
 
     for (i in 0..10) {
       for (listener in listeners) {
@@ -497,7 +497,7 @@ class KStateSkipSameValueTest {
       }
     }
 
-    val lithoView = lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    val lithoView = mLithoTestRule.render { RootComponent(renderCount = renderCount) }
     for (i in 0..10) {
       ShadowLooper.runMainLooperOneTask()
     }
@@ -524,8 +524,8 @@ class KStateSkipSameValueTest {
       }
     }
 
-    val lithoView = lithoViewRule.render { RootComponent() }
-    lithoViewRule.act(lithoView) {
+    val lithoView = mLithoTestRule.render { RootComponent() }
+    mLithoTestRule.act(lithoView) {
       clickOnTag("clickTag")
       /**
        * We need to perform this assertion here because as soon as we exit this lambda, all pending

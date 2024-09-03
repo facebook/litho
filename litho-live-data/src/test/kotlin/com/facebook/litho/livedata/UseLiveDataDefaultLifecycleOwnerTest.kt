@@ -31,7 +31,7 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions
@@ -46,7 +46,7 @@ import org.robolectric.annotation.LooperMode
 class UseLiveDataDefaultLifecycleOwnerTest {
 
   private val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
-  @get:Rule val rule: LithoViewRule = LithoViewRule()
+  @get:Rule val rule: LithoTestRule = LithoTestRule()
 
   @Before
   fun setUp() {

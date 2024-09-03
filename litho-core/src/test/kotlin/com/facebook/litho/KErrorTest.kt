@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.lang.Exception
 import java.lang.RuntimeException
@@ -34,7 +34,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class KErrorTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
   @Rule @JvmField val expectedException = ExpectedException.none()
 
   @Test
@@ -60,8 +60,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.render { UseErrorComponent() }
-    lithoViewRule.idle()
+    mLithoTestRule.render { UseErrorComponent() }
+    mLithoTestRule.idle()
 
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
@@ -86,8 +86,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.render { UseErrorComponent() }
-    lithoViewRule.idle()
+    mLithoTestRule.render { UseErrorComponent() }
+    mLithoTestRule.idle()
   }
 
   @Test
@@ -118,8 +118,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.render { UseErrorComponent() }
-    lithoViewRule.idle()
+    mLithoTestRule.render { UseErrorComponent() }
+    mLithoTestRule.idle()
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
     assertThat(errorList.get(0).message).isEqualTo("crash from kotlin component 2 levels down")
@@ -142,8 +142,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.render { UseErrorComponent() }
-    lithoViewRule.idle()
+    mLithoTestRule.render { UseErrorComponent() }
+    mLithoTestRule.idle()
   }
 
   @Test
@@ -170,8 +170,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.render { UseErrorComponent() }
-    lithoViewRule.idle()
+    mLithoTestRule.render { UseErrorComponent() }
+    mLithoTestRule.idle()
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
     assertThat(errorList.get(0).message).isEqualTo("crash from kotlin component's state")

@@ -33,7 +33,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.lifecycle.LifecycleOwnerTreeProp
 import com.facebook.litho.lifecycle.LifecycleOwnerWrapper
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.collection.LazyList
@@ -50,12 +50,12 @@ class UseLiveDataTest {
 
   private val fakeLifecycleOwner = FakeLifecycleOwner(Lifecycle.State.INITIALIZED)
   @get:Rule
-  val rule: LithoViewRule =
-      LithoViewRule(
+  val rule: LithoTestRule =
+      LithoTestRule(
           lithoVisibilityEventsController = {
             AOSPLithoVisibilityEventsController(fakeLifecycleOwner)
           })
-  @get:Rule val ruleWithoutVisibilityEventsController: LithoViewRule = LithoViewRule()
+  @get:Rule val ruleWithoutVisibilityEventsController: LithoTestRule = LithoTestRule()
 
   @Before
   fun setUp() {

@@ -21,7 +21,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.rotation
@@ -38,7 +38,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CollectionDepsTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun collection_propUpdate_appliedToDependantChildren() {
@@ -69,25 +69,27 @@ class CollectionDepsTest {
 
     // Perform an initial layout
     var testLithoView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(.5f, 180f, 0.75f)
         }
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     // Perform a second layout that updates some props. Update alpha and rotation. Do not update
     // scale.
     testLithoView =
-        lithoViewRule.render(lithoView = testLithoView.lithoView, widthPx = 1000, heightPx = 1000) {
-          CollectionWithSelectedRows(1f, 0f, 0.75f)
-        }
-    lithoViewRule.idle()
+        mLithoTestRule.render(
+            lithoView = testLithoView.lithoView, widthPx = 1000, heightPx = 1000) {
+              CollectionWithSelectedRows(1f, 0f, 0.75f)
+            }
+    mLithoTestRule.idle()
 
     // Do the layout again. This is a workaround to force layout to happen in a test.
     testLithoView =
-        lithoViewRule.render(lithoView = testLithoView.lithoView, widthPx = 1000, heightPx = 1000) {
-          CollectionWithSelectedRows(1f, 0f, 0.75f)
-        }
-    lithoViewRule.idle()
+        mLithoTestRule.render(
+            lithoView = testLithoView.lithoView, widthPx = 1000, heightPx = 1000) {
+              CollectionWithSelectedRows(1f, 0f, 0.75f)
+            }
+    mLithoTestRule.idle()
 
     // childWithNullDeps should re-render all changes
     // Verify childWithNullDeps has been updated

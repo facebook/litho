@@ -24,7 +24,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.kotlin.widget.TextInput
 import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith
 class ViewAttributeExtensionTest {
 
   @JvmField @Rule var lithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
-  @JvmField @Rule var lithoTestRule = LithoViewRule()
+  @JvmField @Rule var lithoTestRule = LithoTestRule()
 
   @Test
   fun `when view attributes is set it should override attribute set by mount spec`() {

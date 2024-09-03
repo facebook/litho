@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.view.View
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewId
 import com.facebook.litho.view.viewTag
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class ComponentViewIdTest {
 
-  @get:Rule val rule: LithoViewRule = LithoViewRule()
+  @get:Rule val rule: LithoTestRule = LithoTestRule()
 
   @Test
   fun `should set a view id on components correctly`() {

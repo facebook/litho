@@ -34,7 +34,7 @@ import com.facebook.litho.StateHandler
 import com.facebook.litho.TreeState
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.assertj.LithoViewAssert.Companion.assertThat
@@ -54,7 +54,7 @@ class StateUpdateTest {
   private var widthSpec = 0
   private var heightSpec = 0
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
@@ -66,7 +66,7 @@ class StateUpdateTest {
   }
 
   private fun createTestLithoView(component: Component): TestLithoView {
-    return lithoViewRule
+    return mLithoTestRule
         .createTestLithoView()
         .setRoot(component)
         .setSizeSpecs(widthSpec, heightSpec)
@@ -414,7 +414,7 @@ class StateUpdateTest {
     val looper = looper
     var componentTree = ComponentTree.create(context, component).layoutThreadLooper(looper).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView(null, componentTree)
             .setSizeSpecs(widthSpec, heightSpec)
             .attachToWindow()
@@ -434,7 +434,7 @@ class StateUpdateTest {
     looper.quit()
     val treeState = componentTree.acquireTreeState()
     componentTree = ComponentTree.create(context, component).treeState(treeState).build()
-    lithoViewRule
+    mLithoTestRule
         .createTestLithoView(null, componentTree)
         .setSizeSpecs(widthSpec, heightSpec)
         .attachToWindow()
@@ -466,12 +466,12 @@ class StateUpdateTest {
                     errorEventHandler = errorEventHandler))
             .build()
 
-    lithoViewRule.render(componentTree = componentTree) {
+    mLithoTestRule.render(componentTree = componentTree) {
       Column { child(ComponentWithStateCrashOnUpdateState.create(context).build()) }
     }
 
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView(null, componentTree)
             .setSizeSpecs(widthSpec, heightSpec)
             .attachToWindow()

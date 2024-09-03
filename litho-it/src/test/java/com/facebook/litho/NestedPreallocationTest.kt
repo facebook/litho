@@ -22,7 +22,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.PreAllocationHandler
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class NestedPreallocationTest {
 
-  @get:Rule val lithoRule: LithoViewRule = LithoViewRule()
+  @get:Rule val lithoRule: LithoTestRule = LithoTestRule()
 
   @get:Rule
   val backgroundLayoutLooperRule: BackgroundLayoutLooperRule = BackgroundLayoutLooperRule()

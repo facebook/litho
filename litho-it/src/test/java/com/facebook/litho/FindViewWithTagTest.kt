@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.view.View
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class FindViewWithTagTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
   @Rule @JvmField val expectedException = ExpectedException.none()
 
   @Test
@@ -53,7 +53,7 @@ class FindViewWithTagTest {
     }
 
     val viewRef = AtomicReference<View>()
-    lithoViewRule.render { MyComponent(viewRef = viewRef) }
+    mLithoTestRule.render { MyComponent(viewRef = viewRef) }
 
     assertThat(viewRef.get()).isNotNull()
     assertThat(viewRef.get().tag).isEqualTo("Find Me!")
@@ -73,7 +73,7 @@ class FindViewWithTagTest {
     }
 
     val viewRef = AtomicReference<View>()
-    lithoViewRule.render { MyComponent(viewRef = viewRef) }
+    mLithoTestRule.render { MyComponent(viewRef = viewRef) }
 
     assertThat(viewRef.get()).isNull()
   }
@@ -94,7 +94,7 @@ class FindViewWithTagTest {
     }
 
     val viewRef = AtomicReference<View>()
-    lithoViewRule.render { MyComponent(viewRef = viewRef) }
+    mLithoTestRule.render { MyComponent(viewRef = viewRef) }
 
     assertThat(viewRef.get()).isNotNull()
     assertThat(viewRef.get().tag).isEqualTo(handleTag2)
@@ -105,7 +105,7 @@ class FindViewWithTagTest {
     expectedException.expect(RuntimeException::class.java)
     expectedException.expectMessage("render")
 
-    ComponentContext(lithoViewRule.context).findViewWithTag<View>("Some Tag")
+    ComponentContext(mLithoTestRule.context).findViewWithTag<View>("Some Tag")
   }
 
   @Test
@@ -113,6 +113,6 @@ class FindViewWithTagTest {
     expectedException.expect(RuntimeException::class.java)
     expectedException.expectMessage("render")
 
-    ComponentScope(ComponentContext(lithoViewRule.context)).findViewWithTag<View>("Some Tag")
+    ComponentScope(ComponentContext(mLithoTestRule.context)).findViewWithTag<View>("Some Tag")
   }
 }

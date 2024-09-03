@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Color
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -35,8 +35,8 @@ import org.robolectric.annotation.LooperMode
 class DuplicateParentChildrenStateTest {
   @JvmField
   @Rule
-  val lithoViewRule: LithoViewRule =
-      LithoViewRule(
+  val mLithoTestRule: LithoTestRule =
+      LithoTestRule(
           componentsConfiguration =
               ComponentsConfiguration.defaultInstance.copy(
                   shouldAddHostViewForRootComponent = true))
@@ -83,7 +83,7 @@ class DuplicateParentChildrenStateTest {
           }
         }
 
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { component }
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
 
     Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(10)
@@ -143,7 +143,7 @@ class DuplicateParentChildrenStateTest {
                 .build()
           }
         }
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { component }
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { component }
     val secondMountedItem =
         testLithoView.lithoView.mountDelegateTarget!!.getMountItemAt(1)!!.content
     Assert.assertTrue(secondMountedItem is ComponentHost)

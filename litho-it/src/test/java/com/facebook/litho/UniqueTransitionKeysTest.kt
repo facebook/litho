@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.transition.transitionKey
 import java.lang.RuntimeException
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class UniqueTransitionKeysTest {
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
   @JvmField @Rule var expectedException: ExpectedException = ExpectedException.none()
 
   @Test
@@ -49,7 +49,7 @@ class UniqueTransitionKeysTest {
     }
 
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) { HasUniqueTransitionKeys() }
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) { HasUniqueTransitionKeys() }
     testLithoView.componentTree.mainThreadLayoutState!!.transitionIdMapping
   }
 
@@ -74,7 +74,7 @@ class UniqueTransitionKeysTest {
     }
 
     val testLithoView =
-        lithoViewRule.render(widthPx = 100, heightPx = 100) { HasNonUniqueTransitionKeys() }
+        mLithoTestRule.render(widthPx = 100, heightPx = 100) { HasNonUniqueTransitionKeys() }
     Assertions.assertThat(testLithoView.componentTree.mainThreadLayoutState!!.transitionIdMapping)
         .isNotNull
   }

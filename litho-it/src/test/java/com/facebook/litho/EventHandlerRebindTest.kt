@@ -19,7 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoViewAssert
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.EventHandlerBindingComponent
@@ -43,7 +43,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class EventHandlerRebindTest {
 
-  @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   /**
    * This test makes sure that we re-bind EventHandlers even if the particular row the EventHandler
@@ -81,7 +81,7 @@ class EventHandlerRebindTest {
         }
 
     val testLithoView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           RecyclerCollectionComponent.create(context)
               .section(
                   EventHandlerBindingSection.create(SectionContext(context))
@@ -91,7 +91,7 @@ class EventHandlerRebindTest {
               .build()
         }
 
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     // 1. First assertions: just make sure everything is set up properly.
 
@@ -111,8 +111,8 @@ class EventHandlerRebindTest {
     // event handler does reflect the latest state.
 
     updater.updateCounterSync(1)
-    lithoViewRule.idle()
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.idle()
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("Counter: 1")
     assertThat(numButtonRenders.get())
@@ -134,9 +134,9 @@ class EventHandlerRebindTest {
     // state again
     updater.updateCounterSync(2)
     testLithoView.setRoot(
-        RecyclerCollectionComponent.create(lithoViewRule.context)
+        RecyclerCollectionComponent.create(mLithoTestRule.context)
             .section(
-                EventHandlerBindingSection.create(SectionContext(lithoViewRule.context))
+                EventHandlerBindingSection.create(SectionContext(mLithoTestRule.context))
                     .stateUpdater(updater)
                     .onButtonClickListener(clickListener)
                     .buttonCreator(
@@ -144,8 +144,8 @@ class EventHandlerRebindTest {
                           RecordingButton(numRenders = numButtonRenders, textSize = 20.sp)
                         }))
             .build())
-    lithoViewRule.idle()
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.idle()
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("Counter: 2")
     assertThat(numButtonRenders.get())
@@ -166,8 +166,8 @@ class EventHandlerRebindTest {
     // button re-renders.
 
     updater.updateCounterSync(3)
-    lithoViewRule.idle()
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.idle()
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("Counter: 3")
     assertThat(numButtonRenders.get())
@@ -225,7 +225,7 @@ class EventHandlerRebindTest {
         }
 
     val testLithoView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           EventHandlerBindingComponent.create(context)
               .stateUpdater(updater)
               .onButtonClickListener(clickListener)
@@ -233,7 +233,7 @@ class EventHandlerRebindTest {
               .build()
         }
 
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     // 1. First assertions: just make sure everything is set up properly.
 
@@ -253,8 +253,8 @@ class EventHandlerRebindTest {
     // the event handler does reflect the latest state.
 
     updater.updateCounterSync(1)
-    lithoViewRule.idle()
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.idle()
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("Counter: 1")
     assertThat(numButtonRenders.get())
@@ -276,7 +276,7 @@ class EventHandlerRebindTest {
     // state again
     updater.updateCounterSync(2)
     testLithoView.setRoot(
-        EventHandlerBindingComponent.create(lithoViewRule.context)
+        EventHandlerBindingComponent.create(mLithoTestRule.context)
             .stateUpdater(updater)
             .onButtonClickListener(clickListener)
             .buttonCreator(
@@ -284,8 +284,8 @@ class EventHandlerRebindTest {
                   RecordingButton(numRenders = numButtonRenders, textSize = 20.sp)
                 })
             .build())
-    lithoViewRule.idle()
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.idle()
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("Counter: 2")
     assertThat(numButtonRenders.get())
@@ -306,8 +306,8 @@ class EventHandlerRebindTest {
     // button re-renders.
 
     updater.updateCounterSync(3)
-    lithoViewRule.idle()
-    lithoViewRule.act(testLithoView) { clickOnText("Click Me") }
+    mLithoTestRule.idle()
+    mLithoTestRule.act(testLithoView) { clickOnText("Click Me") }
 
     LithoViewAssert.assertThat(testLithoView.lithoView).hasVisibleText("Counter: 3")
     assertThat(numButtonRenders.get())

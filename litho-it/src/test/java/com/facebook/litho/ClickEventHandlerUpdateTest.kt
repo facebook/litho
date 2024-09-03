@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ClickEventTrackingImage
 import com.facebook.litho.widget.ClickEventTrackingRow
@@ -29,17 +29,17 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class ClickEventHandlerUpdateTest {
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `click event handler on host should update`() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val tracker = mutableListOf<String>()
     val clickObserver: (String) -> Unit = { s: String -> tracker.add(s) }
 
     // render with tag 0
     val testView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           Row.create(context)
               .wrapInView()
               .child(ClickEventTrackingRow.create(context).id("0").clickObserver(clickObserver))
@@ -90,14 +90,14 @@ class ClickEventHandlerUpdateTest {
 
   @Test
   fun `click event handler on drawable mountspec should update`() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val tracker = mutableListOf<String>()
 
     val clickObserver: (String) -> Unit = { s: String -> tracker.add(s) }
 
     // render with tag 0
     val testView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           Row.create(context)
               .wrapInView()
               .child(ClickEventTrackingImage.create(context).id("0").clickObserver(clickObserver))
@@ -147,14 +147,14 @@ class ClickEventHandlerUpdateTest {
 
   @Test
   fun `click event handler on root host should update`() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val tracker = mutableListOf<String>()
 
     val clickObserver: (String) -> Unit = { s: String -> tracker.add(s) }
 
     // render with tag 0
     val testView =
-        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+        mLithoTestRule.render(widthPx = 1000, heightPx = 1000) {
           ClickEventTrackingRow.create(context).id("0").clickObserver(clickObserver).build()
         }
 

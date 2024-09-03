@@ -24,7 +24,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Image
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.px
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LithoTooltipControllerTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `shows tooltip on Text Spec`() {
@@ -55,9 +55,9 @@ class LithoTooltipControllerTest {
     val handle = Handle()
     val tooltip = RecordingLithoTooltip()
 
-    lithoViewRule.render { ComponentWithTooltip(tooltipHandle = handle) }
+    mLithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
 
-    LithoTooltipController.showTooltipOnHandle(lithoViewRule.context, tooltip, handle)
+    LithoTooltipController.showTooltipOnHandle(mLithoTestRule.context, tooltip, handle)
 
     assertThat(tooltip.calls).hasSize(1)
     val call = tooltip.calls[0]
@@ -84,9 +84,9 @@ class LithoTooltipControllerTest {
     val handle = Handle()
     val tooltip = RecordingLithoTooltip()
 
-    lithoViewRule.render { ComponentWithTooltip(tooltipHandle = handle) }
+    mLithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
 
-    LithoTooltipController.showTooltipOnHandle(lithoViewRule.context, tooltip, handle)
+    LithoTooltipController.showTooltipOnHandle(mLithoTestRule.context, tooltip, handle)
 
     assertThat(tooltip.calls).hasSize(1)
     val call = tooltip.calls[0]
@@ -113,9 +113,9 @@ class LithoTooltipControllerTest {
     val handle = Handle()
     val tooltip = RecordingLithoTooltip()
 
-    lithoViewRule.render { ComponentWithTooltip(tooltipHandle = handle) }
+    mLithoTestRule.render { ComponentWithTooltip(tooltipHandle = handle) }
 
-    LithoTooltipController.showTooltipOnHandle(lithoViewRule.context, tooltip, handle)
+    LithoTooltipController.showTooltipOnHandle(mLithoTestRule.context, tooltip, handle)
 
     assertThat(tooltip.calls).hasSize(1)
     val call = tooltip.calls[0]

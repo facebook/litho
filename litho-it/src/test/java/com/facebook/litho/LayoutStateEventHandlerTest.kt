@@ -16,7 +16,7 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLayoutComponent
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LayoutStateEventHandlerTest {
 
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   private var rootComponent: Component? = null
   private var nestedComponent: Component? = null
@@ -59,7 +59,7 @@ class LayoutStateEventHandlerTest {
 
   @Test
   fun testNestedEventHandlerInput() {
-    lithoViewRule.render { rootComponent }
+    mLithoTestRule.render { rootComponent }
   }
 
   companion object {

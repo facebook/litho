@@ -21,7 +21,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.rendercore.px
@@ -35,13 +35,13 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class VisibilityStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun onVisible_whenSet_firesWhenVisible() {
     val eventFired = AtomicBoolean(false)
 
-    lithoViewRule.render {
+    mLithoTestRule.render {
       Row(style = Style.width(200.px).height(200.px).onVisible { eventFired.set(true) })
     }
 
@@ -53,7 +53,7 @@ class VisibilityStylesTest {
     val eventFired = AtomicBoolean(false)
 
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Row(style = Style.width(200.px).height(200.px).onInvisible { eventFired.set(true) })
         }
 
@@ -70,7 +70,7 @@ class VisibilityStylesTest {
     val unfocusFired = AtomicBoolean(false)
 
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .render {
               Row(
                   style =
@@ -82,7 +82,7 @@ class VisibilityStylesTest {
             .attachToWindow()
 
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -98,7 +98,7 @@ class VisibilityStylesTest {
   fun onFullImpression_whenSet_firesWhenVisible() {
     val eventFired = AtomicBoolean(false)
 
-    lithoViewRule.render {
+    mLithoTestRule.render {
       Row(style = Style.width(200.px).height(200.px).onFullImpression { eventFired.set(true) })
     }
 
@@ -109,7 +109,7 @@ class VisibilityStylesTest {
   fun onVisibilityChanged_whenSet_firesWhenVisibilityBoundsChange() {
     val eventFired = AtomicBoolean(false)
 
-    lithoViewRule.render {
+    mLithoTestRule.render {
       Row(style = Style.width(200.px).height(200.px).onVisibilityChanged { eventFired.set(true) })
     }
 

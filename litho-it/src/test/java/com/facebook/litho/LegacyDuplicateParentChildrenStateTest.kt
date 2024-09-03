@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Color
 import com.facebook.litho.config.TempComponentsConfigurations
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 
 @RunWith(LithoTestRunner::class)
 class LegacyDuplicateParentChildrenStateTest {
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   @Before
   @Throws(Exception::class)
@@ -78,7 +78,7 @@ class LegacyDuplicateParentChildrenStateTest {
                 .build()
           }
         }
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { component }
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { component }
     val layoutState = testLithoView.componentTree.mainThreadLayoutState!!
     Assertions.assertThat(layoutState.getMountableOutputCount()).isEqualTo(12)
     Assert.assertTrue(

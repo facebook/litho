@@ -19,7 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.widget.LayoutWithSizeSpecWithCachedValue
@@ -37,7 +37,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CachedValueTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `cached value is not calculated when input is same for main and nested tree`() {
@@ -63,24 +63,24 @@ class CachedValueTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
 
     // Cached value was calculated for main tree
     Assertions.assertThat(initCounter.get()).isEqualTo(1)
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(1)
 
     // Check cached value updated in nested tree as well
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
 
     // Clear root component from ComponentTree.
-    lithoViewRule.render(testLithoView.lithoView) { EmptyComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { EmptyComponent() }
 
     // Re-set root component with same inputs
-    lithoViewRule.render(testLithoView.lithoView) { TestComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { TestComponent() }
 
     Assertions.assertThat(initCounter.get()).isEqualTo(1)
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(1)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
   }
 
   @Test
@@ -107,26 +107,26 @@ class CachedValueTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
 
     // Cached value was calculated for main tree
     Assertions.assertThat(initCounter.get()).isEqualTo(1)
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(1)
 
     // Check cached value updated in nested tree as well
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
 
     // Clear root component from ComponentTree.
-    lithoViewRule.render(testLithoView.lithoView) { EmptyComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { EmptyComponent() }
 
     // Increase repeat number.
     repeatNum.incrementAndGet()
     // Re-set root component and cache value is re-created.
-    lithoViewRule.render(testLithoView.lithoView) { TestComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { TestComponent() }
 
     Assertions.assertThat(initCounter.get()).isEqualTo(2)
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(2)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 101") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 101") }
   }
 
   @Test
@@ -146,22 +146,22 @@ class CachedValueTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
 
     // Check cached value updated in nested tree as well
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(1)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: -1") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: -1") }
 
     // Clear root component from ComponentTree.
-    lithoViewRule.render(testLithoView.lithoView) { EmptyComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { EmptyComponent() }
 
     // Increase repeat number.
     nullableRepeatNum.set(Integer(100))
     // Re-set root component and cache value is re-created.
-    lithoViewRule.render(testLithoView.lithoView) { TestComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { TestComponent() }
 
     Assertions.assertThat(nestedTreeInitCounter.get()).isEqualTo(2)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
   }
 
   @Test
@@ -191,28 +191,28 @@ class CachedValueTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
 
     // Check cached value updated in nested tree as well
     Assertions.assertThat(firstNestedTreeInitCounter.get()).isEqualTo(1)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 100") }
 
     Assertions.assertThat(secondNestedTreeInitCounter.get()).isEqualTo(1)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 200") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 200") }
 
     // Clear root component from ComponentTree.
-    lithoViewRule.render(testLithoView.lithoView) { EmptyComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { EmptyComponent() }
 
     // Increase repeat number.
     repeatNumFirst.incrementAndGet()
     // Re-set root component and cache value is re-created.
-    lithoViewRule.render(testLithoView.lithoView) { TestComponent() }
+    mLithoTestRule.render(testLithoView.lithoView) { TestComponent() }
 
     Assertions.assertThat(firstNestedTreeInitCounter.get()).isEqualTo(2)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 101") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 101") }
 
     Assertions.assertThat(secondNestedTreeInitCounter.get()).isEqualTo(1)
-    lithoViewRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 200") }
+    mLithoTestRule.act(testLithoView) { ViewPredicates.hasVisibleText("ExpensiveCachedValue: 200") }
   }
 
   companion object {

@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.EventHandlerRebindMode
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -28,7 +28,7 @@ import org.mockito.kotlin.mock
 @RunWith(LithoTestRunner::class)
 class EventHandlerTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   private val hasEventDispatcher = mock<HasEventDispatcher>()
 
@@ -134,8 +134,8 @@ class EventHandlerTest {
             1,
             EventHandlerRebindMode.REBIND,
             EventDispatchInfo(
-                Wrapper.create(lithoViewRule.context).delegate(EmptyComponent()).build(),
-                lithoViewRule.context),
+                Wrapper.create(mLithoTestRule.context).delegate(EmptyComponent()).build(),
+                mLithoTestRule.context),
             arrayOf<Any>(1, 2, 3),
         )
     val eventHandler2: EventHandler<*> =
@@ -143,8 +143,8 @@ class EventHandlerTest {
             1,
             EventHandlerRebindMode.REBIND,
             EventDispatchInfo(
-                Wrapper.create(lithoViewRule.context).delegate(EmptyComponent()).build(),
-                lithoViewRule.context),
+                Wrapper.create(mLithoTestRule.context).delegate(EmptyComponent()).build(),
+                mLithoTestRule.context),
             arrayOf<Any>(1, 2, 3),
         )
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isTrue

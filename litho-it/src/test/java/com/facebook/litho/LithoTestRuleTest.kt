@@ -19,7 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.ComponentWithTreeProp
@@ -35,15 +35,15 @@ import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class LithoViewRuleTest {
+class LithoTestRuleTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   @Test
   fun onLithoViewRuleWithTreeProp_shouldPropagateTreeProp() {
-    val component = ComponentWithTreeProp.create(lithoViewRule.context).build()
+    val component = ComponentWithTreeProp.create(mLithoTestRule.context).build()
     val testLithoView =
-        lithoViewRule.setTreeProp(SimpleTreeProp::class.java, SimpleTreeProp("test")).render {
+        mLithoTestRule.setTreeProp(SimpleTreeProp::class.java, SimpleTreeProp("test")).render {
           component
         }
 
@@ -54,8 +54,8 @@ class LithoViewRuleTest {
 
   @Test(expected = RuntimeException::class)
   fun onLithoViewRuleWithoutTreeProp_shouldThrowException() {
-    val component = ComponentWithTreeProp.create(lithoViewRule.context).build()
-    lithoViewRule.createTestLithoView().attachToWindow().setRoot(component).measure().layout()
+    val component = ComponentWithTreeProp.create(mLithoTestRule.context).build()
+    mLithoTestRule.createTestLithoView().attachToWindow().setRoot(component).measure().layout()
   }
 
   @Test
@@ -72,10 +72,10 @@ class LithoViewRuleTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render { TestComponent() }
+    val testLithoView = mLithoTestRule.render { TestComponent() }
     val thrown: Throwable =
         Assertions.catchThrowable {
-          lithoViewRule.act(testLithoView) { clickOnText("some_other_text") }
+          mLithoTestRule.act(testLithoView) { clickOnText("some_other_text") }
         }
 
     assertThat(thrown).isInstanceOf(RuntimeException::class.java)

@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LinearLayoutInfo
@@ -47,7 +47,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class RecyclerTest {
 
-  @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   lateinit var recyclerBinder: RecyclerBinder
 
@@ -55,13 +55,13 @@ class RecyclerTest {
   fun setup() {
     recyclerBinder =
         RecyclerBinder.Builder()
-            .layoutInfo(LinearLayoutInfo(lithoViewRule.context, OrientationHelper.VERTICAL, false))
-            .build(lithoViewRule.context)
+            .layoutInfo(LinearLayoutInfo(mLithoTestRule.context, OrientationHelper.VERTICAL, false))
+            .build(mLithoTestRule.context)
     for (i in 0 until 10) {
       recyclerBinder.insertItemAt(
           i,
           ComponentRenderInfo.create()
-              .component(Text.create(lithoViewRule.context).text("test"))
+              .component(Text.create(mLithoTestRule.context).text("test"))
               .build())
     }
   }
@@ -69,7 +69,7 @@ class RecyclerTest {
   @Test
   fun `ExperimentalRecycler should render with default values`() {
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Recycler(binder = recyclerBinder, style = Style.width(100.px).height(100.px))
         }
 
@@ -106,7 +106,7 @@ class RecyclerTest {
         }
 
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Recycler(
               binder = recyclerBinder,
               itemDecorations = listOf(itemDecoration),
@@ -124,7 +124,7 @@ class RecyclerTest {
   fun `RecyclerEventController when set is respected`() {
     val recyclerEventsController = RecyclerEventsController()
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Recycler(
               binder = recyclerBinder,
               recyclerEventsController = recyclerEventsController,
@@ -141,7 +141,7 @@ class RecyclerTest {
   fun `ItemAnimator when set is respected`() {
     val itemAnimator = DefaultItemAnimator()
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Recycler(
               binder = recyclerBinder,
               itemAnimator = itemAnimator,

@@ -22,7 +22,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
@@ -38,13 +38,13 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CollectionChildEquivalenceTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   private lateinit var lazyList: LazyCollection
 
   @Before
   fun before() {
-    with(ComponentScope(lithoViewRule.context)) { lazyList = LazyList {} as LazyCollection }
+    with(ComponentScope(mLithoTestRule.context)) { lazyList = LazyList {} as LazyCollection }
   }
 
   @Test
@@ -73,7 +73,7 @@ class CollectionChildEquivalenceTest {
 
   @Test
   fun `test isChildEquivalent checks props`() {
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               lazyList.isChildEquivalent(
                   CollectionChild("", Text("Test")),
@@ -92,7 +92,7 @@ class CollectionChildEquivalenceTest {
 
   @Test
   fun `test isChildEquivalent checks nested props`() {
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               lazyList.isChildEquivalent(
                   CollectionChild("", Row { child(Text("Test")) }),
@@ -111,7 +111,7 @@ class CollectionChildEquivalenceTest {
 
   @Test
   fun `test isChildEquivalent checks lambdas`() {
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       val onClick = { _: ClickEvent -> }
       assertThat(
               lazyList.isChildEquivalent(
@@ -131,7 +131,7 @@ class CollectionChildEquivalenceTest {
 
   @Test
   fun `test isChildEquivalent checks nested lambdas`() {
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       val onClick = { _: ClickEvent -> }
       assertThat(
               lazyList.isChildEquivalent(
@@ -153,7 +153,7 @@ class CollectionChildEquivalenceTest {
 
   @Test
   fun `test isChildEquivalent checks common props`() {
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               lazyList.isChildEquivalent(
                   CollectionChild("", Text("Test", style = Style.backgroundColor(Color.RED))),
@@ -172,7 +172,7 @@ class CollectionChildEquivalenceTest {
 
   @Test
   fun `test isChildEquivalent checks nested common props`() {
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               lazyList.isChildEquivalent(
                   CollectionChild(

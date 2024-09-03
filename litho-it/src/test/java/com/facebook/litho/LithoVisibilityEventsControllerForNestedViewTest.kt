@@ -20,7 +20,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
@@ -39,8 +39,8 @@ import org.robolectric.annotation.LooperMode
 class LithoVisibilityEventsControllerForNestedViewTest {
   @Rule
   @JvmField
-  val lithoViewRule: LithoViewRule =
-      LithoViewRule(lithoVisibilityEventsController = { lithoVisibilityEventsControllerDelegate })
+  val mLithoTestRule: LithoTestRule =
+      LithoTestRule(lithoVisibilityEventsController = { lithoVisibilityEventsControllerDelegate })
   private val lithoVisibilityEventsControllerDelegate: LithoVisibilityEventsController =
       LithoVisibilityEventsControllerDelegate()
   private val invisibleTags: MutableSet<Int> = mutableSetOf()
@@ -60,7 +60,7 @@ class LithoVisibilityEventsControllerForNestedViewTest {
   @Test
   fun `test visibility events for nested LithoView`() {
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           LazyList(style = Style.height(100.sp).width(100.sp)) {
             for (i in 0 until 10) {
               child(

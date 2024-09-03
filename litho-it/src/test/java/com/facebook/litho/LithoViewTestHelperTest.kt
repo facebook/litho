@@ -20,7 +20,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
@@ -38,7 +38,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class LithoViewTestHelperTest {
 
-  @get:Rule val lithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule = LithoTestRule()
 
   @Before
   fun skipIfNonDebug() {
@@ -124,7 +124,7 @@ class LithoViewTestHelperTest {
 
   @Test
   fun viewToStringForE2E_withExtraDescription_componentKeyIsPrinted() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val component: Component =
         Column.create(c)
             .key("column")
@@ -134,7 +134,7 @@ class LithoViewTestHelperTest {
 
     val string =
         LithoViewTestHelper.viewToStringForE2E(
-            lithoViewRule.render { component }.lithoView, 0, false) { debugComponent, sb ->
+            mLithoTestRule.render { component }.lithoView, 0, false) { debugComponent, sb ->
               sb.append(", key=").append(debugComponent.key)
             }
     assertThat(string)
@@ -150,7 +150,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when root Component uses sizes then TestHelper toString should contain nested tree with children`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               ComponentContainerWithSize.create(context)
                   .component(
@@ -183,7 +183,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when root Component uses sizes then TestHelper toString should contain delegated nested tree with children`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               ComponentContainerWithSize.create(context)
                   .component(
@@ -219,7 +219,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when root Component uses sizes then TestHelper toString should contain nested tree`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               ComponentContainerWithSize.create(context).component(ParentComponent()).build()
             }
@@ -244,7 +244,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when child Component uses sizes then TestHelper toString should contain nested tree`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               Column {
                 child(
@@ -273,7 +273,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when delegated root Component uses sizes then TestHelper toString should contain nested tree`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               DelegatingComponent(
                   component =
@@ -303,7 +303,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when delegated child Component uses sizes then TestHelper toString should contain nested tree`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               Column {
                 child(
@@ -337,7 +337,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when leaf component is measured then TestHelper toString should contain the leaf node`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               MeasuringComponent(
                   component = Text(text = "hello", style = Style.testKey("test-key")))
@@ -361,7 +361,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when delegated leaf component is measured then TestHelper toString should contain the leaf node`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               MeasuringComponent(
                   component =
@@ -388,7 +388,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when leaf component is delegated measured then TestHelper toString should contain the leaf node`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               DelegatingComponent(component = MeasuringComponent(component = TextHolderComponent()))
             }
@@ -413,7 +413,7 @@ class LithoViewTestHelperTest {
   @Test
   fun `when delegated component is measured as child then TestHelper toString should contain all the components`() {
     val view =
-        lithoViewRule
+        mLithoTestRule
             .render {
               Column {
                 child(

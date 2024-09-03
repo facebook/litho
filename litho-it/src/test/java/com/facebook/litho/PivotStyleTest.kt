@@ -21,7 +21,7 @@ import android.os.Build
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.pivotPercent
 import com.facebook.litho.view.viewTag
@@ -40,12 +40,12 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class PivotStyleTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
 
   @Test
   fun testPivotApplied() {
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
         }
 
@@ -68,7 +68,7 @@ class PivotStyleTest {
   @Test
   fun testPivotReset() {
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
         }
 
@@ -107,7 +107,7 @@ class PivotStyleTest {
   @Test
   fun testPivotResetPreAPI28() {
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           ComponentWithOptionalPivot(pivotXPercent = 75f, pivotYPercent = 75f)
         }
 

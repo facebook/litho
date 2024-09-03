@@ -27,7 +27,7 @@ import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TrackedItemPool
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountItemsPool
@@ -46,7 +46,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ContentPoolingTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -58,7 +58,7 @@ class ContentPoolingTest {
   fun `different primitive components should use different pools`() {
 
     // Mount an Image component
-    lithoViewRule.render {
+    mLithoTestRule.render {
       Column {
         child(
             TestDrawablePrimitiveComponent(
@@ -73,7 +73,7 @@ class ContentPoolingTest {
 
     // Mount multiple Image components, and a TestTextViewPrimitiveComponent
     val lithoView =
-        lithoViewRule
+        mLithoTestRule
             .render {
               Column {
                 child(
@@ -102,7 +102,7 @@ class ContentPoolingTest {
     var createContentInvocationCount = 0
 
     // Mount 40 Image components, and then unmount them all
-    lithoViewRule
+    mLithoTestRule
         .render {
           Column {
             for (i in 1..40) {
@@ -123,7 +123,7 @@ class ContentPoolingTest {
 
     createContentInvocationCount = 0
     // Mount 40 Image components again to check if pooling works, and then unmount them all
-    lithoViewRule
+    mLithoTestRule
         .render {
           Column {
             for (i in 1..40) {
@@ -154,7 +154,7 @@ class ContentPoolingTest {
 
     // preallocate 40 Text components
     MountItemsPool.prefillMountContentPool(
-        lithoViewRule.context.androidContext, 40, TestTextViewPrimitiveComponent.ALLOCATOR)
+        mLithoTestRule.context.androidContext, 40, TestTextViewPrimitiveComponent.ALLOCATOR)
 
     // Should create 1 Pool for TestTextViewPrimitiveComponent
     assertThat(MountItemsPool.mountItemPools.size).isEqualTo(1)

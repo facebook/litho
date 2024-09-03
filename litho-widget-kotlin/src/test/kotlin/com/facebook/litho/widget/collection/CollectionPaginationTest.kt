@@ -21,7 +21,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -37,7 +37,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CollectionPaginationTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `test Collection pagination callback receives correct updates`() {
@@ -55,14 +55,14 @@ class CollectionPaginationTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
-    lithoViewRule.idle()
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    mLithoTestRule.idle()
 
     assertThat(onNearEndCallbackCount.get()).isEqualTo(0)
 
-    lithoViewRule.act(testLithoView) { clickOnTag("collection_tag") }
+    mLithoTestRule.act(testLithoView) { clickOnTag("collection_tag") }
 
-    lithoViewRule.render(lithoView = testLithoView.lithoView, widthPx = 100, heightPx = 100) {
+    mLithoTestRule.render(lithoView = testLithoView.lithoView, widthPx = 100, heightPx = 100) {
       Test()
     }
 

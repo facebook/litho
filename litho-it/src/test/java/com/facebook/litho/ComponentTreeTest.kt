@@ -33,7 +33,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoStatsRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestDrawableComponent.BlockInPrepareComponentListener
 import com.facebook.litho.testing.TestLayoutComponent
@@ -85,7 +85,7 @@ class ComponentTreeTest {
   private var heightSpec: Int = 0
   private var heightSpec2: Int = 0
 
-  @get:Rule val lithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule = LithoTestRule()
 
   @Before
   fun setup() {
@@ -704,7 +704,7 @@ class ComponentTreeTest {
             .build()
 
     val testLithoView =
-        lithoViewRule.render(componentTree = componentTree) {
+        mLithoTestRule.render(componentTree = componentTree) {
           TestDrawableComponent.create(context)
               .widthPx(100)
               .heightPx(firstIterationHeightPx)
@@ -765,7 +765,7 @@ class ComponentTreeTest {
     parent.measure(exactly(2000), exactly(2000))
     parent.layout(0, 0, 2000, 2000)
 
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     assertThat(testLithoView.lithoView.width).isEqualTo(100)
     assertThat(testLithoView.lithoView.height).isEqualTo(200)

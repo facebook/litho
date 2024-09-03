@@ -20,7 +20,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class UnregisterLocalTreeStateInResolveTest {
 
-  @get:Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @get:Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   @get:Rule
   val backgroundLayoutLooperRule: BackgroundLayoutLooperRule = BackgroundLayoutLooperRule()
@@ -47,7 +47,7 @@ class UnregisterLocalTreeStateInResolveTest {
   @Test
   fun `the initial state container is cleaned on non-commited resolves`() {
     val lithoView = createEmptyLithoView()
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
 
     val componentTree = lithoView.componentTree
     componentTree.setFutureExecutionListener(
@@ -66,7 +66,7 @@ class UnregisterLocalTreeStateInResolveTest {
         })
 
     componentTree.setRootAsync(TestCounterComponent(initialCounter = 1))
-    lithoViewRule.idle()
+    mLithoTestRule.idle()
     LithoAssertions.assertThat(lithoView).hasVisibleText("Counter: 2")
 
     componentTree.setRootSync(EmptyComponent())
@@ -83,7 +83,7 @@ class UnregisterLocalTreeStateInResolveTest {
     val componentTree = ComponentTree.create(componentContext).build()
 
     val lithoView =
-        lithoViewRule.createTestLithoView(
+        mLithoTestRule.createTestLithoView(
             componentTree = componentTree, widthPx = 1080, heightPx = 840) {
               EmptyComponent()
             }

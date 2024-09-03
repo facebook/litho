@@ -21,7 +21,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -37,9 +37,9 @@ import org.robolectric.annotation.LooperMode
 /** Examples of LithoViewRuleList usage */
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class LithoViewRuleListExampleTest {
+class LithoTestRuleListExampleTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `test child is present in LazyList`() {
@@ -54,7 +54,7 @@ class LithoViewRuleListExampleTest {
     }
 
     val testView =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     assertThat(testView).isNotNull()
 
@@ -109,7 +109,7 @@ class LithoViewRuleListExampleTest {
     }
 
     val testView =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     assertThat(testView.findViewWithTextOrNull("Flour: 2")).isNotNull()
     assertThat(testView.findAllComponents(Text::class))
@@ -136,13 +136,13 @@ class LithoViewRuleListExampleTest {
     }
 
     val testView =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     val listComponent = testView.findCollectionComponent()
     assertThat(listComponent).isNotNull
     listComponent ?: return
 
-    val testComponentScope = ComponentScope(context = lithoViewRule.context)
+    val testComponentScope = ComponentScope(context = mLithoTestRule.context)
     val zeroTextComponent = with(testComponentScope) { Text("0") }
     val fourTextComponent = with(testComponentScope) { Text("4") }
     val helloTextComponent = with(testComponentScope) { Text("Hello") }
@@ -189,7 +189,7 @@ class LithoViewRuleListExampleTest {
     }
 
     val testView =
-        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+        mLithoTestRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     val listComponent = testView.findCollectionComponent()
     assertThat(listComponent).isNotNull

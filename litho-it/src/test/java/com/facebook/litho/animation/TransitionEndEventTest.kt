@@ -15,7 +15,7 @@
  */
 package com.facebook.litho.animation
 
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TransitionTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.TransitionEndCallbackTestComponent
@@ -30,7 +30,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class TransitionEndEventTest {
 
-  @JvmField @Rule val lithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule = LithoTestRule()
   @JvmField @Rule val transitionTestRule = TransitionTestRule()
 
   @Test
@@ -40,11 +40,11 @@ class TransitionEndEventTest {
           testType = TransitionEndCallbackTestComponentSpec.TestType.SAME_KEY
         }
     val component =
-        TransitionEndCallbackTestComponent.create(lithoViewRule.context)
+        TransitionEndCallbackTestComponent.create(mLithoTestRule.context)
             .caller(stateUpdater)
             .build()
 
-    lithoViewRule.render { component }
+    mLithoTestRule.render { component }
 
     Assertions.assertThat(stateUpdater.transitionEndMessage)
         .describedAs("Before starting animations")
@@ -69,11 +69,11 @@ class TransitionEndEventTest {
           testType = TransitionEndCallbackTestComponentSpec.TestType.DISAPPEAR
         }
     val component =
-        TransitionEndCallbackTestComponent.create(lithoViewRule.context)
+        TransitionEndCallbackTestComponent.create(mLithoTestRule.context)
             .caller(stateUpdater)
             .build()
 
-    lithoViewRule.render { component }
+    mLithoTestRule.render { component }
 
     Assertions.assertThat(stateUpdater.transitionEndMessage)
         .describedAs("Before starting animations")

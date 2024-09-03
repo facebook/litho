@@ -23,7 +23,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
@@ -40,7 +40,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class CollectionOnViewPortChangedTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   private fun getLazyCollectionRecyclerView(
       testLithoView: TestLithoView,
@@ -82,8 +82,8 @@ class CollectionOnViewPortChangedTest {
       }
     }
 
-    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
-    lithoViewRule.idle()
+    val testLithoView = mLithoTestRule.render(widthPx = 100, heightPx = 100) { Test() }
+    mLithoTestRule.idle()
 
     assertThat(firstVisibleIndexValue.get()).isEqualTo(0)
     assertThat(lastVisibleIndexValue.get()).isEqualTo(2)
@@ -92,7 +92,7 @@ class CollectionOnViewPortChangedTest {
     assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(1)
 
     val recyclerView = getLazyCollectionRecyclerView(testLithoView, "collection_tag")
-    lithoViewRule.act(testLithoView) {
+    mLithoTestRule.act(testLithoView) {
       // Scroll by a distance less than the item height so the first and last items overlap the
       // edges
       recyclerView?.scrollBy(0, 50)

@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -31,14 +31,14 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class StateEqualityTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun `same state with same value is equal`() {
     val stateBox = AtomicReference<State<Int>>()
 
     val testView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox)
         }
 
@@ -57,7 +57,7 @@ class StateEqualityTest {
     val stateBox1 = AtomicReference<State<Int>>()
     val stateBox2 = AtomicReference<State<Int>>()
 
-    lithoViewRule.render {
+    mLithoTestRule.render {
       StateBoxComponent(
           initialState1 = 1, initialState2 = 1, stateBox1 = stateBox1, stateBox2 = stateBox2)
     }
@@ -68,7 +68,7 @@ class StateEqualityTest {
   @Test
   fun `same state with different values is not equal`() {
     val stateBox = AtomicReference<State<Int>>()
-    lithoViewRule.render {
+    mLithoTestRule.render {
       StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox)
     }
 
@@ -85,14 +85,14 @@ class StateEqualityTest {
   @Test
   fun `same state from different trees is not equal`() {
     val stateBox = AtomicReference<State<Int>>()
-    lithoViewRule.render {
+    mLithoTestRule.render {
       StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox)
     }
 
     val firstState = stateBox.get()
     stateBox.set(null)
 
-    lithoViewRule.render {
+    mLithoTestRule.render {
       StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox)
     }
 
@@ -105,7 +105,7 @@ class StateEqualityTest {
   fun `same state with different keys is not equal`() {
     val stateBox1 = AtomicReference<State<Int>>()
     val stateBox2 = AtomicReference<State<Int>>()
-    lithoViewRule.render {
+    mLithoTestRule.render {
       Column {
         child(StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox1))
         child(StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox2))

@@ -20,7 +20,7 @@ import android.graphics.Color
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.SolidColor
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.visibility.onVisible
 import com.facebook.rendercore.px
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class VisibilityExtensionTest {
 
-  @JvmField @Rule var lithoViewRule = LithoViewRule()
+  @JvmField @Rule var mLithoTestRule = LithoTestRule()
 
   @Test
   fun `when litho view is in transient state then visibility event should not be dispatched`() {
@@ -48,10 +48,10 @@ class VisibilityExtensionTest {
     var wasCalled = false
     val component = VisibilityEventCallbackComponent(callback = { wasCalled = true })
 
-    val lithoView = LithoView(lithoViewRule.context)
+    val lithoView = LithoView(mLithoTestRule.context)
     lithoView.setHasTransientState(true)
 
-    lithoViewRule.render(lithoView = lithoView) { component }
+    mLithoTestRule.render(lithoView = lithoView) { component }
 
     assertThat(wasCalled).isFalse
 

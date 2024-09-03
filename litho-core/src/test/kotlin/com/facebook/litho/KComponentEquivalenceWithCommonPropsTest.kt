@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.annotation.SuppressLint
 import com.facebook.litho.config.TempComponentsConfigurations
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.onClick
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class KComponentEquivalenceWithCommonPropsTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Before
   @Throws(Exception::class)
@@ -116,7 +116,7 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
@@ -143,7 +143,7 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun rowWithCommonProps_isEquivalentToWithCommonProps_checksAllFields() {
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
                   .isEquivalentTo(Row(style = Style.alpha(.5f).onClick(action = onClick)) {}))
@@ -168,7 +168,7 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
@@ -195,7 +195,7 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun columnWithCommonProps_isEquivalentToWithCommonProps_checksAllFields() {
     val onClick: (ClickEvent) -> Unit = {}
 
-    with(ComponentScope(lithoViewRule.context)) {
+    with(ComponentScope(mLithoTestRule.context)) {
       assertThat(
               Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
                   .isEquivalentTo(Column(style = Style.alpha(.5f).onClick(action = onClick)) {}))
@@ -221,7 +221,7 @@ class KComponentEquivalenceWithCommonPropsTest {
     val onClick: (ClickEvent) -> Unit = {}
 
     fun Wrapper(style: Style? = null, delegate: () -> Component?): Component =
-        Wrapper.create(lithoViewRule.context).delegate(delegate()).kotlinStyle(style).build()
+        Wrapper.create(mLithoTestRule.context).delegate(delegate()).kotlinStyle(style).build()
 
     assertThat(
             Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
@@ -244,7 +244,7 @@ class KComponentEquivalenceWithCommonPropsTest {
     val onClick: (ClickEvent) -> Unit = {}
 
     fun Wrapper(style: Style? = null, delegate: () -> Component?): Component =
-        Wrapper.create(lithoViewRule.context).delegate(delegate()).kotlinStyle(style).build()
+        Wrapper.create(mLithoTestRule.context).delegate(delegate()).kotlinStyle(style).build()
 
     assertThat(
             Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }

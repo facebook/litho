@@ -22,7 +22,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestViewComponent
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren
@@ -52,11 +52,11 @@ import org.robolectric.util.ReflectionHelpers
 @RunWith(LithoTestRunner::class)
 class VisibilityEventsTest {
 
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
+  @JvmField @Rule val mLithoTestRule: LithoTestRule = LithoTestRule()
 
   @Test
   fun testVisibleEvent() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         Column.create(c)
@@ -68,7 +68,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -86,7 +86,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testNoVisibleEventWhenNotProcessingVisibleOutputs() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         Column.create(c)
@@ -98,7 +98,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -118,7 +118,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleEventWithHeightRatio() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps = mutableListOf<StepInfo>()
     val component =
         Column.create(c)
@@ -130,12 +130,12 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
 
-    val parent = FrameLayout(lithoViewRule.context.androidContext)
+    val parent = FrameLayout(mLithoTestRule.context.androidContext)
     parent.measure(exactly(10), exactly(1000))
     parent.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
 
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setSizePx(exactly(10), exactly(1000))
             .attachToWindow()
@@ -189,7 +189,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleEventWithWidthRatio() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         Column.create(c)
@@ -202,7 +202,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -224,7 +224,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleEventWithHeightAndWidthRatio() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps = mutableListOf<StepInfo>()
     val component =
         Column.create(c)
@@ -237,12 +237,12 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
 
-    val parent = FrameLayout(lithoViewRule.context.androidContext)
+    val parent = FrameLayout(mLithoTestRule.context.androidContext)
     parent.measure(exactly(10), exactly(10))
     parent.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
 
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setSizePx(exactly(10), exactly(10))
             .attachToWindow()
@@ -307,12 +307,12 @@ class VisibilityEventsTest {
 
   @Test
   fun testFocusedOccupiesHalfViewport() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(10).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -320,7 +320,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -332,11 +332,11 @@ class VisibilityEventsTest {
 
   @Test
   fun testFocusedOccupiesLessThanHalfViewport() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component = LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(3).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -344,7 +344,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -356,7 +356,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testMultipleFocusAndUnfocusEvents() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val focusedHandler = EventHandlerTestUtil.create<FocusedVisibleEvent>(2, content)
     val unfocusedHandler = EventHandlerTestUtil.create<UnfocusedVisibleEvent>(3, content)
@@ -372,7 +372,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 8))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -380,7 +380,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -410,7 +410,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testFullImpressionEvent() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         LayoutSpecLifecycleTester.create(c)
@@ -420,7 +420,7 @@ class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -434,7 +434,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibility1fTop() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         LayoutSpecLifecycleTester.create(c)
@@ -445,7 +445,7 @@ class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -459,7 +459,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibility1fBottom() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         LayoutSpecLifecycleTester.create(c)
@@ -469,7 +469,7 @@ class VisibilityEventsTest {
             .heightPx(5)
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -483,7 +483,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testInvisibleEvent() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: List<StepInfo> = mutableListOf()
     val component =
         Column.create(c)
@@ -495,7 +495,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -513,7 +513,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleRectChangedEventItemVisible() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
@@ -526,7 +526,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -560,7 +560,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleRectChangedEventItemNotVisible() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
@@ -574,7 +574,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -594,7 +594,7 @@ class VisibilityEventsTest {
 
   @Test
   fun whenItemIsFullyVisible_VisibleTopAndLeftShouldBe0() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
@@ -607,7 +607,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -626,7 +626,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleRectChangedEventLargeView() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibilityChangedHandler = EventHandlerTestUtil.create<VisibilityChangedEvent>(3, content)
     val root =
@@ -639,7 +639,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -685,7 +685,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleAndInvisibleEvents() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps: MutableList<StepInfo> = mutableListOf()
     val component =
         Column.create(c)
@@ -697,7 +697,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()
@@ -738,7 +738,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testMultipleVisibleEvents() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps1: MutableList<StepInfo> = mutableListOf()
     val steps2: MutableList<StepInfo> = mutableListOf()
     val steps3: MutableList<StepInfo> = mutableListOf()
@@ -751,7 +751,7 @@ class VisibilityEventsTest {
     val root =
         Column.create(c).key("root").child(component1).child(component2).child(component3).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -821,7 +821,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testMultipleVisibleAndInvisibleEvents() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps1: MutableList<StepInfo> = mutableListOf()
     val steps2: MutableList<StepInfo> = mutableListOf()
     val steps3: MutableList<StepInfo> = mutableListOf()
@@ -834,7 +834,7 @@ class VisibilityEventsTest {
     val root =
         Column.create(c).key("root").child(component1).child(component2).child(component3).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -995,7 +995,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testSkipFullyVisible() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps1: MutableList<StepInfo> = mutableListOf()
     val steps2: MutableList<StepInfo> = mutableListOf()
     val steps3: MutableList<StepInfo> = mutableListOf()
@@ -1008,7 +1008,7 @@ class VisibilityEventsTest {
     val root =
         Column.create(c).key("root").child(component1).child(component2).child(component3).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1206,7 +1206,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testDispatchFocusedHandler() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val steps1: MutableList<StepInfo> = mutableListOf()
     val steps2: MutableList<StepInfo> = mutableListOf()
     val steps3: MutableList<StepInfo> = mutableListOf()
@@ -1219,7 +1219,7 @@ class VisibilityEventsTest {
     val root =
         Column.create(c).key("root").child(component1).child(component2).child(component3).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1227,7 +1227,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -1304,7 +1304,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testDetachWithReleasedTreeTriggersInvisibilityItems() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
     val root =
@@ -1317,7 +1317,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1331,7 +1331,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testSetComponentWithDifferentKeyGeneratesVisibilityEvents() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val component1 = TestViewComponent.create(context).key("component1").build()
     val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, component1)
     val invisibleEventHandler1 = EventHandlerTestUtil.create<InvisibleEvent>(2, component1)
@@ -1350,7 +1350,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1358,7 +1358,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -1385,7 +1385,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testSetDifferentComponentTreeWithSameKeysStillCallsInvisibleAndVisibleEvents() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val firstComponent = TestViewComponent.create(context).build()
     val secondComponent = TestViewComponent.create(context).build()
     val visibleEventHandler1 = EventHandlerTestUtil.create<VisibleEvent>(1, firstComponent)
@@ -1403,7 +1403,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1435,7 +1435,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testSetComponentTreeToNullDispatchesInvisibilityEvents() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val component = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
     val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
@@ -1450,7 +1450,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1465,7 +1465,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testTransientStateDoesNotTriggerVisibilityEvents() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val root =
@@ -1478,7 +1478,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1498,7 +1498,7 @@ class VisibilityEventsTest {
 
   @Test
   fun visibilityOutputs_setTransientStateFalse_parentInTransientState_processVisibilityOutputs() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val root =
@@ -1512,7 +1512,7 @@ class VisibilityEventsTest {
             .build()
 
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).build())
             .setRoot(root)
@@ -1520,7 +1520,7 @@ class VisibilityEventsTest {
             .setSizeSpecs(exactly(100), exactly(100))
             .measure()
             .layout()
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -1540,7 +1540,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testRemovingComponentTriggersInvisible() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, content)
     val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, content)
@@ -1554,7 +1554,7 @@ class VisibilityEventsTest {
             .build()
     val root = Column.create(context).child(wrappedContent).build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).build())
             .setRoot(root)
@@ -1576,7 +1576,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testMultipleVisibilityEventsOnSameNode() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val lifecycleTracker1 = LifecycleTracker()
     val lifecycleTracker2 = LifecycleTracker()
     val lifecycleTracker3 = LifecycleTracker()
@@ -1596,7 +1596,7 @@ class VisibilityEventsTest {
             .lifecycleTracker(lifecycleTracker3)
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).build())
             .setRoot(content3)
@@ -1605,7 +1605,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -1663,7 +1663,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testSetVisibilityHint() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val component = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
     val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
@@ -1685,7 +1685,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).build())
             .setRoot(root)
@@ -1694,7 +1694,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -1716,7 +1716,7 @@ class VisibilityEventsTest {
   @Test
   fun testSetVisibilityHintRecursive() {
     // TODO(festevezga, T68365308) - replace with SimpleMountSpecTesterSpec
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val testComponentInner = TestDrawableComponent.create(context).build()
     val visibleEventHandlerInner = EventHandlerTestUtil.create<VisibleEvent>(1, testComponentInner)
     val invisibleEventHandlerInner =
@@ -1732,7 +1732,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).build())
             .setRoot(mountedTestComponentInner)
@@ -1762,7 +1762,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testMultipleVisibleEventsIncrementalMountDisabled() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content1 = TestViewComponent.create(context).build()
     val content2 = TestViewComponent.create(context).build()
     val content3 = TestViewComponent.create(context).build()
@@ -1793,7 +1793,7 @@ class VisibilityEventsTest {
                     .heightPx(5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).incrementalMount(false).build())
             .setRoot(root)
@@ -1832,7 +1832,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testSetVisibilityHintIncrementalMountDisabled() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val component = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(1, component)
     val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(2, component)
@@ -1854,7 +1854,7 @@ class VisibilityEventsTest {
                     .heightPx(10))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).incrementalMount(false).build())
             .setRoot(root)
@@ -1863,7 +1863,7 @@ class VisibilityEventsTest {
             .measure()
             .layout()
     // FocusedVisible requires a measured parent
-    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    val frameLayout = FrameLayout(mLithoTestRule.context.androidContext)
     frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
@@ -1884,7 +1884,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibilityProcessingNoScrollChange() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val root =
@@ -1898,7 +1898,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .useComponentTree(ComponentTree.create(context).incrementalMount(false).build())
             .setRoot(root)
@@ -1914,7 +1914,7 @@ class VisibilityEventsTest {
 
   @Test
   fun setNewComponentTree_noMount_noVisibilityEventsDispatched() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val content = TestViewComponent.create(context).build()
     val visibleEventHandler = EventHandlerTestUtil.create<VisibleEvent>(2, content)
     val invisibleEventHandler = EventHandlerTestUtil.create<InvisibleEvent>(1, content)
@@ -1930,7 +1930,7 @@ class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build()
     val componentTree = ComponentTree.create(context, root).build()
-    val testLithoView = lithoViewRule.createTestLithoView()
+    val testLithoView = mLithoTestRule.createTestLithoView()
     testLithoView.lithoView.componentTree = componentTree
     assertThat(content.dispatchedEventHandlers).doesNotContain(visibleEventHandler)
     content.dispatchedEventHandlers.clear()
@@ -1942,7 +1942,7 @@ class VisibilityEventsTest {
 
   @Test
   fun processVisibility_componentIsMounted() {
-    val context = lithoViewRule.context
+    val context = mLithoTestRule.context
     val textDrawableOutput = Output<Any>()
     val viewOutput = Output<Any>()
     val nullOutput = Output<Any>()
@@ -1955,7 +1955,7 @@ class VisibilityEventsTest {
                     .nullOutput(nullOutput))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(root)
             .attachToWindow()
@@ -1983,7 +1983,7 @@ class VisibilityEventsTest {
 
   @Test
   fun testVisibleEventHorizontalScroll() {
-    val c = lithoViewRule.context
+    val c = mLithoTestRule.context
     val stepsList: MutableList<List<StepInfo>> = mutableListOf()
     val numberOfItems = 2
     val component =
@@ -1992,7 +1992,7 @@ class VisibilityEventsTest {
             .contentProps(createHorizontalScrollChildren(c, numberOfItems, stepsList))
             .build()
     val testLithoView =
-        lithoViewRule
+        mLithoTestRule
             .createTestLithoView()
             .setRoot(component)
             .attachToWindow()

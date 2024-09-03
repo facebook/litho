@@ -21,7 +21,7 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.LithoDebugEvent.LayoutCommitted
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.debug.DebugEvent
 import com.facebook.rendercore.debug.DebugEventDispatcher
@@ -33,7 +33,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class ComponentTreeDebugEventListenerTest {
 
-  @get:Rule val rule = LithoViewRule()
+  @get:Rule val rule = LithoTestRule()
 
   @Test
   fun `should process events if associated with a ComponentTree`() {

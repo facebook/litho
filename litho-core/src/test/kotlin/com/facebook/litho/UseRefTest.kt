@@ -17,8 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LithoViewRule
-import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -30,7 +29,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class UseRefTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun useRef_onMutation_doesNotTriggerLayout() {
@@ -56,7 +55,7 @@ class UseRefTest {
     }
 
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           UseRefTestComponent(logCount = logCount, renderCount = renderCount, seq = 0)
         }
 

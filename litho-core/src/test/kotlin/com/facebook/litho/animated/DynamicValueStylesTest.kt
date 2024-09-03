@@ -23,7 +23,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LithoTestRule
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -37,7 +37,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(RobolectricTestRunner::class)
 class DynamicValueStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val mLithoTestRule = LithoTestRule()
 
   @Test
   fun dynamic_backgroundColor_whenSet_isRespected() {
@@ -45,7 +45,7 @@ class DynamicValueStylesTest {
     val backgroundColorDV: DynamicValue<Int> = DynamicValue<Int>(startValue)
 
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Row(style = Style.width(100.px).height(100.px).backgroundColor(backgroundColorDV))
         }
 
@@ -66,7 +66,7 @@ class DynamicValueStylesTest {
     val alphaDV: DynamicValue<Float> = DynamicValue<Float>(alpha)
 
     val testLithoView =
-        lithoViewRule.render { Row(style = Style.width(100.px).height(100.px).alpha(alphaDV)) }
+        mLithoTestRule.render { Row(style = Style.width(100.px).height(100.px).alpha(alphaDV)) }
 
     assertThat(testLithoView.lithoView.alpha).isEqualTo(alpha)
 
@@ -82,7 +82,7 @@ class DynamicValueStylesTest {
     val translationYDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Row(
               style =
                   Style.width(100.px)
@@ -110,7 +110,7 @@ class DynamicValueStylesTest {
     val rotationDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Row(style = Style.width(100.px).height(100.px).rotation(rotationDV))
         }
 
@@ -129,7 +129,7 @@ class DynamicValueStylesTest {
     val scaleYDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
     val testLithoView =
-        lithoViewRule.render {
+        mLithoTestRule.render {
           Row(style = Style.width(100.px).height(100.px).scaleX(scaleXDV).scaleY(scaleYDV))
         }
 
