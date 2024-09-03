@@ -31,12 +31,12 @@ deps = [
 
 In order to use the @Rule inside of a test class, it needs to be initialised:
 
-```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=start_example end=end_example
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=start_example end=end_example
 ```
 
 Then, within a test, render the component with the help of the `LithoViewRule.render(Component)` method and perform assertions or other actions on the `LithoView` returned by the `render` call:
 
-```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=start_render_example end=end_render_example
+```kotlin file=litho-core/src/test/kotlin/com/facebook/litho/examples/LithoTestRuleExampleTest.kt start=start_render_example end=end_render_example
 ```
 
 ## What next?
