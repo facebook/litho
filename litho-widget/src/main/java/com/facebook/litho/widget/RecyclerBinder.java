@@ -376,9 +376,6 @@ public class RecyclerBinder
         }
       };
 
-  private boolean mPostponeViewRecycle;
-  private int mPostponeViewRecycleDelayMs;
-
   static class RenderCompleteRunnable implements Runnable {
 
     private final EventHandler<RenderCompleteEvent> renderCompleteEventHandler;
@@ -773,8 +770,6 @@ public class RecyclerBinder
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
     mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
-    mPostponeViewRecycle = mRecyclerBinderConfig.postponeViewRecycle;
-    mPostponeViewRecycleDelayMs = mRecyclerBinderConfig.postponeViewRecycleDelayMs;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
     mSnapForPagination = mRecyclerBinderConfig.enableSnapForPagination;
 
@@ -3911,17 +3906,6 @@ public class RecyclerBinder
     @Override
     @GuardedBy("RecyclerBinder.this")
     public void onBindViewHolder(RecyclerBinderViewHolder holder, int position) {
-      if (mPostponeViewRecycle && (holder instanceof BaseViewHolder)) {
-        BaseViewHolder baseViewHolder = (BaseViewHolder) holder;
-        @Nullable Runnable viewRecycledRunnable = baseViewHolder.getViewRecycledRunnable();
-        if (viewRecycledRunnable != null) {
-          // Bind is being called before the (postponed) runnable with view recycle logic was
-          // executed. In this case remove the runnable and execute the recycle logic immediately.
-          mMainThreadHandler.removeCallbacks(viewRecycledRunnable);
-          executePostponedViewRecycle(baseViewHolder);
-          Log.w(TAG, "onBindViewHolder called before viewRecycledRunnable was executed");
-        }
-      }
       final boolean loggingForStartup =
           LithoStartupLogger.isEnabled(mStartupLogger) && !mStartupLoggerAttribution.isEmpty();
       final int normalizedPosition = getNormalizedPosition(position);
@@ -4072,27 +4056,7 @@ public class RecyclerBinder
 
     @Override
     public void onViewRecycled(RecyclerBinderViewHolder holder) {
-      if (mPostponeViewRecycle && (holder instanceof BaseViewHolder)) {
-        BaseViewHolder baseViewHolder = (BaseViewHolder) holder;
-        Runnable viewRecycledRunnable = baseViewHolder.getViewRecycledRunnable();
-        if (viewRecycledRunnable != null) {
-          // If this method is called before previous view recycle was executed,
-          // remove the runnable. This, however, is not expected to happen.
-          mMainThreadHandler.removeCallbacks(viewRecycledRunnable);
-          Log.w(TAG, "onViewRecycled called again before viewRecycledRunnable was executed");
-        }
-        viewRecycledRunnable =
-            new Runnable() {
-              @Override
-              public void run() {
-                executePostponedViewRecycle(baseViewHolder);
-              }
-            };
-        baseViewHolder.setViewRecycledRunnable(viewRecycledRunnable);
-        mMainThreadHandler.postDelayed(viewRecycledRunnable, mPostponeViewRecycleDelayMs);
-      } else {
-        onViewRecycledInternal(holder);
-      }
+      onViewRecycledInternal(holder);
     }
 
     private void onViewRecycledInternal(RecyclerBinderViewHolder holder) {
@@ -4119,13 +4083,6 @@ public class RecyclerBinder
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
-    }
-
-    private void executePostponedViewRecycle(BaseViewHolder viewHolder) {
-      // Execute the view recycle logic and reset the runnable to indicate
-      // that the logic was executed.
-      onViewRecycledInternal(viewHolder);
-      viewHolder.setViewRecycledRunnable(null);
     }
 
     @Override

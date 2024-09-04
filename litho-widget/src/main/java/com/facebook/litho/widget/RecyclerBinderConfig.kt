@@ -90,20 +90,6 @@ data class RecyclerBinderConfig(
      */
     @JvmField val itemViewCacheSize: Int = 0,
     /**
-     * Experimental. Postpones the view recycle logic (unmounts and unbinds) until the next frame
-     * following the scroll. This option is intended for scroll performance optimization of paged
-     * setups as it allows running the expensive logic after the final frame of scroll has been
-     * displayed to the user.
-     */
-    @JvmField val postponeViewRecycle: Boolean = false,
-    /**
-     * Experimental. Specifies the delay in milliseconds for the view recycle runnable if postponing
-     * of the view recycling is enabled.
-     *
-     * @see postponeViewRecycle
-     */
-    @JvmField val postponeViewRecycleDelayMs: Int = 0,
-    /**
      * Set pool for pre-computing and storing [ComponentTree], which can be used to pre-compute and
      * store ComponentTrees before they are inserted in a [RecyclerBinder].
      *
@@ -213,8 +199,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var requestMountForPrefetchedItems = configuration.requestMountForPrefetchedItems
   private var recyclerViewItemPrefetch = configuration.recyclerViewItemPrefetch
   private var itemViewCacheSize = configuration.itemViewCacheSize
-  private var postponeViewRecycle = configuration.postponeViewRecycle
-  private var postponeViewRecycleDelayMs = configuration.postponeViewRecycleDelayMs
   private var hasDynamicItemHeight = configuration.hasDynamicItemHeight
   private var componentsConfiguration = configuration.componentsConfiguration
   private var rangeRatio = configuration.rangeRatio
@@ -249,14 +233,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
 
   fun estimatedViewportCount(estimatedViewportCount: Int?): RecyclerBinderConfigBuilder = also {
     this.estimatedViewportCount = estimatedViewportCount
-  }
-
-  fun postponeViewRecycle(enabled: Boolean): RecyclerBinderConfigBuilder = also {
-    this.postponeViewRecycle = enabled
-  }
-
-  fun postponeViewRecycleDelayMs(delay: Int): RecyclerBinderConfigBuilder = also {
-    this.postponeViewRecycleDelayMs = delay
   }
 
   fun componentWarmer(componentWarmer: ComponentWarmer?): RecyclerBinderConfigBuilder = also {
@@ -301,8 +277,6 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         requestMountForPrefetchedItems = requestMountForPrefetchedItems,
         recyclerViewItemPrefetch = recyclerViewItemPrefetch,
         itemViewCacheSize = itemViewCacheSize,
-        postponeViewRecycle = postponeViewRecycle,
-        postponeViewRecycleDelayMs = postponeViewRecycleDelayMs,
         componentWarmer = componentWarmer,
         estimatedViewportCount = estimatedViewportCount,
         hasDynamicItemHeight = hasDynamicItemHeight,
