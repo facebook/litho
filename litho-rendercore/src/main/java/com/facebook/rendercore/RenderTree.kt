@@ -102,7 +102,8 @@ class RenderTree(
         return
       } else {
         val existingNode = flatList[existingNodeIndex]
-        throw IllegalStateException(
+        throw DuplicateRenderUnitException(
+            newNode.renderUnit.id,
             String.format(
                 Locale.US,
                 """
