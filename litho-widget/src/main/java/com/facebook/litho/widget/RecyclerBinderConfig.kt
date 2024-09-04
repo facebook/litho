@@ -145,10 +145,10 @@ data class RecyclerBinderConfig(
      */
     @JvmField val wrapContent: Boolean = false,
     /**
-     * Turn on this flag would make Recycler stick to the last unseen item while pagination, which
-     * is only supposed to be used in full screen size surfaces like Reels.
+     * The strategy to make Recycler stick to the last unseen item while pagination, which is only
+     * supposed to be used in full screen size surfaces like Reels.
      */
-    @JvmField val enableSnapForPagination: Boolean = false,
+    @JvmField val paginationStrategy: Int = RecyclerBinder.PaginationStrategy.DEFAULT,
 ) {
 
   init {
@@ -205,7 +205,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
   private var wrapContent = configuration.wrapContent
-  private var enableSnapForPagination = configuration.enableSnapForPagination
+  private var paginationStrategy = configuration.paginationStrategy
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -263,10 +263,9 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.wrapContent = wrapContent
   }
 
-  fun enableSnapForPagination(enableSnapForPagination: Boolean): RecyclerBinderConfigBuilder =
-      also {
-        this.enableSnapForPagination = enableSnapForPagination
-      }
+  fun paginationStrategy(strategy: Int): RecyclerBinderConfigBuilder = also {
+    this.paginationStrategy = strategy
+  }
 
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
@@ -284,7 +283,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         layoutHandlerFactory = layoutHandlerFactory,
         enableStableIds = enableStableIds,
         wrapContent = wrapContent,
-        enableSnapForPagination = enableSnapForPagination,
+        paginationStrategy = paginationStrategy,
     )
   }
 }

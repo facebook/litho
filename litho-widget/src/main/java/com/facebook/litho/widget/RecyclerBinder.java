@@ -288,7 +288,7 @@ public class RecyclerBinder
 
   @VisibleForTesting int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
   @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
-  private final boolean mSnapForPagination;
+  private final @PaginationStrategy int mPaginationStrategy;
   private int mCurrentOffset;
   private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
   // The estimated number of items needed to fill the viewport.
@@ -771,7 +771,7 @@ public class RecyclerBinder
     mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
     mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
-    mSnapForPagination = mRecyclerBinderConfig.enableSnapForPagination;
+    mPaginationStrategy = mRecyclerBinderConfig.paginationStrategy;
 
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(builder.componentViewType);
@@ -1180,9 +1180,7 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemInserted(operation.mPosition);
     final boolean shouldUpdate =
         mViewportManager.insertAffectsVisibleRange(operation.mPosition, 1, mEstimatedViewportCount);
-    if (shouldUpdate && mSnapForPagination) {
-      scrollToPosition(mCurrentLastVisiblePosition);
-    }
+    maybeScrollToTarget(operation.mPosition, shouldUpdate);
     mViewportManager.setShouldUpdate(shouldUpdate);
   }
 
@@ -1411,9 +1409,7 @@ public class RecyclerBinder
 
     boolean shouldAffectVisibleRange =
         mViewportManager.insertAffectsVisibleRange(position, 1, mEstimatedViewportCount);
-    if (shouldAffectVisibleRange && mSnapForPagination) {
-      scrollToPosition(mCurrentLastVisiblePosition);
-    }
+    maybeScrollToTarget(position, shouldAffectVisibleRange);
     mViewportManager.setShouldUpdate(shouldAffectVisibleRange);
   }
 
@@ -1545,10 +1541,24 @@ public class RecyclerBinder
     boolean shouldAffectVisibleRange =
         mViewportManager.insertAffectsVisibleRange(
             position, renderInfos.size(), mEstimatedViewportCount);
-    if (shouldAffectVisibleRange && mSnapForPagination) {
-      scrollToPosition(mCurrentLastVisiblePosition);
-    }
+    maybeScrollToTarget(position, shouldAffectVisibleRange);
     mViewportManager.setShouldUpdate(shouldAffectVisibleRange);
+  }
+
+  private void maybeScrollToTarget(int position, boolean shouldAffectVisibleRange) {
+    if (mPaginationStrategy == PaginationStrategy.SCROLL_TO_LAST_VISIBLE
+        && shouldAffectVisibleRange) {
+      scrollToPosition(mCurrentLastVisiblePosition);
+    } else if (mPaginationStrategy == PaginationStrategy.SCROLL_TO_INSERT_POSITION
+        // We want to only handle the situation where items are inserted right above the last
+        // loading item. This means that the start position of insertion should be exactly at the
+        // currently visible position.
+        && (position == mCurrentLastVisiblePosition)
+        // 2. We don't want to interrupt users' scrolling behavior, more specifically when the
+        // loading item is half visible.
+        && (mCurrentFirstVisiblePosition == mCurrentLastVisiblePosition)) {
+      scrollToPosition(position);
+    }
   }
 
   /** See {@link RecyclerBinder#updateItemAt(int, Component)}. */
@@ -3690,6 +3700,17 @@ public class RecyclerBinder
 
     int DEFAULT = 0;
     int RETAIN_MAXIMUM_RANGE = 1;
+  }
+
+  @IntDef({
+    PaginationStrategy.DEFAULT,
+    PaginationStrategy.SCROLL_TO_LAST_VISIBLE,
+    PaginationStrategy.SCROLL_TO_INSERT_POSITION
+  })
+  public @interface PaginationStrategy {
+    int DEFAULT = 0;
+    int SCROLL_TO_LAST_VISIBLE = 1;
+    int SCROLL_TO_INSERT_POSITION = 2;
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
