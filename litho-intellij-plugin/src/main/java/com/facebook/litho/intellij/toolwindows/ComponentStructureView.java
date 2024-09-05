@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.toolwindows;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -58,6 +59,7 @@ import javax.swing.JTextArea;
 import org.jetbrains.annotations.Nullable;
 
 /** Service creates structure view reflecting {@link ComponentTreeModel}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ComponentStructureView implements Disposable {
   private static final JComponent STUB;
 
@@ -68,6 +70,7 @@ class ComponentStructureView implements Disposable {
                 + " MountSpec, GroupSectionSpec, DiffSectionSpec)");
     text.setLineWrap(true);
     text.setEditable(false);
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     text.setBackground(null);
     text.setWrapStyleWord(true);
     text.setFont(UIUtil.getLabelFont());
@@ -94,6 +97,7 @@ class ComponentStructureView implements Disposable {
   @Override
   public void dispose() {
     contentManager = null;
+    // NULLSAFE_FIXME[Nullable Dereference]
     contentContainer.dispose();
     contentContainer = null;
     dispose(structureView);
@@ -179,6 +183,7 @@ class ComponentStructureView implements Disposable {
             .map(ComponentGenerateService.getInstance()::getOrCreateSpecModel)
             .map(
                 model -> {
+                  // NULLSAFE_FIXME[Parameter Not Nullable]
                   structureView = createStructureView(model, selectedEditor, selectedFile, project);
                   data.put(EventLogger.KEY_RESULT, "success");
                   return structureView.getComponent();
