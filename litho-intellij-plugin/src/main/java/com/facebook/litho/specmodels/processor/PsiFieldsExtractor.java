@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.intellij.psi.PsiClass;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Extractor provides {@link FieldModel}s. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class PsiFieldsExtractor {
 
   /**
