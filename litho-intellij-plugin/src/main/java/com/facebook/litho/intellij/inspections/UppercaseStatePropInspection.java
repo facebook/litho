@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.InspectionManager;
@@ -31,10 +32,12 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class UppercaseStatePropInspection extends AbstractBaseJavaLocalInspectionTool {
 
   @Nullable
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public ProblemDescriptor[] checkMethod(
       @NotNull PsiMethod method, @NotNull InspectionManager manager, boolean isOnTheFly) {
     if (!LithoPluginUtils.isLithoSpec(method.getContainingClass())) {
