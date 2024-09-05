@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.extensions;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import java.util.Map;
  *
  * @see "plugin.xml"
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface EventLogger {
   String PLUGIN_ID = "com.facebook.litho.intellij";
   // Metadata keys
