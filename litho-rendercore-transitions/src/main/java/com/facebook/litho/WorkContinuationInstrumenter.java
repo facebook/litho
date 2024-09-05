@@ -17,12 +17,14 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Utility class that allows to capture work continuation updates. Client code can specify a custom
  * {@link Instrumenter} that will receive ad-hoc updates when work that has to be executed across
  * threads gets moved around.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class WorkContinuationInstrumenter {
 
   /** Allows to record work being continued across threads. */
