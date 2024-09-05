@@ -16,9 +16,11 @@
 
 package com.facebook.litho.intellij;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.vcs.log.util.StopWatch;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IntervalLogger {
   private final Logger logger;
   private long start;
