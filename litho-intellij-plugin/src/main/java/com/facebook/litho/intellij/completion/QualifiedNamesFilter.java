@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.completion.PrioritizedLookupElement;
@@ -25,6 +26,7 @@ import com.intellij.psi.PsiClass;
 import java.util.Collection;
 import java.util.Optional;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class QualifiedNamesFilter implements LookupElementFilter {
   private Collection<String> replacedQualifiedNames;
   private InsertHandler<LookupElement> insertHandler;
