@@ -22,7 +22,9 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.R;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AccessibilityUtils {
 
   private static final String ACCESSIBILITY_ROLE_BUTTON = "Button";
