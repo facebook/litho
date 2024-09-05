@@ -16,7 +16,10 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** A {@link RuntimeValue} for a float property like scale or alpha. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FloatValue implements RuntimeValue {
 
   private final float mValue;
