@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -45,6 +46,7 @@ import java.util.Set;
  *
  * @see MountSpecModelFactory
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountSpecMethodAnnotationsProvider extends CompletionProvider<CompletionParameters> {
   static final CompletionProvider<CompletionParameters> INSTANCE =
       new MountSpecMethodAnnotationsProvider();
