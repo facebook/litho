@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.treeprops
 
-import android.graphics.Typeface
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -25,11 +24,11 @@ import com.facebook.litho.kotlin.widget.Text
 
 class TreePropsChildComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     // using_tree_prop_start
+    val typeface = typefaceTreeProp.value
+    val title = titleTreeProp.value
     val color = getTreeProp<Int>()
-    val typeface = getTreeProp<Typeface>()
-    val title = getTreeProp<String>()
     // using_tree_prop_end
     return Text(text = title, typeface = typeface, backgroundColor = color)
   }

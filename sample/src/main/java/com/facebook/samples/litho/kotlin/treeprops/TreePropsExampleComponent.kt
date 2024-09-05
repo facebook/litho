@@ -21,15 +21,24 @@ import android.graphics.Typeface
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.TreeProp
 import com.facebook.litho.TreePropProvider
+import com.facebook.litho.legacyTreePropOf
+import com.facebook.litho.treePropOf
+
+// declaring_tree_prop_recommended_start
+val typefaceTreeProp: TreeProp<Typeface> = treePropOf { error("No default value supplied") }
+val titleTreeProp: TreeProp<String?> = legacyTreePropOf()
+
+// declaring_tree_prop_recommended_end
 
 class TreePropsExampleComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
     // declaring_tree_prop_start
     return TreePropProvider(
-        Typeface::class.java to Typeface.DEFAULT_BOLD,
-        String::class.java to getTextTitle(),
-        Int::class.java to Color.RED) {
+        typefaceTreeProp to Typeface.DEFAULT_BOLD,
+        titleTreeProp to getTextTitle(),
+        legacyTreePropOf<Int>() to Color.RED) {
           TreePropsChildComponent()
         }
     // declaring_tree_prop_end
