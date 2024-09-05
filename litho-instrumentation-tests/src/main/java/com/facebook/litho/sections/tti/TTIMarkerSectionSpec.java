@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.tti;
 
 import android.widget.Toast;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
@@ -33,6 +34,7 @@ import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @GroupSectionSpec
 public class TTIMarkerSectionSpec {
 
