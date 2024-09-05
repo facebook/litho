@@ -18,6 +18,7 @@ package com.facebook.litho.sections.tti;
 
 import android.app.Activity;
 import android.os.Bundle;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -26,6 +27,7 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TTIMarkerActivity extends Activity {
 
   @Override
