@@ -17,20 +17,30 @@ A tree prop is a special type of prop that is transparently passed from a parent
 
 A TreeProp is a special type of prop which is transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass `val` properties to every component in your hierarchy.
 
-### Declaring a Tree Prop
+### Declaring and Installing a Tree Prop
 
-In order to declare a TreeProp you need to use `TreePropProvider`:
+TreeProps must first be declared using reusable Kotlin properties.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/treeprops/TreePropsExampleComponent.kt start=declaring_tree_prop_recommended_start end=declaring_tree_prop_recommended_end
+```
+
+Afterwards, they may be installed via the `TreePropProvider` API
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/treeprops/TreePropsExampleComponent.kt start=declaring_tree_prop_start end=declaring_tree_prop_end
 ```
 
+`legacyTreePropOf` API enables interop with the old class-based system of declaring TreeProps and may be declared inline at installation site.
+While it's still possible to use `T::class.java` directly, it is highly discouraged as it may introduce subtle bugs arising from Kotlin's strict type system, especially with primitives.
+
 :::note
-You can only declare one TreeProp for any one given type. If a child of ParentComponent also defines a TreeProp of the given type, it will override the value of that TreeProp for all its children (but not for itself).
+The legacy APIs allow declaring one TreeProp for any one given type. If a child of ParentComponent also defines a TreeProp of the given type, it will override the value of that TreeProp for all its children (but not for itself).
+
+This limitation does not apply to the `treePropOf` API
 :::
 
 ### Using a Tree Prop
 
-The child component can access the TreeProp value through a `ComponentScope.getTreeProp<>()` method that has the same type that was declared in the parents `TreePropProvider` call:
+The child component can access the TreeProp value by invoking the `value` of a previously declared TreeProp. In addition, child components may also use the `ComponentScope.getTreeProp<>()` method for interop with the legacy system.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/treeprops/TreePropsChildComponent.kt start=using_tree_prop_start end=using_tree_prop_end
 ```
