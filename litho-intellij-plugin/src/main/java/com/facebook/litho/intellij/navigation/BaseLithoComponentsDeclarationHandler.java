@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.navigation;
 
 import static com.facebook.litho.intellij.LithoPluginUtils.isKotlinPluginAvailable;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -42,6 +43,7 @@ import org.jetbrains.kotlin.idea.references.KtSimpleNameReference;
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression;
 
 /** Utility class helping resolve component class to componentSpec class. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class BaseLithoComponentsDeclarationHandler {
   static final EventLogger logger = new DebounceEventLogger(4_000);
 
@@ -90,6 +92,7 @@ class BaseLithoComponentsDeclarationHandler {
         // Filter Spec classes by implementation
         .filter(hasComponentSpecAnnotation)
         .limit(1)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .peek(
             psiClass -> {
               final Map<String, String> data = new HashMap<>();
