@@ -17,6 +17,7 @@
 package com.facebook.rendercore.testing.match;
 
 import android.annotation.SuppressLint;
+import com.facebook.infer.annotation.Nullsafe;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import org.assertj.core.api.Java6Assertions;
  *   node.assertMatches(new GradientDrawable()); // fails
  * </pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MatchNode {
 
   public static MatchNode forType(Class type) {
@@ -99,6 +101,7 @@ public class MatchNode {
   public final void assertMatches(Object o, DebugTraceContext debugContext) {
     debugContext.mNodes.add(this);
 
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     Java6Assertions.assertThat(o)
         .describedAs(getDescription("Expecting type " + mType))
         .isInstanceOf(mType);
@@ -110,11 +113,14 @@ public class MatchNode {
         ((MatchNode) expected).assertMatches(actual, debugContext);
       } else if (expected instanceof MatchNodeList) {
         final MatchNodeList expectedList = (MatchNodeList) expected;
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         Java6Assertions.assertThat(actual)
             .describedAs(getDescription("Field " + prop.getKey() + " is not a List."))
             .isInstanceOf(List.class);
         final List actualList = (List) actual;
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         Java6Assertions.assertThat(actualList)
+            // NULLSAFE_FIXME[Not Vetted Third-Party]
             .describedAs("Size of list on field " + prop.getKey())
             .hasSize(expectedList.getList().size());
 
@@ -124,6 +130,7 @@ public class MatchNode {
       } else if (expected instanceof PropAssertion) {
         ((PropAssertion) expected).doAssert(actual);
       } else {
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         Java6Assertions.assertThat(actual)
             .describedAs(getDescription("Comparing field '" + prop.getKey() + "' on " + o))
             .isEqualTo(expected);
@@ -156,6 +163,7 @@ public class MatchNode {
     try {
       final Method method = type.getMethod(methodName);
       method.setAccessible(true);
+      // NULLSAFE_FIXME[Return Not Nullable]
       return method.invoke(o);
     } catch (NoSuchMethodException e) {
       // We deal with this below
@@ -166,6 +174,7 @@ public class MatchNode {
     try {
       final Method method = type.getMethod(propName);
       method.setAccessible(true);
+      // NULLSAFE_FIXME[Return Not Nullable]
       return method.invoke(o);
     } catch (NoSuchMethodException e) {
       // We deal with this below
