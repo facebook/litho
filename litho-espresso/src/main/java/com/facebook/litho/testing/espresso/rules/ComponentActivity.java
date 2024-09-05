@@ -17,6 +17,7 @@
 package com.facebook.litho.testing.espresso.rules;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
@@ -24,6 +25,7 @@ import com.facebook.litho.LithoView;
 /**
  * An Activity that hosts a Component in a LithoView. Used for instrumentation and screenshot tests.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentActivity extends AppCompatActivity {
 
   /** Sets or replaces the Component being rendered in this Activity. */
