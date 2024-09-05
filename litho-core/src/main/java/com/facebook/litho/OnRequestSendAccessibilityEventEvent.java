@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -27,10 +28,15 @@ import com.facebook.litho.annotations.Event;
  * androidx.core.view.AccessibilityDelegateCompat#onRequestSendAccessibilityEvent( ViewGroup, View,
  * AccessibilityEvent)}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event(returnType = boolean.class)
 public class OnRequestSendAccessibilityEventEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public ViewGroup host;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public View child;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public AccessibilityEvent event;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public AccessibilityDelegateCompat superDelegate;
 }
