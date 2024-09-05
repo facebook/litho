@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.actions;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -23,6 +24,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.psi.PsiFile;
 import java.util.Optional;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class LithoGenerateGroup extends DefaultActionGroup {
 
   @Override
