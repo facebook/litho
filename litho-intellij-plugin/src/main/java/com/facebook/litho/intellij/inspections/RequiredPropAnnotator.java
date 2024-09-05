@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -56,6 +57,7 @@ import org.jetbrains.annotations.Nullable;
  * Annotator adds error to the {@code Component.create()} call in a statement, when this statement
  * misses required prop.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class RequiredPropAnnotator implements Annotator {
   private static final EventLogger LOGGER = new DebounceEventLogger(60 * 60_000);
   static final Function<PsiMethodCallExpression, PsiClass> GENERATED_CLASS_RESOLVER =
