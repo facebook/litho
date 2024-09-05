@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.actions.templates;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.ActionPostProcess;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.Icon;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoTemplateAction extends CreateFileFromTemplateAction {
   private static final Icon ICON = AllIcons.Nodes.AbstractClass;
   private final String templateName;
@@ -94,6 +96,7 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
       name = LithoPluginUtils.getLithoComponentNameFromSpec(name);
     }
     // templateMap is populated in #buildDialog step
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     final PsiFile file = super.createFileFromTemplate(name, templateMap.get(templateName), dir);
     // Kotlin class isn't adjusted to be the same as Kotlin filename, which Java is. Hence, we need
     // to make the class and file names the same
@@ -101,6 +104,7 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
       final String nameWithoutSuffix = name;
       WriteAction.run(
           () -> {
+            // NULLSAFE_FIXME[Nullable Dereference]
             file.setName(nameWithoutSuffix.concat(classNameSuffix).concat(".kt"));
           });
     }
