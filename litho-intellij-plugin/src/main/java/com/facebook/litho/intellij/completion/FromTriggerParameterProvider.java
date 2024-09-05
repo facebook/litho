@@ -16,11 +16,14 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnTrigger;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FromTriggerParameterProvider {
   static final CompletionProvider<CompletionParameters> INSTANCE =
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       new FromParameterProvider(OnTrigger.class.getTypeName(), "FromTrigger");
 }
