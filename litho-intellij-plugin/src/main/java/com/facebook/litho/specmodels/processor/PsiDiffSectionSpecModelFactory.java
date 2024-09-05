@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.sections.specmodels.processor.DiffSectionSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
@@ -37,6 +38,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiDiffSectionSpecModelFactory {
   private final List<Class<? extends Annotation>> mDiffSectionSpecDelegateMethodAnnotations;
   private final SpecGenerator<DiffSectionSpecModel> mDiffSectionSpecGenerator;
