@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.treeprops;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.sections.Children;
@@ -24,6 +25,7 @@ import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.common.SingleComponentSection;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @GroupSectionSpec
 public class BottomGroupSectionSpec {
 
