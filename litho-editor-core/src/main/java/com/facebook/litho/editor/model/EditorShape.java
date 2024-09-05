@@ -16,10 +16,12 @@
 
 package com.facebook.litho.editor.model;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 /** Wraps over a shape to make it an EditorValue */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class EditorShape extends EditorValue {
 
   public final Map<String, EditorValue> value;
