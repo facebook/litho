@@ -18,6 +18,7 @@ package com.facebook.litho.testing.espresso;
 
 import android.app.Activity;
 import androidx.test.rule.ActivityTestRule;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -31,6 +32,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
  *     new LithoActivityTestRule<>(DemoListActivity.class);
  * }</pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
   public LithoActivityTestRule(Class<T> activityClass) {
     super(activityClass);
