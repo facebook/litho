@@ -17,10 +17,12 @@
 package com.facebook.litho;
 
 import androidx.annotation.IntDef;
+import com.facebook.infer.annotation.Nullsafe;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Set of events and event params logged by the framework. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface FrameworkLogEvents {
   int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 8;
   int EVENT_INIT_RANGE = 20;

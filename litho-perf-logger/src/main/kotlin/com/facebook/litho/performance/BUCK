@@ -23,6 +23,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
     ],
 )
