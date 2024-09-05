@@ -16,6 +16,7 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.TransitionId;
 import javax.annotation.Nullable;
 
@@ -24,6 +25,7 @@ import javax.annotation.Nullable;
  * What property for that transition key that should animate - The value that property should
  * animate to
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PropertyAnimation {
 
   private final PropertyHandle mPropertyHandle;
