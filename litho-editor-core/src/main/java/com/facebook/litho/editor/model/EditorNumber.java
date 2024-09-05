@@ -16,9 +16,11 @@
 
 package com.facebook.litho.editor.model;
 
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
 /** Wraps over a number to make it an EditorValue */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class EditorNumber extends EditorValue {
 
   public final Number value;
