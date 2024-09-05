@@ -51,7 +51,6 @@ object LithoDebugEvent {
   const val StateUpdateEnqueued = "Litho.StateUpdateEnqueued"
   const val RenderOnMainThreadStarted = "RenderOnMainThreadStarted"
   const val ComponentResolved = "Litho.Resolve.ComponentResolved"
-  const val ComponentResolveStart = "Litho.Resolve.ComponentResolved.Start"
   const val ComponentRendered = "Litho.Resolve.ComponentRendered"
   const val ComponentTreeResolve = "Litho.ComponentTree.Resolve"
   const val ComponentTreeLayout = "Litho.ComponentTree.Layout"

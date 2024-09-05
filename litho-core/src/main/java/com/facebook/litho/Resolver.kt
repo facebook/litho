@@ -20,13 +20,11 @@ import androidx.annotation.IntDef
 import androidx.annotation.VisibleForTesting
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.debug.LithoDebugEvent
-import com.facebook.litho.debug.LithoDebugEvent.ComponentResolveStart
 import com.facebook.litho.debug.LithoDebugEventAttributes
 import com.facebook.litho.layout.LayoutDirection
 import com.facebook.litho.transition.MutableTransitionData
 import com.facebook.litho.transition.TransitionData
 import com.facebook.rendercore.debug.DebugEventAttribute
-import com.facebook.rendercore.debug.DebugEventDispatcher
 import com.facebook.rendercore.debug.DebugEventDispatcher.trace
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import java.util.ArrayList
@@ -148,14 +146,6 @@ object Resolver {
               attributes[LithoDebugEventAttributes.Component] = component.simpleName
               attributes[DebugEventAttribute.Name] = component.simpleName
             }) {
-              DebugEventDispatcher.dispatch(
-                  ComponentResolveStart,
-                  { resolveContext.treeId.toString() },
-                  { attributes ->
-                    attributes[LithoDebugEventAttributes.Component] = component.simpleName
-                    attributes[DebugEventAttribute.Name] = component.simpleName
-                  })
-
               if (isTracing) {
                 ComponentsSystrace.beginSection("create-node:${component.simpleName}")
               }
