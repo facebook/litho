@@ -59,6 +59,7 @@ class LayoutTreeFuture(
           attrs[LithoDebugEventAttributes.Root] = resolveResult.component.simpleName
           attrs[DebugEventAttribute.SizeConstraints] = sizeConstraints.toString()
           attrs[DebugEventAttribute.Version] = version
+          attrs[DebugEventAttribute.Source] = LayoutState.layoutSourceToString(source)
         }) {
           layout(
               resolveResult,
