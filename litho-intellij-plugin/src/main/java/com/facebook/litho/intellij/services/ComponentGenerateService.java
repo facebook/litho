@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.services;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.sections.specmodels.model.GroupSectionSpecModel;
 import com.facebook.litho.specmodels.internal.RunMode;
@@ -45,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
  * Utility class helping to create {@link SpecModel}s from the given file and update generated
  * Component files with the new model.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentGenerateService {
   private static final PsiLayoutSpecModelFactory LAYOUT_SPEC_MODEL_FACTORY =
       new PsiLayoutSpecModelFactory();
@@ -56,6 +58,7 @@ public class ComponentGenerateService {
       new PsiDiffSectionSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
   private final Map<String, SpecModel> specFqnToModelMap =
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       Collections.synchronizedMap(createLRUMap(50));
 
   public interface SpecUpdateNotifier {
