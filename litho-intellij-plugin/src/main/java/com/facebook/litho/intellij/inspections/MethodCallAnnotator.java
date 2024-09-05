@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.inspections;
 
 import static com.facebook.litho.intellij.LithoPluginUtils.resolveEventName;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.PsiSearchUtils;
@@ -48,6 +49,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Annotator creates quick fix to add existing EventHandler to the method without arguments. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MethodCallAnnotator implements Annotator {
   private static final IntervalLogger DEBUG_LOGGER =
       new IntervalLogger(Logger.getInstance(MethodCallAnnotator.class));
@@ -101,6 +103,7 @@ public class MethodCallAnnotator implements Annotator {
 
     final List<IntentionAction> fixes =
         implementedEventHandlers.stream()
+            // NULLSAFE_FIXME[Nullable Dereference]
             .filter(handler -> eventQualifiedName.equals(handler.typeModel.getReflectionName()))
             .map(handler -> handler.name.toString())
             .distinct()
