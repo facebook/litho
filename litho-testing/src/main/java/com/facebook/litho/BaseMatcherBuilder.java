@@ -16,10 +16,12 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class BaseMatcherBuilder {
   private BaseMatcherBuilder() {}
 
@@ -34,6 +36,7 @@ public final class BaseMatcherBuilder {
                 : null;
         if (matcher.mClickHandlerMatcher != null
             && commonProps != null
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             && !matcher.mClickHandlerMatcher.matches(commonProps.getClickHandler())) {
           as(
               new TextDescription(
@@ -44,6 +47,7 @@ public final class BaseMatcherBuilder {
 
         if (matcher.mLongClickHandlerMatcher != null
             && commonProps != null
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             && !matcher.mLongClickHandlerMatcher.matches(commonProps.getLongClickHandler())) {
           as(
               new TextDescription(
@@ -54,6 +58,7 @@ public final class BaseMatcherBuilder {
 
         if (matcher.mFocusChangeHandlerMatcher != null
             && commonProps != null
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             && !matcher.mFocusChangeHandlerMatcher.matches(commonProps.getFocusChangeHandler())) {
           as(
               new TextDescription(
@@ -64,6 +69,7 @@ public final class BaseMatcherBuilder {
 
         if (matcher.mTouchEventHandlerMatcher != null
             && commonProps != null
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             && !matcher.mTouchEventHandlerMatcher.matches(commonProps.getTouchHandler())) {
           as(
               new TextDescription(
@@ -75,6 +81,7 @@ public final class BaseMatcherBuilder {
         if (matcher.mInterceptTouchHandlerMatcher != null
             && commonProps != null
             && !matcher.mInterceptTouchHandlerMatcher.matches(
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 commonProps.getInterceptTouchHandler())) {
           as(
               new TextDescription(
@@ -95,6 +102,7 @@ public final class BaseMatcherBuilder {
 
         if (matcher.mTransitionKey != null
             && commonProps != null
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             && !matcher.mTransitionKey.matches(commonProps.getTransitionKey())) {
           as(
               new TextDescription(
