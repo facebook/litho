@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.specmodels;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -53,6 +54,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /** An implementation of SpecModel + Builder for testing purposes only. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Immutable
 public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecModel {
   private final String mSpecName;
@@ -228,6 +230,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
   @Override
   @Nullable
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
     return mWorkingRangeRegisterMethod;
   }
@@ -438,10 +441,15 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   public static final class Builder {
+    // NULLSAFE_FIXME[Field Not Initialized]
     private String mSpecName;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private ClassName mSpecTypeName;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private String mComponentName;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private TypeName mComponentTypeName;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private ClassName mComponentClass;
     private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods =
         ImmutableList.of();
@@ -449,6 +457,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
         ImmutableList.of();
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods =
         ImmutableList.of();
+    // NULLSAFE_FIXME[Field Not Initialized]
     private SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterMethod;
     private ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethods = ImmutableList.of();
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods =
@@ -466,24 +475,35 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private ImmutableList<EventDeclarationModel> mEventDeclarations = ImmutableList.of();
     private ImmutableList<BuilderMethodModel> mImplicitBuilderMethods = ImmutableList.of();
     private ImmutableList<RenderDataDiffModel> mDiffs = ImmutableList.of();
+    // NULLSAFE_FIXME[Field Not Initialized]
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs = ImmutableList.of();
     private boolean mIsPublic;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private Object mRepresentedObject;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private TypeSpec mGeneratedTypeSpec;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private ClassName mContextClass;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private ClassName mStateContainerClass;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private ClassName mTransitionClass;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private ClassName mTransitionContainerClass;
     private boolean mHasDeepCopy;
     private boolean mShouldCheckIdInIsEquivalentToMethod;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private String mScopeMethodName;
     private boolean mIsStylingSupported;
     private List<SpecModelValidationError> mSpecModelValidationErrors = ImmutableList.of();
+    // NULLSAFE_FIXME[Field Not Initialized]
     private ImmutableList<AnnotationSpec> mClassAnnotations;
     private ImmutableList<TagModel> mTags = ImmutableList.of();
+    // NULLSAFE_FIXME[Field Not Initialized]
     private SpecElementType mSpecElementType;
     private boolean mIsPureRender;
+    // NULLSAFE_FIXME[Field Not Initialized]
     private SpecModel mEnclosedSpecModel;
 
     public Builder specName(String specName) {
