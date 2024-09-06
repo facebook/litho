@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.SnapHelper;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.Component.ContainerBuilder;
@@ -115,6 +116,7 @@ import kotlin.Unit;
  * @see Section
  * @see GroupSectionSpec
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
 
@@ -201,6 +203,7 @@ public class RecyclerCollectionComponentSpec {
       @State RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandler,
       @State SnapHelper snapHelper) {
     // This is a side effect from OnCreateLayout, so it's inherently prone to race conditions:
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
 
     // More side effects in OnCreateLayout. Watch out:
@@ -567,6 +570,7 @@ public class RecyclerCollectionComponentSpec {
 
   static class RecyclerCollectionLoadEventsHandler extends BaseLoadEventsHandler {
 
+    // NULLSAFE_FIXME[Field Not Initialized]
     private LoadEventsHandler mDelegate;
     private LoadingState mLastState = LoadingState.LOADING;
     private final ComponentContext mComponentContext;
