@@ -16,6 +16,9 @@
 
 package com.facebook.litho.testing.viewtree;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LevenshteinDistance {
   /**
    * Efficient version of Levenshtein Distance Algorithm. It saves CPU by returning early if the
