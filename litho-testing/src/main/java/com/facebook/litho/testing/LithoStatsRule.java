@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.stats.LithoStats;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -25,6 +26,7 @@ import org.junit.runners.model.Statement;
  * This rule resets the litho stats counters {@link LithoStats#resetAllCounters} after every test,
  * and provides utilities methods to get the litho stats.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoStatsRule implements TestRule {
 
   @Override
