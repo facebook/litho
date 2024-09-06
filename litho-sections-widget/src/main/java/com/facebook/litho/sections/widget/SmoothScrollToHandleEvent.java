@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Px;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Handle;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
@@ -25,9 +26,12 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
  * An event that is triggered when a smooth scroll action to a section with a given Handle is
  * requested.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class SmoothScrollToHandleEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Handle target;
   public @Px int offset;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public SmoothScrollAlignmentType type;
 }
