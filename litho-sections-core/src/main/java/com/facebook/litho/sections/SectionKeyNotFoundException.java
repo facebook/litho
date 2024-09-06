@@ -16,6 +16,9 @@
 
 package com.facebook.litho.sections;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SectionKeyNotFoundException extends RuntimeException {
 
   public SectionKeyNotFoundException() {}
