@@ -81,7 +81,7 @@ fun Size(width: Int, height: Int): Size {
  * Returns the current size if it's valid. Otherwise executes [action] lambda and returns its
  * result.
  */
-inline fun Size.getOrElse(action: () -> Size): Size {
+inline fun Size.getOrElse(crossinline action: () -> Size): Size {
   return if (isValid) {
     this
   } else {

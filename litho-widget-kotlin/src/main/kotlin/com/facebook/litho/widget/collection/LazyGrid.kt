@@ -77,7 +77,7 @@ inline fun ResourcesScope.LazyGrid(
     shouldExcludeFromIncrementalMount: Boolean = false,
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
-    init: LazyGridScope.() -> Unit
+    crossinline init: LazyGridScope.() -> Unit
 ): Component {
   val lazyGridScope = LazyGridScope(context).apply { init() }
   return LazyCollection(

@@ -82,7 +82,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
         StaggeredGridRecyclerConfiguration.Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY,
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
-    init: LazyGridScope.() -> Unit
+    crossinline init: LazyGridScope.() -> Unit
 ): Component {
   val lazyStaggeredGridScope = LazyGridScope(context).apply { init() }
   return LazyCollection(

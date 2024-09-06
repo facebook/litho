@@ -66,7 +66,7 @@ inline fun ResourcesScope.VerticalScroll(
     noinline onScrollStateChange: ((View, Int) -> Unit)? = null,
     noinline onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     style: Style? = null,
-    child: ResourcesScope.() -> Component
+    crossinline child: ResourcesScope.() -> Component
 ): Component {
   return if (context.isPrimitiveVerticalScrollEnabled) {
     return VerticalScrollComponent(
