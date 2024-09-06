@@ -16,6 +16,9 @@
 
 package com.facebook.litho.sections;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SectionsDebugParams {
 
   public static final String SECTION_GLOBAL_KEY = "section_global_key";
