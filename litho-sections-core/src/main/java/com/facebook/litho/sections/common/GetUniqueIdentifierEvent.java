@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 
@@ -23,7 +24,9 @@ import com.facebook.litho.annotations.EventHandlerRebindMode;
  * This event is triggered by {@link HideableDataDiffSectionSpec} when it needs to get a unique
  * identifier for the edge model provided.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event(returnType = Object.class, mode = EventHandlerRebindMode.NONE)
 public class GetUniqueIdentifierEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Object model;
 }
