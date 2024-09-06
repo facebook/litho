@@ -20,7 +20,6 @@ litho_android_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = [],
     language = "JAVA",
-    nullchecker_mode = "log",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],
@@ -28,8 +27,9 @@ litho_android_library(
     visibility = [
         "PUBLIC",
     ],
-    deps = LITHO_FRESCO_TARGETS + [
-        LITHO_OSS_TARGET,
-    ],
+    deps =
+        LITHO_FRESCO_TARGETS + [
+            LITHO_OSS_TARGET,
+        ],
     exported_deps = LITHO_FRESCO_EXPORTED_TARGETS,
 )
