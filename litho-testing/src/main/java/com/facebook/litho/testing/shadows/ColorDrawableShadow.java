@@ -18,6 +18,7 @@ package com.facebook.litho.testing.shadows;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
+import com.facebook.infer.annotation.Nullsafe;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.RealObject;
@@ -27,9 +28,11 @@ import org.robolectric.shadows.ShadowDrawable;
  * Shadows a {@link ColorDrawable} to support of drawing its description on a {@link
  * org.robolectric.shadows.ShadowCanvas}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Implements(value = ColorDrawable.class)
 public class ColorDrawableShadow extends ShadowDrawable {
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   @RealObject private ColorDrawable mRealColorDrawable;
 
   @Implementation
