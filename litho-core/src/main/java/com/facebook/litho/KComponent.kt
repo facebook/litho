@@ -162,7 +162,7 @@ abstract class KComponent : Component() {
  * key("my_key") { Text(...) }
  * ```
  */
-inline fun key(key: String, componentLambda: () -> Component): Component {
+inline fun key(key: String, crossinline componentLambda: () -> Component): Component {
   val component = componentLambda()
   setKeyForComponentInternal(component, key)
   return component
@@ -175,7 +175,7 @@ inline fun key(key: String, componentLambda: () -> Component): Component {
  * handle(Handle()) { Text(...) }
  * ```
  */
-inline fun handle(handle: Handle, componentLambda: () -> Component): Component {
+inline fun handle(handle: Handle, crossinline componentLambda: () -> Component): Component {
   val component = componentLambda()
   setHandleForComponentInternal(component, handle)
   return component

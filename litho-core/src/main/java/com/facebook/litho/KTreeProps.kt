@@ -51,7 +51,7 @@ typealias TreePropValuePair<T> = Pair<TreeProp<T>, T>
 @JvmName("LegacyTreePropProvider") // avoid JVM declaration clash with the other TreePropProvider
 inline fun TreePropProvider(
     vararg props: ClassValuePair<*>,
-    component: () -> Component
+    crossinline component: () -> Component
 ): KComponent {
   val resolvedComponent = component()
   return TreePropProviderImpl(classProps = props, child = resolvedComponent)
@@ -70,7 +70,7 @@ inline fun TreePropProvider(
 @Suppress("FunctionName")
 inline fun TreePropProvider(
     vararg props: TreePropValuePair<*>,
-    component: () -> Component
+    crossinline component: () -> Component
 ): KComponent {
   val resolvedComponent = component()
   return TreePropProviderImpl(treeProps = props, child = resolvedComponent)
@@ -83,7 +83,7 @@ inline fun TreePropProvider(
 @Suppress("FunctionName")
 inline fun NullableTreePropProvider(
     vararg props: ClassValuePair<*>,
-    component: () -> Component?
+    crossinline component: () -> Component?
 ): KComponent? {
   val resolvedComponent = component() ?: return null
   return TreePropProviderImpl(classProps = props, child = resolvedComponent)

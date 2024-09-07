@@ -79,7 +79,7 @@ inline fun ResourcesScope.LazyList(
     isCircular: Boolean = false,
     enableStableIds: Boolean =
         context.lithoConfiguration.componentsConfig.useStableIdsInRecyclerBinder,
-    init: LazyListScope.() -> Unit
+    crossinline init: LazyListScope.() -> Unit
 ): Component {
   val lazyListScope = LazyListScope(context).apply { init() }
 

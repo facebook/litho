@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.assertj;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.LithoDebugConfigurations;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -35,6 +36,7 @@ import org.assertj.core.util.Preconditions;
  *
  * @deprecated Use {@link LithoViewAssert#containsComponent)} instead.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public final class LithoViewSubComponentDeepExtractor
     implements Extractor<LithoView, List<InspectableComponent>> {

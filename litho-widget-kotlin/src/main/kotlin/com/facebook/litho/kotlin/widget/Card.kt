@@ -42,7 +42,7 @@ inline fun ResourcesScope.Card(
     disableClipBottomLeft: Boolean = false,
     disableClipBottomRight: Boolean = false,
     transparencyEnabled: Boolean = false,
-    child: ResourcesScope.() -> Component
+    crossinline child: ResourcesScope.() -> Component
 ): Card =
     Card.create(context)
         .transparencyEnabled(transparencyEnabled)

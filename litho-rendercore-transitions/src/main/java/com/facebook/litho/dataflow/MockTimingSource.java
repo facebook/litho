@@ -17,10 +17,12 @@
 package com.facebook.litho.dataflow;
 
 import android.util.Pair;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import java.util.ArrayList;
 
 /** TimingSource and Choreographer implementation that allows manual stepping by frame in tests. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MockTimingSource implements TimingSource, ChoreographerCompat {
 
   public static int FRAME_TIME_MS = 16;
@@ -29,6 +31,7 @@ public class MockTimingSource implements TimingSource, ChoreographerCompat {
 
   private final ArrayList<Pair<FrameCallback, Long>> mChoreographerCallbacksToStartTimes =
       new ArrayList<>();
+  // NULLSAFE_FIXME[Field Not Initialized]
   private DataFlowGraph mDataFlowGraph;
   private boolean mIsRunning = false;
   private long mCurrentTimeNanos = 0;

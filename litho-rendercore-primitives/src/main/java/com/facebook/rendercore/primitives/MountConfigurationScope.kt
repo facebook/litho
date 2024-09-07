@@ -295,7 +295,7 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    */
   inline fun withDescription(
       description: String,
-      binderCall: MountConfigurationScope<ContentType>.() -> Unit
+      crossinline binderCall: MountConfigurationScope<ContentType>.() -> Unit
   ) {
     try {
       binderDescription = description.take(RenderUnit.MAX_DESCRIPTION_LENGTH)

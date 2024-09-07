@@ -34,7 +34,7 @@ inline fun ResourcesScope.HorizontalScroll(
     noinline onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
     horizontalFadingEdgeEnabled: Boolean = false,
     fadingEdgeLength: Int = 0,
-    child: ResourcesScope.() -> Component
+    crossinline child: ResourcesScope.() -> Component
 ): HorizontalScroll =
     HorizontalScroll.create(context)
         .contentProps(child())

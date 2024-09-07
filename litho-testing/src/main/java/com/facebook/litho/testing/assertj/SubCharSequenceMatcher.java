@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.assertj;
 
+import com.facebook.infer.annotation.Nullsafe;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.SubstringMatcher;
@@ -24,6 +25,7 @@ import org.hamcrest.core.SubstringMatcher;
  * An implementation like {@link SubstringMatcher} but generalized to {@link CharSequence} instead
  * of {@link CharSequence}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class SubCharSequenceMatcher extends TypeSafeMatcher<CharSequence> {
   protected final CharSequence mSubstring;
 

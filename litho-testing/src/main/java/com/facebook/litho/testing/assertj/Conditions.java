@@ -16,10 +16,12 @@
 
 package com.facebook.litho.testing.assertj;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.List;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class Conditions {
 
   public static <L extends List<T>, T> Condition<L> exactly(final T item, final int times) {

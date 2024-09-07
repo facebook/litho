@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.common;
 
 import android.os.Bundle;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
@@ -49,6 +50,7 @@ import java.util.List;
  * <p>{@link GetUniqueIdentifierEvent} is fired when a single unique identifier is needed for a
  * model object.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @GroupSectionSpec(events = {RenderWithHideItemHandlerEvent.class, GetUniqueIdentifierEvent.class})
 public class HideableDataDiffSectionSpec<T> {
 

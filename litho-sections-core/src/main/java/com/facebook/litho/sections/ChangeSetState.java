@@ -21,6 +21,7 @@ import static com.facebook.litho.sections.Section.acquireChildrenMap;
 import android.util.Pair;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.Map;
 /**
  * ChangeSetState is responsible to generate a global ChangeSet between two {@link Section}s trees.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ChangeSetState {
 
   private static final List<Section> sEmptyList = new ArrayList<>();
@@ -139,9 +141,11 @@ public class ChangeSetState {
     if (newRootIsNull) {
       // The new tree doesn't have this component. We only need to remove all its children from
       // the list.
+      // NULLSAFE_FIXME[Nullable Dereference]
       final int currentItemsCount = currentRoot.getCount();
       removedComponents.add(currentRoot);
       final ChangeSet changeSet =
+          // NULLSAFE_FIXME[Nullable Dereference]
           ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
 
       for (int i = 0; i < currentItemsCount; i++) {
@@ -160,15 +164,21 @@ public class ChangeSetState {
     // later because a section is considered unchanged if the old one and the new one have
     // the same props and state.
     final boolean isChildrenOfSectionConsistent =
+        // NULLSAFE_FIXME[Nullable Dereference]
         !currentRootIsNull && (currentRoot.getCount() == newRoot.getCount());
     // Components both exist and don't need to update.
+    // NULLSAFE_FIXME[Nullable Dereference, Parameter Not Nullable]
     if (isChildrenOfSectionConsistent && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
       final ChangeSet changeSet =
+          // NULLSAFE_FIXME[Nullable Dereference]
           ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
+      // NULLSAFE_FIXME[Nullable Dereference]
       newRoot.setCount(changeSet.getCount());
       sectionsDebugLogger.logShouldUpdate(
           sectionTreeTag,
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           currentRoot,
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           newRoot,
           updateCurrentPrefix,
           updateNewPrefix,
@@ -178,14 +188,17 @@ public class ChangeSetState {
     }
 
     sectionsDebugLogger.logShouldUpdate(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         sectionTreeTag, currentRoot, newRoot, updateCurrentPrefix, updateNewPrefix, true, thread);
 
     // Component(s) can generate changeSets and will generate the changeset.
     // Add the startCount to the changeSet.
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (lifecycle.isDiffSectionSpec()) {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         ComponentsSystrace.beginSectionWithArgs("generateChangeSet")
+            // NULLSAFE_FIXME[Nullable Dereference]
             .arg("current_root", currentRootIsNull ? "<null>" : currentRoot.getKey())
             .arg("update_prefix", updateCurrentPrefix)
             .flush();
@@ -193,17 +206,24 @@ public class ChangeSetState {
 
       final ChangeSet changeSet =
           ChangeSet.acquireChangeSet(
+              // NULLSAFE_FIXME[Nullable Dereference]
               currentRootIsNull ? 0 : currentRoot.getCount(), newRoot, enableStats);
+      // NULLSAFE_FIXME[Nullable Dereference]
       final SectionContext newRootScopedContext = newRoot.getScopedContext();
       final SectionContext currentRootScopedContext =
           currentRoot == null ? null : currentRoot.getScopedContext();
+      // NULLSAFE_FIXME[Nullable Dereference]
       lifecycle.generateChangeSet(
           newRootScopedContext,
           changeSet,
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           currentRootScopedContext,
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           currentRoot,
           newRootScopedContext,
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           newRoot);
+      // NULLSAFE_FIXME[Nullable Dereference]
       newRoot.setCount(changeSet.getCount());
 
       if (isTracing) {
@@ -226,9 +246,11 @@ public class ChangeSetState {
     }
 
     final List<Section> newChildrenList;
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (newRoot.getChildren() == null) {
       newChildrenList = sEmptyList;
     } else {
+      // NULLSAFE_FIXME[Nullable Dereference]
       newChildrenList = newRoot.getChildren();
     }
 
@@ -262,7 +284,9 @@ public class ChangeSetState {
             final Pair<Section, Integer> valueAndIndex =
                 currentChildren.get(section.getGlobalKey());
 
+            // NULLSAFE_FIXME[Nullable Dereference]
             if (valueAndIndex.second != j) {
+              // NULLSAFE_FIXME[Nullable Dereference]
               currentChildren.put(section.getGlobalKey(), new Pair<>(valueAndIndex.first, j));
             }
           }
@@ -296,6 +320,7 @@ public class ChangeSetState {
       resultChangeSet = ChangeSet.merge(resultChangeSet, changeSet);
     }
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     newRoot.setCount(resultChangeSet.getCount());
 
     return resultChangeSet;
@@ -441,6 +466,7 @@ public class ChangeSetState {
               + ", count="
               + currentRoot.getCount()
               + ", childrenSize="
+              // NULLSAFE_FIXME[Nullable Dereference]
               + currentRoot.getChildren().size()
               + "; ");
     }
@@ -456,6 +482,7 @@ public class ChangeSetState {
               + ", count="
               + newRoot.getCount()
               + ", childrenSize="
+              // NULLSAFE_FIXME[Nullable Dereference]
               + newRoot.getChildren().size()
               + "; ");
     }

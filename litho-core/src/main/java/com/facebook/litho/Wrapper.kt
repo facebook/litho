@@ -125,6 +125,9 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
  * props to a given component.
  */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ResourcesScope.Wrapper(style: Style, content: ResourcesScope.() -> Component): Wrapper {
+inline fun ResourcesScope.Wrapper(
+    style: Style,
+    crossinline content: ResourcesScope.() -> Component
+): Wrapper {
   return Wrapper.create(context).delegate(content()).kotlinStyle(style).build()
 }

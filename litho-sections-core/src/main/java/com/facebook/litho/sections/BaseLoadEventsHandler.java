@@ -16,7 +16,10 @@
 
 package com.facebook.litho.sections;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** An empty implementation of {@link LoadEventsHandler} */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BaseLoadEventsHandler implements LoadEventsHandler {
 
   @Override

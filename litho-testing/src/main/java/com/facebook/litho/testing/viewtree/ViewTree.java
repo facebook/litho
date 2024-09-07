@@ -18,6 +18,7 @@ package com.facebook.litho.testing.viewtree;
 
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.Nullsafe;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -28,6 +29,7 @@ import javax.annotation.Nullable;
  * This is a helper class to allow asserting on view trees and recursively verify predicates on its
  * nodes within the narrow abilities that Robolectric affords us.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ViewTree {
 
   private final View mView;
