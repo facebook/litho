@@ -59,7 +59,7 @@ const features = [
     imageUrl: 'images/home-flat-not-flat.png',
     description: (
       <>
-        Litho uses <a href="https://yogalayout.dev/docs">Yoga</a> for layout and
+        Litho uses <a href="https://yogalayout.dev/docs/about-yoga">Yoga</a> for layout and
         automatically reduces the number of ViewGroups that your UI contains.
         This, in addition to Litho's text optimizations, allows for much smaller
         view hierarchies and improves both memory and scroll performance.
