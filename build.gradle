@@ -50,11 +50,15 @@ allprojects {
         enabled = false
     }
     configurations.all {
-        // These are to prevent upgrade problems where second-party dependencies like Fresco may be
-        // dependencing on a specific, older version of Litho causing dex merging conflicts.
-        resolutionStrategy.dependencySubstitution {
-            substitute module('com.facebook.litho:litho-annotations') using project(':litho-annotations')
-            substitute module('com.facebook.litho:litho-widget') using project(':litho-widget')
+        // Temporarily exclude sample-barebones project from substitution in order to fix the gradle
+        // build.
+        if (project.name != "sample-barebones") {
+            // These are to prevent upgrade problems where second-party dependencies like Fresco may be
+            // dependencing on a specific, older version of Litho causing dex merging conflicts.
+            resolutionStrategy.dependencySubstitution {
+                substitute module('com.facebook.litho:litho-annotations') using project(':litho-annotations')
+                substitute module('com.facebook.litho:litho-widget') using project(':litho-widget')
+            }
         }
     }
 }
