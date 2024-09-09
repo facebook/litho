@@ -702,7 +702,7 @@ class TestCounterComponent(
       onAttach()
       controller.increment = { count.updateSync { count -> count + 1 } }
       controller.decrement = { count.updateSync { count -> count - 1 } }
-      CleanupFunc {
+      onCleanup {
         onDetach()
         controller.increment = null
         controller.decrement = null

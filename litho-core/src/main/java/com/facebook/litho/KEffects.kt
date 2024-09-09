@@ -64,14 +64,17 @@ fun ComponentScope.useEffect(onAttach: () -> CleanupFunc?): Unit =
  * Defines a cleanup function to be invoked when the owning Component is detached or the deps in
  * [useEffect] change.
  */
-inline fun onCleanup(crossinline cleanupFunc: () -> Unit) = CleanupFunc { cleanupFunc() }
+inline fun onCleanup(noinline cleanupFunc: () -> Unit): CleanupFunc = CleanupFunc(cleanupFunc)
 
 /**
  * Interface for the [onCleanup] function: use [onCleanup] to define the cleanup function for your
  * useEffect hook.
  */
-fun interface CleanupFunc {
-  fun onCleanup()
+@JvmInline
+value class CleanupFunc @PublishedApi internal constructor(private val cleanupFunc: () -> Unit) {
+  fun onCleanup() {
+    cleanupFunc()
+  }
 }
 
 private class UseEffectAttachable(
