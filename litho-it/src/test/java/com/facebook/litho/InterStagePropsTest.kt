@@ -51,7 +51,8 @@ class InterStagePropsTest {
     lifecycleTracker.reset()
     stateUpdater.increment()
     legacyLithoViewRule.lithoView.onDetachedFromWindowForTest()
-    legacyLithoViewRule.lithoView.onAttachedToWindowForTest()
+    // We need to make sure layout happens because which triggers mount and bind together
+    legacyLithoViewRule.attachToWindow().measure().layout()
     assertThat(lifecycleTracker.steps)
         .describedAs("On Bind should be called")
         .contains(LifecycleStep.ON_UNBIND, LifecycleStep.ON_BIND)

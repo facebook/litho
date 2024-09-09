@@ -302,9 +302,19 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void onDetached() {
     mMountState.detach();
+    maybeUnmountComponents();
+  }
+
+  private void maybeUnmountComponents() {
     final @Nullable ComponentsConfiguration config = getConfiguration();
     if (config != null && config.enableFixForIM && !mIsTemporaryDetached && !hasTransientState()) {
       notifyVisibleBoundsChanged(EMPTY_RECT);
+      // Set mount state dirty to make sure we will request layout when the ComponentTree is
+      // attached again. And IncrementalMount will be kicked off during layout pass then.
+      setMountStateDirty();
+      // And we need to ask mount state to remount, otherwise, it will skip mounting because
+      // RenderTree never change.
+      mMountState.needsRemount(true);
     }
   }
 

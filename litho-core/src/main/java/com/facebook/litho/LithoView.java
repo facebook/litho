@@ -548,16 +548,6 @@ public class LithoView extends BaseMountingView {
     // Not calling super intentionally as in the LithoView case we want ComponentTree to control the
     // rebind logic.
     if (mComponentTree != null) {
-      final @Nullable ComponentsConfiguration config = getConfiguration();
-      if (config != null
-          && config.enableFixForIM
-          && !mIsTemporaryDetached
-          && !hasTransientState()) {
-        if (hasMountedAtLeastOnce()) {
-          // If this is the first mount, we don't want to notify the visible bounds changed.
-          notifyVisibleBoundsChanged();
-        }
-      }
       mComponentTree.attach();
     }
 
