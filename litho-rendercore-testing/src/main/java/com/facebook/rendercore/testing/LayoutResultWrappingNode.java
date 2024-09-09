@@ -16,10 +16,12 @@
 
 package com.facebook.rendercore.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Node;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutResultWrappingNode implements Node {
 
   private final LayoutResult mLayoutResult;
