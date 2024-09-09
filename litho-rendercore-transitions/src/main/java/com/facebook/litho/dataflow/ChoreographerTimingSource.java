@@ -16,14 +16,17 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 
 /** The default {@link TimingSource} hooked into Android's Choreographer. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ChoreographerTimingSource implements TimingSource {
 
   private final ChoreographerCompat mChoreographerCompat;
   private final ChoreographerCompat.FrameCallback mFrameCallback;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private DataFlowGraph mDataFlowGraph;
   private boolean mIsRunning = false;
   private boolean mHasPostedFrameCallback = false;
