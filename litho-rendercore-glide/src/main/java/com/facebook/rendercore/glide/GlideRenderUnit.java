@@ -8,13 +8,18 @@ import android.net.Uri;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class GlideRenderUnit extends RenderUnit<ImageView> implements ContentAllocator<ImageView> {
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Uri mURI;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Drawable mErrorDrawable;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Drawable mPlaceHolderDrawable;
   private long mId;
 
@@ -54,6 +59,7 @@ public class GlideRenderUnit extends RenderUnit<ImageView> implements ContentAll
   private static final Binder<GlideRenderUnit, ImageView, Void> sMount =
       new Binder<GlideRenderUnit, ImageView, Void>() {
         @Override
+        // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
         public boolean shouldUpdate(
             GlideRenderUnit currentValue,
             GlideRenderUnit newValue,
@@ -75,6 +81,7 @@ public class GlideRenderUnit extends RenderUnit<ImageView> implements ContentAll
         }
 
         @Override
+        // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
         public Void bind(
             Context context,
             ImageView imageView,
@@ -91,6 +98,7 @@ public class GlideRenderUnit extends RenderUnit<ImageView> implements ContentAll
         }
 
         @Override
+        // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
         public void unbind(
             Context context,
             ImageView imageView,
