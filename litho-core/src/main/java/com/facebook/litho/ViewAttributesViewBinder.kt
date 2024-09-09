@@ -28,6 +28,7 @@ internal object ViewAttributesViewBinder :
       val viewAttributes: ViewAttributes,
       val isRootHost: Boolean,
       val cloneStateListAnimators: Boolean,
+      val isEventHandlerRedesignEnabled: Boolean,
   )
 
   fun create(
@@ -44,7 +45,25 @@ internal object ViewAttributesViewBinder :
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
-    return currentModel != newModel
+    return if (newModel.isEventHandlerRedesignEnabled) {
+      currentModel.viewAttributes != newModel.viewAttributes
+    } else {
+      val currentRenderUnit = currentModel.renderUnit
+      val newRenderUnit = newModel.renderUnit
+
+      if (currentRenderUnit === newRenderUnit) {
+        false
+      } else {
+        (currentRenderUnit is MountSpecLithoRenderUnit &&
+            newRenderUnit is MountSpecLithoRenderUnit &&
+            MountSpecLithoRenderUnit.shouldUpdateMountItem(
+                currentRenderUnit,
+                newRenderUnit,
+                currentLayoutData,
+                nextLayoutData,
+            )) || currentModel.viewAttributes != newModel.viewAttributes
+      }
+    }
   }
 
   override fun bind(context: Context, content: View, model: Model, layoutData: Any?): Int {

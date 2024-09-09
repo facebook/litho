@@ -60,6 +60,8 @@ class ClickEventHandlerUpdateTest {
     // We want to make sure we dispatch an event with the updated props and state
     testView.lithoView.setComponentTree(null, false)
     testView.setRoot(Row.create(context))
+    assertThat(testView.findViewWithTag("clickable")).isNotNull()
+    assertThat(testView.findViewWithTag("clickable")).isSameAs(hostView)
     // render with tag 1
     testView.setRoot(
         Row.create(context)

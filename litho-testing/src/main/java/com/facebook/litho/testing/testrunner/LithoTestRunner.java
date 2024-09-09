@@ -77,7 +77,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getGlobalConfigs() {
     return Arrays.asList(
-        FineGrainedLithoViewAttributesStateExtensionConfiguration.class,
+        EventHandlerRedesignTestConfig.class,
         IncrementalMountConfiguration.class,
         ComponentTreePropContainerConfiguration.class);
   }

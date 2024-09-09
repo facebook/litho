@@ -19,15 +19,17 @@ package com.facebook.litho.testing.testrunner
 import com.facebook.litho.config.ComponentsConfiguration
 import org.junit.runners.model.FrameworkMethod
 
-class FineGrainedLithoViewAttributesStateExtensionConfiguration : LithoTestRunConfiguration {
+class EventHandlerRedesignTestConfig : LithoTestRunConfiguration {
+
+  val default = ComponentsConfiguration.defaultInstance.useNonRebindingEventHandlers
 
   override fun beforeTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(useFineGrainedViewAttributesExtension = true)
+        ComponentsConfiguration.defaultInstance.copy(useNonRebindingEventHandlers = !default)
   }
 
   override fun afterTest(method: FrameworkMethod) {
     ComponentsConfiguration.defaultInstance =
-        ComponentsConfiguration.defaultInstance.copy(useFineGrainedViewAttributesExtension = false)
+        ComponentsConfiguration.defaultInstance.copy(enableFixForIM = default)
   }
 }

@@ -405,7 +405,9 @@ object LithoNodeUtils {
                   renderUnit = renderUnit,
                   viewAttributes = viewAttributes,
                   cloneStateListAnimators = config.cloneStateListAnimators,
-                  isRootHost = id == MountState.ROOT_HOST_ID)))
+                  isRootHost = id == MountState.ROOT_HOST_ID,
+                  isEventHandlerRedesignEnabled = config.useNonRebindingEventHandlers,
+              )))
     }
 
     if (config.isHostViewAttributesCleanUpEnabled && component is HostComponent) {

@@ -129,22 +129,33 @@ class EventHandlerTest {
 
   @Test
   fun testIsEquivalentToWithDifferentHasEventDispatchInfos() {
+
+    val dispatchInfo =
+        EventDispatchInfo(
+            Wrapper.create(mLithoTestRule.context).delegate(EmptyComponent()).build(),
+            mLithoTestRule.context)
     val eventHandler1: EventHandler<*> =
         EventHandler<Any?>(
             1,
             EventHandlerRebindMode.REBIND,
-            EventDispatchInfo(
-                Wrapper.create(mLithoTestRule.context).delegate(EmptyComponent()).build(),
-                mLithoTestRule.context),
+            dispatchInfo,
             arrayOf<Any>(1, 2, 3),
         )
+
+    val otherDispatchInfo =
+        if (mLithoTestRule.context.lithoConfiguration.componentsConfig
+            .useNonRebindingEventHandlers) {
+          dispatchInfo
+        } else {
+          EventDispatchInfo(
+              Wrapper.create(mLithoTestRule.context).delegate(EmptyComponent()).build(),
+              mLithoTestRule.context)
+        }
     val eventHandler2: EventHandler<*> =
         EventHandler<Any?>(
             1,
             EventHandlerRebindMode.REBIND,
-            EventDispatchInfo(
-                Wrapper.create(mLithoTestRule.context).delegate(EmptyComponent()).build(),
-                mLithoTestRule.context),
+            otherDispatchInfo,
             arrayOf<Any>(1, 2, 3),
         )
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isTrue
