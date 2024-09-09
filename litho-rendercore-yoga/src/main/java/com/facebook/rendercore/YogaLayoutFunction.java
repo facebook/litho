@@ -25,6 +25,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.LayoutCache.CacheItem;
 import com.facebook.rendercore.utils.LayoutUtils;
 import com.facebook.yoga.YogaConfig;
@@ -56,6 +57,7 @@ import java.util.List;
  *       side, leaving only 6px for content, potentially causing a re-measure.
  * </ul>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class YogaLayoutFunction {
 
   public static final YogaConfig DEFAULT_YOGA_CONFIG = com.facebook.yoga.YogaConfigFactory.create();
@@ -500,6 +502,7 @@ public class YogaLayoutFunction {
         YogaMeasureMode heightMode) {
       final int widthSpec = makeSizeSpecFromYogaSpec(width, widthMode);
       final int heightSpec = makeSizeSpecFromYogaSpec(height, heightMode);
+      // NULLSAFE_FIXME[Nullable Dereference]
       mDelegate = mMeasure.measure(mLayoutContext, widthSpec, heightSpec);
       mLastMeasuredDimensions = YogaMeasureOutput.make(mDelegate.getWidth(), mDelegate.getHeight());
 
