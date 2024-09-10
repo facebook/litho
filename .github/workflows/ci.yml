@@ -41,14 +41,9 @@ jobs:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
       - name: Fetch buck
-        run: |
-          (rm -rf buck && mkdir buck && \
-          wget https://jitpack.io/com/github/facebook/buck/v2022.05.05.01/buck-v2022.05.05.01-java11.pex && \
-          mv buck-v2022.05.05.01-java11.pex buck/buck && \
-          chmod +x buck/buck && \
-          ls -l buck)
+        uses: dtolnay/install-buck2@latest
       - name: Build everything
-        run: BUCK_PATH=`realpath buck/buck` ./gradlew assemble --stacktrace --no-daemon
+        run: ./gradlew assemble --stacktrace --no-daemon
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -83,14 +78,9 @@ jobs:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
       - name: Fetch buck
-        run: |
-          (rm -rf buck && mkdir buck && \
-          wget https://jitpack.io/com/github/facebook/buck/v2022.05.05.01/buck-v2022.05.05.01-java11.pex && \
-          mv buck-v2022.05.05.01-java11.pex buck/buck && \
-          chmod +x buck/buck && \
-          ls -l buck)
+        uses: dtolnay/install-buck2@latest
       - name: Run tests
-        run: BUCK_PATH=`realpath buck/buck` ./gradlew test -x :litho-intellij-plugin:test --stacktrace --no-daemon
+        run: ./gradlew test -x :litho-intellij-plugin:test --stacktrace --no-daemon
   deploy-check:
     name: Skip deploy if PR or Fork or not a SNAPSHOT version
     needs: [build, tests]
@@ -141,11 +131,6 @@ jobs:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
       - name: Fetch buck
-        run: |
-          (rm -rf buck && mkdir buck && \
-          wget https://jitpack.io/com/github/facebook/buck/v2022.05.05.01/buck-v2022.05.05.01-java11.pex && \
-          mv buck-v2022.05.05.01-java11.pex buck/buck && \
-          chmod +x buck/buck && \
-          ls -l buck)
+        uses: dtolnay/install-buck2@latest
       - name: Publish Snapshot
-        run: BUCK_PATH=`realpath buck/buck` ./gradlew uploadArchives --stacktrace
+        run: ./gradlew uploadArchives --stacktrace
