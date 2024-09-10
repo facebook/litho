@@ -20,6 +20,7 @@ import static com.facebook.litho.testing.assertj.ErrorMessage.getCompareComponen
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestCollection;
@@ -103,7 +104,7 @@ public class LithoAssertions {
      */
     public LithoComponentAssert isEquivalentTo(
         @Nullable Component other, boolean shouldCompareCommonProps) {
-      Assertions.assertThat(actual.isEquivalentTo(other, shouldCompareCommonProps))
+      Assertions.assertThat(ComponentUtils.isEquivalent(actual, other, shouldCompareCommonProps))
           .overridingErrorMessage(getCompareComponentsErrorMessage(actual, other))
           .isTrue();
       return this;

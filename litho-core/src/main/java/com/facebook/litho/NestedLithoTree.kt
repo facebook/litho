@@ -42,7 +42,7 @@ object NestedLithoTree {
       current: ResolveResult?,
   ): ResolveResult {
     return if (current == null ||
-        !root.isEquivalentTo(current.component, true) ||
+        !ComponentUtils.isEquivalent(root, current.component, true) ||
         state.keysForPendingStateUpdates.isNotEmpty() ||
         treeProps != current.context.treePropContainer) {
       ResolveTreeFuture.resolve(

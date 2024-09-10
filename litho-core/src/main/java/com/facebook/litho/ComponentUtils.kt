@@ -19,6 +19,7 @@ package com.facebook.litho
 import com.facebook.litho.ComponentsSystrace.isTracing
 import com.facebook.litho.annotations.Comparable
 import com.facebook.litho.annotations.EventHandlerRebindMode
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableDrawable
 import com.facebook.rendercore.Equivalence
 import com.facebook.rendercore.utils.isEquivalentTo
@@ -52,12 +53,19 @@ object ComponentUtils {
    * @return `true` iff the component fields are equivalent.
    */
   @JvmStatic
-  fun isEquivalent(current: Component?, next: Component?): Boolean {
+  fun isEquivalent(
+      current: Component?,
+      next: Component?,
+      shouldCompareCommonProps: Boolean =
+          ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo
+  ): Boolean {
     if (current === next) {
       return true
     }
     return if (current == null || next == null) {
       false
+    } else if (current is SpecGeneratedComponent && next is SpecGeneratedComponent) {
+      current.isEquivalentTo(next, shouldCompareCommonProps)
     } else {
       current.isEquivalentTo(next)
     }

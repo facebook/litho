@@ -57,19 +57,13 @@ class Wrapper private constructor() : SpecGeneratedComponent("Wrapper") {
     if (this === other) {
       return true
     }
-    if (other == null || javaClass != other.javaClass) {
+    if (other !is Wrapper) {
       return false
     }
-    val wrapper = other as Wrapper
-    if (this.id == wrapper.id) {
+    if (this.id == other.id) {
       return true
     }
-    val delegate = delegate
-    return !if (delegate != null) {
-      !delegate.isEquivalentTo(wrapper.delegate, shouldCompareCommonProps)
-    } else {
-      wrapper.delegate != null
-    }
+    return ComponentUtils.isEquivalent(delegate, other.delegate, shouldCompareCommonProps)
   }
 
   override fun getSimpleNameDelegate(): Component? {

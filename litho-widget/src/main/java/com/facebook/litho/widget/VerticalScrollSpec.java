@@ -31,6 +31,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.Diff;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
@@ -280,9 +281,8 @@ public class VerticalScrollSpec {
     boolean compareCommonProps =
         shouldCompareCommonProps.getNext() != null && shouldCompareCommonProps.getNext();
 
-    return !childComponent
-            .getPrevious()
-            .isEquivalentTo(childComponent.getNext(), compareCommonProps)
+    return !ComponentUtils.isEquivalent(
+            childComponent.getPrevious(), childComponent.getNext(), compareCommonProps)
         || !scrollbarEnabled.getPrevious().equals(scrollbarEnabled.getNext())
         || !scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext())
         || !fillViewport.getPrevious().equals(fillViewport.getNext())

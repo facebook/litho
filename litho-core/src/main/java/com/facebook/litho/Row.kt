@@ -100,7 +100,7 @@ private constructor(
         return false
       }
       children.forEachIndexed { index, child ->
-        if (!child.isEquivalentTo(otherChildren[index], shouldCompareCommonProps)) {
+        if (!ComponentUtils.isEquivalent(child, otherChildren[index], shouldCompareCommonProps)) {
           return false
         }
       }

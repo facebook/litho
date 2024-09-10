@@ -19,7 +19,6 @@ package com.facebook.litho.sections.common;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -207,7 +206,7 @@ public class SingleComponentSectionSpecTest {
   public void testUpdateComponent() {
     Component nextComponent = mock(Component.class);
     Component prevComponent = mock(Component.class);
-    when(prevComponent.isEquivalentTo(nextComponent, false)).thenReturn(false);
+    when(prevComponent.isEquivalentTo(nextComponent)).thenReturn(false);
 
     Diff<Component> componentDiff = new Diff<>(prevComponent, nextComponent);
     Diff<Boolean> stickyDiff = new Diff<>(true, true);
@@ -345,7 +344,7 @@ public class SingleComponentSectionSpecTest {
     Component nextComponent = mock(Component.class);
     Component prevComponent = mock(Component.class);
     // when(prevComponent.isEquivalentTo(nextComponent)).thenReturn(true);
-    when(prevComponent.isEquivalentTo(nextComponent, false)).thenReturn(true);
+    when(prevComponent.isEquivalentTo(nextComponent)).thenReturn(true);
 
     Diff<Component> componentDiff = new Diff<>(prevComponent, nextComponent);
     Diff<Boolean> stickyDiff = new Diff<>(true, true);
@@ -375,7 +374,7 @@ public class SingleComponentSectionSpecTest {
   @Test
   public void testUpdateCustomAttributes() {
     Component component = mock(Component.class);
-    when(component.isEquivalentTo(any(), anyBoolean())).thenReturn(true);
+    when(component.isEquivalentTo(any())).thenReturn(true);
     Diff<Component> componentDiff = new Diff<>(component, component);
     Diff<Boolean> stickyDiff = new Diff<>(true, true);
     Diff<Integer> spanSizeDiff = new Diff<>(1, 1);

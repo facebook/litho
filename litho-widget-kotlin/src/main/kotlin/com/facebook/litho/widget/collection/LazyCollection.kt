@@ -19,6 +19,7 @@ package com.facebook.litho.widget.collection
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.ComponentUtils
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
@@ -263,7 +264,7 @@ class LazyCollection(
 
   private fun componentsEquivalent(first: Component?, second: Component?): Boolean {
     if (first == null && second == null) return true
-    return first?.isEquivalentTo(second, childEquivalenceIncludesCommonProps) == true
+    return ComponentUtils.isEquivalent(first, second, childEquivalenceIncludesCommonProps)
   }
 
   private fun isChildEquivalent(event: OnCheckIsSameContentEvent<CollectionChild>): Boolean =

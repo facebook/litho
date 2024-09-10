@@ -23,6 +23,7 @@ import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SINGLE
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.Diff;
 import com.facebook.litho.annotations.Prop;
@@ -173,7 +174,8 @@ public class SingleComponentSectionSpec {
 
   private static boolean isComponentEquivalent(
       Component prevComponent, Component nextComponent, boolean shouldCompareCommonProps) {
-    return prevComponent.isEquivalentTo(
+    return ComponentUtils.isEquivalent(
+        prevComponent,
         nextComponent,
         ComponentsConfiguration.shouldCompareRootCommonPropsInSingleComponentSection
             || shouldCompareCommonProps);

@@ -307,7 +307,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return true;
     }
 
-    return !previous.isEquivalentProps(next)
+    return !ComponentUtils.isEquivalent(previous, next, false)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 

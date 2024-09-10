@@ -436,7 +436,6 @@ class PrimitiveComponentsTest {
     val component = TestViewPrimitiveComponent(identity = 0, view = view, steps = steps)
 
     assertThat(component.isEquivalentTo(component)).isTrue
-    assertThat(component.isEquivalentTo(component, true)).isTrue
   }
 
   @Test
@@ -447,7 +446,6 @@ class PrimitiveComponentsTest {
     val a = TestViewPrimitiveComponent(identity = 0, view = view, steps = steps)
     val b = TestViewPrimitiveComponent(identity = 0, view = view, steps = steps)
     assertThat(a.isEquivalentTo(b)).isTrue
-    assertThat(a.isEquivalentTo(b, true)).isTrue
   }
 
   @Test
@@ -459,7 +457,6 @@ class PrimitiveComponentsTest {
     val b = TestViewPrimitiveComponent(identity = 1, view = view, steps = steps)
 
     assertThat(a.isEquivalentTo(b)).isFalse
-    assertThat(a.isEquivalentTo(b, true)).isFalse
   }
 
   @Test
@@ -483,7 +480,7 @@ class PrimitiveComponentsTest {
             style = Style.width(200.px).height(200.px), /* 200 here */
         )
 
-    assertThat(a.isEquivalentTo(b, true)).isFalse
+    assertThat(a.isEquivalentTo(b)).isFalse
   }
 
   @Test
