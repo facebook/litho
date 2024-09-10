@@ -157,6 +157,7 @@ ext.deps = [
         supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
         // lifecycle
         lifecycle      : 'androidx.lifecycle:lifecycle-runtime:2.6.1',
+        lifecycleService   : 'androidx.lifecycle:lifecycle-service:2.6.1',
         viewModel      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
         liveData           : 'androidx.lifecycle:lifecycle-livedata:2.6.1',
         // First-party
@@ -207,7 +208,7 @@ ext.deps.yoga =
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.
 task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
-    from 'buck-out/gen/lib/yogajni/jni#default,shared/'
+    from 'buck-out/gen/lib/yogajni/jni#default,static/'
     include '*.so'
     include '*.dylib'
     include '*.dll'

@@ -69,6 +69,7 @@ dependencies {
   compileOnly deps.supportAnnotations
   implementation deps.supportCore
   implementation deps.lifecycle
+  implementation deps.lifecycleService
 
   testImplementation deps.assertjCore
   testImplementation deps.junit
