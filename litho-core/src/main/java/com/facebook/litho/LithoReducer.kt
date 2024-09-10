@@ -195,17 +195,21 @@ internal object LithoReducer {
         type = OutputUnitType.HOST)
   }
 
-  private fun createRootHostRenderUnit(context: ComponentContext) =
-      MountSpecLithoRenderUnit.create(
-          id = MountState.ROOT_HOST_ID,
-          component = HostComponent.create(context),
-          commonDynamicProps = null,
-          context = null,
-          nodeInfo = null,
-          flags = 0,
-          importantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-          updateState = MountSpecLithoRenderUnit.STATE_DIRTY,
-          debugKey = LithoNodeUtils.getDebugKey("root-host", OutputUnitType.HOST))
+  private fun createRootHostRenderUnit(context: ComponentContext): MountSpecLithoRenderUnit {
+    val component = HostComponent.create(context)
+    val globalKey: String = ComponentKeyUtils.generateGlobalKey(context, null, component)
+    val c: ComponentContext = ComponentContext.withComponentScope(context, component, globalKey)
+    return MountSpecLithoRenderUnit.create(
+        id = MountState.ROOT_HOST_ID,
+        component = component,
+        commonDynamicProps = null,
+        context = c,
+        nodeInfo = null,
+        flags = 0,
+        importantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        updateState = MountSpecLithoRenderUnit.STATE_DIRTY,
+        debugKey = LithoNodeUtils.getDebugKey("root-host", OutputUnitType.HOST))
+  }
 
   private fun createAnimatableItem(
       unit: LithoRenderUnit,
