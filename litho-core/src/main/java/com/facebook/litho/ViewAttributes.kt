@@ -64,7 +64,6 @@ class ViewAttributes {
     }
 
   var transitionName: String? = null
-  var viewTags: SparseArray<Any>? = null
   var outlineProvider: ViewOutlineProvider? = null
   var clickHandler: EventHandler<ClickEvent>? = null
   var longClickHandler: EventHandler<LongClickEvent>? = null
@@ -231,6 +230,16 @@ class ViewAttributes {
     get() = flags and FLAG_VIEW_ID != 0
 
   var systemGestureExclusionZones: List<(Rect) -> Rect>? = null
+
+  var viewTags: SparseArray<Any>? = null
+
+  fun addViewTags(viewTags: SparseArray<Any>?) {
+    if (this.viewTags == null) {
+      this.viewTags = viewTags
+    } else {
+      this.viewTags = CollectionsUtils.mergeSparseArrays(this.viewTags, viewTags)
+    }
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -424,7 +433,7 @@ class ViewAttributes {
       if (attributes.isTagSet) {
         setViewTag(content, attributes.viewTag)
       }
-      setViewTags(content, attributes.viewTags)
+      addViewTags(content, attributes.viewTags)
       setShadowElevation(content, attributes.shadowElevation)
       setAmbientShadowColor(content, attributes.ambientShadowColor)
       setSpotShadowColor(content, attributes.spotShadowColor)
@@ -470,6 +479,19 @@ class ViewAttributes {
 
       if (content is ComponentHost) {
         content.setSafeViewModificationsEnabled(false)
+      }
+    }
+
+    private fun addViewTags(view: View, viewTags: SparseArray<Any>?) {
+      if (viewTags == null) {
+        return
+      }
+      if (view is ComponentHost) {
+        view.addViewTags(viewTags)
+      } else {
+        for (i in 0 until viewTags.size()) {
+          view.setTag(viewTags.keyAt(i), viewTags.valueAt(i))
+        }
       }
     }
 
@@ -763,26 +785,13 @@ class ViewAttributes {
       view.tag = viewTag
     }
 
-    private fun setViewTags(view: View, viewTags: SparseArray<Any>?) {
-      if (viewTags == null) {
-        return
-      }
-      if (view is ComponentHost) {
-        view.setViewTags(viewTags)
-      } else {
-        for (i in 0 until viewTags.size()) {
-          view.setTag(viewTags.keyAt(i), viewTags.valueAt(i))
-        }
-      }
-    }
-
     fun unsetViewTag(view: View) {
       view.tag = null
     }
 
     fun unsetViewTags(view: View, viewTags: SparseArray<Any>?) {
       if (view is ComponentHost) {
-        view.setViewTags(null)
+        view.unsetViewTags()
       } else {
         if (viewTags != null) {
           for (i in 0 until viewTags.size()) {

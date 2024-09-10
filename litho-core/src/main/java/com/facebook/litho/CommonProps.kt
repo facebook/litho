@@ -423,7 +423,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   }
 
   fun viewTags(viewTags: SparseArray<Any>?) {
-    getOrCreateNodeInfo().viewTags = viewTags
+    getOrCreateNodeInfo().addViewTags(viewTags)
   }
 
   fun transitionName(transitionName: String?) {
@@ -468,6 +468,11 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
   ) {
     getOrCreateNodeInfo().dispatchPopulateAccessibilityEventHandler =
         dispatchPopulateAccessibilityEventHandler
+  }
+
+  fun focusOrder(focusOrder: FocusOrderModel) {
+    getOrCreateNodeInfo().focusOrder = focusOrder
+    getOrCreateNodeInfo().addViewTag(R.id.component_focus_order, focusOrder.key)
   }
 
   fun onInitializeAccessibilityEventHandler(

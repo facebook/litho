@@ -134,6 +134,28 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       node.setHeading(
           mNodeInfo.getAccessibilityHeadingState() == NodeInfo.ACCESSIBILITY_HEADING_SET_TRUE);
     }
+
+    if (mNodeInfo != null && mNodeInfo.getFocusOrder() != null && mountItem != null) {
+      final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
+      final FocusOrderModel focusOrder = mNodeInfo.getFocusOrder();
+
+      if (focusOrder.getPreviousKey() != null) {
+        View previousView =
+            scopedContext.findViewWithTagValue(
+                R.id.component_focus_order, focusOrder.getPreviousKey());
+        if (previousView != null) {
+          node.setTraversalAfter(previousView);
+        }
+      }
+
+      if (focusOrder.getNextKey() != null) {
+        View nextView =
+            scopedContext.findViewWithTagValue(R.id.component_focus_order, focusOrder.getNextKey());
+        if (nextView != null) {
+          node.setTraversalBefore(nextView);
+        }
+      }
+    }
   }
 
   private void dispatchOnPopulateAccessibilityNodeEvent(

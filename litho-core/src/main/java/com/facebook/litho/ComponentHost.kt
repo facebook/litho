@@ -37,6 +37,7 @@ import androidx.collection.SparseArrayCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled
+import com.facebook.litho.CollectionsUtils.mergeSparseArrays
 import com.facebook.litho.ComponentHostUtils.extractContent
 import com.facebook.litho.ComponentHostUtils.extractImageContent
 import com.facebook.litho.ComponentHostUtils.extractTextContent
@@ -549,12 +550,20 @@ open class ComponentHost(
   }
 
   /**
-   * Sets view tags on this host.
+   * Add view tags to this host.
    *
    * @param viewTags the map containing the tags by id.
    */
-  fun setViewTags(viewTags: SparseArray<Any>?) {
-    this.viewTags = viewTags
+  fun addViewTags(viewTags: SparseArray<Any>?) {
+    if (viewTags == null) {
+      this.viewTags = viewTags
+    } else {
+      this.viewTags = mergeSparseArrays(this.viewTags, viewTags)
+    }
+  }
+
+  fun unsetViewTags() {
+    this.viewTags = null
   }
 
   /**

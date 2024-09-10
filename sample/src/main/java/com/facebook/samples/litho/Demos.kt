@@ -76,6 +76,7 @@ import com.facebook.samples.litho.java.triggers.ClearTextTriggerExampleComponent
 import com.facebook.samples.litho.java.triggers.CustomEventTriggerExampleComponent
 import com.facebook.samples.litho.java.triggers.TooltipTriggerExampleActivity
 import com.facebook.samples.litho.java.viewpager.ViewPagerDemoComponent
+import com.facebook.samples.litho.kotlin.accessibility.FocusOrderComponent
 import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
@@ -169,6 +170,11 @@ class Demos {
             DemoList(
                 name = "Kotlin API Demos",
                 listOf(
+                    DemoGrouping(
+                        name = "Accessibility",
+                        listOf(
+                            SingleDemo(name = "Focus Order", component = FocusOrderComponent()),
+                        )),
                     DemoGrouping(
                         name = "Animations",
                         listOf(
