@@ -458,9 +458,7 @@ open class LithoNode : Node<LithoLayoutContext>, Cloneable {
     val componentContext = headComponentContext
     val nodePrimitive = primitive
 
-    if (componentContext.lithoConfiguration.componentsConfig.useViewAttributesBinder &&
-        nodePrimitive != null &&
-        willMountView) {
+    if (nodePrimitive != null && willMountView) {
       val viewAttributes: ViewAttributes? =
           LithoNodeUtils.createViewAttributesForBinder(
               context = componentContext,

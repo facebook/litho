@@ -117,7 +117,6 @@ fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
                 FocusedVisibleEvent::class.java,
                 RenderState::class.java,
                 ViewAttributes::class.java,
-                LithoViewAttributesExtension::class.java,
                 DynamicPropsExtension::class.java,
                 VisibilityChangedEvent::class.java,
                 InvisibleEvent::class.java,

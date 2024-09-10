@@ -478,39 +478,9 @@ object LithoNodeUtils {
             node.transitionGlobalKey)
       }
 
-  @JvmStatic
-  fun createViewAttributes(
-      unit: LithoRenderUnit,
-      component: Component,
-      lithoNode: LithoNode? = null,
-      @OutputUnitType type: Int,
-      @ImportantForAccessibility importantForAccessibility: Int,
-      disableBgFgOutputs: Boolean
-  ): ViewAttributes? {
-    val willMountView: Boolean =
-        when (type) {
-          OutputUnitType.HOST -> true
-          OutputUnitType.CONTENT -> {
-            lithoNode?.willMountView ?: false
-          }
-          else -> false
-        }
-
-    return createViewAttributes(
-        nodeInfo = unit.nodeInfo,
-        component = component,
-        willMountView = willMountView,
-        importantForAccessibility = importantForAccessibility,
-        disableBgFgOutputs = disableBgFgOutputs,
-        lithoNode = lithoNode)
-  }
-
   /**
    * This is used to determine the set of [ViewAttributes] that are to be used in the scope of the
    * ViewAttributesViewBinder.
-   *
-   * If [com.facebook.litho.config.ComponentsConfiguration.useViewAttributesBinder] is not enabled,
-   * it will return `null`.
    */
   @JvmStatic
   internal fun createViewAttributesForBinder(
@@ -520,29 +490,9 @@ object LithoNodeUtils {
       willMountView: Boolean,
       @ImportantForAccessibility importantForAccessibility: Int,
   ): ViewAttributes? {
-    return if (context.lithoConfiguration.componentsConfig.useViewAttributesBinder) {
-      createViewAttributes(
-          nodeInfo = lithoNode.nodeInfo,
-          component = component,
-          willMountView = willMountView,
-          importantForAccessibility = importantForAccessibility,
-          disableBgFgOutputs =
-              context.lithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs,
-          lithoNode = lithoNode)
-    } else {
-      null
-    }
-  }
-
-  @JvmStatic
-  private fun createViewAttributes(
-      nodeInfo: NodeInfo?,
-      component: Component,
-      willMountView: Boolean,
-      @ImportantForAccessibility importantForAccessibility: Int,
-      disableBgFgOutputs: Boolean,
-      lithoNode: LithoNode?
-  ): ViewAttributes? {
+    val nodeInfo = lithoNode.nodeInfo
+    val disableBgFgOutputs =
+        context.lithoConfiguration.componentsConfig.shouldAddRootHostViewOrDisableBgFgOutputs
     if (nodeInfo == null && !willMountView) {
       return null
     }
@@ -554,28 +504,26 @@ object LithoNodeUtils {
     attrs.disableDrawableOutputs = disableBgFgOutputs
     nodeInfo?.copyInto(attrs)
 
-    if (lithoNode != null) {
-      // The following only applies if bg/fg outputs are NOT disabled:
-      // backgrounds and foregrounds should not be set for HostComponents
-      // because those will either be set on the content output or explicit outputs
-      // will be created for backgrounds and foreground.
-      if (disableBgFgOutputs || !attrs.isHostSpec) {
-        attrs.background = lithoNode.background
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          attrs.foreground = lithoNode.foreground
-        }
+    // The following only applies if bg/fg outputs are NOT disabled:
+    // backgrounds and foregrounds should not be set for HostComponents
+    // because those will either be set on the content output or explicit outputs
+    // will be created for backgrounds and foreground.
+    if (disableBgFgOutputs || !attrs.isHostSpec) {
+      attrs.background = lithoNode.background
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        attrs.foreground = lithoNode.foreground
       }
-      attrs.layoutDirection = lithoNode.layoutDirection
-      attrs.layerType = lithoNode.layerType
-      attrs.layoutPaint = lithoNode.layerPaint
-      if (lithoNode.hasStateListAnimatorResSet()) {
-        attrs.stateListAnimatorRes = lithoNode.stateListAnimatorRes
-      } else {
-        attrs.stateListAnimator = lithoNode.stateListAnimator
-      }
-
-      attrs.systemGestureExclusionZones = lithoNode.systemGestureExclusionZones
     }
+    attrs.layoutDirection = lithoNode.layoutDirection
+    attrs.layerType = lithoNode.layerType
+    attrs.layoutPaint = lithoNode.layerPaint
+    if (lithoNode.hasStateListAnimatorResSet()) {
+      attrs.stateListAnimatorRes = lithoNode.stateListAnimatorRes
+    } else {
+      attrs.stateListAnimator = lithoNode.stateListAnimator
+    }
+
+    attrs.systemGestureExclusionZones = lithoNode.systemGestureExclusionZones
 
     return attrs
   }

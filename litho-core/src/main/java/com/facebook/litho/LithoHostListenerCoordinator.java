@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.DynamicPropsExtension.DynamicPropsExtensionState;
-import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState;
 import com.facebook.litho.TransitionsExtension.TransitionsExtensionState;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
@@ -39,24 +38,15 @@ public class LithoHostListenerCoordinator {
 
   private final MountDelegateTarget mMountDelegateTarget;
 
-  private @Nullable ExtensionState<LithoViewAttributesState> mViewAttributesExtensionState;
   private @Nullable ExtensionState<Void> mNestedLithoViewsExtensionState;
   private @Nullable ExtensionState<DynamicPropsExtensionState> mDynamicPropsExtensionState;
   private @Nullable ExtensionState<VisibilityMountExtensionState> mVisibilityExtensionState;
   private @Nullable ExtensionState<TransitionsExtensionState> mTransitionsExtensionState;
   private @Nullable ExtensionState<IncrementalMountExtensionState> mIncrementalMountExtensionState;
   private @Nullable ExtensionState<Void> mEndToEndTestingExtensionState;
-  private boolean mUseFineGrainedLithoViewAttributesState;
 
-  private boolean mCloneStateListAnimators;
-
-  public LithoHostListenerCoordinator(
-      MountDelegateTarget mountDelegateTarget,
-      boolean useFineGrainedLithoViewAttributesState,
-      boolean cloneStateListAnimators) {
+  public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountDelegateTarget = mountDelegateTarget;
-    mUseFineGrainedLithoViewAttributesState = useFineGrainedLithoViewAttributesState;
-    mCloneStateListAnimators = cloneStateListAnimators;
   }
 
   public void setCollectNotifyVisibleBoundsChangedCalls(boolean value) {
@@ -95,10 +85,6 @@ public class LithoHostListenerCoordinator {
 
     if (mEndToEndTestingExtensionState != null) {
       mEndToEndTestingExtensionState.beforeMount(localVisibleRect, input);
-    }
-
-    if (mViewAttributesExtensionState != null) {
-      mViewAttributesExtensionState.beforeMount(localVisibleRect, input);
     }
 
     if (mDynamicPropsExtensionState != null) {
@@ -195,18 +181,6 @@ public class LithoHostListenerCoordinator {
     mEndToEndTestingExtensionState =
         mMountDelegateTarget.registerMountExtension(
             new EndToEndTestingExtension(mMountDelegateTarget));
-  }
-
-  void enableViewAttributes() {
-    if (mViewAttributesExtensionState != null) {
-      throw new IllegalStateException(
-          "View attributes extension has already been enabled on this coordinator");
-    }
-
-    mViewAttributesExtensionState =
-        mMountDelegateTarget.registerMountExtension(
-            LithoViewAttributesExtension.getInstance(
-                mUseFineGrainedLithoViewAttributesState, mCloneStateListAnimators));
   }
 
   void enableNestedLithoViewsExtension() {

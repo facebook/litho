@@ -28,7 +28,6 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
-import com.facebook.litho.view.wrapInView
 import com.facebook.litho.visibility.Visibility
 import com.facebook.litho.visibility.Visibility.Companion.Invisible
 import com.facebook.litho.visibility.Visibility.Companion.Visible
@@ -100,36 +99,6 @@ class ViewAttributeExtensionTest {
     assertThat(lithoViewRule.lithoView.alpha)
         .describedAs("alpha should be restored to the default value")
         .isEqualTo(1f)
-  }
-
-  @Test
-  fun `when view attributes are set on a drawable no view attributes should be created`() {
-    lithoViewRule.render {
-      Column {
-        child(
-            SolidColor(
-                color = Color.BLACK,
-                style = Style.width(10.px).height(10.px).viewTag("test-tag"),
-            ))
-      }
-    }
-
-    val viewAttributes = lithoViewRule.committedLayoutState!!.viewAttributes
-
-    assertThat(viewAttributes.size).isEqualTo(2)
-    assertThat(viewAttributes.values).doesNotContainNull()
-  }
-
-  @Test
-  fun `when component is force wrapped then no duplicate view attributes should be created`() {
-    lithoViewRule.render {
-      Column { child(TextInput(initialText = "hello world", style = Style.wrapInView())) }
-    }
-
-    val viewAttributes = lithoViewRule.committedLayoutState!!.viewAttributes
-
-    assertThat(viewAttributes.size).isEqualTo(2)
-    assertThat(viewAttributes.values).doesNotContainNull()
   }
 
   @Test

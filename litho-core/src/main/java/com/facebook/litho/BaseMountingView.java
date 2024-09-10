@@ -921,17 +921,7 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void setupMountExtensions() {
     if (mLithoHostListenerCoordinator == null) {
-      ComponentsConfiguration configuration = getConfiguration();
-      /*
-       * We want to allow the usage of the {@link ComponentsConfiguration#useFineGrainedViewAttributesExtension} whenever the {@link ComponentsConfiguration#componentHostRecyclingEnabled} is enabled because the bug was mainly visible when this was enabled.
-       */
-      mLithoHostListenerCoordinator =
-          new LithoHostListenerCoordinator(
-              mMountState,
-              configuration != null
-                  && (configuration.useFineGrainedViewAttributesExtension
-                      || configuration.componentHostPoolingPolicy.canReleaseContent),
-              configuration != null && configuration.cloneStateListAnimators);
+      mLithoHostListenerCoordinator = new LithoHostListenerCoordinator(mMountState);
 
       mLithoHostListenerCoordinator.enableNestedLithoViewsExtension();
       mLithoHostListenerCoordinator.enableTransitions();
@@ -940,9 +930,6 @@ public abstract class BaseMountingView extends ComponentHost
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing();
       }
 
-      if (!ComponentsConfiguration.defaultInstance.useViewAttributesBinder) {
-        mLithoHostListenerCoordinator.enableViewAttributes();
-      }
       mLithoHostListenerCoordinator.enableDynamicProps();
     }
 

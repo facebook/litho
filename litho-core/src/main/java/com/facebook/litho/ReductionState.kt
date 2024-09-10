@@ -62,7 +62,6 @@ internal data class ReductionState(
     val mountableOutputBottoms: ArrayList<IncrementalMountOutput> = ArrayList(),
     val incrementalMountOutputs: MutableMap<Long, IncrementalMountOutput> = LinkedHashMap(8),
     val renderUnitIdsWhichHostRenderTrees: MutableSet<Long> = HashSet(4),
-    val renderUnitsWithViewAttributes: MutableMap<Long, ViewAttributes> = HashMap(8),
     val dynamicValueOutputs: MutableMap<Long, DynamicValueOutput> = LinkedHashMap(8),
     val animatableItems: LongSparseArray<AnimatableItem> = LongSparseArray(8),
     val outputsIdToPositionMap: LongSparseArray<Int> = LongSparseArray(8),

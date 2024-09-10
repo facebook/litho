@@ -21,7 +21,6 @@ import android.util.Pair
 import androidx.annotation.VisibleForTesting
 import androidx.collection.LongSparseArray
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput
-import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput
 import com.facebook.litho.Transition.RootBoundsTransition
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.LithoDebugConfigurations
@@ -70,7 +69,6 @@ internal constructor(
     TransitionsExtensionInput,
     EndToEndTestingExtensionInput,
     PotentiallyPartialResult,
-    ViewAttributesInput,
     DynamicPropsExtensionInput {
 
   private val animatableItems: LongSparseArray<AnimatableItem> = reductionState.animatableItems
@@ -148,8 +146,6 @@ internal constructor(
   override val testOutputCount: Int
     get() = testOutputs?.size ?: 0
 
-  override val viewAttributes: Map<Long, ViewAttributes> =
-      reductionState.renderUnitsWithViewAttributes
   override val dynamicValueOutputs: Map<Long, DynamicValueOutput> =
       reductionState.dynamicValueOutputs
   override val isPartialResult: Boolean = false
