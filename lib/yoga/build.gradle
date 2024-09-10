@@ -48,7 +48,8 @@ task buckBuild(type: Exec) {
     commandLine buckPath, 'build', '//lib/yogajni:jni[shared]', '--show-output'
     doLast {
         System.out.println("[Yoga Buck Build]: exit value: ${executionResult.get().exitValue}")
-        def build_outputs = executionResult.get().exitValue.trim()
+        System.out.println("[Yoga Buck Build]: path value: ${executionResult.get().toString()}")
+        def build_outputs = executionResult.get().toString().trim()
         System.out.println("[Yoga Buck Build]: build outputs:\n${build_outputs}")
     }
 }
