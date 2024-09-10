@@ -953,8 +953,9 @@ public class ComponentBodyGenerator {
       case Comparable.COMPONENT:
         codeBlock
             .beginControlFlow(
-                "if ($L != null ? !$L.isEquivalentTo($L, shouldCompareCommonProps) : $L != null)",
+                "if ($L != null ? !$T.isEquivalent($L, $L, shouldCompareCommonProps) : $L != null)",
                 firstComparator,
+                ClassName.bestGuess("com.facebook.litho.ComponentUtils"),
                 firstComparator,
                 secondComparator,
                 secondComparator)
