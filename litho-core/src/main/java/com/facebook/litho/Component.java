@@ -307,7 +307,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
       return true;
     }
 
-    return !previous.isEquivalentProps(next, false)
+    return !previous.isEquivalentProps(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 
@@ -430,7 +430,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    * @param other the component to compare to
    * @return true if the components have equivalent props
    */
-  public boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
+  protected boolean isEquivalentProps(@Nullable Component other) {
     if (this == other) {
       return true;
     }
@@ -454,12 +454,20 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
    * @return true if the components are of the same type and have the same props
    */
   @Override
-  public final boolean isEquivalentTo(@Nullable Component other) {
-    return isEquivalentTo(other, ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo);
+  public boolean isEquivalentTo(@Nullable Component other) {
+    return isEquivalentProps(other);
   }
 
+  /**
+   * This method is retained in <b>Component</b> only to avoid breaking existing call sites. It'll
+   * be gradually removed over the next few iterations.
+   *
+   * <p>Note that the semantic of <i>shouldCompoareCommonProps</i> still makes sense in the context
+   * of <b>SpecGeneratedComponents</b>, so, this overload will continue to exist there indefinitely.
+   */
+  @Deprecated
   public boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
-    return isEquivalentProps(other, shouldCompareCommonProps);
+    return isEquivalentTo(other);
   }
 
   public Component makeShallowCopy() {

@@ -39,6 +39,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.rendercore.ContentAllocator;
@@ -885,13 +886,29 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   @Override
-  public boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
+  public final boolean isEquivalentTo(@Nullable Component other) {
+    return isEquivalentTo(other, ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo);
+  }
+
+  /**
+   * @noinspection deprecation
+   */
+  public final boolean isEquivalentTo(@Nullable Component other, boolean shouldCompareCommonProps) {
     if (shouldCompareCommonProps
         && other instanceof SpecGeneratedComponent
         && !isEquivalentCommonProps((SpecGeneratedComponent) other)) {
       return false;
     }
     return isEquivalentProps(other, shouldCompareCommonProps);
+  }
+
+  @Override
+  protected final boolean isEquivalentProps(@Nullable Component other) {
+    return isEquivalentProps(other, false);
+  }
+
+  protected boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
+    return super.isEquivalentProps(other);
   }
 
   protected final boolean isEquivalentCommonProps(@Nullable SpecGeneratedComponent other) {

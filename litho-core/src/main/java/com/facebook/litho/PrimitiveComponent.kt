@@ -122,10 +122,7 @@ abstract class PrimitiveComponent : Component() {
    * Compare this component to a different one to check if they are equivalent. This is used to be
    * able to skip rendering a component again.
    */
-  final override fun isEquivalentProps(
-      other: Component?,
-      shouldCompareCommonProps: Boolean,
-  ): Boolean {
+  final override fun isEquivalentProps(other: Component?): Boolean {
     if (this === other) {
       return true
     }
@@ -144,8 +141,7 @@ abstract class PrimitiveComponent : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  final override fun isEquivalentTo(other: Component?, shouldCompareCommonProps: Boolean): Boolean =
-      super.isEquivalentTo(other, shouldCompareCommonProps)
+  final override fun isEquivalentTo(other: Component?): Boolean = super.isEquivalentTo(other)
 
   final override fun getSimpleName(): String = super.getSimpleName()
 

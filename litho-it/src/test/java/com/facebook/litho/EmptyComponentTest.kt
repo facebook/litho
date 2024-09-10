@@ -39,7 +39,7 @@ class EmptyComponentTest {
     val emptyComponent1 = EmptyComponent()
     val emptyComponent2 = EmptyComponent()
 
-    assertThat(emptyComponent1.isEquivalentProps(emptyComponent2, false))
+    assertThat(emptyComponent1.isEquivalentProps(emptyComponent2))
         .describedAs("isEquivalentProps check")
         .isEqualTo(true)
     assertThat(emptyComponent1.isEquivalentTo(emptyComponent2))
