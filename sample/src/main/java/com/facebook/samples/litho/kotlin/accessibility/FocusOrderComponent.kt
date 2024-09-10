@@ -27,18 +27,29 @@ import com.facebook.litho.accessibility.focusOrder
 import com.facebook.litho.core.padding
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useFocusOrder
+import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
 import com.facebook.rendercore.dp
 
 class FocusOrderComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
-
+    val hideElements = useState { false }
     val (first, second, third, fourth, fifth, sixth, seventh) = useFocusOrder()
 
     return Column(
         style = Style.padding(16.dp).contentDescription("Second hello!").focusOrder(second)) {
-          child(Text(text = "First hello!", style = Style.focusOrder(first)))
-          child(Text(text = "Fifth hello!", style = Style.focusOrder(fifth)))
+          child(
+              Text(
+                  text = "First hello!",
+                  style =
+                      Style.focusOrder(first).onClick {
+                        hideElements.update { !hideElements.value }
+                      }))
+
+          if (hideElements.value) {
+            child(Text(text = "Fifth hello!", style = Style.focusOrder(fifth)))
+          }
           child(Text(text = "Fourth hello!", style = Style.focusOrder(fourth)))
           child(Text(text = "Third hello!", style = Style.focusOrder(third)))
           child(
