@@ -2859,10 +2859,6 @@ public class ComponentTree
       final LifecycleOwner lifecycleOwner = treePropContainer.get(LifecycleOwnerTreeProp);
       if (lifecycleOwner instanceof LifecycleOwnerWrapper) {
         final LifecycleOwnerWrapper wrapper = (LifecycleOwnerWrapper) lifecycleOwner;
-        if (wrapper.getDelegate() != null && wrapper.getDelegate() != owner) {
-          throw new IllegalArgumentException(
-              "The lifecycle owner has been set from the parent, owner = " + owner);
-        }
         if (Looper.myLooper() == Looper.getMainLooper()) {
           wrapper.setDelegate(owner);
         } else {

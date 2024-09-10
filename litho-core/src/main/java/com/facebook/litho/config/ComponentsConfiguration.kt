@@ -85,6 +85,27 @@ internal constructor(
     @JvmField val debugEventListener: ComponentTreeDebugEventListener? = null,
     @JvmField var enablePreAllocationSameThreadCheck: Boolean = false,
     @JvmField val enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner: Boolean = false,
+    @JvmField val enableDefaultLifecycleOwnerAsFragmentOrActivity: Boolean = false,
+    /**
+     * LithoViewAttributesExtension is an extension for LithoView that allows setting custom view
+     * attributes on the underlying Android View or Drawable. This extension plays a crucial role
+     * when working with Litho components because it enables the modification of view properties not
+     * already exposed by the Litho framework. The proper functioning of this extension is vital for
+     * maintaining correct component behavior during mount and unmount processes, especially when
+     * controlled by animations.
+     *
+     * Prior to the introduction of
+     * [com.facebook.litho.LithoViewAttributesExtension.FineGrainedLithoViewAttributesState], an
+     * existing bug caused view attributes not to be correctly reset upon unmount due to the lack of
+     * information in the view attributes state about the corresponding render unit. This issue
+     * arose primarily during animations that controlled the mount/unmount cycle.
+     *
+     * This configuration aims then to allow you to enable the usage of
+     * [com.facebook.litho.LithoViewAttributesExtension.FineGrainedLithoViewAttributesState] to have
+     * a more reliable behavior. We are testing this currently to ensure there are no other
+     * performance regressions.
+     */
+    @JvmField val useFineGrainedViewAttributesExtension: Boolean = false,
     /**
      * This is a temporary config param for debugging state list animator crashes during layout of a
      * [ComponentHost]
@@ -316,6 +337,10 @@ internal constructor(
     private var avoidRedundantPreAllocations = baseConfig.avoidRedundantPreAllocations
     private var enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
         baseConfig.enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
+    private var enableDefaultLifecycleOwnerAsFragmentOrActivity =
+        baseConfig.enableDefaultLifecycleOwnerAsFragmentOrActivity
+    private var useFineGrainedViewAttributesExtension =
+        baseConfig.useFineGrainedViewAttributesExtension
     private var cloneStateListAnimators = baseConfig.cloneStateListAnimators
     private var enableVisibilityFixForNestedLithoView =
         baseConfig.enableVisibilityFixForNestedLithoView
@@ -389,6 +414,17 @@ internal constructor(
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner
     }
 
+    fun enableDefaultLifecycleOwnerAsFragmentOrActivity(
+        enableDefaultLifecycleOwnerAsFragmentOrActivity: Boolean
+    ): Builder = also {
+      this.enableDefaultLifecycleOwnerAsFragmentOrActivity =
+          enableDefaultLifecycleOwnerAsFragmentOrActivity
+    }
+
+    fun useFineGrainedViewAttributesExtension(enabled: Boolean): Builder = also {
+      useFineGrainedViewAttributesExtension = enabled
+    }
+
     fun cloneStateListAnimators(enabled: Boolean): Builder = also {
       cloneStateListAnimators = enabled
     }
@@ -449,6 +485,9 @@ internal constructor(
           primitiveRecyclerBinderStrategy = primitiveRecyclerBinderStrategy,
           enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner =
               enableSetLifecycleOwnerTreePropViaDefaultLifecycleOwner,
+          enableDefaultLifecycleOwnerAsFragmentOrActivity =
+              enableDefaultLifecycleOwnerAsFragmentOrActivity,
+          useFineGrainedViewAttributesExtension = useFineGrainedViewAttributesExtension,
           cloneStateListAnimators = cloneStateListAnimators,
           enableVisibilityFixForNestedLithoView = enableVisibilityFixForNestedLithoView,
           useDefaultItemAnimatorInLazyCollections = useDefaultItemAnimatorInLazyCollections,

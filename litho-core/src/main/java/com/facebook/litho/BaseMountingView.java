@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -28,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewTreeLifecycleOwner;
 import com.facebook.infer.annotation.Nullsafe;
@@ -217,7 +219,7 @@ public abstract class BaseMountingView extends ComponentHost
       @Nullable LifecycleOwner currentLifecycleOwner);
 
   private void attachLifecycleOwner() {
-    LifecycleOwner lifecycleOwner = ViewTreeLifecycleOwner.get(this);
+    LifecycleOwner lifecycleOwner = getDefaultLifecycleOwner(this);
     if (lifecycleOwner != null && mLifecycleOwner != lifecycleOwner) {
       LifecycleOwner previousLifecycleOwner = mLifecycleOwner;
       mLifecycleOwner = lifecycleOwner;
@@ -230,6 +232,30 @@ public abstract class BaseMountingView extends ComponentHost
       LifecycleOwner previousLifecycleOwner = mLifecycleOwner;
       mLifecycleOwner = null;
       onLifecycleOwnerChanged(previousLifecycleOwner, null);
+    }
+  }
+
+  @Nullable
+  private static LifecycleOwner getDefaultLifecycleOwner(View view) {
+    if (ComponentsConfiguration.defaultInstance.enableDefaultLifecycleOwnerAsFragmentOrActivity) {
+      try {
+        return FragmentManager.findFragment(view);
+      } catch (IllegalStateException e) {
+        return getLifecycleOwnerFromContext(view.getContext());
+      }
+    } else {
+      return ViewTreeLifecycleOwner.get(view);
+    }
+  }
+
+  @Nullable
+  private static LifecycleOwner getLifecycleOwnerFromContext(Context context) {
+    if (context instanceof LifecycleOwner) {
+      return (LifecycleOwner) context;
+    } else if (context instanceof ContextWrapper) {
+      return getLifecycleOwnerFromContext(((ContextWrapper) context).getBaseContext());
+    } else {
+      return null;
     }
   }
 
