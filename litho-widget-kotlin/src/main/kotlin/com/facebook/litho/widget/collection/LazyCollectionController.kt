@@ -19,6 +19,7 @@ package com.facebook.litho.widget.collection
 import androidx.annotation.Px
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.widget.RecyclerEventsController
@@ -50,6 +51,13 @@ class LazyCollectionController {
   /** Tells if the refresh indicator is currently shown or not */
   val isRefreshing: Boolean
     @UiThread get() = recyclerEventsController?.isRefreshing ?: false
+
+  /**
+   * A reference to the [SnapHelper] that is currently attached to the [RecyclerView]. If this
+   * LazyCollection isn't mounted or doesn't have an associated SnapHelper, returns null.
+   */
+  val snapHelper: SnapHelper?
+    @UiThread get() = recyclerEventsController?.snapHelper
 
   /**
    * Toggle the refresh indicator based off a boolean. It is not necessary to call this within the
