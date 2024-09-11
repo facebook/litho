@@ -83,3 +83,17 @@ class DrawableAllocator<Content : Drawable>(
 fun interface Allocator<ContentType> {
   fun allocate(context: Context): ContentType
 }
+
+/**
+ * Returns a new [ContentAllocator] that uses the value returned by the provided [contentType]
+ * lambda as PoolableContentType.
+ */
+fun <Content : Any> ContentAllocator<Content>.withContentType(
+    contentType: () -> Any
+): ContentAllocator<Content> {
+  return object : ContentAllocator<Content> by this {
+    override fun getPoolableContentType(): Any {
+      return contentType()
+    }
+  }
+}
