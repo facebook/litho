@@ -23,6 +23,7 @@ import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.jetpackcompose.UIDebuggerComposeSupport;
 import com.facebook.flipper.plugins.sections.SectionsFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext;
@@ -50,6 +51,7 @@ public class LithoSampleApplication extends Application {
 
       UIDContext uiDebuggerContext = UIDContext.Companion.create(this);
       UIDebuggerLithoSupport.INSTANCE.enable(uiDebuggerContext);
+      UIDebuggerComposeSupport.INSTANCE.enable(uiDebuggerContext);
       client.addPlugin(new UIDebuggerFlipperPlugin(uiDebuggerContext));
 
       final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
