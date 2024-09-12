@@ -146,7 +146,7 @@ internal class VerticalScrollComponent(
             ),
         mountBehavior =
             MountBehavior(
-                "VerticalScroll",
+                { "VerticalScroll" },
                 ViewAllocator { context ->
                   LithoScrollView(context, LithoRenderTreeView(context))
                 }) {

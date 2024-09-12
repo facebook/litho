@@ -1019,7 +1019,7 @@ class PrimitiveComponentsTest {
                 Primitive(
                     layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
                     MountBehavior(
-                        customDescription, ViewAllocator { context -> TextView(context) }) {})
+                        { customDescription }, ViewAllocator { context -> TextView(context) }) {})
 
             customRenderUnitDescription = primitive.renderUnit.description
 
