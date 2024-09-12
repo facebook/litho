@@ -29,14 +29,14 @@ import com.facebook.rendercore.primitives.withContentType
  *
  * @property composable The [ComposableWithDeps] that will be rendered by this component. Use
  *   [useComposable] hook to create one.
- * @property contentType The lambda that returns content type for this component. The content
- *   recycling and updates of components of the same type can be performed more efficiently. It's a
- *   similar concept to contentType in Compose LazyColumn and RecyclerView's itemViewType.
+ * @property contentType The content type for this component. The content recycling and updates of
+ *   components of the same type can be performed more efficiently. It's a similar concept to
+ *   contentType in Compose LazyColumn and RecyclerView's itemViewType.
  * @property style The style to apply to the component.
  */
 class ComposeComponent(
     private val composable: ComposableWithDeps,
-    private val contentType: () -> Any,
+    private val contentType: Any,
     private val style: Style? = null,
 ) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
@@ -44,7 +44,7 @@ class ComposeComponent(
         layoutBehavior = ComposeComponentLayoutBehavior,
         mountBehavior =
             MountBehavior(
-                description = { "ComposeComponent:${contentType()}" },
+                description = { "ComposeComponent:$contentType" },
                 contentAllocator = ALLOCATOR.withContentType(contentType)) {
                   withDescription("composeComponentSetupBinder") {
                     bind(Unit) { content ->

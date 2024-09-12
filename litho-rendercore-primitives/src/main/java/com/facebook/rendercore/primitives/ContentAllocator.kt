@@ -85,15 +85,14 @@ fun interface Allocator<ContentType> {
 }
 
 /**
- * Returns a new [ContentAllocator] that uses the value returned by the provided [contentType]
- * lambda as PoolableContentType.
+ * Returns a new [ContentAllocator] that uses the the provided [contentType] as PoolableContentType.
  */
 fun <Content : Any> ContentAllocator<Content>.withContentType(
-    contentType: () -> Any
+    contentType: Any
 ): ContentAllocator<Content> {
   return object : ContentAllocator<Content> by this {
     override fun getPoolableContentType(): Any {
-      return contentType()
+      return contentType
     }
   }
 }

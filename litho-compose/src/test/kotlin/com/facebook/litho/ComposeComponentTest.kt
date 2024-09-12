@@ -279,7 +279,7 @@ class ComposeComponentTest {
 
   @Test
   fun `should use the same pool for components with the same content types`() {
-    class TestComponent(private val contentType: () -> Any) : KComponent() {
+    class TestComponent(private val contentType: Any) : KComponent() {
       override fun ComponentScope.render(): Component {
         return ComposeComponent(
             composable = useComposable(Unit) { Box {} }, contentType = contentType)
@@ -314,7 +314,7 @@ class ComposeComponentTest {
 
   @Test
   fun `should use separate pools for components with different content types`() {
-    class TestComponent(private val contentType: () -> Any) : KComponent() {
+    class TestComponent(private val contentType: Any) : KComponent() {
       override fun ComponentScope.render(): Component {
         return ComposeComponent(
             composable = useComposable(Unit) { Box {} }, contentType = contentType)
@@ -368,5 +368,5 @@ class ComposeComponentTest {
   }
 }
 
-private val TEST_COMPONENT_CONTENT_TYPE = { "com.facebook.litho.TestComponent" }
-private val OTHER_TEST_COMPONENT_CONTENT_TYPE = { "com.facebook.litho.OtherTestComponent" }
+private val TEST_COMPONENT_CONTENT_TYPE = "com.facebook.litho.TestComponent"
+private val OTHER_TEST_COMPONENT_CONTENT_TYPE = "com.facebook.litho.OtherTestComponent"

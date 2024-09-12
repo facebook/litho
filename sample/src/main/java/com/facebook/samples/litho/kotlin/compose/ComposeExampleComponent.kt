@@ -58,9 +58,8 @@ import com.facebook.litho.widget.TextAlignment
 import com.facebook.litho.widget.VerticalGravity
 import com.facebook.rendercore.dp as lithoDp
 
-private val EXAMPLE_COMPOSE_COMPONENT_CONTENT_TYPE = {
-  "com.facebook.samples.litho.kotlin.compose.ComposeExampleComponent"
-}
+private val EXAMPLE_COMPOSE_COMPONENT_CONTENT_TYPE =
+    "com.facebook.samples.litho.kotlin.compose.ComposeExampleComponent"
 
 class ComposeExampleComponent : KComponent() {
 
