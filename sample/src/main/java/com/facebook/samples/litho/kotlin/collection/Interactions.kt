@@ -23,16 +23,15 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useCallback
-import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.useLazyCollectionController
 
 // start_scrolling_example
 class ScrollingExample() : KComponent() {
 
   override fun ComponentScope.render(): Component {
-    val controller = useState { LazyCollectionController() }.value
+    val controller = useLazyCollectionController()
 
     // Use one of these lambdas to scroll, e.g. in an onClick callback
     val scrollToTenth = useCallback<ClickEvent, Unit> { controller.scrollToIndex(index = 10) }
@@ -58,7 +57,7 @@ class PullToRefreshExample(
 ) : KComponent() {
 
   override fun ComponentScope.render(): Component {
-    val controller = useState { LazyCollectionController() }.value
+    val controller = useLazyCollectionController()
     return LazyList(
         lazyCollectionController = controller,
         onPullToRefresh = {

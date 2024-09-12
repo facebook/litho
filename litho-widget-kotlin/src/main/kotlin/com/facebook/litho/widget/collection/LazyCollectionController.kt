@@ -20,12 +20,21 @@ import androidx.annotation.Px
 import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.ResourcesScope
+import com.facebook.litho.annotations.Hook
 import com.facebook.litho.sections.SectionTree
+import com.facebook.litho.useState
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.px
+
+/** A hook to create a cached [LazyCollectionController] to use with a [LazyCollection]. */
+@Hook
+fun ComponentScope.useLazyCollectionController(): LazyCollectionController {
+  return useState { LazyCollectionController() }.value
+}
 
 /**
  * A controller that can be set on a [LazyCollection] to trigger external events. Most calls should

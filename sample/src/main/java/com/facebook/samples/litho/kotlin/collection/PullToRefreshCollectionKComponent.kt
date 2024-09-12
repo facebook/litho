@@ -26,15 +26,15 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useState
-import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.useLazyCollectionController
 
 // start_example
 class PullToRefreshCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
     val deck = useState { (0..51).map { Card(it) }.shuffled() }
-    val lazyCollectionController = useState { LazyCollectionController() }.value
+    val lazyCollectionController = useLazyCollectionController()
     return LazyList(
         lazyCollectionController = lazyCollectionController,
         onPullToRefresh = {

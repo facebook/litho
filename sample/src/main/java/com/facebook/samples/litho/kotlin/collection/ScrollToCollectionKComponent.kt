@@ -25,16 +25,15 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.useState
 import com.facebook.litho.widget.SmoothScrollAlignmentType
-import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.useLazyCollectionController
 import com.facebook.rendercore.dp
 
 class ScrollToCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
-    val controller = useState { LazyCollectionController() }.value
+    val controller = useLazyCollectionController()
     return Column(style = Style.padding(16.dp)) {
       child(
           Row {
