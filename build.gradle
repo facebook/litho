@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-def latestSdkVersion = 33
+def latestSdkVersion = 34
 
 buildscript {
 
     repositories {
         google()
         mavenCentral()
+        maven { url "https://storage.googleapis.com/r8-releases/raw" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0'
+        classpath 'com.android.tools.build:gradle:8.1.1'
         classpath "com.vanniktech:gradle-maven-publish-plugin:${MAVEN_PUBLISH_PLUGIN}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${DOKKA_VERSION}"
         classpath "com.facebook.kotlin.compilerplugins.dataclassgenerate:gradleplugin:${DATA_CLASS_GENERATE_VERSION}"
+        classpath "com.android.tools:r8:8.5.35"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -123,7 +125,7 @@ ext {
     minSdkVersion = 21
     targetSdkVersion = latestSdkVersion
     compileSdkVersion = latestSdkVersion
-    buildToolsVersion = '33.0.2'
+    buildToolsVersion = '34.0.0'
     sourceCompatibilityVersion = JavaVersion.VERSION_11
     targetCompatibilityVersion = JavaVersion.VERSION_11
 }
@@ -155,6 +157,11 @@ ext.deps = [
         supportTransition  : 'androidx.transition:transition:1.0.0',
         supportSwipeRefresh: 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
         supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
+        // compose
+        activityCompose    : 'androidx.activity:activity-compose:1.9.0',
+        composeFoundation  : 'androidx.compose.foundation:foundation:1.7.0',
+        composeUi          : 'androidx.compose.ui:ui:1.7.0',
+        composeRuntime     : 'androidx.compose.runtime:runtime:1.7.0',
         // lifecycle
         lifecycle      : 'androidx.lifecycle:lifecycle-runtime:2.6.1',
         viewModel      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',

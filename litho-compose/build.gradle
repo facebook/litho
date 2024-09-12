@@ -19,6 +19,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
+project.group = GROUP
+version = VERSION_NAME
+
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
@@ -49,6 +52,13 @@ android {
         }
     }
 
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
@@ -73,6 +83,10 @@ dependencies {
     implementation deps.kotlinStandardLib
     implementation deps.supportCore
     implementation deps.supportDynamicAnimations
+    implementation deps.activityCompose
+    api deps.composeFoundation
+    api deps.composeUi
+    api deps.composeRuntime
 
     // Android Support Library
     compileOnly deps.supportAnnotations
