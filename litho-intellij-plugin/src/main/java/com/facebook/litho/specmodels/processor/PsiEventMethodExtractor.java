@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.processor;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getTypeVariables;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Extracts event methods from the given input. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiEventMethodExtractor {
 
   static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getOnEventMethods(
@@ -67,11 +69,13 @@ public class PsiEventMethodExtractor {
               ImmutableList.of(),
               PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()),
               psiMethod.getName(),
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()),
               ImmutableList.copyOf(getTypeVariables(psiMethod)),
               ImmutableList.copyOf(methodParams),
               psiMethod,
               null,
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               PsiEventDeclarationsExtractor.getEventDeclarationModel(accessExpression));
       delegateMethods.add(eventMethod);
     }
