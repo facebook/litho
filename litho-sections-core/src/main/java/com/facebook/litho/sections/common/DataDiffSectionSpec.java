@@ -21,6 +21,7 @@ import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIO
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DiffUtil;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsReporter;
@@ -109,6 +110,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * }
  * </pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DiffSectionSpec(
     events = {OnCheckIsSameContentEvent.class, OnCheckIsSameItemEvent.class, RenderEvent.class})
 public class DataDiffSectionSpec<T> {
@@ -131,6 +133,7 @@ public class DataDiffSectionSpec<T> {
     final List<? extends T> previousData = data.getPrevious();
     final List<? extends T> nextData = data.getNext();
     final ComponentRenderer componentRenderer =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         new ComponentRenderer<T>(DataDiffSection.<T>getRenderEventHandler(c), c);
     final DiffSectionOperationExecutor operationExecutor =
         new DiffSectionOperationExecutor(changeSet);
@@ -153,6 +156,7 @@ public class DataDiffSectionSpec<T> {
 
     updatesCallback =
         new RecyclerBinderUpdateCallback<>(
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             previousData, nextData, componentRenderer, operationExecutor);
     result.dispatchUpdatesTo(updatesCallback);
 
@@ -254,6 +258,7 @@ public class DataDiffSectionSpec<T> {
     }
 
     @Override
+    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
     public void executeOperations(ComponentContext c, List<Operation> operations) {
       for (int i = 0, size = operations.size(); i < size; i++) {
         final Operation operation = operations.get(i);
@@ -374,6 +379,7 @@ public class DataDiffSectionSpec<T> {
       }
 
       if (LithoDebugConfigurations.isRenderInfoDebuggingEnabled) {
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         renderInfo.addDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, mSectionContext.getSectionScope());
       }
 
