@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.completion.InsertionContext;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Emphasizes the lookup element passed as a delegate by adding "required Prop" tail text. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
 
   static RequiredPropLookupElement create(LookupElement delegate, boolean shouldPrioritize) {
