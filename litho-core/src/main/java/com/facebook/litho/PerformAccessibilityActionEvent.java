@@ -19,16 +19,21 @@ package com.facebook.litho;
 import android.os.Bundle;
 import android.view.View;
 import androidx.core.view.AccessibilityDelegateCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
  * Components should implement an event of this type in order to receive callbacks to {@link
  * android.view.View.AccessibilityDelegate#performAccessibilityAction(View, int, Bundle)}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event(returnType = boolean.class)
 public class PerformAccessibilityActionEvent {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public View host;
   public int action;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Bundle args;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public AccessibilityDelegateCompat superDelegate;
 }
