@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.Choreographer;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.WorkContinuationInstrumenter;
 import com.facebook.rendercore.utils.ThreadUtils;
 import javax.annotation.Nullable;
@@ -32,6 +33,7 @@ import javax.annotation.Nullable;
  *
  * <p>This code was taken from the facebook/rebound repository.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ChoreographerCompatImpl implements ChoreographerCompat {
 
   private static final long ONE_FRAME_MILLIS = 17;
@@ -56,10 +58,12 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
   /** Set the ChoreographerCompat instance for tests. */
   @VisibleForTesting
   public static void setInstance(@Nullable ChoreographerCompat choreographerCompat) {
+    // NULLSAFE_FIXME[Field Not Nullable]
     sInstance = choreographerCompat;
   }
 
   private final @Nullable Handler mHandler;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Choreographer mChoreographer;
 
   @VisibleForTesting
@@ -92,6 +96,7 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
     if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerPostFrameCallback(callbackWrapper.getFrameCallback());
     } else {
+      // NULLSAFE_FIXME[Nullable Dereference]
       mHandler.postDelayed(callbackWrapper.getRunnable(), 0);
     }
   }
@@ -105,6 +110,7 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
     if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerPostFrameCallbackDelayed(callbackWrapper.getFrameCallback(), delayMillis);
     } else {
+      // NULLSAFE_FIXME[Nullable Dereference]
       mHandler.postDelayed(callbackWrapper.getRunnable(), delayMillis + ONE_FRAME_MILLIS);
     }
   }
@@ -116,6 +122,7 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
     if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerRemoveFrameCallback(callbackWrapper.getFrameCallback());
     } else {
+      // NULLSAFE_FIXME[Nullable Dereference]
       mHandler.removeCallbacks(callbackWrapper.getRunnable());
     }
   }
