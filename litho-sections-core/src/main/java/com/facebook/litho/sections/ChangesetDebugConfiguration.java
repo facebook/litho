@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import javax.annotation.Nullable;
  * configured, an event will be dispatched from the {@link SectionTree} whenever a new changeset is
  * generated and applied.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ChangesetDebugConfiguration {
   private static @Nullable ChangesetDebugListener sListener;
 
