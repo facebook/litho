@@ -16,9 +16,11 @@
 
 package com.facebook.litho.editor.model;
 
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
 /** Wraps over a boolean to make it an EditorValue */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class EditorBool extends EditorValue {
 
   public final boolean value;
