@@ -18,6 +18,7 @@ package com.facebook.litho.testing.logging;
 
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.DefaultComponentsReporter;
 import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
@@ -25,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestComponentsReporter implements ErrorReporterDelegate {
 
   private final DefaultComponentsReporter mDefaultComponentsReporter =

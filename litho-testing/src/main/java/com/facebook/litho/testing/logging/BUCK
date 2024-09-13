@@ -18,10 +18,11 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_JAVA_TARGET,
-        LITHO_TESTING_CORE_TARGET,
-        LITHO_PERF_LOGGER,
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         "//third-party/java/androidx/annotation/annotation:annotation",
+        LITHO_JAVA_TARGET,
+        LITHO_PERF_LOGGER,
+        LITHO_TESTING_CORE_TARGET,
     ],
     exported_deps = [
         LITHO_PERF_LOGGER,
