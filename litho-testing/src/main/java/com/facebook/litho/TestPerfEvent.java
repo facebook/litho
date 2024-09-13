@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Implementation of {@link PerfEvent} for tests. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestPerfEvent implements PerfEvent {
 
   private static final AtomicInteger sInstanceCounter = new AtomicInteger(0);
@@ -169,6 +171,7 @@ public class TestPerfEvent implements PerfEvent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
