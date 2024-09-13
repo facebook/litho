@@ -17,13 +17,16 @@
 package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Px;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
 /** An event that is triggered when a smooth scroll action is requested/performed. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class SmoothScrollEvent {
   public int index;
   public @Px int offset;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public SmoothScrollAlignmentType type;
 }
