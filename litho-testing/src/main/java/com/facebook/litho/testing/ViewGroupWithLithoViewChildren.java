@@ -18,11 +18,13 @@ package com.facebook.litho.testing;
 
 import android.content.Context;
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewGroupWithLithoViewChildren extends ViewGroup implements HasLithoViewChildren {
 
   public ViewGroupWithLithoViewChildren(Context context) {
