@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.settings;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
@@ -23,6 +24,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 
 /** Supports storing the application settings in a persistent way. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @State(
     name = "com.facebook.litho.intellij.settings.AppSettingsState",
     storages = {@Storage("LithoIntellijPlugin.xml")},
