@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -26,6 +27,7 @@ import com.facebook.yoga.YogaEdge;
  * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
  *     instead
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public class TestSizeDependentComponent extends SpecGeneratedComponent {
 
@@ -57,6 +59,7 @@ public class TestSizeDependentComponent extends SpecGeneratedComponent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
     return this == other;
   }
