@@ -176,6 +176,37 @@ public class RecyclerBinder
         }
       };
 
+  /**
+   * To avoid creating a new runnable for each ComponentTreeHolder, we maintain a task queue to
+   * consume them in order.
+   */
+  Deque<ComponentTreeHolder> mComponentTreeHoldersToRelease = new ArrayDeque<>();
+
+  private final Object mReleaseTreeRunnableLock = new Object();
+  private boolean mHasPendingReleaseTreeRunnable = false;
+
+  @ThreadConfined(ThreadConfined.UI)
+  final Runnable mReleaseTreeRunnable =
+      () -> {
+        Iterator<ComponentTreeHolder> iterator;
+        synchronized (mReleaseTreeRunnableLock) {
+          mHasPendingReleaseTreeRunnable = false;
+          if (mComponentTreeHoldersToRelease.isEmpty()) {
+            return;
+          }
+
+          iterator = mComponentTreeHoldersToRelease.iterator();
+          mComponentTreeHoldersToRelease = new ArrayDeque<>();
+        }
+
+        while (iterator.hasNext()) {
+          ComponentTreeHolder holder = iterator.next();
+          if (holder != null) {
+            maybeAcquireStateAndReleaseTree(holder);
+          }
+        }
+      };
+
   private final PostDispatchDrawListener mPostDispatchDrawListener =
       new PostDispatchDrawListener() {
         @Override
@@ -3496,7 +3527,17 @@ public class RecyclerBinder
     if (ThreadUtils.isMainThread()) {
       maybeAcquireStateAndReleaseTree(holder);
     } else {
-      mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
+      if (true) {
+        synchronized (mReleaseTreeRunnableLock) {
+          mComponentTreeHoldersToRelease.addLast(holder);
+          if (!mHasPendingReleaseTreeRunnable) {
+            mMainThreadHandler.post(mReleaseTreeRunnable);
+            mHasPendingReleaseTreeRunnable = true;
+          }
+        }
+      } else {
+        mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
+      }
     }
   }
 
