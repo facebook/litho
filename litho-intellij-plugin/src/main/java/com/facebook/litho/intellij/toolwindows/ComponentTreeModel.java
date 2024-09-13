@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.toolwindows;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.StructureViewModelBase;
@@ -23,6 +24,7 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.psi.PsiFile;
 
 /** Structure view containing both leafs and branches. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ComponentTreeModel extends StructureViewModelBase
     implements StructureViewModel.ElementInfoProvider {
 
