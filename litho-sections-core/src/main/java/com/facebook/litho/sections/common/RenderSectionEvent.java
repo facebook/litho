@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.common;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 import com.facebook.litho.sections.Children;
@@ -26,6 +27,7 @@ import com.facebook.litho.sections.Children;
  * com.facebook.litho.sections.annotations.GroupSectionSpec} to render the section of the {@link
  * com.facebook.litho.sections.fb.datasources.GraphQLRootQuerySectionSpec} result.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event(returnType = Children.class, mode = EventHandlerRebindMode.NONE)
 public class RenderSectionEvent {
 
@@ -81,10 +83,14 @@ public class RenderSectionEvent {
     TAIL_FETCH,
   }
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Object model;
   public @Nullable Object lastNonNullModel;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public FetchState state;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public Throwable error;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public DataSource dataSource;
   public @Nullable FetchType fetchType;
 }
