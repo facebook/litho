@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.actions;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -32,6 +33,7 @@ import java.util.Optional;
  * User initiated action available for the Spec file. When invoked navigates user to the generated
  * class.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class GoToGeneratedClassAction extends AnAction {
 
   @Override
