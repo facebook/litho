@@ -574,6 +574,9 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
         }
   }
 
+  val alpha: Float?
+    get() = _nodeInfo?.alpha
+
   fun rotation(rotation: Float) {
     getOrCreateNodeInfo().rotation = rotation
     privateFlags =

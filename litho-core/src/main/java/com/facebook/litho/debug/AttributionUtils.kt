@@ -18,6 +18,7 @@
 
 package com.facebook.litho.debug
 
+import com.facebook.litho.KComponent
 import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.debug.DebugEventDispatcher
 
@@ -35,4 +36,24 @@ fun getAttribution(attribution: String?): String? {
       }
 
   return frame?.toString() ?: attribution
+}
+
+/** Uses a stack trace to find the closest stack element inside a [KComponent.render] method. */
+@SuppressWarnings("ThrowException")
+fun getComponentStackTraceElement(): StackTraceElement? {
+  val stack = Exception().stackTrace
+  var index = 0
+  for (i in stack.indices) {
+    // Find the first stack element that is in KComponent.
+    if (stack[i].className.equals(KComponent::class.qualifiedName)) {
+      // two elements above this stack element is the line in the render method.
+      index = (i - 2).coerceIn(0, stack.lastIndex)
+    }
+  }
+
+  return if (index != 0 && index != stack.lastIndex) {
+    stack[index]
+  } else {
+    null
+  }
 }

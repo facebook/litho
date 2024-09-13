@@ -45,10 +45,14 @@ import com.facebook.litho.SupportsPivotTransform
 import com.facebook.litho.SupportsPivotTransform.Companion.BadPivotClassErrorMessage
 import com.facebook.litho.TouchEvent
 import com.facebook.litho.binders.viewBinder
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.debug.DebugInfoReporter
+import com.facebook.litho.debug.getComponentStackTraceElement
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.rendercore.Dimen
+import com.facebook.rendercore.LogLevel
 import com.facebook.rendercore.RenderUnit
 import com.facebook.yoga.YogaEdge
 
@@ -219,7 +223,21 @@ internal data class DimenStyleItem(override val field: DimenField, override val 
  *
  * See [android.view.View.setAlpha]
  */
-inline fun Style.alpha(alpha: Float): Style = this + FloatStyleItem(FloatField.ALPHA, alpha)
+inline fun Style.alpha(alpha: Float): Style {
+  if (ComponentsConfiguration.isZeroAlphaLoggingEnabled) {
+    if (alpha <= 0) {
+      DebugInfoReporter.report(category = "ZeroAlphaComponent", level = LogLevel.WARNING) {
+        val attribution = getComponentStackTraceElement()
+        val component = "<cls>${attribution?.className ?: "nothing"}</cls>"
+        this["isSpec"] = false
+        this["component"] = component
+        this["location"] = "$component:${attribution?.lineNumber ?: "nothing"}"
+      }
+    }
+  }
+
+  return this + FloatStyleItem(FloatField.ALPHA, alpha)
+}
 
 /**
  * Sets a background on the View this Component mounts to. Setting this property will cause the

@@ -70,6 +70,7 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.Equivalence;
 import com.facebook.rendercore.LayoutCache;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.ResourceResolver;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -998,6 +999,35 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
     public abstract T getThis();
 
     protected abstract void setComponent(Component component);
+
+    protected void validate() {
+      if (ComponentsConfiguration.isZeroAlphaLoggingEnabled) {
+        final @Nullable CommonProps commonProps = mComponent.getCommonProps();
+        if (commonProps != null) {
+          final boolean hasZeroAlpha =
+              commonProps.getAlpha() != null && commonProps.getAlpha() <= 0;
+          final boolean isInteractable =
+              commonProps.getClickHandler() != null
+                  || commonProps.getLongClickHandler() != null
+                  || commonProps.getTouchHandler() != null
+                  || commonProps.getInterceptTouchHandler() != null;
+
+          if (hasZeroAlpha && isInteractable) {
+            DebugInfoReporter.report(
+                "ZeroAlphaComponent",
+                LogLevel.WARNING,
+                (Map<String, Object> attrs) -> {
+                  attrs.put("isSpec", true);
+                  attrs.put("component", mComponent.getSimpleName());
+                  final @Nullable String parent =
+                      getOwner() != null ? getOwner().getSimpleName() : null;
+                  attrs.put("location", parent);
+                  return Unit.INSTANCE;
+                });
+          }
+        }
+      }
+    }
 
     /**
      * Ports {@link androidx.core.view.ViewCompat#setAccessibilityHeading} into components world.

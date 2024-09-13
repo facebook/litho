@@ -1396,6 +1396,10 @@ public class BuilderGenerator {
       buildMethodBuilder.addStatement("registerEventTriggers()");
     }
 
+    if (specModel.hasBuildTimeValidations()) {
+      buildMethodBuilder.addStatement("validate()");
+    }
+
     return buildMethodBuilder
         .addStatement("return $L", getComponentMemberInstanceName(specModel))
         .build();

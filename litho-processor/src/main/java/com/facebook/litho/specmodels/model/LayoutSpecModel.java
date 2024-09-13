@@ -325,6 +325,11 @@ public class LayoutSpecModel implements SpecModel {
     return false;
   }
 
+  @Override
+  public boolean hasBuildTimeValidations() {
+    return true;
+  }
+
   public String getSimpleNameDelegate() {
     return mSimpleNameDelegate;
   }

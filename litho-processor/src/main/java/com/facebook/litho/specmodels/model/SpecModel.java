@@ -269,4 +269,8 @@ public interface SpecModel {
    *     reflection.
    */
   boolean shouldGenerateIsEquivalentTo();
+
+  default boolean hasBuildTimeValidations() {
+    return false;
+  }
 }

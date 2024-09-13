@@ -134,6 +134,7 @@ class BuilderGeneratorKtTest {
                       @java.lang.Override
                       public com.facebook.litho.specmodels.generator.WildcardOutPropTest build() {
                         checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
+                        validate();
                         return mWildcardOutPropTest;
                       }
                     }
@@ -212,6 +213,7 @@ class BuilderGeneratorKtTest {
 
                       @java.lang.Override
                       public com.facebook.litho.specmodels.generator.VarArgsWildcardPropTest build() {
+                        validate();
                         return mVarArgsWildcardPropTest;
                       }
                     }
