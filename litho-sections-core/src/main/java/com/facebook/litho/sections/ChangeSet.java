@@ -27,6 +27,7 @@ import static com.facebook.litho.sections.Change.UPDATE_RANGE;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreePropContainer;
 import com.facebook.litho.config.LithoDebugConfigurations;
@@ -44,10 +45,12 @@ import java.util.List;
  * DiffSectionSpec} to allow the ChangeSetSpec to define its changes based on old/new props and
  * state.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadConfined(ANY)
 public final class ChangeSet {
 
   private final List<Change> mChanges;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Section mSection;
 
   @Nullable private ChangeSetStats mChangeSetStats;
@@ -259,6 +262,7 @@ public final class ChangeSet {
       int startCount, @Nullable Section section, boolean enableStats) {
     final ChangeSet changeSet = new ChangeSet();
     changeSet.mFinalCount = startCount;
+    // NULLSAFE_FIXME[Field Not Nullable]
     changeSet.mSection = section;
     changeSet.mChangeSetStats = enableStats ? new ChangeSetStats() : null;
 
@@ -490,6 +494,7 @@ public final class ChangeSet {
     }
 
     @Override
+    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
