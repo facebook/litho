@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.completion;
 
 import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_PARAMETER_ANNOTATION;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
@@ -47,6 +48,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 /** Offers completion for the {@code @Param} method parameters in the Litho Spec class. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ParamCompletionContributor extends CompletionContributor {
   private static final Set<String> ALLOWED_METHOD_ANNOTATIONS = new HashSet<>();
 
