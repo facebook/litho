@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -44,6 +45,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
   private final TestSpecGenerator mTestSpecGenerator;
@@ -120,6 +122,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
         enclosedSpecModel.getTypeVariables(),
         enclosedSpecModel,
         mTestSpecGenerator,
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         JavadocExtractor.getClassJavadoc(elements, element));
   }
 
