@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
@@ -41,6 +42,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 /** Navigates from Component method to Spec elements. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBase {
   private static final EventLogger LOGGER = new DebounceEventLogger(4_000);
 
@@ -125,6 +127,7 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
         PsiSearchUtils.getInstance()
             .findOriginalClass(
                 project,
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 LithoPluginUtils.getLithoComponentSpecNameFromComponent(containingClsName));
     return specCls;
   }
