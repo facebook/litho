@@ -102,6 +102,9 @@ public class ComponentTreeHolder {
   private RenderInfo mRenderInfo;
 
   @GuardedBy("this")
+  private final boolean mAcquireTreeStateOnRelease;
+
+  @GuardedBy("this")
   private @Nullable ComponentTree.NewLayoutStateReadyListener mPendingNewLayoutListener;
 
   @GuardedBy("this")
@@ -122,6 +125,7 @@ public class ComponentTreeHolder {
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable LithoVisibilityEventsController lithoVisibilityEventsController;
     private @Nullable StateUpdaterDelegator stateUpdaterDelegator;
+    private boolean acquireTreeStateOnRelease;
 
     private Builder(ComponentsConfiguration configuration) {
       componentsConfiguration = configuration;
@@ -146,6 +150,11 @@ public class ComponentTreeHolder {
     public Builder lithoVisibilityEventsController(
         LithoVisibilityEventsController lithoVisibilityEventsController) {
       this.lithoVisibilityEventsController = lithoVisibilityEventsController;
+      return this;
+    }
+
+    public Builder acquireTreeStateOnRelease(boolean shouldAcquireTreeStateOnRelease) {
+      acquireTreeStateOnRelease = shouldAcquireTreeStateOnRelease;
       return this;
     }
 
@@ -177,12 +186,12 @@ public class ComponentTreeHolder {
     mLithoVisibilityEventsController = builder.lithoVisibilityEventsController;
     mComponentsConfiguration = builder.componentsConfiguration;
     mStateUpdaterDelegator = builder.stateUpdaterDelegator;
+    mAcquireTreeStateOnRelease = builder.acquireTreeStateOnRelease;
   }
 
-  @VisibleForTesting
   @UiThread
-  public synchronized void acquireStateAndReleaseTree(boolean acquireTreeStateOnRelease) {
-    if (acquireTreeStateOnRelease || shouldAcquireTreeStateOnRelease()) {
+  public synchronized void acquireStateAndReleaseTree() {
+    if (shouldAcquireTreeStateOnRelease()) {
       acquireTreeState();
     }
 
@@ -499,7 +508,7 @@ public class ComponentTreeHolder {
       return (Boolean) acquireTreeState;
     }
 
-    return false;
+    return mAcquireTreeStateOnRelease;
   }
 
   @GuardedBy("this")

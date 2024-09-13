@@ -139,7 +139,6 @@ public class RecyclerBinder
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
   private final @Nullable RunnableHandler mAsyncInsertHandler;
-  private final boolean mAcquireStateHandlerOnRelease;
   private final @Nullable LithoVisibilityEventsController mLithoVisibilityEventsController;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -407,30 +406,11 @@ public class RecyclerBinder
         @Nullable LithoVisibilityEventsController lifecycleProvider);
   }
 
-  static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
-      new ComponentTreeHolderFactory() {
-        @Override
-        public ComponentTreeHolder create(
-            RenderInfo renderInfo,
-            @Nullable RunnableHandler layoutHandler,
-            @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
-            ComponentsConfiguration componentsConfiguration,
-            @Nullable LithoVisibilityEventsController lifecycleProvider) {
-          return ComponentTreeHolder.create(componentsConfiguration)
-              .renderInfo(renderInfo)
-              .layoutHandler(layoutHandler)
-              .componentTreeMeasureListenerFactory(measureListenerFactory)
-              .lithoVisibilityEventsController(lifecycleProvider)
-              .build();
-        }
-      };
-
   public static final class Builder {
 
     private RecyclerBinderConfig mRecyclerBinderConfig;
     private LayoutInfo layoutInfo;
-    private ComponentTreeHolderFactory componentTreeHolderFactory =
-        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
+    private ComponentTreeHolderFactory componentTreeHolderFactory;
     private ComponentContext componentContext;
     private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
@@ -481,8 +461,7 @@ public class RecyclerBinder
     }
 
     /**
-     * @param componentTreeHolderFactory Factory to acquire a new ComponentTreeHolder. Defaults to
-     *     {@link #DEFAULT_COMPONENT_TREE_HOLDER_FACTORY}.
+     * @param componentTreeHolderFactory Factory to acquire a new ComponentTreeHolder.
      */
     public Builder componentTreeHolderFactory(
         ComponentTreeHolderFactory componentTreeHolderFactory) {
@@ -603,6 +582,22 @@ public class RecyclerBinder
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
+      }
+
+      if (componentTreeHolderFactory == null) {
+        componentTreeHolderFactory =
+            (renderInfo,
+                layoutHandler,
+                measureListenerFactory,
+                componentsConfiguration,
+                lifecycleProvider) ->
+                ComponentTreeHolder.create(componentsConfiguration)
+                    .renderInfo(renderInfo)
+                    .layoutHandler(layoutHandler)
+                    .componentTreeMeasureListenerFactory(measureListenerFactory)
+                    .lithoVisibilityEventsController(lifecycleProvider)
+                    .acquireTreeStateOnRelease(acquireStateHandlerOnRelease)
+                    .build();
       }
 
       return new RecyclerBinder(this);
@@ -767,7 +762,6 @@ public class RecyclerBinder
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = mRecyclerBinderConfig.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
-    mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = mRecyclerBinderConfig.recyclerViewItemPrefetch;
     mRequestMountForPrefetchedItems = mRecyclerBinderConfig.requestMountForPrefetchedItems;
     mItemViewCacheSize = mRecyclerBinderConfig.itemViewCacheSize;
@@ -1751,7 +1745,7 @@ public class RecyclerBinder
     final boolean isTreeValid = holder.isTreeValid();
 
     if (isTreeValid && !isNewPositionInRange) {
-      holder.acquireStateAndReleaseTree(mAcquireStateHandlerOnRelease);
+      holder.acquireStateAndReleaseTree();
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
@@ -3500,28 +3494,23 @@ public class RecyclerBinder
 
   private void maybeReleaseOutOfRangeTree(final ComponentTreeHolder holder) {
     if (ThreadUtils.isMainThread()) {
-      maybeAcquireStateAndReleaseTree(holder, mAcquireStateHandlerOnRelease);
+      maybeAcquireStateAndReleaseTree(holder);
     } else {
       mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
     }
   }
 
-  private Runnable getMaybeAcquireStateAndReleaseTreeRunnable(final ComponentTreeHolder holder) {
-    return new Runnable() {
-      @Override
-      public void run() {
-        maybeAcquireStateAndReleaseTree(holder, mAcquireStateHandlerOnRelease);
-      }
-    };
+  private static Runnable getMaybeAcquireStateAndReleaseTreeRunnable(
+      final ComponentTreeHolder holder) {
+    return () -> maybeAcquireStateAndReleaseTree(holder);
   }
 
   @UiThread
-  private static void maybeAcquireStateAndReleaseTree(
-      ComponentTreeHolder holder, boolean acquireStateAndReleaseTree) {
+  private static void maybeAcquireStateAndReleaseTree(ComponentTreeHolder holder) {
     if (canReleaseTree(holder)
         && (holder.getComponentTree() != null
             && holder.getComponentTree().getLithoView() == null)) {
-      holder.acquireStateAndReleaseTree(acquireStateAndReleaseTree);
+      holder.acquireStateAndReleaseTree();
     }
   }
 

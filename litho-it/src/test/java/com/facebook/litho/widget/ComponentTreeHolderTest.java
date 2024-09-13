@@ -91,7 +91,12 @@ public class ComponentTreeHolderTest {
 
   @Test
   public void testRetainAnimationStateAfterExitingRange() {
-    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, true)
+            .component(mComponent)
+            .build();
+    ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
     assertThat(holder.getComponentTree().hasMounted()).isFalse();
     TreeState treeState = holder.getComponentTree().getTreeState();
@@ -103,7 +108,7 @@ public class ComponentTreeHolderTest {
     Whitebox.setInternalState(holder.getComponentTree(), "mTreeState", treeState);
 
     // component goes out of range
-    holder.acquireStateAndReleaseTree(true);
+    holder.acquireStateAndReleaseTree();
     assertThat(holder.getComponentTree()).isNull();
 
     // component comes back within range
@@ -113,22 +118,32 @@ public class ComponentTreeHolderTest {
 
   @Test
   public void testRetainStateHandlerAfterExitingRange() {
-    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, true)
+            .component(mComponent)
+            .build();
+    ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
 
     // component goes out of range
-    holder.acquireStateAndReleaseTree(true);
+    holder.acquireStateAndReleaseTree();
     assertThat(holder.getComponentTree()).isNull();
     assertThat(holder.getTreeState()).isNotNull();
   }
 
   @Test
   public void testDropStateHandlerAfterExitingRange() {
-    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, false)
+            .component(mComponent)
+            .build();
+    ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
 
     // component goes out of range
-    holder.acquireStateAndReleaseTree(false);
+    holder.acquireStateAndReleaseTree();
     assertThat(holder.getComponentTree()).isNull();
     assertThat(holder.getTreeState()).isNull();
   }
@@ -144,7 +159,7 @@ public class ComponentTreeHolderTest {
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
 
     // component goes out of range
-    holder.acquireStateAndReleaseTree(false);
+    holder.acquireStateAndReleaseTree();
     assertThat(holder.getComponentTree()).isNull();
     assertThat(holder.getTreeState()).isNotNull();
   }

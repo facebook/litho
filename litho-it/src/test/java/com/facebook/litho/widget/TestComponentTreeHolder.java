@@ -57,7 +57,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   }
 
   @Override
-  public synchronized void acquireStateAndReleaseTree(boolean acquireStateHandlerOnRelease) {
+  public synchronized void acquireStateAndReleaseTree() {
     mComponentTree = null;
     mTreeValid = false;
     mLayoutAsyncCalled = false;
