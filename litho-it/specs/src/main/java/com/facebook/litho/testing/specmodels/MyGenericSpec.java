@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.specmodels;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -24,6 +25,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @LayoutSpec
 public class MyGenericSpec<E extends HasEventDispatcher> {
   @OnCreateLayout

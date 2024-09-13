@@ -37,6 +37,7 @@ fb_core_android_library(
         make_dep_path("litho-it/..."),
     ],
     deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
         LITHO_ANNOTATIONS_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_COMPILE_TESTING_TARGET,
