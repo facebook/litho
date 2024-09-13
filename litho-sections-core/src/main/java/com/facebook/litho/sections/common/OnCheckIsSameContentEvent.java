@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.EventHandlerRebindMode;
 
@@ -26,8 +27,11 @@ import com.facebook.litho.annotations.EventHandlerRebindMode;
  * <p>todo(t16485443): The generic type declaration(OnCheckIsSameContentEvent<TEdgeModel>) is
  * temporarily removed until the bug in the attached task is fixed.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event(returnType = Boolean.class, mode = EventHandlerRebindMode.NONE)
 public class OnCheckIsSameContentEvent<T> {
+  // NULLSAFE_FIXME[Field Not Initialized]
   public T previousItem;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public T nextItem;
 }
