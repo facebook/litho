@@ -165,6 +165,11 @@ internal constructor(
      * attributes that may have been added by non-litho code.
      */
     @JvmField val isHostViewAttributesCleanUpEnabled: Boolean = false,
+    /**
+     * To mitigate ANR issue with RecyclerBinder, using a single runnable to release tree out of
+     * working range.
+     */
+    @JvmField val enableSingleRunnableToReleaseTree: Boolean = false,
 ) {
 
   val shouldAddRootHostViewOrDisableBgFgOutputs: Boolean =

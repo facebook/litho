@@ -3527,7 +3527,7 @@ public class RecyclerBinder
     if (ThreadUtils.isMainThread()) {
       maybeAcquireStateAndReleaseTree(holder);
     } else {
-      if (true) {
+      if (ComponentsConfiguration.defaultInstance.enableSingleRunnableToReleaseTree) {
         synchronized (mReleaseTreeRunnableLock) {
           mComponentTreeHoldersToRelease.addLast(holder);
           if (!mHasPendingReleaseTreeRunnable) {
