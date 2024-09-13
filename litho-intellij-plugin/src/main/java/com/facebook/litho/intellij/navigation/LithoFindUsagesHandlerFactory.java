@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.intellij.find.findUsages.FindUsagesHandler;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
   private final Function<PsiClass, PsiClass> findGeneratedClass;
 
@@ -40,6 +42,7 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
                       final String componentFQN =
                           LithoPluginUtils.getLithoComponentNameFromSpec(specFQN);
                       return PsiSearchUtils.getInstance()
+                          // NULLSAFE_FIXME[Parameter Not Nullable]
                           .findOriginalClass(specCls.getProject(), componentFQN);
                     })
                 .orElse(null);
