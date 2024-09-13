@@ -17,6 +17,7 @@
 package com.facebook.litho.testing;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.SpecGeneratedComponent;
@@ -30,6 +31,7 @@ import java.util.Set;
  * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
  *     instead
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public abstract class TestComponent extends SpecGeneratedComponent {
 
@@ -158,6 +160,7 @@ public abstract class TestComponent extends SpecGeneratedComponent {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
     mIsEquivalentToCalled = true;
     return super.isEquivalentProps(other, shouldCompareCommonProps);
@@ -179,6 +182,7 @@ public abstract class TestComponent extends SpecGeneratedComponent {
   @Override
   public Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     mDispatchedEventHandlers.put(eventHandler, eventState);
+    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
