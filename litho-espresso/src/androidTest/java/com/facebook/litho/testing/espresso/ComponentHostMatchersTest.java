@@ -31,6 +31,7 @@ import android.widget.TextView;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.runner.AndroidJUnit4;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -42,15 +43,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link ComponentHostMatchers} */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @RunWith(AndroidJUnit4.class)
 public class ComponentHostMatchersTest {
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private LithoView mView;
 
   @UiThreadTest
   @Before
   public void before() throws Throwable {
     final ComponentContext mComponentContext =
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         new ComponentContext(InstrumentationRegistry.getTargetContext());
     final Component mTextComponent =
         MyComponent.create(mComponentContext).text("foobar").customViewTag("zoidberg").build();
@@ -64,6 +68,7 @@ public class ComponentHostMatchersTest {
   public void testContentDescriptionMatching() throws Throwable {
     assertThat(mView, componentHostWithText("foobar"));
     assertThat(mView, not(componentHostWithText("bar")));
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     assertThat(mView, componentHostWithText(containsString("oob")));
   }
 
@@ -86,6 +91,7 @@ public class ComponentHostMatchersTest {
 
   @Test
   public void testMountedComponent() throws Throwable {
+    // NULLSAFE_FIXME[Not Vetted Third-Party]
     assertThat(mView, is(componentHost(withLifecycle(isA(Text.class)))));
   }
 }
