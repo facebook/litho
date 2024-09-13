@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.espresso;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -23,6 +24,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @LayoutSpec
 public class MyComponentSpec {
   @OnCreateLayout
