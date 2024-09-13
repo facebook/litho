@@ -29,11 +29,15 @@ import com.facebook.rendercore.debug.DebugEventDispatcher.dispatch
  */
 object DebugInfoReporter {
 
-  /** @param [category] the debug event category. It is saved as the 'name' attribute in QPL */
+  /**
+   * @param [category] the debug event category. It is saved as the 'name' attribute in QPL
+   * @param [level] the log level; default is [LogLevel.DEBUG]
+   */
   @JvmStatic
   @JvmOverloads
   fun report(
       category: String,
+      level: LogLevel = LogLevel.DEBUG,
       renderStateId: Int = RenderState.NO_ID,
       write: MutableMap<String, Any?>.() -> Unit,
   ) {
@@ -44,7 +48,7 @@ object DebugInfoReporter {
         } else {
           { renderStateId.toString() }
         },
-        LogLevel.DEBUG,
+        level,
     ) { attribute ->
       attribute.write()
       attribute[Name] = category
