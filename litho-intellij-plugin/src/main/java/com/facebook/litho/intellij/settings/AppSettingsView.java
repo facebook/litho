@@ -16,11 +16,13 @@
 
 package com.facebook.litho.intellij.settings;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ui.FormBuilder;
 import javax.swing.JPanel;
 
 /** Creates and manages settings UI for the Settings Dialog. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AppSettingsView {
   private final JPanel mainPanel;
   private final JBCheckBox resolveRedSymbolsStatus =
