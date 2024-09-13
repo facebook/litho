@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.settings;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.openapi.options.Configurable;
@@ -26,8 +27,10 @@ import javax.swing.JComponent;
 import org.jetbrains.annotations.Nls;
 
 /** Bridges settings UI with settings data model. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AppSettingsController implements Configurable {
   private final Project project;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private AppSettingsView view;
 
   public AppSettingsController(Project project) {
@@ -70,6 +73,7 @@ public class AppSettingsController implements Configurable {
 
   @Override
   public void disposeUIResources() {
+    // NULLSAFE_FIXME[Field Not Nullable]
     view = null;
   }
 }
