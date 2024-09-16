@@ -743,13 +743,13 @@ class ViewAttributes {
         return
       }
       if (view is ComponentHost) {
-        view.setInterceptTouchEventHandler(interceptTouchHandler)
+        view.onInterceptTouchEventHandler = interceptTouchHandler
       }
     }
 
     fun unsetInterceptTouchEventHandler(view: View) {
       if (view is ComponentHost) {
-        view.setInterceptTouchEventHandler(null)
+        view.onInterceptTouchEventHandler = null
       }
     }
 

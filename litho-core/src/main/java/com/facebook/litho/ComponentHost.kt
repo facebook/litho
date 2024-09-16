@@ -95,7 +95,6 @@ open class ComponentHost(
   private var componentAccessibilityDelegate: ComponentAccessibilityDelegate? = null
   private var isComponentAccessibilityDelegateSet = false
   private var onLongClickListener: ComponentLongClickListener? = null
-  private var onInterceptTouchEventHandler: EventHandler<InterceptTouchEvent>? = null
   private var pivotXPercent = UNSET
   private var pivotYPercent = UNSET
   /**
@@ -132,6 +131,11 @@ open class ComponentHost(
       field = value
       withSafeModification { setOnTouchListener(value) }
     }
+
+  /**
+   * An [EventHandler] that will be invoked when [ComponentHost.onInterceptTouchEvent] is called.
+   */
+  var onInterceptTouchEventHandler: EventHandler<InterceptTouchEvent>? = null
 
   var touchExpansionDelegate: TouchExpansionDelegate? = null
     private set
@@ -534,7 +538,7 @@ open class ComponentHost(
       componentLongClickListener?.eventHandler = null
       componentFocusChangeListener?.eventHandler = null
       componentTouchListener?.eventHandler = null
-      setInterceptTouchEventHandler(null)
+      onInterceptTouchEventHandler = null
     }
   }
 
@@ -577,18 +581,6 @@ open class ComponentHost(
       onLongClickListener = listener
       withSafeModification { setOnLongClickListener(listener) }
     }
-
-  /**
-   * Sets an [EventHandler] that will be invoked when [ComponentHost.onInterceptTouchEvent] is
-   * called.
-   *
-   * @param interceptTouchEventHandler the handler to be set on this host.
-   */
-  fun setInterceptTouchEventHandler(
-      interceptTouchEventHandler: EventHandler<InterceptTouchEvent>?
-  ) {
-    onInterceptTouchEventHandler = interceptTouchEventHandler
-  }
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
     val interceptTouchEventHandler = onInterceptTouchEventHandler
