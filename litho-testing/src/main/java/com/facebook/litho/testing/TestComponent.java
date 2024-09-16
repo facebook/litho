@@ -179,10 +179,10 @@ public abstract class TestComponent extends SpecGeneratedComponent {
     mIsEquivalentToCalled = false;
   }
 
+  @Nullable
   @Override
   public Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     mDispatchedEventHandlers.put(eventHandler, eventState);
-    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
