@@ -2,10 +2,12 @@
 
 package com.facebook.rendercore;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.text.TextMeasurementUtils;
 import com.facebook.rendercore.text.TextRenderUnit;
 import com.facebook.rendercore.text.TextStyle;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DefaultTextNode extends DefaultNode {
 
   private final String mText;
