@@ -16,12 +16,14 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 /** An {@link AnimationBinding} that adds a delay to the provided {@link AnimationBinding} */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DelayBinding extends BaseAnimationBinding {
 
   private final AnimationBinding mBinding;
@@ -92,6 +94,7 @@ public class DelayBinding extends BaseAnimationBinding {
             if (!mIsActive) {
               return;
             }
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             mBinding.start(mResolver);
           }
         };
