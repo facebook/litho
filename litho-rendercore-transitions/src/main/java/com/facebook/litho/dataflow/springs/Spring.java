@@ -16,6 +16,7 @@
 
 package com.facebook.litho.dataflow.springs;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -23,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * <p>This code was forked from the facebook/rebound repository.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class Spring {
 
   // unique incrementer id for springs
@@ -32,6 +34,7 @@ public class Spring {
   private static final double MAX_DELTA_TIME_SEC = 0.064;
   // fixed timestep to use in the physics solver in seconds
   private static final double SOLVER_TIMESTEP_SEC = 0.001;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private SpringConfig mSpringConfig;
   private boolean mOvershootClampingEnabled;
 
