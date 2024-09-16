@@ -20,8 +20,7 @@ import android.content.Context
 import android.view.View
 import com.facebook.rendercore.RenderUnit
 
-internal object ViewAttributesViewBinder :
-    RenderUnit.Binder<ViewAttributesViewBinder.Model, View, Int> {
+object ViewAttributesViewBinder : RenderUnit.Binder<ViewAttributesViewBinder.Model, View, Int> {
 
   data class Model(
       val renderUnit: RenderUnit<*>,
