@@ -16,11 +16,14 @@
 
 package com.facebook.litho.dataflow.springs;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Data structure for storing spring configuration.
  *
  * <p>This code was forked from the facebook/rebound repository.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SpringConfig {
 
   public static final double DEFAULT_TENSION = 230.2;
