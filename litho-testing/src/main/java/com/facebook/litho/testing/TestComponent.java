@@ -160,8 +160,7 @@ public abstract class TestComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
-  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
+  public boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
     mIsEquivalentToCalled = true;
     return super.isEquivalentProps(other, shouldCompareCommonProps);
   }
