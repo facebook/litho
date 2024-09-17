@@ -28,6 +28,10 @@ class StateUpdaterDelegator : StateUpdater {
     this.delegate = stateUpdater
   }
 
+  fun detachStateUpdater() {
+    this.delegate = null
+  }
+
   override var isFirstMount: Boolean
     get() = applyOnStateUpdater { isFirstMount }
     set(value) {
