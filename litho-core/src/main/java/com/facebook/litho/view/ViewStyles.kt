@@ -223,7 +223,7 @@ internal data class DimenStyleItem(override val field: DimenField, override val 
  *
  * See [android.view.View.setAlpha]
  */
-inline fun Style.alpha(alpha: Float): Style {
+fun Style.alpha(alpha: Float): Style {
   maybeLogZeroAlpha(alpha)
   return this + FloatStyleItem(FloatField.ALPHA, alpha)
 }
