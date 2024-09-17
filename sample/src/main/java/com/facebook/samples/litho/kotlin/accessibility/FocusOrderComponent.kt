@@ -20,7 +20,6 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.accessibility.focusOrder
@@ -34,8 +33,9 @@ import com.facebook.rendercore.dp
 class FocusOrderComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
+    // start_focusorder_a11y_example
     val hideElements = useState { false }
-    val (first, second, third, fourth, fifth, sixth, seventh) = useFocusOrder()
+    val (first, second, third, fourth, fifth) = useFocusOrder()
 
     return Column(
         style = Style.padding(16.dp).contentDescription("Second hello!").focusOrder(second)) {
@@ -52,14 +52,8 @@ class FocusOrderComponent : KComponent() {
           }
           child(Text(text = "Fourth hello!", style = Style.focusOrder(fourth)))
           child(Text(text = "Third hello!", style = Style.focusOrder(third)))
-          child(
-              Row(
-                  style =
-                      Style.padding(16.dp)
-                          .focusOrder(seventh)
-                          .contentDescription("Seventh hello!")) {
-                    child(Text(text = "Sixth hello!", style = Style.focusOrder(sixth)))
-                  })
         }
+    // end_focusorder_a11y_example
+
   }
 }
