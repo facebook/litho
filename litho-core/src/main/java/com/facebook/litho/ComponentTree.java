@@ -142,9 +142,6 @@ public class ComponentTree
 
   private String mReleasedComponent;
 
-  @GuardedBy("this")
-  private int mStateUpdatesFromCreateLayoutCount;
-
   private @Nullable final AccessibilityManager mAccessibilityManager;
 
   private boolean mInAttach = false;
@@ -1150,21 +1147,13 @@ public class ComponentTree
   }
 
   @VisibleForTesting
-  void updateStateSync(
-      String componentKey,
-      StateUpdate stateUpdate,
-      String attribution,
-      boolean isCreateLayoutInProgress) {
-    updateStateSync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress, false);
+  void updateStateSync(String componentKey, StateUpdate stateUpdate, String attribution) {
+    updateStateSync(componentKey, stateUpdate, attribution, false);
   }
 
   @Override
   public void updateStateSync(
-      String componentKey,
-      StateUpdate stateUpdate,
-      String attribution,
-      boolean isCreateLayoutInProgress,
-      boolean isLayoutState) {
+      String componentKey, StateUpdate stateUpdate, String attribution, boolean isLayoutState) {
 
     synchronized (this) {
       if (mRoot == null) {
@@ -1182,25 +1171,17 @@ public class ComponentTree
       }
     }
 
-    ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
+    ensureSyncStateUpdateRunnable(attribution);
   }
 
   @VisibleForTesting
-  public void updateStateAsync(
-      String componentKey,
-      StateUpdate stateUpdate,
-      String attribution,
-      boolean isCreateLayoutInProgress) {
-    updateStateAsync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress, false);
+  public void updateStateAsync(String componentKey, StateUpdate stateUpdate, String attribution) {
+    updateStateAsync(componentKey, stateUpdate, attribution, false);
   }
 
   @Override
   public void updateStateAsync(
-      String componentKey,
-      StateUpdate stateUpdate,
-      String attribution,
-      boolean isCreateLayoutInProgress,
-      boolean isLayoutState) {
+      String componentKey, StateUpdate stateUpdate, String attribution, boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -1212,16 +1193,12 @@ public class ComponentTree
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
+    onAsyncStateUpdateEnqueued(attribution);
   }
 
   @Override
   public final void updateHookStateSync(
-      String globalKey,
-      HookUpdater updater,
-      String attribution,
-      boolean isCreateLayoutInProgress,
-      boolean isLayoutState) {
+      String globalKey, HookUpdater updater, String attribution, boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -1232,16 +1209,12 @@ public class ComponentTree
       }
     }
 
-    ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
+    ensureSyncStateUpdateRunnable(attribution);
   }
 
   @Override
   public final void updateHookStateAsync(
-      String globalKey,
-      HookUpdater updater,
-      String attribution,
-      boolean isCreateLayoutInProgress,
-      boolean isLayoutState) {
+      String globalKey, HookUpdater updater, String attribution, boolean isLayoutState) {
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -1253,19 +1226,18 @@ public class ComponentTree
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
+    onAsyncStateUpdateEnqueued(attribution);
   }
 
-  private void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+  private void onAsyncStateUpdateEnqueued(String attribution) {
     dispatchStateUpdateEnqueuedEvent(attribution, false);
 
-    if (!mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
-        attribution, isCreateLayoutInProgress)) {
-      updateStateInternal(true, attribution, isCreateLayoutInProgress);
+    if (!mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(attribution, false)) {
+      updateStateInternal(true, attribution);
     }
   }
 
-  private void ensureSyncStateUpdateRunnable(String attribution, boolean isCreateLayoutInProgress) {
+  private void ensureSyncStateUpdateRunnable(String attribution) {
     LithoStats.incrementComponentStateUpdateSyncCount();
     final Looper looper = Looper.myLooper();
 
@@ -1278,8 +1250,7 @@ public class ComponentTree
         if (mUpdateStateSyncRunnable != null) {
           mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
         }
-        mUpdateStateSyncRunnable =
-            new UpdateStateSyncRunnable(attribution, isCreateLayoutInProgress);
+        mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
 
         String tag = EMPTY_STRING;
         if (mLayoutThreadHandler.isTracing()) {
@@ -1304,7 +1275,7 @@ public class ComponentTree
       if (mUpdateStateSyncRunnable != null) {
         handler.remove(mUpdateStateSyncRunnable);
       }
-      mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution, isCreateLayoutInProgress);
+      mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
 
       String tag = EMPTY_STRING;
       if (handler.isTracing()) {
@@ -1328,7 +1299,7 @@ public class ComponentTree
         });
   }
 
-  void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
+  void updateStateInternal(boolean isAsync, String attribution) {
     final @Nullable TreePropContainer treePropContainer;
     synchronized (this) {
       if (mRoot == null) {
@@ -1338,10 +1309,6 @@ public class ComponentTree
           useComponentTreePropContainerAsSourceOfTruth
               ? null
               : TreePropContainer.copy(mTreePropContainer);
-
-      if (isCreateLayoutInProgress) {
-        logStateUpdatesFromCreateLayout(attribution);
-      }
 
       mBatchedStateUpdatesStrategy.onInternalStateUpdateStart();
     }
@@ -1356,30 +1323,7 @@ public class ComponentTree
         INVALID_LAYOUT_VERSION,
         attribution,
         treePropContainer,
-        isCreateLayoutInProgress,
         false);
-  }
-
-  /**
-   * State updates can be triggered when layout creation is still in progress which causes an
-   * infinite loop because state updates again create the layout. To prevent this we keep a track of
-   * how many times consequently state updates was invoked from within layout creation. If this
-   * crosses the threshold a runtime exception is thrown.
-   *
-   * @param attribution
-   */
-  @GuardedBy("this")
-  private void logStateUpdatesFromCreateLayout(@Nullable String attribution) {
-    if (++mStateUpdatesFromCreateLayoutCount == STATE_UPDATES_IN_LOOP_THRESHOLD) {
-      String message =
-          "State update loop during layout detected. Most recent attribution: "
-              + attribution
-              + ".\n"
-              + "State updates were dispatched over 50 times during the current layout. "
-              + "This happens most commonly when state updates are dispatched unconditionally from "
-              + "the render method.";
-      throw new RuntimeException(message);
-    }
   }
 
   /**
@@ -1475,7 +1419,6 @@ public class ComponentTree
         INVALID_LAYOUT_VERSION,
         null,
         null,
-        false,
         false);
   }
 
@@ -1490,7 +1433,6 @@ public class ComponentTree
         INVALID_LAYOUT_VERSION,
         null,
         null,
-        false,
         false);
   }
 
@@ -1506,7 +1448,6 @@ public class ComponentTree
         INVALID_LAYOUT_VERSION,
         null,
         null,
-        false,
         forceLayout);
   }
 
@@ -1521,7 +1462,6 @@ public class ComponentTree
         INVALID_LAYOUT_VERSION,
         null,
         null,
-        false,
         false);
   }
 
@@ -1728,7 +1668,6 @@ public class ComponentTree
         externalRootVersion,
         extraAttribution,
         treePropContainer,
-        false,
         false);
   }
 
@@ -1742,7 +1681,6 @@ public class ComponentTree
       int externalRootVersion,
       @Nullable String extraAttribution,
       @Nullable TreePropContainer treePropContainer,
-      boolean isCreateLayoutInProgress,
       boolean forceLayout) {
 
     final int requestedWidthSpec;
@@ -1877,7 +1815,6 @@ public class ComponentTree
         output,
         source,
         extraAttribution,
-        isCreateLayoutInProgress,
         requestedWidthSpec,
         requestedHeightSpec,
         requestedRoot,
@@ -1916,7 +1853,6 @@ public class ComponentTree
       @Nullable Size output,
       @RenderSource int source,
       @Nullable String extraAttribution,
-      boolean isCreateLayoutInProgress,
       final int widthSpec,
       final int heightSpec,
       final Component root,
@@ -1948,14 +1884,7 @@ public class ComponentTree
       boolean canLayoutWithoutResolve = (currentResolveResult.component == root && isSameTreeProps);
       if (canLayoutWithoutResolve) {
         requestLayoutWithSplitFutures(
-            currentResolveResult,
-            output,
-            source,
-            extraAttribution,
-            isCreateLayoutInProgress,
-            false,
-            widthSpec,
-            heightSpec);
+            currentResolveResult, output, source, extraAttribution, false, widthSpec, heightSpec);
         return;
       }
     }
@@ -1977,13 +1906,7 @@ public class ComponentTree
         }
         mCurrentDoResolveRunnable =
             new DoResolveRunnable(
-                source,
-                root,
-                treePropContainer,
-                widthSpec,
-                heightSpec,
-                extraAttribution,
-                isCreateLayoutInProgress);
+                source, root, treePropContainer, widthSpec, heightSpec, extraAttribution);
 
         String tag = EMPTY_STRING;
         if (mLayoutThreadHandler.isTracing()) {
@@ -1995,15 +1918,7 @@ public class ComponentTree
         mLayoutThreadHandler.post(mCurrentDoResolveRunnable, tag);
       }
     } else {
-      doResolve(
-          output,
-          source,
-          extraAttribution,
-          isCreateLayoutInProgress,
-          root,
-          treePropContainer,
-          widthSpec,
-          heightSpec);
+      doResolve(output, source, extraAttribution, root, treePropContainer, widthSpec, heightSpec);
     }
   }
 
@@ -2011,7 +1926,6 @@ public class ComponentTree
       @Nullable Size output,
       @RenderSource int source,
       @Nullable String extraAttribution,
-      boolean isCreateLayoutInProgress,
       final Component root,
       final @Nullable TreePropContainer treePropContainer,
       final int widthSpec,
@@ -2103,7 +2017,7 @@ public class ComponentTree
       return;
     }
 
-    commitResolveResult(resolveResult, isCreateLayoutInProgress);
+    commitResolveResult(resolveResult);
 
     ComponentsLogger logger = getLogger();
     if (logger != null && resolvePerfEvent != null) {
@@ -2115,7 +2029,6 @@ public class ComponentTree
         output,
         source,
         extraAttribution,
-        isCreateLayoutInProgress,
         // Don't post when using the same thread handler, as it could cause heavy delays
         true,
         widthSpec,
@@ -2148,20 +2061,13 @@ public class ComponentTree
     return resolvePerfEvent;
   }
 
-  private synchronized void commitResolveResult(
-      final ResolveResult resolveResult, final boolean isCreateLayoutInProgress) {
+  private synchronized void commitResolveResult(final ResolveResult resolveResult) {
     if (mCommittedResolveResult == null
         || mCommittedResolveResult.version < resolveResult.version) {
       mCommittedResolveResult = resolveResult;
 
       if (mTreeState != null) {
         mTreeState.commitResolveState(resolveResult.treeState);
-      }
-
-      // Resetting the count after resolve calculation is complete and it was triggered during a
-      // calculation
-      if (!isCreateLayoutInProgress) {
-        mStateUpdatesFromCreateLayoutCount = 0;
       }
     }
   }
@@ -2171,7 +2077,6 @@ public class ComponentTree
       @Nullable Size output,
       @RenderSource int source,
       @Nullable String extraAttribution,
-      boolean isCreateLayoutInProgress,
       boolean forceSyncCalculation,
       final int widthSpec,
       final int heightSpec) {
@@ -2199,13 +2104,7 @@ public class ComponentTree
           mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
         }
         mCurrentDoLayoutRunnable =
-            new DoLayoutRunnable(
-                resolveResult,
-                source,
-                widthSpec,
-                heightSpec,
-                extraAttribution,
-                isCreateLayoutInProgress);
+            new DoLayoutRunnable(resolveResult, source, widthSpec, heightSpec, extraAttribution);
 
         String tag = EMPTY_STRING;
         if (mLayoutThreadHandler.isTracing()) {
@@ -2217,14 +2116,7 @@ public class ComponentTree
         mLayoutThreadHandler.post(mCurrentDoLayoutRunnable, tag);
       }
     } else {
-      doLayout(
-          resolveResult,
-          output,
-          source,
-          extraAttribution,
-          isCreateLayoutInProgress,
-          widthSpec,
-          heightSpec);
+      doLayout(resolveResult, output, source, extraAttribution, widthSpec, heightSpec);
     }
   }
 
@@ -2233,7 +2125,6 @@ public class ComponentTree
       @Nullable Size output,
       @RenderSource int source,
       @Nullable String extraAttribution,
-      boolean isCreateLayoutInProgress,
       final int widthSpec,
       final int heightSpec) {
 
@@ -2313,7 +2204,6 @@ public class ComponentTree
         layoutVersion,
         source,
         extraAttribution,
-        isCreateLayoutInProgress,
         treePropContainer,
         resolveResult.component);
   }
@@ -2329,7 +2219,6 @@ public class ComponentTree
       final int layoutVersion,
       final @RenderSource int source,
       final @Nullable String extraAttribution,
-      final boolean isCreateLayoutInProgress,
       final @Nullable TreePropContainer treePropContainer,
       final Component rootComponent) {
     List<MeasureListener> measureListeners = null;
@@ -2414,12 +2303,6 @@ public class ComponentTree
         bindHandlesToComponentTree(this, layoutState);
 
         measureListeners = mMeasureListeners == null ? null : new ArrayList<>(mMeasureListeners);
-      }
-
-      // Resetting the count after layout calculation is complete and it was triggered from within
-      // layout creation
-      if (!isCreateLayoutInProgress) {
-        mStateUpdatesFromCreateLayoutCount = 0;
       }
     }
 
@@ -2967,8 +2850,7 @@ public class ComponentTree
                   true,
                   attribution != null
                       ? attribution
-                      : "<cls>" + getContext().getComponentScope().getClass().getName() + "</cls>",
-                  mContext.isCreateLayoutInProgress());
+                      : "<cls>" + getContext().getComponentScope().getClass().getName() + "</cls>");
             }
           }
         };
@@ -3270,7 +3152,6 @@ public class ComponentTree
     private final int mWidthSpec;
     private final int mHeightSpec;
     private final @Nullable String mAttribution;
-    private final boolean mIsCreateLayoutInProgress;
 
     public DoResolveRunnable(
         @RenderSource int source,
@@ -3278,28 +3159,18 @@ public class ComponentTree
         TreePropContainer treePropContainer,
         int widthSpec,
         int heightSpec,
-        @Nullable String attribution,
-        boolean isCreateLayoutInProgress) {
+        @Nullable String attribution) {
       mSource = source;
       mRoot = root;
       mTreePropContainer = treePropContainer;
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
       mAttribution = attribution;
-      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
 
     @Override
     public void tracedRun() {
-      doResolve(
-          null,
-          mSource,
-          mAttribution,
-          mIsCreateLayoutInProgress,
-          mRoot,
-          mTreePropContainer,
-          mWidthSpec,
-          mHeightSpec);
+      doResolve(null, mSource, mAttribution, mRoot, mTreePropContainer, mWidthSpec, mHeightSpec);
     }
   }
 
@@ -3310,49 +3181,37 @@ public class ComponentTree
     private final int mWidthSpec;
     private final int mHeightSpec;
     private final @Nullable String mAttribution;
-    private final boolean mIsCreateLayoutInProgress;
 
     public DoLayoutRunnable(
         final ResolveResult resolveResult,
         @RenderSource int source,
         int widthSpec,
         int heightSpec,
-        @Nullable String attribution,
-        boolean isCreateLayoutInProgress) {
+        @Nullable String attribution) {
       mResolveResult = resolveResult;
       mSource = source;
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
       mAttribution = attribution;
-      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
 
     @Override
     public void tracedRun() {
-      doLayout(
-          mResolveResult,
-          null,
-          mSource,
-          mAttribution,
-          mIsCreateLayoutInProgress,
-          mWidthSpec,
-          mHeightSpec);
+      doLayout(mResolveResult, null, mSource, mAttribution, mWidthSpec, mHeightSpec);
     }
   }
 
   private final class UpdateStateSyncRunnable extends ThreadTracingRunnable {
 
     private final String mAttribution;
-    private final boolean mIsCreateLayoutInProgress;
 
-    public UpdateStateSyncRunnable(String attribution, boolean isCreateLayoutInProgress) {
+    public UpdateStateSyncRunnable(String attribution) {
       mAttribution = attribution;
-      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
 
     @Override
     public void tracedRun() {
-      updateStateInternal(false, mAttribution, mIsCreateLayoutInProgress);
+      updateStateInternal(false, mAttribution);
     }
   }
 }

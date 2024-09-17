@@ -37,7 +37,6 @@ interface StateUpdater {
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   )
 
@@ -49,7 +48,6 @@ interface StateUpdater {
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   )
 
@@ -68,7 +66,6 @@ interface StateUpdater {
       globalKey: String,
       updateBlock: HookUpdater,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   )
 
@@ -77,7 +74,6 @@ interface StateUpdater {
       globalKey: String,
       updateBlock: HookUpdater,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   )
 

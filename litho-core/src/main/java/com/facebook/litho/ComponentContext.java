@@ -417,12 +417,7 @@ public class ComponentContext {
 
     mLithoTree
         .getStateUpdater()
-        .updateStateSync(
-            getGlobalKey(),
-            stateUpdate,
-            attribution,
-            isCreateLayoutInProgress(),
-            isNestedTreeContext());
+        .updateStateSync(getGlobalKey(), stateUpdate, attribution, isNestedTreeContext());
   }
 
   /**
@@ -439,12 +434,7 @@ public class ComponentContext {
 
     mLithoTree
         .getStateUpdater()
-        .updateStateAsync(
-            getGlobalKey(),
-            stateUpdate,
-            attribution,
-            isCreateLayoutInProgress(),
-            isNestedTreeContext());
+        .updateStateAsync(getGlobalKey(), stateUpdate, attribution, isNestedTreeContext());
   }
 
   public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
@@ -475,7 +465,6 @@ public class ComponentContext {
             globalKey,
             updateBlock,
             scope != null ? scope.getSimpleName() : "hook",
-            isCreateLayoutInProgress(),
             isNestedTreeContext());
   }
 
@@ -493,7 +482,6 @@ public class ComponentContext {
             globalKey,
             updateBlock,
             scope != null ? scope.getSimpleName() : "hook",
-            isCreateLayoutInProgress(),
             isNestedTreeContext());
   }
 

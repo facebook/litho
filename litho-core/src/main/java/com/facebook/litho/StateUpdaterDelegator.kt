@@ -42,21 +42,15 @@ class StateUpdaterDelegator : StateUpdater {
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
-  ) = applyOnStateUpdater {
-    updateStateSync(globalKey, stateUpdate, attribution, isCreateLayoutInProgress, isLayoutState)
-  }
+  ) = applyOnStateUpdater { updateStateSync(globalKey, stateUpdate, attribution, isLayoutState) }
 
   override fun updateStateAsync(
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
-  ) = applyOnStateUpdater {
-    updateStateAsync(globalKey, stateUpdate, attribution, isCreateLayoutInProgress, isLayoutState)
-  }
+  ) = applyOnStateUpdater { updateStateAsync(globalKey, stateUpdate, attribution, isLayoutState) }
 
   override fun updateStateLazy(
       globalKey: String,
@@ -68,22 +62,18 @@ class StateUpdaterDelegator : StateUpdater {
       globalKey: String,
       updateBlock: HookUpdater,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) = applyOnStateUpdater {
-    updateHookStateAsync(
-        globalKey, updateBlock, attribution, isCreateLayoutInProgress, isLayoutState)
+    updateHookStateAsync(globalKey, updateBlock, attribution, isLayoutState)
   }
 
   override fun updateHookStateSync(
       globalKey: String,
       updateBlock: HookUpdater,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) = applyOnStateUpdater {
-    updateHookStateSync(
-        globalKey, updateBlock, attribution, isCreateLayoutInProgress, isLayoutState)
+    updateHookStateSync(globalKey, updateBlock, attribution, isLayoutState)
   }
 
   override fun applyLazyStateUpdatesForContainer(

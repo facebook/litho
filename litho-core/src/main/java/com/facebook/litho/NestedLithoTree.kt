@@ -159,7 +159,6 @@ class NestedStateUpdater(
       globalKey: String,
       updateBlock: HookUpdater,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
     updater.request(
@@ -176,7 +175,6 @@ class NestedStateUpdater(
       globalKey: String,
       updateBlock: HookUpdater,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
     updater.request(
@@ -193,7 +191,6 @@ class NestedStateUpdater(
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
     updater.request(
@@ -210,7 +207,6 @@ class NestedStateUpdater(
       globalKey: String,
       stateUpdate: StateContainer.StateUpdate,
       attribution: String?,
-      isCreateLayoutInProgress: Boolean,
       isLayoutState: Boolean
   ) {
     updater.request(

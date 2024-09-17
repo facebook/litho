@@ -181,13 +181,6 @@ open class StateUpdatesTest {
     assertThat(getPendingStateUpdatesForComponent(testComponentKey)).hasSize(1)
   }
 
-  @Test(expected = RuntimeException::class)
-  fun testUpdateStateFromOnCreateLayout_throwsRuntimeExceptionWhenThresholdExceeds() {
-    for (i in 0 until ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD) {
-      componentTree.updateStateInternal(false, "test", true)
-    }
-  }
-
   @Test
   fun testEnqueueStateUpdate_checkAppliedStateUpdate() {
     componentTree.updateStateAsync(
