@@ -22,6 +22,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.yoga.YogaEdge;
+import javax.annotation.Nullable;
 
 /**
  * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
@@ -59,8 +60,7 @@ public class TestSizeDependentComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
-  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
+  public boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
     return this == other;
   }
 
