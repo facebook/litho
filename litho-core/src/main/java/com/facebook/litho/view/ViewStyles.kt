@@ -224,19 +224,20 @@ internal data class DimenStyleItem(override val field: DimenField, override val 
  * See [android.view.View.setAlpha]
  */
 inline fun Style.alpha(alpha: Float): Style {
-  if (ComponentsConfiguration.isZeroAlphaLoggingEnabled) {
-    if (alpha <= 0) {
-      DebugInfoReporter.report(category = "ZeroAlphaComponent", level = LogLevel.WARNING) {
-        val attribution = getComponentStackTraceElement()
-        val component = "<cls>${attribution?.className ?: "nothing"}</cls>"
-        this["isSpec"] = false
-        this["component"] = component
-        this["location"] = "$component:${attribution?.lineNumber ?: "nothing"}"
-      }
+  maybeLogZeroAlpha(alpha)
+  return this + FloatStyleItem(FloatField.ALPHA, alpha)
+}
+
+fun maybeLogZeroAlpha(alpha: Float) {
+  if (ComponentsConfiguration.isZeroAlphaLoggingEnabled && alpha <= 0) {
+    DebugInfoReporter.report(category = "ZeroAlphaComponent", level = LogLevel.WARNING) {
+      val attribution = getComponentStackTraceElement()
+      val component = "<cls>${attribution?.className ?: "nothing"}</cls>"
+      this["isSpec"] = false
+      this["component"] = component
+      this["location"] = "$component:${attribution?.lineNumber ?: "nothing"}"
     }
   }
-
-  return this + FloatStyleItem(FloatField.ALPHA, alpha)
 }
 
 /**
