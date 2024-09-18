@@ -328,20 +328,6 @@ public abstract class BaseMountingView extends ComponentHost
 
   protected void onDetached() {
     mMountState.detach();
-    maybeUnmountComponents();
-  }
-
-  private void maybeUnmountComponents() {
-    final @Nullable ComponentsConfiguration config = getConfiguration();
-    if (config != null && config.enableFixForIM && !mIsTemporaryDetached && !hasTransientState()) {
-      notifyVisibleBoundsChanged(EMPTY_RECT);
-      // Set mount state dirty to make sure we will request layout when the ComponentTree is
-      // attached again. And IncrementalMount will be kicked off during layout pass then.
-      setMountStateDirty();
-      // And we need to ask mount state to remount, otherwise, it will skip mounting because
-      // RenderTree never change.
-      mMountState.needsRemount(true);
-    }
   }
 
   boolean isAttached() {
@@ -1032,24 +1018,15 @@ public abstract class BaseMountingView extends ComponentHost
     mVisibilityHintIsVisible = isVisible;
 
     if (isVisible) {
-      // Due to the fact that detached LithoView is still receiving visibility event and ends up IM
-      // being kicked off, we need to make sure that current view is in the state of being attached.
-      final @Nullable ComponentsConfiguration config = getConfiguration();
-      if (config != null
-          && config.enableFixForIM
-          && !mIsTemporaryDetached
-          && !hasTransientState()
-          && !isAttached()) {
-        notifyVisibleBoundsChanged(EMPTY_RECT);
-      } else {
+      if (shouldDispatchVisibilityEvent()) {
         if (forceMount) {
           notifyVisibleBoundsChanged();
         } else if (getLocalVisibleRect(mRect)) {
           processVisibilityOutputs(mRect);
         }
       }
-      // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
+      // if false: no-op, doesn't have visible area, is not ready or not attached
       clearVisibilityItems();
     }
   }
@@ -1109,14 +1086,16 @@ public abstract class BaseMountingView extends ComponentHost
     mVisibilityHintIsVisible = isVisible;
 
     if (isVisible) {
-      if (forceMount) {
-        notifyVisibleBoundsChanged();
-      } else if (getLocalVisibleRect(mRect)) {
-        processVisibilityOutputs(mRect);
+      if (shouldDispatchVisibilityEvent()) {
+        if (forceMount) {
+          notifyVisibleBoundsChanged();
+        } else if (getLocalVisibleRect(mRect)) {
+          processVisibilityOutputs(mRect);
+        }
+        recursivelySetVisibleHint(true, skipMountingIfNotVisible);
       }
-      recursivelySetVisibleHint(true, skipMountingIfNotVisible);
-      // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
+      // if false: no-op, doesn't have visible area, is not ready or not attached
       recursivelySetVisibleHint(false, skipMountingIfNotVisible);
       clearVisibilityItems();
     }
@@ -1133,6 +1112,18 @@ public abstract class BaseMountingView extends ComponentHost
     if (mLithoHostListenerCoordinator != null) {
       mLithoHostListenerCoordinator.clearLastMountedTreeId();
     }
+  }
+
+  /**
+   * Since detached LithoView is still receiving visibility event and ends up that IM being kicked
+   * off, we need to make sure that current view is in the state of being attached. Another fact is
+   * that we could get an incorrect visible bounds when view gets detached.
+   *
+   * @return True if LithoView is attached and we need to invoke IM or dispatch visibility event.
+   */
+  private boolean shouldDispatchVisibilityEvent() {
+    final @Nullable ComponentsConfiguration config = getConfiguration();
+    return !(config != null && config.enableFixForIM && !isAttached());
   }
 
   /**

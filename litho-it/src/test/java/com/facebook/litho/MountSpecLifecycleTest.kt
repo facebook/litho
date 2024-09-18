@@ -129,16 +129,9 @@ class MountSpecLifecycleTest {
         }
     lifecycleTracker.reset()
     testLithoView.detachFromWindow()
-    val config = testLithoView.lithoView.configuration
-    if (config != null && config.enableFixForIM) {
-      assertThat(lifecycleTracker.steps)
-          .describedAs("Should only call")
-          .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT)
-    } else {
-      assertThat(lifecycleTracker.steps)
-          .describedAs("Should only call")
-          .containsExactly(LifecycleStep.ON_UNBIND)
-    }
+    assertThat(lifecycleTracker.steps)
+        .describedAs("Should only call")
+        .containsExactly(LifecycleStep.ON_UNBIND)
   }
 
   @Test
@@ -156,17 +149,9 @@ class MountSpecLifecycleTest {
 
     lifecycleTracker.reset()
     testLithoView.attachToWindow().measure().layout()
-
-    val config = testLithoView.lithoView.configuration
-    if (config != null && config.enableFixForIM) {
-      assertThat(lifecycleTracker.steps)
-          .describedAs("Should only call")
-          .containsExactly(LifecycleStep.ON_MOUNT, LifecycleStep.ON_BIND)
-    } else {
-      assertThat(lifecycleTracker.steps)
-          .describedAs("Should only call")
-          .containsExactly(LifecycleStep.ON_BIND)
-    }
+    assertThat(lifecycleTracker.steps)
+        .describedAs("Should only call")
+        .containsExactly(LifecycleStep.ON_BIND)
   }
 
   @Test

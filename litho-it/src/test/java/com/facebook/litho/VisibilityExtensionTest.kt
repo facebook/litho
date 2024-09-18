@@ -22,6 +22,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.SolidColor
 import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.rendercore.px
 import org.assertj.core.api.Assertions.assertThat
@@ -58,5 +59,68 @@ class VisibilityExtensionTest {
     lithoView.setHasTransientState(false)
 
     assertThat(wasCalled).isTrue
+  }
+
+  @Test
+  fun `when litho view was detached and re-attached then visibility event should be dispatched`() {
+    class VisibilityEventCallbackComponent(val callback: (Boolean) -> Unit) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return SolidColor(
+            Color.BLACK,
+            style =
+                Style.width(100.px)
+                    .height(100.px)
+                    .onVisible { callback(true) }
+                    .onInvisible { callback(false) },
+        )
+      }
+    }
+
+    var isVisible = false
+    val component = VisibilityEventCallbackComponent(callback = { isVisible = it })
+    val testLithoView = mLithoTestRule.render { component }
+
+    val config = testLithoView.lithoView.configuration
+    if (config != null && config.enableFixForIM) {
+      assertThat(isVisible).isTrue()
+
+      testLithoView.detachFromWindow()
+      assertThat(isVisible).isFalse()
+
+      testLithoView.attachToWindow()
+      testLithoView.lithoView.notifyVisibleBoundsChanged()
+      assertThat(isVisible).isTrue()
+    }
+  }
+
+  @Test
+  fun `when setVisibilityHint(true) is being called when detached then nothing should be dispatched`() {
+    class VisibilityEventCallbackComponent(val callback: (Boolean) -> Unit) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return SolidColor(
+            Color.BLACK,
+            style =
+                Style.width(100.px)
+                    .height(100.px)
+                    .onVisible { callback(true) }
+                    .onInvisible { callback(false) },
+        )
+      }
+    }
+
+    var isVisible = false
+    val component = VisibilityEventCallbackComponent(callback = { isVisible = it })
+    val testLithoView = mLithoTestRule.render { component }
+
+    val config = testLithoView.lithoView.configuration
+    if (config != null && config.enableFixForIM) {
+      assertThat(isVisible).isTrue()
+
+      testLithoView.detachFromWindow()
+      assertThat(isVisible).isFalse()
+
+      testLithoView.lithoView.setVisibilityHint(true)
+      assertThat(isVisible).isFalse()
+    }
   }
 }
