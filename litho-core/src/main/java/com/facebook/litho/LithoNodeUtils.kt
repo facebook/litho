@@ -121,7 +121,6 @@ object LithoNodeUtils {
     hostComponent.commonDynamicProps = commonDynamicProps
 
     val id: Long = context.calculateLayoutOutputId(node.tailComponentKey, OutputUnitType.HOST)
-    val isAccessibilityEnabled = context.calculationStateContext?.isAccessibilityEnabled ?: false
 
     return createRenderUnit(
         id = id,
@@ -144,11 +143,7 @@ object LithoNodeUtils {
                 component = hostComponent,
                 willMountView = true,
                 importantForAccessibility = node.importantForAccessibility,
-            ),
-        accessibilityDelegateCompatBinder =
-            if (isAccessibilityEnabled)
-                AccessibilityDelegateCompatBinder.create(node.importantForAccessibility)
-            else null)
+            ))
   }
 
   /** Creates a [LithoRenderUnit] for the root host */
@@ -323,8 +318,7 @@ object LithoNodeUtils {
       customDelegateBindersForMountSpec: Map<Class<*>, RenderUnit.DelegateBinder<Any, Any, Any>>? =
           null,
       debugKey: String? = null,
-      viewAttributes: ViewAttributes?,
-      accessibilityDelegateCompatBinder: RenderUnit.DelegateBinder<*, in Any, *>? = null,
+      viewAttributes: ViewAttributes?
   ): LithoRenderUnit {
     var flags = 0
     val nodeInfo: NodeInfo? = node.nodeInfo
@@ -414,10 +408,6 @@ object LithoNodeUtils {
               binder = HostViewAttributesCleanupBinder(),
           ) as RenderUnit.DelegateBinder<Any?, Any, Any>,
       )
-    }
-
-    if (accessibilityDelegateCompatBinder != null) {
-      renderUnit.addOptionalMountBinder(accessibilityDelegateCompatBinder)
     }
 
     return renderUnit

@@ -81,7 +81,7 @@ class MountItemTest {
     nodeInfo.focusChangeHandler = focusChangeHandler
     nodeInfo.touchHandler = touchHandler
     nodeInfo.viewTag = viewTag
-    nodeInfo.addViewTags(viewTags)
+    nodeInfo.viewTags = viewTags
     mountItem = create(content)
   }
 

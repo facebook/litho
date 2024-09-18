@@ -22,6 +22,5 @@
   <item type="id" name="component_focus_change_listener"/>
   <item type="id" name="component_touch_listener"/>
   <item type="id" name="component_node_info"/>
-  <item type="id" name="component_focus_order"/>
 
 </resources>

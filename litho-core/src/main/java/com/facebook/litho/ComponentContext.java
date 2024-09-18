@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
@@ -37,8 +36,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.ResourceCache;
 import com.facebook.rendercore.ResourceResolver;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -565,51 +562,6 @@ public class ComponentContext {
     }
 
     return mountedView.findViewWithTag(tag);
-  }
-
-  /**
-   * A utility function to find the View with a given tag under the current Component's LithoView.
-   * To set a view tag, use the .viewTags() common prop or Style.viewTags. An appropriate time to
-   * call this is in your Component's onVisible callback.
-   *
-   * <p>As with View.findViewWithTag in general, this must be called on the main thread.
-   *
-   * <p>Note that null may be returned if the associated View doesn't exist or isn't mounted: with
-   * incremental mount turned on (which is the default), if the component is off-screen, it won't be
-   * mounted.
-   *
-   * <p>Finally, note that you should never hold a reference to the view returned by this function
-   * as Litho may unmount your Component and mount it to a different View.
-   */
-  public @Nullable View findViewWithTagValue(int key, Object tag) {
-    if (mLithoTree == null) {
-      return null;
-    }
-    final View mountedView = mLithoTree.getMountedViewReference().getMountedView();
-    // The tree isn't mounted
-    if (mountedView == null) {
-      return null;
-    }
-
-    Queue<View> queue = new LinkedList<>();
-    queue.add(mountedView);
-
-    while (!queue.isEmpty()) {
-      View currentView = queue.poll();
-      if (currentView == null) {
-        continue;
-      }
-      if (currentView.getTag(key) == tag) {
-        return currentView;
-      } else if (currentView instanceof ViewGroup) {
-        ViewGroup groupView = (ViewGroup) currentView;
-        final int childCount = groupView.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-          queue.add(groupView.getChildAt(i));
-        }
-      }
-    }
-    return null;
   }
 
   public @Nullable ErrorComponentReceiver getErrorComponentReceiver() {

@@ -310,7 +310,7 @@ class NodeInfoTest {
 
   @Test
   fun testViewTagsFlag() {
-    nodeInfo.addViewTags(SparseArray())
+    nodeInfo.viewTags = SparseArray()
     testFlagIsSetThenClear(nodeInfo, "PFLAG_VIEW_TAGS_IS_SET")
   }
 

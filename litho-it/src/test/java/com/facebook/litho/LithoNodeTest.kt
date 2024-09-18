@@ -121,7 +121,7 @@ class LithoNodeTest {
     toBeAppliedInfo.contentDescription = "test"
     toBeAppliedInfo.tooltipText = "test"
     toBeAppliedInfo.viewTag = viewTag
-    toBeAppliedInfo.addViewTags(viewTags)
+    toBeAppliedInfo.viewTags = viewTags
     toBeAppliedInfo.shadowElevation = 60f
     toBeAppliedInfo.ambientShadowColor = Color.RED
     toBeAppliedInfo.spotShadowColor = Color.BLUE
@@ -155,7 +155,7 @@ class LithoNodeTest {
     verify(nodeInfo).contentDescription = "test"
     verify(nodeInfo).tooltipText = "test"
     verify(nodeInfo).viewTag = viewTag
-    verify(nodeInfo).addViewTags(viewTags)
+    verify(nodeInfo).viewTags = viewTags
     verify(nodeInfo).shadowElevation = 60f
     verify(nodeInfo).ambientShadowColor = Color.RED
     verify(nodeInfo).spotShadowColor = Color.BLUE

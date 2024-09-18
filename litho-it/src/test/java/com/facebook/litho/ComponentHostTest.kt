@@ -366,10 +366,10 @@ class ComponentHostTest {
     val viewTags = SparseArray<Any>()
     viewTags.put(1, value1)
     viewTags.put(2, value2)
-    host.addViewTags(viewTags)
+    host.setViewTags(viewTags)
     assertThat(host.getTag(1)).isEqualTo(value1)
     assertThat(host.getTag(2)).isEqualTo(value2)
-    host.addViewTags(null)
+    host.setViewTags(null)
     assertThat(host.getTag(1)).isNull()
     assertThat(host.getTag(2)).isNull()
   }
