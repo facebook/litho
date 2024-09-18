@@ -138,55 +138,24 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     if (mNodeInfo != null && mNodeInfo.getFocusOrder() != null && mountItem != null) {
       final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       final FocusOrderModel focusOrder = mNodeInfo.getFocusOrder();
-      if (focusOrder.getPrevious() != null) {
-        View previousView = getPreviousView(focusOrder, scopedContext);
+
+      if (focusOrder.getPreviousKey() != null) {
+        View previousView =
+            scopedContext.findViewWithTagValue(
+                R.id.component_focus_order, focusOrder.getPreviousKey());
         if (previousView != null) {
           node.setTraversalAfter(previousView);
         }
       }
 
-      if (focusOrder.getNext() != null) {
-        View nextView = getNextView(focusOrder, scopedContext);
+      if (focusOrder.getNextKey() != null) {
+        View nextView =
+            scopedContext.findViewWithTagValue(R.id.component_focus_order, focusOrder.getNextKey());
         if (nextView != null) {
           node.setTraversalBefore(nextView);
         }
       }
     }
-  }
-
-  public @Nullable View getPreviousView(
-      FocusOrderModel focusOrderModel, ComponentContext scopedContext) {
-    FocusOrderModel current = focusOrderModel;
-    while (current != null) {
-      View previousView =
-          focusOrderModel.getPrevious() != null
-              ? scopedContext.findViewWithTagValue(
-                  R.id.component_focus_order, focusOrderModel.getPrevious().getKey())
-              : null;
-      if (previousView != null) {
-        return previousView;
-      }
-      current = current.getPrevious();
-    }
-
-    return null;
-  }
-
-  public @Nullable View getNextView(
-      FocusOrderModel focusOrderModel, ComponentContext scopedContext) {
-    FocusOrderModel current = focusOrderModel;
-    while (current != null) {
-      View nextView =
-          focusOrderModel.getNext() != null
-              ? scopedContext.findViewWithTagValue(
-                  R.id.component_focus_order, focusOrderModel.getNext().getKey())
-              : null;
-      if (nextView != null) {
-        return nextView;
-      }
-      current = current.getNext();
-    }
-    return null;
   }
 
   private void dispatchOnPopulateAccessibilityNodeEvent(
