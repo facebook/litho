@@ -32,6 +32,8 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val treeState: TreeState =
       resolveContext?.treeState
           ?: throw IllegalStateException("Cannot create state outside of layout calculation")
+  val stateUpdater: StateUpdater =
+      context.stateUpdater ?: throw IllegalStateException("LithoTree is null")
 
   val isNestedTreeContext = context.isNestedTreeContext
   val kState = treeState.getStateContainer(globalKey, isNestedTreeContext) as KStateContainer?
@@ -49,7 +51,13 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
 
     context.scopedComponentInfo.stateContainer = state
 
-    return State(context, hookIndex, state.states[hookIndex] as T)
+    return State(
+        stateUpdater,
+        hookIndex,
+        globalKey,
+        isNestedTreeContext,
+        context.componentScope,
+        state.states[hookIndex] as T)
   } else {
     context.scopedComponentInfo.stateContainer = kState
   }
@@ -59,14 +67,23 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
     treeState.keepStateContainerForGlobalKey(globalKey, isNestedTreeContext)
   }
 
-  return State(context, hookIndex, kState.states[hookIndex] as T)
+  return State(
+      stateUpdater,
+      hookIndex,
+      globalKey,
+      isNestedTreeContext,
+      context.componentScope,
+      kState.states[hookIndex] as T)
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
 class State<T>
 internal constructor(
-    private val context: ComponentContext,
+    private val stateUpdater: StateUpdater,
     private val hookStateIndex: Int,
+    private val globalKey: String,
+    private val isNestedTreeContext: Boolean,
+    private val componentScope: Component?,
     val value: T
 ) {
 
@@ -79,7 +96,11 @@ internal constructor(
       return
     }
 
-    context.updateHookStateAsync(context.globalKey, HookUpdaterValue(newValue))
+    stateUpdater?.updateHookStateAsync(
+        globalKey,
+        HookUpdaterValue(newValue),
+        componentScope?.simpleName ?: "hook",
+        isNestedTreeContext)
   }
 
   /**
@@ -99,7 +120,11 @@ internal constructor(
       return
     }
 
-    context.updateHookStateAsync(context.globalKey, HookUpdaterLambda(newValueFunction))
+    stateUpdater.updateHookStateAsync(
+        globalKey,
+        HookUpdaterLambda(newValueFunction),
+        componentScope?.simpleName ?: "hook",
+        isNestedTreeContext)
   }
 
   /**
@@ -116,7 +141,11 @@ internal constructor(
       return
     }
 
-    context.updateHookStateSync(context.globalKey, HookUpdaterValue(newValue))
+    stateUpdater.updateHookStateSync(
+        globalKey,
+        HookUpdaterValue(newValue),
+        componentScope?.simpleName ?: "hook",
+        isNestedTreeContext)
   }
 
   /**
@@ -140,7 +169,11 @@ internal constructor(
       return
     }
 
-    context.updateHookStateSync(context.globalKey, HookUpdaterLambda(newValueFunction))
+    stateUpdater.updateHookStateSync(
+        globalKey,
+        HookUpdaterLambda(newValueFunction),
+        componentScope?.simpleName ?: "hook",
+        isNestedTreeContext)
   }
 
   inner class HookUpdaterValue(val newValue: T) : HookUpdater {
@@ -157,13 +190,12 @@ internal constructor(
   }
 
   private fun canSkip(newValue: T): Boolean {
-    return context.stateUpdater?.canSkipStateUpdate(
-        context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext) ?: false
+    return stateUpdater.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isNestedTreeContext)
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
-    return context.stateUpdater?.canSkipStateUpdate(
-        newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext) ?: false
+    return stateUpdater.canSkipStateUpdate(
+        newValueFunction, globalKey, hookStateIndex, isNestedTreeContext)
   }
 
   /**
@@ -179,13 +211,12 @@ internal constructor(
       return false
     }
 
-    return context.lithoTree === other.context.lithoTree &&
-        context.globalKey == other.context.globalKey &&
+    return globalKey == other.globalKey &&
         hookStateIndex == other.hookStateIndex &&
         value == other.value
   }
 
   override fun hashCode(): Int {
-    return context.globalKey.hashCode() * 17 + (value?.hashCode() ?: 0) * 11 + hookStateIndex
+    return globalKey.hashCode() * 17 + (value?.hashCode() ?: 0) * 11 + hookStateIndex
   }
 }
