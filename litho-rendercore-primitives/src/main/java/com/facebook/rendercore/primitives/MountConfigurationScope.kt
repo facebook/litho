@@ -16,9 +16,7 @@
 
 package com.facebook.rendercore.primitives
 
-import android.content.Context
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.utils.areObjectsEquivalent
 import kotlin.reflect.KFunction2
 import kotlin.reflect.KMutableProperty1
 
@@ -59,47 +57,23 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    * @param bindCall A function that allows for applying properties to the content.
    */
   fun bind(vararg deps: Any?, bindCall: BindScope.(content: ContentType) -> UnbindFunc) {
-    val bindScope = BindScope()
     _fixedBinders.add(
-        RenderUnit.DelegateBinder.createDelegateBinder(
+        binder(
             deps,
-            object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
+            object : BindFunc<ContentType> {
 
-              private val fixedBinderIndex = _fixedBinders.size
-              private val customDescription: String? = binderDescription
+              val fixedBinderIndex: Int = _fixedBinders.size
+              val customDescription: String? = binderDescription
+
+              override fun BindScope.bind(content: ContentType): UnbindFunc {
+                return bindCall(content)
+              }
 
               override val description: String
-                get() = "binder:${customDescription ?: fixedBinderIndex}"
-
-              override fun shouldUpdate(
-                  currentModel: Array<out Any?>,
-                  newModel: Array<out Any?>,
-                  currentLayoutData: Any?,
-                  nextLayoutData: Any?
-              ): Boolean {
-                return !areObjectsEquivalent(currentModel, newModel)
-              }
-
-              override fun bind(
-                  context: Context,
-                  content: ContentType,
-                  model: Array<out Any?>,
-                  layoutData: Any?
-              ): UnbindFunc {
-                return bindScope.withContext(context) { bindScope.bindCall(content) }
-              }
-
-              override fun unbind(
-                  context: Context,
-                  content: ContentType,
-                  model: Array<out Any?>,
-                  layoutData: Any?,
-                  unbindFunc: UnbindFunc?
-              ) {
-                bindScope.withContext(context) { unbindFunc?.onUnbind() }
-              }
-            }
-                as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
+                get() = "${customDescription ?: fixedBinderIndex}"
+            },
+        ),
+    )
   }
 
   /**
@@ -122,56 +96,23 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
       vararg deps: Any?,
       bindCall: BindScope.(content: ContentType, layoutData: LayoutDataT) -> UnbindFunc
   ) {
-    val bindScope = BindScope()
     _fixedBinders.add(
-        RenderUnit.DelegateBinder.createDelegateBinder(
+        binder(
             deps,
-            object : RenderUnit.Binder<Array<out Any?>, ContentType, UnbindFunc> {
+            object : BindFuncWithLayoutData<ContentType> {
 
-              private val fixedBinderIndex = _fixedBinders.size
-              private val customDescription: String? = binderDescription
+              val fixedBinderIndex: Int = _fixedBinders.size
+              val customDescription: String? = binderDescription
+
+              override fun BindScope.bind(content: ContentType, layoutData: Any?): UnbindFunc {
+                return bindCall(content, layoutData as LayoutDataT)
+              }
 
               override val description: String
-                get() = "binder:${customDescription ?: fixedBinderIndex}"
-
-              override fun shouldUpdate(
-                  currentModel: Array<out Any?>,
-                  newModel: Array<out Any?>,
-                  currentLayoutData: Any?,
-                  nextLayoutData: Any?
-              ): Boolean {
-
-                if (!areObjectsEquivalent(currentLayoutData, nextLayoutData)) {
-                  // layout data has changed
-                  return true
-                }
-
-                return !areObjectsEquivalent(currentModel, newModel)
-              }
-
-              @Suppress("UNCHECKED_CAST")
-              override fun bind(
-                  context: Context,
-                  content: ContentType,
-                  model: Array<out Any?>,
-                  layoutData: Any?
-              ): UnbindFunc {
-                return bindScope.withContext(context) {
-                  bindScope.bindCall(content, layoutData as LayoutDataT)
-                }
-              }
-
-              override fun unbind(
-                  context: Context,
-                  content: ContentType,
-                  model: Array<out Any?>,
-                  layoutData: Any?,
-                  unbindFunc: UnbindFunc?
-              ) {
-                bindScope.withContext(context) { unbindFunc?.onUnbind() }
-              }
-            }
-                as RenderUnit.Binder<Array<out Any?>, ContentType, Any>))
+                get() = "${customDescription ?: fixedBinderIndex}"
+            },
+        ),
+    )
   }
 
   /**
@@ -182,44 +123,20 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    */
   fun <T> T.bindTo(setter: KFunction2<ContentType, T, *>, defaultValue: T) {
     _fixedBinders.add(
-        RenderUnit.DelegateBinder.createDelegateBinder(
+        binder(
             this,
-            object : RenderUnit.Binder<T, ContentType, Any> {
+            object : BindFunc<ContentType> {
 
-              private val fixedBinderIndex = _fixedBinders.size
-              private val customDescription: String? = binderDescription
+              val fixedBinderIndex: Int = _fixedBinders.size
+              val customDescription: String? = binderDescription
+
+              override fun BindScope.bind(content: ContentType): UnbindFunc {
+                setter(content, this@bindTo)
+                return onUnbind { setter(content, defaultValue) }
+              }
 
               override val description: String
-                get() = "binder:${customDescription ?: fixedBinderIndex}"
-
-              override fun shouldUpdate(
-                  currentModel: T,
-                  newModel: T,
-                  currentLayoutData: Any?,
-                  nextLayoutData: Any?
-              ): Boolean {
-                return !areObjectsEquivalent(currentModel, newModel)
-              }
-
-              override fun bind(
-                  context: Context,
-                  content: ContentType,
-                  model: T,
-                  layoutData: Any?
-              ): Any? {
-                setter(content, model)
-                return null
-              }
-
-              override fun unbind(
-                  context: Context,
-                  content: ContentType,
-                  model: T,
-                  layoutData: Any?,
-                  bindData: Any?
-              ) {
-                setter(content, defaultValue)
-              }
+                get() = "${customDescription ?: fixedBinderIndex}"
             }))
   }
 
@@ -231,45 +148,23 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
    */
   fun <T> T.bindTo(setter: KMutableProperty1<ContentType, T>, defaultValue: T) {
     _fixedBinders.add(
-        RenderUnit.DelegateBinder.createDelegateBinder(
+        binder(
             this,
-            object : RenderUnit.Binder<T, ContentType, Any> {
+            object : BindFunc<ContentType> {
 
-              private val fixedBinderIndex = _fixedBinders.size
-              private val customDescription: String? = binderDescription
+              val fixedBinderIndex: Int = _fixedBinders.size
+              val customDescription: String? = binderDescription
+
+              override fun BindScope.bind(content: ContentType): UnbindFunc {
+                setter.set(content, this@bindTo)
+                return onUnbind { setter.set(content, defaultValue) }
+              }
 
               override val description: String
-                get() = "binder:${customDescription ?: fixedBinderIndex}"
-
-              override fun shouldUpdate(
-                  currentModel: T,
-                  newModel: T,
-                  currentLayoutData: Any?,
-                  nextLayoutData: Any?
-              ): Boolean {
-                return !areObjectsEquivalent(currentModel, newModel)
-              }
-
-              override fun bind(
-                  context: Context,
-                  content: ContentType,
-                  model: T,
-                  layoutData: Any?
-              ): Any? {
-                setter.set(content, model)
-                return null
-              }
-
-              override fun unbind(
-                  context: Context,
-                  content: ContentType,
-                  model: T,
-                  layoutData: Any?,
-                  bindData: Any?
-              ) {
-                setter.set(content, defaultValue)
-              }
-            }))
+                get() = "${customDescription ?: fixedBinderIndex}"
+            },
+        ),
+    )
   }
 
   /**
@@ -321,35 +216,4 @@ class MountConfigurationScope<ContentType : Any> internal constructor() {
     private const val BIND_NO_DEPS_ERROR =
         "bind must provide 'deps' parameter that determines whether the existing 'onUnbind' cleanup callback will be invoked, and the new 'bind' callback will be invoked"
   }
-}
-
-/**
- * Interface for the [onUnbind] function: use [onUnbind] to define the cleanup function for your
- * content.
- */
-fun interface UnbindFunc {
-  fun onUnbind()
-}
-
-class BindScope {
-
-  private var context: Context? = null
-
-  internal inline fun <T> withContext(context: Context, block: () -> T): T {
-    this.context = context
-    return try {
-      block()
-    } finally {
-      this.context = null
-    }
-  }
-
-  val androidContext: Context
-    get() = requireNotNull(context)
-
-  /**
-   * Defines an unbind function to be invoked when the content needs to be updated or a [Primitive]
-   * is detached.
-   */
-  inline fun onUnbind(crossinline unbindFunc: () -> Unit): UnbindFunc = UnbindFunc { unbindFunc() }
 }
