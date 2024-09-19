@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.extensions;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Extension point for other plugins to provide own templates.
  *
@@ -31,6 +33,7 @@ package com.facebook.litho.intellij.extensions;
  *       &lt;templateProvider implementation="yourImpl"/&gt;</code>
  * </ol>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface TemplateProvider {
   String getTemplateName();
 
