@@ -17,7 +17,6 @@
 package com.facebook.litho.view
 
 import android.animation.StateListAnimator
-import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
@@ -43,7 +42,7 @@ import com.facebook.litho.StyleItemField
 import com.facebook.litho.SupportsPivotTransform
 import com.facebook.litho.SupportsPivotTransform.Companion.BadPivotClassErrorMessage
 import com.facebook.litho.TouchEvent
-import com.facebook.litho.binders.viewBinder
+import com.facebook.litho.binders.onBind
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.debug.DebugInfoReporter
 import com.facebook.litho.debug.getComponentStackTraceElement
@@ -52,7 +51,9 @@ import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.rendercore.Dimen
 import com.facebook.rendercore.LogLevel
-import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.primitives.BindFunc
+import com.facebook.rendercore.primitives.BindScope
+import com.facebook.rendercore.primitives.UnbindFunc
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */
@@ -482,34 +483,19 @@ inline fun Style.pivotPercent(
   check(pivotXPercent in 0f..100f && pivotYPercent in 0f..100f) {
     "Pivot values must be between 0 and 100f. Got ($pivotXPercent, $pivotYPercent)."
   }
-  return this + Style.viewBinder(PivotBinder, Pair(pivotXPercent, pivotYPercent))
+  val model = Pair(pivotXPercent, pivotYPercent)
+  return this + Style.onBind(model, func = PivotPercentBinder(model))
 }
 
-@PublishedApi
-internal object PivotBinder : RenderUnit.Binder<Pair<Float, Float>, View, Unit> {
-
-  override fun shouldUpdate(
-      currentModel: Pair<Float, Float>,
-      newModel: Pair<Float, Float>,
-      currentLayoutData: Any?,
-      nextLayoutData: Any?
-  ): Boolean = currentModel != newModel
-
-  override fun bind(context: Context, content: View, model: Pair<Float, Float>, layoutData: Any?) {
+class PivotPercentBinder(val model: Pair<Float, Float>) : BindFunc<View> {
+  override fun BindScope.bind(content: View): UnbindFunc {
     check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
     content.setTransformPivot(model.first, model.second)
+    return onUnbind { SupportsPivotTransform.resetPivot(content) }
   }
 
-  override fun unbind(
-      context: Context,
-      content: View,
-      model: Pair<Float, Float>,
-      layoutData: Any?,
-      bindData: Unit?
-  ) {
-    check(content is SupportsPivotTransform) { BadPivotClassErrorMessage }
-    SupportsPivotTransform.resetPivot(content)
-  }
+  override val description: String
+    get() = "pivotPercent"
 }
 
 /**
