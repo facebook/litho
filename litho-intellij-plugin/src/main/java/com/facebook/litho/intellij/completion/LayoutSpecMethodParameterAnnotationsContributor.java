@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.completion;
 
 import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_PARAMETER_ANNOTATION;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -51,6 +52,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutSpecMethodParameterAnnotationsContributor extends CompletionContributor {
 
   public LayoutSpecMethodParameterAnnotationsContributor() {
