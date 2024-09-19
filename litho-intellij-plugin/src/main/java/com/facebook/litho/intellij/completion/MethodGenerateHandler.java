@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.sections.specmodels.model.GroupSectionSpecModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -50,6 +51,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Generates method. Doesn't prompt the user for additional data, uses pre-defined method instead.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class MethodGenerateHandler extends GenerateMembersHandlerBase {
   private final List<PsiMethod> generatedMethods;
   private final PsiClass specClass;
@@ -99,6 +101,7 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
 
     public MethodTemplateGenerationInfo(
         PsiMethod element, PsiClass specClass, Document document, Project project) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       super(element, null);
       this.specClass = specClass;
       this.document = document;
@@ -107,6 +110,7 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
 
     @Override
     protected PsiElement getTemplateElement(PsiMethod method) {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
 
