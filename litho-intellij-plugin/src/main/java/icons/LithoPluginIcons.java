@@ -16,9 +16,11 @@
 
 package icons;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.openapi.util.IconLoader;
 import javax.swing.Icon;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface LithoPluginIcons {
   Icon BASE_ACTION = IconLoader.getIcon("/icons/lithoLogo.svg", LithoPluginIcons.class);
   Icon TOOLWINDOW = IconLoader.getIcon("/icons/toolwindow.svg", LithoPluginIcons.class);
