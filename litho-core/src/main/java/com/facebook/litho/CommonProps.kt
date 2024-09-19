@@ -703,9 +703,7 @@ class CommonProps : LayoutProps, Equivalence<CommonProps?> {
 
     fun delegateMountViewBinder(binder: DelegateBinder<Any, Any, Any>) {
       typeToDelegateViewBinder =
-          (typeToDelegateViewBinder ?: LinkedHashMap()).apply {
-            this[binder.delegatedBinderClass] = binder
-          }
+          (typeToDelegateViewBinder ?: LinkedHashMap()).apply { this[binder.type] = binder }
     }
 
     fun importantForAccessibility(importantForAccessibility: Int) {

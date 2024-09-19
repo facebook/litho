@@ -255,7 +255,7 @@ constructor(
       try {
         val binderBindData = binder.bind(context, content, layoutData)
         bindData.setOptionalMountBindersBindData(
-            binderBindData, binder.binder.javaClass, optionalMountBindersSize)
+            binderBindData, binder.binder.type, optionalMountBindersSize)
       } catch (exception: Exception) {
         throw RenderUnitOperationException(
             renderUnit = this,
@@ -332,7 +332,7 @@ constructor(
               context,
               content,
               layoutData,
-              bindData.removeOptionalMountBindersBindData(binder.binder.javaClass))
+              bindData.removeOptionalMountBindersBindData(binder.binder.type))
         } catch (exception: Exception) {
           throw RenderUnitOperationException(
               renderUnit = this,
@@ -372,7 +372,7 @@ constructor(
         tracer.beginSection(sectionName(binder.description))
       }
       val binderBindData = binder.bind(context, content, layoutData)
-      bindData.setAttachBindersBindData(binderBindData, binder.binder.javaClass, attachBindersSize)
+      bindData.setAttachBindersBindData(binderBindData, binder.binder.type, attachBindersSize)
       if (isTracing) {
         tracer.endSection()
       }
@@ -401,10 +401,7 @@ constructor(
         tracer.beginSection(sectionName(binder.description))
       }
       binder.unbind(
-          context,
-          content,
-          layoutData,
-          bindData.removeAttachBindersBindData(binder.binder.javaClass))
+          context, content, layoutData, bindData.removeAttachBindersBindData(binder.binder.type))
       if (isTracing) {
         tracer.endSection()
       }
@@ -499,7 +496,7 @@ constructor(
             context,
             content,
             currentLayoutData,
-            bindData.removeAttachBindersBindData(binder.binder.javaClass))
+            bindData.removeAttachBindersBindData(binder.binder.type))
         if (isTracing) {
           tracer.endSection()
         }
@@ -532,7 +529,7 @@ constructor(
           context,
           content,
           currentLayoutData,
-          bindData.removeOptionalMountBindersBindData(binder.binder.javaClass))
+          bindData.removeOptionalMountBindersBindData(binder.binder.type))
       if (isTracing) {
         tracer.endSection()
       }
@@ -600,7 +597,7 @@ constructor(
       }
       val binderBindData = binder.bind(context, content, newLayoutData)
       bindData.setOptionalMountBindersBindData(
-          binderBindData, binder.binder.javaClass, optionalMountBindersSize)
+          binderBindData, binder.binder.type, optionalMountBindersSize)
       if (isTracing) {
         tracer.endSection()
       }
@@ -630,7 +627,7 @@ constructor(
         tracer.beginSection(sectionName(binder.description))
       }
       val binderBindData = binder.bind(context, content, newLayoutData)
-      bindData.setAttachBindersBindData(binderBindData, binder.binder.javaClass, attachBindersSize)
+      bindData.setAttachBindersBindData(binderBindData, binder.binder.type, attachBindersSize)
       if (isTracing) {
         tracer.endSection()
       }
@@ -657,12 +654,11 @@ constructor(
   }
 
   open fun containsAttachBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {
-    return attachBinderTypeToDelegateMap?.containsKey(delegateBinder.binder.javaClass) ?: false
+    return attachBinderTypeToDelegateMap?.containsKey(delegateBinder.binder.type) ?: false
   }
 
   open fun containsOptionalMountBinder(delegateBinder: DelegateBinder<*, *, *>): Boolean {
-    return optionalMountBinderTypeToDelegateMap?.containsKey(delegateBinder.binder.javaClass)
-        ?: false
+    return optionalMountBinderTypeToDelegateMap?.containsKey(delegateBinder.binder.type) ?: false
   }
 
   /**
@@ -676,10 +672,6 @@ constructor(
     init {
       this.binder = binder
     }
-
-    val delegatedBinderClass: Class<*>
-      /** Returns the class for the binder to which it delegates. */
-      get() = binder.javaClass
 
     fun shouldUpdate(
         previous: DelegateBinder<MODEL, CONTENT, BIND_DATA>,
@@ -699,6 +691,9 @@ constructor(
 
     val description: String
       get() = binder.description
+
+    val type: Class<*>
+      get() = binder.type
 
     companion object {
       /**
@@ -747,6 +742,9 @@ constructor(
 
     val description: String
       get() = getSectionNameForTracing(javaClass)
+
+    val type: Class<*>
+      get() = javaClass
   }
 
   companion object {
@@ -764,12 +762,12 @@ constructor(
         binders: MutableList<DelegateBinder<*, in MOUNT_CONTENT, *>>,
         binder: DelegateBinder<*, in MOUNT_CONTENT, *>
     ) {
-      val prevBinder = binderTypeToBinderMap.put(binder.binder.javaClass, binder)
+      val prevBinder = binderTypeToBinderMap.put(binder.binder.type, binder)
       if (prevBinder != null) {
         // A binder with the same type was already present and it should be removed.
         var found = false
         for (i in binders.indices.reversed()) {
-          if (binders[i].binder.javaClass == binder.binder.javaClass) {
+          if (binders[i].binder.type == binder.binder.type) {
             binders.removeAt(i)
             found = true
             break
@@ -848,7 +846,7 @@ constructor(
       // Parse all new binders and resolve which ones are to bind.
       for (i in newBinders.indices) {
         val newBinder = newBinders[i]
-        val binderClass: Class<*> = newBinder.binder.javaClass
+        val binderClass: Class<*> = newBinder.binder.type
         val currentBinder = currentBinderTypeToBinderMap?.get(binderClass)
         if (currentBinder == null) {
           // Found new binder, has to be bound.
@@ -868,7 +866,7 @@ constructor(
       // Parse all current binders and resolve which ones are to unbind.
       for (i in currentBinders.indices) {
         val currentBinder = currentBinders[i]
-        val binderClass: Class<*> = currentBinder.binder.javaClass
+        val binderClass: Class<*> = currentBinder.binder.type
         if (!binderToShouldUpdate.containsKey(binderClass) ||
             binderToShouldUpdate[binderClass] == true) {
           // Found a current binder which either is not in the new RenderUnit or shouldUpdate is
