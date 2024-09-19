@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.completion;
 
 import static com.intellij.patterns.StandardPatterns.or;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.patterns.ElementPattern;
@@ -36,6 +37,7 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class CompletionUtils {
   static final ElementPattern<? extends PsiElement> METHOD_ANNOTATION_PARAMETER =
       PlatformPatterns.psiElement(PsiIdentifier.class)
