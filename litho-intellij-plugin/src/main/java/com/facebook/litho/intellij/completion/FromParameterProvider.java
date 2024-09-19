@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FromParameterProvider extends CompletionProvider<CompletionParameters> {
   private final String allowedMethodAnnotation;
   private final String parameterAnnotation;
@@ -76,6 +78,7 @@ public class FromParameterProvider extends CompletionProvider<CompletionParamete
         Arrays.stream(psiMethod.getAnnotations())
             .filter(
                 methodAnnotation ->
+                    // NULLSAFE_FIXME[Parameter Not Nullable]
                     allowedMethodAnnotation.contains(methodAnnotation.getQualifiedName()))
             .findAny()
             .orElse(null);
