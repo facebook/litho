@@ -25,6 +25,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.espresso.LithoActivityTestRule;
+import javax.annotation.Nullable;
 
 /**
  * A test rule for instrumentation and screenshot tests that want to render a Component in an
@@ -35,7 +36,7 @@ import com.facebook.litho.testing.espresso.LithoActivityTestRule;
 public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentActivity> {
 
   // NULLSAFE_FIXME[Field Not Initialized]
-  private volatile ComponentContext mComponentContext;
+  @Nullable private volatile ComponentContext mComponentContext;
 
   public ComponentActivityTestRule() {
     super(ComponentActivity.class);
