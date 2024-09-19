@@ -186,10 +186,6 @@ internal constructor(
     /** Indicates that the incremental mount helper is required for this build. */
     @JvmField val USE_INCREMENTAL_MOUNT_HELPER: Boolean = BuildConfig.USE_INCREMENTAL_MOUNT_HELPER
 
-    /** Whether we can access properties in Settings.Global for animations. */
-    val CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS: Boolean =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-
     /** Whether we need to account for lack of synchronization while accessing Themes. */
     @JvmField
     val NEEDS_THEME_SYNCHRONIZATION: Boolean =

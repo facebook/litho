@@ -22,7 +22,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.SparseArray
 import android.view.View
 import android.view.ViewOutlineProvider
@@ -577,11 +576,7 @@ inline fun Style.selected(isSelected: Boolean): Style =
  * NOTE: This style will be ignored pre-API 21.
  */
 inline fun Style.stateListAnimator(stateListAnimator: StateListAnimator?): Style =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      this + ObjectStyleItem(ObjectField.STATE_LIST_ANIMATOR, stateListAnimator)
-    } else {
-      this
-    }
+    this + ObjectStyleItem(ObjectField.STATE_LIST_ANIMATOR, stateListAnimator)
 
 /**
  * Sets testKey on the View this Component mounts to. Setting this property will cause the Component

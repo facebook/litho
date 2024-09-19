@@ -52,6 +52,7 @@ import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
 import androidx.annotation.Dimension;
+import androidx.annotation.DoNotInline;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -534,9 +535,7 @@ public class TextSpec {
       layoutBuilder.setLineHeight(lineHeight);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      layoutBuilder.setLetterSpacing(letterSpacing);
-    }
+    layoutBuilder.setLetterSpacing(letterSpacing);
 
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
@@ -850,11 +849,10 @@ public class TextSpec {
     }
     // Get character offset number corresponding to that X position:
 
-    int ellipsisOffset;
+    int ellipsisOffset = 0;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      ellipsisOffset =
-          getEllipsisOffsetFromPaintAdvance(
-              newLayout, text, isRtl, ellipsizedLineNumber, ellipsisTarget);
+      AndroidMImpl.getEllipsisOffsetFromPaintAdvance(
+          newLayout, text, isRtl, ellipsizedLineNumber, ellipsisTarget);
     } else {
       ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     }
@@ -886,9 +884,7 @@ public class TextSpec {
           && ellipsisOffset != 0
           && ellipsisOffset != text.length()) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          BreakIterator iterator = BreakIterator.getCharacterInstance();
-          iterator.setText(text);
-          ellipsisOffset = iterator.preceding(ellipsisOffset);
+          ellipsisOffset = AndroidQImpl.breakIteratorGetPreceding(text, ellipsisOffset);
         } else {
           java.text.BreakIterator iterator = java.text.BreakIterator.getCharacterInstance();
           iterator.setText(text.toString());
@@ -900,16 +896,6 @@ public class TextSpec {
     } else {
       return text;
     }
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.M)
-  private static int getEllipsisOffsetFromPaintAdvance(
-      Layout layout, CharSequence text, boolean isRtl, int line, float advance) {
-    Paint paint = layout.getPaint();
-    int lineStart = layout.getLineStart(line);
-    int lineEnd = layout.getLineEnd(line);
-
-    return paint.getOffsetForAdvance(text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance);
   }
 
   /**
@@ -1302,5 +1288,35 @@ public class TextSpec {
         break;
     }
     return alignment;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.M)
+  private static class AndroidMImpl {
+
+    private AndroidMImpl() {}
+
+    @DoNotInline
+    static int getEllipsisOffsetFromPaintAdvance(
+        Layout layout, CharSequence text, boolean isRtl, int line, float advance) {
+      Paint paint = layout.getPaint();
+      int lineStart = layout.getLineStart(line);
+      int lineEnd = layout.getLineEnd(line);
+
+      return paint.getOffsetForAdvance(
+          text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private static class AndroidQImpl {
+
+    private AndroidQImpl() {}
+
+    @DoNotInline
+    static int breakIteratorGetPreceding(CharSequence text, int ellipsisOffset) {
+      BreakIterator iterator = BreakIterator.getCharacterInstance();
+      iterator.setText(text);
+      return iterator.preceding(ellipsisOffset);
+    }
   }
 }

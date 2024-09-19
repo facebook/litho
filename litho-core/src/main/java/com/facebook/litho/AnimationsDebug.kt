@@ -44,9 +44,6 @@ object AnimationsDebug {
     if (!ComponentsConfiguration.isEndToEndTestRun) {
       return true
     }
-    if (!ComponentsConfiguration.CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS) {
-      return false
-    }
     if (context == null) {
       return false
     }

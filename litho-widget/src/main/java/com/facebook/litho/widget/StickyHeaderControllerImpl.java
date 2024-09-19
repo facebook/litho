@@ -16,8 +16,6 @@
 
 package com.facebook.litho.widget;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -32,7 +30,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * list, we might either use first child as sticky header or use {@link SectionsRecyclerView}'s
  * sticky header.
  */
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     implements StickyHeaderController {
 

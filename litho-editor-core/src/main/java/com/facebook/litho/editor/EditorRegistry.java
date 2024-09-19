@@ -221,9 +221,7 @@ public final class EditorRegistry {
 
     registerEditor(Style.class, StyleEditorInstance.Companion.getInstance());
 
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      registerEditor(android.util.Size.class, new UtilSizeEditorInstance());
-    }
+    registerEditor(android.util.Size.class, new UtilSizeEditorInstance());
 
     registerEditor(ColorDrawable.class, new ColorDrawableEditorInstance());
     registerEditor(ComparableColorDrawable.class, new ComparableColorDrawableEditorInstance());
