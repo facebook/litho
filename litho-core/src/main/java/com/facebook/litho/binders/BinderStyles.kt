@@ -26,6 +26,37 @@ import com.facebook.litho.StyleItemField
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder
 import com.facebook.rendercore.RenderUnit.DelegateBinder.Companion.createDelegateBinder
+import com.facebook.rendercore.primitives.BindFunc
+import com.facebook.rendercore.primitives.binder
+
+/**
+ * This [Style] adds a mount callbacks. The [BindFunc] is invoked when the Component is mounted, and
+ * it receives a [BindScope] and the [View] this [Component] rendered to. The [BindFunc] must return
+ * an [UnbindFunc] and it must undo any mutations made to the [View] in the [BindFunc]. This API can
+ * be used to create higher-order Styles.
+ *
+ * If the [Component] does not render a view then this [Style] will wrap the content into a [View].
+ * The callbacks are guaranteed to be called on the main thread.
+ *
+ * The previous and new values of the [deps] are compared to check if the callbacks should be
+ * invoked again. If the [deps] are equivalent then the callbacks are not invoked again; if they are
+ * not equivalent then [UnbindFunc] is invoked followed by [BindFunc]. To invoke the callbacks only
+ * once use [Unit] as [deps].
+ *
+ * @param deps the dependencies that will be compared to check if the binder should be rerun.
+ * @param func the [RenderUnit.Binder] to be used to bind the model to the View content.
+ */
+inline fun Style.onBind(vararg deps: Any?, func: BindFunc<View>): Style =
+    this +
+        ObjectStyleItem(
+            BinderObjectField.DELEGATE_MOUNT_VIEW_BINDER,
+            binder(dep = deps, bindFunc = func),
+        )
+
+@Deprecated(ON_BIND_NO_DEPS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+inline fun Style.onBind(func: BindFunc<View>): Style =
+    throw IllegalArgumentException(ON_BIND_NO_DEPS_ERROR)
 
 /**
  * Creates a [Style] which will apply the given [RenderUnit.Binder] to the [View] rendered by the
@@ -94,3 +125,8 @@ internal data class ObjectStyleItem(
     }
   }
 }
+
+const val ON_BIND_NO_DEPS_ERROR =
+    "onBind must provide the 'deps' parameter to determine whether an existing binder should " +
+        "be re-bound. Use 'Unit' as 'deps' to invoke the binder only once when the component " +
+        "is mounted or 'Any' to invoke the binder every time the component is mounted."

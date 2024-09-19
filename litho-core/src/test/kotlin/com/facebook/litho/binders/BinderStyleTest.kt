@@ -16,13 +16,12 @@
 
 package com.facebook.litho
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.TextView
-import com.facebook.litho.binders.viewBinder
+import com.facebook.litho.binders.onBind
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Progress
@@ -33,15 +32,18 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.ProgressView
-import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.dp
+import com.facebook.rendercore.primitives.BindFunc
+import com.facebook.rendercore.primitives.BindScope
 import com.facebook.rendercore.primitives.DrawableAllocator
 import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
 import com.facebook.rendercore.primitives.Primitive
+import com.facebook.rendercore.primitives.UnbindFunc
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.px
 import java.util.LinkedList
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,15 +51,194 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class BinderStyleTest {
 
-  @get:Rule val mLithoTestRule = LithoTestRule()
+  @get:Rule val lithoTestRule = LithoTestRule()
+
+  @Test
+  fun `when Style onBind is set on a component then mount callbacks should be invoked`() {
+    var wasBound = false
+    var wasUnBound = false
+    var view: View? = null
+
+    val handle =
+        lithoTestRule.render {
+          ComponentWithTextViewPrimitive(
+              style =
+                  Style.onBind(Unit) { content ->
+                    wasBound = true
+                    content.tag = "test-tag"
+                    view = content
+                    onUnbind {
+                      wasUnBound = true
+                      content.tag = null
+                    }
+                  })
+        }
+
+    assertThat(wasBound).isTrue
+    assertThat(wasUnBound).isFalse
+    assertThat(view).isNotNull
+    assertThat(view?.tag).isEqualTo("test-tag")
+
+    handle.lithoView.unmountAllItems()
+
+    assertThat(wasUnBound).isTrue
+    assertThat(view?.tag).isNull()
+  }
+
+  @Test
+  fun `when multiple Style onBind is set on a component then mount callbacks should be invoked`() {
+    var wasBound1 = false
+    var wasBound2 = false
+    var wasUnBound1 = false
+    var wasUnBound2 = false
+    var view: View? = null
+
+    val handle =
+        lithoTestRule.render {
+          ComponentWithTextViewPrimitive(
+              style =
+                  Style.onBind(Unit) { content ->
+                        wasBound1 = true
+                        content.tag = "test-tag-1"
+                        view = content
+                        onUnbind {
+                          wasUnBound1 = true
+                          content.tag = null
+                        }
+                      }
+                      .onBind(Unit) { content ->
+                        wasBound2 = true
+                        content.tag = "test-tag-2"
+                        view = content
+                        onUnbind {
+                          wasUnBound2 = true
+                          content.tag = null
+                        }
+                      })
+        }
+
+    assertThat(wasBound1).isTrue
+    assertThat(wasBound2).isTrue
+    assertThat(wasUnBound1).isFalse
+    assertThat(wasUnBound2).isFalse
+    assertThat(view).isNotNull
+    assertThat(view?.tag).isEqualTo("test-tag-2")
+
+    handle.lithoView.unmountAllItems()
+
+    assertThat(wasUnBound1).isTrue
+    assertThat(wasUnBound2).isTrue
+    assertThat(view?.tag).isNull()
+  }
+
+  @Test
+  fun `when Style onBind with deps is set on a component then mount callbacks should be invoked when they change`() {
+    var bindCalls = 0
+    var unbindCalls = 0
+
+    class TestComponent(val deps: () -> Array<out Any?>) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val dummyState = useState { 0 }
+        return Column {
+          child(
+              Text(
+                  "Hello",
+                  style =
+                      Style.onBind(*deps()) {
+                        bindCalls++
+                        onUnbind { unbindCalls++ }
+                      },
+              ),
+          )
+          child(Text("Click me", Style.onClick { dummyState.update { it + 1 } }))
+        }
+      }
+    }
+
+    var deps: Array<out Any?> = arrayOf(Unit)
+    val handle = lithoTestRule.render { TestComponent { deps } }
+
+    assertThat(bindCalls).isEqualTo(1)
+    assertThat(unbindCalls).isEqualTo(0)
+
+    lithoTestRule.act(handle) { clickOnText("Click me") }
+
+    assertThat(bindCalls).isEqualTo(1)
+    assertThat(unbindCalls).isEqualTo(0)
+
+    deps = arrayOf(Any())
+
+    lithoTestRule.act(handle) { clickOnText("Click me") }
+
+    assertThat(bindCalls).isEqualTo(2)
+    assertThat(unbindCalls).isEqualTo(1)
+  }
+
+  @Test
+  fun `when Style onBind with should update is set on a component then mount callbacks should be invoked when they change`() {
+    var bindCalls = 0
+    var unbindCalls = 0
+
+    class TestComponent(val shouldUpdateFunc: (Any?, Any?) -> Boolean) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        val dummyState = useState { 0 }
+        return Column {
+          child(
+              Text(
+                  "Hello",
+                  style =
+                      Style.onBind(
+                          Unit,
+                          func =
+                              object : BindFunc<View> {
+                                override fun BindScope.bind(content: View): UnbindFunc {
+                                  bindCalls++
+                                  return onUnbind { unbindCalls++ }
+                                }
+
+                                override fun shouldUpdate(
+                                    currentModel: Any?,
+                                    newModel: Any?,
+                                    currentLayoutData: Any?,
+                                    nextLayoutData: Any?,
+                                ): Boolean {
+                                  return shouldUpdateFunc(currentModel, newModel)
+                                }
+                              }),
+              ),
+          )
+          child(Text("Click me", Style.onClick { dummyState.update { it + 1 } }))
+        }
+      }
+    }
+
+    var shouldUpdate = false
+    val shouldUpdateFunc: (Any?, Any?) -> Boolean = { _, _ -> shouldUpdate }
+    val handle = lithoTestRule.render { TestComponent(shouldUpdateFunc = shouldUpdateFunc) }
+
+    assertThat(bindCalls).isEqualTo(1)
+    assertThat(unbindCalls).isEqualTo(0)
+
+    lithoTestRule.act(handle) { clickOnText("Click me") }
+
+    assertThat(bindCalls).isEqualTo(1)
+    assertThat(unbindCalls).isEqualTo(0)
+
+    shouldUpdate = true
+
+    lithoTestRule.act(handle) { clickOnText("Click me") }
+
+    assertThat(bindCalls).isEqualTo(2)
+    assertThat(unbindCalls).isEqualTo(1)
+  }
 
   @Test
   fun `MountSpec - binder invoked on mount and unmount`() {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawableMountSpec(textStyle = Style.onBind(Unit, func = testBinder))
         }
 
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
@@ -79,7 +260,9 @@ class BinderStyleTest {
     val binder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render { ComponentWithTextViewPrimitive(style = Style.viewBinder(binder)) }
+        lithoTestRule.render {
+          ComponentWithTextViewPrimitive(style = Style.onBind(Unit, func = binder))
+        }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
     binder.assertNumOfBindInvocations(1)
@@ -97,11 +280,11 @@ class BinderStyleTest {
 
   @Test
   fun `binder invoked on re-mount when shouldUpdate is true`() {
-    val testBinder = ViewTestBinder(shouldUpdate = true)
+    val testBinder = ViewTestBinder { _, _ -> true }
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawableMountSpec(textStyle = Style.onBind(Any(), func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -109,7 +292,7 @@ class BinderStyleTest {
     testBinder.assertBoundContentType(0, ComponentHost::class.java)
     testBinder.assertNoContentHasBeenUnbound()
 
-    mLithoTestRule.act(lithoView) { clickOnText("Click me") }
+    lithoTestRule.act(lithoView) { clickOnText("Click me") }
 
     testBinder.assertNumOfBindInvocations(2)
     testBinder.assertNumOfUnbindInvocations(1)
@@ -124,11 +307,11 @@ class BinderStyleTest {
 
   @Test
   fun `binder not invoked on re-mount when shouldUpdate is false`() {
-    val testBinder = ViewTestBinder(shouldUpdate = false)
+    val testBinder = ViewTestBinder { _, _ -> false }
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawableMountSpec(textStyle = Style.onBind(Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -136,7 +319,7 @@ class BinderStyleTest {
     testBinder.assertBoundContentType(0, ComponentHost::class.java)
     testBinder.assertNoContentHasBeenUnbound()
 
-    mLithoTestRule.act(lithoView) { clickOnText("Click me") }
+    lithoTestRule.act(lithoView) { clickOnText("Click me") }
 
     testBinder.assertNumOfBindInvocations(1)
     testBinder.assertNumOfUnbindInvocations(0)
@@ -155,9 +338,10 @@ class BinderStyleTest {
     val usedBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
+        lithoTestRule.render {
           ComponentWithDrawableMountSpec(
-              textStyle = Style.viewBinder(overridenBinder).viewBinder(usedBinder))
+              textStyle =
+                  Style.onBind(Unit, func = overridenBinder).onBind(Unit, func = usedBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -186,9 +370,9 @@ class BinderStyleTest {
     val usedBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
+        lithoTestRule.render {
           ComponentWithTextViewPrimitive(
-              style = Style.viewBinder(overridenBinder).viewBinder(usedBinder))
+              style = Style.onBind(Unit, func = overridenBinder).onBind(Unit, func = usedBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -216,8 +400,8 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawableMountSpec(textStyle = Style.viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawableMountSpec(textStyle = Style.onBind(Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -239,8 +423,8 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawablePrimitive(style = Style.viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawablePrimitive(style = Style.onBind(Unit, func = testBinder))
         }
 
     testBinder.assertNumOfBindInvocations(1)
@@ -261,8 +445,9 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawableMountSpec(textStyle = Style.wrapInView().viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawableMountSpec(
+              textStyle = Style.wrapInView().onBind(Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -284,8 +469,8 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawablePrimitive(style = Style.wrapInView().viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawablePrimitive(style = Style.wrapInView().onBind(Unit, func = testBinder))
         }
 
     testBinder.assertNumOfBindInvocations(1)
@@ -306,8 +491,8 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithViewMountSpec(style = Style.wrapInView().viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithViewMountSpec(style = Style.wrapInView().onBind(Unit, func = testBinder))
         }
 
     testBinder.assertNumOfBindInvocations(1)
@@ -328,8 +513,8 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithTextViewPrimitive(style = Style.wrapInView().viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithTextViewPrimitive(style = Style.wrapInView().onBind(Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -351,8 +536,8 @@ class BinderStyleTest {
     val testBinder = ViewTestBinder()
 
     val lithoView =
-        mLithoTestRule.render {
-          ComponentWithDrawableMountSpec(rootStyle = Style.viewBinder(testBinder))
+        lithoTestRule.render {
+          ComponentWithDrawableMountSpec(rootStyle = Style.onBind(Unit, func = testBinder))
         }
     LithoAssertions.assertThat(lithoView).hasVisibleText("Hello")
 
@@ -404,14 +589,16 @@ class BinderStyleTest {
     }
   }
 
-  private class ViewTestBinder(
-      shouldUpdate: Boolean = false,
-  ) : TestBinder<View>(shouldUpdate, { view -> view.javaClass })
+  fun ViewTestBinder(
+      shouldUpdateFunc: (Any?, Any?) -> Boolean = { _, _ -> false },
+  ): TestBinder<View> {
+    return TestBinder(shouldUpdateFunc)
+  }
 
-  private abstract class TestBinder<T>(
-      private val shouldUpdate: Boolean = false,
-      private val extractor: (T) -> Class<*>
-  ) : RenderUnit.Binder<Unit, T, Any> {
+  class TestBinder<T : Any>(
+      private val shouldUpdateFunc: (Any?, Any?) -> Boolean = { _, _ -> false },
+      private val extractor: (T) -> Class<*> = { view -> view.javaClass }
+  ) : BindFunc<T> {
 
     private val bindContent: MutableList<Class<*>> = LinkedList()
     private var numBindInvocations = 0
@@ -419,28 +606,22 @@ class BinderStyleTest {
     private val unbindContent: MutableList<Class<*>> = LinkedList()
     private var numUnbindInvocations = 0
 
-    override fun shouldUpdate(
-        currentModel: Unit,
-        newModel: Unit,
-        currentLayoutData: Any?,
-        nextLayoutData: Any?
-    ): Boolean = shouldUpdate
-
-    override fun bind(context: Context, content: T, model: Unit, layoutData: Any?): Any {
+    override fun BindScope.bind(content: T): UnbindFunc {
       numBindInvocations++
       bindContent.add(extractor(content))
-      return Unit
+      return onUnbind {
+        numUnbindInvocations++
+        unbindContent.add(extractor(content))
+      }
     }
 
-    override fun unbind(
-        context: Context,
-        content: T,
-        model: Unit,
-        layoutData: Any?,
-        bindData: Any?
-    ) {
-      numUnbindInvocations++
-      unbindContent.add(extractor(content))
+    override fun shouldUpdate(
+        currentModel: Any?,
+        newModel: Any?,
+        currentLayoutData: Any?,
+        nextLayoutData: Any?,
+    ): Boolean {
+      return shouldUpdateFunc(currentModel, newModel)
     }
 
     fun assertNoContentHasBeenBound() {
