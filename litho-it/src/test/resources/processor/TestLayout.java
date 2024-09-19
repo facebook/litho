@@ -16,6 +16,7 @@
 
 package com.facebook.litho.processor.integration.resources;
 
+import android.annotation.TargetApi;
 import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.Nullable;
@@ -65,6 +66,7 @@ import java.util.List;
  * @prop-required prop6 long
  * @see com.facebook.litho.processor.integration.resources.TestLayoutSpec
  */
+@TargetApi(17)
 @Generated
 public final class TestLayout<S extends View> extends SpecGeneratedComponent implements TestTag {
   private TestLayoutRenderData mPreviousRenderData;

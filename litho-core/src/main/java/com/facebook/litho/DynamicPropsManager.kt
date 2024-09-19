@@ -208,8 +208,10 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
               content.translationY = 0f
             }
         KEY_TRANSLATION_Z ->
-            if (content.translationZ != 0f) {
-              content.translationZ = 0f
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              if (content.translationZ != 0f) {
+                content.translationZ = 0f
+              }
             }
         KEY_SCALE_X ->
             if (content.scaleX != 1f) {
@@ -220,7 +222,7 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
               content.scaleY = 1f
             }
         KEY_ELEVATION ->
-            if (content.elevation != 0f) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && content.elevation != 0f) {
               content.elevation = 0f
             }
         KEY_ROTATION ->
@@ -252,10 +254,16 @@ class DynamicPropsManager : DynamicValue.OnValueChangeListener<Any?> {
         KEY_ALPHA -> target.alpha = resolve(value)
         KEY_TRANSLATION_X -> target.translationX = resolve(value)
         KEY_TRANSLATION_Y -> target.translationY = resolve(value)
-        KEY_TRANSLATION_Z -> target.translationZ = resolve(value)
+        KEY_TRANSLATION_Z ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              target.translationZ = resolve(value)
+            }
         KEY_SCALE_X -> target.scaleX = resolve(value)
         KEY_SCALE_Y -> target.scaleY = resolve(value)
-        KEY_ELEVATION -> target.elevation = resolve(value)
+        KEY_ELEVATION ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              target.elevation = resolve(value)
+            }
         KEY_BACKGROUND_COLOR -> target.setBackgroundColor(resolve(value))
         KEY_ROTATION -> target.rotation = resolve(value)
         KEY_ROTATION_X -> target.rotationX = resolve(value)

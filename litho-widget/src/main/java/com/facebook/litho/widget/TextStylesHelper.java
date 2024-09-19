@@ -230,8 +230,10 @@ public final class TextStylesHelper {
           ellipsize.set(TRUNCATE_AT[index - 1]);
         }
       } else if (attr == R.styleable.Text_android_textAlignment) {
-        viewTextAlignment = a.getInt(attr, -1);
-        textAlignment.set(getTextAlignment(viewTextAlignment, gravity));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+          viewTextAlignment = a.getInt(attr, -1);
+          textAlignment.set(getTextAlignment(viewTextAlignment, gravity));
+        }
       } else if (attr == R.styleable.Text_android_gravity) {
         gravity = a.getInt(attr, -1);
         textAlignment.set(getTextAlignment(viewTextAlignment, gravity));

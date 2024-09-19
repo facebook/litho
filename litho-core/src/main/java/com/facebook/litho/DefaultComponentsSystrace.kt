@@ -58,6 +58,7 @@ open class DefaultComponentsSystrace : Systracer {
 
   override fun isTracing(): Boolean =
       LithoDebugConfigurations.isDebugModeEnabled &&
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 &&
           (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled())
 
   private fun applyIfTracing(block: () -> Unit) {

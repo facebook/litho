@@ -18,10 +18,12 @@ package com.facebook.litho.processor.integration.resources;
 
 import static com.facebook.litho.annotations.ResType.STRING;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -69,6 +71,7 @@ import com.facebook.litho.annotations.TreeProp;
 import com.facebook.rendercore.MountItemsPool;
 import javax.annotation.Nullable;
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @MountSpec(
     events = TestEvent.class,
     isPureRender = true,

@@ -16,6 +16,8 @@
 
 package com.facebook.litho.widget;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.text.Layout.Alignment.ALIGN_CENTER;
 import static android.text.Layout.Alignment.ALIGN_NORMAL;
 import static android.text.Layout.Alignment.ALIGN_OPPOSITE;
@@ -47,10 +49,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import androidx.annotation.DoNotInline;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.view.ViewCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -241,8 +240,10 @@ class EditTextSpec {
           ellipsize.set(TRUNCATE_AT[index - 1]);
         }
       } else if (attr == R.styleable.Text_android_textAlignment) {
-        int viewTextAlignment = a.getInt(attr, -1);
-        textAlignment.set(getAlignment(viewTextAlignment, Gravity.NO_GRAVITY));
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          int viewTextAlignment = a.getInt(attr, -1);
+          textAlignment.set(getAlignment(viewTextAlignment, Gravity.NO_GRAVITY));
+        }
       } else if (attr == R.styleable.Text_android_minLines) {
         minLines.set(a.getInteger(attr, -1));
       } else if (attr == R.styleable.Text_android_maxLines) {
@@ -375,7 +376,12 @@ class EditTextSpec {
         // Padding from the background will be added to the layout separately, so does not need to
         // be a part of this measurement.
         editText.setPadding(0, 0, 0, 0);
-        editText.setBackground(null);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+          editText.setBackgroundDrawable(null);
+        } else {
+          editText.setBackground(null);
+        }
       }
     }
 
@@ -703,7 +709,7 @@ class EditTextSpec {
 
     if (cursorDrawableRes != -1) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        AndroidQImpl.setTextCursorDrawable(editText, cursorDrawableRes);
+        editText.setTextCursorDrawable(cursorDrawableRes);
       } else {
         try {
           // Uses reflection because there is no public API to change cursor color programmatically.
@@ -720,13 +726,25 @@ class EditTextSpec {
 
     switch (textAlignment) {
       case ALIGN_NORMAL:
-        editText.setTextAlignment(TEXT_ALIGNMENT_TEXT_START);
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          editText.setTextAlignment(TEXT_ALIGNMENT_TEXT_START);
+        } else {
+          editText.setGravity(gravity | Gravity.LEFT);
+        }
         break;
       case ALIGN_OPPOSITE:
-        editText.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          editText.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
+        } else {
+          editText.setGravity(gravity | Gravity.RIGHT);
+        }
         break;
       case ALIGN_CENTER:
-        editText.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          editText.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+        } else {
+          editText.setGravity(gravity | Gravity.CENTER_HORIZONTAL);
+        }
         break;
     }
   }
@@ -865,7 +883,7 @@ class EditTextSpec {
     }
 
     @Override
-    public void setBackground(@Nullable Drawable background) {
+    public void setBackground(Drawable background) {
       if (background != null) {
         background.mutate();
       }
@@ -929,15 +947,5 @@ class EditTextSpec {
         break;
     }
     return alignment;
-  }
-
-  @RequiresApi(Build.VERSION_CODES.Q)
-  private static class AndroidQImpl {
-    private AndroidQImpl() {}
-
-    @DoNotInline
-    static void setTextCursorDrawable(EditText editText, @DrawableRes int cursorDrawableRes) {
-      editText.setTextCursorDrawable(cursorDrawableRes);
-    }
   }
 }
