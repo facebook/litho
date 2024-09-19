@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.treeprops;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEvent;
@@ -31,6 +32,7 @@ import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @GroupSectionSpec
 public class TopDiffingGroupSectionSpec {
 
