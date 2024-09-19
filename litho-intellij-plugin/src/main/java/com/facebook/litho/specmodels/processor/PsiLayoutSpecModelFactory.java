@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.processor;
 import static com.facebook.litho.specmodels.processor.LayoutSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS;
 import static com.facebook.litho.specmodels.processor.LayoutSpecModelFactory.INTER_STAGE_INPUT_ANNOTATIONS;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -37,6 +38,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 /** Factory for creating {@link LayoutSpecModel}s. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PsiLayoutSpecModelFactory {
   private final List<Class<? extends Annotation>> mLayoutSpecDelegateMethodAnnotations;
   private final SpecGenerator<LayoutSpecModel> mLayoutSpecGenerator;
@@ -77,6 +79,7 @@ public class PsiLayoutSpecModelFactory {
     ImmutableList<PropJavadocModel> propJavadocs = ImmutableList.of();
 
     return new LayoutSpecModel(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         psiClass.getQualifiedName(),
         layoutSpecAnnotation.value(),
         PsiDelegateMethodExtractor.getDelegateMethods(
@@ -88,6 +91,7 @@ public class PsiLayoutSpecModelFactory {
         PsiEventMethodExtractor.getOnEventMethods(
             psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
         triggerMethods,
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         PsiWorkingRangesMethodExtractor.getRegisterMethod(
             psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
         PsiWorkingRangesMethodExtractor.getRangesMethods(
@@ -100,6 +104,7 @@ public class PsiLayoutSpecModelFactory {
         PsiPropDefaultsExtractor.getPropDefaults(psiClass),
         PsiEventDeclarationsExtractor.getEventDeclarations(psiClass, LayoutSpec.class),
         PsiAnnotationExtractor.extractValidAnnotations(project, psiClass),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         null,
         classJavadoc,
         propJavadocs,
@@ -109,6 +114,7 @@ public class PsiLayoutSpecModelFactory {
         mLayoutSpecGenerator,
         PsiTypeVariablesExtractor.getTypeVariables(psiClass),
         PsiFieldsExtractor.extractFields(psiClass),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         null);
   }
 }
