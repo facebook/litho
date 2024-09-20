@@ -17,12 +17,14 @@
 package com.facebook.litho.sections;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class Logger implements SectionsDebugLogger {
 
   protected Set<SectionsDebugLogger> mSectionsDebugLoggers;
@@ -92,6 +94,7 @@ public class Logger implements SectionsDebugLogger {
       String thread) {
     for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
       sectionsDebugLogger.logShouldUpdate(
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           tag, previous, next, previousPrefix, nextPrefix, shouldUpdate, thread);
     }
   }
