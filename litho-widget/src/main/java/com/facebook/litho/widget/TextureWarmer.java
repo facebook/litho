@@ -30,6 +30,7 @@ import android.text.Layout;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import java.lang.ref.WeakReference;
+import javax.annotation.Nullable;
 
 /**
  * A class that schedules a background draw of a {@link Layout} or {@link Drawable}. Drawing a
@@ -46,7 +47,7 @@ public class TextureWarmer {
   private static final int WARMER_THREAD_PRIORITY =
       (THREAD_PRIORITY_BACKGROUND + THREAD_PRIORITY_LOWEST) / 2;
 
-  private static TextureWarmer sInstance;
+  @Nullable private static TextureWarmer sInstance;
   private final WarmerHandler mHandler;
 
   public static class WarmDrawable {
@@ -107,7 +108,7 @@ public class TextureWarmer {
     public static final int WARM_LAYOUT = 0;
     public static final int WARM_DRAWABLE = 1;
 
-    private final Picture mPicture;
+    @Nullable private final Picture mPicture;
 
     private WarmerHandler(Looper looper) {
       super(looper);
