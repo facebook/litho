@@ -751,11 +751,11 @@ class EditTextSpec {
 
   static class EditTextWithEventHandlers extends EditText {
     private final DelegatingTextWatcher mTextWatcher;
-    private ComponentContext mComponentContext;
+    @Nullable private ComponentContext mComponentContext;
     private EditTextStateUpdatePolicy mStateUpdatePolicy;
-    private EventHandler mTextChangedEventHandler;
-    private EventHandler mSelectionChangedEventHandler;
-    private EventHandler mKeyUpEventHandler;
+    @Nullable private EventHandler mTextChangedEventHandler;
+    @Nullable private EventHandler mSelectionChangedEventHandler;
+    @Nullable private EventHandler mKeyUpEventHandler;
 
     private class DelegatingTextWatcher implements TextWatcher {
 
