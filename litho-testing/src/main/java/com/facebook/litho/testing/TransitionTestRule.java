@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.dataflow.DataFlowGraph;
@@ -24,9 +25,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TransitionTestRule implements TestRule {
 
   private boolean mIsAnimationDisabled;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private MockTimingSource mFakeTimingSource;
 
   @Override
