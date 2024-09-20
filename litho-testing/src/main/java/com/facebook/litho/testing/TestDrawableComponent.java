@@ -29,6 +29,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.Comparable;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 /**
  * @deprecated Use MountSpecLifecycleTester if lifecycle assertions are needed or
@@ -59,6 +60,7 @@ public class TestDrawableComponent extends TestComponent {
   @Comparable(type = Comparable.PRIMITIVE)
   private boolean mReturnSelfInMakeShallowCopy;
 
+  @Nullable
   @Comparable(type = Comparable.OTHER)
   private TestComponentListener mTestComponentListener;
 
