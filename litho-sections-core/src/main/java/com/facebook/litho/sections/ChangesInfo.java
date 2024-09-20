@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.sections.SectionTree.Target;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.List;
  * A ChangesInfo represent a list of Change that has to be applied to a {@link Target} as the result
  * of an update of a {@link Section}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ChangesInfo {
 
   private final List<Change> mChanges;
