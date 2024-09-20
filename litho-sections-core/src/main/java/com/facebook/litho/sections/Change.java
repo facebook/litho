@@ -19,6 +19,7 @@ package com.facebook.litho.sections;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -38,6 +39,7 @@ import java.util.List;
  * Change.insert(0, component);
  * </code>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class Change {
 
   public static final int INSERT = 1; // INSERT(index, component)
