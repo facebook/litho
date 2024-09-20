@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
+import com.facebook.infer.annotation.Nullsafe;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -40,6 +41,7 @@ import org.assertj.core.api.Assertions;
  * nodes, but do not check actual layout. So a visible view might have 0 pixels available for it in
  * actual app code and still pass the checks done here
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTree> {
 
   private ViewTreeAssert(final ViewTree actual) {
@@ -61,6 +63,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleText(text);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(path == null ? getHasVisibleTextErrorMessage(text) : "")
         .isNotNull();
 
@@ -71,6 +74,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     String errorMsg =
         String.format(
             "Cannot find text \"%s\" in view hierarchy:%n%s. ",
+            // NULLSAFE_FIXME[Nullable Dereference]
             text, actual.makeString(GET_TEXT_FUNCTION));
 
     final ImmutableList<View> similarPath = getPathToVisibleSimilarText(text);
@@ -100,8 +104,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleTextWithTag(text, tagId, tagValue);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Cannot find text \"%s\" with tagId \"%d\" and value:%s in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference]
             text, tagId, tagValue.toString(), actual.makeString(GET_TEXT_FUNCTION))
         .isNotNull();
 
@@ -130,6 +136,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleText(text);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Found text \"%s\" in view hierarchy for path: %s", text, makeString(path))
         .isNull();
@@ -148,8 +155,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToViewTag(tagId, tagValue);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Cannot find tag id \"%d\" with tag value \"%s\" in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference]
             tagId, tagValue, actual.makeString(ViewExtractors.generateGetViewTagFunction(tagId)))
         .isNotNull();
 
@@ -166,8 +175,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToContentDescription(contentDescription);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Cannot find content description \"%s\" in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference]
             contentDescription, actual.makeString(ViewExtractors.GET_CONTENT_DESCRIPTION_FUNCTION))
         .isNotNull();
 
@@ -184,10 +195,12 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToContentDescription(contentDescription);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Found content description \"%s\" in view hierarchy:%n%s while the content description"
                 + " should not exist. ",
             contentDescription,
+            // NULLSAFE_FIXME[Nullable Dereference]
             actual.makeString(ViewExtractors.GET_CONTENT_DESCRIPTION_FUNCTION),
             path)
         .isNull();
@@ -219,6 +232,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToVisibleSimilarText(final String text) {
+    // NULLSAFE_FIXME[Return Not Nullable, Nullable Dereference]
     return actual.findChild(
         Predicates.and(
             isVisible(),
@@ -238,20 +252,24 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToVisibleText(final String text) {
+    // NULLSAFE_FIXME[Nullable Dereference, Return Not Nullable]
     return actual.findChild(ViewPredicates.hasVisibleText(text), ViewPredicates.isVisible());
   }
 
   private ImmutableList<View> getPathToVisibleTextWithTag(
       final String text, final int tagId, final Object tagValue) {
+    // NULLSAFE_FIXME[Return Not Nullable, Nullable Dereference]
     return actual.findChild(
         ViewPredicates.hasVisibleTextWithTag(text, tagId, tagValue), ViewPredicates.isVisible());
   }
 
   private ImmutableList<View> getPathToViewTag(final int tagId, final Object tagValue) {
+    // NULLSAFE_FIXME[Nullable Dereference, Return Not Nullable]
     return actual.findChild(ViewPredicates.hasTag(tagId, tagValue));
   }
 
   private ImmutableList<View> getPathToContentDescription(final String contentDescription) {
+    // NULLSAFE_FIXME[Nullable Dereference, Return Not Nullable]
     return actual.findChild(ViewPredicates.hasContentDescription(contentDescription));
   }
 
@@ -266,8 +284,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleMatchingText(pattern);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Cannot find text matching \"%s\" in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference]
             pattern, actual.makeString(GET_TEXT_FUNCTION))
         .isNotNull();
 
@@ -285,6 +305,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleMatchingText(pattern);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Found pattern \"%s\" in view hierarchy for path: %s", pattern, makeString(path))
         .isNull();
@@ -302,6 +323,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleMatchingText(".+");
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Found text \"%s\" in view hierarchy for path: %s",
             getTextProof(path), makeString(path))
@@ -320,6 +342,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToVisibleMatchingText(final String pattern) {
+    // NULLSAFE_FIXME[Nullable Dereference, Return Not Nullable]
     return actual.findChild(
         ViewPredicates.hasVisibleMatchingText(pattern), ViewPredicates.isVisible());
   }
@@ -340,6 +363,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasVisibleDrawable(final int resourceId) {
     hasVisibleDrawable(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         ApplicationProvider.getApplicationContext().getResources().getDrawable(resourceId));
     return this;
   }
@@ -355,8 +379,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleWithDrawable(drawable);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Did not find drawable %s in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference]
             drawable, actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
         .isNotNull();
 
@@ -373,6 +399,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleDrawable(final int resourceId) {
     doesNotHaveVisibleDrawable(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         ApplicationProvider.getApplicationContext().getResources().getDrawable(resourceId));
     return this;
   }
@@ -388,8 +415,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleWithDrawable(drawable);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Found drawable %s in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference]
             drawable, actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
         .isNull();
 
@@ -401,10 +430,12 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleWithId(viewId);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Did not find visible view with id \"%s=%d\":%n%s",
             ViewTreeUtil.getResourceName(viewId),
             viewId,
+            // NULLSAFE_FIXME[Nullable Dereference]
             actual.makeString(ViewExtractors.GET_VIEW_ID_FUNCTION))
         .isNotNull();
 
@@ -416,10 +447,12 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleWithId(viewId);
 
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Found visible view with id \"%s=%d\":%n%s",
             ViewTreeUtil.getResourceName(viewId),
             viewId,
+            // NULLSAFE_FIXME[Nullable Dereference]
             actual.makeString(ViewExtractors.GET_VIEW_ID_FUNCTION))
         .isNull();
 
@@ -432,11 +465,15 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         Predicates.and(
             Predicates.instanceOf(clazz), ViewPredicates.isVisible(), (Predicate<View>) predicate);
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     final ImmutableList<View> path = actual.findChild(conjunction, ViewPredicates.isVisible());
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Did not find view for which given predicate is true in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference, Parameter Not Nullable]
             actual.makeString(null))
         .isNotNull();
 
@@ -448,11 +485,15 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final Predicate<View> conjunction =
         Predicates.and(Predicates.instanceOf(clazz), ViewPredicates.isVisible(), predicate);
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     final ImmutableList<View> path = actual.findChild(conjunction, ViewPredicates.isVisible());
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     Assertions.assertThat(path)
+        // NULLSAFE_FIXME[Not Vetted Third-Party]
         .overridingErrorMessage(
             "Found a view for which given predicate is true in view hierarchy:%n%s",
+            // NULLSAFE_FIXME[Nullable Dereference, Parameter Not Nullable]
             actual.makeString(null))
         .isNull();
 
@@ -460,11 +501,13 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToVisibleWithDrawable(final Drawable drawable) {
+    // NULLSAFE_FIXME[Nullable Dereference, Return Not Nullable]
     return actual.findChild(
         ViewPredicates.hasVisibleDrawable(drawable), ViewPredicates.isVisible());
   }
 
   private ImmutableList<View> getPathToVisibleWithId(final int viewId) {
+    // NULLSAFE_FIXME[Nullable Dereference, Return Not Nullable]
     return actual.findChild(hasVisibleId(viewId), isVisible());
   }
 }
