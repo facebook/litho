@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -69,6 +70,7 @@ import javax.annotation.Nullable;
  *
  * @see {@link TextInput} for usage instructions
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @MountSpec(
     isPureRender = true,
     events = {
@@ -187,6 +189,7 @@ class MaterialTextInputSpec {
             widthSpec,
             heightSpec,
             size,
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             null,
             inputBackground,
             shadowRadius,
@@ -218,6 +221,7 @@ class MaterialTextInputSpec {
             importantForAutofill,
             autofillHints,
             disableAutofill,
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             savedText.get());
     MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
     setParams(
@@ -391,6 +395,7 @@ class MaterialTextInputSpec {
     mountedEditTextRef.set(editText);
 
     TextInputSpec.setParams(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         editText,
         null,
         TextInputSpec.getBackgroundOrDefault(c, inputBackground),
@@ -429,6 +434,7 @@ class MaterialTextInputSpec {
         importantForAutofill,
         autofillHints);
     setParams(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         editText,
         textInputLayout,
         hint,
@@ -441,7 +447,9 @@ class MaterialTextInputSpec {
         editTextTopPadding,
         editTextEndPadding,
         editTextBottomPadding);
+    // NULLSAFE_FIXME[Nullable Dereference]
     editText.setTextState(savedText);
+    // NULLSAFE_FIXME[Nullable Dereference]
     editText.setDisableAutofill(disableAutofill);
   }
 
@@ -493,16 +501,24 @@ class MaterialTextInputSpec {
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onBindEditText(
         c,
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         editText,
         textWatchers,
         selectionActionModeCallback,
         insertionActionModeCallback,
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getTextChangedEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getSelectionChangedEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getInputFocusChangedEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getKeyUpEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getKeyPreImeEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getEditorActionEventHandler(c),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         MaterialTextInput.getInputConnectionEventHandler(c));
   }
 
@@ -514,6 +530,7 @@ class MaterialTextInputSpec {
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     TextInputSpec.onUnmount(c, editText, keyListener, mountedEditTextRef);
   }
 
@@ -521,6 +538,7 @@ class MaterialTextInputSpec {
   static void onUnbind(final ComponentContext c, MountableTextInputLayout textInputLayout) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     TextInputSpec.onUnbind(c, editText);
   }
 
@@ -576,6 +594,7 @@ class MaterialTextInputSpec {
 
   @OnUpdateState
   static void remeasureForUpdatedText(StateValue<Integer> measureSeqNumber) {
+    // NULLSAFE_FIXME[Nullable Dereference]
     measureSeqNumber.set(measureSeqNumber.get() + 1);
   }
 }
