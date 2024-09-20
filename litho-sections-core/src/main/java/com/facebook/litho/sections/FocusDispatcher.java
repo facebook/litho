@@ -18,6 +18,7 @@ package com.facebook.litho.sections;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
 /**
@@ -31,6 +32,7 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
  * <p>Both of these states have to be completed before the focus request can be dispatched.
  * Otherwise, the last known request will be kept until the states are valid again.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class FocusDispatcher {
 
   private final SectionTree.Target mTarget;
