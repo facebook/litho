@@ -18,6 +18,7 @@ package com.facebook.litho.sections;
 
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
  * this is local to a particular changeset calculation and is only active while the changeset is
  * being calculated.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ChangeSetCalculationState {
 
   private @Nullable State mState = new State();
