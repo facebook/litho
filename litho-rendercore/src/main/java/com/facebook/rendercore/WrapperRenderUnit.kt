@@ -26,10 +26,12 @@ import androidx.annotation.IdRes
  */
 // Don't add support for fixedMountBinders in WrapperRenderUnit unless you add support for them in
 // BindData handling logic.
-class WrapperRenderUnit<ContentType : Any>(private val renderUnit: RenderUnit<ContentType>) :
+class WrapperRenderUnit<ContentType : Any>
+@JvmOverloads
+constructor(private val renderUnit: RenderUnit<ContentType>, idOverride: Long = renderUnit.id) :
     RenderUnit<ContentType>(renderUnit.renderType) {
 
-  override val id: Long = renderUnit.id
+  override val id: Long = idOverride
 
   override val contentAllocator: ContentAllocator<ContentType> = renderUnit.contentAllocator
 
