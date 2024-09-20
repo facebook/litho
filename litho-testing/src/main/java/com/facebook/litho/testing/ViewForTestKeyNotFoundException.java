@@ -16,7 +16,10 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Exception thrown when a view isn't found in a test. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewForTestKeyNotFoundException extends RuntimeException {
 
   public ViewForTestKeyNotFoundException(String testKey) {
