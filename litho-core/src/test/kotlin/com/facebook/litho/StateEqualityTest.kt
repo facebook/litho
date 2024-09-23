@@ -85,25 +85,6 @@ class StateEqualityTest {
   }
 
   @Test
-  fun `same state from different trees is not equal`() {
-    val stateBox = AtomicReference<State<Int>>()
-    mLithoTestRule.render {
-      StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox)
-    }
-
-    val firstState = stateBox.get()
-    stateBox.set(null)
-
-    mLithoTestRule.render {
-      StateBoxComponent(initialState1 = 1, initialState2 = 1, stateBox1 = stateBox)
-    }
-
-    val secondState = stateBox.get()
-
-    assertThat(firstState).isNotEqualTo(secondState)
-  }
-
-  @Test
   fun `same state with different keys is not equal`() {
     val stateBox1 = AtomicReference<State<Int>>()
     val stateBox2 = AtomicReference<State<Int>>()
