@@ -31,8 +31,10 @@
 package com.facebook.rendercore.testing;
 
 import android.content.Context;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Host;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TestHostRenderUnit extends TestRenderUnit {
 
   public TestHostRenderUnit(long id) {
