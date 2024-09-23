@@ -27,7 +27,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 
 public class TransparencyEnabledCardClipDrawable extends Drawable {
 
@@ -37,8 +36,6 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
   static final int BOTTOM_LEFT = 1 << 2;
   static final int BOTTOM_RIGHT = 1 << 3;
   private final Paint mBackgroundPaint;
-  // Scratch RectF to prevent allocations in the draw() method
-  private final RectF mScratchRect = new RectF();
   private final Path mCornerPath = new Path();
   private Paint mCornerPaint;
   private boolean mDirty = true;
@@ -115,19 +112,14 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
   }
 
   private void drawWithRoundRectImplementation(Canvas canvas, Rect bounds) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      canvas.drawRoundRect(
-          bounds.left,
-          bounds.top,
-          bounds.right,
-          bounds.bottom,
-          mCornerRadius,
-          mCornerRadius,
-          mBackgroundPaint);
-    } else {
-      mScratchRect.set(bounds);
-      canvas.drawRoundRect(mScratchRect, mCornerRadius, mCornerRadius, mBackgroundPaint);
-    }
+    canvas.drawRoundRect(
+        bounds.left,
+        bounds.top,
+        bounds.right,
+        bounds.bottom,
+        mCornerRadius,
+        mCornerRadius,
+        mBackgroundPaint);
   }
 
   public void setBackgroundColor(int backgroundColor) {

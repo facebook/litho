@@ -2093,9 +2093,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * @param value controller for the elevation value
      */
     public T shadowElevation(DynamicValue<Float> value) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonDynamicProps().put(KEY_ELEVATION, value);
-      }
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_ELEVATION, value);
       return getThis();
     }
 
@@ -2107,9 +2105,7 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * into a view
      */
     public T stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonProps().stateListAnimator(stateListAnimator);
-      }
+      mComponent.getOrCreateCommonProps().stateListAnimator(stateListAnimator);
       return getThis();
     }
 
@@ -2121,16 +2117,14 @@ public abstract class Component implements Cloneable, Equivalence<Component>, At
      * into a view
      */
     public T stateListAnimatorRes(@DrawableRes int resId) {
-      if (Build.VERSION.SDK_INT >= 26) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // We cannot do it on the versions prior to Android 8.0 since there is a possible race
         // condition when loading state list animators, thus we will avoid doing it off the UI
         // thread
         return stateListAnimator(
             AnimatorInflater.loadStateListAnimator(mContext.getAndroidContext(), resId));
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonProps().stateListAnimatorRes(resId);
-      }
+      mComponent.getOrCreateCommonProps().stateListAnimatorRes(resId);
       return getThis();
     }
 

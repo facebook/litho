@@ -18,9 +18,6 @@ package com.facebook.litho.widget;
 
 import static android.graphics.Color.TRANSPARENT;
 import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.Build.VERSION_CODES.M;
 import static android.view.View.TEXT_ALIGNMENT_GRAVITY;
 
@@ -516,12 +513,7 @@ class TextInputSpec {
       editText.setFilters(NO_FILTERS);
     }
     editText.setHint(hint);
-
-    if (SDK_INT < JELLY_BEAN) {
-      editText.setBackgroundDrawable(background);
-    } else {
-      editText.setBackground(background);
-    }
+    editText.setBackground(background);
     // From the docs for setBackground:
     // "If the background has padding, this View's padding is set to the background's padding.
     // However, when a background is removed, this View's padding isn't touched. If setting the
@@ -576,9 +568,7 @@ class TextInputSpec {
     }
 
     editText.setEllipsize(ellipsize);
-    if (SDK_INT >= JELLY_BEAN_MR1) {
-      editText.setTextAlignment(textAlignment);
-    }
+    editText.setTextAlignment(textAlignment);
     if (text != null && !ObjectsCompat.equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
       // Set the selection only when mounting because #setSelection does not affect measurement,
@@ -783,15 +773,13 @@ class TextInputSpec {
       if (fa instanceof InputFilter.AllCaps && fb instanceof InputFilter.AllCaps) {
         continue; // equal, AllCaps has no configuration
       }
-      if (SDK_INT >= LOLLIPOP) { // getMax added in lollipop
-        if (fa instanceof InputFilter.LengthFilter && fb instanceof InputFilter.LengthFilter) {
-          if (((InputFilter.LengthFilter) fa).getMax()
-              != ((InputFilter.LengthFilter) fb).getMax()) {
-            return false;
-          }
-          continue; // equal, same max
+      if (fa instanceof InputFilter.LengthFilter && fb instanceof InputFilter.LengthFilter) {
+        if (((InputFilter.LengthFilter) fa).getMax() != ((InputFilter.LengthFilter) fb).getMax()) {
+          return false;
         }
+        continue; // equal, same max
       }
+
       // Best we can do in this case is call equals().
       if (!ObjectsCompat.equals(fa, fb)) {
         return false;

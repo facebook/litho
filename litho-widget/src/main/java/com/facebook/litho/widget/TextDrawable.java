@@ -43,10 +43,12 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
+import com.facebook.litho.utils.VersionedAndroidApis;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -108,7 +110,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     }
     canvas.translate(bounds.left + mLayoutTranslationX, bounds.top + mLayoutTranslationY);
     try {
-      maybeDrawOutline(canvas);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        maybeDrawOutline(canvas);
+      }
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
     } catch (IndexOutOfBoundsException e) {
       RuntimeException withDebugInfo =
@@ -132,6 +136,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
    *
    * @param canvas - A canvas to draw on.
    */
+  @RequiresApi(Build.VERSION_CODES.Q)
   private void maybeDrawOutline(Canvas canvas) {
     if (mOutlineWidth > 0f) {
       Paint p = mLayout.getPaint();
@@ -140,7 +145,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       float savedStrokeWidth = p.getStrokeWidth();
       Paint.Join savedJoin = p.getStrokeJoin();
       p.setStrokeJoin(Paint.Join.ROUND);
-      p.setColor(mOutlineColor != 0 ? mOutlineColor : p.getShadowLayerColor());
+      p.setColor(
+          mOutlineColor != 0 ? mOutlineColor : VersionedAndroidApis.Q.getShadowLayerColor(p));
       p.setStyle(Paint.Style.STROKE);
       p.setStrokeWidth(mOutlineWidth);
       mLayout.draw(canvas);
@@ -486,6 +492,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       mOutlineWidth = outlineWidth;
       mOutlineColor = outlineColor;
+      invalidateSelf();
       invalidateSelf();
     }
   }

@@ -16,17 +16,83 @@
 
 package com.facebook.litho.utils
 
+import android.graphics.Paint
+import android.graphics.drawable.Drawable
+import android.icu.text.BreakIterator
 import android.os.Build
+import android.text.Layout
 import android.view.View
+import android.widget.EditText
+import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
+import com.facebook.litho.ViewAttributes
 
 object VersionedAndroidApis {
+
+  @RequiresApi(Build.VERSION_CODES.M)
+  object M {
+    @DoNotInline
+    fun setForeground(attrs: ViewAttributes, foreground: Drawable?) {
+      attrs.foreground = foreground
+    }
+
+    @DoNotInline
+    @JvmStatic
+    fun getEllipsisOffsetFromPaintAdvance(
+        layout: Layout,
+        text: CharSequence?,
+        isRtl: Boolean,
+        line: Int,
+        advance: Float
+    ): Int {
+      val paint: Paint = layout.paint
+      val lineStart = layout.getLineStart(line)
+      val lineEnd = layout.getLineEnd(line)
+      return paint.getOffsetForAdvance(text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance)
+    }
+  }
+
   @RequiresApi(Build.VERSION_CODES.P)
   object P {
     @DoNotInline
     fun resetPivot(view: View) {
       view.resetPivot()
+    }
+
+    @DoNotInline
+    fun setAmbientShadowColor(view: View, @ColorInt ambientShadowColor: Int) {
+      view.outlineAmbientShadowColor = ambientShadowColor
+    }
+
+    @DoNotInline
+    fun setSpotShadowColor(view: View, @ColorInt spotShadowColor: Int) {
+      view.outlineSpotShadowColor = spotShadowColor
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  object Q {
+    @DoNotInline
+    @JvmStatic
+    fun setTextCursorDrawable(editText: EditText, @DrawableRes cursorDrawableRes: Int) {
+      editText.setTextCursorDrawable(cursorDrawableRes)
+    }
+
+    @DoNotInline
+    @JvmStatic
+    @ColorInt
+    fun getShadowLayerColor(paint: Paint): Int {
+      return paint.shadowLayerColor
+    }
+
+    @DoNotInline
+    @JvmStatic
+    fun breakIteratorGetPreceding(text: CharSequence?, ellipsisOffset: Int): Int {
+      val iterator = BreakIterator.getCharacterInstance()
+      iterator.setText(text)
+      return iterator.preceding(ellipsisOffset)
     }
   }
 }

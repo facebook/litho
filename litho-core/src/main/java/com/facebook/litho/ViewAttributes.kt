@@ -37,6 +37,7 @@ import androidx.annotation.IdRes
 import androidx.core.view.ViewCompat
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.layout.LayoutDirection
+import com.facebook.litho.utils.VersionedAndroidApis
 import com.facebook.litho.visibility.Visibility
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.utils.equals
@@ -800,13 +801,13 @@ class ViewAttributes {
 
     private fun setAmbientShadowColor(view: View, @ColorInt ambientShadowColor: Int) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        view.outlineAmbientShadowColor = ambientShadowColor
+        VersionedAndroidApis.P.setAmbientShadowColor(view, ambientShadowColor)
       }
     }
 
     private fun setSpotShadowColor(view: View, @ColorInt spotShadowColor: Int) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        view.outlineSpotShadowColor = spotShadowColor
+        VersionedAndroidApis.P.setSpotShadowColor(view, spotShadowColor)
       }
     }
 
@@ -820,7 +821,7 @@ class ViewAttributes {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ambientShadowColor != Color.BLACK) {
         // Android documentation says black is the default:
         // https://developer.android.com/reference/android/view/View#getOutlineAmbientShadowColor()
-        view.outlineAmbientShadowColor = Color.BLACK
+        VersionedAndroidApis.P.setAmbientShadowColor(view, Color.BLACK)
       }
     }
 
@@ -828,30 +829,30 @@ class ViewAttributes {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && spotShadowColor != Color.BLACK) {
         // Android documentation says black is the default:
         // https://developer.android.com/reference/android/view/View#getOutlineSpotShadowColor()
-        view.outlineSpotShadowColor = Color.BLACK
+        VersionedAndroidApis.P.setSpotShadowColor(view, Color.BLACK)
       }
     }
 
     private fun setOutlineProvider(view: View, outlineProvider: ViewOutlineProvider?) {
-      if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (outlineProvider != null) {
         view.outlineProvider = outlineProvider
       }
     }
 
     private fun unsetOutlineProvider(view: View, outlineProvider: ViewOutlineProvider?) {
-      if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (outlineProvider != null) {
         view.outlineProvider = ViewOutlineProvider.BACKGROUND
       }
     }
 
     private fun setClipToOutline(view: View, clipToOutline: Boolean) {
-      if (clipToOutline && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (clipToOutline) {
         view.clipToOutline = clipToOutline
       }
     }
 
     private fun unsetClipToOutline(view: View, clipToOutline: Boolean) {
-      if (clipToOutline && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (clipToOutline) {
         view.clipToOutline = false
       }
     }
@@ -1037,11 +1038,7 @@ class ViewAttributes {
 
     @Suppress("deprecation")
     fun setBackgroundCompat(view: View, drawable: Drawable?) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-        view.setBackgroundDrawable(drawable)
-      } else {
-        view.background = drawable
-      }
+      view.background = drawable
     }
 
     private fun unsetViewForeground(view: View, attributes: ViewAttributes) {
@@ -1059,16 +1056,10 @@ class ViewAttributes {
     }
 
     private fun setViewLayoutDirection(view: View, attributes: ViewAttributes) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        return
-      }
       view.layoutDirection = attributes.layoutDirection.getLayoutDirectionForView()
     }
 
     fun unsetViewLayoutDirection(view: View) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        return
-      }
       view.layoutDirection = View.LAYOUT_DIRECTION_INHERIT
     }
 
@@ -1081,9 +1072,6 @@ class ViewAttributes {
       val stateListAnimatorRes = attributes.stateListAnimatorRes
       if (stateListAnimator == null && stateListAnimatorRes == 0) {
         return
-      }
-      check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        ("MountState has a ViewAttributes with stateListAnimator, however the current Android version doesn't support stateListAnimator on Views")
       }
       if (stateListAnimator == null) {
         stateListAnimator =
@@ -1109,9 +1097,6 @@ class ViewAttributes {
     }
 
     fun unsetViewStateListAnimator(view: View) {
-      check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        ("MountState has a ViewAttributes with stateListAnimator, however the current Android version doesn't support stateListAnimator on Views")
-      }
       if (view.stateListAnimator != null) {
         view.stateListAnimator.jumpToCurrentState()
         view.stateListAnimator = null

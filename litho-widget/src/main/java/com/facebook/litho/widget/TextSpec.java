@@ -33,12 +33,10 @@ import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.icu.text.BreakIterator;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
@@ -53,7 +51,6 @@ import android.text.style.ImageSpan;
 import android.view.View;
 import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextDirectionHeuristicCompat;
 import androidx.core.text.TextDirectionHeuristicsCompat;
@@ -89,6 +86,7 @@ import com.facebook.litho.annotations.OnVirtualViewKeyboardFocusChanged;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.utils.VersionedAndroidApis;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;
@@ -534,9 +532,7 @@ public class TextSpec {
       layoutBuilder.setLineHeight(lineHeight);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      layoutBuilder.setLetterSpacing(letterSpacing);
-    }
+    layoutBuilder.setLetterSpacing(letterSpacing);
 
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
@@ -853,7 +849,7 @@ public class TextSpec {
     int ellipsisOffset;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       ellipsisOffset =
-          getEllipsisOffsetFromPaintAdvance(
+          VersionedAndroidApis.M.getEllipsisOffsetFromPaintAdvance(
               newLayout, text, isRtl, ellipsizedLineNumber, ellipsisTarget);
     } else {
       ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
@@ -886,9 +882,7 @@ public class TextSpec {
           && ellipsisOffset != 0
           && ellipsisOffset != text.length()) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          BreakIterator iterator = BreakIterator.getCharacterInstance();
-          iterator.setText(text);
-          ellipsisOffset = iterator.preceding(ellipsisOffset);
+          ellipsisOffset = VersionedAndroidApis.Q.breakIteratorGetPreceding(text, ellipsisOffset);
         } else {
           java.text.BreakIterator iterator = java.text.BreakIterator.getCharacterInstance();
           iterator.setText(text.toString());
@@ -900,16 +894,6 @@ public class TextSpec {
     } else {
       return text;
     }
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.M)
-  private static int getEllipsisOffsetFromPaintAdvance(
-      Layout layout, CharSequence text, boolean isRtl, int line, float advance) {
-    Paint paint = layout.getPaint();
-    int lineStart = layout.getLineStart(line);
-    int lineEnd = layout.getLineEnd(line);
-
-    return paint.getOffsetForAdvance(text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance);
   }
 
   /**

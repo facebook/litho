@@ -18,7 +18,6 @@ package com.facebook.litho.drawable
 
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
-import android.os.Build
 import androidx.annotation.ColorInt
 import com.facebook.rendercore.utils.equals
 import java.util.Arrays
@@ -73,7 +72,7 @@ open class ComparableGradientDrawable(
         strokeDashWidth == that.strokeDashWidth &&
         strokeDashGap == that.strokeDashGap &&
         strokeColor == that.strokeColor &&
-        orientationOrNullOnAPI15 == that.orientationOrNullOnAPI15 &&
+        orientation == that.orientation &&
         Arrays.equals(colors, that.colors) &&
         Arrays.equals(cornerRadii, that.cornerRadii) &&
         equals(strokeColorStateList, that.strokeColorStateList)
@@ -82,7 +81,7 @@ open class ComparableGradientDrawable(
   override fun hashCode(): Int {
     var result =
         arrayOf(
-                orientationOrNullOnAPI15,
+                orientation,
                 color,
                 colorStateList,
                 cornerRadius,
@@ -101,16 +100,6 @@ open class ComparableGradientDrawable(
     result = 31 * result + cornerRadii.contentHashCode()
     return result
   }
-
-  private val orientationOrNullOnAPI15: Orientation?
-    /**
-     * On API 15, get/setOrientation didn't exist so we need to not call it. It also wasn't possible
-     * to change the orientation so we don't need to compare it anyway.
-     */
-    get() =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-          null
-        } else orientation
 
   override fun isEquivalentTo(other: ComparableDrawable): Boolean {
     return equals(other)

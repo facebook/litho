@@ -28,6 +28,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.litho.config.LithoDebugConfigurations
 import com.facebook.litho.drawable.BorderColorDrawable
 import com.facebook.litho.host.HostViewAttributesCleanupBinder
+import com.facebook.litho.utils.VersionedAndroidApis
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.Primitive
@@ -502,7 +503,7 @@ object LithoNodeUtils {
     if (disableBgFgOutputs || !attrs.isHostSpec) {
       attrs.background = lithoNode.background
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        attrs.foreground = lithoNode.foreground
+        VersionedAndroidApis.M.setForeground(attrs, lithoNode.foreground)
       }
     }
     attrs.layoutDirection = lithoNode.layoutDirection

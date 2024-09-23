@@ -38,24 +38,20 @@ public class UtilSizeEditorInstance implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      final Size size = Reflection.INSTANCE.getValueUNSAFE(f, node);
-      if (size == null) {
-        return EditorValue.string("null");
-      }
-      try {
-        return EditorValue.string(
-            String.format(
-                Locale.ENGLISH,
-                "%s=%d %s=%d",
-                WIDTH_FIELD_STR,
-                size.getWidth(),
-                HEIGHT_FIELD_STR,
-                size.getHeight()));
-      } catch (IllegalFormatException e) {
-        return EditorValue.string("null");
-      }
-    } else {
+    final Size size = Reflection.INSTANCE.getValueUNSAFE(f, node);
+    if (size == null) {
+      return EditorValue.string("null");
+    }
+    try {
+      return EditorValue.string(
+          String.format(
+              Locale.ENGLISH,
+              "%s=%d %s=%d",
+              WIDTH_FIELD_STR,
+              size.getWidth(),
+              HEIGHT_FIELD_STR,
+              size.getHeight()));
+    } catch (IllegalFormatException e) {
       return EditorValue.string("null");
     }
   }
@@ -85,9 +81,7 @@ public class UtilSizeEditorInstance implements Editor {
             try {
               final int sizeWidth = Integer.parseInt(components.get(1));
               final int sizeHeight = Integer.parseInt(components.get(3));
-              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                Reflection.INSTANCE.setValueUNSAFE(f, node, new Size(sizeWidth, sizeHeight));
-              }
+              Reflection.INSTANCE.setValueUNSAFE(f, node, new Size(sizeWidth, sizeHeight));
             } catch (NumberFormatException e) {
               // No-Op if value could not be parsed into a number.
             }
