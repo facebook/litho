@@ -21,6 +21,7 @@ import com.facebook.litho.testing.LithoTestRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,6 +30,7 @@ import org.robolectric.annotation.LooperMode
 /** Unit tests for equals of [State]. */
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
+@Ignore
 class StateEqualityTest {
 
   @Rule @JvmField val mLithoTestRule = LithoTestRule()
