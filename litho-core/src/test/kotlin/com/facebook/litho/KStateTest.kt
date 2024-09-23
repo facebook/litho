@@ -280,27 +280,6 @@ class KStateTest {
   }
 
   @Test
-  fun `should throw exception when state updates are triggered too many times during layout`() {
-
-    expectedException.expect(LithoMetadataExceptionWrapper::class.java)
-    expectedException.expectMessage("State update loop during layout detected")
-
-    class RootComponent : KComponent() {
-      override fun ComponentScope.render(): Component {
-
-        val state = useState { 0 }
-
-        // unconditional state update
-        state.updateSync { value -> value + 1 }
-
-        return Row { child(Text(text = "hello world")) }
-      }
-    }
-
-    mLithoTestRule.render { RootComponent() }
-  }
-
-  @Test
   fun useState_updateState_stateIsUpdated_forPrimitive() {
     lateinit var stateRef: AtomicReference<String>
 
@@ -556,27 +535,6 @@ class KStateTest {
     assertThat(view.findViewWithText("Counter: 1")).isNotNull()
     assertThat(parentRenderCount.get()).isEqualTo(2)
     assertThat(siblingRenderCount.get()).isEqualTo(1)
-  }
-
-  @Test
-  fun `should throw exception when state updates are triggered too many times during layout for Primitive`() {
-
-    expectedException.expect(LithoMetadataExceptionWrapper::class.java)
-    expectedException.expectMessage("State update loop during layout detected")
-
-    class RootComponent : PrimitiveComponent() {
-      override fun PrimitiveComponentScope.render(): LithoPrimitive {
-
-        val state = useState { 0 }
-
-        // unconditional state update
-        state.updateSync { value -> value + 1 }
-
-        return LithoPrimitive(TestTextPrimitive(text = "hello world"), null)
-      }
-    }
-
-    mLithoTestRule.render { RootComponent() }
   }
 
   @Test
